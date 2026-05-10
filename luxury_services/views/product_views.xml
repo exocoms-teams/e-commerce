@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_luxury" model="ir.ui.view">
+        <field name="name">product.template.form.luxury</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Luxury Services" name="luxury_services">
+                    <group string="Informations générales">
+                        <group>
+                            <field name="categorie_luxe"/>
+                            <field name="type_service"/>
+                            <field name="disponible"
+                                   invisible="type_service == 'vente'"/>
+                        </group>
+                    </group>
+                    <group string="Caractéristiques">
+                        <group>
+                            <field name="longueur"/>
+                            <field name="capacite_personnes"/>
+                        </group>
+                    </group>
+                    <group string="Location"
+                           invisible="type_service == 'vente'">
+                        <group>
+                            <field name="duree_min_location"/>
+                            <field name="prix_location_jour"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

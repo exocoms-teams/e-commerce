@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Modification de la page produit eCommerce -->
+    <template id="luxury_product_page"
+              inherit_id="website_sale.product"
+              name="Luxury - Bouton dynamique">
+
+        <!-- Remplace le bouton Ajouter au panier -->
+        <xpath expr="//div[hasclass('o_wsale_product_btn')]" position="replace">
+            <div class="o_wsale_product_btn d-flex gap-2">
+
+                <!-- Si vente ou les_deux → bouton panier normal -->
+                <t t-if="product.type_service in ('vente', 'les_deux')">
+                    <a role="button"
+                       class="btn btn-primary btn-lg a-submit"
+                       href="#"
+                       id="add_to_cart">
+                        <i class="fa fa-shopping-cart me-2"/>
+                        Ajouter au panier
+                    </a>
+                </t>
+
+                <!-- Si location ou les_deux → bouton réserver -->
+                <t t-if="product.type_service in ('location', 'les_deux')">
+                    <t t-if="product.disponible">
+                        <a role="button"
+                           class="btn btn-luxury btn-lg"
+                           t-attf-href="/luxury/reserver/#{product.id}">
+                            <i class="fa fa-calendar me-2"/>
+                            Réserver
+                        </a>
+                    </t>
+                    <t t-else="">
+                        <button class="btn btn-secondary btn-lg" disabled="1">
+                            <i class="fa fa-times me-2"/>
+                            Non disponible
+                        </button>
+                    </t>
+                </t>
+
+                <!-- Si type_service non défini → bouton panier par défaut -->
+                <t t-if="not product.type_service">
+                    <a role="button"
+                       class="btn btn-primary btn-lg a-submit"
+                       href="#">
+                        <i class="fa fa-shopping-cart me-2"/>
+                        Ajouter au panier
+                    </a>
+                </t>
+
+            </div>
+        </xpath>
+
+        <!-- Ajout des infos luxury sous le prix -->
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <div t-if="product.categorie_luxe" class="luxury_info mt-3">
+                <t t-if="product.longueur">
+                    <span class="me-3">
+                        <i class="fa fa-arrows-h me-1"/>
+                        <strong>Longueur :</strong>
+                        <t t-esc="product.longueur"/> m
+                    </span>
+                </t>
+                <t t-if="product.capacite_personnes">
+                    <span class="me-3">
+                        <i class="fa fa-users me-1"/>
+                        <strong>Capacité :</strong>
+                        <t t-esc="product.capacite_personnes"/> personnes
+                    </span>
+                </t>
+                <t t-if="product.type_service in ('location', 'les_deux')">
+                    <span class="me-3">
+                        <i class="fa fa-tag me-1"/>
+                        <strong>Prix/jour :</strong>
+                        <t t-esc="product.prix_location_jour"/> €
+                    </span>
+                    <span>
+                        <i class="fa fa-clock-o me-1"/>
+                        <strong>Durée min :</strong>
+                        <t t-esc="product.duree_min_location"/> jours
+                    </span>
+                </t>
+            </div>
+        </xpath>
+
+    </template>
+
+    <!-- Page de réservation -->
+    <template id="luxury_reservation_page" name="Page de réservation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="mb-4">
+                            <i class="fa fa-calendar me-2"/>
+                            Réserver — <t t-esc="product.name"/>
+                        </h1>
+
+                        <!-- Infos produit -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <t t-if="product.image_1920">
+                                            <img t-attf-src="/web/image/product.template/#{product.id}/image_1920"
+                                                 class="img-fluid rounded"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h4><t t-esc="product.name"/></h4>
+                                        <p t-if="product.longueur">
+                                            <strong>Longueur :</strong>
+                                            <t t-esc="product.longueur"/> m
+                                        </p>
+                                        <p t-if="product.capacite_personnes">
+                                            <strong>Capacité :</strong>
+                                            <t t-esc="product.capacite_personnes"/> personnes
+                                        </p>
+                                        <p>
+                                            <strong>Prix/jour :</strong>
+                                            <t t-esc="product.prix_location_jour"/> €
+                                        </p>
+                                        <p>
+                                            <strong>Durée minimum :</strong>
+                                            <t t-esc="product.duree_min_location"/> jours
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulaire de réservation -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-4">Vos informations</h4>
+                                <form action="/luxury/reserver/submit" method="POST">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="product_id"
+                                           t-att-value="product.id"/>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Nom complet *</strong>
+                                            </label>
+                                            <input type="text"
+                                                   name="client_name"
+                                                   class="form-control"
+                                                   required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Email *</strong>
+                                            </label>
+                                            <input type="email"
+                                                   name="client_email"
+                                                   class="form-control"
+                                                   required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <strong>Téléphone</strong>
+                                        </label>
+                                        <input type="tel"
+                                               name="client_phone"
+                                               class="form-control"/>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Date de début *</strong>
+                                            </label>
+                                            <input type="date"
+                                                   name="date_debut"
+                                                   class="form-control"
+                                                   required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">
+                                                <strong>Date de fin *</strong>
+                                            </label>
+                                            <input type="date"
+                                                   name="date_fin"
+                                                   class="form-control"
+                                                   required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <strong>Notes / Demandes spéciales</strong>
+                                        </label>
+                                        <textarea name="notes"
+                                                  class="form-control"
+                                                  rows="3"/>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit"
+                                                class="btn btn-primary btn-lg">
+                                            <i class="fa fa-check me-2"/>
+                                            Confirmer la réservation
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Page de confirmation -->
+    <template id="luxury_reservation_confirm" name="Confirmation réservation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+                        <i class="fa fa-check-circle fa-5x text-success mb-4"/>
+                        <h1>Réservation confirmée !</h1>
+                        <p class="lead">
+                            Merci <strong><t t-esc="reservation.client_name"/></strong> !
+                            Votre réservation a bien été enregistrée.
+                        </p>
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <p><strong>Référence :</strong>
+                                    <t t-esc="reservation.name"/></p>
+                                <p><strong>Produit :</strong>
+                                    <t t-esc="reservation.product_id.name"/></p>
+                                <p><strong>Du :</strong>
+                                    <t t-esc="reservation.date_debut"/></p>
+                                <p><strong>Au :</strong>
+                                    <t t-esc="reservation.date_fin"/></p>
+                                <p><strong>Durée :</strong>
+                                    <t t-esc="reservation.nb_jours"/> jours</p>
+                                <p><strong>Prix total :</strong>
+                                    <t t-esc="reservation.prix_total"/> €</p>
+                            </div>
+                        </div>
+                        <a href="/" class="btn btn-primary mt-4">
+                            Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

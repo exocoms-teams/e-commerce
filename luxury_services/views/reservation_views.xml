@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_luxury_reservation" model="ir.sequence">
+        <field name="name">Luxury Reservation</field>
+        <field name="code">luxury.reservation</field>
+        <field name="prefix">LUX/</field>
+        <field name="padding">5</field>
+    </record>
+
+    <record id="view_luxury_reservation_tree" model="ir.ui.view">
+        <field name="name">luxury.reservation.tree</field>
+        <field name="model">luxury.reservation</field>
+        <field name="arch" type="xml">
+            <tree string="Réservations"
+                  decoration-success="state == 'confirmed'"
+                  decoration-danger="state == 'cancelled'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="client_name"/>
+                <field name="client_phone"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="nb_jours"/>
+                <field name="prix_total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_luxury_reservation_form" model="ir.ui.view">
+        <field name="name">luxury.reservation.form</field>
+        <field name="model">luxury.reservation</field>
+        <field name="arch" type="xml">
+            <form string="Réservation">
+                <header>
+                    <button name="action_confirm"
+                            string="Confirmer"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_cancel"
+                            string="Annuler"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,confirmed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group string="Informations client">
+                        <group>
+                            <field name="client_name"/>
+                            <field name="client_email"/>
+                            <field name="client_phone"/>
+                        </group>
+                    </group>
+                    <group string="Détails réservation">
+                        <group>
+                            <field name="product_id"/>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                        </group>
+                        <group>
+                            <field name="nb_jours"/>
+                            <field name="prix_total"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_luxury_reservation" model="ir.actions.act_window">
+        <field name="name">Réservations</field>
+        <field name="res_model">luxury.reservation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_luxury_root"
+              name="Luxury Services"
+              sequence="10"/>
+
+    <menuitem id="menu_luxury_reservation"
+              name="Réservations"
+              parent="menu_luxury_root"
+              action="action_luxury_reservation"/>
+
+</odoo>
