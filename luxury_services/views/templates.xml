@@ -1,60 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Modification de la page produit eCommerce -->
     <template id="luxury_product_page"
               inherit_id="website_sale.product"
               name="Luxury - Bouton dynamique">
 
-        <!-- Remplace le bouton Ajouter au panier -->
-        <xpath expr="//div[hasclass('o_wsale_product_btn')]" position="replace">
-            <div class="o_wsale_product_btn d-flex gap-2">
+        <!-- Remplace le bouton Add to cart -->
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="replace">
 
-                <!-- Si vente ou les_deux → bouton panier normal -->
-                <t t-if="product.type_service in ('vente', 'les_deux')">
-                    <a role="button"
-                       class="btn btn-primary btn-lg a-submit"
+            <!-- Si vente ou les_deux → bouton panier normal -->
+            <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
+                <div id="add_to_cart_wrap"
+                     class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                    <a id="add_to_cart"
+                       role="button"
                        href="#"
-                       id="add_to_cart">
+                       class="btn btn-primary js_check_product a-submit flex-grow-1"
+                       data-animation-selector=".o_wsale_product_images">
                         <i class="fa fa-shopping-cart me-2"/>
                         Ajouter au panier
                     </a>
-                </t>
+                </div>
+            </t>
 
-                <!-- Si location ou les_deux → bouton réserver -->
-                <t t-if="product.type_service in ('location', 'les_deux')">
+            <!-- Si location → bouton réserver ou non disponible -->
+            <t t-if="product.type_service in ('location', 'les_deux')">
+                <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
                     <t t-if="product.disponible">
                         <a role="button"
-                           class="btn btn-luxury btn-lg"
+                           class="btn btn-luxury flex-grow-1"
                            t-attf-href="/luxury/reserver/#{product.id}">
                             <i class="fa fa-calendar me-2"/>
                             Réserver
                         </a>
                     </t>
                     <t t-else="">
-                        <button class="btn btn-secondary btn-lg" disabled="1">
+                        <button class="btn btn-secondary flex-grow-1" disabled="1">
                             <i class="fa fa-times me-2"/>
                             Non disponible
                         </button>
                     </t>
-                </t>
+                </div>
+            </t>
 
-                <!-- Si type_service non défini → bouton panier par défaut -->
-                <t t-if="not product.type_service">
-                    <a role="button"
-                       class="btn btn-primary btn-lg a-submit"
-                       href="#">
-                        <i class="fa fa-shopping-cart me-2"/>
-                        Ajouter au panier
-                    </a>
-                </t>
-
-            </div>
         </xpath>
 
-        <!-- Ajout des infos luxury sous le prix -->
-        <xpath expr="//div[@id='product_details']" position="inside">
-            <div t-if="product.categorie_luxe" class="luxury_info mt-3">
+        <!-- Infos luxury sous le prix -->
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
+            <div t-if="product.categorie_luxe" class="luxury_info mt-3 w-100">
                 <t t-if="product.longueur">
                     <span class="me-3">
                         <i class="fa fa-arrows-h me-1"/>
@@ -97,7 +90,10 @@
                             Réserver — <t t-esc="product.name"/>
                         </h1>
 
-                        <!-- Infos produit -->
+                        <div t-if="error" class="alert alert-danger">
+                            <t t-esc="error"/>
+                        </div>
+
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row">
@@ -130,7 +126,6 @@
                             </div>
                         </div>
 
-                        <!-- Formulaire de réservation -->
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title mb-4">Vos informations</h4>
@@ -210,7 +205,6 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
