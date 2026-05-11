@@ -19,13 +19,16 @@ class LuxuryReservation(models.Model):
         required=True,
         domain="[('type_service', 'in', ['location', 'les_deux'])]"
     )
-    client_id = fields.Many2one(
-        'res.partner',
-        string='Client',
-    )
+    client_id = fields.Many2one('res.partner', string='Client')
     client_name = fields.Char(string='Nom du client', required=True)
     client_email = fields.Char(string='Email du client', required=True)
     client_phone = fields.Char(string='Téléphone')
+
+    # Adresse
+    client_adresse = fields.Char(string='Adresse')
+    client_code_postal = fields.Char(string='Code postal')
+    client_pays = fields.Many2one('res.country', string='Pays')
+
     date_debut = fields.Date(string='Date de début', required=True)
     date_fin = fields.Date(string='Date de fin', required=True)
     nb_jours = fields.Integer(
@@ -101,7 +104,6 @@ class LuxuryReservation(models.Model):
     def action_cancel(self):
         for rec in self:
             rec.state = 'cancelled'
-            # Remettre disponible si plus de réservations confirmées
             other_confirmed = self.search([
                 ('product_id', '=', rec.product_id.id),
                 ('state', '=', 'confirmed'),

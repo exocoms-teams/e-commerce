@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Bouton dynamique sur la page produit -->
     <template id="luxury_product_page"
               inherit_id="website_sale.cta_wrapper"
-              name="Luxury - Bouton dynamique">
+              name="Luxury - Bouton dynamique"
+              website_id="14">
 
-        <!-- Remplace le bouton Add to cart -->
         <xpath expr="//div[@id='add_to_cart_wrap']" position="replace">
 
-            <!-- Si vente ou les_deux → bouton panier normal -->
             <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
                 <div id="add_to_cart_wrap"
                      class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
@@ -23,7 +23,6 @@
                 </div>
             </t>
 
-            <!-- Si location → bouton réserver ou non disponible -->
             <t t-if="product.type_service in ('location', 'les_deux')">
                 <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
                     <t t-if="product.disponible">
@@ -44,10 +43,16 @@
             </t>
 
         </xpath>
+    </template>
 
-        <!-- Infos luxury sous le prix -->
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
-            <div t-if="product.categorie_luxe" class="luxury_info mt-3 w-100">
+    <!-- Infos luxury sur la page produit -->
+    <template id="luxury_product_info"
+              inherit_id="website_sale.product"
+              name="Luxury - Infos produit"
+              website_id="14">
+
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="after">
+            <div t-if="product.categorie_luxe" class="luxury_info o_wsale_product_details_content_section mb-4 p-3">
                 <t t-if="product.longueur">
                     <span class="me-3">
                         <i class="fa fa-arrows-h me-1"/>
@@ -76,10 +81,9 @@
                 </t>
             </div>
         </xpath>
-
     </template>
 
-    <!-- Page de réservation -->
+    <!-- Page formulaire de réservation -->
     <template id="luxury_reservation_page" name="Page de réservation">
         <t t-call="website.layout">
             <div class="container mt-5 mb-5">
@@ -94,6 +98,7 @@
                             <t t-esc="error"/>
                         </div>
 
+                        <!-- Infos produit -->
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row">
@@ -126,80 +131,87 @@
                             </div>
                         </div>
 
+                        <!-- Formulaire -->
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title mb-4">Vos informations</h4>
-                                <form action="/luxury/reserver/submit" method="POST">
+                                <form action="/luxury/reserver/recap" method="POST">
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="product_id"
                                            t-att-value="product.id"/>
 
+                                    <!-- Identité -->
+                                    <h5 class="mb-3">Identité</h5>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <strong>Nom complet *</strong>
-                                            </label>
-                                            <input type="text"
-                                                   name="client_name"
-                                                   class="form-control"
-                                                   required="1"/>
+                                            <label class="form-label"><strong>Nom complet *</strong></label>
+                                            <input type="text" name="client_name"
+                                                   class="form-control" required="1"/>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <strong>Email *</strong>
-                                            </label>
-                                            <input type="email"
-                                                   name="client_email"
-                                                   class="form-control"
-                                                   required="1"/>
+                                            <label class="form-label"><strong>Email *</strong></label>
+                                            <input type="email" name="client_email"
+                                                   class="form-control" required="1"/>
                                         </div>
                                     </div>
-
                                     <div class="mb-3">
-                                        <label class="form-label">
-                                            <strong>Téléphone</strong>
-                                        </label>
-                                        <input type="tel"
-                                               name="client_phone"
+                                        <label class="form-label"><strong>Téléphone</strong></label>
+                                        <input type="tel" name="client_phone"
                                                class="form-control"/>
                                     </div>
 
+                                    <!-- Adresse -->
+                                    <h5 class="mb-3 mt-4">Adresse</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label"><strong>Adresse *</strong></label>
+                                        <input type="text" name="client_adresse"
+                                               class="form-control" required="1"/>
+                                    </div>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <strong>Date de début *</strong>
-                                            </label>
-                                            <input type="date"
-                                                   name="date_debut"
-                                                   class="form-control"
-                                                   required="1"/>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label"><strong>Code postal *</strong></label>
+                                            <input type="text" name="client_code_postal"
+                                                   class="form-control" required="1"/>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <strong>Date de fin *</strong>
-                                            </label>
-                                            <input type="date"
-                                                   name="date_fin"
-                                                   class="form-control"
-                                                   required="1"/>
+                                        <div class="col-md-8 mb-3">
+                                            <label class="form-label"><strong>Pays *</strong></label>
+                                            <select name="client_pays_id"
+                                                    class="form-select" required="1">
+                                                <option value="">-- Sélectionnez un pays --</option>
+                                                <t t-foreach="pays_list" t-as="pays">
+                                                    <option t-att-value="pays.id"
+                                                            t-esc="pays.name"/>
+                                                </t>
+                                            </select>
                                         </div>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">
-                                            <strong>Notes / Demandes spéciales</strong>
-                                        </label>
-                                        <textarea name="notes"
-                                                  class="form-control"
-                                                  rows="3"/>
+                                    <!-- Dates -->
+                                    <h5 class="mb-3 mt-4">Dates de réservation</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de début *</strong></label>
+                                            <input type="date" name="date_debut"
+                                                   class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de fin *</strong></label>
+                                            <input type="date" name="date_fin"
+                                                   class="form-control" required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
+                                        <textarea name="notes" class="form-control" rows="3"/>
                                     </div>
 
                                     <div class="d-grid">
-                                        <button type="submit"
-                                                class="btn btn-primary btn-lg">
-                                            <i class="fa fa-check me-2"/>
-                                            Confirmer la réservation
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-arrow-right me-2"/>
+                                            Voir le récapitulatif
                                         </button>
                                     </div>
                                 </form>
@@ -211,7 +223,98 @@
         </t>
     </template>
 
-    <!-- Page de confirmation -->
+    <!-- Page récapitulatif -->
+    <template id="luxury_reservation_recap" name="Récapitulatif réservation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="mb-4">
+                            <i class="fa fa-list me-2"/>
+                            Récapitulatif de votre réservation
+                        </h1>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-luxury text-white">
+                                <h5 class="mb-0">Produit réservé</h5>
+                            </div>
+                            <div class="card-body">
+                                <h4><t t-esc="product.name"/></h4>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Date de début :</strong> <t t-esc="date_debut"/></p>
+                                        <p><strong>Date de fin :</strong> <t t-esc="date_fin"/></p>
+                                        <p><strong>Durée :</strong> <t t-esc="nb_jours"/> jours</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Prix/jour :</strong> <t t-esc="product.prix_location_jour"/> €</p>
+                                        <h4 class="text-success">
+                                            <strong>Total : <t t-esc="prix_total"/> €</strong>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vos informations</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Nom :</strong> <t t-esc="client_name"/></p>
+                                        <p><strong>Email :</strong> <t t-esc="client_email"/></p>
+                                        <p><strong>Téléphone :</strong> <t t-esc="client_phone"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Adresse :</strong> <t t-esc="client_adresse"/></p>
+                                        <p><strong>Code postal :</strong> <t t-esc="client_code_postal"/></p>
+                                        <p><strong>Pays :</strong> <t t-esc="client_pays.name"/></p>
+                                    </div>
+                                </div>
+                                <t t-if="notes">
+                                    <p><strong>Notes :</strong> <t t-esc="notes"/></p>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Formulaire de confirmation -->
+                        <form action="/luxury/reserver/submit" method="POST">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="product_id" t-att-value="product.id"/>
+                            <input type="hidden" name="client_name" t-att-value="client_name"/>
+                            <input type="hidden" name="client_email" t-att-value="client_email"/>
+                            <input type="hidden" name="client_phone" t-att-value="client_phone"/>
+                            <input type="hidden" name="client_adresse" t-att-value="client_adresse"/>
+                            <input type="hidden" name="client_code_postal" t-att-value="client_code_postal"/>
+                            <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
+                            <input type="hidden" name="date_debut" t-att-value="date_debut"/>
+                            <input type="hidden" name="date_fin" t-att-value="date_fin"/>
+                            <input type="hidden" name="notes" t-att-value="notes"/>
+
+                            <div class="d-flex gap-3">
+                                <a t-attf-href="/luxury/reserver/#{product.id}"
+                                   class="btn btn-secondary btn-lg flex-grow-1">
+                                    <i class="fa fa-arrow-left me-2"/>
+                                    Modifier
+                                </a>
+                                <button type="submit"
+                                        class="btn btn-success btn-lg flex-grow-1">
+                                    <i class="fa fa-check me-2"/>
+                                    Confirmer la réservation
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Page confirmation finale -->
     <template id="luxury_reservation_confirm" name="Confirmation réservation">
         <t t-call="website.layout">
             <div class="container mt-5 mb-5">
@@ -223,20 +326,18 @@
                             Merci <strong><t t-esc="reservation.client_name"/></strong> !
                             Votre réservation a bien été enregistrée.
                         </p>
-                        <div class="card mt-4">
+                        <div class="card mt-4 text-start">
                             <div class="card-body">
-                                <p><strong>Référence :</strong>
-                                    <t t-esc="reservation.name"/></p>
-                                <p><strong>Produit :</strong>
-                                    <t t-esc="reservation.product_id.name"/></p>
-                                <p><strong>Du :</strong>
-                                    <t t-esc="reservation.date_debut"/></p>
-                                <p><strong>Au :</strong>
-                                    <t t-esc="reservation.date_fin"/></p>
-                                <p><strong>Durée :</strong>
-                                    <t t-esc="reservation.nb_jours"/> jours</p>
-                                <p><strong>Prix total :</strong>
-                                    <t t-esc="reservation.prix_total"/> €</p>
+                                <p><strong>Référence :</strong> <t t-esc="reservation.name"/></p>
+                                <p><strong>Produit :</strong> <t t-esc="reservation.product_id.name"/></p>
+                                <p><strong>Du :</strong> <t t-esc="reservation.date_debut"/></p>
+                                <p><strong>Au :</strong> <t t-esc="reservation.date_fin"/></p>
+                                <p><strong>Durée :</strong> <t t-esc="reservation.nb_jours"/> jours</p>
+                                <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
+                                <hr/>
+                                <p><strong>Adresse :</strong> <t t-esc="reservation.client_adresse"/></p>
+                                <p><strong>Code postal :</strong> <t t-esc="reservation.client_code_postal"/></p>
+                                <p><strong>Pays :</strong> <t t-esc="reservation.client_pays.name"/></p>
                             </div>
                         </div>
                         <a href="/" class="btn btn-primary mt-4">
