@@ -21,7 +21,7 @@ class PayCoreWebsite(http.Controller):
             ),
             'og_title': 'PayCore — Solutions Monétiques & Paiement',
         })
-        return request.render('paycore_website.page_home', values)
+        return request.render('monetique_theme.page_home', values)
 
     @http.route('/services', type='http', auth='public', website=True)
     def services(self, **kwargs):
@@ -33,7 +33,7 @@ class PayCoreWebsite(http.Controller):
                 'TPE, support technique, maintenance préventive et corrective.'
             ),
         })
-        return request.render('paycore_website.page_services', values)
+        return request.render('monetique_theme.page_services', values)
 
     @http.route('/solutions/tpe', type='http', auth='public', website=True)
     def tpe(self, **kwargs):
@@ -45,7 +45,7 @@ class PayCoreWebsite(http.Controller):
                 'Installation, configuration, formation et maintenance incluses.'
             ),
         })
-        return request.render('paycore_website.page_tpe', values)
+        return request.render('monetique_theme.page_tpe', values)
 
     @http.route('/solutions/encaissement', type='http', auth='public', website=True)
     def encaissement(self, **kwargs):
@@ -57,7 +57,7 @@ class PayCoreWebsite(http.Controller):
                 'Caisse enregistreuse connectée, logiciels de caisse certifiés NF525.'
             ),
         })
-        return request.render('paycore_website.page_encaissement', values)
+        return request.render('monetique_theme.page_encaissement', values)
 
     @http.route('/solutions/paiement-omnicanal', type='http', auth='public', website=True)
     def omnicanal(self, **kwargs):
@@ -69,7 +69,7 @@ class PayCoreWebsite(http.Controller):
                 'Unifiez votre infrastructure de paiement avec PayCore.'
             ),
         })
-        return request.render('paycore_website.page_omnicanal', values)
+        return request.render('monetique_theme.page_omnicanal', values)
 
     @http.route('/support', type='http', auth='public', website=True)
     def support(self, **kwargs):
@@ -81,7 +81,7 @@ class PayCoreWebsite(http.Controller):
                 'et corrective. SLA garanti pour votre infrastructure de paiement.'
             ),
         })
-        return request.render('paycore_website.page_support', values)
+        return request.render('monetique_theme.page_support', values)
 
     @http.route('/a-propos', type='http', auth='public', website=True)
     def about(self, **kwargs):
@@ -93,7 +93,7 @@ class PayCoreWebsite(http.Controller):
                 'Notre mission : simplifier et sécuriser votre infrastructure de paiement.'
             ),
         })
-        return request.render('paycore_website.page_about', values)
+        return request.render('monetique_theme.page_about', values)
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
@@ -102,7 +102,7 @@ class PayCoreWebsite(http.Controller):
             'page_title': 'Contact — PayCore',
             'meta_description': 'Contactez nos experts en monétique et solutions de paiement.',
         })
-        return request.render('paycore_website.page_contact', values)
+        return request.render('monetique_theme.page_contact', values)
 
     @http.route('/contact/submit', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def contact_submit(self, **post):
