@@ -30,7 +30,5 @@
     },
     'installable': True,
     'auto_install': False,
-    'theme': True,
-    'website': True,
-    'application': True,
+    'application': False,
 }
