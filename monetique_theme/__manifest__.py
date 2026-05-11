@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'PayCore — Infrastructure de Paiement',
+    'name': 'monetiques.fr — Infrastructure de Paiement',
     'version': '19.0.1.0.0',
     'category': 'Website',
     'summary': 'Site vitrine premium pour solutions monétiques et paiement',
     'description': """
-        Module website custom pour PayCore.
+        Module website custom pour monetiques.fr.
         Architecture complète : navbar premium, hero, services monétiques,
         sections métiers, footer enterprise, animations premium.
         Compatible Odoo 19 / Odoo.sh.
     """,
-    'author': 'PayCore Dev Team',
-    'website': 'https://paycore.fr',
+    'author': 'monetiques.fr Dev Team',
+    'website': 'https://monetiques.fr',
     'license': 'LGPL-3',
 
     'depends': [
