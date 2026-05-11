@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         LAYOUT PRINCIPAL PAYCORE
+         Hérite de website.layout et override les blocs clés
+         ================================================================ -->
+
+    <template id="layout" name="PayCore — Layout Principal" inherit_id="website.layout">
+
+        <!-- Override head : fonts + meta premium -->
+        <xpath expr="//head" position="inside">
+            <!-- Fonts premium : Geist (display) + DM Sans (body) -->
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+            <link rel="stylesheet"
+                  href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&amp;family=DM+Mono:wght@400;500&amp;display=swap"/>
+
+            <!-- Meta dynamiques -->
+            <meta name="description" t-att-content="meta_description or 'PayCore — Infrastructure de paiement moderne'"/>
+            <meta property="og:title" t-att-content="og_title or page_title or 'PayCore'"/>
+            <meta property="og:description" t-att-content="og_description or meta_description or ''"/>
+            <meta property="og:type" content="website"/>
+            <meta property="og:image" content="/paycore_website/static/src/img/og-paycore.png"/>
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="theme-color" content="#0A0F1E"/>
+
+            <!-- Favicon -->
+            <link rel="icon" type="image/svg+xml" href="/paycore_website/static/src/img/favicon.svg"/>
+            <link rel="apple-touch-icon" href="/paycore_website/static/src/img/apple-touch-icon.png"/>
+        </xpath>
+
+        <!-- Override title -->
+        <xpath expr="//title" position="replace">
+            <title t-esc="page_title or 'PayCore — Infrastructure de Paiement'"/>
+        </xpath>
+
+        <!-- Supprimer la navbar Odoo par défaut -->
+        <xpath expr="//header" position="replace">
+            <t t-call="paycore_website.navbar"/>
+        </xpath>
+
+        <!-- Supprimer le footer Odoo par défaut et injecter le nôtre -->
+        <xpath expr="//footer" position="replace">
+            <t t-call="paycore_website.footer"/>
+        </xpath>
+
+    </template>
+
+
+    <!-- ================================================================
+         NAVBAR PREMIUM STICKY
+         ================================================================ -->
+
+    <template id="navbar" name="PayCore — Navbar">
+        <header class="pc-navbar" id="pc-navbar" role="banner">
+            <div class="pc-navbar__inner">
+
+                <!-- Logo -->
+                <a href="/" class="pc-navbar__logo" aria-label="PayCore — Accueil">
+                    <svg class="pc-logo" width="140" height="32" viewBox="0 0 140 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <!-- Icône : carré arrondi avec éclair -->
+                        <rect width="32" height="32" rx="8" fill="#2563EB"/>
+                        <path d="M18 6L10 18H16L14 26L22 14H16L18 6Z" fill="white"/>
+                        <!-- Wordmark -->
+                        <text x="40" y="22" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="currentColor" letter-spacing="-0.3">PayCore</text>
+                    </svg>
+                </a>
+
+                <!-- Navigation principale -->
+                <nav class="pc-navbar__nav" role="navigation" aria-label="Navigation principale">
+                    <ul class="pc-navbar__menu" role="list">
+
+                        <li class="pc-navbar__item pc-navbar__item--dropdown">
+                            <button class="pc-navbar__link pc-navbar__link--has-dropdown" aria-expanded="false" aria-haspopup="true">
+                                Solutions
+                                <svg class="pc-navbar__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                                    <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <div class="pc-navbar__dropdown" role="menu">
+                                <div class="pc-navbar__dropdown-inner">
+                                    <div class="pc-navbar__dropdown-col">
+                                        <span class="pc-navbar__dropdown-label">Matériel</span>
+                                        <a href="/solutions/tpe" class="pc-navbar__dropdown-item" role="menuitem">
+                                            <span class="pc-navbar__dropdown-icon">
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 14v2M12 14v2M4 16h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="5" y="7" width="8" height="4" rx="1" fill="currentColor" opacity="0.2"/></svg>
+                                            </span>
+                                            <span>
+                                                <strong>Terminaux TPE</strong>
+                                                <em>Fixes, mobiles, Android</em>
+                                            </span>
+                                        </a>
+                                        <a href="/solutions/encaissement" class="pc-navbar__dropdown-item" role="menuitem">
+                                            <span class="pc-navbar__dropdown-icon">
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M1 7h16" stroke="currentColor" stroke-width="1.5"/><path d="M5 11h3M12 11h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                            </span>
+                                            <span>
+                                                <strong>Encaissement</strong>
+                                                <em>Caisses connectées, logiciels NF525</em>
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <div class="pc-navbar__dropdown-col">
+                                        <span class="pc-navbar__dropdown-label">Digital</span>
+                                        <a href="/solutions/paiement-omnicanal" class="pc-navbar__dropdown-item" role="menuitem">
+                                            <span class="pc-navbar__dropdown-icon">
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M2 9h14M9 2a11 11 0 010 14M9 2a11 11 0 000 14" stroke="currentColor" stroke-width="1.5"/></svg>
+                                            </span>
+                                            <span>
+                                                <strong>Paiement Omnicanal</strong>
+                                                <em>Web, mobile, point de vente</em>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="pc-navbar__item">
+                            <a href="/support" class="pc-navbar__link">Support</a>
+                        </li>
+
+                        <li class="pc-navbar__item">
+                            <a href="/services" class="pc-navbar__link">Services</a>
+                        </li>
+
+                        <li class="pc-navbar__item">
+                            <a href="/a-propos" class="pc-navbar__link">À propos</a>
+                        </li>
+
+                    </ul>
+                </nav>
+
+                <!-- CTA Navbar -->
+                <div class="pc-navbar__actions">
+                    <a href="tel:+33XXXXXXXXX" class="pc-navbar__tel">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                            <path d="M2 2.5A1.5 1.5 0 013.5 1h.382a1 1 0 01.95.684l.688 2.063a1 1 0 01-.275 1.06l-.7.616a7.002 7.002 0 003.03 3.03l.617-.7a1 1 0 011.06-.275l2.063.688A1 1 0 0112 9.118V9.5A1.5 1.5 0 0110.5 11C5.253 11 1 6.747 1 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Expert disponible
+                    </a>
+                    <a href="/contact" class="pc-btn pc-btn--primary pc-btn--sm">
+                        Demander un devis
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Burger mobile -->
+                <button class="pc-navbar__burger" id="pc-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="pc-mobile-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+            </div>
+
+            <!-- Menu mobile -->
+            <div class="pc-navbar__mobile" id="pc-mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu navigation">
+                <nav>
+                    <a href="/solutions/tpe" class="pc-navbar__mobile-link">Terminaux TPE</a>
+                    <a href="/solutions/encaissement" class="pc-navbar__mobile-link">Encaissement</a>
+                    <a href="/solutions/paiement-omnicanal" class="pc-navbar__mobile-link">Paiement Omnicanal</a>
+                    <a href="/support" class="pc-navbar__mobile-link">Support Technique</a>
+                    <a href="/services" class="pc-navbar__mobile-link">Tous les Services</a>
+                    <a href="/a-propos" class="pc-navbar__mobile-link">À propos</a>
+                    <a href="/contact" class="pc-btn pc-btn--primary pc-btn--full">Demander un devis</a>
+                </nav>
+            </div>
+
+        </header>
+    </template>
+
+
+    <!-- ================================================================
+         FOOTER ENTERPRISE
+         ================================================================ -->
+
+    <template id="footer" name="PayCore — Footer">
+        <footer class="pc-footer" role="contentinfo">
+
+            <!-- Bande supérieure : CTA -->
+            <div class="pc-footer__cta">
+                <div class="pc-container">
+                    <div class="pc-footer__cta-inner">
+                        <div class="pc-footer__cta-text">
+                            <h2 class="pc-footer__cta-title">Prêt à moderniser votre infrastructure de paiement ?</h2>
+                            <p>Nos experts vous accompagnent de l'audit à la mise en production.</p>
+                        </div>
+                        <div class="pc-footer__cta-actions">
+                            <a href="/contact" class="pc-btn pc-btn--white">Parler à un expert</a>
+                            <a href="tel:+33XXXXXXXXX" class="pc-footer__phone">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                    <path d="M2.5 3A1.5 1.5 0 014 1.5h.382a1 1 0 01.95.684l.688 2.063a1 1 0 01-.275 1.06l-.7.616a8 8 0 003.532 3.532l.617-.7a1 1 0 011.06-.275l2.063.688A1 1 0 0113 9.618V10a1.5 1.5 0 01-1.5 1.5C5.753 11.5 1 6.747 1 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                                +33 (0)X XX XX XX XX
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corps du footer -->
+            <div class="pc-footer__body">
+                <div class="pc-container">
+                    <div class="pc-footer__grid">
+
+                        <!-- Colonne marque -->
+                        <div class="pc-footer__brand">
+                            <a href="/" class="pc-footer__logo" aria-label="PayCore">
+                                <svg width="120" height="28" viewBox="0 0 140 32" fill="none">
+                                    <rect width="32" height="32" rx="8" fill="#2563EB"/>
+                                    <path d="M18 6L10 18H16L14 26L22 14H16L18 6Z" fill="white"/>
+                                    <text x="40" y="22" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="white" letter-spacing="-0.3">PayCore</text>
+                                </svg>
+                            </a>
+                            <p class="pc-footer__brand-desc">
+                                Infrastructure de paiement sécurisée pour les entreprises françaises. Monétique, TPE, encaissement et support technique depuis 2005.
+                            </p>
+                            <div class="pc-footer__certifications">
+                                <span class="pc-footer__cert">PCI DSS</span>
+                                <span class="pc-footer__cert">NF525</span>
+                                <span class="pc-footer__cert">ISO 27001</span>
+                            </div>
+                        </div>
+
+                        <!-- Colonne Solutions -->
+                        <div class="pc-footer__col">
+                            <h3 class="pc-footer__col-title">Solutions</h3>
+                            <ul class="pc-footer__links" role="list">
+                                <li><a href="/solutions/tpe">Terminaux TPE</a></li>
+                                <li><a href="/solutions/encaissement">Encaissement</a></li>
+                                <li><a href="/solutions/paiement-omnicanal">Paiement Omnicanal</a></li>
+                                <li><a href="/services">Intégration SI</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Colonne Services -->
+                        <div class="pc-footer__col">
+                            <h3 class="pc-footer__col-title">Services</h3>
+                            <ul class="pc-footer__links" role="list">
+                                <li><a href="/support">Support 7j/7</a></li>
+                                <li><a href="/support#maintenance">Maintenance préventive</a></li>
+                                <li><a href="/support#intervention">Interventions sur site</a></li>
+                                <li><a href="/support#hotline">Hotline technique</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Colonne Entreprise -->
+                        <div class="pc-footer__col">
+                            <h3 class="pc-footer__col-title">Entreprise</h3>
+                            <ul class="pc-footer__links" role="list">
+                                <li><a href="/a-propos">À propos</a></li>
+                                <li><a href="/a-propos#equipe">Notre équipe</a></li>
+                                <li><a href="/contact">Contact</a></li>
+                                <li><a href="/recrutement">Recrutement</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bande légale -->
+            <div class="pc-footer__legal">
+                <div class="pc-container">
+                    <div class="pc-footer__legal-inner">
+                        <p>© <span id="pc-year">2024</span> PayCore SAS. Tous droits réservés.</p>
+                        <nav class="pc-footer__legal-links" aria-label="Liens légaux">
+                            <a href="/mentions-legales">Mentions légales</a>
+                            <a href="/confidentialite">Confidentialité</a>
+                            <a href="/cgv">CGV</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+        </footer>
+    </template>
+
+</odoo>

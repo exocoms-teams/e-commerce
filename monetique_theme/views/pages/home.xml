@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="page_home" name="PayCore — Accueil" inherit_id="website.layout">
+        <xpath expr="//div[@id='wrapwrap']" position="replace">
+
+        <div id="wrapwrap" class="pc-site">
+
+            <t t-call="paycore_website.navbar"/>
+
+            <main id="wrap" role="main">
+
+                <!-- ============================================================
+                     HERO SECTION
+                     ============================================================ -->
+                <section class="pc-hero" aria-label="Introduction">
+                    <!-- Grille décorative -->
+                    <div class="pc-hero__grid" aria-hidden="true"></div>
+                    <!-- Gradient orb -->
+                    <div class="pc-hero__orb pc-hero__orb--1" aria-hidden="true"></div>
+                    <div class="pc-hero__orb pc-hero__orb--2" aria-hidden="true"></div>
+
+                    <div class="pc-container">
+                        <div class="pc-hero__inner">
+
+                            <div class="pc-hero__content" data-animate="hero">
+                                <!-- Badge annonce -->
+                                <div class="pc-hero__announce">
+                                    <span class="pc-hero__announce-dot" aria-hidden="true"></span>
+                                    <span>Certifié PCI DSS · Partenaire agréé Banque de France</span>
+                                </div>
+
+                                <h1 class="pc-hero__title">
+                                    L'infrastructure de paiement
+                                    <br/>
+                                    <em class="pc-hero__title-accent">que votre business mérite</em>
+                                </h1>
+
+                                <p class="pc-hero__subtitle">
+                                    Terminaux TPE, encaissement, paiement omnicanal, support technique&nbsp;—
+                                    une plateforme unifiée pour gérer l'intégralité de vos flux de paiement
+                                    avec la rigueur d'un partenaire technique certifié.
+                                </p>
+
+                                <div class="pc-hero__actions">
+                                    <a href="/contact" class="pc-btn pc-btn--primary pc-btn--lg">
+                                        Parler à un expert
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </a>
+                                    <a href="/services" class="pc-btn pc-btn--ghost pc-btn--lg">
+                                        Voir nos solutions
+                                    </a>
+                                </div>
+
+                                <!-- Trust badges inline -->
+                                <t t-call="paycore_website.trust_badge"/>
+                            </div>
+
+                            <!-- Hero visual : mockup terminal de paiement -->
+                            <div class="pc-hero__visual" aria-hidden="true">
+                                <div class="pc-terminal-mockup">
+                                    <div class="pc-terminal-mockup__screen">
+                                        <div class="pc-terminal-mockup__header">
+                                            <span class="pc-terminal-mockup__status"></span>
+                                            <span class="pc-terminal-mockup__amount">124,90 €</span>
+                                        </div>
+                                        <div class="pc-terminal-mockup__display">
+                                            <div class="pc-terminal-mockup__wave"></div>
+                                            <div class="pc-terminal-mockup__icons">
+                                                <!-- NFC icon -->
+                                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                                    <path d="M14 4a10 10 0 110 20A10 10 0 0114 4z" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+                                                    <path d="M14 8a6 6 0 110 12A6 6 0 0114 8z" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+                                                    <path d="M14 12a2 2 0 110 4 2 2 0 010-4z" fill="currentColor"/>
+                                                </svg>
+                                            </div>
+                                            <p class="pc-terminal-mockup__instruction">Approchez votre carte</p>
+                                        </div>
+                                        <div class="pc-terminal-mockup__indicators">
+                                            <div class="pc-terminal-mockup__indicator pc-terminal-mockup__indicator--active">VISA</div>
+                                            <div class="pc-terminal-mockup__indicator">MC</div>
+                                            <div class="pc-terminal-mockup__indicator">CB</div>
+                                        </div>
+                                    </div>
+                                    <div class="pc-terminal-mockup__keypad">
+                                        <t t-foreach="['1','2','3','4','5','6','7','8','9','*','0','#']" t-as="k">
+                                            <div class="pc-terminal-mockup__key" t-esc="k"/>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Floating cards autour du terminal -->
+                                <div class="pc-hero__float pc-hero__float--1">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 1l2 4 5 .5-3.5 3.5 1 5L8 11.5 3.5 14l1-5L1 5.5 6 5 8 1z" fill="#22C55E"/>
+                                    </svg>
+                                    Paiement validé
+                                </div>
+                                <div class="pc-hero__float pc-hero__float--2">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="#2563EB" stroke-width="1.5"/>
+                                        <path d="M8 4v4l2.5 2.5" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                    SLA 98,5%
+                                </div>
+                                <div class="pc-hero__float pc-hero__float--3">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 1L2 4v4c0 3.5 2.5 6.8 6 7.9C11.5 14.8 14 11.5 14 8V4L8 1z" fill="#2563EB" opacity="0.15" stroke="#2563EB" stroke-width="1.2"/>
+                                        <path d="M5.5 8l2 2 3-3" stroke="#2563EB" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    PCI DSS
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ============================================================
+                     STATS
+                     ============================================================ -->
+                <t t-call="paycore_website.stats_section"/>
+
+
+                <!-- ============================================================
+                     SERVICES PRINCIPAUX
+                     ============================================================ -->
+                <section class="pc-section pc-services-home" aria-label="Nos solutions">
+                    <div class="pc-container">
+
+                        <div class="pc-section__header">
+                            <span class="pc-eyebrow">Nos solutions</span>
+                            <h2 class="pc-h2">Tout ce dont vous avez besoin<br/>pour encaisser sereinement</h2>
+                            <p class="pc-lead">De l'équipement physique à l'intégration logicielle, nous couvrons l'intégralité de votre infrastructure de paiement.</p>
+                        </div>
+
+                        <div class="pc-services-home__grid">
+
+                            <!-- TPE -->
+                            <a href="/solutions/tpe" class="pc-card pc-card--service-lg" data-animate="fade-up">
+                                <div class="pc-card__tag">Matériel</div>
+                                <div class="pc-card__icon-lg" aria-hidden="true">
+                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                        <rect x="4" y="8" width="28" height="20" rx="4" stroke="currentColor" stroke-width="1.8"/>
+                                        <path d="M4 14h28" stroke="currentColor" stroke-width="1.8"/>
+                                        <rect x="10" y="18" width="16" height="6" rx="1.5" fill="currentColor" opacity="0.15"/>
+                                        <path d="M12 32h12M18 28v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3>Terminaux TPE</h3>
+                                <p>Fixes, mobiles, Android. Installation, paramétrage et formation inclus. Maintenance garantie.</p>
+                                <span class="pc-card__arrow" aria-hidden="true">→</span>
+                            </a>
+
+                            <!-- Encaissement -->
+                            <a href="/solutions/encaissement" class="pc-card pc-card--service-lg" data-animate="fade-up" data-delay="80">
+                                <div class="pc-card__tag">Logiciel</div>
+                                <div class="pc-card__icon-lg" aria-hidden="true">
+                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                        <rect x="2" y="6" width="32" height="22" rx="4" stroke="currentColor" stroke-width="1.8"/>
+                                        <path d="M2 14h32" stroke="currentColor" stroke-width="1.8"/>
+                                        <path d="M10 22h6M24 22h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        <path d="M10 30h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3>Encaissement</h3>
+                                <p>Solutions de caisse connectées, certifiées NF525. Gestion des tickets, inventaire, reporting temps réel.</p>
+                                <span class="pc-card__arrow" aria-hidden="true">→</span>
+                            </a>
+
+                            <!-- Omnicanal -->
+                            <a href="/solutions/paiement-omnicanal" class="pc-card pc-card--service-lg pc-card--featured" data-animate="fade-up" data-delay="160">
+                                <div class="pc-card__tag pc-card__tag--blue">Nouveau</div>
+                                <div class="pc-card__icon-lg" aria-hidden="true">
+                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                        <circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.8"/>
+                                        <path d="M4 18h28M18 4a18 18 0 010 28M18 4a18 18 0 000 28" stroke="currentColor" stroke-width="1.8"/>
+                                    </svg>
+                                </div>
+                                <h3>Paiement Omnicanal</h3>
+                                <p>Unifiez paiement en magasin, en ligne et sur mobile. Une seule plateforme, une seule réconciliation.</p>
+                                <span class="pc-card__arrow" aria-hidden="true">→</span>
+                            </a>
+
+                            <!-- Support -->
+                            <a href="/support" class="pc-card pc-card--service-lg" data-animate="fade-up" data-delay="240">
+                                <div class="pc-card__tag">Service</div>
+                                <div class="pc-card__icon-lg" aria-hidden="true">
+                                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                        <path d="M18 4C10.268 4 4 10.268 4 18v4a2 2 0 002 2h2V18c0-5.523 4.477-10 10-10s10 4.477 10 10v6h2a2 2 0 002-2v-4c0-7.732-6.268-14-14-14z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                        <rect x="4" y="20" width="6" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                                        <rect x="26" y="20" width="6" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                                    </svg>
+                                </div>
+                                <h3>Support Technique</h3>
+                                <p>Hotline dédiée, interventions sur site, maintenance préventive. SLA contractuel garanti 98,5%.</p>
+                                <span class="pc-card__arrow" aria-hidden="true">→</span>
+                            </a>
+
+                        </div>
+
+                        <div class="pc-section__footer">
+                            <a href="/services" class="pc-btn pc-btn--outline">
+                                Tous nos services
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                    <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ============================================================
+                     PARTENAIRES
+                     ============================================================ -->
+                <t t-call="paycore_website.partners_section"/>
+
+
+                <!-- ============================================================
+                     SECTION DIFFÉRENCIATION
+                     ============================================================ -->
+                <section class="pc-section pc-diff" aria-label="Pourquoi PayCore">
+                    <div class="pc-container">
+                        <div class="pc-diff__grid">
+
+                            <div class="pc-diff__content" data-animate="fade-right">
+                                <span class="pc-eyebrow">Pourquoi PayCore</span>
+                                <h2 class="pc-h2">Pas un revendeur.<br/>Un partenaire technique.</h2>
+                                <p class="pc-body">
+                                    Contrairement aux grossistes, nous intervenons directement sur votre infrastructure.
+                                    Nos techniciens sont certifiés par les constructeurs. Nos contrats de maintenance
+                                    incluent des GTI (Garanties de Temps d'Intervention) contractuelles.
+                                </p>
+                                <ul class="pc-checklist">
+                                    <li>Équipe technique interne certifiée</li>
+                                    <li>Stock de pièces détachées en France</li>
+                                    <li>Contrats SLA sur-mesure</li>
+                                    <li>Rapport d'intervention systématique</li>
+                                    <li>Portail client temps réel</li>
+                                </ul>
+                                <a href="/a-propos" class="pc-btn pc-btn--outline">Notre approche</a>
+                            </div>
+
+                            <div class="pc-diff__visual" aria-hidden="true" data-animate="fade-left">
+                                <!-- Dashboard mockup -->
+                                <div class="pc-dashboard-mockup">
+                                    <div class="pc-dashboard-mockup__header">
+                                        <div class="pc-dashboard-mockup__title">Infrastructure Paiement</div>
+                                        <div class="pc-dashboard-mockup__status">
+                                            <span class="pc-status-dot pc-status-dot--green"></span>
+                                            Opérationnel
+                                        </div>
+                                    </div>
+                                    <div class="pc-dashboard-mockup__body">
+                                        <div class="pc-dashboard-mockup__metric">
+                                            <span class="pc-dashboard-mockup__metric-label">Disponibilité</span>
+                                            <span class="pc-dashboard-mockup__metric-value">99.8%</span>
+                                        </div>
+                                        <div class="pc-dashboard-mockup__metric">
+                                            <span class="pc-dashboard-mockup__metric-label">TPE actifs</span>
+                                            <span class="pc-dashboard-mockup__metric-value">3,412</span>
+                                        </div>
+                                        <div class="pc-dashboard-mockup__metric">
+                                            <span class="pc-dashboard-mockup__metric-label">Transactions / jour</span>
+                                            <span class="pc-dashboard-mockup__metric-value">28,940</span>
+                                        </div>
+                                        <div class="pc-dashboard-mockup__chart" aria-hidden="true">
+                                            <div class="pc-mini-chart">
+                                                <t t-foreach="[60,72,55,80,68,90,85,95,78,88,92,98]" t-as="v">
+                                                    <div class="pc-mini-chart__bar" t-attf-style="height: #{v}%"/>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ============================================================
+                     ENGAGEMENTS
+                     ============================================================ -->
+                <t t-call="paycore_website.engagements_section"/>
+
+
+                <!-- ============================================================
+                     CTA FINAL
+                     ============================================================ -->
+                <section class="pc-cta-final" aria-label="Appel à l'action">
+                    <div class="pc-container">
+                        <div class="pc-cta-final__inner">
+                            <div class="pc-cta-final__bg" aria-hidden="true"></div>
+                            <h2 class="pc-cta-final__title">
+                                Votre infrastructure de paiement<br/>commence par une conversation.
+                            </h2>
+                            <p class="pc-cta-final__sub">
+                                Audit gratuit · Devis sous 48h · Sans engagement
+                            </p>
+                            <div class="pc-cta-final__actions">
+                                <a href="/contact" class="pc-btn pc-btn--white pc-btn--lg">
+                                    Demander un audit gratuit
+                                </a>
+                                <a href="tel:+33XXXXXXXXX" class="pc-cta-final__phone">
+                                    Ou appelez le +33 (0)X XX XX XX XX
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <t t-call="paycore_website.footer"/>
+
+        </div>
+
+        </xpath>
+    </template>
+
+</odoo>

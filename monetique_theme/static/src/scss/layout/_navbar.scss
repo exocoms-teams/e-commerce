@@ -1,0 +1,333 @@
+// =============================================================================
+// PAYCORE — NAVBAR
+// =============================================================================
+
+.pc-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: $z-sticky;
+    height: $navbar-height;
+    background: rgba($color-bg, 0.88);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-bottom: 1px solid transparent;
+    @include transition(all, $transition-base);
+
+    // État scrolled : ajout d'une border discrète
+    &.is-scrolled {
+        border-bottom-color: $color-border;
+        background: rgba($color-bg, 0.96);
+        box-shadow: $shadow-sm;
+    }
+
+    // Sur fonds sombres (hero)
+    &--dark {
+        background: rgba($color-bg-dark, 0.85);
+
+        .pc-navbar__link {
+            color: rgba(255,255,255,0.75);
+
+            &:hover { color: white; }
+        }
+
+        .pc-navbar__tel { color: rgba(255,255,255,0.6); }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Inner layout
+    // -------------------------------------------------------------------------
+
+    &__inner {
+        @include container;
+        height: 100%;
+        @include flex-between;
+        gap: $space-8;
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Logo
+    // -------------------------------------------------------------------------
+
+    &__logo {
+        flex-shrink: 0;
+        @include focus-ring;
+        border-radius: $radius-md;
+        display: flex;
+        align-items: center;
+    }
+
+    .pc-logo {
+        color: $color-text;
+        @include transition(opacity);
+
+        &:hover { opacity: 0.85; }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Menu
+    // -------------------------------------------------------------------------
+
+    &__nav {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+
+        @include respond-to(lg) { display: none; }
+    }
+
+    &__menu {
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+    }
+
+    &__item {
+        position: relative;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+        padding: $space-2 $space-3;
+        font-size: $text-sm;
+        font-weight: $weight-medium;
+        color: $color-text-secondary;
+        border-radius: $radius-md;
+        cursor: pointer;
+        @include transition(all, $transition-fast);
+        @include focus-ring;
+
+        &:hover,
+        &:focus-visible {
+            color: $color-text;
+            background: $color-bg-muted;
+        }
+
+        &--has-dropdown {
+            user-select: none;
+        }
+    }
+
+    &__chevron {
+        @include transition(transform, $transition-fast);
+
+        .pc-navbar__link--has-dropdown:hover &,
+        .pc-navbar__link--has-dropdown[aria-expanded="true"] & {
+            transform: rotate(180deg);
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Dropdown
+    // -------------------------------------------------------------------------
+
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + #{$space-2});
+        left: 50%;
+        transform: translateX(-50%) translateY(-8px);
+        min-width: 480px;
+        background: $color-bg;
+        border: 1px solid $color-border;
+        border-radius: $radius-xl;
+        box-shadow: $shadow-xl;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        @include transition(all, $transition-base);
+
+        .pc-navbar__item--dropdown:hover & {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    &__dropdown-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        padding: $space-3;
+    }
+
+    &__dropdown-col {
+        padding: $space-3;
+
+        &:first-child {
+            border-right: 1px solid $color-border;
+        }
+    }
+
+    &__dropdown-label {
+        display: block;
+        font-size: $text-xs;
+        font-weight: $weight-semibold;
+        letter-spacing: $tracking-wider;
+        text-transform: uppercase;
+        color: $color-text-muted;
+        padding: 0 $space-2 $space-2;
+        margin-bottom: $space-1;
+    }
+
+    &__dropdown-item {
+        display: flex;
+        align-items: flex-start;
+        gap: $space-3;
+        padding: $space-3 $space-2;
+        border-radius: $radius-lg;
+        @include transition(background, $transition-fast);
+        @include focus-ring;
+
+        &:hover {
+            background: $color-bg-subtle;
+        }
+
+        strong {
+            display: block;
+            font-size: $text-sm;
+            font-weight: $weight-medium;
+            color: $color-text;
+            margin-bottom: 2px;
+        }
+
+        em {
+            display: block;
+            font-style: normal;
+            font-size: $text-xs;
+            color: $color-text-muted;
+        }
+    }
+
+    &__dropdown-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        background: $color-primary-muted;
+        border-radius: $radius-md;
+        @include flex-center;
+        color: $color-primary;
+        margin-top: 2px;
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Actions (CTA)
+    // -------------------------------------------------------------------------
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: $space-4;
+        flex-shrink: 0;
+
+        @include respond-to(lg) { display: none; }
+    }
+
+    &__tel {
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+        font-size: $text-xs;
+        font-weight: $weight-medium;
+        color: $color-text-muted;
+        @include transition(color, $transition-fast);
+        @include focus-ring;
+
+        &:hover { color: $color-text; }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Burger mobile
+    // -------------------------------------------------------------------------
+
+    &__burger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 40px;
+        height: 40px;
+        border-radius: $radius-md;
+        @include transition(background, $transition-fast);
+        @include focus-ring;
+
+        @include respond-to(lg) { display: flex; }
+
+        span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: $color-text;
+            border-radius: $radius-full;
+            @include transition(all, $transition-base);
+            transform-origin: center;
+        }
+
+        &[aria-expanded="true"] {
+            span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+            span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+            span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+        }
+
+        &:hover { background: $color-bg-muted; }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Menu mobile
+    // -------------------------------------------------------------------------
+
+    &__mobile {
+        display: none;
+        position: fixed;
+        inset: $navbar-height-mobile 0 0 0;
+        background: $color-bg;
+        z-index: $z-dropdown;
+        padding: $space-6 $space-4;
+        overflow-y: auto;
+        opacity: 0;
+        pointer-events: none;
+        @include transition(opacity, $transition-base);
+
+        @include respond-to(lg) { display: block; }
+
+        &.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: $space-1;
+        }
+    }
+
+    &__mobile-link {
+        display: block;
+        padding: $space-3 $space-4;
+        font-size: $text-base;
+        font-weight: $weight-medium;
+        color: $color-text;
+        border-radius: $radius-lg;
+        @include transition(background, $transition-fast);
+        @include focus-ring;
+
+        &:hover { background: $color-bg-subtle; }
+    }
+
+    // CTA dans mobile
+    .pc-btn--full {
+        margin-top: $space-4;
+    }
+}

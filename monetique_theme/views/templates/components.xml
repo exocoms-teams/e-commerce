@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================================================
+         COMPOSANTS RÉUTILISABLES PAYCORE
+         Appelés avec t-call depuis n'importe quelle page
+         ================================================================ -->
+
+
+    <!-- Badge de confiance (PCI DSS, certifications...) -->
+    <template id="trust_badge" name="PayCore — Trust Badge">
+        <div class="pc-trust-badges">
+            <div class="pc-trust-badge">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M10 1L3 4v5c0 4.418 3.134 8.55 7 9.938C13.866 17.55 17 13.418 17 9V4L10 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>PCI DSS Certifié</span>
+            </div>
+            <div class="pc-trust-badge">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M6 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
+                </svg>
+                <span>Transactions sécurisées</span>
+            </div>
+            <div class="pc-trust-badge">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>Support 7j/7</span>
+            </div>
+            <div class="pc-trust-badge">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M3 10a7 7 0 1014 0A7 7 0 003 10zM10 3v2M10 15v2M3 10H1M19 10h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>20 ans d'expertise</span>
+            </div>
+        </div>
+    </template>
+
+
+    <!-- Section stats chiffrées -->
+    <template id="stats_section" name="PayCore — Stats">
+        <section class="pc-stats" aria-label="Chiffres clés">
+            <div class="pc-container">
+                <div class="pc-stats__grid">
+                    <div class="pc-stat" data-animate="counter">
+                        <span class="pc-stat__number" data-target="3500">0</span>
+                        <span class="pc-stat__suffix">+</span>
+                        <span class="pc-stat__label">TPE déployés</span>
+                    </div>
+                    <div class="pc-stat" data-animate="counter">
+                        <span class="pc-stat__number" data-target="98">0</span>
+                        <span class="pc-stat__suffix">%</span>
+                        <span class="pc-stat__label">Taux de disponibilité SLA</span>
+                    </div>
+                    <div class="pc-stat" data-animate="counter">
+                        <span class="pc-stat__number" data-target="850">0</span>
+                        <span class="pc-stat__suffix">+</span>
+                        <span class="pc-stat__label">Clients actifs</span>
+                    </div>
+                    <div class="pc-stat" data-animate="counter">
+                        <span class="pc-stat__number" data-target="20">0</span>
+                        <span class="pc-stat__suffix"> ans</span>
+                        <span class="pc-stat__label">d'expertise monétique</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+
+    <!-- Card service individuelle -->
+    <template id="service_card" name="PayCore — Service Card">
+        <!-- Paramètres attendus : icon_svg, title, description, link, badge (optionnel) -->
+        <article class="pc-card pc-card--service">
+            <div class="pc-card__icon" aria-hidden="true">
+                <t t-raw="icon_svg"/>
+            </div>
+            <div class="pc-card__body">
+                <t t-if="badge">
+                    <span class="pc-badge pc-badge--blue" t-esc="badge"/>
+                </t>
+                <h3 class="pc-card__title" t-esc="title"/>
+                <p class="pc-card__desc" t-esc="description"/>
+                <a t-att-href="link" class="pc-card__link">
+                    En savoir plus
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                        <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </article>
+    </template>
+
+
+    <!-- Section "Nos engagements" -->
+    <template id="engagements_section" name="PayCore — Engagements">
+        <section class="pc-section pc-engagements">
+            <div class="pc-container">
+                <div class="pc-section__header pc-section__header--center">
+                    <span class="pc-eyebrow">Nos engagements</span>
+                    <h2 class="pc-h2">Une infrastructure sur laquelle vous pouvez compter</h2>
+                    <p class="pc-lead">Des SLA contractuels, une équipe dédiée, des processus rodés depuis 20 ans.</p>
+                </div>
+                <div class="pc-engagements__grid">
+
+                    <div class="pc-engagement" data-animate="fade-up">
+                        <div class="pc-engagement__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12.4C16.2 22.7 20 17.5 20 12V6L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                                <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>Sécurité maximale</h3>
+                        <p>Certification PCI DSS niveau 1. Chiffrement bout en bout. Conformité RGPD. Audits de sécurité réguliers.</p>
+                    </div>
+
+                    <div class="pc-engagement" data-animate="fade-up" data-delay="100">
+                        <div class="pc-engagement__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>Disponibilité 24/7</h3>
+                        <p>Support technique disponible 7 jours sur 7. Hotline dédiée. Astreinte pour les clients sous contrat premium.</p>
+                    </div>
+
+                    <div class="pc-engagement" data-animate="fade-up" data-delay="200">
+                        <div class="pc-engagement__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>Interventions rapides</h3>
+                        <p>GTI (Garantie de Temps d'Intervention) contractuelle. Techniciens certifiés. Pièces détachées en stock.</p>
+                    </div>
+
+                    <div class="pc-engagement" data-animate="fade-up" data-delay="300">
+                        <div class="pc-engagement__icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>Accompagnement dédié</h3>
+                        <p>Un interlocuteur unique. Formation de vos équipes. Suivi de projet structuré. Reporting mensuel inclus.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </template>
+
+
+    <!-- Section logos clients / partenaires -->
+    <template id="partners_section" name="PayCore — Partenaires">
+        <section class="pc-section pc-partners">
+            <div class="pc-container">
+                <p class="pc-partners__label">Partenaires certifiés et intégrateurs officiels</p>
+                <div class="pc-partners__logos">
+                    <!-- Remplacer par vraies valeurs SVG / img partenaires -->
+                    <div class="pc-partner-logo">Ingenico</div>
+                    <div class="pc-partner-logo">Verifone</div>
+                    <div class="pc-partner-logo">PAX Technology</div>
+                    <div class="pc-partner-logo">Worldline</div>
+                    <div class="pc-partner-logo">Stripe</div>
+                    <div class="pc-partner-logo">Lyra</div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+
+    <!-- CTA intermédiaire (entre sections) -->
+    <template id="cta_band" name="PayCore — CTA Band">
+        <section class="pc-cta-band">
+            <div class="pc-container">
+                <div class="pc-cta-band__inner">
+                    <div class="pc-cta-band__text">
+                        <h2 t-esc="cta_title or 'Besoin d\'un audit de votre infrastructure ?'"/>
+                        <p t-esc="cta_desc or 'Nos experts analysent votre situation et vous proposent une solution adaptée.'"/>
+                    </div>
+                    <a t-att-href="cta_link or '/contact'" class="pc-btn pc-btn--primary">
+                        <t t-esc="cta_label or 'Prendre rendez-vous'"/>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </template>
+
+</odoo>

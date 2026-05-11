@@ -1,0 +1,309 @@
+// =============================================================================
+// PAYCORE — BASE
+// Styles fondamentaux : typo, body, classes utilitaires globales
+// =============================================================================
+
+// Scroll behavior premium
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.pc-site {
+    font-family: $font-body;
+    font-size: $text-base;
+    font-weight: $weight-regular;
+    line-height: $leading-normal;
+    color: $color-text;
+    background-color: $color-bg;
+}
+
+
+// -----------------------------------------------------------------------------
+// Container
+// -----------------------------------------------------------------------------
+
+.pc-container {
+    @include container;
+}
+
+
+// -----------------------------------------------------------------------------
+// Typographie système
+// -----------------------------------------------------------------------------
+
+.pc-h1 {
+    @include heading($text-6xl);
+    line-height: 1.1;
+
+    @include respond-to(lg) { font-size: $text-5xl; }
+    @include respond-to(md) { font-size: $text-4xl; }
+    @include respond-to(sm) { font-size: $text-3xl; }
+}
+
+.pc-h2 {
+    @include heading($text-4xl);
+    line-height: 1.2;
+
+    @include respond-to(md) { font-size: $text-3xl; }
+    @include respond-to(sm) { font-size: $text-2xl; }
+}
+
+.pc-h3 {
+    @include heading($text-2xl);
+    letter-spacing: $tracking-snug;
+
+    @include respond-to(sm) { font-size: $text-xl; }
+}
+
+.pc-lead {
+    font-size: $text-lg;
+    font-weight: $weight-regular;
+    line-height: $leading-relaxed;
+    color: $color-text-secondary;
+
+    @include respond-to(sm) { font-size: $text-base; }
+}
+
+.pc-body {
+    @include body-text;
+    margin-bottom: $space-4;
+
+    &:last-child { margin-bottom: 0; }
+}
+
+// Eyebrow : label au-dessus des titres de section
+.pc-eyebrow {
+    display: inline-block;
+    font-size: $text-xs;
+    font-weight: $weight-semibold;
+    letter-spacing: $tracking-wider;
+    text-transform: uppercase;
+    color: $color-primary;
+    margin-bottom: $space-3;
+}
+
+
+// -----------------------------------------------------------------------------
+// Sections
+// -----------------------------------------------------------------------------
+
+.pc-section {
+    padding: $space-24 0;
+
+    @include respond-to(md) { padding: $space-16 0; }
+    @include respond-to(sm) { padding: $space-12 0; }
+
+    &--sm {
+        padding: $space-16 0;
+    }
+
+    &--dark {
+        background: $color-bg-dark;
+        color: $color-text-inverse;
+    }
+
+    &--subtle {
+        background: $color-bg-subtle;
+    }
+}
+
+.pc-section__header {
+    max-width: 640px;
+    margin-bottom: $space-16;
+
+    &--center {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .pc-h2 {
+        margin-top: $space-2;
+        margin-bottom: $space-4;
+    }
+}
+
+.pc-section__footer {
+    margin-top: $space-12;
+    display: flex;
+    justify-content: center;
+}
+
+
+// -----------------------------------------------------------------------------
+// Page header (sous-pages)
+// -----------------------------------------------------------------------------
+
+.pc-page-header {
+    padding: calc(#{$navbar-height} + #{$space-16}) 0 $space-16;
+    background: $color-bg-subtle;
+    border-bottom: 1px solid $color-border;
+
+    &--dark {
+        background: $color-bg-dark;
+        color: $color-text-inverse;
+        border-bottom-color: $color-border-dark;
+
+        .pc-breadcrumb a,
+        .pc-breadcrumb span { color: $color-text-muted-dark; }
+        .pc-page-header__sub { color: $color-text-on-dark; }
+    }
+
+    &__title {
+        @include heading($text-5xl);
+        margin: $space-4 0 $space-4;
+
+        @include respond-to(md) { font-size: $text-4xl; }
+        @include respond-to(sm) { font-size: $text-3xl; }
+    }
+
+    &__sub {
+        font-size: $text-lg;
+        color: $color-text-secondary;
+        max-width: 600px;
+        line-height: $leading-relaxed;
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Breadcrumb
+// -----------------------------------------------------------------------------
+
+.pc-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $text-sm;
+    color: $color-text-muted;
+    margin-bottom: $space-4;
+
+    a {
+        color: $color-text-muted;
+        @include transition(color);
+        @include focus-ring;
+
+        &:hover { color: $color-primary; }
+    }
+
+    span { color: $color-text-muted; }
+
+    span[aria-current="page"] {
+        color: $color-text-secondary;
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Grid utilitaire
+// -----------------------------------------------------------------------------
+
+.pc-grid {
+    display: grid;
+    gap: $space-6;
+
+    &--2 { grid-template-columns: repeat(2, 1fr); }
+    &--3 { grid-template-columns: repeat(3, 1fr); }
+    &--4 { grid-template-columns: repeat(4, 1fr); }
+
+    @include respond-to(md) {
+        &--4 { grid-template-columns: repeat(2, 1fr); }
+        &--3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @include respond-to(sm) {
+        &--2,
+        &--3,
+        &--4 { grid-template-columns: 1fr; }
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Checklist
+// -----------------------------------------------------------------------------
+
+.pc-checklist {
+    list-style: none;
+    padding: 0;
+    margin: $space-6 0;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        font-size: $text-sm;
+        font-weight: $weight-medium;
+        color: $color-text;
+
+        &::before {
+            content: '';
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            background-color: $color-primary-muted;
+            border-radius: $radius-full;
+            background-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 9l3 3 5-5' stroke='%232563EB' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Alert
+// -----------------------------------------------------------------------------
+
+.pc-alert {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-4 $space-5;
+    border-radius: $radius-lg;
+    font-size: $text-sm;
+    font-weight: $weight-medium;
+    margin-bottom: $space-6;
+
+    &--success {
+        background: rgba($color-success, 0.08);
+        border: 1px solid rgba($color-success, 0.2);
+        color: darken($color-success, 15%);
+
+        svg { color: $color-success; flex-shrink: 0; }
+    }
+
+    &--error {
+        background: rgba($color-error, 0.08);
+        border: 1px solid rgba($color-error, 0.2);
+        color: darken($color-error, 10%);
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Status dot
+// -----------------------------------------------------------------------------
+
+.pc-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: $radius-full;
+    flex-shrink: 0;
+
+    &--green {
+        background: $color-success;
+        animation: pc-blink 2.5s ease-in-out infinite;
+        box-shadow: 0 0 0 0 rgba($color-success, 0.4);
+    }
+
+    &--yellow { background: $color-warning; }
+    &--red    { background: $color-error; }
+}
