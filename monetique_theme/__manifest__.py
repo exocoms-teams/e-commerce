@@ -16,7 +16,6 @@
 
     'depends': [
         'website',
-        'website_seo',
         'mail',
     ],
 
