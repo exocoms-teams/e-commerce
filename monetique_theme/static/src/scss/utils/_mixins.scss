@@ -1,0 +1,150 @@
+// =============================================================================
+// PAYCORE — MIXINS
+// =============================================================================
+
+
+// Responsive breakpoints
+// Utilisation : @include respond-to(md) { ... }
+@mixin respond-to($bp) {
+    @if $bp == xs    { @media (max-width: #{$bp-xs})  { @content; } }
+    @else if $bp == sm { @media (max-width: #{$bp-sm})  { @content; } }
+    @else if $bp == md { @media (max-width: #{$bp-md})  { @content; } }
+    @else if $bp == lg { @media (max-width: #{$bp-lg})  { @content; } }
+    @else if $bp == xl { @media (max-width: #{$bp-xl})  { @content; } }
+}
+
+@mixin respond-min($bp) {
+    @if $bp == md { @media (min-width: #{$bp-md}) { @content; } }
+    @else if $bp == lg { @media (min-width: #{$bp-lg}) { @content; } }
+}
+
+
+// Flexbox helpers
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin flex-start {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+
+// Container
+@mixin container {
+    width: 100%;
+    max-width: $container-max;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: $container-padding;
+    padding-right: $container-padding;
+
+    @include respond-to(md) {
+        padding-left: $container-padding-sm;
+        padding-right: $container-padding-sm;
+    }
+}
+
+
+// Typography
+@mixin heading($size, $weight: $weight-semibold, $tracking: $tracking-tight) {
+    font-family: $font-display;
+    font-size: $size;
+    font-weight: $weight;
+    letter-spacing: $tracking;
+    line-height: $leading-tight;
+}
+
+@mixin body-text($size: $text-base, $color: $color-text-secondary) {
+    font-family: $font-body;
+    font-size: $size;
+    font-weight: $weight-regular;
+    line-height: $leading-relaxed;
+    color: $color;
+}
+
+
+// Transition
+@mixin transition($props: all, $duration: $transition-base) {
+    transition: $props $duration;
+}
+
+
+// Truncate texte
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin line-clamp($lines) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+// Focus visible accessible
+@mixin focus-ring($color: $color-primary) {
+    &:focus-visible {
+        outline: 2px solid $color;
+        outline-offset: 3px;
+        border-radius: $radius-sm;
+    }
+}
+
+
+// Card base
+@mixin card-base {
+    background: $color-card-bg;
+    border: 1px solid $color-card-border;
+    border-radius: $radius-xl;
+    @include transition(all);
+
+    &:hover {
+        border-color: $color-border-strong;
+        box-shadow: $shadow-lg;
+        transform: translateY(-2px);
+    }
+}
+
+
+// Gradient text
+@mixin gradient-text($from: $color-primary, $to: #60A5FA) {
+    background: linear-gradient(135deg, $from, $to);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+// Surface sombre avec glass effect subtil
+@mixin glass-dark {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+
+// Visually hidden (accessibilité)
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
