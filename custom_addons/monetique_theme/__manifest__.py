@@ -32,5 +32,5 @@
     'auto_install': False,
     'theme': True,
     'website': True,
-    'application': False,
+    'application': True,
 }
