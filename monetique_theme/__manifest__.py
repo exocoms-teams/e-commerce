@@ -30,5 +30,6 @@
     },
     'installable': True,
     'auto_install': False,
+    'theme': True,
     'application': False,
 }
