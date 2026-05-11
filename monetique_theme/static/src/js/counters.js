@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 /**
- * PayCore Counters — animated number counters for stats sections.
+ * monetiques.fr Counters — animated number counters for stats sections.
  *
  * Usage in XML templates:
  *   <span class="pc-stat__number"

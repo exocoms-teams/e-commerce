@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 /**
- * PayCore Animations — IntersectionObserver-based scroll animations.
+ * monetiques.fr Animations — IntersectionObserver-based scroll animations.
  *
  * Usage in XML templates:
  *   data-animate="fade-up"          → fade + translate-Y
