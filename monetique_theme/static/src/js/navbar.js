@@ -1,6 +1,6 @@
 /** @odoo-module **/
 /**
- * PayCore — navbar.js
+ * monetiques.fr — navbar.js
  * Gestion de la navbar : sticky scroll, menu mobile, dropdowns accessibles.
  */
 

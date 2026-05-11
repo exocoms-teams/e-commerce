@@ -1,6 +1,6 @@
 /** @odoo-module **/
 /**
- * PayCore — main.js
+ * monetiques.fr — main.js
  * Point d'entrée JS principal. Import des modules.
  * Utilise le système de modules Odoo 17+/19.
  */
