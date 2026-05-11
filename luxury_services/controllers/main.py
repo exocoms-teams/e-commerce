@@ -154,7 +154,7 @@ class LuxuryController(http.Controller):
             'date_debut': date_debut,
             'date_fin': date_fin,
             'notes': notes,
-            'state': 'confirmed',
+            'state': 'en_attente',
         })
 
         product.sudo().write({'disponible': False})

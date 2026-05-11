@@ -42,10 +42,11 @@ class LuxuryReservation(models.Model):
         store=True
     )
     state = fields.Selection([
-        ('draft', 'Brouillon'),
-        ('confirmed', 'Confirmée'),
-        ('cancelled', 'Annulée'),
-    ], string='Statut', default='draft')
+    ('draft', 'Brouillon'),
+    ('en_attente', 'En attente de validation'),
+    ('confirmed', 'Confirmée'),
+    ('cancelled', 'Annulée'),
+     ], string='Statut', default='draft')
     notes = fields.Text(string='Notes')
 
     @api.depends('date_debut', 'date_fin')
@@ -100,6 +101,18 @@ class LuxuryReservation(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'confirmed'
+            # Envoie email de confirmation au client
+            template = self.env.ref(
+                'luxury_services.email_template_reservation_confirmed',
+                raise_if_not_found=False
+            )
+            if template:
+                template.send_mail(rec.id, force_send=True)
+
+    def action_set_waiting(self):
+        for rec in self:
+            rec.state = 'en_attente'
+
 
     def action_cancel(self):
         for rec in self:
