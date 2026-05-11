@@ -6,7 +6,7 @@
          Hérite de website.layout et override les blocs clés
          ================================================================ -->
 
-    <template id="layout" name="PayCore — Layout Principal" inherit_id="website.layout">
+    <template id="layout" name="monetiques.fr - Layout Principal" inherit_id="website.layout">
 
         <!-- Override head : fonts + meta premium -->
         <xpath expr="//head" position="inside">
@@ -17,8 +17,8 @@
                   href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&amp;family=DM+Mono:wght@400;500&amp;display=swap"/>
 
             <!-- Meta dynamiques -->
-            <meta name="description" t-att-content="meta_description or 'PayCore — Infrastructure de paiement moderne'"/>
-            <meta property="og:title" t-att-content="og_title or page_title or 'PayCore'"/>
+            <meta name="description" t-att-content="meta_description or 'monetiques.fr - Infrastructure de paiement moderne'"/>
+            <meta property="og:title" t-att-content="og_title or page_title or 'monetiques.fr'"/>
             <meta property="og:description" t-att-content="og_description or meta_description or ''"/>
             <meta property="og:type" content="website"/>
             <meta property="og:image" content="/paycore_website/static/src/img/og-paycore.png"/>
@@ -32,7 +32,7 @@
 
         <!-- Override title -->
         <xpath expr="//title" position="replace">
-            <title t-esc="page_title or 'PayCore — Infrastructure de Paiement'"/>
+            <title t-esc="page_title or 'monetiques.fr - Infrastructure de Paiement'"/>
         </xpath>
 
         <!-- Supprimer la navbar Odoo par défaut -->
@@ -49,125 +49,128 @@
 
 
     <!-- ================================================================
-         NAVBAR PREMIUM STICKY
+         HEADER STYLE HP - MONETIQUES.FR
+         Inspiré hp.com/fr-fr : fond blanc pur, nav horizontale sobre,
+         icônes utilitaires à droite, breadcrumb séparé en dessous
          ================================================================ -->
 
-    <template id="navbar" name="PayCore — Navbar">
-        <header class="pc-navbar" id="pc-navbar" role="banner">
-            <div class="pc-navbar__inner">
+    <template id="navbar" name="monetiques.fr - Header HP Style">
+        <header class="pc-header" id="pc-header" role="banner">
 
-                <!-- Logo -->
-                <a href="/" class="pc-navbar__logo" aria-label="PayCore — Accueil">
-                    <svg class="pc-logo" width="140" height="32" viewBox="0 0 140 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <!-- Icône : carré arrondi avec éclair -->
-                        <rect width="32" height="32" rx="8" fill="#2563EB"/>
-                        <path d="M18 6L10 18H16L14 26L22 14H16L18 6Z" fill="white"/>
-                        <!-- Wordmark -->
-                        <text x="40" y="22" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="currentColor" letter-spacing="-0.3">PayCore</text>
-                    </svg>
-                </a>
+            <!-- ═══ BARRE PRINCIPALE ═══ -->
+            <div class="pc-header__main">
+                <div class="pc-header__inner">
 
-                <!-- Navigation principale -->
-                <nav class="pc-navbar__nav" role="navigation" aria-label="Navigation principale">
-                    <ul class="pc-navbar__menu" role="list">
+                    <!-- Burger gauche (mobile) + hamburger desktop style HP -->
+                    <button class="pc-header__burger" id="pc-burger"
+                            aria-label="Menu" aria-expanded="false" aria-controls="pc-mobile-menu">
+                        <span></span><span></span><span></span>
+                    </button>
 
-                        <li class="pc-navbar__item pc-navbar__item--dropdown">
-                            <button class="pc-navbar__link pc-navbar__link--has-dropdown" aria-expanded="false" aria-haspopup="true">
-                                Solutions
-                                <svg class="pc-navbar__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                                    <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <div class="pc-navbar__dropdown" role="menu">
-                                <div class="pc-navbar__dropdown-inner">
-                                    <div class="pc-navbar__dropdown-col">
-                                        <span class="pc-navbar__dropdown-label">Matériel</span>
-                                        <a href="/solutions/tpe" class="pc-navbar__dropdown-item" role="menuitem">
-                                            <span class="pc-navbar__dropdown-icon">
-                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 14v2M12 14v2M4 16h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="5" y="7" width="8" height="4" rx="1" fill="currentColor" opacity="0.2"/></svg>
-                                            </span>
-                                            <span>
-                                                <strong>Terminaux TPE</strong>
-                                                <em>Fixes, mobiles, Android</em>
-                                            </span>
-                                        </a>
-                                        <a href="/solutions/encaissement" class="pc-navbar__dropdown-item" role="menuitem">
-                                            <span class="pc-navbar__dropdown-icon">
-                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M1 7h16" stroke="currentColor" stroke-width="1.5"/><path d="M5 11h3M12 11h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                                            </span>
-                                            <span>
-                                                <strong>Encaissement</strong>
-                                                <em>Caisses connectées, logiciels NF525</em>
-                                            </span>
-                                        </a>
-                                    </div>
-                                    <div class="pc-navbar__dropdown-col">
-                                        <span class="pc-navbar__dropdown-label">Digital</span>
-                                        <a href="/solutions/paiement-omnicanal" class="pc-navbar__dropdown-item" role="menuitem">
-                                            <span class="pc-navbar__dropdown-icon">
-                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M2 9h14M9 2a11 11 0 010 14M9 2a11 11 0 000 14" stroke="currentColor" stroke-width="1.5"/></svg>
-                                            </span>
-                                            <span>
-                                                <strong>Paiement Omnicanal</strong>
-                                                <em>Web, mobile, point de vente</em>
-                                            </span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-
-                        <li class="pc-navbar__item">
-                            <a href="/support" class="pc-navbar__link">Support</a>
-                        </li>
-
-                        <li class="pc-navbar__item">
-                            <a href="/services" class="pc-navbar__link">Services</a>
-                        </li>
-
-                        <li class="pc-navbar__item">
-                            <a href="/a-propos" class="pc-navbar__link">À propos</a>
-                        </li>
-
-                    </ul>
-                </nav>
-
-                <!-- CTA Navbar -->
-                <div class="pc-navbar__actions">
-                    <a href="tel:+33XXXXXXXXX" class="pc-navbar__tel">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                            <path d="M2 2.5A1.5 1.5 0 013.5 1h.382a1 1 0 01.95.684l.688 2.063a1 1 0 01-.275 1.06l-.7.616a7.002 7.002 0 003.03 3.03l.617-.7a1 1 0 011.06-.275l2.063.688A1 1 0 0112 9.118V9.5A1.5 1.5 0 0110.5 11C5.253 11 1 6.747 1 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Expert disponible
+                    <!-- Logo rond bleu style HP -->
+                    <a href="/" class="pc-header__logo" aria-label="monetiques.fr - Accueil">
+                        <div class="pc-header__logo-mark" aria-hidden="true">
+                            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                <circle cx="18" cy="18" r="18" fill="#0096D6"/>
+                                <!-- Lettre M stylisée -->
+                                <path d="M9 26V10l5 8 4-6 4 6 5-8v16" stroke="white" stroke-width="2.2"
+                                      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </div>
+                        <span class="pc-header__logo-text">monetiques<span>.fr</span></span>
                     </a>
-                    <a href="/contact" class="pc-btn pc-btn--primary pc-btn--sm">
-                        Demander un devis
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
+
+                    <!-- Navigation principale style HP - liens simples, sobre -->
+                    <nav class="pc-header__nav" role="navigation" aria-label="Navigation principale">
+                        <ul class="pc-header__menu" role="list">
+
+                            <li class="pc-header__item">
+                                <a href="/solutions/tpe" class="pc-header__link">TPE &amp; Terminaux</a>
+                            </li>
+                            <li class="pc-header__item">
+                                <a href="/solutions/encaissement" class="pc-header__link">Encaissement</a>
+                            </li>
+                            <li class="pc-header__item">
+                                <a href="/solutions/paiement-omnicanal" class="pc-header__link">Paiement omnicanal</a>
+                            </li>
+                            <li class="pc-header__item">
+                                <a href="/services" class="pc-header__link">Services</a>
+                            </li>
+                            <li class="pc-header__item">
+                                <a href="/support" class="pc-header__link">Support</a>
+                            </li>
+                            <li class="pc-header__item">
+                                <a href="/a-propos" class="pc-header__link">À propos</a>
+                            </li>
+
+                        </ul>
+                    </nav>
+
+                    <!-- Icônes utilitaires droite - style HP : recherche, téléphone, compte, devis -->
+                    <div class="pc-header__utils">
+                        <!-- Recherche -->
+                        <button class="pc-header__util-btn" aria-label="Rechercher">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <!-- Téléphone -->
+                        <a href="tel:+33XXXXXXXXX" class="pc-header__util-btn" aria-label="Nous appeler">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <path d="M3 4.5A1.5 1.5 0 014.5 3h.879a1 1 0 01.95.684l.813 2.437a1 1 0 01-.275 1.06l-.813.676a9 9 0 004.072 4.072l.676-.813a1 1 0 011.06-.275l2.437.813A1 1 0 0115 12.622V13.5A1.5 1.5 0 0113.5 15C7.701 15 3 10.299 3 4.5z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </a>
+                        <!-- Compte client -->
+                        <a href="/web#action=login" class="pc-header__util-btn" aria-label="Espace client">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                        <!-- CTA devis - seul élément coloré, style HP -->
+                        <a href="/contact" class="pc-header__cta">Demander un devis</a>
+                    </div>
+
                 </div>
-
-                <!-- Burger mobile -->
-                <button class="pc-navbar__burger" id="pc-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="pc-mobile-menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-
             </div>
 
-            <!-- Menu mobile -->
-            <div class="pc-navbar__mobile" id="pc-mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu navigation">
-                <nav>
-                    <a href="/solutions/tpe" class="pc-navbar__mobile-link">Terminaux TPE</a>
-                    <a href="/solutions/encaissement" class="pc-navbar__mobile-link">Encaissement</a>
-                    <a href="/solutions/paiement-omnicanal" class="pc-navbar__mobile-link">Paiement Omnicanal</a>
-                    <a href="/support" class="pc-navbar__mobile-link">Support Technique</a>
-                    <a href="/services" class="pc-navbar__mobile-link">Tous les Services</a>
-                    <a href="/a-propos" class="pc-navbar__mobile-link">À propos</a>
-                    <a href="/contact" class="pc-btn pc-btn--primary pc-btn--full">Demander un devis</a>
-                </nav>
+            <!-- ═══ BREADCRUMB (affiché sur pages internes via t-if) ═══ -->
+            <t t-if="breadcrumb_items">
+                <div class="pc-header__breadcrumb">
+                    <div class="pc-header__inner">
+                        <nav aria-label="Fil d'Ariane">
+                            <ol class="pc-breadcrumb__list" role="list">
+                                <li><a href="/">Page d'accueil</a></li>
+                                <t t-foreach="breadcrumb_items" t-as="item">
+                                    <li aria-hidden="true">/</li>
+                                    <li>
+                                        <t t-if="item_last">
+                                            <strong t-esc="item.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <a t-att-href="item.url" t-esc="item.name"/>
+                                        </t>
+                                    </li>
+                                </t>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </t>
+
+            <!-- ═══ MENU MOBILE ═══ -->
+            <div class="pc-header__mobile" id="pc-mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu">
+                <div class="pc-header__mobile-inner">
+                    <a href="/solutions/tpe" class="pc-header__mobile-link">TPE &amp; Terminaux</a>
+                    <a href="/solutions/encaissement" class="pc-header__mobile-link">Encaissement</a>
+                    <a href="/solutions/paiement-omnicanal" class="pc-header__mobile-link">Paiement omnicanal</a>
+                    <a href="/services" class="pc-header__mobile-link">Services</a>
+                    <a href="/support" class="pc-header__mobile-link">Support</a>
+                    <a href="/a-propos" class="pc-header__mobile-link">À propos</a>
+                    <div class="pc-header__mobile-sep"></div>
+                    <a href="/contact" class="pc-header__mobile-cta">Demander un devis</a>
+                </div>
             </div>
 
         </header>
@@ -178,7 +181,7 @@
          FOOTER ENTERPRISE
          ================================================================ -->
 
-    <template id="footer" name="PayCore — Footer">
+    <template id="footer" name="monetiques.fr - Footer">
         <footer class="pc-footer" role="contentinfo">
 
             <!-- Bande supérieure : CTA -->
@@ -209,11 +212,11 @@
 
                         <!-- Colonne marque -->
                         <div class="pc-footer__brand">
-                            <a href="/" class="pc-footer__logo" aria-label="PayCore">
+                            <a href="/" class="pc-footer__logo" aria-label="monetiques.fr">
                                 <svg width="120" height="28" viewBox="0 0 140 32" fill="none">
                                     <rect width="32" height="32" rx="8" fill="#2563EB"/>
                                     <path d="M18 6L10 18H16L14 26L22 14H16L18 6Z" fill="white"/>
-                                    <text x="40" y="22" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="white" letter-spacing="-0.3">PayCore</text>
+                                    <text x="40" y="22" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="white" letter-spacing="-0.3">monetiques.fr</text>
                                 </svg>
                             </a>
                             <p class="pc-footer__brand-desc">
@@ -267,7 +270,7 @@
             <div class="pc-footer__legal">
                 <div class="pc-container">
                     <div class="pc-footer__legal-inner">
-                        <p>© <span id="pc-year">2024</span> PayCore SAS. Tous droits réservés.</p>
+                        <p>© <span id="pc-year">2024</span> monetiques.fr SAS. Tous droits réservés.</p>
                         <nav class="pc-footer__legal-links" aria-label="Liens légaux">
                             <a href="/mentions-legales">Mentions légales</a>
                             <a href="/confidentialite">Confidentialité</a>
