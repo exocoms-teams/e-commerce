@@ -18,7 +18,7 @@
         'data/website_data.xml',
     ],
     'assets': {
-        'web.assets_frontend': [
+        'website.assets_frontend': [
             '/monetique_theme/static/src/css/variables.css',
             '/monetique_theme/static/src/css/base.css',
             '/monetique_theme/static/src/css/layout.css',
