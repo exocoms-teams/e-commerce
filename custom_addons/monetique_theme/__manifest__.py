@@ -18,14 +18,14 @@
         'data/website_data.xml',
     ],
     'assets': {
-        'website.assets_frontend': [
-            'monetique_theme/static/src/css/variables.css',
-            'monetique_theme/static/src/css/base.css',
-            'monetique_theme/static/src/css/layout.css',
-            'monetique_theme/static/src/css/homepage.css',
-            'monetique_theme/static/src/css/pages.css',
-            'monetique_theme/static/src/css/shop.css',
-            'monetique_theme/static/src/js/main.js',
+        'web.assets_frontend': [
+            '/monetique_theme/static/src/css/variables.css',
+            '/monetique_theme/static/src/css/base.css',
+            '/monetique_theme/static/src/css/layout.css',
+            '/monetique_theme/static/src/css/homepage.css',
+            '/monetique_theme/static/src/css/pages.css',
+            '/monetique_theme/static/src/css/shop.css',
+            '/monetique_theme/static/src/js/main.js',
         ],
     },
     'installable': True,
