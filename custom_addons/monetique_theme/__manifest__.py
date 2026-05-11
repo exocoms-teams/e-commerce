@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Monétiques Theme',
-    'version': '19.0.1.0.0',
+    'version': '1.0',
     'category': 'Website/Theme',
     'summary': 'Thème officiel monetiques.fr — frontend complet',
     'description': 'Reconstruction complète du frontend monetiques.fr avec design system exact.',
