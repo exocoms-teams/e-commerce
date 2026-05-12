@@ -11,10 +11,7 @@
     'depends': ['website', 'website_sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
-        'views/layout_templates.xml',
-        'views/homepage_templates.xml',
         'views/pages_templates.xml',
-        'views/shop_templates.xml',
         'data/website_data.xml',
     ],
     'assets': {
