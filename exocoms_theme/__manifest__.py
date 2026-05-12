@@ -15,6 +15,7 @@
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
+        'views/templates/layout.xml',
     ],
     'assets': {
         'web.assets_frontend': [
