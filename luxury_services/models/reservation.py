@@ -124,3 +124,10 @@ class LuxuryReservation(models.Model):
             ])
             if not other_confirmed:
                 rec.product_id.disponible = True
+                
+                
+    def get_payment_url(self):
+        """Génère l'URL de paiement pour la réservation"""
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return f"{base_url}/luxury/paiement/{self.id}"
