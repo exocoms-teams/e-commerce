@@ -7,7 +7,7 @@
     ],
     'data': [
         #DATA
-        'data/website_menu.xml',
+        'data/website_data.xml',
         # PAGES
         'views/pages/home.xml',
         # PARTIALS
