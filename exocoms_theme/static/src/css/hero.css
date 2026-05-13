@@ -1,117 +1,162 @@
+/* ========================================
+   SECTION HÉRO - DESIGN MODERNE
+   ======================================== */
+
 .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
+}
 
-    height: 100vh;
-
-    background-image:
-        linear-gradient(
-            rgba(0,20,60,0.7),
-            rgba(0,20,60,0.7)
-        ),
-        url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg');
-
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg');
     background-size: cover;
-
     background-position: center;
+    opacity: 0.15;
+    z-index: 1;
 }
 
 .hero-overlay {
-
     width: 100%;
     height: 100%;
-
     display: flex;
-
     align-items: center;
-
-    padding-left: 100px;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
 }
 
 .hero-content {
+    max-width: 800px;
+    text-align: center;
+    color: var(--white);
+    padding: 0 var(--spacing-lg);
+    animation: fadeInUp 0.8s ease-out;
+}
 
-    max-width: 700px;
-
-    color: white;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hero-content h1 {
-
-    font-size: 78px;
-
-    line-height: 1.1;
+    font-size: 3.5rem;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-lg);
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
-.mq-hero {
-    padding-top: 140px;
-    min-height: 100vh;
+.hero-content p {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    margin-bottom: var(--spacing-2xl);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
 }
 
-.mq-btn-primary {
-    background: #00357a;
-    color: white;
-}
 .hero-buttons {
     display: flex;
-    gap: 18px;
-    margin-top: 35px;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-btn-primary,
+.hero-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-normal);
+    min-width: 200px;
 }
 
 .hero-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 16px 30px;
-
-    background: #00357a;
-    color: white !important;
-
-    border-radius: 12px;
-
-    font-size: 16px;
-    font-weight: 600;
-
-    text-decoration: none;
-
-    transition: all 0.3s ease;
+    background: var(--gradient-accent);
+    color: var(--white);
+    box-shadow: var(--shadow-lg);
 }
 
 .hero-btn-primary:hover {
-
-    background: #00357a;
-
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
 }
 
 .hero-btn-secondary {
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 16px 30px;
-
-    border: 1px solid rgba(255,255,255,0.4);
-
-    color: white !important;
-
-    border-radius: 12px;
-
-    font-size: 16px;
-    font-weight: 600;
-
-    text-decoration: none;
-
-    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--white);
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
-
-    transition: all 0.3s ease;
 }
 
 .hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--accent-cyan);
+    transform: translateY(-4px);
+}
 
-    background: rgba(255,255,255,0.12);
+/* ========================================
+   RESPONSIVE
+   ======================================== */
 
-    border-color: white;
+@media (max-width: 1024px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
 
-    transform: translateY(-2px);
+    .hero-content p {
+        font-size: 1.125rem;
+    }
+
+    .hero-section {
+        min-height: 80vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .hero-btn-primary,
+    .hero-btn-secondary {
+        min-width: 100%;
+    }
+
+    .hero-section {
+        min-height: 70vh;
+        padding: var(--spacing-2xl) 0;
+    }
 }
