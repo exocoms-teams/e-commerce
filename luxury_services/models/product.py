@@ -17,12 +17,22 @@ class ProductTemplate(models.Model):
         ('vip', 'Conciergerie VIP'),
     ], string='Catégorie Luxe', default='yacht')
 
-    # Caractéristiques
+    # Caractéristiques yacht
     longueur = fields.Float(string='Longueur (m)')
     capacite_personnes = fields.Integer(string='Capacité (personnes)')
     duree_min_location = fields.Integer(string='Durée minimum location (jours)', default=1)
-    prix_location_jour = fields.Float(string='Prix location / jour (€)')
+    
 
+    # Informations Jet privé
+    constructeur_jet = fields.Char(string='Constructeur')
+    modele_jet = fields.Char(string='Modèle du jet')
+    autonomie_vol = fields.Float(string='Autonomie de vol (km)')
+    vitesse_max = fields.Float(string='Vitesse max (km/h)')
+    nombre_moteurs = fields.Integer(string='Nombre de moteurs')
+    altitude_max = fields.Float(string='Altitude max (m)')
+    equipage = fields.Integer(string='Nombre équipage')    
+    
+    prix_location_jour = fields.Float(string='Prix location / jour (€)')
     # Disponibilité
     disponible = fields.Boolean(string='Disponible à la location', default=True)
 
