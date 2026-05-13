@@ -295,12 +295,9 @@
 
                         <i class="fa fa-shopping-cart"></i>
 
-                        <t t-set="order"
-                            t-value="request.website.sale_get_order()" />
-
                         <span
-                            t-if="order and order.cart_quantity"
-                            t-esc="order.cart_quantity"
+                            t-if="request.session.get('website_sale_cart_quantity')"
+                            t-esc="request.session.get('website_sale_cart_quantity')"
                             class="exo-cart-count" />
 
                     </a>
