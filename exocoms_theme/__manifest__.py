@@ -16,6 +16,7 @@
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/portal.xml',
+        'views/partials/home_sections.xml',
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
@@ -28,6 +29,7 @@
             'exocoms_theme/static/src/css/layout.css',
             'exocoms_theme/static/src/css/header.css',
             'exocoms_theme/static/src/css/hero.css',
+            'exocoms_theme/static/src/css/home_sections.css',
             'exocoms_theme/static/src/css/footer.css',
             'exocoms_theme/static/src/css/features.css',
             # JS
