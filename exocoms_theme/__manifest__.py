@@ -1,9 +1,12 @@
 {
     'name': 'Exocoms Theme',
     'version': '1.0',
-    'category': 'Theme',
+    'summary': 'Custom website theme for Exocoms Group',
+    'author': 'Exocoms Group',
+    'license': 'LGPL-3',
+    'category': 'Website',
     'depends': [
-        'website',
+        'website','website_sale'
     ],
     'data': [
         #DATA
