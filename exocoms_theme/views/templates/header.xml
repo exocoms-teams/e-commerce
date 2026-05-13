@@ -385,6 +385,31 @@
         });
 
     });
+    
+    const profileDropdown = document.querySelector(".exo-profile-dropdown");
+
+if (profileDropdown) {
+
+    let profileTimeout;
+
+    profileDropdown.addEventListener("mouseenter", () => {
+
+        clearTimeout(profileTimeout);
+
+        profileDropdown.classList.add("active");
+
+    });
+
+    profileDropdown.addEventListener("mouseleave", () => {
+
+        profileTimeout = setTimeout(() => {
+
+            profileDropdown.classList.remove("active");
+
+        }, 300);
+
+    });
+}
 
 </script>
 
