@@ -3,6 +3,7 @@
 
     <template id="custom_header" name="Custom Header">
 
+
         <header class="exo-header">
 
             <div class="exo-header-container">
@@ -250,6 +251,40 @@
             </div>
 
         </header>
+        
+        <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropdowns = document.querySelectorAll(".exo-dropdown");
+
+        dropdowns.forEach(dropdown => {
+
+            let timeout;
+
+            dropdown.addEventListener("mouseenter", () => {
+
+                clearTimeout(timeout);
+
+                dropdown.classList.add("active");
+
+            });
+
+            dropdown.addEventListener("mouseleave", () => {
+
+                timeout = setTimeout(() => {
+
+                    dropdown.classList.remove("active");
+
+                }, 300);
+
+            });
+
+        });
+
+    });
+
+</script>
 
     </template>
 
