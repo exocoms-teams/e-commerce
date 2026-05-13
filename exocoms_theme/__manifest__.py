@@ -15,6 +15,7 @@
         'views/pages/home.xml',
         # PARTIALS
         'views/partials/hero.xml',
+        'views/partials/portal.xml',
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
