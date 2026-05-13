@@ -14,7 +14,7 @@
 
                     <img
                         src="/exocoms_theme/static/src/img/logo.png"
-                        alt="Exocoms Logo"/>
+                        alt="Exocoms Logo" />
 
                 </a>
 
@@ -32,11 +32,7 @@
 
                     <div class="exo-dropdown">
 
-                        <button class="exo-dropdown-btn">
-
-                            Informatique
-
-                            <i class="fa fa-angle-down"/>
+                        <button class="exo-dropdown-btn"> Informatique <i class="fa fa-angle-down" />
 
                         </button>
 
@@ -48,11 +44,14 @@
                                     Matériel et Informatique Générale
                                 </h4>
 
-                                <a href="https://www.edox.com/Webshop/category/10001506/Composants-PC" target="_blank">
+                                <a
+                                    href="https://www.edox.com/Webshop/category/10001506/Composants-PC"
+                                    target="_blank">
                                     PC, composants
                                 </a>
 
-                                <a href="https://www.edox.com/Webshop/category/10001503/Peripheriques">
+                                <a
+                                    href="https://www.edox.com/Webshop/category/10001503/Peripheriques">
                                     Périphériques
                                 </a>
 
@@ -64,7 +63,8 @@
                                     Affichage
                                 </a>
 
-                                 <a href="https://www.edox.com/Webshop/category/10001593/Logiciels%20&amp;%20S%C3%A9curit%C3%A9">
+                                <a
+                                    href="https://www.edox.com/Webshop/category/10001593/Logiciels%20&amp;%20S%C3%A9curit%C3%A9">
                                     Logiciels &amp; Securité
                                 </a>
 
@@ -88,7 +88,7 @@
                                     Routage &amp; Firewall
                                 </a>
 
-                                 <a href="https://www.edox.com/Webshop/category/10003624">
+                                <a href="https://www.edox.com/Webshop/category/10003624">
                                     Câblage réseaux &amp; baies
                                 </a>
 
@@ -100,7 +100,8 @@
                                     Communication et Vidéo
                                 </h4>
 
-                                <a href="https://www.edox.com/Webshop/category/10001572/Telephonie%20IP">
+                                <a
+                                    href="https://www.edox.com/Webshop/category/10001572/Telephonie%20IP">
                                     Téléphonie
                                 </a>
 
@@ -108,7 +109,8 @@
                                     Visioconférence
                                 </a>
 
-                                <a href="https://www.edox.com/Webshop/category/10001573/Videosurveillance">
+                                <a
+                                    href="https://www.edox.com/Webshop/category/10001573/Videosurveillance">
                                     Vidéosurveillance
                                 </a>
 
@@ -122,11 +124,7 @@
 
                     <div class="exo-dropdown">
 
-                        <button class="exo-dropdown-btn">
-
-                            Monétique
-
-                            <i class="fa fa-angle-down"/>
+                        <button class="exo-dropdown-btn"> Monétique <i class="fa fa-angle-down" />
 
                         </button>
 
@@ -148,19 +146,19 @@
                                     TPE Mobile
                                 </a>
 
-                                 <a href="#">
+                                <a href="#">
                                     TPE Santé
                                 </a>
 
-                                 <a href="#">
+                                <a href="#">
                                     PIN Pad
                                 </a>
 
-                                 <a href="#">
+                                <a href="#">
                                     Logiciels TPE
                                 </a>
 
-                                 <a href="#">
+                                <a href="#">
                                     Passerelles
                                 </a>
 
@@ -212,7 +210,7 @@
                             <div class="exo-dropdown-col">
 
                                 <h4>
-                                   Crypto
+                                    Crypto
                                 </h4>
 
                                 <a href="#">
@@ -237,11 +235,7 @@
 
                     <div class="exo-dropdown">
 
-                        <button class="exo-dropdown-btn">
-
-                            Télécom
-
-                            <i class="fa fa-angle-down"/>
+                        <button class="exo-dropdown-btn"> Télécom <i class="fa fa-angle-down" />
 
                         </button>
 
@@ -261,7 +255,7 @@
                                     Câbles
                                 </a>
 
-                                 <a href="https://www.edox.com/Webshop/category/10002194/Accessoires">
+                                <a href="https://www.edox.com/Webshop/category/10002194/Accessoires">
                                     Accessoires
                                 </a>
 
@@ -297,24 +291,64 @@
 
                 <div class="exo-header-icons">
 
-                    <a href="/shop/cart">
-                        <i class="fa fa-shopping-cart"/>
+                    <a href="/shop/cart" class="exo-cart-icon">
+
+                        <i class="fa fa-shopping-cart"></i>
+
+                        <span t-if="website.sale_get_order()"
+                            t-esc="website.sale_get_order().cart_quantity"
+                            class="exo-cart-count" />
+
                     </a>
 
                     <a href="/shop">
-                        <i class="fa fa-search"/>
+                        <i class="fa fa-search" />
                     </a>
 
-                    <a href="/my/home">
-                        <i class="fa fa-user"/>
-                    </a>
+                    <div class="exo-profile-dropdown">
+
+                        <button class="exo-profile-btn">
+
+                            <i class="fa fa-user"></i>
+
+                        </button>
+
+                        <div class="exo-profile-menu">
+
+                            <!-- UTILISATEUR NON CONNECTÉ -->
+
+                            <t t-if="request.env.user._is_public()">
+
+                                <a href="/web/login">
+
+                                    <i class="fa fa-sign-in"></i> Login </a>
+
+                            </t>
+
+                            <!-- UTILISATEUR CONNECTÉ -->
+
+                            <t t-else="">
+
+                                <a href="/my/home">
+
+                                    <i class="fa fa-id-card"></i> My Account </a>
+
+                                <a href="/web/session/logout?redirect=/">
+
+                                    <i class="fa fa-sign-out"></i> Logout </a>
+
+                            </t>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
         </header>
-        
+
         <script>
 
     document.addEventListener("DOMContentLoaded", function () {
