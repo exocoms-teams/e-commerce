@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
         <xpath expr="//footer" position="replace">
             <t t-call="monetique_theme.footer"/>
+        </xpath>
+        <xpath expr="//nav[hasclass('navbar')]//ul[hasclass('navbar-nav')]" position="before">
+            <ul class="navbar-nav mn-mega-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="/shop?category=1" data-bs-toggle="dropdown">Monetique</a>
+                    <div class="dropdown-menu mn-mega-menu">
+                        <div class="mn-mega-menu__grid">
+                            <div class="mn-mega-menu__col">
+                                <h6>TPE</h6>
+                                <a href="/shop?search=TPE+Fixe" class="dropdown-item">TPE Fixe</a>
+                                <a href="/shop?search=TPE+Mobile" class="dropdown-item">TPE Mobile</a>
+                                <a href="/shop?search=TPE+Portable" class="dropdown-item">TPE Portable</a>
+                            </div>
+                            <div class="mn-mega-menu__col">
+                                <h6>Solutions</h6>
+                                <a href="/shop?search=Passerelle" class="dropdown-item">Passerelles</a>
+                                <a href="/shop?search=Caisse" class="dropdown-item">Caisse Enregistreuse</a>
+                                <a href="/shop?search=Logiciel" class="dropdown-item">Logiciels TPE</a>
+                            </div>
+                            <div class="mn-mega-menu__col">
+                                <h6>Services</h6>
+                                <a href="/shop?search=Maintenance" class="dropdown-item">Maintenance</a>
+                                <a href="/shop?search=Installation" class="dropdown-item">Installation</a>
+                                <a href="/shop?search=Assistance" class="dropdown-item">Assistance</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </xpath>
     </template>
 
@@ -25,8 +53,8 @@
                             <h4>Solutions</h4>
                             <ul>
                                 <li><a href="/shop">Boutique</a></li>
-                                <li><a href="/solutions/tpe">Terminaux TPE</a></li>
-                                <li><a href="/solutions/encaissement">Encaissement</a></li>
+                                <li><a href="/shop?search=TPE">Terminaux TPE</a></li>
+                                <li><a href="/shop?search=Caisse">Encaissement</a></li>
                             </ul>
                         </div>
                         <div class="mn-footer__col">
@@ -59,5 +87,4 @@
             </div>
         </footer>
     </template>
-
 </odoo>
