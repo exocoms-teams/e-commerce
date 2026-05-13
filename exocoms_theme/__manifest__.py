@@ -15,6 +15,7 @@
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
+        'views/templates/features.xml',
         'views/templates/layout.xml',
     ],
     'assets': {
@@ -24,6 +25,7 @@
             'exocoms_theme/static/src/css/header.css',
             'exocoms_theme/static/src/css/hero.css',
             'exocoms_theme/static/src/css/footer.css',
+            'exocoms_theme/static/src/css/features.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
         ],
