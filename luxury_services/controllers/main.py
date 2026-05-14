@@ -2,15 +2,13 @@ from odoo import http
 from odoo.http import request
 from datetime import datetime
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.fields import Domain
+from odoo.osv.expression import AND
 
 
 class LuxuryController(WebsiteSale):
 
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
-        """Étend le domain de recherche avec les filtres luxury"""
-        from odoo.osv.expression import AND
-        from odoo.domains import Domain
-
         domain = super()._get_shop_domain(
             search, category, attribute_value_dict, search_in_description
         )
@@ -18,14 +16,12 @@ class LuxuryController(WebsiteSale):
         params = request.params
         extra_domains = []
 
-        # Filtre type service
         type_service = params.get('type_service', '')
         if type_service == 'location':
             extra_domains.append([('type_service', 'in', ['location', 'les_deux'])])
         elif type_service == 'vente':
             extra_domains.append([('type_service', 'in', ['vente', 'les_deux'])])
 
-        # Filtre longueur
         longueur_min = params.get('longueur_min', '')
         longueur_max = params.get('longueur_max', '')
         if longueur_min:
@@ -33,23 +29,20 @@ class LuxuryController(WebsiteSale):
         if longueur_max:
             extra_domains.append([('longueur', '<=', float(longueur_max))])
 
-        # Filtre capacité
         capacite_min = params.get('capacite_min', '')
         if capacite_min:
             extra_domains.append([('capacite_personnes', '>=', int(capacite_min))])
 
-        # Filtre cabines
         cabines_min = params.get('cabines_min', '')
         if cabines_min:
             extra_domains.append([('nb_cabines', '>=', int(cabines_min))])
 
-        # Filtre vitesse
         vitesse_min = params.get('vitesse_min', '')
         if vitesse_min:
             extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
 
         if extra_domains:
-            return Domain(AND([list(domain)] + extra_domains))
+            return domain & Domain(AND(extra_domains))
 
         return domain
 
