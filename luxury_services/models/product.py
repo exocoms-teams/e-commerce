@@ -21,7 +21,10 @@ class ProductTemplate(models.Model):
     longueur = fields.Float(string='Longueur (m)')
     capacite_personnes = fields.Integer(string='Capacité (personnes)')
     duree_min_location = fields.Integer(string='Durée minimum location (jours)', default=1)
-    
+    nb_cabines = fields.Integer(string='Nombre de cabines')
+    vitesse_max = fields.Float(string='Vitesse maximale (nœuds)')
+    annee_fabrication = fields.Integer(string='Année de fabrication')
+    pavillon = fields.Char(string='Pavillon (nationalité)')
 
     # Informations Jet privé
     constructeur_jet = fields.Char(string='Constructeur')
