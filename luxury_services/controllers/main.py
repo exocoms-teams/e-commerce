@@ -43,7 +43,7 @@ class LuxuryController(WebsiteSale):
         # Filtre vitesse
         vitesse_min = params.get('vitesse_min', '')
         if vitesse_min:
-            extra_domains.append([('vitesse_max', '>=', float(vitesse_min))])
+            extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
 
         if extra_domains:
             extra_domains.insert(0, domain.to_list())
