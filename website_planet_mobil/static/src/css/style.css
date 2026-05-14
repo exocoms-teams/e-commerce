@@ -1,3 +1,5 @@
+
+
 :root {
     --primary: #0066CC;
     --primary-dark: #003d7a;
@@ -7,10 +9,7 @@
     --bg-light: #f8f9fa;
     --white: #ffffff;
     --sidebar-width: 220px;
-    --header-height: 70px;
-    --topbar-height: 36px;
 }
-
 
 * { box-sizing: border-box; }
 a { text-decoration: none; }
@@ -19,14 +18,8 @@ ul { list-style: none; padding: 0; margin: 0; }
 
 #top-bar {
     background: var(--primary-dark);
-    height: var(--topbar-height);
-    display: flex;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1100;
+    padding: 8px 0;
+    text-align: center;
 }
 
 #top-bar span {
@@ -34,108 +27,9 @@ ul { list-style: none; padding: 0; margin: 0; }
     font-size: 12px;
 }
 
-
-#main-header {
-    background: var(--white);
-    height: var(--header-height);
-    display: flex;
-    align-items: center;
-    position: fixed;
-    top: var(--topbar-height);
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    width: 100%;
-}
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 180px;
-}
-
-.logo-icon { font-size: 28px; }
-
-.logo-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--primary);
-}
-
-.header-search {
-    flex: 1;
-    max-width: 500px;
-}
-
-.header-search form {
-    display: flex;
-    border: 2px solid var(--primary);
-    border-radius: 30px;
-    overflow: hidden;
-}
-
-.search-input {
-    flex: 1;
-    border: none;
-    padding: 10px 16px;
-    font-size: 14px;
-    outline: none;
-}
-
-.search-btn {
-    background: var(--primary);
-    border: none;
-    padding: 10px 18px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.header-icons {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.header-icon {
-    position: relative;
-    font-size: 22px;
-    color: var(--text-dark);
-    transition: color 0.2s;
-}
-
-.header-icon:hover { color: var(--primary); }
-
-.cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: var(--accent);
+#top-bar i {
+    margin-right: 4px;
     color: #ffffff;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-
-#page-wrapper {
-    display: flex;
-    margin-top: calc(var(--topbar-height) + var(--header-height));
-    min-height: calc(100vh - var(--topbar-height) - var(--header-height));
 }
 
 
@@ -143,11 +37,12 @@ ul { list-style: none; padding: 0; margin: 0; }
     width: var(--sidebar-width);
     background: var(--primary-dark);
     position: fixed;
-    top: calc(var(--topbar-height) + var(--header-height));
+    top: 0;
     left: 0;
     bottom: 0;
     overflow-y: auto;
-    z-index: 900;
+    z-index: 1000;
+    padding-top: 20px;
 }
 
 .sidebar-nav { padding: 12px 0; }
@@ -176,13 +71,33 @@ ul { list-style: none; padding: 0; margin: 0; }
     font-weight: 600;
 }
 
-.sidebar-icon { font-size: 18px; }
+.sidebar-icon {
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
 
 
-#main-content {
-    margin-left: var(--sidebar-width);
-    flex: 1;
-    min-height: 100%;
+#wrapwrap {
+    margin-left: var(--sidebar-width) !important;
+}
+
+
+.o_wsale_my_cart .o_cart_empty,
+.o_wsale_my_cart .o_cart_not_empty {
+    font-size: 0;
+}
+
+.o_wsale_my_cart .o_cart_empty::before {
+    content: "\F217";
+    font-family: "bootstrap-icons";
+    font-size: 22px;
+}
+
+.o_wsale_my_cart .o_cart_not_empty::before {
+    content: "\F217";
+    font-family: "bootstrap-icons";
+    font-size: 22px;
 }
 
 
@@ -192,17 +107,6 @@ ul { list-style: none; padding: 0; margin: 0; }
     );
     padding: 60px 0;
     text-align: center;
-}
-
-.hero-badge {
-    background: rgba(255,255,255,0.15);
-    color: #ffffff;
-    padding: 6px 18px;
-    border-radius: 30px;
-    font-size: 13px;
-    letter-spacing: 1px;
-    display: inline-block;
-    margin-bottom: 16px;
 }
 
 .hero-title {
@@ -256,7 +160,7 @@ ul { list-style: none; padding: 0; margin: 0; }
     color: var(--primary);
 }
 
-/* ----- RÉASSURANCE ----- */
+
 .reassurance-section {
     background: #ffffff;
     padding: 20px 0;
@@ -277,15 +181,13 @@ ul { list-style: none; padding: 0; margin: 0; }
     justify-content: center;
 }
 
-.reassurance-icon { font-size: 28px; }
-
 .reassurance-title {
     font-weight: 600;
     font-size: 14px;
     color: var(--text-dark);
 }
 
-/* ----- SECTIONS PRODUITS ----- */
+
 .products-section {
     padding: 48px 0;
     background: #ffffff;
@@ -419,7 +321,7 @@ ul { list-style: none; padding: 0; margin: 0; }
     color: var(--text-muted);
 }
 
-/* ----- NEWSLETTER ----- */
+
 .newsletter-section {
     background: var(--accent);
     padding: 36px 0;
@@ -476,7 +378,7 @@ ul { list-style: none; padding: 0; margin: 0; }
 
 .newsletter-btn:hover { background: #002a56; }
 
-/* ----- AVIS CLIENTS ----- */
+
 .reviews-section {
     padding: 48px 0;
     background: var(--bg-light);
@@ -540,7 +442,7 @@ ul { list-style: none; padding: 0; margin: 0; }
     color: var(--text-muted);
 }
 
-/* ----- FOOTER ----- */
+
 #main-footer {
     background: var(--primary-dark);
     padding: 48px 0 20px;
@@ -582,7 +484,7 @@ ul { list-style: none; padding: 0; margin: 0; }
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-size: 13px;
+    font-size: 16px;
     transition: background 0.2s;
 }
 
@@ -596,8 +498,8 @@ ul { list-style: none; padding: 0; margin: 0; }
 .footer-links a {
     color: #ffffff;
     font-size: 13px;
-    transition: opacity 0.2s;
     opacity: 0.85;
+    transition: opacity 0.2s;
 }
 
 .footer-links a:hover {
@@ -614,8 +516,8 @@ ul { list-style: none; padding: 0; margin: 0; }
 
 .footer-contact a {
     color: #ffffff;
-    transition: opacity 0.2s;
     opacity: 0.85;
+    transition: opacity 0.2s;
 }
 
 .footer-contact a:hover {
@@ -662,12 +564,9 @@ ul { list-style: none; padding: 0; margin: 0; }
 
 @media (max-width: 768px) {
     #sidebar { display: none; }
-    #main-content { margin-left: 0; }
+    #wrapwrap { margin-left: 0 !important; }
     .hero-title { font-size: 28px; }
     .reviews-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 576px) {
     .products-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: 1fr; }
 }

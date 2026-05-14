@@ -1,118 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="layout" inherit_id="website.layout"
-        name="Planet Mobil Layout">
-        <xpath expr="//header" position="replace">
 
-            
+    
+    <template id="top_bar" inherit_id="website.layout"
+        name="Planet Mobil Top Bar">
+        <xpath expr="//header" position="before">
             <div id="top-bar">
                 <div class="container">
                     <span>
+                        <i class="bi bi-telephone-fill"></i>
                         +33 (0)6 64 97 80 50
-                        | contact@planet-mobil.com
-                        | Lun-Ven : 9h - 18h
+                        |
+                        <i class="bi bi-envelope-fill"></i>
+                        contact@planet-mobil.com
+                        |
+                        <i class="bi bi-clock-fill"></i>
+                        Lun-Ven : 9h - 18h
                     </span>
                 </div>
             </div>
-
-            <!-- HEADER PRINCIPAL -->
-            <header id="main-header">
-                <div class="container">
-                    <div class="header-inner">
-                        <a href="/" class="header-logo">
-                            <span class="logo-text">Planet-Mobil</span>
-                        </a>
-                        <div class="header-search">
-                            <form action="/shop" method="get">
-                                <input
-                                    type="text"
-                                    name="search"
-                                    placeholder="Rechercher un produit..."
-                                    class="search-input"/>
-                                <button type="submit" class="search-btn">
-                                    Rechercher
-                                </button>
-                            </form>
-                        </div>
-                        <div class="header-icons">
-                            <a href="/web/login"
-                                class="header-icon"
-                                title="Mon compte">
-                                <span>Mon compte</span>
-                            </a>
-                            <a href="/shop/wishlist"
-                                class="header-icon"
-                                title="Favoris">
-                                <span>Favoris</span>
-                            </a>
-                            <a href="/shop/cart"
-                                class="header-icon cart-icon"
-                                title="Panier">
-                                <span>Panier</span>
-                                <span class="cart-count">0</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- LAYOUT : SIDEBAR + CONTENU -->
-            <div id="page-wrapper">
-                <nav id="sidebar">
-                    <ul class="sidebar-nav">
-                        <li class="sidebar-item">
-                            <a href="/" class="sidebar-link">
-                                <span>Accueil</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop/category/apple-iphone-106"
-                                class="sidebar-link">
-                                <span>Smartphones</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop/category/apple-apple-watch-105"
-                                class="sidebar-link">
-                                <span>Apple Watch</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop?search=airpods"
-                                class="sidebar-link">
-                                <span>AirPods</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop?search=coque"
-                                class="sidebar-link">
-                                <span>Coques et Protection</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop?search=chargeur"
-                                class="sidebar-link">
-                                <span>Chargeurs et Cables</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/shop?search=accessoires"
-                                class="sidebar-link">
-                                <span>Accessoires</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/contactus" class="sidebar-link">
-                                <span>Contact</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <div id="main-content">
-                    <t t-out="0"/>
-                </div>
-            </div>
-
         </xpath>
     </template>
+
+    <!-- SIDEBAR -->
+    <template id="sidebar" inherit_id="website.layout"
+        name="Planet Mobil Sidebar">
+        <xpath expr="//div[@id='wrapwrap']" position="before">
+            <nav id="sidebar">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-item">
+                        <a href="/" class="sidebar-link">
+                            <i class="bi bi-house-fill sidebar-icon"></i>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop/category/apple-iphone-106"
+                            class="sidebar-link">
+                            <i class="bi bi-phone sidebar-icon"></i>
+                            <span>Smartphones</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop/category/apple-apple-watch-105"
+                            class="sidebar-link">
+                            <i class="bi bi-smartwatch sidebar-icon"></i>
+                            <span>Apple Watch</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop?search=airpods"
+                            class="sidebar-link">
+                            <i class="bi bi-headphones sidebar-icon"></i>
+                            <span>AirPods</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop?search=coque"
+                            class="sidebar-link">
+                            <i class="bi bi-shield sidebar-icon"></i>
+                            <span>Coques et Protection</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop?search=chargeur"
+                            class="sidebar-link">
+                            <i class="bi bi-plug sidebar-icon"></i>
+                            <span>Chargeurs et Cables</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/shop?search=accessoires"
+                            class="sidebar-link">
+                            <i class="bi bi-bag sidebar-icon"></i>
+                            <span>Accessoires</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/contactus" class="sidebar-link">
+                            <i class="bi bi-telephone sidebar-icon"></i>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </xpath>
+    </template>
+
 </odoo>
