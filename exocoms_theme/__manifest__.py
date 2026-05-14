@@ -15,6 +15,8 @@
         'views/pages/home.xml',
         # PARTIALS
         'views/partials/hero.xml',
+        'views/partials/dasbord.xml',
+
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
@@ -34,8 +36,10 @@
             'exocoms_theme/static/src/css/categories.css',
             'exocoms_theme/static/src/css/cta.css',
             # CSS - ANIMATIONS & UTILITIES
+            'exocoms_theme/static/src/css/home.css',
             'exocoms_theme/static/src/css/animations.css',
             'exocoms_theme/static/src/css/benefits.css',
+            'exocoms_theme/static/src/css/dashbord.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
         ],
