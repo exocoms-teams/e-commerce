@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="homepage" name="Planet Mobil Homepage">
+        <t t-call="website.layout">
+            <div id="wrap">
+
+                
+                <section class="hero-section">
+                    <div class="container">
+                        <div class="hero-badge">✨ NOUVEAUTÉS 2025</div>
+                        <h1 class="hero-title">
+                            Votre univers
+                            <span class="hero-highlight">smartphone</span>
+                            commence ici
+                        </h1>
+                        <p class="hero-subtitle">
+                            iPhone, Apple Watch, AirPods
+                            et accessoires tech.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="/shop" class="btn-primary-hero">
+                                🛍️ Découvrir la boutique
+                            </a>
+                            <a href="/shop?order=publish_date+desc"
+                                class="btn-outline-hero">
+                                🆕 Nouveautés
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section class="reassurance-section">
+                    <div class="container">
+                        <div class="reassurance-grid">
+                            <div class="reassurance-item">
+                                <span class="reassurance-icon">🚚</span>
+                                <div class="reassurance-title">
+                                    Livraison rapide
+                                </div>
+                            </div>
+                            <div class="reassurance-item">
+                                <span class="reassurance-icon">💰</span>
+                                <div class="reassurance-title">
+                                    Meilleurs prix
+                                </div>
+                            </div>
+                            <div class="reassurance-item">
+                                <span class="reassurance-icon">🔒</span>
+                                <div class="reassurance-title">
+                                    Paiement sécurisé
+                                </div>
+                            </div>
+                            <div class="reassurance-item">
+                                <span class="reassurance-icon">↩️</span>
+                                <div class="reassurance-title">
+                                    Satisfait ou remboursé
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section class="products-section">
+                    <div class="container">
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title">
+                                    🆕 Nouveautés
+                                </h2>
+                                <p class="section-sub">
+                                    Découvrez nos dernières arrivées
+                                </p>
+                            </div>
+                            <a href="/shop?order=publish_date+desc"
+                                class="btn-see-all">
+                                Voir tout →
+                            </a>
+                        </div>
+                        <div class="products-grid">
+                            <t t-if="new_products">
+                                <t t-foreach="new_products"
+                                    t-as="product">
+                                    <div class="product-card">
+                                        <a t-attf-href="/shop/#{product.id}">
+                                            <div class="product-img-wrap">
+                                                <img
+                                                    t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                                                    t-att-alt="product.name"
+                                                    class="product-img"/>
+                                                <span t-if="product.is_new"
+                                                    class="badge-new">
+                                                    Nouveau !
+                                                </span>
+                                            </div>
+                                            <div class="product-info">
+                                                <h3 class="product-name">
+                                                    <t t-out="product.name"/>
+                                                </h3>
+                                                <div class="product-price">
+                                                    <t t-out="product.list_price"/> €
+                                                </div>
+                                                <button class="btn-add-cart">
+                                                    Ajouter au panier
+                                                </button>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="empty-products">
+                                    <p>Les produits s'afficheront
+                                    ici automatiquement</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BEST SELLERS -->
+                <section class="products-section bg-light">
+                    <div class="container">
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title">
+                                    🏆 Meilleures ventes
+                                </h2>
+                                <p class="section-sub">
+                                    Les préférés de nos clients
+                                </p>
+                            </div>
+                            <a href="/shop?order=sales_count+desc"
+                                class="btn-see-all">
+                                Voir tout →
+                            </a>
+                        </div>
+                        <div class="products-grid">
+                            <t t-if="best_sellers">
+                                <t t-foreach="best_sellers"
+                                    t-as="product">
+                                    <div class="product-card">
+                                        <a t-attf-href="/shop/#{product.id}">
+                                            <div class="product-img-wrap">
+                                                <img
+                                                    t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                                                    t-att-alt="product.name"
+                                                    class="product-img"/>
+                                            </div>
+                                            <div class="product-info">
+                                                <h3 class="product-name">
+                                                    <t t-out="product.name"/>
+                                                </h3>
+                                                <div class="product-price">
+                                                    <t t-out="product.list_price"/> €
+                                                </div>
+                                                <button class="btn-add-cart">
+                                                    Ajouter au panier
+                                                </button>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="empty-products">
+                                    <p>Les produits s'afficheront
+                                    ici automatiquement</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <section class="newsletter-section">
+                    <div class="container">
+                        <div class="newsletter-inner">
+                            <div class="newsletter-text">
+                                <h2>📧 Restez informé !</h2>
+                                <p>
+                                    Inscrivez-vous et recevez nos offres
+                                    en avant-première.
+                                </p>
+                            </div>
+                            <div class="newsletter-form">
+                                <input
+                                    type="email"
+                                    placeholder="Votre adresse email..."
+                                    class="newsletter-input"/>
+                                <button class="n
