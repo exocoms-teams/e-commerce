@@ -8,6 +8,9 @@ class LuxuryController(WebsiteSale):
 
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         """Étend le domain de recherche avec les filtres luxury"""
+        from odoo.osv.expression import AND
+        from odoo.domains import Domain
+
         domain = super()._get_shop_domain(
             search, category, attribute_value_dict, search_in_description
         )
@@ -46,8 +49,7 @@ class LuxuryController(WebsiteSale):
             extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
 
         if extra_domains:
-            extra_domains.insert(0, domain.to_list())
-            return AND(extra_domains)
+            return Domain(AND([list(domain)] + extra_domains))
 
         return domain
 
