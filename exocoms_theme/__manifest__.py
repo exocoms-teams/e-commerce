@@ -37,7 +37,6 @@
             'exocoms_theme/static/src/css/cta.css',
             'exocoms_theme/static/src/css/dashbord.css',
             # CSS - ANIMATIONS & UTILITIES
-            'exocoms_theme/static/src/css/home.css',
             'exocoms_theme/static/src/css/animations.css',
             'exocoms_theme/static/src/css/benefits.css',
             # JS
