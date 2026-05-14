@@ -13,10 +13,15 @@
         'data/website_data.xml',
         # PAGES
         'views/pages/home.xml',
+        'views/pages/services.xml',
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/portal.xml',
         'views/partials/home_sections.xml',
+        'views/partials/services_hero.xml',
+        'views/partials/services_content.xml',
+        'views/partials/services_features.xml',
+        
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
