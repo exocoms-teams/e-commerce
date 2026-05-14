@@ -3,14 +3,14 @@
 ========================================================= */
 
 .exo-dashboard-section {
-  padding: 40px 0;
-  background: #f5f7fb;
+    padding: 40px 0;
+    background: #f5f7fb;
 }
 
 .exo-dashboard-layout {
-  display: flex;
-  gap: 30px;
-  align-items: flex-start;
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
 }
 
 /* =========================================================
@@ -18,27 +18,45 @@
 ========================================================= */
 
 .exo-dashboard-sidebar {
-  width: 400px;
-  background: linear-gradient(180deg, #08152d, #0b1f44);
 
-  border-radius: 20px;
-  overflow: hidden;
-  color: white;
-  flex-shrink: 0;
+    width: 400px;
+
+    background: linear-gradient(
+        180deg,
+        #08152d,
+        #0b1f44
+    );
+
+    border-radius: 20px;
+
+    overflow: visible;
+
+    color: white;
+
+    flex-shrink: 0;
+
+    position: relative;
 }
 
-/* TITLE */
+/* =========================================================
+   TITLE
+========================================================= */
 
 .exo-sidebar-title {
-  background: #0d4dff;
-  padding: 22px 24px;
 
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    background: #0d4dff;
 
-  font-size: 18px;
-  font-weight: 700;
+    padding: 22px 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 18px;
+
+    font-weight: 700;
 }
 
 /* =========================================================
@@ -46,41 +64,58 @@
 ========================================================= */
 
 .exo-menu-group {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    position: relative;
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-/* MAIN */
+/* =========================================================
+   MAIN
+========================================================= */
 
 .exo-menu-main {
-  padding: 22px 24px;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    padding: 22px 24px;
 
-  cursor: pointer;
+    display: flex;
 
-  transition: 0.3s;
+    align-items: center;
+
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    transition: 0.3s;
 }
 
 .exo-menu-main:hover {
-  background: rgba(255, 255, 255, 0.04);
+
+    background: rgba(255,255,255,0.04);
 }
 
-/* LEFT */
+/* =========================================================
+   LEFT
+========================================================= */
 
 .exo-menu-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
 
-  font-size: 17px;
-  font-weight: 600;
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    font-size: 17px;
+
+    font-weight: 600;
 }
 
 .exo-menu-left i {
-  font-size: 18px;
-  color: #17c2ff;
+
+    font-size: 18px;
+
+    color: #17c2ff;
 }
 
 /* =========================================================
@@ -88,81 +123,91 @@
 ========================================================= */
 
 .exo-submenu {
-  display: flex;
-  flex-direction: column;
 
-  padding: 0 24px 20px 58px;
-}
+    display: flex;
 
-.exo-submenu a {
-  color: rgba(255, 255, 255, 0.82);
-
-  text-decoration: none;
-
-  padding: 10px 0;
-
-  font-size: 15px;
-
-  transition: 0.3s;
-}
-
-.exo-submenu a:hover {
-  color: #17c2ff;
-  transform: translateX(6px);
-}
-
-/* =========================================================
-   CONTENT
-========================================================= */
-
-.exo-dashboard-content {
-  flex: 1;
-
-  background: white;
-
-  border-radius: 20px;
-
-  padding: 40px;
-}
-
-.exo-dashboard-content h2 {
-  font-size: 42px;
-  margin-bottom: 20px;
-}
-
-.exo-dashboard-content p {
-  font-size: 18px;
-  color: #666;
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 992px) {
-  .exo-dashboard-layout {
     flex-direction: column;
-  }
 
-  .exo-dashboard-sidebar {
-    width: 100%;
-  }
+    padding: 0 24px 20px 58px;
 }
+
 /* =========================================================
-   MEGA SUBMENU
+   SUBMENU ITEM
 ========================================================= */
 
-.exo-submenu-mega {
+.exo-submenu-item {
 
-    display: grid;
+    position: relative;
+}
+
+/* =========================================================
+   SUBMENU LINK
+========================================================= */
+
+.exo-submenu-item > a {
+
+    display: block;
+
+    color: rgba(255,255,255,0.82);
+
+    text-decoration: none;
+
+    padding: 10px 0;
+
+    font-size: 15px;
+
+    transition: 0.3s;
+}
+
+.exo-submenu-item > a:hover {
+
+    color: #17c2ff;
+
+    transform: translateX(6px);
+}
+
+/* =========================================================
+   MEGA PANEL
+========================================================= */
+
+.exo-mega-panel {
+
+    position: absolute;
+
+    top: 0;
+
+    left: calc(100% + 30px);
+
+    width: 950px;
+
+    background: linear-gradient(
+        135deg,
+        #08152d,
+        #102654
+    );
+
+    border-radius: 24px;
+
+    padding: 35px;
+
+    display: none;
 
     grid-template-columns: repeat(4, 1fr);
 
-    gap: 24px;
+    gap: 30px;
 
-    padding: 24px;
+    z-index: 999;
 
-    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+}
+
+/* =========================================================
+   SHOW PANEL
+========================================================= */
+
+.exo-submenu-item:hover .exo-mega-panel {
+
+    display: grid;
 }
 
 /* =========================================================
@@ -186,11 +231,11 @@
 
     color: white;
 
-    font-size: 15px;
+    font-size: 16px;
 
     font-weight: 700;
 
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 
     padding-bottom: 10px;
 
@@ -200,26 +245,26 @@
 }
 
 /* =========================================================
-   LINKS
+   PANEL LINKS
 ========================================================= */
 
 .exo-submenu-col a {
 
-    color: rgba(255, 255, 255, 0.78);
+    color: rgba(255,255,255,0.78);
 
     text-decoration: none;
 
     font-size: 14px;
 
-    line-height: 1.4;
+    line-height: 1.5;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 
     transition: all 0.3s ease;
 }
 
 /* =========================================================
-   HOVER
+   PANEL HOVER
 ========================================================= */
 
 .exo-submenu-col a:hover {
@@ -230,12 +275,71 @@
 }
 
 /* =========================================================
+   CONTENT
+========================================================= */
+
+.exo-dashboard-content {
+
+    flex: 1;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 40px;
+
+    min-height: 700px;
+}
+
+.exo-dashboard-content h2 {
+
+    font-size: 42px;
+
+    margin-bottom: 20px;
+}
+
+.exo-dashboard-content p {
+
+    font-size: 18px;
+
+    color: #666;
+}
+
+/* =========================================================
    RESPONSIVE
 ========================================================= */
 
+@media (max-width: 1400px) {
+
+    .exo-mega-panel {
+
+        width: 700px;
+
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 1200px) {
 
-    .exo-submenu-mega {
+    .exo-dashboard-layout {
+
+        flex-direction: column;
+    }
+
+    .exo-dashboard-sidebar {
+
+        width: 100%;
+    }
+
+    .exo-mega-panel {
+
+        position: relative;
+
+        left: 0;
+
+        top: 20px;
+
+        width: 100%;
 
         grid-template-columns: repeat(2, 1fr);
     }
@@ -243,13 +347,23 @@
 
 @media (max-width: 768px) {
 
-    .exo-submenu-mega {
+    .exo-dashboard-content {
+
+        padding: 24px;
+    }
+
+    .exo-dashboard-content h2 {
+
+        font-size: 30px;
+    }
+
+    .exo-mega-panel {
 
         grid-template-columns: 1fr;
 
-        gap: 18px;
+        gap: 20px;
 
-        padding: 18px;
+        padding: 20px;
     }
 
     .exo-submenu-col h4 {
