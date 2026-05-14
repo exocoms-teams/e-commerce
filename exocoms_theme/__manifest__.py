@@ -20,13 +20,13 @@
         'views/partials/home_sections.xml',
         'views/partials/services_hero.xml',
         'views/partials/services_content.xml',
-        'views/partials/services_features.xml',
         
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
         'views/templates/layout.xml',
+        'views/templates/services_features.xml',
     ],
     'assets': {
         'web.assets_frontend': [
