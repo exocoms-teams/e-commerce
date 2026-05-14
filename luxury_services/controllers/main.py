@@ -6,10 +6,10 @@ from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 class LuxuryController(WebsiteSale):
 
-    def _get_search_domain(self, search, category, attrib_values, options=None):
+    def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         """Étend le domain de recherche avec les filtres luxury"""
-        domain = super()._get_search_domain(
-            search, category, attrib_values, options
+        domain = super()._get_shop_domain(
+            search, category, attribute_value_dict, search_in_description
         )
 
         params = request.params

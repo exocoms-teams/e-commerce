@@ -22,7 +22,7 @@ class ProductTemplate(models.Model):
     capacite_personnes = fields.Integer(string='Capacité (personnes)')
     duree_min_location = fields.Integer(string='Durée minimum location (jours)', default=1)
     nb_cabines = fields.Integer(string='Nombre de cabines')
-    vitesse_max = fields.Float(string='Vitesse maximale (nœuds)')
+    vitesse_croisiere = fields.Float(string='Vitesse maximale (nœuds)')
     annee_fabrication = fields.Integer(string='Année de fabrication')
     pavillon = fields.Char(string='Pavillon (nationalité)')
 
