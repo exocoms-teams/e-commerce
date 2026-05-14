@@ -1,102 +1,78 @@
-/**
- * monetique_theme — JavaScript principal
- * Menu mobile, scroll header, user dropdown, nav active
- */
 (function () {
     'use strict';
 
-    function initBurger() {
-        var burger = document.getElementById('mqBurger');
-        var nav = document.getElementById('mqNav');
-        if (!burger || !nav) return;
-        burger.addEventListener('click', function () {
-            var open = nav.classList.toggle('open');
-            burger.classList.toggle('open', open);
-            burger.setAttribute('aria-expanded', String(open));
-            document.body.style.overflow = open ? 'hidden' : '';
-        });
-        nav.querySelectorAll('.mq-nav-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                nav.classList.remove('open');
-                burger.classList.remove('open');
-                document.body.style.overflow = '';
+    // --- SÉLECTEURS ---
+    const dropdowns = document.querySelectorAll('.exo-dropdown');
+    const burger = document.querySelector('.exo-burger');
+    const nav = document.querySelector('.exo-nav');
+    const header = document.querySelector('.exo-header');
+    // Ajoute ici le sélecteur pour ta modale
+    const modal = document.querySelector('.ton-selecteur-modal'); 
+
+    // --- DROPDOWNS ---
+    function initDropdowns() {
+        if (!dropdowns.length) return;
+        let timeout;
+        dropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('.exo-dropdown-btn');
+            if (!button) return;
+
+            dropdown.addEventListener('mouseenter', () => {
+                clearTimeout(timeout);
+                dropdown.classList.add('active');
             });
-        });
-        document.addEventListener('click', function (e) {
-            if (!nav.contains(e.target) && !burger.contains(e.target)) {
-                nav.classList.remove('open');
-                burger.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-        });
-    }
-
-    function initNavActive() {
-        var path = window.location.pathname;
-        document.querySelectorAll('.mq-nav-link').forEach(function (link) {
-            var href = (link.getAttribute('href') || '').split('?')[0];
-            if (!href) return;
-            if ((href === '/' && path === '/') || (href !== '/' && path.startsWith(href))) {
-                link.classList.add('active');
-            }
-        });
-    }
-
-    function initRappelModal() {
-        var btns = document.querySelectorAll('[data-rappel-trigger]');
-        var modal = document.getElementById('mqRappelModal');
-        if (!modal) return;
-        btns.forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
+            dropdown.addEventListener('mouseleave', () => {
+                timeout = setTimeout(() => dropdown.classList.remove('active'), 300);
+            });
+            button.addEventListener('click', (e) => {
                 e.preventDefault();
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+                dropdown.classList.toggle('active');
             });
-        });
-        var close = modal.querySelector('[data-rappel-close]');
-        if (close) {
-            close.addEventListener('click', function () {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-        }
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
         });
     }
 
+    // --- BURGER MENU ---
+    function initBurgerMenu() {
+        if (!burger || !nav) return;
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            nav.classList.toggle('active');
+            document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
+        });
+    }
+
+    // --- SCROLL REVEAL (Animation au défilement) ---
     function initScrollReveal() {
         if (!('IntersectionObserver' in window)) return;
-        var targets = document.querySelectorAll(
-            '.mq-sol-card, .mq-hp-prod-card, .mq-garantie-card, .mq-stat-card, .mq-tarif-card'
-        );
-        if (!targets.length) return;
-        var obs = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
+        const targets = document.querySelectorAll('.mq-sol-card, .mq-hp-prod-card, [data-animate]');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
-                    obs.unobserve(entry.target);
+                    // Si tu utilises data-animate
+                    const animation = entry.target.dataset.animate;
+                    if(animation) entry.target.classList.add(`animate-${animation}`);
+                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        }, { threshold: 0.1 });
 
-        targets.forEach(function (el, i) {
+        targets.forEach((el, i) => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(14px)';
-            el.style.transition = 'opacity 0.45s ease ' + (i * 0.06) + 's, transform 0.45s ease ' + (i * 0.06) + 's';
-            obs.observe(el);
+            el.style.transition = `opacity 0.45s ease ${i * 0.06}s, transform 0.45s ease ${i * 0.06}s`;
+            observer.observe(el);
         });
     }
 
+    // --- INITIALISATION GÉNÉRALE ---
     function init() {
-        initBurger();
-        initNavActive();
-        initRappelModal();
+        initDropdowns();
+        initBurgerMenu();
         initScrollReveal();
+        // Ajoute ici tes autres appels (SmoothScroll, Cart, etc.)
     }
 
     if (document.readyState === 'loading') {
@@ -104,5 +80,4 @@
     } else {
         init();
     }
-    document.addEventListener('page:loaded', init);
 })();

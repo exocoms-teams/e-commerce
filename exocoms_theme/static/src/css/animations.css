@@ -1,8 +1,12 @@
-/* ========================================
-   ANIMATIONS ET EFFETS
-   ======================================== */
+/* ═══════════════════════════════════════════════════════════ */
+/* ANIMATIONS FLUIDES - DESIGN SYSTÈME */
+/* ═══════════════════════════════════════════════════════════ */
 
-@keyframes fadeIn {
+/* ═══════════════════════════════════════════════════════════ */
+/* KEYFRAMES */
+/* ═══════════════════════════════════════════════════════════ */
+
+@keyframes fade-in {
     from {
         opacity: 0;
     }
@@ -11,7 +15,29 @@
     }
 }
 
-@keyframes slideInLeft {
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in-left {
     from {
         opacity: 0;
         transform: translateX(-30px);
@@ -22,7 +48,7 @@
     }
 }
 
-@keyframes slideInRight {
+@keyframes fade-in-right {
     from {
         opacity: 0;
         transform: translateX(30px);
@@ -33,14 +59,41 @@
     }
 }
 
-@keyframes slideInUp {
+@keyframes scale-in {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: scale(0.95);
     }
     to {
         opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slide-in-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
         transform: translateY(0);
+    }
+}
+
+@keyframes slide-in-down {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
     }
 }
 
@@ -53,131 +106,135 @@
     }
 }
 
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
 @keyframes glow {
     0%, 100% {
-        box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
     }
     50% {
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        box-shadow: 0 0 40px rgba(0, 212, 255, 0.6);
     }
 }
 
-/* Applique les animations au chargement */
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes rotate-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* UTILITY ANIMATIONS */
+/* ═══════════════════════════════════════════════════════════ */
+
 .animate-fade {
-    animation: fadeIn var(--transition-normal) ease-out;
+    animation: fade-in var(--duration-base) var(--ease-in-out);
 }
 
-.animate-slide-left {
-    animation: slideInLeft var(--transition-slow) ease-out;
+.animate-fade-up {
+    animation: fade-in-up var(--duration-base) var(--ease-in-out);
 }
 
-.animate-slide-right {
-    animation: slideInRight var(--transition-slow) ease-out;
+.animate-fade-down {
+    animation: fade-in-down var(--duration-base) var(--ease-in-out);
 }
 
-.animate-slide-up {
-    animation: slideInUp var(--transition-slow) ease-out;
+.animate-fade-left {
+    animation: fade-in-left var(--duration-base) var(--ease-in-out);
 }
 
-.animate-float {
-    animation: float 3s ease-in-out infinite;
+.animate-fade-right {
+    animation: fade-in-right var(--duration-base) var(--ease-in-out);
+}
+
+.animate-scale {
+    animation: scale-in var(--duration-base) var(--ease-in-out);
+}
+
+.animate-bounce {
+    animation: bounce 2s var(--ease-in-out) infinite;
 }
 
 .animate-pulse {
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 2s var(--ease-in-out) infinite;
 }
 
 .animate-glow {
-    animation: glow 2s ease-in-out infinite;
+    animation: glow 2s var(--ease-in-out) infinite;
 }
 
-/* ========================================
-   HOVER EFFECTS
-   ======================================== */
-
-.hover-lift {
-    transition: all var(--transition-normal);
+.animate-float {
+    animation: float 3s var(--ease-in-out) infinite;
 }
 
-.hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+.animate-slide-up {
+    animation: slide-in-up var(--duration-slow) var(--ease-in-out);
 }
 
-.hover-glow {
-    transition: all var(--transition-normal);
+.animate-slide-down {
+    animation: slide-in-down var(--duration-slow) var(--ease-in-out);
 }
 
-.hover-glow:hover {
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-}
+/* ═══════════════════════════════════════════════════════════ */
+/* HOVER EFFECTS */
+/* ═══════════════════════════════════════════════════════════ */
 
 .hover-scale {
-    transition: transform var(--transition-normal);
+    transition: transform var(--duration-base) var(--ease-in-out);
 }
 
 .hover-scale:hover {
     transform: scale(1.05);
 }
 
-.hover-color {
-    transition: color var(--transition-normal);
+.hover-lift {
+    transition: all var(--duration-base) var(--ease-in-out);
 }
 
-.hover-color:hover {
-    color: var(--accent-cyan);
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
 }
 
-/* ========================================
-   TRANSITIONS
-   ======================================== */
-
-.transition-all {
-    transition: all var(--transition-normal);
+.hover-glow {
+    transition: all var(--duration-base) var(--ease-in-out);
 }
+
+.hover-glow:hover {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* TRANSITION HELPERS */
+/* ═══════════════════════════════════════════════════════════ */
 
 .transition-fast {
-    transition: all var(--transition-fast);
+    transition: all var(--duration-fast) var(--ease-in-out);
+}
+
+.transition-base {
+    transition: all var(--duration-base) var(--ease-in-out);
 }
 
 .transition-slow {
-    transition: all var(--transition-slow);
-}
-
-/* ========================================
-   SCROLLER LISSE
-   ======================================== */
-
-html {
-    scroll-behavior: smooth;
-}
-
-/* ========================================
-   SCROLLBAR STYLISÉ
-   ======================================== */
-
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--light);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent-blue);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-cyan);
+    transition: all var(--duration-slow) var(--ease-in-out);
 }

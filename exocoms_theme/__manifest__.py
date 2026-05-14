@@ -13,30 +13,29 @@
         'data/website_data.xml',
         # PAGES
         'views/pages/home.xml',
-        'views/pages/services.xml',
         # PARTIALS
         'views/partials/hero.xml',
-        'views/partials/portal.xml',
-        'views/partials/home_sections.xml',
-        'views/partials/services_hero.xml',
-        'views/partials/services_content.xml',
-        
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
         'views/templates/layout.xml',
-        'views/templates/services_features.xml',
     ],
     'assets': {
         'web.assets_frontend': [
-            # CSS
+            # CSS - DESIGN SYSTEM & CORE
             'exocoms_theme/static/src/css/layout.css',
+            # CSS - COMPONENTS
             'exocoms_theme/static/src/css/header.css',
             'exocoms_theme/static/src/css/hero.css',
-            'exocoms_theme/static/src/css/home_sections.css',
-            'exocoms_theme/static/src/css/footer.css',
             'exocoms_theme/static/src/css/features.css',
+            'exocoms_theme/static/src/css/products.css',
+            'exocoms_theme/static/src/css/footer.css',
+            'exocoms_theme/static/src/css/categories.css',
+            'exocoms_theme/static/src/css/cta.css',
+            # CSS - ANIMATIONS & UTILITIES
+            'exocoms_theme/static/src/css/animations.css',
+            'exocoms_theme/static/src/css/benefits.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
         ],

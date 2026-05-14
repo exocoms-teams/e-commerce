@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* BENEFITS & ADVANTAGES SECTION - DESIGN MODERNE */
+/* ═══════════════════════════════════════════════════════════ */
+
+.benefits-section {
+    padding: var(--space-4xl) 0;
+    background: var(--bg-light);
+}
+
+.benefits-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-2xl);
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-2xl);
+}
+
+.benefit-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-2xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid #f0f0f0;
+    transition: all var(--duration-base) var(--ease-in-out);
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-item::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-in-out);
+    z-index: -1;
+}
+
+.benefit-item:hover::before {
+    opacity: 0.05;
+}
+
+.benefit-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(0, 106, 255, 0.12);
+    border-color: rgba(0, 106, 255, 0.2);
+}
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+        rgba(0, 106, 255, 0.1),
+        rgba(0, 212, 255, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: var(--space-lg);
+}
+
+.benefit-title {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.benefit-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .benefits-section {
+        padding: var(--space-2xl) 0;
+    }
+
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+    }
+
+    .benefit-item {
+        padding: var(--space-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+}
