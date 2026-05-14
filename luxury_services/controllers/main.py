@@ -13,36 +13,41 @@ class LuxuryController(WebsiteSale):
         )
 
         params = request.params
+        extra_domains = []
 
         # Filtre type service
         type_service = params.get('type_service', '')
         if type_service == 'location':
-            domain += [('type_service', 'in', ['location', 'les_deux'])]
+            extra_domains.append([('type_service', 'in', ['location', 'les_deux'])])
         elif type_service == 'vente':
-            domain += [('type_service', 'in', ['vente', 'les_deux'])]
+            extra_domains.append([('type_service', 'in', ['vente', 'les_deux'])])
 
         # Filtre longueur
         longueur_min = params.get('longueur_min', '')
         longueur_max = params.get('longueur_max', '')
         if longueur_min:
-            domain += [('longueur', '>=', float(longueur_min))]
+            extra_domains.append([('longueur', '>=', float(longueur_min))])
         if longueur_max:
-            domain += [('longueur', '<=', float(longueur_max))]
+            extra_domains.append([('longueur', '<=', float(longueur_max))])
 
         # Filtre capacité
         capacite_min = params.get('capacite_min', '')
         if capacite_min:
-            domain += [('capacite_personnes', '>=', int(capacite_min))]
+            extra_domains.append([('capacite_personnes', '>=', int(capacite_min))])
 
         # Filtre cabines
         cabines_min = params.get('cabines_min', '')
         if cabines_min:
-            domain += [('nb_cabines', '>=', int(cabines_min))]
+            extra_domains.append([('nb_cabines', '>=', int(cabines_min))])
 
         # Filtre vitesse
         vitesse_min = params.get('vitesse_min', '')
         if vitesse_min:
-            domain += [('vitesse_max', '>=', float(vitesse_min))]
+            extra_domains.append([('vitesse_max', '>=', float(vitesse_min))])
+
+        if extra_domains:
+            extra_domains.insert(0, domain.to_list())
+            return AND(extra_domains)
 
         return domain
 
