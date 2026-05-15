@@ -13,6 +13,8 @@
         'data/website_data.xml',
         # PAGES
         'views/pages/home.xml',
+        'views/pages/services.xml',
+
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/dashbord.xml',
