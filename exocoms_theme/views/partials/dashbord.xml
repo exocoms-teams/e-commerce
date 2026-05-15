@@ -491,71 +491,73 @@
                         </div>
                         <div class="exo-section-header">
                             <h3>Nos Produits</h3>
+                            <a href="/shop">Voir tout le shop</a>
                         </div>
+                        <!--  Produits Odoo natifs — sans iframe  -->
                         <div class="exo-shop-odoo">
-                            <iframe src="/shop" class="exo-shop-frame" />
+                            <t t-set="products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=8, order='create_date desc')" />
+                            <div class="exo-products-native-grid">
+                                <t t-foreach="products" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="exo-native-card">
+                                        <div class="exo-native-card-img">
+                                            <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512" t-att-alt="product.name" />
+                                        </div>
+                                        <div class="exo-native-card-body">
+                                            <h4 t-esc="product.name" />
+                                            <span class="exo-native-price">
+                                                <t t-esc="product.currency_id.symbol" />
+                                                <t t-esc="'%.2f' % product.list_price" />
+                                            </span>
+                                        </div>
+                                    </a>
+                                </t>
+                            </div>
                         </div>
                         <div class="exo-carousels-wrapper">
+                            <!--  NOUVEAUTÉS — 6 derniers produits publiés  -->
                             <div class="exo-products-section">
                                 <div class="exo-section-header">
                                     <h3>Nouveautés</h3>
+                                    <a href="/shop?order=create_date+desc">Voir plus</a>
                                 </div>
                                 <div class="exo-products-carousel">
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="TPE Portable" />
-                                        <div class="exo-product-card-body">
-                                            <h4>TPE Portable</h4>
-                                            <p>Nouvelle génération.</p>
-                                            <span>299€</span>
-                                        </div>
-                                    </div>
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="Routeur Pro" />
-                                        <div class="exo-product-card-body">
-                                            <h4>Routeur Pro</h4>
-                                            <p>Performance entreprise.</p>
-                                            <span>189€</span>
-                                        </div>
-                                    </div>
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="Casque VoIP" />
-                                        <div class="exo-product-card-body">
-                                            <h4>Casque VoIP</h4>
-                                            <p>Communication HD.</p>
-                                            <span>79€</span>
-                                        </div>
-                                    </div>
+                                    <t t-set="new_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=6, order='create_date desc')" />
+                                    <t t-foreach="new_products" t-as="product">
+                                        <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card">
+                                            <img t-attf-src="/web/image/product.template/{{ product.id }}/image_128" t-att-alt="product.name" />
+                                            <div class="exo-product-card-body">
+                                                <h4 t-esc="product.name" />
+                                                <p t-esc="product.categ_id.name" />
+                                                <span>
+                                                    <t t-esc="product.currency_id.symbol" />
+                                                    <t t-esc="'%.2f' % product.list_price" />
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
+                            <!--  MEILLEURES VENTES — produits les plus vendus  -->
                             <div class="exo-products-section">
                                 <div class="exo-section-header">
                                     <h3>Meilleures ventes</h3>
+                                    <a href="/shop?order=sales_count+desc">Voir plus</a>
                                 </div>
                                 <div class="exo-products-carousel">
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="TPE Fixe" />
-                                        <div class="exo-product-card-body">
-                                            <h4>TPE Fixe</h4>
-                                            <p>Top vente.</p>
-                                            <span>349€</span>
-                                        </div>
-                                    </div>
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="Switch Réseau" />
-                                        <div class="exo-product-card-body">
-                                            <h4>Switch Réseau</h4>
-                                            <p>Ultra rapide.</p>
-                                            <span>259€</span>
-                                        </div>
-                                    </div>
-                                    <div class="exo-product-card">
-                                        <img src="/web/image/website/1/logo" alt="ATM Crypto" />
-                                        <div class="exo-product-card-body">
-                                            <h4>ATM Crypto</h4>
-                                            <p>Solution complète.</p>
-                                            <span>1299€</span>
-                                        </div>
-                                    </div>
+                                    <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=6, order='sales_count desc')" />
+                                    <t t-foreach="best_products" t-as="product">
+                                        <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card">
+                                            <img t-attf-src="/web/image/product.template/{{ product.id }}/image_128" t-att-alt="product.name" />
+                                            <div class="exo-product-card-body">
+                                                <h4 t-esc="product.name" />
+                                                <p t-esc="product.categ_id.name" />
+                                                <span>
+                                                    <t t-esc="product.currency_id.symbol" />
+                                                    <t t-esc="'%.2f' % product.list_price" />
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
                         </div>
