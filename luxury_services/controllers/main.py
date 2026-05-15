@@ -17,34 +17,60 @@ class LuxuryController(WebsiteSale):
         extra_domains = []
 
         type_service = params.get('type_service', '')
+
         if type_service == 'location':
-            extra_domains.append([('type_service', 'in', ['location', 'les_deux'])])
+            extra_domains.append(
+                [('type_service', 'in', ['location', 'les_deux'])]
+            )
+
         elif type_service == 'vente':
-            extra_domains.append([('type_service', 'in', ['vente', 'les_deux'])])
+            extra_domains.append(
+                [('type_service', 'in', ['vente', 'les_deux'])]
+            )
 
         longueur_min = params.get('longueur_min', '')
         longueur_max = params.get('longueur_max', '')
+
         if longueur_min:
-            extra_domains.append([('longueur', '>=', float(longueur_min))])
+            extra_domains.append(
+                [('longueur', '>=', float(longueur_min))]
+            )
+
         if longueur_max:
-            extra_domains.append([('longueur', '<=', float(longueur_max))])
+            extra_domains.append(
+                [('longueur', '<=', float(longueur_max))]
+            )
 
         capacite_min = params.get('capacite_min', '')
+
         if capacite_min:
-            extra_domains.append([('capacite_personnes', '>=', int(capacite_min))])
+            extra_domains.append(
+                [('capacite_personnes', '>=', int(capacite_min))]
+            )
 
         cabines_min = params.get('cabines_min', '')
+
         if cabines_min:
-            extra_domains.append([('nb_cabines', '>=', int(cabines_min))])
+            extra_domains.append(
+                [('nb_cabines', '>=', int(cabines_min))]
+            )
 
         vitesse_min = params.get('vitesse_min', '')
+
         if vitesse_min:
-            extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
+            extra_domains.append(
+                [('vitesse_croisiere', '>=', float(vitesse_min))]
+            )
 
         if extra_domains:
             return domain & Domain(AND(extra_domains))
 
+        
         return domain
+    
+    
+    
+    
 
     @http.route('/luxury/reserver/<int:product_id>',
                 type='http',
