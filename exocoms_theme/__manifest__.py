@@ -16,12 +16,16 @@
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/dashbord.xml',
+        'views/partials/services_hero.xml',
+        'views/partials/services_content.xml',
+        
 
         # TEMPLATES
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
         'views/templates/layout.xml',
+        'views/templates/services_features.xml',
     ],
     'assets': {
         'web.assets_frontend': [
@@ -36,6 +40,9 @@
             'exocoms_theme/static/src/css/categories.css',
             'exocoms_theme/static/src/css/cta.css',
             'exocoms_theme/static/src/css/dashbord.css',
+            'exocoms_theme/static/src/css/services_content.css',
+            'exocoms_theme/static/src/css/services_features.css',
+            'exocoms_theme/static/src/css/services_hero.css',
             'exocoms_theme/static/src/css/home.css',
             # CSS - ANIMATIONS & UTILITIES
             'exocoms_theme/static/src/css/animations.css',
