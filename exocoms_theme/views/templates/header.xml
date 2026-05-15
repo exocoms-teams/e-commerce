@@ -19,51 +19,38 @@
                     <a href="/shop/cart" class="exo-icon-btn" title="Panier">
                         <i class="fa fa-shopping-cart" />
                     </a>
-                    <!--  SEARCH TRIGGER  -->
-                    <button class="exo-icon-btn exo-search-trigger" id="exo-search-trigger" title="Rechercher" aria-label="Ouvrir la recherche">
-                        <i class="fa fa-search" />
-                    </button>
+                    <!--  ✅ SEARCH NATIF ODOO  -->
+                    <t t-call="website.searchbar">
+                        <t t-set="search_type" t-value="'products'" />
+                    </t>
                     <!--  PROFIL  -->
                     <div class="exo-profile-dropdown">
-                        <button class="exo-icon-btn" title="Mon compte">
+                        <button class="exo-profile-btn">
                             <i class="fa fa-user" />
                         </button>
                         <div class="exo-profile-menu">
                             <t t-if="request.env.user._is_public()">
-                                <a href="/web/login">
+                                <a href="/web/login" title="compte">
                                     <i class="fa fa-sign-in" />
  Login </a>
                             </t>
                             <t t-else="">
-                                <a href="/my/home">
+                                <a href="/my/home" title="Compte">
                                     <i class="fa fa-user-circle" />
-                                    <span>Mon compte</span>
+                                    <span>My Account</span>
                                 </a>
                                 <a href="/web/session/logout?redirect=/">
                                     <i class="fa fa-sign-out" />
-                                    <span>Déconnexion</span>
+                                    <span>Logout</span>
                                 </a>
                             </t>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--  BARRE DE RECHERCHE PLEINE LARGEUR  -->
-            <div class="exo-search-bar" id="exo-search-bar">
-                <div class="exo-search-inner">
-                    <form action="/shop" method="get" class="exo-search-form">
-                        <i class="fa fa-search exo-search-icon" />
-                        <input type="text" name="search" id="exo-search-input" class="exo-search-input" placeholder="Rechercher un produit..." autocomplete="off" />
-                        <button type="submit" class="exo-search-submit"> Rechercher </button>
-                    </form>
-                    <button class="exo-search-close" id="exo-search-close" aria-label="Fermer">
-                        <i class="fa fa-times" />
-                    </button>
-                </div>
-            </div>
         </header>
         <script>
-            <![CDATA[ document.addEventListener("DOMContentLoaded", function () { /* === SEARCH === */ var trigger = document.getElementById('exo-search-trigger'); var bar = document.getElementById('exo-search-bar'); var input = document.getElementById('exo-search-input'); var close = document.getElementById('exo-search-close'); if (trigger && bar) { trigger.addEventListener('click', function () { bar.classList.toggle('exo-search-open'); if (bar.classList.contains('exo-search-open')) { setTimeout(function () { if (input) input.focus(); }, 150); } }); if (close) { close.addEventListener('click', function () { bar.classList.remove('exo-search-open'); }); } /* Ferme avec Echap */ document.addEventListener('keydown', function (e) { if (e.key === 'Escape') bar.classList.remove('exo-search-open'); }); /* Ferme si clic hors de la barre */ document.addEventListener('click', function (e) { if (!bar.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) { bar.classList.remove('exo-search-open'); } }); } /* === PROFIL DROPDOWN === */ var profileDropdown = document.querySelector('.exo-profile-dropdown'); if (profileDropdown) { var profileTimeout; profileDropdown.addEventListener('mouseenter', function () { clearTimeout(profileTimeout); profileDropdown.classList.add('active'); }); profileDropdown.addEventListener('mouseleave', function () { profileTimeout = setTimeout(function () { profileDropdown.classList.remove('active'); }, 300); }); } }); ]]>
+            <![CDATA[ document.addEventListener("DOMContentLoaded", function () { var profileDropdown = document.querySelector(".exo-profile-dropdown"); if (profileDropdown) { var profileTimeout; profileDropdown.addEventListener("mouseenter", function() { clearTimeout(profileTimeout); profileDropdown.classList.add("active"); }); profileDropdown.addEventListener("mouseleave", function() { profileTimeout = setTimeout(function() { profileDropdown.classList.remove("active"); }, 300); }); } }); ]]>
         </script>
     </template>
 </odoo>
