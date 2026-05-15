@@ -1,287 +1,367 @@
 /* =========================================================
-   CACHE LE HEADER CUSTOM — on garde le natif Odoo
+   RESET — CACHE LE HEADER NATIF ODOO
 ========================================================= */
 
-/* Si vous aviez un header custom, on le désactive */
-.exo-header {
+header#top {
   display: none !important;
 }
 
 /* =========================================================
-   STYLE DU HEADER NATIF ODOO
+   HEADER CUSTOM
 ========================================================= */
 
-header#top {
-  background: linear-gradient(135deg, #0f172a 0%, #111827 100%) !important;
-  border-bottom: 1px solid rgba(13, 77, 255, 0.12) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25) !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 999 !important;
+.exo-header {
+  width: 100%;
+  background: linear-gradient(135deg, #0f172a, #111827);
+  border-bottom: 1px solid rgba(13, 77, 255, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* Navbar container */
-header#top .navbar {
-  min-height: 72px !important;
-  padding: 0 40px !important;
-}
-
-/* LOGO */
-header#top .navbar-brand img {
-  height: 52px !important;
-  width: auto !important;
-}
-
-/* LIENS NAV */
-header#top .nav-link,
-header#top .navbar-nav > li > a {
-  color: rgba(255, 255, 255, 0.78) !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  padding: 8px 14px !important;
-  border-radius: 8px !important;
-  transition: all 0.2s ease !important;
-  white-space: nowrap !important;
-}
-
-header#top .nav-link:hover,
-header#top .navbar-nav > li > a:hover,
-header#top .nav-link.active {
-  color: white !important;
-  background: rgba(13, 77, 255, 0.15) !important;
-}
-
-/* DROPDOWN NAV */
-header#top .dropdown-menu {
-  background: #1a2540 !important;
-  border: 1px solid rgba(13, 77, 255, 0.15) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35) !important;
-  padding: 8px !important;
-  margin-top: 8px !important;
-}
-
-header#top .dropdown-item {
-  color: rgba(255, 255, 255, 0.75) !important;
-  border-radius: 8px !important;
-  padding: 10px 16px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  transition: all 0.18s ease !important;
-}
-
-header#top .dropdown-item:hover {
-  background: rgba(13, 77, 255, 0.2) !important;
-  color: white !important;
+.exo-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 80px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px;
 }
 
 /* =========================================================
-   ICONES HEADER NATIF (panier, search, user)
+   LOGO
 ========================================================= */
 
-header#top .o_wsale_my_cart,
-header#top .o_search_button,
-header#top .o_login_btn,
-header#top #top_menu_collapse .nav-item.o_header_btn {
+.exo-logo {
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
 
-/* Bouton panier */
-header#top .o_wsale_my_cart .btn,
-header#top a[href="/shop/cart"] {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.2s ease !important;
-  text-decoration: none !important;
-  padding: 0 !important;
+.exo-logo:hover {
+  transform: scale(1.04);
 }
 
-header#top .o_wsale_my_cart .btn:hover,
-header#top a[href="/shop/cart"]:hover {
-  background: #0d4dff !important;
-  border-color: #0d4dff !important;
-  box-shadow: 0 4px 14px rgba(13, 77, 255, 0.4) !important;
-  transform: scale(1.08) !important;
-}
-
-/* Badge panier */
-header#top .my_cart_quantity {
-  background: linear-gradient(135deg, #0d4dff, #4d8aff) !important;
-  color: white !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  border-radius: 50% !important;
-  min-width: 18px !important;
-  height: 18px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* Bouton Search natif */
-header#top .o_search_button,
-header#top button[data-toggle="search"],
-header#top .search-toggle,
-header#top .btn-search {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.2s ease !important;
-  padding: 0 !important;
-}
-
-header#top .o_search_button:hover,
-header#top button[data-toggle="search"]:hover {
-  background: #0d4dff !important;
-  border-color: #0d4dff !important;
-  box-shadow: 0 4px 14px rgba(13, 77, 255, 0.4) !important;
-  transform: scale(1.08) !important;
-}
-
-/* Icone fa dans les boutons */
-header#top .o_search_button i,
-header#top .o_wsale_my_cart i,
-header#top .btn i {
-  font-size: 16px !important;
-  color: inherit !important;
+.exo-logo img {
+  height: 50px;
+  width: auto;
+  display: block;
 }
 
 /* =========================================================
-   BARRE DE RECHERCHE NATIVE ODOO
+   NAV
 ========================================================= */
 
-/* La search bar qui s'ouvre */
-header#top .o_search_order_by,
-header#top .search-query,
-header#top form.o_search_form,
-#o_search_form_navbar,
-.o_navbar_search {
+.exo-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+.exo-nav-link {
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.exo-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: linear-gradient(90deg, #0d4dff, #4d8aff);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.exo-nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.exo-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* =========================================================
+   ICONES DROITE
+========================================================= */
+
+.exo-header-icons {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Bouton icône générique */
+.exo-icon-btn,
+.exo-profile-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.exo-icon-btn:hover,
+.exo-profile-btn:hover {
+  background: #0d4dff;
+  border-color: #0d4dff;
+  color: white;
+  box-shadow: 0 4px 14px rgba(13, 77, 255, 0.4);
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   SEARCH FORM — compact, s'élargit au focus
+========================================================= */
+
+.exo-search-form {
+  display: flex !important;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  padding: 0 6px 0 14px;
+  height: 42px;
+  min-width: 42px;
+  width: 42px;
+  overflow: hidden;
+  transition: width 0.3s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.exo-search-form.exo-search-expanded,
+.exo-search-form:focus-within {
+  width: 280px;
+  background: white;
+  border-color: #0d4dff;
+  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.15);
+}
+
+.exo-search-icon {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+
+.exo-search-form:focus-within .exo-search-icon {
+  color: #8890aa;
+}
+
+.exo-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  padding: 0 8px;
+  min-width: 0;
+  width: 0;
+  transition: color 0.25s ease;
+  -webkit-appearance: none;
+}
+
+.exo-search-form:focus-within .exo-search-input {
+  color: #08152d;
+  width: auto;
+}
+
+.exo-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.exo-search-form:focus-within .exo-search-input::placeholder {
+  color: #b0b8cc;
+}
+
+/* Cache le X natif du input[type=search] */
+.exo-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.exo-search-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.exo-search-form:focus-within .exo-search-btn {
+  background: #0d4dff;
+  color: white;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(13, 77, 255, 0.35);
+}
+
+/* =========================================================
+   AUTOCOMPLETE DROPDOWN
+========================================================= */
+
+.o_searchbar_autocomplete,
+.o_website_searchbar_autocomplete {
   background: white !important;
-  border-radius: 50px !important;
-  border: 1.5px solid #e0e5f0 !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
-}
-
-/* Input de recherche */
-header#top input.search-query,
-header#top input[name="search"],
-header#top .search-input {
-  background: transparent !important;
-  border: none !important;
-  color: #08152d !important;
-  font-size: 15px !important;
-  padding: 14px 20px !important;
-  border-radius: 50px !important;
-  outline: none !important;
-  box-shadow: none !important;
-  width: 100% !important;
-}
-
-header#top input.search-query::placeholder,
-header#top input[name="search"]::placeholder {
-  color: #aab0c4 !important;
-}
-
-/* Bouton submit search */
-header#top .search-query + button,
-header#top .oe_search_button,
-header#top button[type="submit"].btn-search {
-  background: #0d4dff !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 0 50px 50px 0 !important;
-  padding: 14px 22px !important;
-  font-weight: 600 !important;
-  transition: background 0.2s ease !important;
-}
-
-header#top .oe_search_button:hover {
-  background: #0a3ad4 !important;
-}
-
-/* Zone autocomplete / suggestions */
-.ui-autocomplete,
-.o_website_searchbar_autocomplete,
-header#top .search-autocomplete {
-  background: white !important;
-  border: 1px solid #eef0f6 !important;
+  border: 1px solid #e8ecf8 !important;
   border-radius: 16px !important;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
   margin-top: 8px !important;
   overflow: hidden !important;
   z-index: 9999 !important;
+  min-width: 360px !important;
 }
 
-.ui-autocomplete .ui-menu-item,
+.o_searchbar_autocomplete .dropdown-item,
 .o_website_searchbar_autocomplete .dropdown-item {
-  padding: 12px 20px !important;
-  border-bottom: 1px solid #f5f7fb !important;
-  transition: background 0.15s ease !important;
-}
-
-.ui-autocomplete .ui-menu-item:hover,
-.o_website_searchbar_autocomplete .dropdown-item:hover {
-  background: #f0f4ff !important;
-}
-
-/* Lien résultat "Tous les résultats" */
-.o_website_searchbar_autocomplete .dropdown-item.o_searchbar_result_link,
-.ui-autocomplete .see-all-results {
-  color: #0d4dff !important;
-  font-weight: 600 !important;
-  text-align: center !important;
-  padding: 14px !important;
-}
-
-/* =========================================================
-   PROFIL / USER MENU NATIF
-========================================================= */
-
-header#top .o_login_btn,
-header#top .o_header_user_btn,
-header#top li.o_sign_in > a,
-header#top .nav-item.o_header_btn.o_user_btn > a {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: rgba(255, 255, 255, 0.85) !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.2s ease !important;
-  padding: 0 !important;
+  gap: 12px !important;
+  padding: 12px 20px !important;
+  color: #1a2240 !important;
+  font-size: 14px !important;
+  border-bottom: 1px solid #f5f7fb !important;
+  transition: background 0.15s ease !important;
   text-decoration: none !important;
 }
 
-header#top .o_login_btn:hover,
-header#top .o_header_user_btn:hover {
-  background: #0d4dff !important;
-  border-color: #0d4dff !important;
-  box-shadow: 0 4px 14px rgba(13, 77, 255, 0.4) !important;
+.o_searchbar_autocomplete .dropdown-item:hover,
+.o_website_searchbar_autocomplete .dropdown-item:hover {
+  background: #f0f4ff !important;
+  color: #0d4dff !important;
 }
 
-/* Nom utilisateur connecté — on affiche juste l'icône */
-header#top .o_header_user_btn .fa-user,
-header#top .nav-item.o_header_btn .fa-user {
-  font-size: 16px !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+/* Nom du produit en bleu */
+.o_searchbar_autocomplete .o_search_result_name,
+.o_website_searchbar_autocomplete .o_search_result_name {
+  color: #0d4dff !important;
+  font-weight: 600 !important;
+}
+
+/* "Tous les résultats" */
+.o_searchbar_autocomplete .o_searchbar_result_link,
+.o_website_searchbar_autocomplete .o_searchbar_result_link {
+  justify-content: center !important;
+  color: #0d4dff !important;
+  font-weight: 700 !important;
+  border-top: 1px solid #eef0f6 !important;
+  border-bottom: none !important;
+  padding: 14px !important;
+}
+
+.o_searchbar_autocomplete .o_searchbar_result_link:hover {
+  background: #eef2ff !important;
+}
+
+/* =========================================================
+   PROFIL DROPDOWN
+========================================================= */
+
+.exo-profile-dropdown {
+  position: relative;
+}
+
+.exo-profile-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.exo-profile-menu {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 210px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.22s ease;
+  z-index: 9999;
+  border: 1px solid #eef0f6;
+}
+
+.exo-profile-dropdown.active .exo-profile-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.exo-profile-menu a {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  padding: 12px 18px;
+  color: #1a2240 !important;
+  text-decoration: none !important;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-sizing: border-box;
+  transition: all 0.18s ease;
+}
+
+.exo-profile-menu a:hover {
+  background: #0d4dff !important;
+  color: white !important;
+  transform: none !important;
+}
+
+.exo-profile-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 14px;
 }
 
 /* =========================================================
@@ -289,133 +369,16 @@ header#top .nav-item.o_header_btn .fa-user {
 ========================================================= */
 
 @media (max-width: 992px) {
-  header#top .navbar {
-    padding: 0 16px !important;
-    min-height: 60px !important;
+  .exo-header-container {
+    padding: 0 16px;
+    height: 64px;
   }
 
-  header#top .navbar-brand img {
-    height: 40px !important;
+  .exo-nav {
+    display: none !important;
   }
 
-  header#top .navbar-collapse {
-    background: #1a2540 !important;
-    border-radius: 14px !important;
-    padding: 16px !important;
-    margin-top: 8px !important;
-    border: 1px solid rgba(13, 77, 255, 0.15) !important;
+  .exo-logo img {
+    height: 40px;
   }
-}
-
-/* =========================================================
-   INTÉGRATION SEARCH NATIF ODOO DANS HEADER CUSTOM
-========================================================= */
-
-/* Conteneur du widget searchbar natif */
-.exo-header-icons .o_searchbar_form,
-.exo-header-icons form.o_searchbar_form {
-  display: flex !important;
-  align-items: center !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 50px !important;
-  overflow: hidden !important;
-  transition: all 0.25s ease !important;
-  min-width: 200px !important;
-}
-
-.exo-header-icons .o_searchbar_form:focus-within {
-  background: white !important;
-  border-color: #0d4dff !important;
-  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.15) !important;
-  min-width: 320px !important;
-}
-
-/* Input de recherche */
-.exo-header-icons .o_searchbar_form input,
-.exo-header-icons .o_searchbar_form .search-query {
-  background: transparent !important;
-  border: none !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-size: 14px !important;
-  padding: 10px 16px !important;
-  outline: none !important;
-  box-shadow: none !important;
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-
-.exo-header-icons .o_searchbar_form:focus-within input,
-.exo-header-icons .o_searchbar_form:focus-within .search-query {
-  color: #08152d !important;
-}
-
-.exo-header-icons .o_searchbar_form input::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.exo-header-icons .o_searchbar_form:focus-within input::placeholder {
-  color: #aab0c4 !important;
-}
-
-/* Bouton submit */
-.exo-header-icons .o_searchbar_form button[type="submit"],
-.exo-header-icons .o_searchbar_form .oe_search_button {
-  background: transparent !important;
-  border: none !important;
-  color: rgba(255, 255, 255, 0.7) !important;
-  padding: 10px 14px !important;
-  cursor: pointer !important;
-  transition: color 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-.exo-header-icons .o_searchbar_form:focus-within button[type="submit"],
-.exo-header-icons .o_searchbar_form:focus-within .oe_search_button {
-  color: #0d4dff !important;
-}
-
-.exo-header-icons .o_searchbar_form button[type="submit"]:hover {
-  color: #0d4dff !important;
-}
-
-/* Dropdown autocomplete */
-.exo-header-icons .o_searchbar_form .o_dropdown_menu,
-.o_searchbar_autocomplete {
-  background: white !important;
-  border: 1px solid #eef0f6 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14) !important;
-  margin-top: 8px !important;
-  overflow: hidden !important;
-  z-index: 9999 !important;
-}
-
-/* Items autocomplete */
-.o_searchbar_autocomplete .dropdown-item {
-  padding: 12px 20px !important;
-  color: #1a2240 !important;
-  font-size: 14px !important;
-  border-bottom: 1px solid #f5f7fb !important;
-  transition: background 0.15s ease !important;
-}
-
-.o_searchbar_autocomplete .dropdown-item:hover,
-.o_searchbar_autocomplete .dropdown-item:focus {
-  background: #f0f4ff !important;
-  color: #0d4dff !important;
-}
-
-/* Lien "Tous les résultats" */
-.o_searchbar_autocomplete .o_searchbar_result_link {
-  color: #0d4dff !important;
-  font-weight: 600 !important;
-  text-align: center !important;
-  padding: 14px !important;
-  border-top: 1px solid #eef0f6 !important;
-}
-
-.o_searchbar_autocomplete .o_searchbar_result_link:hover {
-  background: #eef2ff !important;
 }
