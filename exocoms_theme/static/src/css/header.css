@@ -1,739 +1,213 @@
 /* =========================================================
-   DASHBOARD SECTION
+   RESET HEADER ODOO NATIF
 ========================================================= */
 
-.exo-dashboard-section {
-  padding: 20px 0 40px;
-  background: #eef0f7;
-  margin-top: -80px;
+header#top {
+  display: none !important;
 }
 
 /* =========================================================
-   DASHBOARD LAYOUT
+   HEADER PRINCIPAL
 ========================================================= */
 
-.exo-dashboard-layout {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-  position: relative;
+.exo-header {
+  width: 100%;
+  background: linear-gradient(135deg, #0f172a 0%, #0f172a 100%);
+  border-bottom: 1px solid rgba(13, 77, 255, 0.12);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.exo-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 80px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 32px;
 }
 
 /* =========================================================
-   SIDEBAR — posée sur la page, sans fond
+   LOGO
 ========================================================= */
 
-.exo-dashboard-sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: visible;
-  position: relative;
-  z-index: 10;
-  margin-top: -80px;
-  margin-bottom: 40px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.07);
-  padding: 20px 18px;
-}
-
-/* =========================================================
-   SIDEBAR TITLE
-========================================================= */
-
-.exo-sidebar-title {
-  background: transparent;
-  padding: 0 0 14px 0;
-  display: flex;
+.exo-logo {
+  display: flex !important;
   align-items: center;
-  gap: 0;
-  border-radius: 0;
-  border-bottom: 2px solid #e8ecf4;
-  margin-bottom: 10px;
-}
-
-.exo-sidebar-title i {
-  display: none;
-}
-
-.exo-sidebar-title span {
-  font-size: 20px;
-  font-weight: 800;
-  color: #08152d;
-  letter-spacing: -0.3px;
-  text-transform: none;
-}
-
-/* =========================================================
-   MENU GROUP
-========================================================= */
-
-.exo-menu-group {
-  position: relative;
-  border-bottom: none;
-}
-
-.exo-menu-group:last-child {
-  border-bottom: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-/* =========================================================
-   MAIN CATEGORY — niveau 0
-========================================================= */
-
-.exo-menu-main {
-  padding: 5px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: none;
-  position: relative;
-  background: transparent !important;
-}
-
-.exo-menu-main::after {
-  display: none;
-}
-
-.exo-menu-main .fa-chevron-down {
-  font-size: 9px;
-  color: #b0b8cc;
-  transition: transform 0.22s ease, color 0.15s ease;
-  flex-shrink: 0;
-}
-
-/* =========================================================
-   MENU LEFT
-========================================================= */
-
-.exo-menu-left {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: #08152d;
-}
-
-.exo-menu-left i {
-  display: none;
-}
-
-.exo-menu-main:hover .exo-menu-left {
-  color: #0d4dff;
-}
-
-/* =========================================================
-   SUBMENU — niveau 1
-========================================================= */
-
-.exo-submenu {
-  display: flex;
-  flex-direction: column;
-  padding: 0 0 0 14px;
-  background: transparent;
-  overflow: hidden;
-}
-
-/* =========================================================
-   SUB ITEM
-========================================================= */
-
-.exo-sub-item {
-  border-radius: 0;
-  overflow: visible;
-  margin-bottom: 0;
-}
-
-.exo-sub-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-radius: 0;
-  cursor: pointer;
-  background: transparent !important;
-  user-select: none;
-}
-
-.exo-sub-header a {
-  color: #08152d;
   text-decoration: none;
-  font-size: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.exo-logo:hover {
+  transform: scale(1.04);
+}
+
+.exo-logo img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+/* =========================================================
+   NAV
+========================================================= */
+
+.exo-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 32px;
+  margin: 0 auto;
+}
+
+.exo-nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-size: 15px;
   font-weight: 600;
-  flex: 1;
-  transition: color 0.15s ease;
-  pointer-events: none;
-}
-
-.exo-sub-header:hover a {
-  color: #0d4dff;
-  text-decoration: none;
-}
-
-.exo-sub-chevron {
-  font-size: 8px;
-  color: #b0b8cc;
-  flex-shrink: 0;
-  transition: transform 0.22s ease, color 0.15s ease;
-  margin-left: 6px;
-}
-
-/* =========================================================
-   SUB BODY — niveau 2
-========================================================= */
-
-.exo-sub-body {
-  display: none;
-  flex-direction: column;
-  padding: 0 0 4px 14px;
-  gap: 0;
-}
-
-/* =========================================================
-   SUB GROUP
-========================================================= */
-
-.exo-sub-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2px;
-}
-
-.exo-sub-group:last-child {
-  margin-bottom: 0;
-}
-
-/* =========================================================
-   GROUP TITLE — niveau 2
-========================================================= */
-
-.exo-group-title {
-  display: block;
-  padding: 3px 0;
-  color: #2a3250;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-  transition: color 0.15s ease;
-}
-
-.exo-group-title::before {
-  display: none;
-}
-
-.exo-group-title:hover {
-  color: #0d4dff;
-  background: transparent;
-}
-
-/* =========================================================
-   LEAF — niveau 3 (marque)
-========================================================= */
-
-.exo-leaf {
-  display: block;
-  padding: 2px 0 2px 14px;
-  color: #4a5270;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 0;
-  transition: color 0.15s ease;
-}
-
-.exo-leaf::before {
-  display: none;
-}
-
-.exo-leaf:hover {
-  color: #0d4dff;
-  background: transparent;
-  padding-left: 14px;
-  text-decoration: underline;
-}
-
-/* =========================================================
-   DASHBOARD CONTENT
-========================================================= */
-
-.exo-dashboard-content {
-  flex: 1;
-  background: white;
-  border-radius: 18px;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 12px 40px rgba(0,0,0,0.07);
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-/* =========================================================
-   SHOP HEADER
-========================================================= */
-
-.exo-shop-header {
-  flex-shrink: 0;
-}
-
-.exo-shop-header h2 {
-  font-size: 32px;
-  font-weight: 800;
-  color: #08152d;
-  margin-bottom: 4px;
-  letter-spacing: -0.5px;
-}
-
-.exo-shop-header p {
-  font-size: 15px;
-  color: #8890aa;
-}
-
-/* =========================================================
-   SECTION HEADER
-========================================================= */
-
-.exo-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0;
-}
-
-.exo-section-header h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a2240;
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
+  padding: 6px 0;
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.2s ease;
 }
 
-.exo-section-header h3::before {
+.exo-nav-link::after {
   content: '';
-  width: 14px;
-  height: 3px;
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
   background: linear-gradient(90deg, #0d4dff, #4d8aff);
   border-radius: 2px;
-  flex-shrink: 0;
+  transition: width 0.2s ease;
 }
 
-.exo-section-header a {
-  font-size: 12px;
-  font-weight: 600;
-  color: #0d4dff;
-  text-decoration: none;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #eef2ff;
-  transition: all 0.2s ease;
-}
-
-.exo-section-header a:hover {
-  background: #0d4dff;
+.exo-nav-link:hover {
   color: white;
 }
 
-/* =========================================================
-   SHOP ODOO
-========================================================= */
-
-.exo-shop-odoo {
-  flex-shrink: 0;
+.exo-nav-link:hover::after {
   width: 100%;
-  height: 480px;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid #eef0f6;
-  background: #fafbff;
-}
-
-.exo-shop-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
 }
 
 /* =========================================================
-   CAROUSELS WRAPPER
+   ICONES HEADER
 ========================================================= */
 
-.exo-carousels-wrapper {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.exo-products-section {
-  margin-bottom: 0;
-}
-
-/* =========================================================
-   PRODUCTS CAROUSEL
-========================================================= */
-
-.exo-products-carousel {
-  display: flex;
+.exo-header-icons {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: #dce5ff transparent;
-  margin-top: 10px;
-}
-
-/* =========================================================
-   PRODUCT CARD
-========================================================= */
-
-.exo-product-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
   flex-shrink: 0;
-  min-width: 210px;
-  max-width: 230px;
-  background: #fafbff;
-  border-radius: 12px;
-  padding: 10px 14px;
-  border: 1px solid #eef0f8;
-  transition: all 0.2s ease;
-  cursor: pointer;
 }
-
-.exo-product-card:hover {
-  border-color: #c0ceff;
-  background: #f5f7ff;
-  box-shadow: 0 4px 16px rgba(13,77,255,0.1);
-  transform: translateY(-2px);
-}
-
-.exo-product-card img {
-  width: 46px;
-  height: 46px;
-  object-fit: contain;
-  flex-shrink: 0;
-  border-radius: 8px;
-  background: white;
-  padding: 4px;
-  border: 1px solid #eef0f6;
-}
-
-.exo-product-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.exo-product-card h4 {
-  font-size: 13px;
-  font-weight: 700;
-  margin: 0;
-  color: #1a2240;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.exo-product-card p {
-  font-size: 11px;
-  color: #8890aa;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.exo-product-card span {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0d4dff;
-}
-
-/* =========================================================
-   PRODUCTS GRID (si utilisée ailleurs)
-========================================================= */
-
-.exo-products-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-bottom: 70px;
-}
-
-/* =========================================================
-   PRODUCTS WRAPPER (si utilisé ailleurs)
-========================================================= */
-
-.exo-products-wrapper {
-  width: calc(100% - 430px);
-  margin-left: auto;
-  margin-top: 40px;
-}
-
-/* =========================================================
-   ODOO SHOP — OVERRIDE STYLES
-========================================================= */
-
-.exo-shop-odoo .o_wsale_products_grid_table_wrapper {
-  width: 100%;
-}
-
-.exo-shop-odoo .oe_product_cart {
-  border-radius: 14px !important;
-  overflow: hidden;
-  border: 1px solid #eef0f6 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-  transition: 0.25s ease;
-}
-
-.exo-shop-odoo .oe_product_cart:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(13,77,255,0.1) !important;
-  border-color: #c0ceff !important;
-}
-
-.exo-shop-odoo .o_wsale_product_information {
-  padding: 14px !important;
-}
-
-.exo-shop-odoo .o_wsale_products_item_title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1a2240;
-}
-
-.exo-shop-odoo .text-primary {
-  color: #0d4dff !important;
-  font-weight: 700;
-}
-
-/* =========================================================
-   RESPONSIVE — 1200px
-========================================================= */
-
-@media (max-width: 1200px) {
-  .exo-dashboard-layout {
-    flex-direction: column;
-  }
-
-  .exo-dashboard-sidebar {
-    width: 100%;
-    margin-top: 0;
-  }
-}
-
-/* =========================================================
-   RESPONSIVE — 768px
-========================================================= */
-
-@media (max-width: 768px) {
-  .exo-dashboard-content {
-    padding: 20px;
-  }
-
-  .exo-shop-header h2 {
-    font-size: 24px;
-  }
-
-  .exo-product-card {
-    min-width: 180px;
-  }
-
-  .exo-products-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =========================================================
-   CAT0 — titre de section fixe (Monétique, Informatique, Télécom)
-========================================================= */
-
-.exo-cat0 {
-  font-size: 15px;
-  font-weight: 800;
-  color: #08152d;
-  padding: 12px 0 6px 0;
-  margin-top: 4px;
-  border-bottom: 2px solid #e8ecf4;
-  margin-bottom: 4px;
-  letter-spacing: -0.2px;
-}
-
-.exo-cat0:first-of-type {
-  padding-top: 4px;
-}
-
-/* =========================================================
-   CAT1 GROUP — conteneur des items niveau 1
-========================================================= */
-
-.exo-cat1-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 4px;
-}
-
-/* =========================================================
-   L1 ITEM — ligne cliquable niveau 1 (ex: Monétique terminals)
-========================================================= */
-
-.exo-l1-item {
-  border-radius: 0;
-}
-
-.exo-l1-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 0;
-  cursor: pointer;
-  user-select: none;
-}
-
-.exo-l1-header a {
-  color: #08152d;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  flex: 1;
-  pointer-events: none;
-  transition: color 0.15s ease;
-}
-
-.exo-l1-header:hover a {
-  color: #0d4dff;
-}
-
-.exo-l1-chevron {
-  font-size: 8px;
-  color: #b0b8cc;
-  flex-shrink: 0;
-  transition: transform 0.22s ease, color 0.15s ease;
-  margin-left: 6px;
-}
-
-/* =========================================================
-   L1 BODY — contenu déplié niveau 1
-========================================================= */
-
-.exo-l1-body {
-  display: none;
-  flex-direction: column;
-  padding: 2px 0 4px 12px;
-  border-left: 2px solid #dce5ff;
-  margin: 2px 0 4px 6px;
-}
-
-/* =========================================================
-   L2 ITEM — ligne cliquable niveau 2 (ex: TPE Fixe)
-========================================================= */
-
-.exo-l2-item {
-  border-radius: 0;
-}
-
-.exo-l2-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-  cursor: pointer;
-  user-select: none;
-}
-
-.exo-l2-header a {
-  color: #2a3250;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  flex: 1;
-  pointer-events: none;
-  transition: color 0.15s ease;
-}
-
-.exo-l2-header:hover a {
-  color: #0d4dff;
-}
-
-.exo-l2-chevron {
-  font-size: 7px;
-  color: #c0c6d6;
-  flex-shrink: 0;
-  transition: transform 0.2s ease, color 0.15s ease;
-  margin-left: 4px;
-}
-
-/* =========================================================
-   L2 BODY — marques (INGENICO, PAX...)
-========================================================= */
-
-.exo-l2-body {
-  display: none;
-  flex-direction: column;
-  padding: 2px 0 4px 10px;
-  border-left: 2px solid #eef2ff;
-  margin: 1px 0 2px 4px;
-}
-
-/* =========================================================
-   LEAF — lien final dans l2-body
-========================================================= */
-
-.exo-leaf {
-  display: block;
-  padding: 2px 0;
-  color: #4a5270;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 500;
-  transition: color 0.15s ease;
-}
-
-.exo-leaf:hover {
-  color: #0d4dff;
-}
-
-/* =========================================================
-   HEADER ICON BTN — style unifié
-========================================================= */
 
 .exo-icon-btn {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #f4f4f4;
-  border: none;
-  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  color: #222;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 16px;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
-.exo-icon-btn:hover,
-.exo-search-trigger.active {
+.exo-icon-btn:hover {
   background: #0d4dff;
   color: white;
-  transform: scale(1.05);
+  border-color: #0d4dff;
+  box-shadow: 0 4px 14px rgba(13, 77, 255, 0.4);
+  transform: scale(1.08);
 }
 
 /* =========================================================
-   SEARCH BAR — pleine largeur sous le header
+   PROFIL DROPDOWN
+========================================================= */
+
+.exo-profile-dropdown {
+  position: relative;
+}
+
+.exo-profile-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.exo-profile-menu {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  width: 200px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.22s ease;
+  z-index: 9999;
+}
+
+.exo-profile-dropdown.active .exo-profile-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.exo-profile-menu a {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  padding: 12px 18px;
+  color: #1a2240 !important;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  transition: background 0.18s ease, color 0.18s ease;
+  box-sizing: border-box;
+}
+
+.exo-profile-menu a:hover {
+  background: #0d4dff !important;
+  color: white !important;
+  transform: none !important;
+}
+
+.exo-profile-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* =========================================================
+   SEARCH BAR
 ========================================================= */
 
 .exo-search-bar {
@@ -742,28 +216,29 @@
   border-top: 1px solid #eef0f6;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: none;
+  transition: max-height 0.28s ease, box-shadow 0.28s ease;
 }
 
 .exo-search-bar.exo-search-open {
-  max-height: 90px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  max-height: 80px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 .exo-search-inner {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 14px 32px;
+  padding: 12px 40px;
   gap: 12px;
 }
 
 .exo-search-form {
   flex: 1;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   background: #f5f7fb;
   border: 1.5px solid #e0e5f0;
   border-radius: 50px;
@@ -790,8 +265,9 @@
   background: transparent;
   font-size: 15px;
   color: #08152d;
-  padding: 12px 0;
+  padding: 13px 0;
   outline: none;
+  min-width: 0;
 }
 
 .exo-search-input::placeholder {
@@ -803,7 +279,7 @@
   color: white;
   border: none;
   border-radius: 50px;
-  padding: 8px 20px;
+  padding: 9px 22px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -813,7 +289,7 @@
 }
 
 .exo-search-submit:hover {
-  background: #0a3dd4;
+  background: #0a3ad4;
 }
 
 .exo-search-close {
@@ -825,7 +301,7 @@
   color: #5a6480;
   font-size: 14px;
   cursor: pointer;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -835,4 +311,28 @@
 .exo-search-close:hover {
   background: #e0e4f0;
   color: #08152d;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+  .exo-header-container {
+    padding: 0 16px;
+    height: 64px;
+    gap: 16px;
+  }
+
+  .exo-nav {
+    display: none !important;
+  }
+
+  .exo-logo img {
+    height: 40px;
+  }
+
+  .exo-search-inner {
+    padding: 10px 16px;
+  }
 }
