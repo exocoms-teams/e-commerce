@@ -3,8 +3,8 @@
 ========================================================= */
 
 .exo-dashboard-section {
-  padding: 20px 0 40px;
-  background: #f0f2f8;
+  padding: 20px 0;
+  background: #f5f7fb;
   margin-top: -80px;
 }
 
@@ -14,8 +14,8 @@
 
 .exo-dashboard-layout {
   display: flex;
-  gap: 24px;
-  align-items: flex-start;
+  gap: 30px;
+  align-items: stretch;
   position: relative;
 }
 
@@ -24,17 +24,18 @@
 ========================================================= */
 
 .exo-dashboard-sidebar {
-  width: 280px;
+  width: 300px;
+  height: auto;
+  background: linear-gradient(160deg, #07122a 0%, #0a1c40 60%, #071630 100%);
+  border-radius: 20px;
+  color: white;
   flex-shrink: 0;
-  background: #ffffff;
-  border-radius: 18px;
   overflow: visible;
   position: relative;
   z-index: 10;
   margin-top: -115px;
   margin-bottom: 80px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.08);
-  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 /* =========================================================
@@ -42,22 +43,23 @@
 ========================================================= */
 
 .exo-sidebar-title {
-  background: linear-gradient(135deg, #0d4dff 0%, #1a5fff 100%);
-  padding: 18px 20px;
+  background: linear-gradient(135deg, #0d4dff 0%, #0a3dd4 100%);
+  padding: 20px 22px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
+  gap: 12px;
+  font-size: 15px;
   font-weight: 700;
-  color: white;
-  border-radius: 17px 17px 0 0;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.3px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 4px 20px rgba(13, 77, 255, 0.4);
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .exo-sidebar-title i {
-  font-size: 15px;
-  opacity: 0.95;
+  font-size: 16px;
+  opacity: 0.9;
 }
 
 /* =========================================================
@@ -66,13 +68,11 @@
 
 .exo-menu-group {
   position: relative;
-  border-bottom: 1px solid #f0f2f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .exo-menu-group:last-child {
   border-bottom: none;
-  border-radius: 0 0 17px 17px;
-  overflow: hidden;
 }
 
 /* =========================================================
@@ -80,45 +80,45 @@
 ========================================================= */
 
 .exo-menu-main {
-  padding: 14px 18px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
   position: relative;
 }
 
-.exo-menu-main::after {
+.exo-menu-main::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 20%;
-  bottom: 20%;
+  top: 0;
+  bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, #0d4dff, #4d8aff);
+  background: #0d4dff;
   border-radius: 0 3px 3px 0;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .exo-menu-main:hover {
-  background: #f6f8ff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.exo-menu-main:hover::after {
+.exo-menu-main:hover::before {
   opacity: 1;
 }
 
 .exo-menu-main .fa-chevron-down {
-  font-size: 10px;
-  color: #c0c6d6;
-  transition: all 0.25s ease;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  transition: transform 0.25s ease;
 }
 
 .exo-menu-group:hover .exo-menu-main .fa-chevron-down {
   transform: rotate(-180deg);
-  color: #0d4dff;
+  color: #17c2ff;
 }
 
 /* =========================================================
@@ -128,36 +128,31 @@
 .exo-menu-left {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #1a2240;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .exo-menu-left i {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  color: #0d4dff;
-  background: #eef2ff;
-  border-radius: 9px;
-  border: 1px solid #dce5ff;
+  font-size: 15px;
+  color: #17c2ff;
+  background: rgba(23, 194, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(23, 194, 255, 0.15);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .exo-menu-main:hover .exo-menu-left i {
-  background: #0d4dff;
-  color: white;
-  border-color: #0d4dff;
-  box-shadow: 0 4px 12px rgba(13,77,255,0.3);
-}
-
-.exo-menu-main:hover .exo-menu-left {
-  color: #0d4dff;
+  background: rgba(23, 194, 255, 0.18);
+  border-color: rgba(23, 194, 255, 0.3);
+  color: #4dd5ff;
 }
 
 /* =========================================================
@@ -167,8 +162,7 @@
 .exo-submenu {
   display: flex;
   flex-direction: column;
-  padding: 4px 12px 10px 62px;
-  background: #fafbff;
+  padding: 4px 12px 12px 64px;
 }
 
 /* =========================================================
@@ -187,13 +181,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 10px;
-  color: #5a6480;
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .exo-submenu-item > a::before {
@@ -201,19 +196,20 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #d0d5e8;
+  background: rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .exo-submenu-item > a:hover {
-  color: #0d4dff;
-  background: #eef2ff;
-  padding-left: 14px;
+  color: white;
+  background: rgba(255, 255, 255, 0.07);
+  padding-left: 16px;
 }
 
 .exo-submenu-item > a:hover::before {
-  background: #0d4dff;
+  background: #17c2ff;
+  box-shadow: 0 0 6px rgba(23, 194, 255, 0.6);
 }
 
 /* =========================================================
@@ -223,29 +219,32 @@
 .exo-mega-panel {
   position: absolute;
   top: -10px;
-  left: calc(100% + 14px);
-  width: 320px;
-  background: #ffffff;
+  left: calc(100% + 16px);
+  width: 340px;
+  background: linear-gradient(160deg, #07122a 0%, #0c1e44 100%);
   border-radius: 16px;
-  padding: 22px;
+  padding: 24px;
   display: none;
   grid-template-columns: 1fr;
   gap: 0;
   z-index: 999;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .exo-mega-panel::before {
   content: '';
   position: absolute;
-  top: 22px;
-  left: -5px;
-  width: 10px;
-  height: 10px;
-  background: #ffffff;
+  top: 20px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  background: #0c1e44;
   transform: rotate(45deg);
-  border-left: 1px solid rgba(0,0,0,0.06);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .exo-submenu-item.active .exo-mega-panel {
@@ -265,14 +264,14 @@
 
 .exo-submenu-col > h4 {
   width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   padding-bottom: 10px;
-  color: #08152d;
-  font-size: 12px;
+  color: white;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  border-bottom: 1px solid #eef0f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -281,9 +280,9 @@
 .exo-submenu-col > h4::before {
   content: '';
   display: inline-block;
-  width: 16px;
+  width: 18px;
   height: 2px;
-  background: linear-gradient(90deg, #0d4dff, #4d8aff);
+  background: #0d4dff;
   border-radius: 2px;
   flex-shrink: 0;
 }
@@ -292,20 +291,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 7px 10px;
   margin-bottom: 2px;
   width: 100%;
-  color: #5a6480;
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .exo-submenu-col > a:hover {
-  color: #0d4dff;
-  background: #f0f4ff;
+  color: white;
+  background: rgba(255, 255, 255, 0.07);
   padding-left: 14px;
 }
 
@@ -315,35 +314,35 @@
 
 .exo-sub-category {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .exo-sub-category-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #1a2240;
+  color: rgba(255, 255, 255, 0.92);
   font-size: 13px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-decoration: none;
-  padding: 5px 8px;
-  border-radius: 7px;
-  transition: all 0.18s ease;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .exo-sub-category-title::before {
   content: '';
   width: 3px;
-  height: 13px;
-  background: linear-gradient(180deg, #0d4dff, #4d8aff);
+  height: 14px;
+  background: linear-gradient(180deg, #0d4dff, #17c2ff);
   border-radius: 2px;
   flex-shrink: 0;
 }
 
 .exo-sub-category-title:hover {
-  color: #0d4dff;
-  background: #f0f4ff;
+  color: #17c2ff;
+  background: rgba(23, 194, 255, 0.08);
 }
 
 /* =========================================================
@@ -353,21 +352,21 @@
 .exo-sub-links {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding-left: 16px;
+  gap: 2px;
+  padding-left: 18px;
 }
 
 .exo-sub-links a {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 10px;
-  color: #8890aa;
+  gap: 8px;
+  padding: 5px 10px;
+  color: rgba(255, 255, 255, 0.45);
   text-decoration: none;
   font-size: 12px;
   font-weight: 500;
   border-radius: 6px;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .exo-sub-links a::before {
@@ -375,19 +374,19 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #d0d5e8;
+  background: rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .exo-sub-links a:hover {
-  color: #0d4dff;
-  background: #f0f4ff;
+  color: #17c2ff;
+  background: rgba(23, 194, 255, 0.06);
   padding-left: 14px;
 }
 
 .exo-sub-links a:hover::before {
-  background: #0d4dff;
+  background: #17c2ff;
 }
 
 /* =========================================================
@@ -397,13 +396,11 @@
 .exo-dashboard-content {
   flex: 1;
   background: white;
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 12px 40px rgba(0,0,0,0.07);
-  border: 1px solid rgba(0,0,0,0.05);
 }
 
 /* =========================================================
@@ -412,23 +409,23 @@
 
 .exo-shop-header {
   flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .exo-shop-header h2 {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
   color: #08152d;
   margin-bottom: 4px;
-  letter-spacing: -0.5px;
 }
 
 .exo-shop-header p {
-  font-size: 15px;
-  color: #8890aa;
+  font-size: 16px;
+  color: #666;
 }
 
 /* =========================================================
-   SHOP ODOO
+   SHOP ODOO — hauteur fixe (zone principale)
 ========================================================= */
 
 .exo-shop-odoo {
@@ -436,9 +433,7 @@
   width: 100%;
   height: 480px;
   overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid #eef0f6;
-  background: #fafbff;
+  border-radius: 14px;
 }
 
 .exo-shop-frame {
@@ -449,7 +444,7 @@
 }
 
 /* =========================================================
-   CAROUSELS WRAPPER
+   CAROUSELS WRAPPER — deux sections empilées
 ========================================================= */
 
 .exo-carousels-wrapper {
@@ -457,6 +452,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding-top: 8px;
 }
 
 .exo-carousels-wrapper .exo-products-section {
@@ -471,41 +467,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .exo-section-header h3 {
   font-size: 15px;
   font-weight: 700;
-  color: #1a2240;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.exo-section-header h3::before {
-  content: '';
-  width: 14px;
-  height: 3px;
-  background: linear-gradient(90deg, #0d4dff, #4d8aff);
-  border-radius: 2px;
-  flex-shrink: 0;
+  color: #08152d;
 }
 
 .exo-section-header a {
-  font-size: 12px;
-  font-weight: 600;
   color: #0d4dff;
   text-decoration: none;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #eef2ff;
-  transition: all 0.2s ease;
-}
-
-.exo-section-header a:hover {
-  background: #0d4dff;
-  color: white;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 /* =========================================================
@@ -527,11 +502,11 @@
   padding-bottom: 6px;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: #dce5ff transparent;
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
 }
 
 /* =========================================================
-   PRODUCT CARD
+   PRODUCT CARD — format horizontal (image gauche, texte droite)
 ========================================================= */
 
 .exo-product-card {
@@ -540,34 +515,34 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-  min-width: 210px;
-  max-width: 230px;
-  background: #fafbff;
+  min-width: 220px;
+  max-width: 240px;
+  background: #f8f9fc;
   border-radius: 12px;
   padding: 10px 14px;
-  border: 1px solid #eef0f8;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: 0.25s ease;
 }
 
 .exo-product-card:hover {
-  border-color: #c0ceff;
-  background: #f5f7ff;
-  box-shadow: 0 4px 16px rgba(13,77,255,0.1);
-  transform: translateY(-2px);
+  transform: translateX(3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border-color: rgba(13, 77, 255, 0.15);
 }
 
+/* Image à gauche, petite et carrée */
 .exo-product-card img {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   flex-shrink: 0;
   border-radius: 8px;
   background: white;
   padding: 4px;
-  border: 1px solid #eef0f6;
 }
 
+/* Bloc texte à droite */
 .exo-product-card-body {
   display: flex;
   flex-direction: column;
@@ -579,7 +554,7 @@
   font-size: 13px;
   font-weight: 700;
   margin: 0;
-  color: #1a2240;
+  color: #08152d;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -587,7 +562,7 @@
 
 .exo-product-card p {
   font-size: 11px;
-  color: #8890aa;
+  color: #888;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -595,7 +570,7 @@
 }
 
 .exo-product-card span {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: #0d4dff;
 }
@@ -630,32 +605,40 @@
 }
 
 .exo-shop-odoo .oe_product_cart {
-  border-radius: 14px !important;
+  border-radius: 18px !important;
   overflow: hidden;
-  border: 1px solid #eef0f6 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-  transition: 0.25s ease;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: 0.3s ease;
 }
 
 .exo-shop-odoo .oe_product_cart:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(13,77,255,0.1) !important;
-  border-color: #c0ceff !important;
 }
 
 .exo-shop-odoo .o_wsale_product_information {
-  padding: 14px !important;
+  padding: 16px !important;
 }
 
 .exo-shop-odoo .o_wsale_products_item_title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  color: #1a2240;
 }
 
 .exo-shop-odoo .text-primary {
-  color: #0d4dff !important;
+  color: #0d47ff !important;
   font-weight: 700;
+}
+
+/* =========================================================
+   RESPONSIVE — 1400px
+========================================================= */
+
+@media (max-width: 1400px) {
+  .exo-mega-panel {
+    width: 700px;
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* =========================================================
@@ -673,10 +656,19 @@
 
   .exo-mega-panel {
     position: relative;
-    top: 8px;
+    top: 20px;
     left: 0;
     width: 100%;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .exo-carousels-wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .exo-carousels-wrapper .exo-products-section {
+    flex: 1 1 45%;
   }
 }
 
@@ -690,11 +682,29 @@
   }
 
   .exo-shop-header h2 {
-    font-size: 24px;
+    font-size: 28px;
+  }
+
+  .exo-mega-panel {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .exo-submenu-col h4 {
+    font-size: 14px;
+  }
+
+  .exo-submenu-col a {
+    font-size: 13px;
+  }
+
+  .exo-carousels-wrapper {
+    flex-direction: column;
   }
 
   .exo-product-card {
-    min-width: 180px;
+    min-width: 140px;
   }
 
   .exo-products-grid {
