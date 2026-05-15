@@ -3,8 +3,8 @@
 ========================================================= */
 
 .exo-dashboard-section {
-  padding: 20px 0;
-  background: #f5f7fb;
+  padding: 20px 0 40px;
+  background: #f0f2f8;
   margin-top: -80px;
 }
 
@@ -14,28 +14,27 @@
 
 .exo-dashboard-layout {
   display: flex;
-  gap: 30px;
-  align-items: stretch;
+  gap: 40px;
+  align-items: flex-start;
   position: relative;
 }
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR — posée sur la page, sans fond
 ========================================================= */
 
 .exo-dashboard-sidebar {
-  width: 300px;
-  height: auto;
-  background: linear-gradient(160deg, #07122a 0%, #0a1c40 60%, #071630 100%);
-  border-radius: 20px;
-  color: white;
+  width: 240px;
   flex-shrink: 0;
+  background: transparent;
+  border-radius: 0;
   overflow: visible;
   position: relative;
   z-index: 10;
-  margin-top: -115px;
-  margin-bottom: 80px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+  margin-top: -80px;
+  margin-bottom: 40px;
+  box-shadow: none;
+  border: none;
 }
 
 /* =========================================================
@@ -43,23 +42,26 @@
 ========================================================= */
 
 .exo-sidebar-title {
-  background: linear-gradient(135deg, #0d4dff 0%, #0a3dd4 100%);
-  padding: 20px 22px;
+  background: transparent;
+  padding: 0 0 16px 0;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 4px 20px rgba(13, 77, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  gap: 0;
+  border-radius: 0;
+  border-bottom: 2px solid #e0e4f0;
+  margin-bottom: 8px;
 }
 
 .exo-sidebar-title i {
-  font-size: 16px;
-  opacity: 0.9;
+  display: none;
+}
+
+.exo-sidebar-title span {
+  font-size: 20px;
+  font-weight: 800;
+  color: #08152d;
+  letter-spacing: -0.3px;
+  text-transform: none;
 }
 
 /* =========================================================
@@ -68,57 +70,39 @@
 
 .exo-menu-group {
   position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: none;
 }
 
 .exo-menu-group:last-child {
   border-bottom: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
 /* =========================================================
-   MAIN CATEGORY
+   MAIN CATEGORY — niveau 0
 ========================================================= */
 
 .exo-menu-main {
-  padding: 16px 20px;
+  padding: 5px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: none;
   position: relative;
+  background: transparent !important;
 }
 
-.exo-menu-main::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #0d4dff;
-  border-radius: 0 3px 3px 0;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.exo-menu-main:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.exo-menu-main:hover::before {
-  opacity: 1;
+.exo-menu-main::after {
+  display: none;
 }
 
 .exo-menu-main .fa-chevron-down {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.35);
-  transition: transform 0.25s ease;
-}
-
-.exo-menu-group:hover .exo-menu-main .fa-chevron-down {
-  transform: rotate(-180deg);
-  color: #17c2ff;
+  font-size: 9px;
+  color: #b0b8cc;
+  transition: transform 0.22s ease, color 0.15s ease;
+  flex-shrink: 0;
 }
 
 /* =========================================================
@@ -128,265 +112,148 @@
 .exo-menu-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  gap: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #08152d;
 }
 
 .exo-menu-left i {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  color: #17c2ff;
-  background: rgba(23, 194, 255, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(23, 194, 255, 0.15);
-  flex-shrink: 0;
-  transition: all 0.25s ease;
+  display: none;
 }
 
-.exo-menu-main:hover .exo-menu-left i {
-  background: rgba(23, 194, 255, 0.18);
-  border-color: rgba(23, 194, 255, 0.3);
-  color: #4dd5ff;
+.exo-menu-main:hover .exo-menu-left {
+  color: #0d4dff;
 }
 
 /* =========================================================
-   SUBMENU
+   SUBMENU — niveau 1
 ========================================================= */
 
 .exo-submenu {
   display: flex;
   flex-direction: column;
-  padding: 4px 12px 12px 64px;
+  padding: 0 0 0 14px;
+  background: transparent;
+  overflow: hidden;
 }
 
 /* =========================================================
-   SUBMENU ITEM
+   SUB ITEM
 ========================================================= */
 
-.exo-submenu-item {
-  position: relative;
+.exo-sub-item {
+  border-radius: 0;
+  overflow: visible;
+  margin-bottom: 0;
 }
 
-/* =========================================================
-   SUBMENU LINK
-========================================================= */
-
-.exo-submenu-item > a {
+.exo-sub-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  color: rgba(255, 255, 255, 0.6);
+  justify-content: space-between;
+  padding: 4px 0;
+  border-radius: 0;
+  cursor: pointer;
+  background: transparent !important;
+  user-select: none;
+}
+
+.exo-sub-header a {
+  color: #0d4dff;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  position: relative;
+  flex: 1;
+  transition: color 0.15s ease;
+  pointer-events: none;
 }
 
-.exo-submenu-item > a::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+.exo-sub-header:hover a {
+  color: #0a3ad4;
+  text-decoration: underline;
+}
+
+.exo-sub-chevron {
+  font-size: 8px;
+  color: #b0b8cc;
   flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.exo-submenu-item > a:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.07);
-  padding-left: 16px;
-}
-
-.exo-submenu-item > a:hover::before {
-  background: #17c2ff;
-  box-shadow: 0 0 6px rgba(23, 194, 255, 0.6);
+  transition: transform 0.22s ease, color 0.15s ease;
+  margin-left: 6px;
 }
 
 /* =========================================================
-   MEGA PANEL
+   SUB BODY — niveau 2
 ========================================================= */
 
-.exo-mega-panel {
-  position: absolute;
-  top: -10px;
-  left: calc(100% + 16px);
-  width: 340px;
-  background: linear-gradient(160deg, #07122a 0%, #0c1e44 100%);
-  border-radius: 16px;
-  padding: 24px;
+.exo-sub-body {
   display: none;
-  grid-template-columns: 1fr;
+  flex-direction: column;
+  padding: 0 0 4px 14px;
   gap: 0;
-  z-index: 999;
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.exo-mega-panel::before {
-  content: '';
-  position: absolute;
-  top: 20px;
-  left: -6px;
-  width: 12px;
-  height: 12px;
-  background: #0c1e44;
-  transform: rotate(45deg);
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.exo-submenu-item.active .exo-mega-panel {
-  display: grid;
 }
 
 /* =========================================================
-   MEGA PANEL COLUMN
+   SUB GROUP
 ========================================================= */
 
-.exo-submenu-col {
+.exo-sub-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.exo-submenu-col > h4 {
-  width: 100%;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  color: white;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.exo-submenu-col > h4::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 2px;
-  background: #0d4dff;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.exo-submenu-col > a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
   margin-bottom: 2px;
-  width: 100%;
-  color: rgba(255, 255, 255, 0.65);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.2s ease;
 }
 
-.exo-submenu-col > a:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.07);
-  padding-left: 14px;
+.exo-sub-group:last-child {
+  margin-bottom: 0;
 }
 
 /* =========================================================
-   SUB CATEGORY
+   GROUP TITLE — niveau 2
 ========================================================= */
 
-.exo-sub-category {
-  width: 100%;
-  margin-bottom: 18px;
-}
-
-.exo-sub-category-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 8px;
+.exo-group-title {
+  display: block;
+  padding: 3px 0;
+  color: #1a2240;
   text-decoration: none;
-  padding: 6px 8px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.15s ease;
 }
 
-.exo-sub-category-title::before {
-  content: '';
-  width: 3px;
-  height: 14px;
-  background: linear-gradient(180deg, #0d4dff, #17c2ff);
-  border-radius: 2px;
-  flex-shrink: 0;
+.exo-group-title::before {
+  display: none;
 }
 
-.exo-sub-category-title:hover {
-  color: #17c2ff;
-  background: rgba(23, 194, 255, 0.08);
+.exo-group-title:hover {
+  color: #0d4dff;
+  background: transparent;
 }
 
 /* =========================================================
-   SUB LINKS
+   LEAF — niveau 3 (marque)
 ========================================================= */
 
-.exo-sub-links {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-left: 18px;
-}
-
-.exo-sub-links a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  color: rgba(255, 255, 255, 0.45);
+.exo-leaf {
+  display: block;
+  padding: 2px 0 2px 14px;
+  color: #8890aa;
   text-decoration: none;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 400;
+  border-radius: 0;
+  transition: color 0.15s ease;
 }
 
-.exo-sub-links a::before {
-  content: '';
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  flex-shrink: 0;
-  transition: all 0.2s ease;
+.exo-leaf::before {
+  display: none;
 }
 
-.exo-sub-links a:hover {
-  color: #17c2ff;
-  background: rgba(23, 194, 255, 0.06);
+.exo-leaf:hover {
+  color: #0d4dff;
+  background: transparent;
   padding-left: 14px;
-}
-
-.exo-sub-links a:hover::before {
-  background: #17c2ff;
+  text-decoration: underline;
 }
 
 /* =========================================================
@@ -396,11 +263,13 @@
 .exo-dashboard-content {
   flex: 1;
   background: white;
-  border-radius: 20px;
+  border-radius: 18px;
   padding: 30px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 12px 40px rgba(0,0,0,0.07);
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 /* =========================================================
@@ -409,54 +278,19 @@
 
 .exo-shop-header {
   flex-shrink: 0;
-  margin-bottom: 0;
 }
 
 .exo-shop-header h2 {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 800;
   color: #08152d;
   margin-bottom: 4px;
+  letter-spacing: -0.5px;
 }
 
 .exo-shop-header p {
-  font-size: 16px;
-  color: #666;
-}
-
-/* =========================================================
-   SHOP ODOO — hauteur fixe (zone principale)
-========================================================= */
-
-.exo-shop-odoo {
-  flex-shrink: 0;
-  width: 100%;
-  height: 480px;
-  overflow: hidden;
-  border-radius: 14px;
-}
-
-.exo-shop-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
-
-/* =========================================================
-   CAROUSELS WRAPPER — deux sections empilées
-========================================================= */
-
-.exo-carousels-wrapper {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding-top: 8px;
-}
-
-.exo-carousels-wrapper .exo-products-section {
-  margin-bottom: 0;
+  font-size: 15px;
+  color: #8890aa;
 }
 
 /* =========================================================
@@ -467,25 +301,74 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
 .exo-section-header h3 {
   font-size: 15px;
   font-weight: 700;
-  color: #08152d;
+  color: #1a2240;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exo-section-header h3::before {
+  content: '';
+  width: 14px;
+  height: 3px;
+  background: linear-gradient(90deg, #0d4dff, #4d8aff);
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .exo-section-header a {
+  font-size: 12px;
+  font-weight: 600;
   color: #0d4dff;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #eef2ff;
+  transition: all 0.2s ease;
+}
+
+.exo-section-header a:hover {
+  background: #0d4dff;
+  color: white;
 }
 
 /* =========================================================
-   PRODUCTS SECTION
+   SHOP ODOO
 ========================================================= */
+
+.exo-shop-odoo {
+  flex-shrink: 0;
+  width: 100%;
+  height: 480px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #eef0f6;
+  background: #fafbff;
+}
+
+.exo-shop-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* =========================================================
+   CAROUSELS WRAPPER
+========================================================= */
+
+.exo-carousels-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 .exo-products-section {
   margin-bottom: 0;
@@ -499,14 +382,15 @@
   display: flex;
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.15) transparent;
+  scrollbar-color: #dce5ff transparent;
+  margin-top: 10px;
 }
 
 /* =========================================================
-   PRODUCT CARD — format horizontal (image gauche, texte droite)
+   PRODUCT CARD
 ========================================================= */
 
 .exo-product-card {
@@ -515,34 +399,34 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
-  min-width: 220px;
-  max-width: 240px;
-  background: #f8f9fc;
+  min-width: 210px;
+  max-width: 230px;
+  background: #fafbff;
   border-radius: 12px;
   padding: 10px 14px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: 0.25s ease;
+  border: 1px solid #eef0f8;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .exo-product-card:hover {
-  transform: translateX(3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  border-color: rgba(13, 77, 255, 0.15);
+  border-color: #c0ceff;
+  background: #f5f7ff;
+  box-shadow: 0 4px 16px rgba(13,77,255,0.1);
+  transform: translateY(-2px);
 }
 
-/* Image à gauche, petite et carrée */
 .exo-product-card img {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   flex-shrink: 0;
   border-radius: 8px;
   background: white;
   padding: 4px;
+  border: 1px solid #eef0f6;
 }
 
-/* Bloc texte à droite */
 .exo-product-card-body {
   display: flex;
   flex-direction: column;
@@ -554,7 +438,7 @@
   font-size: 13px;
   font-weight: 700;
   margin: 0;
-  color: #08152d;
+  color: #1a2240;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -562,7 +446,7 @@
 
 .exo-product-card p {
   font-size: 11px;
-  color: #888;
+  color: #8890aa;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -570,7 +454,7 @@
 }
 
 .exo-product-card span {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   color: #0d4dff;
 }
@@ -605,40 +489,32 @@
 }
 
 .exo-shop-odoo .oe_product_cart {
-  border-radius: 18px !important;
+  border-radius: 14px !important;
   overflow: hidden;
-  border: none !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transition: 0.3s ease;
+  border: 1px solid #eef0f6 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  transition: 0.25s ease;
 }
 
 .exo-shop-odoo .oe_product_cart:hover {
   transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(13,77,255,0.1) !important;
+  border-color: #c0ceff !important;
 }
 
 .exo-shop-odoo .o_wsale_product_information {
-  padding: 16px !important;
+  padding: 14px !important;
 }
 
 .exo-shop-odoo .o_wsale_products_item_title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
+  color: #1a2240;
 }
 
 .exo-shop-odoo .text-primary {
-  color: #0d47ff !important;
+  color: #0d4dff !important;
   font-weight: 700;
-}
-
-/* =========================================================
-   RESPONSIVE — 1400px
-========================================================= */
-
-@media (max-width: 1400px) {
-  .exo-mega-panel {
-    width: 700px;
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 /* =========================================================
@@ -652,23 +528,7 @@
 
   .exo-dashboard-sidebar {
     width: 100%;
-  }
-
-  .exo-mega-panel {
-    position: relative;
-    top: 20px;
-    left: 0;
-    width: 100%;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .exo-carousels-wrapper {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .exo-carousels-wrapper .exo-products-section {
-    flex: 1 1 45%;
+    margin-top: 0;
   }
 }
 
@@ -682,29 +542,11 @@
   }
 
   .exo-shop-header h2 {
-    font-size: 28px;
-  }
-
-  .exo-mega-panel {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 20px;
-  }
-
-  .exo-submenu-col h4 {
-    font-size: 14px;
-  }
-
-  .exo-submenu-col a {
-    font-size: 13px;
-  }
-
-  .exo-carousels-wrapper {
-    flex-direction: column;
+    font-size: 24px;
   }
 
   .exo-product-card {
-    min-width: 140px;
+    min-width: 180px;
   }
 
   .exo-products-grid {
