@@ -12,61 +12,103 @@ class LuxuryController(WebsiteSale):
         domain = super()._get_shop_domain(
             search, category, attribute_value_dict, search_in_description
         )
-
-        params = request.params
+    
+        # En Odoo 19, reccuperer les params de GET
+        params = request.httprequest.args
+    
         extra_domains = []
-
+    
         type_service = params.get('type_service', '')
-
         if type_service == 'location':
-            extra_domains.append(
-                [('type_service', 'in', ['location', 'les_deux'])]
-            )
-
+            extra_domains.append([('type_service', 'in', ['location', 'les_deux'])])
         elif type_service == 'vente':
-            extra_domains.append(
-                [('type_service', 'in', ['vente', 'les_deux'])]
-            )
-
+            extra_domains.append([('type_service', 'in', ['vente', 'les_deux'])])
+    
         longueur_min = params.get('longueur_min', '')
         longueur_max = params.get('longueur_max', '')
-
         if longueur_min:
-            extra_domains.append(
-                [('longueur', '>=', float(longueur_min))]
-            )
-
+            extra_domains.append([('longueur', '>=', float(longueur_min))])
         if longueur_max:
-            extra_domains.append(
-                [('longueur', '<=', float(longueur_max))]
-            )
-
+            extra_domains.append([('longueur', '<=', float(longueur_max))])
+    
         capacite_min = params.get('capacite_min', '')
-
         if capacite_min:
-            extra_domains.append(
-                [('capacite_personnes', '>=', int(capacite_min))]
-            )
-
+            extra_domains.append([('capacite_personnes', '>=', int(capacite_min))])
+    
         cabines_min = params.get('cabines_min', '')
-
         if cabines_min:
-            extra_domains.append(
-                [('nb_cabines', '>=', int(cabines_min))]
-            )
-
+            extra_domains.append([('nb_cabines', '>=', int(cabines_min))])
+    
         vitesse_min = params.get('vitesse_min', '')
-
         if vitesse_min:
-            extra_domains.append(
-                [('vitesse_croisiere', '>=', float(vitesse_min))]
-            )
-
+            extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
+    
+        import logging
+        _logger = logging.getLogger(__name__)
+        _logger.warning("LUXURY PARAMS = %s", dict(params))
+        _logger.warning("LUXURY EXTRA DOMAINS = %s", extra_domains)
+    
         if extra_domains:
             return domain & Domain(AND(extra_domains))
-
-        
+    
         return domain
+
+
+    def _shop_lookup_products(self, options, post, search, website):
+        """Override pour appliquer les filtres luxury après la recherche"""
+        fuzzy_search_term, product_count, search_result = super()._shop_lookup_products(
+            options, post, search, website
+        )
+    
+        params = request.httprequest.args
+    
+        # Filtre type service
+        type_service = params.get('type_service', '')
+        if type_service == 'location':
+            search_result = search_result.filtered(
+                lambda p: p.type_service in ('location', 'les_deux')
+            )
+        elif type_service == 'vente':
+            search_result = search_result.filtered(
+                lambda p: p.type_service in ('vente', 'les_deux')
+            )
+    
+        # Filtre longueur
+        longueur_min = params.get('longueur_min', '')
+        longueur_max = params.get('longueur_max', '')
+        if longueur_min:
+            search_result = search_result.filtered(
+                lambda p: p.longueur >= float(longueur_min)
+            )
+        if longueur_max:
+            search_result = search_result.filtered(
+                lambda p: p.longueur <= float(longueur_max)
+            )
+    
+        # Filtre capacité
+        capacite_min = params.get('capacite_min', '')
+        if capacite_min:
+            search_result = search_result.filtered(
+                lambda p: p.capacite_personnes >= int(capacite_min)
+            )
+    
+        # Filtre cabines
+        cabines_min = params.get('cabines_min', '')
+        if cabines_min:
+            search_result = search_result.filtered(
+                lambda p: p.nb_cabines >= int(cabines_min)
+            )
+    
+        # Filtre vitesse
+        vitesse_min = params.get('vitesse_min', '')
+        if vitesse_min:
+            search_result = search_result.filtered(
+                lambda p: p.vitesse_croisiere >= float(vitesse_min)
+            )
+    
+        product_count = len(search_result)
+        return fuzzy_search_term, product_count, search_result
+
     
     
     
