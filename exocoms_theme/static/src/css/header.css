@@ -144,97 +144,120 @@ header#top {
 }
 
 /* =========================================================
-   SEARCH FORM — compact, s'élargit au focus
+   SEARCH WRAPPER + OVERLAY
 ========================================================= */
 
-.exo-search-form {
-  display: flex !important;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50px;
-  padding: 0 6px 0 14px;
-  height: 42px;
-  min-width: 42px;
-  width: 42px;
-  overflow: hidden;
-  transition: width 0.3s ease, background 0.25s ease, border-color 0.25s ease;
+.exo-search-wrapper {
+  position: relative;
 }
 
-.exo-search-form.exo-search-expanded,
-.exo-search-form:focus-within {
-  width: 280px;
+/* Overlay — cachée par défaut, pleine largeur sous le header */
+.exo-search-overlay {
+  display: none;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
   background: white;
-  border-color: #0d4dff;
-  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.15);
+  border-bottom: 1px solid #e8ecf8;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 998;
+  padding: 14px 40px;
 }
 
-.exo-search-icon {
-  color: rgba(255, 255, 255, 0.7);
+.exo-search-overlay.open {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.exo-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Formulaire */
+.exo-search-form {
+  flex: 1;
+  display: flex !important;
+  align-items: center !important;
+  background: #f5f7fb;
+  border: 1.5px solid #e0e5f0;
+  border-radius: 50px;
+  padding: 0 8px 0 20px;
+  gap: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exo-search-form:focus-within {
+  border-color: #0d4dff;
+  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.1);
+  background: white;
+}
+
+.exo-search-form i {
+  color: #8890aa;
   font-size: 15px;
   flex-shrink: 0;
-  transition: color 0.25s ease;
 }
 
-.exo-search-form:focus-within .exo-search-icon {
-  color: #8890aa;
-}
-
-.exo-search-input {
+.exo-search-form input {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  padding: 0 8px;
-  min-width: 0;
-  width: 0;
-  transition: color 0.25s ease;
-  -webkit-appearance: none;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 15px !important;
+  color: #08152d !important;
+  padding: 13px 0 !important;
 }
 
-.exo-search-form:focus-within .exo-search-input {
-  color: #08152d;
-  width: auto;
-}
-
-.exo-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.exo-search-form:focus-within .exo-search-input::placeholder {
+.exo-search-form input::placeholder {
   color: #b0b8cc;
 }
 
-/* Cache le X natif du input[type=search] */
-.exo-search-input::-webkit-search-cancel-button {
-  display: none;
+.exo-search-form button[type="submit"] {
+  background: #0d4dff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 9px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
 }
 
-.exo-search-btn {
-  width: 30px;
-  height: 30px;
+.exo-search-form button[type="submit"]:hover {
+  background: #0a3ad4;
+}
+
+/* Bouton fermer */
+.exo-search-close {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  background: #f0f2f8;
+  color: #5a6480;
+  font-size: 15px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 13px;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  opacity: 0;
 }
 
-.exo-search-form:focus-within .exo-search-btn {
-  background: #0d4dff;
-  color: white;
-  opacity: 1;
-  box-shadow: 0 2px 8px rgba(13, 77, 255, 0.35);
+.exo-search-close:hover {
+  background: #e0e4f0;
+  color: #08152d;
 }
 
 /* =========================================================

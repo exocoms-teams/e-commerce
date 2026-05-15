@@ -19,17 +19,29 @@
                     <a href="/shop/cart" class="exo-icon-btn" title="Panier">
                         <i class="fa fa-shopping-cart" />
                     </a>
-                    <!--  SEARCH — formulaire simple natif Odoo  -->
-                    <form class="exo-search-form" action="/shop" method="get">
-                        <i class="fa fa-search exo-search-icon" />
-                        <input type="search" name="search" class="exo-search-input" placeholder="Rechercher..." autocomplete="off" />
-                        <button type="submit" class="exo-search-btn">
-                            <i class="fa fa-arrow-right" />
+                    <!--  SEARCH  -->
+                    <div class="exo-search-wrapper">
+                        <!--  Bouton loupe  -->
+                        <button class="exo-icon-btn" id="exo-search-open" type="button" title="Rechercher">
+                            <i class="fa fa-search" />
                         </button>
-                    </form>
+                        <!--  Overlay search  -->
+                        <div class="exo-search-overlay" id="exo-search-overlay">
+                            <div class="exo-search-box">
+                                <form action="/shop" method="get" class="exo-search-form">
+                                    <i class="fa fa-search" />
+                                    <input type="text" name="search" id="exo-search-input" placeholder="Rechercher un produit..." autocomplete="off" />
+                                    <button type="submit">Rechercher</button>
+                                </form>
+                                <button type="button" class="exo-search-close" id="exo-search-close">
+                                    <i class="fa fa-times" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <!--  PROFIL  -->
                     <div class="exo-profile-dropdown">
-                        <button class="exo-profile-btn">
+                        <button class="exo-icon-btn">
                             <i class="fa fa-user" />
                         </button>
                         <div class="exo-profile-menu">
@@ -54,7 +66,7 @@
             </div>
         </header>
         <script>
-            <![CDATA[ document.addEventListener("DOMContentLoaded", function () { /* === PROFIL DROPDOWN === */ var profileDropdown = document.querySelector(".exo-profile-dropdown"); if (profileDropdown) { var profileTimeout; profileDropdown.addEventListener("mouseenter", function() { clearTimeout(profileTimeout); profileDropdown.classList.add("active"); }); profileDropdown.addEventListener("mouseleave", function() { profileTimeout = setTimeout(function() { profileDropdown.classList.remove("active"); }, 300); }); } /* === SEARCH — expand au focus === */ var searchForm = document.querySelector(".exo-search-form"); var searchInput = document.querySelector(".exo-search-input"); if (searchForm && searchInput) { searchInput.addEventListener("focus", function() { searchForm.classList.add("exo-search-expanded"); }); searchInput.addEventListener("blur", function() { if (!searchInput.value) { searchForm.classList.remove("exo-search-expanded"); } }); } }); ]]>
+            <![CDATA[ document.addEventListener("DOMContentLoaded", function () { /* === SEARCH === */ var openBtn = document.getElementById('exo-search-open'); var overlay = document.getElementById('exo-search-overlay'); var closeBtn = document.getElementById('exo-search-close'); var input = document.getElementById('exo-search-input'); if (openBtn && overlay) { openBtn.addEventListener('click', function(e) { e.stopPropagation(); overlay.classList.add('open'); setTimeout(function() { if (input) input.focus(); }, 50); }); } if (closeBtn && overlay) { closeBtn.addEventListener('click', function() { overlay.classList.remove('open'); if (input) input.value = ''; }); } document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && overlay) { overlay.classList.remove('open'); } }); /* Clic hors overlay = ferme */ document.addEventListener('click', function(e) { if (overlay && overlay.classList.contains('open')) { if (!overlay.contains(e.target)) { overlay.classList.remove('open'); } } }); /* === PROFIL DROPDOWN === */ var profileDropdown = document.querySelector('.exo-profile-dropdown'); if (profileDropdown) { var profileTimeout; profileDropdown.addEventListener('mouseenter', function() { clearTimeout(profileTimeout); profileDropdown.classList.add('active'); }); profileDropdown.addEventListener('mouseleave', function() { profileTimeout = setTimeout(function() { profileDropdown.classList.remove('active'); }, 300); }); } }); ]]>
         </script>
     </template>
 </odoo>
