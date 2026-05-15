@@ -1120,38 +1120,37 @@
 
         <script>
 
-    document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function () {
 
-        const dropdowns = document.querySelectorAll(".exo-submenu");
+                const items = document.querySelectorAll(".exo-submenu-item");
 
-        dropdowns.forEach(dropdown => {
+                items.forEach(item => {
 
-            let timeout;
+                    let timeout;
 
-            dropdown.addEventListener("mouseenter", () => {
+                    item.addEventListener("mouseenter", () => {
 
-                clearTimeout(timeout);
+                        clearTimeout(timeout);
 
-                dropdown.classList.add("active");
+                        item.classList.add("active");
+
+                    });
+
+                    item.addEventListener("mouseleave", () => {
+
+                        timeout = setTimeout(() => {
+
+                            item.classList.remove("active");
+
+                        }, 300);
+
+                    });
+
+                });
 
             });
-
-            dropdown.addEventListener("mouseleave", () => {
-
-                timeout = setTimeout(() => {
-
-                    dropdown.classList.remove("active");
-
-                }, 300);
-
-            });
-
-        });
-
-    });
 
         </script>
-
     </template>
 
 </odoo>
