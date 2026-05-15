@@ -1118,6 +1118,40 @@
 
         </section>
 
+        <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropdowns = document.querySelectorAll(".exo-dropdown");
+
+        dropdowns.forEach(dropdown => {
+
+            let timeout;
+
+            dropdown.addEventListener("mouseenter", () => {
+
+                clearTimeout(timeout);
+
+                dropdown.classList.add("active");
+
+            });
+
+            dropdown.addEventListener("mouseleave", () => {
+
+                timeout = setTimeout(() => {
+
+                    dropdown.classList.remove("active");
+
+                }, 300);
+
+            });
+
+        });
+
+    });
+
+        </script>
+
     </template>
 
 </odoo>

@@ -12,9 +12,7 @@
 
                 <a href="/" class="exo-logo">
 
-                    <img
-                        src="/exocoms_theme/static/src/img/EXOCOMS.png"
-                        alt="Exocoms Logo"/>
+                    <img src="/exocoms_theme/static/src/img/EXOCOMS.png" alt="Exocoms Logo" />
 
                 </a>
 
@@ -29,11 +27,11 @@
                     </a>
 
                     <a href="/services" class="exo-nav-link">
-                        <i class="fa fa-briefcase" /> Nos services </a>
+                        <i class="fa fa-briefcase" />
+ Nos services </a>
 
                     <!-- INFORMATIQUE -->
 
-                   
 
                 </nav>
 
@@ -42,57 +40,64 @@
                 <div class="exo-header-icons">
 
                     <a href="/shop/cart">
-                        <i class="fa fa-shopping-cart"/>
+                        <i class="fa fa-shopping-cart" />
                     </a>
 
                     <a href="/shop">
-                        <i class="fa fa-search"/>
+                        <i class="fa fa-search" />
                     </a>
 
-                    <a href="/my/home">
-                        <i class="fa fa-user"/>
-                    </a>
+                    <div class="exo-profile-dropdown">
+                        <button class="exo-profile-btn">
+                            <i class="fa fa-user" />
+                        </button>
+
+                        <div class="exo-profile-menu">
+                            <!-- UTILISATEUR NON CONNECTÉ -->
+                            <t t-if="request.env.user._is_public()">
+                                <a href="/web/login" title="compte">
+                                    <i class="fa fa-sign-in"></i> Login </a>
+                            </t>
+                            <!-- UTILISATEUR CONNECTÉ -->
+                            <t t-else="">
+                                <a href="/my/home" title="Compte">
+                                    <i class="fa fa-user-circle" />
+                                    <span>My Account</span>
+                                </a>
+                                <a href="/web/session/logout?redirect=/">
+                                    <i class="fa fa-sign-out"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
 
                 </div>
 
             </div>
 
         </header>
-        
+
         <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            const profileDropdown = document.querySelector(".exo-profile-dropdown");
 
-    document.addEventListener("DOMContentLoaded", function () {
+            if (profileDropdown) {
+            let profileTimeout;
 
-        const dropdowns = document.querySelectorAll(".exo-dropdown");
-
-        dropdowns.forEach(dropdown => {
-
-            let timeout;
-
-            dropdown.addEventListener("mouseenter", () => {
-
-                clearTimeout(timeout);
-
-                dropdown.classList.add("active");
-
+            profileDropdown.addEventListener("mouseenter", () => {
+            clearTimeout(profileTimeout);
+            profileDropdown.classList.add("active");
             });
 
-            dropdown.addEventListener("mouseleave", () => {
-
-                timeout = setTimeout(() => {
-
-                    dropdown.classList.remove("active");
-
-                }, 300);
-
+            profileDropdown.addEventListener("mouseleave", () => {
+            profileTimeout = setTimeout(() => {
+            profileDropdown.classList.remove("active");
+            }, 300);
             });
-
-        });
-
-    });
-
-</script>
-
+            }
+            });
+        </script>
     </template>
 
 </odoo>
