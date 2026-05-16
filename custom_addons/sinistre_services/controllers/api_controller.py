@@ -172,8 +172,7 @@ class SinistreApiController(http.Controller):
     # ── PWA INTERVENANT : mes missions ───────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/missions', type='http', auth='user', methods=['GET'], csrf=False)
     def mes_missions(self, **kw):
-        intervenant = request.env['sinistre.intervenant'].search(
-            [('user_id', '=', request.env.user.id)], limit=1)
+        intervenant = request.env['sinistre.intervenant'].sudo().search([('user_id', '=', request.env.user.id)], limit=1)
         if not intervenant:
             return _err(403, "Aucun intervenant associé à ce compte")
         missions = request.env['sinistre.mission'].search([
