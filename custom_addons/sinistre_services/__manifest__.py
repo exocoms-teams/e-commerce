@@ -31,6 +31,7 @@
     'data/website_data.xml',
     # Website
     'views/website_homepage.xml',
+    'views/website_layout.xml',
     # Back-office views
     'views/mission_views.xml',
     'views/intervenant_views.xml',
