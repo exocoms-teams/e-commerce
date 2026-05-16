@@ -6,7 +6,7 @@
 window.CONFIG = {
 
     /* ── Odoo SH ─────────────────────────────────────────────────── */
-    ODOO_BASE_URL: 'https://votre-instance.odoo.com',   // ← à adapter
+    ODOO_BASE_URL: 'https://exocoms-e-commerce-sinistres-32284788.dev.odoo.com',   // ← à adapter
     API_BASE: '/api/sinistre/v1',
 
     /* ── Firebase ─────────────────────────────────────────────────── */
@@ -21,7 +21,7 @@ window.CONFIG = {
     FIREBASE_VAPID_KEY: '__FIREBASE_VAPID_KEY__',     // clé publique VAPID
 
     /* ── PWA ─────────────────────────────────────────────────────── */
-    SW_PATH:    '/pwa/sw.js',
+    SW_PATH: '/sinistre_services/static/pwa/sw.js',
     CACHE_NAME: 'sinistre-pro-v1',
 
     /* ── Offline ─────────────────────────────────────────────────── */
