@@ -25,6 +25,7 @@
     'security/security.xml',
     'security/ir.model.access.csv',
     # Data
+    'data/init_data.xml',
     'data/sequence_data.xml',
     'data/mission_type_data.xml',
     'data/website_data.xml',
