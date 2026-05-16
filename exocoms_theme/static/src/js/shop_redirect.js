@@ -1,6 +1,10 @@
 /**
- * EXOCOMS — Interception bouton Shop
+ * EXOCOMS — Interception ciblée bouton "Shop"
  * static/src/js/shop_redirect.js
+ *
+ * Intercepte UNIQUEMENT le bouton "Shop" dans la page panier
+ * qui pointe exactement vers /shop
+ * Tout le reste fonctionne normalement
  */
 
 (function () {
@@ -12,9 +16,15 @@
         if (!link) return;
 
         var href = link.getAttribute('href') || '';
+        var text = link.textContent.trim().toLowerCase();
 
-        /* Intercepte uniquement les liens /shop */
-        if (!href.includes('/shop')) return;
+        /* Intercepte UNIQUEMENT le lien exact /shop avec le texte "Shop" */
+        var isShopBtn = (
+            href === '/shop' &&
+            text === 'shop'
+        );
+
+        if (!isShopBtn) return;
 
         e.preventDefault();
         e.stopPropagation();
@@ -22,33 +32,18 @@
         var iframe = document.getElementById('exo-shop-frame');
 
         if (iframe) {
-            /* Déjà sur le dashboard — met à jour l'iframe seulement */
-            iframe.src = href;
+            /* Sur le dashboard — charge dans l'iframe */
+            iframe.src = '/shop';
             iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
-            /* Pas sur le dashboard — va sur l'accueil sans recharger tout */
-            if (window.location.pathname === '/') {
-                /* Déjà sur l'accueil mais iframe pas encore là — attend */
-                var tries = 0;
-                var wait = setInterval(function () {
-                    var fr = document.getElementById('exo-shop-frame');
-                    if (fr) {
-                        clearInterval(wait);
-                        fr.src = href;
-                        fr.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                    if (++tries > 20) clearInterval(wait);
-                }, 100);
-            } else {
-                /* Sur une autre page — stocke l'URL et va à l'accueil */
-                sessionStorage.setItem('exo_shop_url', href);
-                window.location.href = '/';
-            }
+            /* Sur une autre page — va sur l'accueil */
+            sessionStorage.setItem('exo_shop_url', '/shop');
+            window.location.href = '/';
         }
 
     }, true);
 
-    /* Au chargement de l'accueil — charge l'URL stockée dans l'iframe */
+    /* Au chargement — charge l'URL stockée */
     document.addEventListener('DOMContentLoaded', function () {
         var shopUrl = sessionStorage.getItem('exo_shop_url');
         if (shopUrl) {
