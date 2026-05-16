@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         LAYOUT GLOBAL — Sinistre Services
+         Adapté de monetique_theme/views/layout_templates.xml
+         Topbar ROUGE urgence + Header blanc + Footer dark
+         Modal rappel global
+    ============================================================ -->
+
+    <template id="ss_layout" name="Sinistre Services Layout"
+              inherit_id="website.layout" primary="True">
+
+        <!-- TOPBAR URGENCE (rouge — override de la bleue monetique) -->
+        <xpath expr="//header" position="before">
+            <div class="ss-topbar">
+                <div class="ss-container">
+                    <div class="ss-topbar-left">
+                        <div class="ss-topbar-item">
+                            <i class="fa fa-phone"/>
+                            <a href="tel:+33100000000">01 XX XX XX XX — Urgence 24/7</a>
+                        </div>
+                        <div class="ss-topbar-item">
+                            <i class="fa fa-envelope"/>
+                            <a href="mailto:contact@sinistre-services.fr">contact@sinistre-services.fr</a>
+                        </div>
+                    </div>
+                    <a href="/urgence" class="ss-topbar-cta">
+                        <i class="fa fa-exclamation-triangle"/> Urgence 24h/24
+                    </a>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- HEADER -->
+        <xpath expr="//header" position="replace">
+            <header class="ss-header" id="top">
+                <div class="ss-container">
+                    <a href="/" class="ss-logo">⚡ SINISTRE SERVICES</a>
+
+                    <ul class="ss-nav" id="ssNav">
+                        <li class="ss-nav-item">
+                            <a href="/" class="ss-nav-link">Accueil</a>
+                        </li>
+                        <li class="ss-nav-item ss-nav-has-drop">
+                            <a href="/nos-services" class="ss-nav-link">
+                                Nos Services <i class="fa fa-chevron-down"/>
+                            </a>
+                            <div class="ss-dropdown">
+                                <a href="/nos-services#serrurerie" class="ss-dropdown-item">
+                                    🔐 Serrurerie
+                                </a>
+                                <a href="/nos-services#plomberie" class="ss-dropdown-item">
+                                    🔧 Plomberie
+                                </a>
+                                <a href="/nos-services#menuiserie" class="ss-dropdown-item">
+                                    🚪 Menuiserie
+                                </a>
+                                <a href="/nos-services#vitrerie" class="ss-dropdown-item">
+                                    🪟 Vitrerie
+                                </a>
+                                <a href="/nos-services#electricite" class="ss-dropdown-item">
+                                    ⚡ Électricité
+                                </a>
+                            </div>
+                        </li>
+                        <li class="ss-nav-item">
+                            <a href="/urgence" class="ss-nav-link" style="color: var(--ss-red); font-weight: 700;">
+                                <i class="fa fa-exclamation-triangle"/> Urgence
+                            </a>
+                        </li>
+                        <li class="ss-nav-item">
+                            <a href="/contact" class="ss-nav-link">Contact</a>
+                        </li>
+                    </ul>
+
+                    <div class="ss-nav-actions">
+                        <!-- Portail client -->
+                        <t t-if="request.env.user._is_public()">
+                            <a href="/web/login" class="ss-btn-secondary"
+                               style="padding:8px 18px; font-size:11px">
+                                <i class="fa fa-user"/> Espace client
+                            </a>
+                        </t>
+                        <t t-else="">
+                            <a href="/my" class="ss-btn-secondary"
+                               style="padding:8px 18px; font-size:11px">
+                                <i class="fa fa-user"/> Mon espace
+                            </a>
+                        </t>
+                        <!-- CTA Demande principale -->
+                        <a href="/demande-intervention" class="ss-btn-primary">
+                            <i class="fa fa-wrench"/> Demander une intervention
+                        </a>
+                        <!-- Burger mobile -->
+                        <button class="ss-burger" id="ssBurger"
+                                aria-label="Menu" aria-expanded="false">
+                            <span/><span/><span/>
+                        </button>
+                    </div>
+                </div>
+            </header>
+        </xpath>
+
+        <!-- FOOTER -->
+        <xpath expr="//footer" position="replace">
+            <footer class="ss-footer">
+                <div class="ss-container">
+                    <div class="ss-footer-top">
+                        <!-- Brand -->
+                        <div class="ss-footer-brand">
+                            <a href="/" class="ss-footer-logo">⚡ SINISTRE SERVICES</a>
+                            <p class="ss-footer-about">
+                                Plateforme spécialisée dans la gestion des interventions sinistres.
+                                Nous intervenons pour les assurances, particuliers et entreprises
+                                partout en France, 24h/24 et 7j/7.
+                            </p>
+                            <div class="ss-footer-social">
+                                <a href="#" class="ss-footer-social-link" aria-label="Facebook">
+                                    <i class="fa fa-facebook"/>
+                                </a>
+                                <a href="#" class="ss-footer-social-link" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin"/>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Services -->
+                        <div class="ss-footer-col">
+                            <h4>Nos Interventions</h4>
+                            <a href="/nos-services#serrurerie">🔐 Serrurerie</a>
+                            <a href="/nos-services#plomberie">🔧 Plomberie</a>
+                            <a href="/nos-services#menuiserie">🚪 Menuiserie</a>
+                            <a href="/nos-services#vitrerie">🪟 Vitrerie</a>
+                            <a href="/nos-services#electricite">⚡ Électricité</a>
+                        </div>
+                        <!-- Pour qui -->
+                        <div class="ss-footer-col">
+                            <h4>Pour qui ?</h4>
+                            <a href="/demande-intervention">Particuliers</a>
+                            <a href="/demande-intervention">Entreprises</a>
+                            <a href="/demande-intervention">Assurances</a>
+                            <a href="/contact">Devenez Intervenant</a>
+                        </div>
+                        <!-- Contact -->
+                        <div class="ss-footer-col">
+                            <h4>Urgence &amp; Contact</h4>
+                            <a href="tel:+33100000000">
+                                <i class="fa fa-phone" style="font-size:11px;margin-right:5px"/>
+                                01 XX XX XX XX — 24h/24
+                            </a>
+                            <a href="mailto:contact@sinistre-services.fr">
+                                <i class="fa fa-envelope" style="font-size:11px;margin-right:5px"/>
+                                contact@sinistre-services.fr
+                            </a>
+                            <a href="/contact">
+                                <i class="fa fa-map-marker" style="font-size:11px;margin-right:5px"/>
+                                Nous contacter
+                            </a>
+                            <div class="ss-footer-col-cta" style="margin-top:14px">
+                                <a href="/demande-intervention" class="ss-btn-primary"
+                                   style="font-size:11px; padding:9px 16px">
+                                    Demander une intervention
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ss-footer-bottom">
+                        <p class="ss-footer-copy">
+                            © <t t-esc="datetime.datetime.now().year"/> Sinistre Services — Tous droits réservés
+                        </p>
+                        <div class="ss-footer-legal">
+                            <a href="/page/mentions-legales">Mentions légales</a>
+                            <a href="/page/confidentialite">Confidentialité</a>
+                            <a href="/page/cgv">CGV</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </xpath>
+
+    </template>
+
+    <!-- ============================================================
+         MODAL RAPPEL GLOBAL (repris de monetique_theme)
+    ============================================================ -->
+    <template id="ss_rappel_modal" name="Modal Rappel Sinistre"
+              inherit_id="website.layout">
+        <xpath expr="//body" position="inside">
+            <div id="ssRappelModal" style="
+                display:none; position:fixed; inset:0; z-index:9999;
+                background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
+            ">
+                <div style="
+                    background:#fff; border-radius:12px; padding:40px;
+                    width:100%; max-width:440px; position:relative;
+                    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+                ">
+                    <button data-rappel-close="1" style="
+                        position:absolute; top:16px; right:16px; background:none;
+                        border:none; font-size:20px; cursor:pointer; color:#888;
+                    ">&#215;</button>
+                    <h2 style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:#1A1A2E;margin-bottom:4px">
+                        Être rappelé rapidement
+                    </h2>
+                    <p style="font-size:14px;color:#888;margin-bottom:24px">
+                        Laissez vos coordonnées, un conseiller vous rappelle sous 15 minutes.
+                    </p>
+                    <form method="POST" action="/rappel">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+                            <label style="font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px">
+                                Nom
+                            </label>
+                            <input type="text" name="name" placeholder="Votre nom"
+                                   style="padding:11px 14px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;outline:none"/>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:24px">
+                            <label style="font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px">
+                                Téléphone <span style="color:#C62828">*</span>
+                            </label>
+                            <input type="tel" name="phone" required="required" placeholder="01 XX XX XX XX"
+                                   style="padding:11px 14px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;outline:none"/>
+                        </div>
+                        <button type="submit" class="ss-btn-primary" style="width:100%;justify-content:center">
+                            <i class="fa fa-phone"/> Me faire rappeler
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

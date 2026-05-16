@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         PAGE D'ACCUEIL — Sinistre Services
+         Adapté de monetique_theme/views/homepage_templates.xml
+         Structure : Hero → Urgence band → Services → Process → Stats → Garanties → CTA
+    ============================================================ -->
+
+    <template id="ss_homepage" name="Sinistre Services — Accueil" page="True">
+        <t t-call="website.layout">
+
+            <!-- ── HERO ── -->
+            <section class="ss-hero">
+                <div class="ss-container">
+                    <div class="ss-hero-content">
+                        <span class="ss-hero-eyebrow">
+                            <i class="fa fa-shield"/> Plateforme de gestion des sinistres
+                        </span>
+                        <h1 class="ss-hero-h1">
+                            Intervention rapide<br/>
+                            <span>pour tous vos sinistres</span>
+                        </h1>
+                        <p class="ss-hero-p">
+                            Sinistre Services coordonne les interventions pour les compagnies d'assurance,
+                            les particuliers et les entreprises. Serruriers, plombiers, menuisiers —
+                            disponibles 24h/24 sur toute la France.
+                        </p>
+                        <div class="ss-hero-btns">
+                            <a href="/demande-intervention" class="ss-btn-primary">
+                                <i class="fa fa-wrench"/> Demander une intervention
+                            </a>
+                            <a href="#" class="ss-btn-secondary" data-rappel-trigger="1">
+                                <i class="fa fa-phone"/> Être rappelé
+                            </a>
+                        </div>
+                        <div class="ss-hero-trust">
+                            <div class="ss-hero-trust-item">
+                                <i class="fa fa-clock-o"/> Intervention en 2h
+                            </div>
+                            <div class="ss-hero-trust-item">
+                                <i class="fa fa-shield"/> Artisans certifiés
+                            </div>
+                            <div class="ss-hero-trust-item">
+                                <i class="fa fa-star"/> Devis gratuit
+                            </div>
+                            <div class="ss-hero-trust-item">
+                                <i class="fa fa-calendar"/> 24h/24 — 7j/7
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ss-hero-visual">
+                        <div class="ss-hero-img-wrap">
+                            <div class="ss-hero-img-placeholder">
+                                <i class="fa fa-home"/>
+                                <span>Votre visuel sinistre ici</span>
+                            </div>
+                        </div>
+                        <span class="ss-hero-badge">Intervention 2h</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── FEATURE BAND (3 piliers) ── -->
+            <div class="ss-feat-band">
+                <div class="ss-container">
+                    <div class="ss-feat-item">
+                        <div class="ss-feat-icon"><i class="fa fa-building-o"/></div>
+                        <div>
+                            <p class="ss-feat-title">Assurances partenaires</p>
+                            <p class="ss-feat-desc">Réception automatique des ordres de mission via API sécurisée</p>
+                        </div>
+                    </div>
+                    <div class="ss-feat-item">
+                        <div class="ss-feat-icon"><i class="fa fa-users"/></div>
+                        <div>
+                            <p class="ss-feat-title">Particuliers &amp; Entreprises</p>
+                            <p class="ss-feat-desc">Demande directe sans assurance — réponse en moins de 30 min</p>
+                        </div>
+                    </div>
+                    <div class="ss-feat-item">
+                        <div class="ss-feat-icon"><i class="fa fa-wrench"/></div>
+                        <div>
+                            <p class="ss-feat-title">Réseau d'artisans qualifiés</p>
+                            <p class="ss-feat-desc">Intervenants certifiés, géolocalisés, disponibles 24h/24</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── BANDE URGENCE ── -->
+            <div class="ss-urgence-band">
+                <div class="ss-container">
+                    <div style="display:flex; align-items:center; gap:20px">
+                        <div class="ss-urgence-band-icon">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div class="ss-urgence-band-content">
+                            <p class="ss-urgence-band-title">Urgence ? Appelez maintenant</p>
+                            <a href="tel:+33100000000" class="ss-urgence-band-tel">01 XX XX XX XX</a>
+                            <p class="ss-urgence-band-sub">Disponible 24h/24, 7j/7 — Intervention sous 2h</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:12px; flex-shrink:0">
+                        <a href="/urgence" class="ss-btn-white">
+                            <i class="fa fa-info-circle"/> En savoir plus
+                        </a>
+                        <a href="/demande-intervention?urgence=tres_urgente" class="ss-btn-primary"
+                           style="background:var(--ss-white); color:var(--ss-red)">
+                            <i class="fa fa-exclamation"/> Demande urgente
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── NOS SERVICES ── -->
+            <section class="ss-services-section">
+                <div class="ss-container">
+                    <div class="ss-section-head">
+                        <span class="ss-section-tag">Nos interventions</span>
+                        <h2 class="ss-section-title">Tous types de sinistres couverts</h2>
+                        <div class="ss-section-underline"/>
+                        <p class="ss-section-sub">Des artisans spécialisés pour chaque type d'intervention</p>
+                    </div>
+                    <div class="ss-services-grid">
+                        <a href="/nos-services#serrurerie" class="ss-service-card">
+                            <div class="ss-service-icon urgent">
+                                <i class="fa fa-key"/>
+                            </div>
+                            <h3 class="ss-service-title">🔐 Serrurerie</h3>
+                            <p class="ss-service-p">
+                                Ouverture de porte, remplacement de serrure, effraction, porte claquée.
+                                Intervention rapide en urgence.
+                            </p>
+                            <span class="ss-service-link">
+                                En savoir plus <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+
+                        <a href="/nos-services#plomberie" class="ss-service-card">
+                            <div class="ss-service-icon">
+                                <i class="fa fa-tint"/>
+                            </div>
+                            <h3 class="ss-service-title">🔧 Plomberie</h3>
+                            <p class="ss-service-p">
+                                Fuite d'eau, dégât des eaux, canalisation bouchée, chauffe-eau.
+                                Diagnostic et réparation immédiate.
+                            </p>
+                            <span class="ss-service-link">
+                                En savoir plus <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+
+                        <a href="/nos-services#menuiserie" class="ss-service-card">
+                            <div class="ss-service-icon">
+                                <i class="fa fa-cube"/>
+                            </div>
+                            <h3 class="ss-service-title">🚪 Menuiserie</h3>
+                            <p class="ss-service-p">
+                                Porte fracturée, fenêtre endommagée, volet cassé.
+                                Réparation ou remplacement sur-mesure.
+                            </p>
+                            <span class="ss-service-link">
+                                En savoir plus <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+
+                        <a href="/nos-services#vitrerie" class="ss-service-card">
+                            <div class="ss-service-icon">
+                                <i class="fa fa-th-large"/>
+                            </div>
+                            <h3 class="ss-service-title">🪟 Vitrerie</h3>
+                            <p class="ss-service-p">
+                                Bris de glace, vitre cassée, double vitrage.
+                                Pose et remplacement par nos vitriers qualifiés.
+                            </p>
+                            <span class="ss-service-link">
+                                En savoir plus <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+
+                        <a href="/nos-services#electricite" class="ss-service-card">
+                            <div class="ss-service-icon">
+                                <i class="fa fa-bolt"/>
+                            </div>
+                            <h3 class="ss-service-title">⚡ Électricité</h3>
+                            <p class="ss-service-p">
+                                Panne électrique, court-circuit, tableau électrique,
+                                mise aux normes. Électriciens certifiés.
+                            </p>
+                            <span class="ss-service-link">
+                                En savoir plus <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+
+                        <a href="/demande-intervention" class="ss-service-card" style="background:var(--ss-blue); border-color:var(--ss-blue)">
+                            <div class="ss-service-icon" style="background:rgba(255,255,255,0.15); color:white">
+                                <i class="fa fa-plus"/>
+                            </div>
+                            <h3 class="ss-service-title" style="color:white">Autre sinistre ?</h3>
+                            <p class="ss-service-p" style="color:rgba(255,255,255,0.75)">
+                                Décrivez votre problème, nous trouvons le bon artisan
+                                pour vous dans les meilleurs délais.
+                            </p>
+                            <span class="ss-service-link" style="color:white">
+                                Faire une demande <i class="fa fa-arrow-right"/>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PROCESSUS ── -->
+            <section class="ss-process-section">
+                <div class="ss-container">
+                    <div class="ss-section-head">
+                        <span class="ss-section-tag">Comment ça marche</span>
+                        <h2 class="ss-section-title">Une intervention en 4 étapes simples</h2>
+                        <div class="ss-section-underline"/>
+                    </div>
+                    <div class="ss-process-steps">
+                        <div class="ss-process-step">
+                            <div class="ss-process-num">1</div>
+                            <h4 class="ss-process-title">Vous nous contactez</h4>
+                            <p class="ss-process-p">Par téléphone, formulaire ou votre assurance nous transmet votre dossier</p>
+                        </div>
+                        <div class="ss-process-step">
+                            <div class="ss-process-num">2</div>
+                            <h4 class="ss-process-title">Dispatch immédiat</h4>
+                            <p class="ss-process-p">Nous assignons l'artisan le plus proche disponible et planifions le RDV</p>
+                        </div>
+                        <div class="ss-process-step">
+                            <div class="ss-process-num">3</div>
+                            <h4 class="ss-process-title">Devis &amp; Intervention</h4>
+                            <p class="ss-process-p">Devis transparent avant travaux, intervention soignée avec photos</p>
+                        </div>
+                        <div class="ss-process-step">
+                            <div class="ss-process-num">4</div>
+                            <h4 class="ss-process-title">Facturation assurance</h4>
+                            <p class="ss-process-p">Prise en charge automatique par votre assurance, vous ne payez que la franchise</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── STATS ── -->
+            <section class="ss-stats-section">
+                <div class="ss-container">
+                    <div class="ss-stats-grid">
+                        <div class="ss-stat-card">
+                            <span class="ss-stat-number"
+                                  data-counter="5000" data-suffix="">+5 000</span>
+                            <span class="ss-stat-label">Interventions réalisées</span>
+                        </div>
+                        <div class="ss-stat-card">
+                            <span class="ss-stat-number"
+                                  data-counter="120" data-suffix="">+120</span>
+                            <span class="ss-stat-label">Artisans partenaires</span>
+                        </div>
+                        <div class="ss-stat-card">
+                            <span class="ss-stat-number">2h</span>
+                            <span class="ss-stat-label">Délai moyen d'intervention</span>
+                        </div>
+                        <div class="ss-stat-card">
+                            <span class="ss-stat-number">97%</span>
+                            <span class="ss-stat-label">Clients satisfaits</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── GARANTIES (fond bleu comme monetique_theme) ── -->
+            <section class="ss-garanties-section">
+                <div class="ss-container">
+                    <div class="ss-section-head">
+                        <span class="ss-section-tag">Nos engagements</span>
+                        <h2 class="ss-section-title">Pourquoi choisir Sinistre Services ?</h2>
+                        <div class="ss-section-underline"/>
+                    </div>
+                    <div class="ss-garanties-grid">
+                        <div class="ss-garantie-card">
+                            <div class="ss-garantie-icon"><i class="fa fa-clock-o"/></div>
+                            <h4 class="ss-garantie-title">Réactivité maximale</h4>
+                            <p class="ss-garantie-p">Prise en charge en moins de 30 minutes, intervention sous 2h en France</p>
+                        </div>
+                        <div class="ss-garantie-card">
+                            <div class="ss-garantie-icon"><i class="fa fa-certificate"/></div>
+                            <h4 class="ss-garantie-title">Artisans certifiés</h4>
+                            <p class="ss-garantie-p">Tous nos intervenants sont vérifiés, assurés et formés à nos standards</p>
+                        </div>
+                        <div class="ss-garantie-card">
+                            <div class="ss-garantie-icon"><i class="fa fa-file-text-o"/></div>
+                            <h4 class="ss-garantie-title">Devis transparent</h4>
+                            <p class="ss-garantie-p">Prix fixé avant toute intervention, aucune mauvaise surprise</p>
+                        </div>
+                        <div class="ss-garantie-card">
+                            <div class="ss-garantie-icon"><i class="fa fa-handshake-o"/></div>
+                            <h4 class="ss-garantie-title">Prise en charge assurance</h4>
+                            <p class="ss-garantie-p">Coordination directe avec votre assurance — vous gérez uniquement votre franchise</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── ASSURANCES PARTENAIRES ── -->
+            <section class="ss-trust-section">
+                <div class="ss-container">
+                    <p class="ss-trust-title">Assurances partenaires</p>
+                    <div class="ss-trust-logos">
+                        <!-- À remplacer par les vrais logos assurances partenaires -->
+                        <div class="ss-trust-logo">AXA</div>
+                        <div class="ss-trust-logo">MAIF</div>
+                        <div class="ss-trust-logo">ALLIANZ</div>
+                        <div class="ss-trust-logo">GROUPAMA</div>
+                        <div class="ss-trust-logo">COVÉA</div>
+                        <div class="ss-trust-logo">MMA</div>
+                        <div class="ss-trust-logo">MACIF</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── CTA BAND FINAL ── -->
+            <div class="ss-cta-band">
+                <div class="ss-container">
+                    <div>
+                        <h3>Besoin d'une intervention ?</h3>
+                        <p>Contactez-nous, un artisan est disponible près de chez vous.</p>
+                    </div>
+                    <div style="display:flex; gap:12px; flex-shrink:0">
+                        <a href="#" class="ss-btn-white" data-rappel-trigger="1">
+                            <i class="fa fa-phone"/> Être rappelé
+                        </a>
+                        <a href="/demande-intervention" class="ss-btn-primary"
+                           style="background:white; color:var(--ss-blue)">
+                            <i class="fa fa-wrench"/> Demander une intervention
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </t>
+    </template>
+
+</odoo>
