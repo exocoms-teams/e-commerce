@@ -7,6 +7,8 @@
     'author': 'exocoms',
     'website': '',
     'license': 'LGPL-3',
+    'post_init_hook': 'post_install_hook',
+    'uninstall_hook': 'uninstall_hook',
     'depends': [
         'base',
         'mail',
@@ -23,9 +25,13 @@
     'security/security.xml',
     'security/ir.model.access.csv',
     # Data
+    'data/init_data.xml',
     'data/sequence_data.xml',
     'data/mission_type_data.xml',
     'data/website_data.xml',
+    # Website
+    'views/website_homepage.xml',
+    'views/website_layout.xml',
     # Back-office views
     'views/mission_views.xml',
     'views/intervenant_views.xml',

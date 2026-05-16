@@ -117,7 +117,7 @@ window.API = (() => {
                     jsonrpc: '2.0',
                     method: 'call',
                     params: {
-                        db: '__ODOO_DB_NAME__',   // ← à adapter
+                        db: 'exocoms-e-commerce-sinistres-32284788',   // ← à adapter
                         login: email,
                         password: password,
                     },

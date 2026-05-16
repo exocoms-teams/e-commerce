@@ -32,7 +32,7 @@ window.App = (() => {
     async function _registerSW() {
         if (!('serviceWorker' in navigator)) return;
         try {
-            const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, { scope: '/pwa/' });
+            const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, { scope: '/sinistre_services/static/pwa/' });
             console.log('[SW] Enregistré:', reg.scope);
 
             // Écouter les messages du SW

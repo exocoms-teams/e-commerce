@@ -14,13 +14,15 @@ window.Dashboard = (() => {
         _isLoading = true;
 
         if (showSkeleton) {
-            document.getElementById('skeletonList').style.display = 'flex';
-            document.getElementById('missionList').style.display  = 'none';
+            const sk2 = document.getElementById('skeletonList'); if(sk2) sk2.style.display = 'flex';
+            const _ml2 = document.getElementById('missionList'); if(_ml2) _ml2.style.display = 'none';
         }
 
         try {
             const data = await API.getMissions();
+console.log('[DEBUG] API response:', JSON.stringify(data));
             _missions  = data.missions || [];
+console.log('[DEBUG] Missions count:', _missions.length);
             _updateStats();
             _renderList();
         } catch (err) {
@@ -36,8 +38,8 @@ window.Dashboard = (() => {
             }
         } finally {
             _isLoading = false;
-            document.getElementById('skeletonList').style.display = 'none';
-            document.getElementById('missionList').style.display  = 'flex';
+            const sk = document.getElementById('skeletonList'); if(sk) sk.style.display = 'none';
+            const ml = document.getElementById('missionList'); if(ml) ml.style.display = 'flex';
         }
     }
 
@@ -74,17 +76,18 @@ window.Dashboard = (() => {
     function _renderList() {
         const container = document.getElementById('missionList');
         const empty     = document.getElementById('emptyState');
+        if (!container) { console.warn('[Dashboard] missionList not found'); return; }
         const missions  = _filtered();
 
         if (!missions.length) {
-            empty.style.display = 'flex';
-            container.innerHTML = '';
+            if(empty) if(empty) if(empty) empty.style.display = 'flex';
+            if(container) if(container) if(container) container.innerHTML = '';
             container.appendChild(empty);
             return;
         }
 
-        empty.style.display = 'none';
-        container.innerHTML = '';
+        if(empty) if(empty) if(empty) empty.style.display = 'none';
+        if(container) if(container) if(container) container.innerHTML = '';
 
         missions.forEach(m => {
             container.appendChild(_buildCard(m));
@@ -176,15 +179,19 @@ window.Dashboard = (() => {
     /* ── API publique ── */
     return {
         init() {
-            load();
-            _initPullToRefresh();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    load();
+                    _initPullToRefresh();
+                });
+            });
         },
 
         refresh() { load(false); },
 
         setFilter(filter, btn) {
             _filter = filter;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             _renderList();
         },
