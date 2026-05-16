@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import UserError
 import uuid
 
 
 class SinistreMission(models.Model):
-    """
-    Ordre de Mission — Cœur du système.
-    Sources possibles :
-      - API assurance       (source='assurance')
-      - Formulaire web      (source='particulier' | 'entreprise')
-      - Saisie back-office  (source='particulier' | 'entreprise')
-    """
     _name = 'sinistre.mission'
     _description = 'Ordre de Mission Sinistre'
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -39,10 +32,10 @@ class SinistreMission(models.Model):
     assurance_id = fields.Many2one('sinistre.assurance', string='Compagnie Assurance', tracking=True)
     ref_assurance = fields.Char(string='Référence Assurance', tracking=True)
     contrat_assurance = fields.Char(string="N° Contrat Assuré")
-    montant_garanti = fields.Monetary(string='Montant Garanti (Assurance)', currency_field='currency_id', tracking=True)
+    montant_garanti = fields.Monetary(string='Montant Garanti', currency_field='currency_id', tracking=True)
     franchise = fields.Monetary(string='Franchise', currency_field='currency_id')
 
-    # ── Client final ─────────────────────────────────────────────────
+    # ── Client ───────────────────────────────────────────────────────
     client_id = fields.Many2one('res.partner', string='Client / Assuré', required=True, tracking=True)
     adresse_intervention = fields.Char(string="Adresse d'Intervention", required=True, tracking=True)
     contact_sur_place = fields.Char(string="Contact sur place")
@@ -50,13 +43,13 @@ class SinistreMission(models.Model):
 
     # ── Type d'intervention ─────────────────────────────────────────
     type_intervention = fields.Selection([
-        ('serrurerie', '🔐 Serrurerie'),
-        ('plomberie', '🔧 Plomberie'),
-        ('menuiserie_int', '🪟 Menuiserie Intérieure'),
-        ('menuiserie_ext', '🚪 Menuiserie Extérieure'),
-        ('vitrerie', '🪟 Vitrerie'),
-        ('electricite', '⚡ Électricité'),
-        ('autre', '🔨 Autre'),
+        ('serrurerie', 'Serrurerie'),
+        ('plomberie', 'Plomberie'),
+        ('menuiserie_int', 'Menuiserie Intérieure'),
+        ('menuiserie_ext', 'Menuiserie Extérieure'),
+        ('vitrerie', 'Vitrerie'),
+        ('electricite', 'Électricité'),
+        ('autre', 'Autre'),
     ], string="Type d'Intervention", required=True, tracking=True)
 
     urgence = fields.Selection([
@@ -116,20 +109,25 @@ class SinistreMission(models.Model):
     )
 
     # ── Factures ────────────────────────────────────────────────────
-    facture_assurance_id = fields.Many2one('account.move', string='Facture Assurance',
-                                           domain=[('move_type', '=', 'out_invoice')])
-    facture_client_id = fields.Many2one('account.move', string='Facture Client',
-                                        domain=[('move_type', '=', 'out_invoice')])
+    facture_assurance_id = fields.Many2one(
+        'account.move', string='Facture Assurance',
+        domain=[('move_type', '=', 'out_invoice')],
+    )
+    facture_client_id = fields.Many2one(
+        'account.move', string='Facture Client',
+        domain=[('move_type', '=', 'out_invoice')],
+    )
 
     # ── Photos ───────────────────────────────────────────────────────
     photo_ids = fields.One2many('sinistre.photo', 'mission_id', string='Photos')
     photos_avant_count = fields.Integer(compute='_compute_photos_count', string='Photos Avant')
     photos_apres_count = fields.Integer(compute='_compute_photos_count', string='Photos Après')
 
-    # ── Portail / site web ───────────────────────────────────────────
+    # ── Web ──────────────────────────────────────────────────────────
     origine_web = fields.Boolean(string='Demande via site web', default=False)
 
     # ── Computes ─────────────────────────────────────────────────────
+
     def _compute_devis_count(self):
         for rec in self:
             rec.devis_count = len(rec.devis_ids)
@@ -137,7 +135,9 @@ class SinistreMission(models.Model):
     @api.depends('devis_ids', 'devis_ids.state', 'devis_ids.montant_total')
     def _compute_montant_devis(self):
         for rec in self:
-            rec.montant_devis = sum(rec.devis_ids.filtered(lambda d: d.state == 'accepte').mapped('montant_total'))
+            rec.montant_devis = sum(
+                rec.devis_ids.filtered(lambda d: d.state == 'accepte').mapped('montant_total')
+            )
 
     @api.depends('montant_devis', 'montant_garanti', 'franchise')
     def _compute_reste_a_charge(self):
@@ -159,10 +159,11 @@ class SinistreMission(models.Model):
             rec.photos_apres_count = len(rec.photo_ids.filtered(lambda p: p.type_photo == 'apres'))
 
     @api.model
-    def _expand_states(self, states, domain, order):
+    def _expand_states(self, records, values, domain, order=None):
         return [key for key, _ in self._fields['state'].selection]
 
     # ── Séquence ─────────────────────────────────────────────────────
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -173,12 +174,16 @@ class SinistreMission(models.Model):
         return super().create(vals_list)
 
     # ── Workflow ─────────────────────────────────────────────────────
+
     def action_assigner(self):
         self.ensure_one()
         if not self.intervenant_id:
             raise UserError(_("Veuillez d'abord assigner un intervenant."))
         self.write({'state': 'assigne'})
-        self.message_post(body=_(f"Mission assignée à {self.intervenant_id.name}"), subtype_xmlid='mail.mt_note')
+        self.message_post(
+            body=_(f"Mission assignée à {self.intervenant_id.name}"),
+            subtype_xmlid='mail.mt_note',
+        )
 
     def action_planifier_rdv(self):
         self.ensure_one()
@@ -219,7 +224,12 @@ class SinistreMission(models.Model):
             })],
         })
         self.write({'facture_assurance_id': facture.id, 'state': 'facture'})
-        return {'type': 'ir.actions.act_window', 'res_model': 'account.move', 'res_id': facture.id, 'view_mode': 'form'}
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': facture.id,
+            'view_mode': 'form',
+        }
 
     def action_creer_facture_client(self):
         self.ensure_one()
@@ -238,20 +248,37 @@ class SinistreMission(models.Model):
             })],
         })
         self.write({'facture_client_id': facture.id})
-        return {'type': 'ir.actions.act_window', 'res_model': 'account.move', 'res_id': facture.id, 'view_mode': 'form'}
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': facture.id,
+            'view_mode': 'form',
+        }
 
     def get_type_label(self):
-        return dict(self._fields['type_intervention'].selection).get(self.type_intervention, self.type_intervention)
+        return dict(self._fields['type_intervention'].selection).get(
+            self.type_intervention, self.type_intervention
+        )
 
     def action_voir_devis(self):
-        return {'type': 'ir.actions.act_window', 'name': 'Devis', 'res_model': 'sinistre.devis',
-                'view_mode': 'list,form', 'domain': [('mission_id', '=', self.id)],
-                'context': {'default_mission_id': self.id}}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Devis',
+            'res_model': 'sinistre.devis',
+            'view_mode': 'list,form',
+            'domain': [('mission_id', '=', self.id)],
+            'context': {'default_mission_id': self.id},
+        }
 
     def action_voir_photos(self):
-        return {'type': 'ir.actions.act_window', 'name': 'Photos', 'res_model': 'sinistre.photo',
-                'view_mode': 'kanban,list,form', 'domain': [('mission_id', '=', self.id)],
-                'context': {'default_mission_id': self.id}}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Photos',
+            'res_model': 'sinistre.photo',
+            'view_mode': 'kanban,list,form',
+            'domain': [('mission_id', '=', self.id)],
+            'context': {'default_mission_id': self.id},
+        }
 
     def name_get(self):
         return [(rec.id, f"[{rec.reference}] {rec.client_id.name or ''}") for rec in self]
