@@ -33,9 +33,9 @@
         'views/devis_views.xml',
         'views/menu_views.xml',
         # Website views — à réactiver après correction
-        # 'views/website_layout.xml',
-        # 'views/website_homepage.xml',
-        # 'views/website_pages.xml',
+         'views/website_layout.xml',
+         'views/website_homepage.xml',
+         'views/website_pages.xml',
         # Reports
         'report/report_mission.xml',
         # Wizards
