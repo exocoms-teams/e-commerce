@@ -14,6 +14,7 @@
         # PAGES
         'views/pages/home.xml',
         'views/pages/services.xml',
+         'views/pages/mentions_legales.xml',
 
         # PARTIALS
         'views/partials/hero.xml',
@@ -46,6 +47,7 @@
             'exocoms_theme/static/src/css/services_features.css',
             'exocoms_theme/static/src/css/services_hero.css',
             'exocoms_theme/static/src/css/home.css',
+            'exocoms_theme/static/src/css/legal.css',
             # CSS - ANIMATIONS & UTILITIES
             'exocoms_theme/static/src/css/animations.css',
             'exocoms_theme/static/src/css/benefits.css',

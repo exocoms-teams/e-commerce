@@ -17,4 +17,6 @@ class Exocoms(http.Controller):
             'exocoms_theme.services_page',
             {}
         )
-    
+    @http.route('/mentions-legales', type='http', auth='public', website=True, sitemap=True)
+    def mentions_legales(self, **kw):
+        return request.render('exocoms_theme.mentions_legales', {})
