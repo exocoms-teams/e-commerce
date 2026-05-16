@@ -6,7 +6,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'sinistre-pro-v1';
+const CACHE_NAME = 'sinistre-pro-v3';
 const OFFLINE_URL = '/pwa/offline.html';
 
 // ─── Ressources à précacher ───────────────────────────────────────
