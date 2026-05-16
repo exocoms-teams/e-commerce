@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="avis_page" name="Planet Mobil - Avis clients">
+        <t t-call="website_planet_mobil.layout">
+
+            
+            <div class="avis-hero">
+                <h1>⭐ Avis de nos clients</h1>
+                <p>Ce que pensent nos clients de Planet Mobil</p>
+            </div>
+
+            
+            <div class="avis-stats">
+                <div class="avis-stat-main">
+                    <div class="note">4.6</div>
+                    <div class="stars-big">
+                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/>
+                    </div>
+                    <p>Basé sur 248 avis vérifiés</p>
+                </div>
+                <div class="avis-stat-bars">
+                    <div class="avis-bar-row"><span>5 ⭐</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:72%"/></div><span>72%</span></div>
+                    <div class="avis-bar-row"><span>4 ⭐</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:18%"/></div><span>18%</span></div>
+                    <div class="avis-bar-row"><span>3 ⭐</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:6%"/></div><span>6%</span></div>
+                    <div class="avis-bar-row"><span>2 ⭐</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:3%"/></div><span>3%</span></div>
+                    <div class="avis-bar-row"><span>1 ⭐</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:1%"/></div><span>1%</span></div>
+                </div>
+            </div>
+
+            
+            <div class="avis-grid">
+                <t t-foreach="avis_list" t-as="avis">
+                    <div class="avis-card">
+                        <div class="avis-card-header">
+                            <div class="avis-avatar"><t t-out="avis['initiales']"/></div>
+                            <div class="avis-author-info">
+                                <h4><t t-out="avis['nom']"/></h4>
+                                <span><t t-out="avis['date']"/></span>
+                            </div>
+                        </div>
+                        <div class="avis-card-stars">
+                            <t t-foreach="range(avis['note'])" t-as="s"><i class="fa fa-star"/></t>
+                            <t t-foreach="range(5 - avis['note'])" t-as="s"><i class="fa fa-star-o" style="color:#d1d5db"/></t>
+                        </div>
+                        <p class="avis-card-title"><t t-out="avis['titre']"/></p>
+                        <p class="avis-card-text"><t t-out="avis['commentaire']"/></p>
+                        <div class="avis-card-product"><i class="fa fa-tag"/> <t t-out="avis['produit']"/></div>
+                        <div class="avis-verified"><i class="fa fa-check-circle"/> Achat vérifié</div>
+                    </div>
+                </t>
+            </div>
+
+        </t>
+    </template>
+
+</odoo>

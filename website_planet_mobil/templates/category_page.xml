@@ -1,10 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="category_page"
-        inherit_id="website_sale.products"
-        name="Planet Mobil Category Page">
-        <xpath expr="//div[@id='wrap']" position="inside">
-            
-        </xpath>
+
+
+    <template id="category_page" name="TechShop Pro - Catalogue">
+        <t t-call="website_planet_mobil.layout">
+
+            <section class="tsp-section">
+                <div class="tsp-section-header">
+                    <h2 class="tsp-section-title">Tous les produits</h2>
+                </div>
+
+                <div class="tsp-products-grid">
+                    <t t-foreach="products" t-as="product">
+                        <div class="tsp-card">
+                            <div class="tsp-card-img-wrap">
+                                <t t-if="product.badge">
+                                    <span class="tsp-badge"><t t-out="product.badge"/></span>
+                                </t>
+                                <img
+                                    t-att-src="'/web/image/planet.product/' + str(product.id) + '/image'"
+                                    t-att-alt="product.name"
+                                    class="tsp-card-img"
+                                    onerror="this.parentElement.classList.add('tsp-img-placeholder')"
+                                />
+                                <button class="tsp-wishlist-btn">
+                                    <i class="fa fa-heart-o"/>
+                                </button>
+                            </div>
+                            <div class="tsp-card-body">
+                                <div class="tsp-stars">
+                                    <t t-foreach="range(5)" t-as="star_i">
+                                        <i t-if="star_i &lt; int(product.rating)" class="fa fa-star tsp-star-on"/>
+                                        <i t-else="" class="fa fa-star tsp-star-off"/>
+                                    </t>
+                                    <span class="tsp-stars-count">(<t t-out="product.rating"/>)</span>
+                                </div>
+                                <h3 class="tsp-card-name"><t t-out="product.name"/></h3>
+                                <p class="tsp-card-desc"><t t-out="product.description"/></p>
+                                <div class="tsp-card-footer">
+                                    <span class="tsp-price"><t t-out="product.price"/>€</span>
+                                    <a t-attf-href="/shop/product/#{product.id}" class="tsp-btn tsp-btn-add">
+                                        <i class="fa fa-shopping-cart"/> Ajouter
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+        </t>
     </template>
+
 </odoo>
