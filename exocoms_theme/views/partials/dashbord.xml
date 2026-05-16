@@ -541,10 +541,10 @@
                             <div class="exo-products-section">
                                 <div class="exo-section-header">
                                     <h3>Meilleures ventes</h3>
-                                    <a href="/shop?order=sales_count+desc">Voir plus</a>
+                                    <a href="/shop?order=website_sequence+asc">Voir plus</a>
                                 </div>
                                 <div class="exo-products-carousel">
-                                    <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=6, order='sales_count desc')" />
+                                    <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('website_sequence', '!=', False)], limit=6, order='website_sequence asc')" />
                                     <t t-foreach="best_products" t-as="product">
                                         <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card">
                                             <img t-attf-src="/web/image/product.template/{{ product.id }}/image_128" t-att-alt="product.name" />
