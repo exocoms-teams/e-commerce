@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Sinistre Services - Gestion des Interventions',
-    'version': '19.0.1.0.0',
-    'category': 'Services',
-    'summary': 'Gestion des ordres de mission sinistres (assurances, particuliers, entreprises)',
+    'name': 'Sinistre Services',
+    'version': '19.0.2.0.0',
+    'category': 'Website/Services',
+    'summary': 'Gestion des interventions sinistres — assurances, particuliers, entreprises',
     'description': """
-        Module de gestion des interventions sinistres :
-        - Réception des ordres de mission des assurances via API
-        - Demandes directes particuliers et professionnels
-        - Gestion des intervenants (serruriers, plombiers, menuisiers...)
-        - Devis, facturation assurance + reste à charge
-        - Commissions intervenants
-        - Suivi photo et clôture de dossier
+        Plateforme complète de gestion des sinistres et interventions :
+        • Réception des ordres de mission des assurances via API REST (clé API)
+        • Formulaire de demande directe particuliers / entreprises (sans assurance)
+        • Dispatch des intervenants artisans (serruriers, plombiers, menuisiers…)
+        • Gestion devis, photos avant/après, facturation, commissions
+        • Site web public avec design system (Poppins + bleu #0D47A1)
+        • Suivi dossier par token public
+        • Modal urgence + formulaire de rappel
     """,
     'author': 'exocoms',
-    'website': 'https://exocoms.fr',
+    'website': '',
+    'license': 'LGPL-3',
     'depends': [
         'base',
         'mail',
@@ -24,6 +26,8 @@
         'hr',
         'contacts',
         'web',
+        'website',
+        'portal',
     ],
     'data': [
         # Security
@@ -32,32 +36,36 @@
         # Data
         'data/sequence_data.xml',
         'data/mission_type_data.xml',
-        # Views
+        'data/website_data.xml',
+        # Back-office views
         'views/mission_views.xml',
         'views/intervenant_views.xml',
         'views/assurance_views.xml',
         'views/devis_views.xml',
         'views/menu_views.xml',
+        # Website (front)
+        'views/website_layout.xml',
+        'views/website_homepage.xml',
+        'views/website_pages.xml',
         # Reports
         'report/report_mission.xml',
-        'report/report_facture_assurance.xml',
+        # Wizards
+        'wizard/assigner_mission_view.xml',
     ],
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/css/variables.css',
-            'monetique_theme/static/src/css/base.css',
-            'monetique_theme/static/src/css/layout.css',
-            'monetique_theme/static/src/css/homepage.css',
-            'monetique_theme/static/src/css/pages.css',
-            'monetique_theme/static/src/css/shop.css',
-            'monetique_theme/static/src/js/main.js',
+            'sinistre_services/static/src/css/variables.css',
+            'sinistre_services/static/src/css/base.css',
+            'sinistre_services/static/src/css/layout.css',
+            'sinistre_services/static/src/css/homepage.css',
+            'sinistre_services/static/src/css/pages.css',
+            'sinistre_services/static/src/js/main.js',
         ],
         'web.assets_backend': [
-            'sinistre_services/static/src/css/sinistre.css',
-            'sinistre_services/static/src/js/mission_kanban.js',
+            'sinistre_services/static/src/css/backend.css',
         ],
     },
     'installable': True,
+    'application': True,
     'auto_install': False,
-    'application': False,
 }
