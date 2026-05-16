@@ -29,6 +29,8 @@
     'data/sequence_data.xml',
     'data/mission_type_data.xml',
     'data/website_data.xml',
+    # Website
+    'views/website_homepage.xml',
     # Back-office views
     'views/mission_views.xml',
     'views/intervenant_views.xml',
