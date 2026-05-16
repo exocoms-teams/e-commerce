@@ -51,6 +51,7 @@
             'exocoms_theme/static/src/css/benefits.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
+            'exocoms_theme/static/src/js/shop_redirect.js',
         ],
     },
 
