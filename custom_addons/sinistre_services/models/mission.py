@@ -159,8 +159,8 @@ class SinistreMission(models.Model):
             rec.photos_apres_count = len(rec.photo_ids.filtered(lambda p: p.type_photo == 'apres'))
 
    @api.model
-   def _expand_states(self, records, values, domain):
-        return [key for key, _ in self._fields['state'].selection]
+def _expand_states(self, records, values, domain):
+    return [key for key, _ in self._fields['state'].selection]
 
     # ── Séquence ─────────────────────────────────────────────────────
     @api.model_create_multi
