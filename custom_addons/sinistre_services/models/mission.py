@@ -88,7 +88,7 @@ class SinistreMission(models.Model):
         ('facture', 'Facturé'),
         ('clos', 'Clos'),
         ('annule', 'Annulé'),
-    ], string='État', default='nouveau', tracking=True, group_expand='_expand_states')
+    ], string='État', default='nouveau', tracking=True)
 
     # ── Financier ────────────────────────────────────────────────────
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
