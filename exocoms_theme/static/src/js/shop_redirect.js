@@ -1,9 +1,6 @@
 /**
- * EXOCOMS — Interception globale des liens /shop
- * Fichier: static/src/js/shop_redirect.js
- *
- * Tout lien qui pointe vers /shop ou /shop/category/...
- * charge dans l'iframe du dashboard au lieu d'ouvrir une nouvelle page.
+ * EXOCOMS — Interception globale TOUT /shop sans exception
+ * static/src/js/shop_redirect.js
  */
 
 (function () {
@@ -16,30 +13,40 @@
 
         var href = link.getAttribute('href') || '';
 
-        /* Cible uniquement les liens shop — pas le panier, pas les produits individuels */
-        var isShopLink = (
-            href === '/shop' ||
-            href.startsWith('/shop?') ||
-            href.startsWith('/shop/page/') ||
-            href.startsWith('/shop/category/')
-        );
+        /* Intercepte TOUT ce qui contient /shop — sans exception */
+        if (!href.includes('/shop')) return;
 
-        if (!isShopLink) return;
-
-        /* Cherche l'iframe du dashboard */
         var iframe = document.getElementById('exo-shop-frame');
 
-        if (!iframe) return; /* Si pas sur la page du dashboard, comportement normal */
+        if (!iframe) {
+            /* Pas sur la page dashboard — redirige vers l'accueil avec l'URL */
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = '/?shop_url=' + encodeURIComponent(href);
+            return;
+        }
 
+        /* Sur la page dashboard — charge dans l'iframe */
         e.preventDefault();
         e.stopPropagation();
 
-        /* Charge l'URL dans l'iframe */
         iframe.src = href;
-
-        /* Scroll vers l'iframe */
         iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    }, true); /* capture=true — intercepte avant tout autre handler */
+    }, true);
+
+    /* Si on arrive avec ?shop_url= dans l'URL */
+    document.addEventListener('DOMContentLoaded', function () {
+        var params = new URLSearchParams(window.location.search);
+        var shopUrl = params.get('shop_url');
+
+        if (shopUrl) {
+            window.history.replaceState({}, '', '/');
+            var iframe = document.getElementById('exo-shop-frame');
+            if (iframe) {
+                iframe.src = decodeURIComponent(shopUrl);
+            }
+        }
+    });
 
 })();
