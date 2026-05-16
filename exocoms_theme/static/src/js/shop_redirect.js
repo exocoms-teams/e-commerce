@@ -1,5 +1,5 @@
 /**
- * EXOCOMS — Interception globale TOUT /shop sans exception
+ * EXOCOMS — Interception bouton Shop
  * static/src/js/shop_redirect.js
  */
 
@@ -13,38 +13,49 @@
 
         var href = link.getAttribute('href') || '';
 
-        /* Intercepte TOUT ce qui contient /shop — sans exception */
+        /* Intercepte uniquement les liens /shop */
         if (!href.includes('/shop')) return;
 
-        var iframe = document.getElementById('exo-shop-frame');
-
-        if (!iframe) {
-            /* Pas sur la page dashboard — redirige vers l'accueil avec l'URL */
-            e.preventDefault();
-            e.stopPropagation();
-            window.location.href = '/?shop_url=' + encodeURIComponent(href);
-            return;
-        }
-
-        /* Sur la page dashboard — charge dans l'iframe */
         e.preventDefault();
         e.stopPropagation();
 
-        iframe.src = href;
-        iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var iframe = document.getElementById('exo-shop-frame');
+
+        if (iframe) {
+            /* Déjà sur le dashboard — met à jour l'iframe seulement */
+            iframe.src = href;
+            iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            /* Pas sur le dashboard — va sur l'accueil sans recharger tout */
+            if (window.location.pathname === '/') {
+                /* Déjà sur l'accueil mais iframe pas encore là — attend */
+                var tries = 0;
+                var wait = setInterval(function () {
+                    var fr = document.getElementById('exo-shop-frame');
+                    if (fr) {
+                        clearInterval(wait);
+                        fr.src = href;
+                        fr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                    if (++tries > 20) clearInterval(wait);
+                }, 100);
+            } else {
+                /* Sur une autre page — stocke l'URL et va à l'accueil */
+                sessionStorage.setItem('exo_shop_url', href);
+                window.location.href = '/';
+            }
+        }
 
     }, true);
 
-    /* Si on arrive avec ?shop_url= dans l'URL */
+    /* Au chargement de l'accueil — charge l'URL stockée dans l'iframe */
     document.addEventListener('DOMContentLoaded', function () {
-        var params = new URLSearchParams(window.location.search);
-        var shopUrl = params.get('shop_url');
-
+        var shopUrl = sessionStorage.getItem('exo_shop_url');
         if (shopUrl) {
-            window.history.replaceState({}, '', '/');
+            sessionStorage.removeItem('exo_shop_url');
             var iframe = document.getElementById('exo-shop-frame');
             if (iframe) {
-                iframe.src = decodeURIComponent(shopUrl);
+                iframe.src = shopUrl;
             }
         }
     });
