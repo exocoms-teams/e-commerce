@@ -37,7 +37,6 @@
                             <field name="source"/>
                             <field name="type_intervention"/>
                             <field name="urgence"/>
-                            <field name="origine_web" invisible="not origine_web"/>
                         </group>
                         <group string="Dates">
                             <field name="date_reception"/>
@@ -122,7 +121,6 @@
                 <field name="montant_devis" optional="show"/>
                 <field name="reste_a_charge" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state in ('termine','clos')" decoration-primary="state in ('travaux_en_cours','en_cours')" decoration-warning="state in ('rdv_planifie','assigne')" decoration-danger="state in ('annule','devis_refuse')"/>
-                <field name="origine_web" optional="hide"/>
             </list>
         </field>
     </record>
@@ -133,10 +131,16 @@
         <field name="model">sinistre.mission</field>
         <field name="arch" type="xml">
             <kanban default_group_by="state" class="o_kanban_small_column">
-                <field name="reference"/><field name="source"/><field name="type_intervention"/>
-                <field name="client_id"/><field name="intervenant_id"/><field name="urgence"/>
-                <field name="montant_devis"/><field name="date_rdv"/><field name="state"/>
-                <field name="priority"/><field name="origine_web"/>
+                <field name="reference"/>
+                <field name="source"/>
+                <field name="type_intervention"/>
+                <field name="client_id"/>
+                <field name="intervenant_id"/>
+                <field name="urgence"/>
+                <field name="montant_devis"/>
+                <field name="date_rdv"/>
+                <field name="state"/>
+                <field name="priority"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_global_click #{record.urgence.raw_value == 'tres_urgente' ? 'border-danger' : record.urgence.raw_value == 'urgente' ? 'border-warning' : ''}">
@@ -149,14 +153,23 @@
                                     <field name="priority" widget="priority"/>
                                 </div>
                                 <div class="o_kanban_record_body">
-                                    <div><i class="fa fa-user"/> <field name="client_id"/></div>
-                                    <div t-if="record.intervenant_id.raw_value"><i class="fa fa-wrench"/> <field name="intervenant_id"/></div>
-                                    <div t-if="record.date_rdv.raw_value"><i class="fa fa-calendar"/> <field name="date_rdv"/></div>
-                                    <div t-if="record.origine_web.raw_value"><span class="badge bg-info text-white" style="font-size:10px">🌐 Web</span></div>
+                                    <div><i class="fa fa-user" title="Client"/> <field name="client_id"/></div>
+                                    <div t-if="record.intervenant_id.raw_value">
+                                        <i class="fa fa-wrench" title="Intervenant"/> <field name="intervenant_id"/>
+                                    </div>
+                                    <div t-if="record.date_rdv.raw_value">
+                                        <i class="fa fa-calendar" title="Date RDV"/> <field name="date_rdv"/>
+                                    </div>
                                 </div>
                                 <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left"><field name="source" widget="badge"/></div>
-                                    <div class="oe_kanban_bottom_right"><field name="urgence" widget="badge" decoration-danger="urgence == 'tres_urgente'" decoration-warning="urgence == 'urgente'"/></div>
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="source" widget="badge"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="urgence" widget="badge"
+                                               decoration-danger="urgence == 'tres_urgente'"
+                                               decoration-warning="urgence == 'urgente'"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +198,7 @@
                 <filter string="Particuliers" name="particulier" domain="[('source', '=', 'particulier')]"/>
                 <filter string="Entreprises" name="entreprise" domain="[('source', '=', 'entreprise')]"/>
                 <filter string="Terminées" name="termine" domain="[('state', 'in', ['termine', 'facture', 'clos'])]"/>
-                <group expand="0" string="Grouper par">
+                <group string="Grouper par">
                     <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Type" name="group_type" context="{'group_by': 'type_intervention'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source'}"/>
@@ -196,11 +209,18 @@
         </field>
     </record>
 
+    <!-- ACTION -->
     <record id="action_sinistre_mission" model="ir.actions.act_window">
         <field name="name">Ordres de Mission</field>
         <field name="res_model">sinistre.mission</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_sinistre_mission_search"/>
         <field name="context">{'search_default_en_cours': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune mission pour le moment.
+            </p>
+        </field>
     </record>
+
 </odoo>
