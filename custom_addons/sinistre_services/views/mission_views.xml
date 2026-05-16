@@ -171,22 +171,26 @@
         <field name="name">sinistre.mission.search</field>
         <field name="model">sinistre.mission</field>
         <field name="arch" type="xml">
-            <search>
-                <field name="reference"/><field name="client_id"/><field name="intervenant_id"/>
-                <field name="assurance_id"/><field name="ref_assurance"/>
+            <search string="Recherche Missions">
+                <field name="reference"/>
+                <field name="client_id"/>
+                <field name="intervenant_id"/>
+                <field name="assurance_id"/>
+                <field name="ref_assurance"/>
                 <separator/>
-                <filter string="Nouvelles" name="nouveau" domain="[('state','=','nouveau')]"/>
-                <filter string="En Cours" name="en_cours" domain="[('state','in',('en_cours','travaux_en_cours','rdv_planifie','assigne'))]"/>
-                <filter string="Urgentes" name="urgente" domain="[('urgence','in',('urgente','tres_urgente'))]"/>
-                <filter string="Demandes Web" name="web" domain="[('origine_web','=',True)]"/>
-                <filter string="Assurances" name="assurance" domain="[('source','=','assurance')]"/>
-                <filter string="Particuliers" name="particulier" domain="[('source','=','particulier')]"/>
-                <filter string="Terminées" name="termine" domain="[('state','in',('termine','facture','clos'))]"/>
+                <filter string="Nouvelles" name="nouveau" domain="[('state', '=', 'nouveau')]"/>
+                <filter string="En Cours" name="en_cours" domain="[('state', 'in', ['en_cours', 'travaux_en_cours', 'rdv_planifie', 'assigne'])]"/>
+                <filter string="Urgentes" name="urgente" domain="[('urgence', 'in', ['urgente', 'tres_urgente'])]"/>
+                <filter string="Assurances" name="assurance" domain="[('source', '=', 'assurance')]"/>
+                <filter string="Particuliers" name="particulier" domain="[('source', '=', 'particulier')]"/>
+                <filter string="Entreprises" name="entreprise" domain="[('source', '=', 'entreprise')]"/>
+                <filter string="Terminées" name="termine" domain="[('state', 'in', ['termine', 'facture', 'clos'])]"/>
                 <group expand="0" string="Grouper par">
-                    <filter string="Statut" name="group_state" context="{'group_by':'state'}"/>
-                    <filter string="Type" name="group_type" context="{'group_by':'type_intervention'}"/>
-                    <filter string="Source" name="group_source" context="{'group_by':'source'}"/>
-                    <filter string="Intervenant" name="group_interv" context="{'group_by':'intervenant_id'}"/>
+                    <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'type_intervention'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source'}"/>
+                    <filter string="Intervenant" name="group_intervenant" context="{'group_by': 'intervenant_id'}"/>
+                    <filter string="Assurance" name="group_assurance" context="{'group_by': 'assurance_id'}"/>
                 </group>
             </search>
         </field>
