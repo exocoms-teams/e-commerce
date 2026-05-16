@@ -21,6 +21,7 @@
         'views/partials/dashbord.xml',
         'views/partials/services_hero.xml',
         'views/partials/services_content.xml',
+        'views/partials/mentions_legales_content.xml',
         
 
         # TEMPLATES
