@@ -1,91 +1,109 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <template id="layout" name="Planet Mobil - Layout principal">
-        <t t-call="web.layout">
-            <t t-set="head_website">
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <title>PLANET MOBIL</title>
-            </t>
-
-            
-            <header class="tsp-header">
-                <div class="tsp-header-inner">
-
-                    
-                    <a href="/" class="tsp-logo">
-                        <span class="logo-planet">🌍 PLANET</span><span class="logo-mobil"> MOBIL</span>
-                    </a>
-
-                    
-                    <div class="tsp-search">
-                        <input type="text" placeholder="Rechercher un produit, une référence..."/>
-                        <button class="tsp-search-btn"><i class="fa fa-search"/></button>
-                    </div>
-
-                    
-                    <div class="tsp-header-actions">
-                        <a href="/web/login" class="tsp-btn tsp-btn-login">
-                            <i class="fa fa-sign-in"/> Se connecter
-                        </a>
-                        <a href="/shop/wishlist" class="tsp-btn-icon" title="Favoris">
-                            <i class="fa fa-heart-o"/>
-                        </a>
-                        <a href="/shop/cart" class="tsp-btn-icon tsp-btn-cart" title="Panier">
-                            <i class="fa fa-shopping-cart"/>
-                        </a>
-                    </div>
-                </div>
-            </header>
-
-            
-            <div class="tsp-wrapper">
-
-                
-                <nav class="tsp-sidebar">
-                    <ul class="tsp-nav">
-                        <li class="tsp-nav-item tsp-nav-active">
-                            <a href="/techshop"><i class="fa fa-bars"/> Accueil</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/promotions"><i class="fa fa-star-o"/> Promotions</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/nouveautes"><i class="fa fa-star-o"/> Nouveautés</a>
-                        </li>
-                        <li class="tsp-nav-item tsp-nav-dropdown">
-                            <a href="/shop">
-                                <i class="fa fa-th-large"/> Tous les produits
-                                <i class="fa fa-chevron-down tsp-chevron"/>
-                            </a>
-                            <ul class="tsp-submenu">
-                                <li><a href="/shop/category/apple-iphone-106"><i class="fa fa-mobile"/> Smartphones</a></li>
-                                <li><a href="/shop/category/apple-apple-watch-105"><i class="fa fa-clock-o"/> Montres connectées</a></li>
-                                <li><a href="/shop"><i class="fa fa-shield"/> Coques &amp; Accessoires</a></li>
-                                <li><a href="/shop"><i class="fa fa-television"/> TV &amp; Audio</a></li>
-                            </ul>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/techshop/avis"><i class="fa fa-star-o"/> Avis</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/contactus"><i class="fa fa-phone"/> Contact</a>
-                        </li>
-                    </ul>
-                </nav>
-
-                
-                <main class="tsp-main">
-                    <t t-out="0"/>
-                </main>
-
-            </div>
-
-            
-            <t t-call="website_planet_mobil.footer"/>
-
-        </t>
-    </template>
-
+<template id="layout" name="Planet Mobil - Layout principal">
+<t t-call="website.layout">
+<t t-set="head">
+<link rel="stylesheet" type="text/css" t-att-href="request.httprequest.host_url + 'website_planet_mobil/static/src/css/style.css'"/>
+</t>
+<!--  HEADER  -->
+<header class="tsp-header">
+<div class="tsp-header-inner">
+<a href="/" class="tsp-logo">
+<span class="logo-planet">🌍 PLANET</span>
+<span class="logo-mobil"> MOBIL</span>
+</a>
+<div class="tsp-search">
+<input type="text" placeholder="Rechercher un produit, une référence..."/>
+<button class="tsp-search-btn">
+<i class="fa fa-search"/>
+</button>
+</div>
+<div class="tsp-header-actions">
+<a href="/web/login" class="tsp-btn tsp-btn-login">
+<i class="fa fa-sign-in"/>
+Se connecter
+</a>
+<a href="/shop/wishlist" class="tsp-btn-icon" title="Favoris">
+<i class="fa fa-heart-o"/>
+</a>
+<a href="/shop/cart" class="tsp-btn-icon tsp-btn-cart" title="Panier">
+<i class="fa fa-shopping-cart"/>
+</a>
+</div>
+</div>
+</header>
+<div class="tsp-wrapper">
+<nav class="tsp-sidebar">
+<ul class="tsp-nav">
+<li class="tsp-nav-item tsp-nav-active">
+<a href="/techshop">
+<i class="fa fa-bars"/>
+Accueil
+</a>
+</li>
+<li class="tsp-nav-item">
+<a href="/promotions">
+<i class="fa fa-star-o"/>
+Promotions
+</a>
+</li>
+<li class="tsp-nav-item">
+<a href="/nouveautes">
+<i class="fa fa-star-o"/>
+Nouveautés
+</a>
+</li>
+<li class="tsp-nav-item tsp-nav-dropdown">
+<a href="/techshop/shop">
+<i class="fa fa-th-large"/>
+Tous les produits
+<i class="fa fa-chevron-down tsp-chevron"/>
+</a>
+<ul class="tsp-submenu">
+<li>
+<a href="/techshop/shop">
+<i class="fa fa-mobile"/>
+Smartphones
+</a>
+</li>
+<li>
+<a href="/techshop/shop">
+<i class="fa fa-clock-o"/>
+Montres connectées
+</a>
+</li>
+<li>
+<a href="/techshop/shop">
+<i class="fa fa-shield"/>
+Coques & Accessoires
+</a>
+</li>
+<li>
+<a href="/techshop/shop">
+<i class="fa fa-television"/>
+TV & Audio
+</a>
+</li>
+</ul>
+</li>
+<li class="tsp-nav-item">
+<a href="/techshop/avis">
+<i class="fa fa-star-o"/>
+Avis
+</a>
+</li>
+<li class="tsp-nav-item">
+<a href="/techshop/contact">
+<i class="fa fa-phone"/>
+Contact
+</a>
+</li>
+</ul>
+</nav>
+<main class="tsp-main">
+<t t-out="0"/>
+</main>
+</div>
+<t t-call="website_planet_mobil.footer"/>
+</t>
+</template>
 </odoo>
