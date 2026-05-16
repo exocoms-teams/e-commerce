@@ -1,342 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ============================================================
-         PAGE D'ACCUEIL — Sinistre Services
-         Adapté de monetique_theme/views/homepage_templates.xml
-         Structure : Hero → Urgence band → Services → Process → Stats → Garanties → CTA
-    ============================================================ -->
-
     <template id="ss_homepage" name="Sinistre Services — Accueil" page="True">
         <t t-call="website.layout">
+            <t t-set="pageName" t-value="'homepage'"/>
 
             <!-- ── HERO ── -->
-            <section class="ss-hero">
-                <div class="ss-container">
-                    <div class="ss-hero-content">
-                        <span class="ss-hero-eyebrow">
-                            <i class="fa fa-shield"/> Plateforme de gestion des sinistres
-                        </span>
-                        <h1 class="ss-hero-h1">
+            <section style="background: linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #0D47A1 100%); color: white; padding: 80px 0 60px; position: relative; overflow: hidden;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 60px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 300px;">
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(198,40,40,0.9); padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; margin-bottom: 24px;">
+                            <i class="fa fa-shield" style="font-size:12px"/> Plateforme agréée assurances
+                        </div>
+                        <h1 style="font-family: 'Poppins', sans-serif; font-size: clamp(32px, 5vw, 54px); font-weight: 800; line-height: 1.15; margin-bottom: 20px;">
                             Intervention rapide<br/>
-                            <span>pour tous vos sinistres</span>
+                            <span style="color: #FFD600;">pour tous vos sinistres</span>
                         </h1>
-                        <p class="ss-hero-p">
-                            Sinistre Services coordonne les interventions pour les compagnies d'assurance,
-                            les particuliers et les entreprises. Serruriers, plombiers, menuisiers —
-                            disponibles 24h/24 sur toute la France.
+                        <p style="font-size: 18px; opacity: .85; line-height: 1.7; margin-bottom: 32px; max-width: 520px;">
+                            Serruriers, plombiers, menuisiers disponibles
+                            <strong>24h/24 — 7j/7</strong> partout en France.
+                            Intervention en moins de 2h, devis gratuit.
                         </p>
-                        <div class="ss-hero-btns">
-                            <a href="/demande-intervention" class="ss-btn-primary">
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;">
+                            <a href="/demande-intervention" style="display: inline-flex; align-items: center; gap: 10px; background: #C62828; color: white; padding: 16px 32px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 16px; text-decoration: none;">
                                 <i class="fa fa-wrench"/> Demander une intervention
                             </a>
-                            <a href="#" class="ss-btn-secondary" data-rappel-trigger="1">
-                                <i class="fa fa-phone"/> Être rappelé
+                            <a href="tel:+33100000000" style="display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); color: white; padding: 16px 28px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; text-decoration: none; border: 2px solid rgba(255,255,255,0.4);">
+                                <i class="fa fa-phone"/> 01 XX XX XX XX
                             </a>
                         </div>
-                        <div class="ss-hero-trust">
-                            <div class="ss-hero-trust-item">
-                                <i class="fa fa-clock-o"/> Intervention en 2h
+                        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: .9;">
+                                <i class="fa fa-clock-o" style="color: #FFD600;"/> Intervention en 2h
                             </div>
-                            <div class="ss-hero-trust-item">
-                                <i class="fa fa-shield"/> Artisans certifiés
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: .9;">
+                                <i class="fa fa-check-circle" style="color: #FFD600;"/> Artisans certifiés
                             </div>
-                            <div class="ss-hero-trust-item">
-                                <i class="fa fa-star"/> Devis gratuit
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: .9;">
+                                <i class="fa fa-star" style="color: #FFD600;"/> Devis gratuit
                             </div>
-                            <div class="ss-hero-trust-item">
-                                <i class="fa fa-calendar"/> 24h/24 — 7j/7
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: .9;">
+                                <i class="fa fa-calendar" style="color: #FFD600;"/> 24h/24 — 7j/7
                             </div>
                         </div>
                     </div>
-                    <div class="ss-hero-visual">
-                        <div class="ss-hero-img-wrap">
-                            <div class="ss-hero-img-placeholder">
-                                <i class="fa fa-home"/>
-                                <span>Votre visuel sinistre ici</span>
+
+                    <!-- Formulaire demande rapide -->
+                    <div style="background: white; border-radius: 16px; padding: 32px; min-width: 300px; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <h3 style="font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #0D47A1; margin-bottom: 6px;">
+                            Demande rapide
+                        </h3>
+                        <p style="font-size: 13px; color: #666; margin-bottom: 24px;">Réponse sous 15 minutes</p>
+                        <form method="POST" action="/demande-intervention">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;">Type d'intervention</label>
+                                <select name="type_intervention" style="width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 8px; font-size: 14px; color: #333; background: white;">
+                                    <option value="serrurerie">🔐 Serrurerie</option>
+                                    <option value="plomberie">🔧 Plomberie</option>
+                                    <option value="menuiserie_ext">🚪 Menuiserie</option>
+                                    <option value="vitrerie">🪟 Vitrerie</option>
+                                    <option value="electricite">⚡ Électricité</option>
+                                    <option value="autre">🔨 Autre</option>
+                                </select>
                             </div>
-                        </div>
-                        <span class="ss-hero-badge">Intervention 2h</span>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;">Téléphone</label>
+                                <input type="tel" name="telephone" placeholder="06 XX XX XX XX" required="1" style="width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 8px; font-size: 14px; box-sizing: border-box;"/>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;">Code postal</label>
+                                <input type="text" name="code_postal" placeholder="75001" style="width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 8px; font-size: 14px; box-sizing: border-box;"/>
+                            </div>
+                            <button type="submit" style="width: 100%; padding: 14px; background: #C62828; color: white; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;">
+                                <i class="fa fa-arrow-right" style="margin-right: 8px;"/> Trouver un artisan
+                            </button>
+                            <p style="text-align: center; font-size: 12px; color: #888; margin-top: 12px;">
+                                Sans engagement · Devis gratuit
+                            </p>
+                        </form>
                     </div>
                 </div>
             </section>
 
-            <!-- ── FEATURE BAND (3 piliers) ── -->
-            <div class="ss-feat-band">
-                <div class="ss-container">
-                    <div class="ss-feat-item">
-                        <div class="ss-feat-icon"><i class="fa fa-building-o"/></div>
-                        <div>
-                            <p class="ss-feat-title">Assurances partenaires</p>
-                            <p class="ss-feat-desc">Réception automatique des ordres de mission via API sécurisée</p>
-                        </div>
+            <!-- ── STATS BAND ── -->
+            <section style="background: #1A1A2E; color: white; padding: 28px 0;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 32px; font-weight: 800; color: #FFD600;">+15 000</div>
+                        <div style="font-size: 13px; opacity: .7;">Demandes par mois</div>
                     </div>
-                    <div class="ss-feat-item">
-                        <div class="ss-feat-icon"><i class="fa fa-users"/></div>
-                        <div>
-                            <p class="ss-feat-title">Particuliers &amp; Entreprises</p>
-                            <p class="ss-feat-desc">Demande directe sans assurance — réponse en moins de 30 min</p>
-                        </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 32px; font-weight: 800; color: #FFD600;">+1 700</div>
+                        <div style="font-size: 13px; opacity: .7;">Artisans certifiés</div>
                     </div>
-                    <div class="ss-feat-item">
-                        <div class="ss-feat-icon"><i class="fa fa-wrench"/></div>
-                        <div>
-                            <p class="ss-feat-title">Réseau d'artisans qualifiés</p>
-                            <p class="ss-feat-desc">Intervenants certifiés, géolocalisés, disponibles 24h/24</p>
-                        </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 32px; font-weight: 800; color: #FFD600;">2h</div>
+                        <div style="font-size: 13px; opacity: .7;">Délai d'intervention moyen</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Poppins', sans-serif; font-size: 32px; font-weight: 800; color: #FFD600;">98%</div>
+                        <div style="font-size: 13px; opacity: .7;">Clients satisfaits</div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- ── BANDE URGENCE ── -->
-            <div class="ss-urgence-band">
-                <div class="ss-container">
-                    <div style="display:flex; align-items:center; gap:20px">
-                        <div class="ss-urgence-band-icon">
-                            <i class="fa fa-exclamation-triangle"/>
-                        </div>
-                        <div class="ss-urgence-band-content">
-                            <p class="ss-urgence-band-title">Urgence ? Appelez maintenant</p>
-                            <a href="tel:+33100000000" class="ss-urgence-band-tel">01 XX XX XX XX</a>
-                            <p class="ss-urgence-band-sub">Disponible 24h/24, 7j/7 — Intervention sous 2h</p>
-                        </div>
+            <!-- ── SERVICES ── -->
+            <section style="padding: 80px 0; background: #F8FAFF;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+                    <div style="text-align: center; margin-bottom: 48px;">
+                        <span style="color: #C62828; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Nos interventions</span>
+                        <h2 style="font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 700; color: #0D47A1; margin-top: 8px;">
+                            Tous types de sinistres pris en charge
+                        </h2>
                     </div>
-                    <div style="display:flex; gap:12px; flex-shrink:0">
-                        <a href="/urgence" class="ss-btn-white">
-                            <i class="fa fa-info-circle"/> En savoir plus
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+                        <a href="/demande-intervention?type=serrurerie" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; transition: all .2s; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">🔐</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Serrurerie</div>
+                            <div style="font-size: 12px; color: #888;">Sous 45 min</div>
                         </a>
-                        <a href="/demande-intervention?urgence=tres_urgente" class="ss-btn-primary"
-                           style="background:var(--ss-white); color:var(--ss-red)">
-                            <i class="fa fa-exclamation"/> Demande urgente
+                        <a href="/demande-intervention?type=plomberie" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">🔧</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Plomberie</div>
+                            <div style="font-size: 12px; color: #888;">Urgence 24h/24</div>
                         </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── NOS SERVICES ── -->
-            <section class="ss-services-section">
-                <div class="ss-container">
-                    <div class="ss-section-head">
-                        <span class="ss-section-tag">Nos interventions</span>
-                        <h2 class="ss-section-title">Tous types de sinistres couverts</h2>
-                        <div class="ss-section-underline"/>
-                        <p class="ss-section-sub">Des artisans spécialisés pour chaque type d'intervention</p>
-                    </div>
-                    <div class="ss-services-grid">
-                        <a href="/nos-services#serrurerie" class="ss-service-card">
-                            <div class="ss-service-icon urgent">
-                                <i class="fa fa-key"/>
-                            </div>
-                            <h3 class="ss-service-title">🔐 Serrurerie</h3>
-                            <p class="ss-service-p">
-                                Ouverture de porte, remplacement de serrure, effraction, porte claquée.
-                                Intervention rapide en urgence.
-                            </p>
-                            <span class="ss-service-link">
-                                En savoir plus <i class="fa fa-arrow-right"/>
-                            </span>
+                        <a href="/demande-intervention?type=menuiserie_ext" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">🚪</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Menuiserie</div>
+                            <div style="font-size: 12px; color: #888;">Intérieure &amp; extérieure</div>
                         </a>
-
-                        <a href="/nos-services#plomberie" class="ss-service-card">
-                            <div class="ss-service-icon">
-                                <i class="fa fa-tint"/>
-                            </div>
-                            <h3 class="ss-service-title">🔧 Plomberie</h3>
-                            <p class="ss-service-p">
-                                Fuite d'eau, dégât des eaux, canalisation bouchée, chauffe-eau.
-                                Diagnostic et réparation immédiate.
-                            </p>
-                            <span class="ss-service-link">
-                                En savoir plus <i class="fa fa-arrow-right"/>
-                            </span>
+                        <a href="/demande-intervention?type=vitrerie" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">🪟</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Vitrerie</div>
+                            <div style="font-size: 12px; color: #888;">Vitres &amp; baies</div>
                         </a>
-
-                        <a href="/nos-services#menuiserie" class="ss-service-card">
-                            <div class="ss-service-icon">
-                                <i class="fa fa-cube"/>
-                            </div>
-                            <h3 class="ss-service-title">🚪 Menuiserie</h3>
-                            <p class="ss-service-p">
-                                Porte fracturée, fenêtre endommagée, volet cassé.
-                                Réparation ou remplacement sur-mesure.
-                            </p>
-                            <span class="ss-service-link">
-                                En savoir plus <i class="fa fa-arrow-right"/>
-                            </span>
+                        <a href="/demande-intervention?type=electricite" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">⚡</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Électricité</div>
+                            <div style="font-size: 12px; color: #888;">Dépannage rapide</div>
                         </a>
-
-                        <a href="/nos-services#vitrerie" class="ss-service-card">
-                            <div class="ss-service-icon">
-                                <i class="fa fa-th-large"/>
-                            </div>
-                            <h3 class="ss-service-title">🪟 Vitrerie</h3>
-                            <p class="ss-service-p">
-                                Bris de glace, vitre cassée, double vitrage.
-                                Pose et remplacement par nos vitriers qualifiés.
-                            </p>
-                            <span class="ss-service-link">
-                                En savoir plus <i class="fa fa-arrow-right"/>
-                            </span>
-                        </a>
-
-                        <a href="/nos-services#electricite" class="ss-service-card">
-                            <div class="ss-service-icon">
-                                <i class="fa fa-bolt"/>
-                            </div>
-                            <h3 class="ss-service-title">⚡ Électricité</h3>
-                            <p class="ss-service-p">
-                                Panne électrique, court-circuit, tableau électrique,
-                                mise aux normes. Électriciens certifiés.
-                            </p>
-                            <span class="ss-service-link">
-                                En savoir plus <i class="fa fa-arrow-right"/>
-                            </span>
-                        </a>
-
-                        <a href="/demande-intervention" class="ss-service-card" style="background:var(--ss-blue); border-color:var(--ss-blue)">
-                            <div class="ss-service-icon" style="background:rgba(255,255,255,0.15); color:white">
-                                <i class="fa fa-plus"/>
-                            </div>
-                            <h3 class="ss-service-title" style="color:white">Autre sinistre ?</h3>
-                            <p class="ss-service-p" style="color:rgba(255,255,255,0.75)">
-                                Décrivez votre problème, nous trouvons le bon artisan
-                                pour vous dans les meilleurs délais.
-                            </p>
-                            <span class="ss-service-link" style="color:white">
-                                Faire une demande <i class="fa fa-arrow-right"/>
-                            </span>
+                        <a href="/demande-intervention" style="text-decoration: none; background: white; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1.5px solid #E8EEF8; display: block;">
+                            <div style="width: 64px; height: 64px; background: #E3F2FD; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;">🔨</div>
+                            <div style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #0D47A1; font-size: 15px; margin-bottom: 6px;">Autre</div>
+                            <div style="font-size: 12px; color: #888;">Tous travaux</div>
                         </a>
                     </div>
                 </div>
             </section>
 
-            <!-- ── PROCESSUS ── -->
-            <section class="ss-process-section">
-                <div class="ss-container">
-                    <div class="ss-section-head">
-                        <span class="ss-section-tag">Comment ça marche</span>
-                        <h2 class="ss-section-title">Une intervention en 4 étapes simples</h2>
-                        <div class="ss-section-underline"/>
+            <!-- ── COMMENT ÇA MARCHE ── -->
+            <section style="padding: 80px 0; background: white;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+                    <div style="text-align: center; margin-bottom: 56px;">
+                        <span style="color: #C62828; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Simple et rapide</span>
+                        <h2 style="font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 700; color: #0D47A1; margin-top: 8px;">
+                            Comment ça marche ?
+                        </h2>
                     </div>
-                    <div class="ss-process-steps">
-                        <div class="ss-process-step">
-                            <div class="ss-process-num">1</div>
-                            <h4 class="ss-process-title">Vous nous contactez</h4>
-                            <p class="ss-process-p">Par téléphone, formulaire ou votre assurance nous transmet votre dossier</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+                        <div style="text-align: center;">
+                            <div style="width: 72px; height: 72px; background: #0D47A1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: white;">1</div>
+                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #1A1A2E; margin-bottom: 12px;">Décrivez votre problème</h3>
+                            <p style="color: #666; font-size: 15px; line-height: 1.7;">En ligne ou par téléphone, décrivez votre sinistre en 2 minutes. Disponible 24h/24.</p>
                         </div>
-                        <div class="ss-process-step">
-                            <div class="ss-process-num">2</div>
-                            <h4 class="ss-process-title">Dispatch immédiat</h4>
-                            <p class="ss-process-p">Nous assignons l'artisan le plus proche disponible et planifions le RDV</p>
+                        <div style="text-align: center;">
+                            <div style="width: 72px; height: 72px; background: #0D47A1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: white;">2</div>
+                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #1A1A2E; margin-bottom: 12px;">Recevez un devis gratuit</h3>
+                            <p style="color: #666; font-size: 15px; line-height: 1.7;">Fourchette tarifaire fixe, sans frais cachés. Réservez en ligne, payez après l'intervention.</p>
                         </div>
-                        <div class="ss-process-step">
-                            <div class="ss-process-num">3</div>
-                            <h4 class="ss-process-title">Devis &amp; Intervention</h4>
-                            <p class="ss-process-p">Devis transparent avant travaux, intervention soignée avec photos</p>
-                        </div>
-                        <div class="ss-process-step">
-                            <div class="ss-process-num">4</div>
-                            <h4 class="ss-process-title">Facturation assurance</h4>
-                            <p class="ss-process-p">Prise en charge automatique par votre assurance, vous ne payez que la franchise</p>
+                        <div style="text-align: center;">
+                            <div style="width: 72px; height: 72px; background: #C62828; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: white;">3</div>
+                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #1A1A2E; margin-bottom: 12px;">Un artisan intervient</h3>
+                            <p style="color: #666; font-size: 15px; line-height: 1.7;">Artisan certifié chez vous en moins de 2h ou sur rendez-vous. Photos avant/après garanties.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ── STATS ── -->
-            <section class="ss-stats-section">
-                <div class="ss-container">
-                    <div class="ss-stats-grid">
-                        <div class="ss-stat-card">
-                            <span class="ss-stat-number"
-                                  data-counter="5000" data-suffix="">+5 000</span>
-                            <span class="ss-stat-label">Interventions réalisées</span>
+            <!-- ── GARANTIES ── -->
+            <section style="padding: 80px 0; background: #F8FAFF;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+                    <div style="text-align: center; margin-bottom: 48px;">
+                        <h2 style="font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 700; color: #0D47A1;">
+                            Pourquoi nous choisir ?
+                        </h2>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
+                        <div style="background: white; border-radius: 12px; padding: 28px; border-left: 4px solid #0D47A1;">
+                            <i class="fa fa-shield" style="font-size: 28px; color: #0D47A1; margin-bottom: 16px; display: block;"/>
+                            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #1A1A2E; margin-bottom: 8px;">Artisans certifiés</h4>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">Tous nos artisans signent une charte qualité et sont vérifiés avant toute intervention.</p>
                         </div>
-                        <div class="ss-stat-card">
-                            <span class="ss-stat-number"
-                                  data-counter="120" data-suffix="">+120</span>
-                            <span class="ss-stat-label">Artisans partenaires</span>
+                        <div style="background: white; border-radius: 12px; padding: 28px; border-left: 4px solid #0D47A1;">
+                            <i class="fa fa-money" style="font-size: 28px; color: #0D47A1; margin-bottom: 16px; display: block;"/>
+                            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #1A1A2E; margin-bottom: 8px;">Prix transparents</h4>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">Devis gratuit, fourchette tarifaire fixe. Aucun frais caché, paiement après intervention.</p>
                         </div>
-                        <div class="ss-stat-card">
-                            <span class="ss-stat-number">2h</span>
-                            <span class="ss-stat-label">Délai moyen d'intervention</span>
+                        <div style="background: white; border-radius: 12px; padding: 28px; border-left: 4px solid #C62828;">
+                            <i class="fa fa-clock-o" style="font-size: 28px; color: #C62828; margin-bottom: 16px; display: block;"/>
+                            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #1A1A2E; margin-bottom: 8px;">Disponible 24h/24</h4>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">Urgence ou rendez-vous planifié, nous sommes disponibles 7j/7 partout en France.</p>
                         </div>
-                        <div class="ss-stat-card">
-                            <span class="ss-stat-number">97%</span>
-                            <span class="ss-stat-label">Clients satisfaits</span>
+                        <div style="background: white; border-radius: 12px; padding: 28px; border-left: 4px solid #C62828;">
+                            <i class="fa fa-building" style="font-size: 28px; color: #C62828; margin-bottom: 16px; display: block;"/>
+                            <h4 style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #1A1A2E; margin-bottom: 8px;">Agréé assurances</h4>
+                            <p style="color: #666; font-size: 14px; line-height: 1.6;">Plateforme de gestion des sinistres pour les compagnies d'assurance. API dédiée.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ── GARANTIES (fond bleu comme monetique_theme) ── -->
-            <section class="ss-garanties-section">
-                <div class="ss-container">
-                    <div class="ss-section-head">
-                        <span class="ss-section-tag">Nos engagements</span>
-                        <h2 class="ss-section-title">Pourquoi choisir Sinistre Services ?</h2>
-                        <div class="ss-section-underline"/>
-                    </div>
-                    <div class="ss-garanties-grid">
-                        <div class="ss-garantie-card">
-                            <div class="ss-garantie-icon"><i class="fa fa-clock-o"/></div>
-                            <h4 class="ss-garantie-title">Réactivité maximale</h4>
-                            <p class="ss-garantie-p">Prise en charge en moins de 30 minutes, intervention sous 2h en France</p>
-                        </div>
-                        <div class="ss-garantie-card">
-                            <div class="ss-garantie-icon"><i class="fa fa-certificate"/></div>
-                            <h4 class="ss-garantie-title">Artisans certifiés</h4>
-                            <p class="ss-garantie-p">Tous nos intervenants sont vérifiés, assurés et formés à nos standards</p>
-                        </div>
-                        <div class="ss-garantie-card">
-                            <div class="ss-garantie-icon"><i class="fa fa-file-text-o"/></div>
-                            <h4 class="ss-garantie-title">Devis transparent</h4>
-                            <p class="ss-garantie-p">Prix fixé avant toute intervention, aucune mauvaise surprise</p>
-                        </div>
-                        <div class="ss-garantie-card">
-                            <div class="ss-garantie-icon"><i class="fa fa-handshake-o"/></div>
-                            <h4 class="ss-garantie-title">Prise en charge assurance</h4>
-                            <p class="ss-garantie-p">Coordination directe avec votre assurance — vous gérez uniquement votre franchise</p>
-                        </div>
-                    </div>
+            <!-- ── CTA URGENCE ── -->
+            <section style="background: #C62828; color: white; padding: 60px 0;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; text-align: center;">
+                    <i class="fa fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px; display: block; opacity: .9;"/>
+                    <h2 style="font-family: 'Poppins', sans-serif; font-size: 36px; font-weight: 800; margin-bottom: 12px;">
+                        Urgence sinistre ?
+                    </h2>
+                    <p style="font-size: 18px; opacity: .9; margin-bottom: 32px;">
+                        Appelez-nous maintenant — un artisan chez vous en moins de 2h
+                    </p>
+                    <a href="tel:+33100000000" style="display: inline-flex; align-items: center; gap: 12px; background: white; color: #C62828; padding: 18px 40px; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 800; text-decoration: none;">
+                        <i class="fa fa-phone"/> 01 XX XX XX XX
+                    </a>
+                    <p style="margin-top: 16px; font-size: 14px; opacity: .8;">Disponible 24h/24 — 7j/7 — Prix d'un appel local</p>
                 </div>
             </section>
-
-            <!-- ── ASSURANCES PARTENAIRES ── -->
-            <section class="ss-trust-section">
-                <div class="ss-container">
-                    <p class="ss-trust-title">Assurances partenaires</p>
-                    <div class="ss-trust-logos">
-                        <!-- À remplacer par les vrais logos assurances partenaires -->
-                        <div class="ss-trust-logo">AXA</div>
-                        <div class="ss-trust-logo">MAIF</div>
-                        <div class="ss-trust-logo">ALLIANZ</div>
-                        <div class="ss-trust-logo">GROUPAMA</div>
-                        <div class="ss-trust-logo">COVÉA</div>
-                        <div class="ss-trust-logo">MMA</div>
-                        <div class="ss-trust-logo">MACIF</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ── CTA BAND FINAL ── -->
-            <div class="ss-cta-band">
-                <div class="ss-container">
-                    <div>
-                        <h3>Besoin d'une intervention ?</h3>
-                        <p>Contactez-nous, un artisan est disponible près de chez vous.</p>
-                    </div>
-                    <div style="display:flex; gap:12px; flex-shrink:0">
-                        <a href="#" class="ss-btn-white" data-rappel-trigger="1">
-                            <i class="fa fa-phone"/> Être rappelé
-                        </a>
-                        <a href="/demande-intervention" class="ss-btn-primary"
-                           style="background:white; color:var(--ss-blue)">
-                            <i class="fa fa-wrench"/> Demander une intervention
-                        </a>
-                    </div>
-                </div>
-            </div>
 
         </t>
     </template>
