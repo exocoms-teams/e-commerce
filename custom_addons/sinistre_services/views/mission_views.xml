@@ -108,19 +108,31 @@
         <field name="name">sinistre.mission.list</field>
         <field name="model">sinistre.mission</field>
         <field name="arch" type="xml">
-            <list string="Missions" decoration-danger="urgence == 'tres_urgente'" decoration-warning="urgence == 'urgente'" decoration-muted="state in ('clos','annule')">
+            <list string="Missions"
+                  decoration-danger="urgence == 'tres_urgente'"
+                  decoration-warning="urgence == 'urgente'"
+                  decoration-muted="state in ('clos','annule')">
                 <field name="reference"/>
                 <field name="date_reception"/>
-                <field name="source" widget="badge" decoration-info="source == 'assurance'" decoration-success="source == 'particulier'" decoration-warning="source == 'entreprise'"/>
+                <field name="source" widget="badge"
+                       decoration-info="source == 'assurance'"
+                       decoration-success="source == 'particulier'"
+                       decoration-warning="source == 'entreprise'"/>
                 <field name="type_intervention"/>
                 <field name="client_id"/>
                 <field name="adresse_intervention"/>
                 <field name="intervenant_id"/>
-                <field name="urgence" widget="badge" decoration-danger="urgence == 'tres_urgente'" decoration-warning="urgence == 'urgente'"/>
+                <field name="urgence" widget="badge"
+                       decoration-danger="urgence == 'tres_urgente'"
+                       decoration-warning="urgence == 'urgente'"/>
                 <field name="date_rdv"/>
                 <field name="montant_devis" optional="show"/>
                 <field name="reste_a_charge" optional="show"/>
-                <field name="state" widget="badge" decoration-success="state in ('termine','clos')" decoration-primary="state in ('travaux_en_cours','en_cours')" decoration-warning="state in ('rdv_planifie','assigne')" decoration-danger="state in ('annule','devis_refuse')"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('termine','clos')"
+                       decoration-primary="state in ('travaux_en_cours','en_cours')"
+                       decoration-warning="state in ('rdv_planifie','assigne')"
+                       decoration-danger="state in ('annule','devis_refuse')"/>
             </list>
         </field>
     </record>
@@ -147,18 +159,27 @@
                             <div class="oe_kanban_details">
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title"><field name="reference"/></strong>
-                                        <small class="text-muted"><field name="type_intervention"/></small>
+                                        <strong class="o_kanban_record_title">
+                                            <field name="reference"/>
+                                        </strong>
+                                        <small class="text-muted">
+                                            <field name="type_intervention"/>
+                                        </small>
                                     </div>
                                     <field name="priority" widget="priority"/>
                                 </div>
                                 <div class="o_kanban_record_body">
-                                    <div><i class="fa fa-user" title="Client"/> <field name="client_id"/></div>
+                                    <div>
+                                        <i class="fa fa-user" title="Client"/>
+                                        <field name="client_id"/>
+                                    </div>
                                     <div t-if="record.intervenant_id.raw_value">
-                                        <i class="fa fa-wrench" title="Intervenant"/> <field name="intervenant_id"/>
+                                        <i class="fa fa-wrench" title="Intervenant"/>
+                                        <field name="intervenant_id"/>
                                     </div>
                                     <div t-if="record.date_rdv.raw_value">
-                                        <i class="fa fa-calendar" title="Date RDV"/> <field name="date_rdv"/>
+                                        <i class="fa fa-calendar" title="Date RDV"/>
+                                        <field name="date_rdv"/>
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_bottom">
@@ -191,20 +212,33 @@
                 <field name="assurance_id"/>
                 <field name="ref_assurance"/>
                 <separator/>
-                <filter string="Nouvelles" name="nouveau" domain="[('state', '=', 'nouveau')]"/>
-                <filter string="En Cours" name="en_cours" domain="[('state', 'in', ['en_cours', 'travaux_en_cours', 'rdv_planifie', 'assigne'])]"/>
-                <filter string="Urgentes" name="urgente" domain="[('urgence', 'in', ['urgente', 'tres_urgente'])]"/>
-                <filter string="Assurances" name="assurance" domain="[('source', '=', 'assurance')]"/>
-                <filter string="Particuliers" name="particulier" domain="[('source', '=', 'particulier')]"/>
-                <filter string="Entreprises" name="entreprise" domain="[('source', '=', 'entreprise')]"/>
-                <filter string="Terminées" name="termine" domain="[('state', 'in', ['termine', 'facture', 'clos'])]"/>
-                <group string="Grouper par">
-                    <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Type" name="group_type" context="{'group_by': 'type_intervention'}"/>
-                    <filter string="Source" name="group_source" context="{'group_by': 'source'}"/>
-                    <filter string="Intervenant" name="group_intervenant" context="{'group_by': 'intervenant_id'}"/>
-                    <filter string="Assurance" name="group_assurance" context="{'group_by': 'assurance_id'}"/>
-                </group>
+                <filter string="Nouvelles" name="nouveau"
+                        domain="[('state', '=', 'nouveau')]"/>
+                <filter string="En Cours" name="en_cours"
+                        domain="[('state', 'in', ['en_cours', 'travaux_en_cours', 'rdv_planifie', 'assigne'])]"/>
+                <filter string="Urgentes" name="urgente"
+                        domain="[('urgence', 'in', ['urgente', 'tres_urgente'])]"/>
+                <separator/>
+                <filter string="Assurances" name="assurance"
+                        domain="[('source', '=', 'assurance')]"/>
+                <filter string="Particuliers" name="particulier"
+                        domain="[('source', '=', 'particulier')]"/>
+                <filter string="Entreprises" name="entreprise"
+                        domain="[('source', '=', 'entreprise')]"/>
+                <separator/>
+                <filter string="Terminées" name="termine"
+                        domain="[('state', 'in', ['termine', 'facture', 'clos'])]"/>
+                <separator/>
+                <filter string="Par Statut" name="group_state"
+                        context="{'group_by': 'state'}"/>
+                <filter string="Par Type" name="group_type"
+                        context="{'group_by': 'type_intervention'}"/>
+                <filter string="Par Source" name="group_source"
+                        context="{'group_by': 'source'}"/>
+                <filter string="Par Intervenant" name="group_intervenant"
+                        context="{'group_by': 'intervenant_id'}"/>
+                <filter string="Par Assurance" name="group_assurance"
+                        context="{'group_by': 'assurance_id'}"/>
             </search>
         </field>
     </record>
