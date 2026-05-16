@@ -30,7 +30,8 @@
     'data/mission_type_data.xml',
     'data/website_data.xml',
     # Website
-
+    # Website
+    'views/website_homepage.xml',
 
        
     # Back-office views
