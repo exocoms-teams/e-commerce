@@ -1,512 +1,770 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="page_home" name="Sinistre Services — Accueil">
-        <t t-call="website.layout">
-
-            <!-- ══════════════════════════════════════════
-                 HERO
-            ══════════════════════════════════════════ -->
-            <section class="mn-hero">
-                <div class="mn-container">
-                    <div class="mn-hero__inner">
-                        <div class="mn-hero__content">
-                            <div class="mn-hero__badge">
-                                <span class="mn-dot"></span>
-                                Plateforme agreee assurances · Artisans certifies
-                            </div>
-                            <h1 class="mn-hero__title">
-                                Intervention rapide,
-                                <span class="mn-hero__accent">pour vos sinistres</span>
-                            </h1>
-                            <p class="mn-hero__desc">Serruriers, plombiers, menuisiers disponibles <strong>24h/24 — 7j/7</strong> partout en France. Intervention en moins de 2h, devis gratuit.</p>
-                            <div class="mn-hero__actions">
-                                <a href="/demande-intervention" class="mn-btn mn-btn--primary mn-btn--lg">
-                                    <i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention
-                                </a>
-                                <a href="tel:+33100000000" class="mn-btn mn-btn--outline mn-btn--lg">
-                                    <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
-                                </a>
-                            </div>
-                            <div class="mn-hero__trust">
-                                <span>&#10003; Intervention en 2h</span>
-                                <span>&#10003; Devis gratuit</span>
-                                <span>&#10003; Artisans certifies</span>
-                                <span>&#10003; 24h/24 7j/7</span>
-                            </div>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE NOS SERVICES
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_nos_services" name="Sinistre Services — Nos Services">
+    <t t-call="website.layout">
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Nos Services</p>
+                <h1>Nos Services d'Intervention</h1>
+                <p>Artisans qualifies disponibles 24h/24 — Intervention en moins de 2h partout en France</p>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <!-- Serrurerie -->
+                <div id="serrurerie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div>
+                        <span class="mn-eyebrow">Serrurerie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Ouverture de porte et serrurerie</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Porte claquee, serrure forcee suite a effraction, cylindre a changer. Nos serruriers interviennent sans destruction dans 95% des cas.</p>
+                        <ul style="color:#6B7280;font-size:14px;line-height:2;margin-bottom:28px;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Ouverture de porte sans destruction</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Remplacement de cylindre et serrure</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Serrure multipoints et connectee</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Securisation apres effraction</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Blindage de porte</li>
+                        </ul>
+                        <div style="display:flex;gap:12px;">
+                            <a href="/demande-intervention?type=serrurerie&amp;urgence=tres_urgente" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Intervention urgente</a>
+                            <a href="/demande-intervention?type=serrurerie" class="mn-btn mn-btn--outline">Devis gratuit</a>
                         </div>
-                        <!-- Formulaire demande rapide -->
-                        <div class="mn-hero__visual" style="filter:none;">
-                            <div style="background:white;border-radius:20px;padding:32px;box-shadow:0 12px 48px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);">
-                                <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:4px;font-family:'Inter',sans-serif;">Demande rapide</h3>
-                                <p style="font-size:13px;color:#6B7280;margin-bottom:24px;">Reponse sous 15 minutes</p>
-                                <form method="POST" action="/demande-intervention">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <div style="margin-bottom:14px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Type d'intervention</label>
-                                        <select name="type_intervention" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#111827;background:white;box-sizing:border-box;font-family:'Inter',sans-serif;">
+                    </div>
+                    <div style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa fa-lock" style="font-size:80px;color:rgba(198,40,40,.3);" aria-hidden="true"/>
+                    </div>
+                </div>
+                <!-- Plomberie -->
+                <div id="plomberie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa fa-tint" style="font-size:80px;color:rgba(30,64,175,.2);" aria-hidden="true"/>
+                    </div>
+                    <div>
+                        <span class="mn-eyebrow">Plomberie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Plomberie et degat des eaux</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Fuite d'eau, dégat des eaux, canalisation bouchee. Nos plombiers diagnostiquent et reparent pour limiter les dommages et faciliter la declaration assurance.</p>
+                        <ul style="color:#6B7280;font-size:14px;line-height:2;margin-bottom:28px;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Fuite sous evier, robinetterie, canalisation</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Degat des eaux — pompage et assechement</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Chauffe-eau et ballon d'eau chaude</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Recherche de fuite non destructive</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Rapport pour declaration assurance</li>
+                        </ul>
+                        <a href="/demande-intervention?type=plomberie" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                </div>
+                <!-- Menuiserie -->
+                <div id="menuiserie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div>
+                        <span class="mn-eyebrow">Menuiserie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Menuiserie interieure et exterieure</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Porte fracturee, fenetre endommagee, volet casse. Securisation immediate puis remplacement par nos menuisiers qualifies.</p>
+                        <ul style="color:#6B7280;font-size:14px;line-height:2;margin-bottom:28px;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Porte d'entree fracturee — securisation</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Fenetre et double vitrage</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Volet roulant, store, persienne</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Materiaux : bois, PVC, aluminium</li>
+                        </ul>
+                        <a href="/demande-intervention?type=menuiserie_ext" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa fa-home" style="font-size:80px;color:rgba(16,185,129,.2);" aria-hidden="true"/>
+                    </div>
+                </div>
+                <!-- Vitrerie + Electricite cote a cote -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div id="vitrerie" style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:32px;">
+                        <div class="mn-card__icon"><i class="fa fa-th-large" aria-hidden="true"/></div>
+                        <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:10px;">Vitrerie</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Bris de glace, fenetre cassee, double vitrage — pose et remplacement rapides. Bache provisoire disponible dans l'heure.</p>
+                        <a href="/demande-intervention?type=vitrerie" class="mn-btn mn-btn--primary mn-btn--sm">Demander une intervention</a>
+                    </div>
+                    <div id="electricite" style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:32px;">
+                        <div class="mn-card__icon"><i class="fa fa-bolt" aria-hidden="true"/></div>
+                        <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:10px;">Electricite</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Panne electrique, disjoncteur, court-circuit, installation. Electriciens Qualifelec disponibles immediatement.</p>
+                        <a href="/demande-intervention?type=electricite" class="mn-btn mn-btn--primary mn-btn--sm">Demander une intervention</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="mn-cta">
+            <div class="mn-container">
+                <div class="mn-cta__inner">
+                    <h2>Vous etes une assurance ?</h2>
+                    <p>Integrez notre API pour envoyer vos ordres de mission automatiquement.</p>
+                    <div class="mn-cta__actions">
+                        <a href="/assurances" class="mn-btn mn-btn--white mn-btn--lg">Decouvrir notre API</a>
+                        <a href="/contact" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,.4);color:white;">Nous contacter</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE URGENCE
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_urgence" name="Sinistre Services — Urgence">
+    <t t-call="website.layout">
+        <div style="background:linear-gradient(135deg,#B71C1C 0%,#C62828 100%);padding:80px 0;text-align:center;color:white;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);border-radius:50%;"/>
+            <div class="mn-container" style="position:relative;z-index:1;">
+                <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;margin-bottom:20px;">
+                    <span style="width:8px;height:8px;background:#4ADE80;border-radius:50%;animation:urgencePulse 2s infinite;display:inline-block;"/>
+                    Intervenants disponibles maintenant
+                </div>
+                <h1 style="font-size:48px;font-weight:800;letter-spacing:-.025em;margin-bottom:16px;">Urgence Sinistre</h1>
+                <p style="font-size:18px;opacity:.85;margin-bottom:32px;">Appelez maintenant — un artisan chez vous en moins de 2h</p>
+                <a href="tel:+33100000000" style="display:inline-block;font-size:42px;font-weight:900;color:white;letter-spacing:-.03em;margin-bottom:32px;">01 XX XX XX XX</a>
+                <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                    <a href="/demande-intervention?urgence=tres_urgente" class="mn-btn mn-btn--white mn-btn--lg"><i class="fa fa-wrench" aria-hidden="true"/> Formulaire d'urgence</a>
+                    <a href="#" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.4);" data-rappel="1"><i class="fa fa-phone" aria-hidden="true"/> Rappel immediat</a>
+                </div>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">En cas d'urgence</span>
+                    <h2>Que faire avant notre arrivee ?</h2>
+                </div>
+                <div class="mn-grid mn-grid--3">
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#128272;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Effraction / Serrure</h4>
+                        <ul style="color:#6B7280;font-size:13px;line-height:2;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Deposez une main courante</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Ne touchez pas a la zone</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Photographiez les degats</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Attendez notre intervenant</li>
+                        </ul>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#128295;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Fuite / Degat des eaux</h4>
+                        <ul style="color:#6B7280;font-size:13px;line-height:2;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Coupez l'eau au general</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Coupez le disjoncteur</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Eloignez vos affaires</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Photographiez les degats</li>
+                        </ul>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#9889;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Panne Electrique</h4>
+                        <ul style="color:#6B7280;font-size:13px;line-height:2;">
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Verifiez le disjoncteur</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Debranchez les appareils</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>N'intervenez pas sur les fils</li>
+                            <li><i class="fa fa-check" style="color:#C62828;margin-right:6px;" aria-hidden="true"/>Appelez-nous immediatement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE DEMANDE D'INTERVENTION
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_demande" name="Sinistre Services — Demande d'intervention">
+    <t t-call="website.layout">
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Demande d'intervention</p>
+                <h1>Demande d'Intervention</h1>
+                <p>Particulier, entreprise ou assure — remplissez ce formulaire, nous intervenons sous 2h</p>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <t t-if="success">
+                    <div style="max-width:600px;margin:0 auto;background:white;border:1px solid #A7F3D0;border-radius:16px;padding:40px;text-align:center;">
+                        <div style="font-size:56px;margin-bottom:16px;">&#10003;</div>
+                        <h2 style="font-size:24px;font-weight:700;color:#065F46;margin-bottom:10px;">Demande enregistree !</h2>
+                        <p style="color:#6B7280;margin-bottom:20px;">Votre demande a bien ete reçue. Un conseiller vous contacte dans les 30 minutes.</p>
+                        <t t-if="reference">
+                            <p style="font-size:13px;color:#9CA3AF;margin-bottom:24px;">Reference dossier : <strong style="color:#C62828;font-size:16px;"><t t-esc="reference"/></strong></p>
+                        </t>
+                        <a href="/" class="mn-btn mn-btn--primary">Retour a l'accueil</a>
+                    </div>
+                </t>
+                <t t-if="not success">
+                    <div style="display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start;">
+                        <!-- Formulaire -->
+                        <div class="mn-form-card">
+                            <h2>Decrivez votre sinistre</h2>
+                            <p class="mn-form-sub">Remplissez ce formulaire — un conseiller vous rappelle sous 30 minutes.</p>
+                            <t t-if="error">
+                                <div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires.</div>
+                            </t>
+                            <form method="POST" action="/demande-intervention/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Prenom</label>
+                                        <input type="text" name="prenom" placeholder="Votre prenom"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Nom <span class="required">*</span></label>
+                                        <input type="text" name="nom" required="required" placeholder="Votre nom"/>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Telephone <span class="required">*</span></label>
+                                        <input type="tel" name="telephone" required="required" placeholder="06 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email</label>
+                                        <input type="email" name="email" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Vous etes <span class="required">*</span></label>
+                                    <select name="source">
+                                        <option value="particulier">Particulier</option>
+                                        <option value="entreprise">Entreprise / Professionnel</option>
+                                        <option value="assurance">Mandate par une assurance</option>
+                                    </select>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Type d'intervention <span class="required">*</span></label>
+                                        <select name="type_intervention">
+                                            <option value="">-- Selectionnez --</option>
                                             <option value="serrurerie">Serrurerie</option>
                                             <option value="plomberie">Plomberie</option>
-                                            <option value="menuiserie_ext">Menuiserie</option>
+                                            <option value="menuiserie_int">Menuiserie Interieure</option>
+                                            <option value="menuiserie_ext">Menuiserie Exterieure</option>
                                             <option value="vitrerie">Vitrerie</option>
                                             <option value="electricite">Electricite</option>
                                             <option value="autre">Autre</option>
                                         </select>
                                     </div>
-                                    <div style="margin-bottom:14px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Telephone</label>
-                                        <input type="tel" name="telephone" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
+                                    <div class="mn-form-group">
+                                        <label>Niveau d'urgence</label>
+                                        <select name="urgence">
+                                            <option value="normale">Normale — sous 48h</option>
+                                            <option value="urgente">Urgente — aujourd'hui</option>
+                                            <option value="tres_urgente">Tres urgente — moins de 2h</option>
+                                        </select>
                                     </div>
-                                    <div style="margin-bottom:20px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Code postal</label>
-                                        <input type="text" name="code_postal" placeholder="75001" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
-                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Adresse d'intervention <span class="required">*</span></label>
+                                    <input type="text" name="adresse" required="required" placeholder="Adresse complete avec code postal"/>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Description du sinistre <span class="required">*</span></label>
+                                    <textarea name="description" rows="5" required="required" placeholder="Decrivez votre probleme en detail : que s'est-il passe, depuis quand ?"/>
+                                </div>
+                                <div class="mn-form-submit">
                                     <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
-                                        Trouver un artisan
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma demande
                                     </button>
-                                    <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:10px;">Sans engagement · Devis gratuit</p>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 STATS
-            ══════════════════════════════════════════ -->
-            <section class="mn-stats">
-                <div class="mn-container">
-                    <div class="mn-stats__grid">
-                        <div class="mn-stat">
-                            <span class="mn-stat__number">+15 000</span>
-                            <span class="mn-stat__label">Demandes par mois</span>
-                        </div>
-                        <div class="mn-stat">
-                            <span class="mn-stat__number">+1 700</span>
-                            <span class="mn-stat__label">Artisans certifies</span>
-                        </div>
-                        <div class="mn-stat">
-                            <span class="mn-stat__number">2h</span>
-                            <span class="mn-stat__label">Delai moyen</span>
-                        </div>
-                        <div class="mn-stat">
-                            <span class="mn-stat__number">98%</span>
-                            <span class="mn-stat__label">Clients satisfaits</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 SERVICES
-            ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Nos interventions</span>
-                        <h2>Tous types de sinistres pris en charge</h2>
-                        <p>Artisans qualifies disponibles 24h/24 — Intervention garantie en moins de 2h</p>
-                    </div>
-                    <div class="mn-grid mn-grid--3">
-                        <a href="/demande-intervention" class="mn-card--solution">
-                            <div class="mn-card__icon"><i class="fa fa-lock" aria-hidden="true"/></div>
-                            <h3>Serrurerie</h3>
-                            <p>Porte claquee, serrure forcee, cylindre a remplacer. Ouverture sans destruction garantie.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                        <a href="/demande-intervention" class="mn-card--solution">
-                            <div class="mn-card__icon"><i class="fa fa-tint" aria-hidden="true"/></div>
-                            <h3>Plomberie</h3>
-                            <p>Fuite d'eau, degat des eaux, canalisation bouchee. Intervention d'urgence 24h/24.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                        <a href="/demande-intervention" class="mn-card--solution">
-                            <div class="mn-card__icon"><i class="fa fa-home" aria-hidden="true"/></div>
-                            <h3>Menuiserie</h3>
-                            <p>Porte fracturee, fenetre endommagee, volet casse. Securisation immediate puis remplacement.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                        <a href="/demande-intervention" class="mn-card--solution">
-                            <div class="mn-card__icon"><i class="fa fa-th-large" aria-hidden="true"/></div>
-                            <h3>Vitrerie</h3>
-                            <p>Bris de glace, fenetre cassee, double vitrage. Bache provisoire disponible dans l'heure.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                        <a href="/demande-intervention" class="mn-card--solution">
-                            <div class="mn-card__icon"><i class="fa fa-bolt" aria-hidden="true"/></div>
-                            <h3>Electricite</h3>
-                            <p>Panne electrique, disjoncteur, court-circuit. Electriciens Qualifelec certifies.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                        <a href="/urgence" class="mn-card--solution mn-card--featured">
-                            <div class="mn-card__icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"/></div>
-                            <h3>Urgence 24h/24</h3>
-                            <p>Toute intervention urgente, nuit et weekend. Un artisan chez vous en moins de 2h garantis.</p>
-                            <span class="mn-card__arrow">&#8594;</span>
-                        </a>
-                    </div>
-                    <div class="mn-section__footer">
-                        <a href="/nos-services" class="mn-btn mn-btn--outline">Voir tous nos services &#8594;</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 COMMENT CA MARCHE
-            ══════════════════════════════════════════ -->
-            <section class="mn-section">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Simple et rapide</span>
-                        <h2>Comment ca marche ?</h2>
-                        <p>De votre appel a l'intervention, tout se passe en 3 etapes simples</p>
-                    </div>
-                    <div class="mn-grid mn-grid--3" style="gap:32px;">
-                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;position:relative;">
-                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">1</div>
-                            <div style="position:absolute;top:56px;left:calc(50% + 36px);width:calc(50% - 36px + 32px);height:2px;background:linear-gradient(90deg,#FFEBEE,rgba(198,40,40,.15));display:none;" class="mn-step-line"/>
-                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Contactez-nous</h3>
-                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Appelez le 01 XX XX XX XX ou remplissez le formulaire en ligne. Disponible 24h/24, 7j/7, meme les jours feries.</p>
-                        </div>
-                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;">
-                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">2</div>
-                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Recevez un devis</h3>
-                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Fourchette tarifaire precise en moins de 10 minutes. Pas de surprise : le prix est fixe avant l'intervention.</p>
-                        </div>
-                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid rgba(198,40,40,.15);background:linear-gradient(135deg,#FFF5F5,white);">
-                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(198,40,40,.25);">3</div>
-                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">L'artisan intervient</h3>
-                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Artisan certifie chez vous en moins de 2h. Photos avant/apres, rapport d'intervention remis pour votre assurance.</p>
-                        </div>
-                    </div>
-
-                    <!-- Bande assurance -->
-                    <div style="margin-top:48px;background:linear-gradient(135deg,#EFF6FF,#F0F4FF);border:1px solid #BFDBFE;border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-                        <div style="display:flex;align-items:center;gap:16px;">
-                            <div style="width:48px;height:48px;background:#1E40AF;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;flex-shrink:0;">
-                                <i class="fa fa-building" aria-hidden="true"/>
-                            </div>
-                            <div>
-                                <p style="font-size:15px;font-weight:700;color:#1E40AF;margin-bottom:2px;">Vous avez une assurance habitation ?</p>
-                                <p style="font-size:13px;color:#6B7280;">Contactez d'abord votre assureur — il peut nous mandater directement et prendre en charge une partie du cout.</p>
-                            </div>
-                        </div>
-                        <a href="/contact" class="mn-btn mn-btn--primary mn-btn--sm" style="background:#1E40AF;border-color:#1E40AF;white-space:nowrap;">En savoir plus</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 POURQUOI NOUS CHOISIR
-            ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Nos engagements</span>
-                        <h2>Pourquoi choisir Sinistre Services ?</h2>
-                        <p>Des engagements concrets pour votre tranquillite d'esprit</p>
-                    </div>
-                    <div class="mn-grid mn-grid--4">
-                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-shield" aria-hidden="true"/></div>
-                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Artisans verifies</h4>
-                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Chaque artisan signe une charte qualite et est verifie (assurance, Kbis, certifications) avant toute intervention.</p>
-                        </div>
-                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-money" aria-hidden="true"/></div>
-                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Prix fixes garantis</h4>
-                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Devis gratuit, fourchette tarifaire fixee avant l'intervention. Zero frais cache. Paiement uniquement apres realisation.</p>
-                        </div>
-                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-clock-o" aria-hidden="true"/></div>
-                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Disponible 24h/24</h4>
-                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Urgences la nuit, le weekend, les jours feries. Notre plateforme ne s'arrete jamais, partout en France metropolitaine.</p>
-                        </div>
-                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-file-text-o" aria-hidden="true"/></div>
-                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Rapport complet</h4>
-                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Photos avant/apres, rapport d'intervention detaille transmis directement a votre assurance pour faciliter le remboursement.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 TEMOIGNAGES
-            ══════════════════════════════════════════ -->
-            <section class="mn-reviews mn-section">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Temoignages</span>
-                        <h2>Ce que disent nos clients</h2>
-                    </div>
-                    <div class="mn-grid mn-grid--3">
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Serrurier arrive en 40 minutes, porte ouverte sans degat. Tres professionnel, prix conforme au devis.</blockquote>
-                            <footer class="mn-review__author">
-                                <div class="mn-avatar">ML</div>
-                                <div><strong>Marie L.</strong><span>Particulier, Paris 15e</span></div>
-                            </footer>
-                        </article>
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Fuite d'eau un dimanche soir, plombier sur place en 1h30. Degat maitrise rapidement. Merci pour la reactivite !</blockquote>
-                            <footer class="mn-review__author">
-                                <div class="mn-avatar">TB</div>
-                                <div><strong>Thomas B.</strong><span>Particulier, Lyon</span></div>
-                            </footer>
-                        </article>
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Prise en charge directe par notre assurance. Rapport d'intervention tres detaille, suivi parfait du dossier.</blockquote>
-                            <footer class="mn-review__author">
-                                <div class="mn-avatar">SM</div>
-                                <div><strong>Sophie M.</strong><span>Gestionnaire sinistres, AXA</span></div>
-                            </footer>
-                        </article>
-                    </div>
-                    <div class="mn-reviews__score">
-                        <div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <strong>4,8 / 5</strong> &#8212; 1 247 avis verifies
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 ESPACE ARTISAN
-            ══════════════════════════════════════════ -->
-            <section class="mn-section" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);color:white;">
-                <div class="mn-container">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
-                        <div>
-                            <span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FCA5A5;background:rgba(198,40,40,.15);padding:4px 14px;border-radius:100px;border:1px solid rgba(198,40,40,.3);margin-bottom:20px;">Espace Artisan</span>
-                            <h2 style="font-size:36px;font-weight:800;letter-spacing:-.025em;color:white;margin-bottom:16px;line-height:1.2;">Vous etes artisan ? Rejoignez notre reseau</h2>
-                            <p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:32px;">Recevez des missions qualifiees directement sur votre smartphone. Gerez votre planning, vos devis et vos paiements depuis notre application mobile.</p>
-                            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:36px;">
-                                <div style="display:flex;align-items:center;gap:14px;">
-                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-                                        <i class="fa fa-mobile" aria-hidden="true"/>
-                                    </div>
-                                    <div>
-                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Application mobile dediee</p>
-                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Recevez et gerez vos missions en temps reel depuis votre telephone</p>
-                                    </div>
+                                    <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:10px;">En soumettant ce formulaire, vous acceptez notre <a href="/page/confidentialite">politique de confidentialite</a>.</p>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:14px;">
-                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-                                        <i class="fa fa-money" aria-hidden="true"/>
-                                    </div>
-                                    <div>
-                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Paiement rapide garanti</p>
-                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Virement sous 48h apres validation du client. Aucun impaye.</p>
-                                    </div>
+                            </form>
+                        </div>
+                        <!-- Sidebar -->
+                        <div style="display:flex;flex-direction:column;gap:16px;">
+                            <div class="mn-contact-info-card">
+                                <h3>Urgence ?</h3>
+                                <div style="text-align:center;padding:12px 0;">
+                                    <a href="tel:+33100000000" style="font-size:24px;font-weight:800;color:#C62828;display:block;margin-bottom:4px;">01 XX XX XX XX</a>
+                                    <p style="font-size:12px;color:#9CA3AF;">Disponible 24h/24, 7j/7</p>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:14px;">
-                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-                                        <i class="fa fa-map-marker" aria-hidden="true"/>
+                                <a href="#" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;" data-rappel="1"><i class="fa fa-phone" aria-hidden="true"/> Etre rappele</a>
+                            </div>
+                            <div class="mn-contact-info-card">
+                                <h3>Delais d'intervention</h3>
+                                <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#FFF5F5;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128308; Tres urgent</span>
+                                        <strong style="font-size:13px;color:#C62828;">Moins de 2h</strong>
                                     </div>
-                                    <div>
-                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Missions dans votre zone</p>
-                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Definissez votre perimetre d'intervention. Recevez uniquement les missions proches de vous.</p>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#FFF7ED;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128992; Urgent</span>
+                                        <strong style="font-size:13px;color:#EA580C;">Aujourd'hui</strong>
                                     </div>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:14px;">
-                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-                                        <i class="fa fa-star" aria-hidden="true"/>
-                                    </div>
-                                    <div>
-                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Developpez votre reputation</p>
-                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Avis clients verifies, badge certifie, visibilite aupres des assurances partenaires.</p>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#F0FDF4;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128994; Normal</span>
+                                        <strong style="font-size:13px;color:#16A34A;">Sous 48h</strong>
                                     </div>
                                 </div>
                             </div>
-                            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                                <a href="/intervenant/login" class="mn-btn mn-btn--primary mn-btn--lg">
-                                    <i class="fa fa-sign-in" aria-hidden="true"/> Espace Artisan
-                                </a>
-                                <a href="/contact" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.08);color:white;border:2px solid rgba(255,255,255,.2);">
-                                    Rejoindre le reseau
-                                </a>
+                            <div class="mn-contact-info-card">
+                                <h3>Assurance ?</h3>
+                                <p style="font-size:13px;color:#6B7280;margin-bottom:14px;">Votre assurance peut couvrir tout ou partie de l'intervention. Contactez-la en premier lieu.</p>
+                                <a href="/assurances" class="mn-btn mn-btn--outline mn-btn--sm" style="width:100%;justify-content:center;">En savoir plus</a>
                             </div>
                         </div>
-                        <!-- Stats artisan -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">+1 700</div>
-                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Artisans actifs</div>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE REJOINDRE LE RESEAU
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_rejoindre" name="Sinistre Services — Rejoindre le reseau">
+    <t t-call="website.layout">
+        <div class="mn-page-hero" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Rejoindre le reseau</p>
+                <h1>Rejoignez notre reseau d'artisans</h1>
+                <p>Recevez des missions qualifiees, gerez votre planning, encaissez rapidement</p>
+            </div>
+        </div>
+        <!-- Avantages -->
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">Pourquoi nous rejoindre</span>
+                    <h2>Les avantages du reseau Sinistre Services</h2>
+                </div>
+                <div class="mn-grid mn-grid--4" style="margin-bottom:64px;">
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;margin:0 auto 16px;font-size:22px;"><i class="fa fa-mobile" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">App mobile dediee</h4>
+                        <p style="font-size:13px;color:#6B7280;">Recevez et gerez vos missions en temps reel depuis votre smartphone.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;margin:0 auto 16px;font-size:22px;"><i class="fa fa-money" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Paiement sous 48h</h4>
+                        <p style="font-size:13px;color:#6B7280;">Virement garanti sous 48h apres validation. Zero impaye.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;margin:0 auto 16px;font-size:22px;"><i class="fa fa-map-marker" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Votre zone uniquement</h4>
+                        <p style="font-size:13px;color:#6B7280;">Definissez votre perimetre. Recevez uniquement les missions proches.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;margin:0 auto 16px;font-size:22px;"><i class="fa fa-star" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Badge certifie</h4>
+                        <p style="font-size:13px;color:#6B7280;">Visibilite aupres des assurances partenaires. Avis clients verifies.</p>
+                    </div>
+                </div>
+                <!-- Formulaire candidature -->
+                <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start;">
+                    <div class="mn-form-card">
+                        <h2>Candidature artisan</h2>
+                        <p class="mn-form-sub">Complétez ce formulaire — notre equipe vous recontacte sous 48h.</p>
+                        <t t-if="error"><div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires.</div></t>
+                        <t t-if="success">
+                            <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:12px;padding:28px;text-align:center;">
+                                <div style="font-size:40px;margin-bottom:12px;">&#10003;</div>
+                                <h3 style="color:#065F46;font-size:18px;font-weight:700;margin-bottom:8px;">Candidature reçue !</h3>
+                                <p style="color:#6B7280;font-size:14px;">Notre equipe vous contacte dans les 48h pour verifier votre dossier.</p>
                             </div>
-                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">48h</div>
-                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Delai de paiement</div>
+                        </t>
+                        <t t-if="not success">
+                            <form method="POST" action="/rejoindre-le-reseau/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Nom complet <span class="required">*</span></label>
+                                        <input type="text" name="nom" required="required" placeholder="Votre nom"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Telephone <span class="required">*</span></label>
+                                        <input type="tel" name="telephone" required="required" placeholder="06 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Specialite <span class="required">*</span></label>
+                                        <select name="specialite">
+                                            <option value="">-- Selectionnez --</option>
+                                            <option value="serrurerie">Serrurerie</option>
+                                            <option value="plomberie">Plomberie</option>
+                                            <option value="menuiserie">Menuiserie</option>
+                                            <option value="vitrerie">Vitrerie</option>
+                                            <option value="electricite">Electricite</option>
+                                            <option value="multi">Multi-metiers</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Zone d'intervention</label>
+                                        <input type="text" name="zone" placeholder="Ex: 75, 92, 93..."/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Annees d'experience</label>
+                                        <select name="experience">
+                                            <option value="1-3">1 a 3 ans</option>
+                                            <option value="3-10">3 a 10 ans</option>
+                                            <option value="10+">Plus de 10 ans</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Certifications (Qualifelec, RGE, etc.)</label>
+                                    <input type="text" name="certifications" placeholder="Listez vos certifications"/>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Presentation libre</label>
+                                    <textarea name="message" rows="4" placeholder="Parlez-nous de votre activite, vos equipements, votre disponibilite..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma candidature
+                                    </button>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+                    <!-- Sidebar processus -->
+                    <div style="background:linear-gradient(135deg,#0F172A,#1E2A4A);border-radius:16px;padding:32px;color:white;">
+                        <h3 style="font-size:18px;font-weight:700;margin-bottom:24px;">Le processus en 4 etapes</h3>
+                        <div style="display:flex;flex-direction:column;gap:20px;">
+                            <div style="display:flex;gap:14px;align-items:flex-start;">
+                                <div style="width:32px;height:32px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">1</div>
+                                <div><p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Candidature en ligne</p><p style="font-size:12px;color:rgba(255,255,255,.5);">Remplissez le formulaire ci-contre</p></div>
                             </div>
-                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">15%</div>
-                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Commission plateforme</div>
+                            <div style="display:flex;gap:14px;align-items:flex-start;">
+                                <div style="width:32px;height:32px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">2</div>
+                                <div><p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Verification du dossier</p><p style="font-size:12px;color:rgba(255,255,255,.5);">Kbis, assurance RC, certifications</p></div>
                             </div>
-                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">0</div>
-                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Impaye garanti</div>
+                            <div style="display:flex;gap:14px;align-items:flex-start;">
+                                <div style="width:32px;height:32px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">3</div>
+                                <div><p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Formation plateforme</p><p style="font-size:12px;color:rgba(255,255,255,.5);">Prise en main de l'app mobile (1h)</p></div>
+                            </div>
+                            <div style="display:flex;gap:14px;align-items:flex-start;">
+                                <div style="width:32px;height:32px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">&#10003;</div>
+                                <div><p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Premiere mission</p><p style="font-size:12px;color:rgba(255,255,255,.5);">Vous recevez vos premieres missions</p></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);">
+                            <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:4px;">Commission plateforme</p>
+                            <p style="font-size:28px;font-weight:800;color:white;">15%</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,.4);">Paiement garanti sous 48h · Zero impaye</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE ASSURANCES
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_assurances" name="Sinistre Services — Assurances">
+    <t t-call="website.layout">
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Assurances</p>
+                <h1>Solutions pour les Assureurs</h1>
+                <p>Plateforme de gestion des sinistres agreee — API dediee, suivi temps reel, rapports PDF</p>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">Notre offre</span>
+                    <h2>Une plateforme conçue pour les assureurs</h2>
+                    <p>Simplifiez la gestion de vos sinistres avec une integration directe dans vos systemes</p>
+                </div>
+                <div class="mn-grid mn-grid--3" style="margin-bottom:64px;">
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-code" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">API REST documentee</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Integration simple avec votre systeme de gestion. Envoi automatique des ordres de mission. Documentation complete et sandbox de test disponibles.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-clock-o" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Suivi temps reel</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Tableau de bord dedie. Notifications webhook a chaque changement d'etat. Photos de l'intervention transmises automatiquement.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-file-pdf-o" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Rapports PDF automatiques</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Rapport d'intervention complet genere automatiquement. Photos avant/apres, devis, bon de travaux — tout en un seul document.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-shield" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Artisans verifies</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Chaque artisan est verifie (Kbis, RC pro, certifications). Notation systematique apres chaque intervention. Standard de qualite garanti.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-euro" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Tarification transparente</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Grille tarifaire fixe par type d'intervention. Devis valide avant execution. Facturation directe ou via votre systeme selon votre preference.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-headphones" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Support dedie</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Interlocuteur unique dedie a votre compte. SLA garanti. Support technique 24h/24 pour les intégrations API critiques.</p>
+                    </div>
+                </div>
+                <!-- CTA API -->
+                <div style="background:linear-gradient(135deg,#0F172A,#1E2A4A);border-radius:20px;padding:48px;text-align:center;color:white;">
+                    <span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FCA5A5;background:rgba(198,40,40,.2);padding:4px 14px;border-radius:100px;border:1px solid rgba(198,40,40,.3);margin-bottom:20px;">Acces API</span>
+                    <h2 style="font-size:32px;font-weight:800;margin-bottom:14px;">Pret a integrer notre plateforme ?</h2>
+                    <p style="font-size:16px;opacity:.7;margin-bottom:32px;max-width:520px;margin-left:auto;margin-right:auto;">Demandez un acces sandbox gratuit. Notre equipe technique vous accompagne dans l'integration. Mise en production en moins d'une semaine.</p>
+                    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                        <a href="/assurances/api-access" class="mn-btn mn-btn--primary mn-btn--lg"><i class="fa fa-code" aria-hidden="true"/> Demander un acces API</a>
+                        <a href="/contact" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.1);color:white;border:2px solid rgba(255,255,255,.2);">Parler a un expert</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE ACCES API
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_api_access" name="Sinistre Services — Acces API">
+    <t t-call="website.layout">
+        <div class="mn-page-hero" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › <a href="/assurances" style="color:rgba(255,255,255,.6);">Assurances</a> › Acces API</p>
+                <h1>Demande d'acces API</h1>
+                <p>Sandbox gratuite · Documentation complete · Mise en production en moins d'une semaine</p>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div style="display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start;">
+                    <div class="mn-form-card">
+                        <h2>Formulaire de demande d'acces</h2>
+                        <p class="mn-form-sub">Notre equipe technique vous contacte sous 24h ouvrees avec vos identifiants sandbox.</p>
+                        <t t-if="error"><div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires.</div></t>
+                        <t t-if="success">
+                            <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:12px;padding:32px;text-align:center;">
+                                <div style="font-size:48px;margin-bottom:14px;">&#10003;</div>
+                                <h3 style="color:#065F46;font-size:20px;font-weight:700;margin-bottom:8px;">Demande enregistree !</h3>
+                                <p style="color:#6B7280;">Notre equipe technique vous contacte sous 24h ouvrees avec vos identifiants sandbox et la documentation d'integration.</p>
+                            </div>
+                        </t>
+                        <t t-if="not success">
+                            <form method="POST" action="/assurances/api-access/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Societe <span class="required">*</span></label>
+                                        <input type="text" name="societe" required="required" placeholder="Nom de votre compagnie"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Nom du contact <span class="required">*</span></label>
+                                        <input type="text" name="nom" required="required" placeholder="Prenom Nom"/>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Email professionnel <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="vous@assurance.fr"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Telephone</label>
+                                        <input type="tel" name="telephone" placeholder="01 XX XX XX XX"/>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Volume de sinistres / mois</label>
+                                        <select name="volume">
+                                            <option value="moins-100">Moins de 100</option>
+                                            <option value="100-500">100 a 500</option>
+                                            <option value="500-2000">500 a 2 000</option>
+                                            <option value="plus-2000">Plus de 2 000</option>
+                                        </select>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Systeme de gestion actuel</label>
+                                        <input type="text" name="systeme" placeholder="Ex: Guidewire, Majesco..."/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Types de sinistres geres</label>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_serrurerie" value="1"/> Serrurerie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_plomberie" value="1"/> Plomberie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_vitrerie" value="1"/> Vitrerie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_menuiserie" value="1"/> Menuiserie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_electricite" value="1"/> Electricite</label>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Besoins specifiques et contexte</label>
+                                    <textarea name="besoins" rows="4" placeholder="Decrivez votre besoin d'integration, les volumes, les specificites techniques..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+                                        <i class="fa fa-code" aria-hidden="true"/> Demander mon acces sandbox
+                                    </button>
+                                    <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:10px;">Acces sandbox gratuit · Reponse sous 24h ouvrees · Sans engagement</p>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+                    <!-- Sidebar technique -->
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        <div class="mn-contact-info-card">
+                            <h3>Ce que vous recevrez</h3>
+                            <ul style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> Cles API sandbox</li>
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> Documentation complete (OpenAPI)</li>
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> SDK Python et JavaScript</li>
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> Exemples de code</li>
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> Support technique dedie</li>
+                                <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/> Webhooks configures</li>
+                            </ul>
+                        </div>
+                        <div class="mn-contact-info-card">
+                            <h3>Endpoints principaux</h3>
+                            <div style="background:#0F172A;border-radius:10px;padding:16px;margin-top:4px;">
+                                <p style="font-family:monospace;font-size:11px;color:#4ADE80;margin-bottom:8px;">POST /api/v1/missions</p>
+                                <p style="font-family:monospace;font-size:11px;color:#60A5FA;margin-bottom:8px;">GET  /api/v1/missions/{id}</p>
+                                <p style="font-family:monospace;font-size:11px;color:#60A5FA;margin-bottom:8px;">GET  /api/v1/missions/{id}/pdf</p>
+                                <p style="font-family:monospace;font-size:11px;color:#A78BFA;margin-bottom:0;">POST /api/v1/webhooks</p>
+                            </div>
+                        </div>
+                        <div class="mn-contact-info-card">
+                            <h3>Contact technique</h3>
+                            <div class="mn-contact-detail">
+                                <div class="mn-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></div>
+                                <div>
+                                    <span class="mn-contact-detail-label">Email</span>
+                                    <a href="mailto:api@sinistre-services.fr" class="mn-contact-detail-val">api@sinistre-services.fr</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
+    </t>
+</template>
 
-            <!-- ══════════════════════════════════════════
-                 ASSURANCES PARTENAIRES
-            ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Partenaires</span>
-                        <h2>Plateforme agreee par les assurances</h2>
-                        <p>Nous travaillons directement avec les principales compagnies d'assurance pour une prise en charge simplifiee</p>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE CONTACT
+══════════════════════════════════════════════════════════════════ -->
+<template id="page_contact" name="Sinistre Services — Contact">
+    <t t-call="website.layout">
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Contact</p>
+                <h1>Contactez-nous</h1>
+                <p>Notre equipe vous repond sous 24h ouvrees</p>
+            </div>
+        </div>
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <t t-if="success">
+                    <div style="max-width:560px;margin:0 auto;background:white;border:1px solid #A7F3D0;border-radius:16px;padding:40px;text-align:center;">
+                        <div style="font-size:48px;margin-bottom:14px;">&#10003;</div>
+                        <h3 style="color:#065F46;font-size:20px;font-weight:700;margin-bottom:8px;">Message envoye !</h3>
+                        <p style="color:#6B7280;margin-bottom:24px;">Merci pour votre message. Notre equipe vous repond sous 24h ouvrees.</p>
+                        <a href="/" class="mn-btn mn-btn--primary">Retour a l'accueil</a>
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:48px;">
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">AXA</div>
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MAIF</div>
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Allianz</div>
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Groupama</div>
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MMA</div>
-                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MACIF</div>
-                    </div>
-                    <!-- API Box -->
-                    <div style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-                        <div style="display:flex;align-items:flex-start;gap:20px;">
-                            <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:22px;flex-shrink:0;">
-                                <i class="fa fa-code" aria-hidden="true"/>
+                </t>
+                <t t-if="not success">
+                    <div class="mn-contact-grid">
+                        <div class="mn-form-card">
+                            <h2>Envoyez-nous un message</h2>
+                            <p class="mn-form-sub">Reponse sous 24h ouvrees.</p>
+                            <t t-if="error"><div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires.</div></t>
+                            <form method="POST" action="/contact/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Nom <span class="required">*</span></label>
+                                        <input type="text" name="name" required="required" placeholder="Votre nom complet"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                    <div class="mn-form-group">
+                                        <label>Telephone</label>
+                                        <input type="tel" name="phone" placeholder="01 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Sujet</label>
+                                        <input type="text" name="sujet" placeholder="Sujet de votre message"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Message <span class="required">*</span></label>
+                                    <textarea name="message" required="required" rows="6" placeholder="Votre message..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mn-contact-sidebar">
+                            <div class="mn-contact-info-card">
+                                <h3>Nos coordonnees</h3>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-phone" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">Urgences 24/7</span>
+                                        <a href="tel:+33100000000" class="mn-contact-detail-val">01 XX XX XX XX</a>
+                                    </div>
+                                </div>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">Email</span>
+                                        <a href="mailto:contact@sinistre-services.fr" class="mn-contact-detail-val">contact@sinistre-services.fr</a>
+                                    </div>
+                                </div>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-code" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">API Assureurs</span>
+                                        <a href="mailto:api@sinistre-services.fr" class="mn-contact-detail-val">api@sinistre-services.fr</a>
+                                    </div>
+                                </div>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-users" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">Recrutement artisans</span>
+                                        <a href="mailto:artisans@sinistre-services.fr" class="mn-contact-detail-val">artisans@sinistre-services.fr</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:6px;">API dediee pour assureurs</h3>
-                                <p style="font-size:14px;color:#6B7280;max-width:520px;line-height:1.6;">Integrez notre plateforme directement dans votre systeme de gestion de sinistres. Envoi automatique des ordres de mission, suivi en temps reel, rapports PDF.</p>
+                            <div style="background:linear-gradient(135deg,#FFF5F5,white);border:1px solid rgba(198,40,40,.15);border-radius:14px;padding:24px;text-align:center;">
+                                <h4 style="font-size:15px;font-weight:700;color:#C62828;margin-bottom:8px;">Urgence sinistre ?</h4>
+                                <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">N'attendez pas — appelez directement notre ligne d'urgence disponible 24h/24.</p>
+                                <a href="tel:+33100000000" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;"><i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX</a>
+                            </div>
+                            <div class="mn-contact-info-card">
+                                <h3>Liens utiles</h3>
+                                <ul style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+                                    <li><a href="/demande-intervention" style="font-size:14px;color:#C62828;display:flex;align-items:center;gap:8px;"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a></li>
+                                    <li><a href="/assurances/api-access" style="font-size:14px;color:#C62828;display:flex;align-items:center;gap:8px;"><i class="fa fa-code" aria-hidden="true"/> Demander un acces API</a></li>
+                                    <li><a href="/rejoindre-le-reseau" style="font-size:14px;color:#C62828;display:flex;align-items:center;gap:8px;"><i class="fa fa-users" aria-hidden="true"/> Rejoindre le reseau artisan</a></li>
+                                </ul>
                             </div>
                         </div>
-                        <a href="/contact" class="mn-btn mn-btn--primary" style="white-space:nowrap;">Demander un acces API</a>
                     </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 FAQ
-            ══════════════════════════════════════════ -->
-            <section class="mn-section">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">FAQ</span>
-                        <h2>Questions frequentes</h2>
-                        <p>Tout ce que vous devez savoir avant de faire appel a nos services</p>
-                    </div>
-                    <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;">
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Quel est le delai d'intervention ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Pour les urgences (porte claquee, fuite d'eau, panne electrique), nous garantissons une intervention en moins de 2h. Pour les interventions planifiees, nous proposons des creneaux sous 48h. Nos artisans couvrent l'ensemble du territoire metropolitain.
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Est-ce que mon assurance prend en charge les frais ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Cela depend de votre contrat d'assurance. Beaucoup de contrats multirisques habitation couvrent les degats des eaux, les effractions et les bris de glace. Contactez d'abord votre assureur. Si votre assurance est partenaire de notre plateforme, la prise en charge est automatique et directe.
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Comment sont selectionnes vos artisans ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Chaque artisan passe par un processus de verification rigoureux : verification du Kbis, des assurances professionnelles, des certifications metier (Qualifelec pour les electriciens, etc.) et signature d'une charte qualite. Leurs interventions sont notees par les clients apres chaque mission. Tout artisan en dessous de 4/5 est suspendu.
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Quels sont vos tarifs ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Le devis est toujours gratuit et sans engagement. Les tarifs varient selon le type d'intervention, la complexite et l'heure (tarif de nuit ou weekend). Vous recevez une fourchette de prix precise avant toute intervention. Aucun frais supplementaire ne peut etre facture sans votre accord prealable.
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Intervenez-vous dans toute la France ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Oui, notre reseau couvre l'ensemble de la France metropolitaine et les DOM-TOM principaux. Nos 1 700+ artisans partenaires sont repartis dans toutes les regions. En zone rurale, le delai peut etre legerement superieur (3h maximum).
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Comment suivre l'avancement de mon dossier ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Apres votre demande, vous recevez un SMS avec un lien de suivi unique. Vous pouvez suivre en temps reel : confirmation de l'artisan, heure d'arrivee estimee, photos de l'intervention, rapport final et facture. Tout est disponible sans creation de compte.
-                            </div>
-                        </details>
-
-                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-                                Je suis artisan, comment rejoindre votre reseau ?
-                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-                            </summary>
-                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Rendez-vous sur notre espace artisan et remplissez le formulaire d'inscription. Vous devrez fournir votre Kbis, attestation d'assurance RC pro et vos certifications metier. Apres verification (48h), vous recevez acces a l'application mobile pour recevoir vos premieres missions.
-                            </div>
-                        </details>
-
-                    </div>
-                </div>
-            </section>
-
-            <!-- ══════════════════════════════════════════
-                 CTA FINAL
-            ══════════════════════════════════════════ -->
-            <section class="mn-cta">
-                <div class="mn-container">
-                    <div class="mn-cta__inner">
-                        <h2>Urgence sinistre ? Appelez maintenant.</h2>
-                        <p>Intervention sous 2h · Devis gratuit · Artisans certifies · Sans engagement</p>
-                        <div class="mn-cta__actions">
-                            <a href="tel:+33100000000" class="mn-btn mn-btn--white mn-btn--lg">
-                                <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
-                            </a>
-                            <a href="/demande-intervention" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white;">
-                                <i class="fa fa-wrench" aria-hidden="true"/> Formulaire en ligne
-                            </a>
-                        </div>
-                        <p style="margin-top:20px;font-size:13px;opacity:.6;">Disponible 24h/24 — 7j/7 — Prix d'un appel local</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Script FAQ accordeon -->
-            <script>
-                document.querySelectorAll('details').forEach(function(det) {
-                    det.addEventListener('toggle', function() {
-                        var icon = det.querySelector('.fa-chevron-down');
-                        if (icon) icon.style.transform = det.open ? 'rotate(180deg)' : 'rotate(0)';
-                        icon.style.transition = 'transform 0.2s';
-                    });
-                });
-            </script>
-
-        </t>
-    </template>
+                </t>
+            </div>
+        </section>
+    </t>
+</template>
 
 </odoo>
