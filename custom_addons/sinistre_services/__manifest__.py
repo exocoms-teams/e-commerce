@@ -12,7 +12,7 @@
     'depends': [
     'base', 'mail', 'account', 'sale', 'hr',
     'contacts', 'web', 'website', 'portal',
-    'sinistre_theme',   # ← ajouter
+    'monetique_theme',   # ← ajouter
     ],
    'data': [
     # Security
