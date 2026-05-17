@@ -4,74 +4,128 @@
     <template id="page_home" name="Sinistre Services — Accueil">
         <t t-call="website.layout">
 
+            <!-- HERO -->
             <section class="mn-hero">
                 <div class="mn-container">
                     <div class="mn-hero__inner">
                         <div class="mn-hero__content">
                             <div class="mn-hero__badge">
                                 <span class="mn-dot"></span>
-                                Certifie PCI DSS &#183; Partenaire Banque de France
+                                Plateforme agreee assurances · Artisans certifies
                             </div>
                             <h1 class="mn-hero__title">
-                                Encaissez simplement, partout
-                                <span class="mn-hero__accent">et en toute securite</span>
+                                Intervention rapide,
+                                <span class="mn-hero__accent">pour vos sinistres</span>
                             </h1>
-                            <p class="mn-hero__desc">Des solutions de paiement adaptees a votre activite : TPE, paiement mobile et e-commerce.</p>
+                            <p class="mn-hero__desc">Serruriers, plombiers, menuisiers disponibles <strong>24h/24 — 7j/7</strong> partout en France. Intervention en moins de 2h, devis gratuit.</p>
                             <div class="mn-hero__actions">
-                                <a href="/contact" class="mn-btn mn-btn--primary mn-btn--lg">Demander un audit gratuit</a>
-                                <a href="/shop" class="mn-btn mn-btn--outline mn-btn--lg">Voir nos produits</a>
+                                <a href="/demande-intervention" class="mn-btn mn-btn--primary mn-btn--lg">
+                                    <i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention
+                                </a>
+                                <a href="tel:+33100000000" class="mn-btn mn-btn--outline mn-btn--lg">
+                                    <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
+                                </a>
                             </div>
                             <div class="mn-hero__trust">
-                                <span>&#10003; SLA 98.5% garanti</span>
-                                <span>&#10003; Support 7j/7</span>
-                                <span>&#10003; +3400 TPE actifs</span>
+                                <span>&#10003; Intervention en 2h</span>
+                                <span>&#10003; Devis gratuit</span>
+                                <span>&#10003; Artisans certifies</span>
+                                <span>&#10003; 24h/24 7j/7</span>
                             </div>
                         </div>
-                        <div class="mn-hero__visual">
-                            <img src="/monetique_theme/static/src/img/tpe_hero.png" alt="TPE Monetique" style="max-width:100%;height:auto;border-radius:16px;width:600px;"/>
+                        <!-- Formulaire demande rapide -->
+                        <div class="mn-hero__visual" style="filter:none;">
+                            <div style="background:white;border-radius:20px;padding:32px;box-shadow:0 12px 48px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);">
+                                <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:4px;font-family:'Inter',sans-serif;">Demande rapide</h3>
+                                <p style="font-size:13px;color:#6B7280;margin-bottom:24px;">Reponse sous 15 minutes</p>
+                                <form method="POST" action="/demande-intervention">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div style="margin-bottom:14px;">
+                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Type d'intervention</label>
+                                        <select name="type_intervention" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#111827;background:white;box-sizing:border-box;font-family:'Inter',sans-serif;">
+                                            <option value="serrurerie">Serrurerie</option>
+                                            <option value="plomberie">Plomberie</option>
+                                            <option value="menuiserie_ext">Menuiserie</option>
+                                            <option value="vitrerie">Vitrerie</option>
+                                            <option value="electricite">Electricite</option>
+                                            <option value="autre">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom:14px;">
+                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Telephone</label>
+                                        <input type="tel" name="telephone" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
+                                    </div>
+                                    <div style="margin-bottom:20px;">
+                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Code postal</label>
+                                        <input type="text" name="code_postal" placeholder="75001" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
+                                    </div>
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+                                        Trouver un artisan
+                                    </button>
+                                    <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:10px;">Sans engagement · Devis gratuit</p>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- STATS -->
             <t t-call="monetique_theme.stats_section"/>
 
-            <section class="mn-section mn-products">
+            <!-- SERVICES -->
+            <section class="mn-section mn-section--gray">
                 <div class="mn-container">
                     <div class="mn-section__header">
-                        <span class="mn-eyebrow">Nos produits</span>
-                        <h2>Nos solutions les plus demandees</h2>
-                        <p>Equipements certifies, prets a deployer. Livraison et installation incluses.</p>
+                        <span class="mn-eyebrow">Nos interventions</span>
+                        <h2>Tous types de sinistres pris en charge</h2>
+                        <p>Artisans qualifies disponibles 24h/24 — Intervention garantie en moins de 2h</p>
                     </div>
-                    <div class="mn-products__grid">
-                        <t t-set="products" t-value="website.sale_product_domain()"/>
-                        <t t-foreach="request.env['product.template'].search([], limit=8)" t-as="product">
-                            <a t-attf-href="/shop/#{product.id}" class="mn-product-card">
-                                <div class="mn-product-card__img">
-                                    <t t-if="product.image_512">
-                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="mn-product-card__no-img"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="26" rx="4" stroke="#94A3B8" stroke-width="2"/><path d="M6 18h36" stroke="#94A3B8" stroke-width="2"/><rect x="14" y="22" width="20" height="8" rx="2" fill="#94A3B8" opacity="0.3"/></svg></div>
-                                    </t>
-                                </div>
-                                <div class="mn-product-card__body">
-                                    <h3 t-esc="product.name"/>
-                                    <div class="mn-product-card__footer">
-                                        <span class="mn-product-card__price" t-esc="'%.2f € HT' % product.list_price"/>
-                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </t>
-                        
+                    <div class="mn-grid mn-grid--3">
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-lock" aria-hidden="true"/></div>
+                            <h3>Serrurerie</h3>
+                            <p>Porte claquee, serrure forcee, cylindre a remplacer. Intervention sous 45 minutes.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-tint" aria-hidden="true"/></div>
+                            <h3>Plomberie</h3>
+                            <p>Fuite d'eau, degat des eaux, canalisation bouchee. Plombiers disponibles 24h/24.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-home" aria-hidden="true"/></div>
+                            <h3>Menuiserie</h3>
+                            <p>Porte fracturee, fenetre endommagee, volet casse. Reparation urgente ou remplacement.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-th-large" aria-hidden="true"/></div>
+                            <h3>Vitrerie</h3>
+                            <p>Bris de glace, fenetre cassee, double vitrage. Bache provisoire dans l'heure.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-bolt" aria-hidden="true"/></div>
+                            <h3>Electricite</h3>
+                            <p>Panne electrique, disjoncteur, court-circuit. Electriciens Qualifelec disponibles.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/urgence" class="mn-card--solution mn-card--featured">
+                            <div class="mn-card__icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"/></div>
+                            <h3>Urgence 24h/24</h3>
+                            <p>Toute intervention urgente, nuit et weekend. Un artisan chez vous en moins de 2h garantis.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
                     </div>
                     <div class="mn-section__footer">
-                        <a href="/shop" class="mn-btn mn-btn--outline">Voir tous nos produits &#8594;</a>
+                        <a href="/nos-services" class="mn-btn mn-btn--outline">Voir tous nos services &#8594;</a>
                     </div>
                 </div>
             </section>
 
+            <!-- TEMOIGNAGES -->
             <section class="mn-reviews mn-section">
                 <div class="mn-container">
                     <div class="mn-section__header">
@@ -81,32 +135,49 @@
                     <div class="mn-grid mn-grid--3">
                         <article class="mn-review">
                             <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Installation rapide, equipe tres reactive. 12 terminaux sans interruption depuis 2 ans.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">ML</div><div><strong>Marie L.</strong><span>Directrice - Restauration, Lyon</span></div></footer>
+                            <blockquote>Serrurier arrive en 40 minutes, porte ouverte sans degat. Professionnel et efficace.</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">ML</div>
+                                <div><strong>Marie L.</strong><span>Particulier, Paris 15e</span></div>
+                            </footer>
                         </article>
                         <article class="mn-review">
                             <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Support 7j/7 nous a depannes un dimanche en moins de 2h. Indispensable.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">TB</div><div><strong>Thomas B.</strong><span>Gerant - Supermarche, Paris</span></div></footer>
+                            <blockquote>Fuite d'eau un dimanche soir, plombier sur place en 1h30. Merci pour la rapidite !</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">TB</div>
+                                <div><strong>Thomas B.</strong><span>Particulier, Lyon</span></div>
+                            </footer>
                         </article>
                         <article class="mn-review">
                             <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Migration de 45 caisses sans interruption. Serieux et professionnel.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">SM</div><div><strong>Sophie M.</strong><span>DSI - Franchise, Bordeaux</span></div></footer>
+                            <blockquote>Prise en charge directe par notre assurance. Intervention rapide et devis conforme.</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">SM</div>
+                                <div><strong>Sophie M.</strong><span>Gestionnaire sinistres, AXA</span></div>
+                            </footer>
                         </article>
                     </div>
-                    <div class="mn-reviews__score"><div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><strong>4,8 / 5</strong> &#8212; 312 avis verifies</div>
+                    <div class="mn-reviews__score">
+                        <div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        <strong>4,8 / 5</strong> &#8212; 1 247 avis verifies
+                    </div>
                 </div>
             </section>
 
+            <!-- CTA URGENCE -->
             <section class="mn-cta">
                 <div class="mn-container">
                     <div class="mn-cta__inner">
-                        <h2>Votre infrastructure de paiement commence par une conversation.</h2>
-                        <p>Audit gratuit &#183; Devis sous 48h &#183; Sans engagement</p>
+                        <h2>Urgence sinistre ? Appelez maintenant.</h2>
+                        <p>Intervention sous 2h · Devis gratuit · Artisans certifies · Sans engagement</p>
                         <div class="mn-cta__actions">
-                            <a href="/contact" class="mn-btn mn-btn--white mn-btn--lg">Demander un audit gratuit</a>
-                            <a href="/shop" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white">Voir la boutique</a>
+                            <a href="tel:+33100000000" class="mn-btn mn-btn--white mn-btn--lg">
+                                <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
+                            </a>
+                            <a href="/demande-intervention" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white">
+                                <i class="fa fa-wrench" aria-hidden="true"/> Formulaire en ligne
+                            </a>
                         </div>
                     </div>
                 </div>
