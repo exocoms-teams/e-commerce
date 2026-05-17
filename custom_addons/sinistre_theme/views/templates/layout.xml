@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Enregistrement de l'asset CSS -->
-    <record id="sinistre_theme_css" model="ir.asset">
-        <field name="name">sinistre_theme CSS</field>
-        <field name="bundle">web.assets_frontend</field>
-        <field name="path">sinistre_theme/static/src/css/main.css</field>
-    </record>
-
-    <!-- Topbar urgence -->
     <template id="layout" name="Sinistre Services Layout" inherit_id="website.layout" customize_show="False">
+
+        <!-- Injecter le CSS directement dans le head -->
+        <xpath expr="//head" position="inside">
+            <link rel="stylesheet" type="text/css" href="/sinistre_theme/static/src/css/main.css"/>
+        </xpath>
+
+        <!-- Topbar urgence -->
         <xpath expr="//header" position="before">
             <div class="ss-topbar">
                 <div class="ss-container">
@@ -29,6 +28,7 @@
                 </div>
             </div>
         </xpath>
+
     </template>
 
 </odoo>
