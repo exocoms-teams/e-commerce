@@ -10,15 +10,9 @@
     'post_init_hook': 'post_install_hook',
     'uninstall_hook': 'uninstall_hook',
     'depends': [
-        'base',
-        'mail',
-        'account',
-        'sale',
-        'hr',
-        'contacts',
-        'web',
-        'website',
-        'portal',
+    'base', 'mail', 'account', 'sale', 'hr',
+    'contacts', 'web', 'website', 'portal',
+    'monetique_theme',   # ← ajouter
     ],
    'data': [
     # Security
@@ -46,14 +40,7 @@
     'wizard/assigner_mission_view.xml',
 ],
 'assets': {
-    'web.assets_frontend': [
-        'sinistre_services/static/src/css/variables.css',
-        'sinistre_services/static/src/css/base.css',
-        'sinistre_services/static/src/css/layout.css',
-        'sinistre_services/static/src/css/homepage.css',
-        'sinistre_services/static/src/css/pages.css',
-        'sinistre_services/static/src/js/main.js',
-    ],
+    'web.assets_frontend': [],
     'web.assets_backend': [
         'sinistre_services/static/src/css/backend.css',
     ],
