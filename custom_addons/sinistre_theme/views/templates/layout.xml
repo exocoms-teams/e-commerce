@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Layout principal : topbar urgence + footer sinistres -->
+    <template id="layout" name="Sinistre Services Layout" inherit_id="website.layout" customize_show="False">
+
+        <!-- Topbar urgence rouge avant le header -->
+        <xpath expr="//header" position="before">
+            <div class="ss-topbar">
+                <div class="ss-container">
+                    <div class="ss-topbar-left">
+                        <div class="ss-topbar-item">
+                            <i class="fa fa-phone" aria-hidden="true"/>
+                            <a href="tel:+33100000000">01 XX XX XX XX — Urgence 24/7</a>
+                        </div>
+                        <div class="ss-topbar-item">
+                            <i class="fa fa-envelope" aria-hidden="true"/>
+                            <a href="mailto:contact@sinistre-services.fr">contact@sinistre-services.fr</a>
+                        </div>
+                    </div>
+                    <a href="/urgence" class="ss-topbar-cta">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"/> Urgence 24h/24
+                    </a>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Footer sinistres -->
+        <xpath expr="//footer" position="replace">
+            <t t-call="sinistre_theme.footer"/>
+        </xpath>
+
+    </template>
+
+    <!-- Template footer -->
+    <template id="footer" name="Sinistre Services Footer">
+        <footer class="ss-footer">
+            <div class="ss-footer__top">
+                <div class="ss-container" style="display:contents;">
+                    <div class="ss-footer__brand">
+                        <a href="/" class="ss-footer__logo">SINISTRE<span>SERVICES</span></a>
+                        <p class="ss-footer__about">
+                            Plateforme specialisee dans la gestion des interventions sinistres.
+                            Artisans certifies disponibles 24h/24 partout en France.
+                        </p>
+                        <div class="ss-footer__social">
+                            <a href="#" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"/></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"/></a>
+                        </div>
+                        <div class="ss-footer__badges">
+                            <span class="ss-badge">Agree Assurances</span>
+                            <span class="ss-badge">24h/24</span>
+                            <span class="ss-badge">Artisans Certifies</span>
+                        </div>
+                    </div>
+                    <div class="ss-footer__col">
+                        <h4>Interventions</h4>
+                        <ul>
+                            <li><a href="/nos-services#serrurerie">Serrurerie</a></li>
+                            <li><a href="/nos-services#plomberie">Plomberie</a></li>
+                            <li><a href="/nos-services#menuiserie">Menuiserie</a></li>
+                            <li><a href="/nos-services#vitrerie">Vitrerie</a></li>
+                            <li><a href="/nos-services#electricite">Electricite</a></li>
+                        </ul>
+                    </div>
+                    <div class="ss-footer__col">
+                        <h4>Clients</h4>
+                        <ul>
+                            <li><a href="/demande-intervention">Particuliers</a></li>
+                            <li><a href="/demande-intervention">Entreprises</a></li>
+                            <li><a href="/demande-intervention">Assurances</a></li>
+                            <li><a href="/contact">Devenez Intervenant</a></li>
+                        </ul>
+                    </div>
+                    <div class="ss-footer__col">
+                        <h4>Contact</h4>
+                        <ul>
+                            <li><a href="tel:+33100000000"><i class="fa fa-phone" style="margin-right:6px;" aria-hidden="true"/>01 XX XX XX XX</a></li>
+                            <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="margin-right:6px;" aria-hidden="true"/>contact@sinistre-services.fr</a></li>
+                            <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="margin-right:6px;" aria-hidden="true"/>Urgence 24h/24</a></li>
+                            <li><a href="/contact"><i class="fa fa-map-marker" style="margin-right:6px;" aria-hidden="true"/>Nous contacter</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="ss-footer__bottom">
+                <div class="ss-container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;width:100%;">
+                    <p class="ss-footer__copy">&#169; <t t-esc="datetime.datetime.now().year"/> Sinistre Services. Tous droits reserves.</p>
+                    <nav class="ss-footer__legal">
+                        <a href="/page/mentions-legales">Mentions legales</a>
+                        <a href="/page/confidentialite">Confidentialite</a>
+                        <a href="/page/cgv">CGV</a>
+                    </nav>
+                </div>
+            </div>
+        </footer>
+    </template>
+
+</odoo>
