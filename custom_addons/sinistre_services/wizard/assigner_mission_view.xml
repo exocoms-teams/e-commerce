@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_assigner_mission_wizard" model="ir.ui.view">
+        <field name="name">sinistre.assigner.mission.wizard.form</field>
+        <field name="model">sinistre.assigner.mission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Assigner un Intervenant">
+                <group>
+                    <field name="mission_ids" widget="many2many_tags"/>
+                    <field name="intervenant_id" options="{'quick_create': false}"/>
+                    <field name="date_rdv" required="1"/>
+                    <field name="note" placeholder="Message pour l'intervenant (optionnel)..."/>
+                </group>
+                <footer>
+                    <button name="action_assigner" string="✅ Assigner" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_assigner_mission_wizard" model="ir.actions.act_window">
+        <field name="name">Assigner un Intervenant</field>
+        <field name="res_model">sinistre.assigner.mission.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_sinistre_mission"/>
+        <field name="binding_type">action</field>
+    </record>
+</odoo>

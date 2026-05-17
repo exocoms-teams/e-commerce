@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sinistre_intervenant_form" model="ir.ui.view">
+        <field name="name">sinistre.intervenant.form</field>
+        <field name="model">sinistre.intervenant</field>
+        <field name="arch" type="xml">
+            <form string="Intervenant">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_voir_missions" type="object" class="oe_stat_button" icon="fa-tasks">
+                            <field name="mission_count" widget="statinfo" string="Missions"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name" placeholder="Nom de l'intervenant"/></h1></div>
+                    <group>
+                        <group string="Informations">
+                            <field name="partner_id" options="{'quick_create': false}"/>
+                            <field name="user_id" help="Compte pour accès PWA"/>
+                            <field name="specialites" widget="many2many_tags"/>
+                            <field name="zone_intervention"/>
+                        </group>
+                        <group string="Contrat">
+                            <field name="taux_commission" widget="percentage"/>
+                            <field name="disponible" widget="boolean_toggle"/>
+                            <field name="actif" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Notes"><field name="note" nolabel="1"/></group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_sinistre_intervenant_list" model="ir.ui.view">
+        <field name="name">sinistre.intervenant.list</field>
+        <field name="model">sinistre.intervenant</field>
+        <field name="arch" type="xml">
+            <list string="Intervenants">
+                <field name="name"/><field name="specialites" widget="many2many_tags"/>
+                <field name="zone_intervention"/><field name="taux_commission" widget="percentage"/>
+                <field name="mission_count"/><field name="disponible" widget="boolean_toggle"/>
+                <field name="actif" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_sinistre_intervenant" model="ir.actions.act_window">
+        <field name="name">Intervenants</field>
+        <field name="res_model">sinistre.intervenant</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
