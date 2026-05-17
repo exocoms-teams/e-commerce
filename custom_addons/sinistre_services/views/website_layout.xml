@@ -1,1 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Modal rappel -->
+    <record id="ss_rappel_modal" model="ir.ui.view">
+        <field name="name">ss.rappel.modal</field>
+        <field name="type">qweb</field>
+        <field name="key">sinistre_services.ss_rappel_modal</field>
+        <field name="inherit_id" ref="website.layout"/>
+        <field name="arch" type="xml">
+            <xpath expr="//body" position="inside">
+                <div id="ssRappelModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+                    <div style="background:white;border-radius:12px;padding:36px;width:100%;max-width:420px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.25);margin:20px;">
+                        <button onclick="document.getElementById('ssRappelModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:#888;">&#215;</button>
+                        <h2 style="font-family:'Poppins',sans-serif;font-size:19px;font-weight:700;color:#0D47A1;margin-bottom:6px;">Etre rappele rapidement</h2>
+                        <p style="font-size:13px;color:#888;margin-bottom:22px;">Un conseiller vous rappelle sous 15 minutes.</p>
+                        <form method="POST" action="/rappel">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div style="margin-bottom:12px;">
+                                <label style="display:block;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Nom</label>
+                                <input type="text" name="name" placeholder="Votre nom" style="width:100%;padding:10px 12px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                            </div>
+                            <div style="margin-bottom:20px;">
+                                <label style="display:block;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Telephone *</label>
+                                <input type="tel" name="phone" required="required" placeholder="01 XX XX XX XX" style="width:100%;padding:10px 12px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                            </div>
+                            <button type="submit" style="width:100%;padding:12px;background:#0D47A1;color:white;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">
+                                <i class="fa fa-phone" style="margin-right:7px;" aria-hidden="true"/>Me faire rappeler
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('[data-rappel-trigger]').forEach(function(el) {
+                            el.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                document.getElementById('ssRappelModal').style.display = 'flex';
+                            });
+                        });
+                        document.getElementById('ssRappelModal').addEventListener('click', function(e) {
+                            if (e.target === this) this.style.display = 'none';
+                        });
+                    });
+                </script>
+            </xpath>
+        </field>
+    </record>
 
+</odoo>
