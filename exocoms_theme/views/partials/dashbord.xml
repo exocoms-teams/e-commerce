@@ -1,94 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="dashboard_menu">
-        <section class="exo-dashboard-section">
-            <!--  ================================================
-                 CAROUSELS — pleine largeur sous le dashboard
-            ================================================  -->
-            <div class="exo-carousels-fullwidth">
-                <!--  NOUVEAUTÉS  -->
-                <div class="exo-products-section">
-                    <div class="exo-section-header">
-                        <h3>Nouveautés</h3>
-                        <a href="/shop?order=create_date+desc" target="exo-shop-frame">Voir plus</a>
-                    </div>
-                    <div class="exo-carousel-wrapper">
-                        <button class="exo-carousel-btn exo-carousel-prev"
-                            data-target="carousel-new">
-                            <i class="fa fa-chevron-left" />
-                        </button>
-                        <div class="exo-products-carousel" id="carousel-new">
-                            <t t-set="new_products"
-                                t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=8, order='create_date desc')" />
-                            <t t-foreach="new_products" t-as="product">
-                                <a t-attf-href="/shop/{{ slug(product) }}"
-                                    class="exo-product-card exo-product-card-big"
-                                    target="exo-shop-frame">
-                                    <div class="exo-product-card-img-wrap">
-                                        <img
-                                            t-attf-src="/web/image/product.template/{{ product.id }}/image_512"
-                                            t-att-alt="product.name" />
-                                    </div>
-                                    <div class="exo-product-card-body">
-                                        <h4 t-esc="product.name" />
-                                        <p t-esc="product.categ_id.name" />
-                                        <span>
-                                            <t t-esc="product.currency_id.symbol" />
-                                            <t t-esc="'%.2f' % product.list_price" />
-                                        </span>
-                                    </div>
-                                </a>
-                            </t>
-                        </div>
-                        <button class="exo-carousel-btn exo-carousel-next"
-                            data-target="carousel-new">
-                            <i class="fa fa-chevron-right" />
-                        </button>
-                    </div>
+
+    <!-- ACCUEIL — carousels uniquement -->
+    <template id="dashboard_menu" name="Dashboard Accueil Carousels">
+
+        <div class="exo-carousels-fullwidth">
+
+            <!-- NOUVEAUTÉS -->
+            <div class="exo-products-section">
+                <div class="exo-section-header">
+                    <h3>Nouveautés</h3>
+                    <a href="/boutique">Voir plus</a>
                 </div>
-                <!--  MEILLEURES VENTES  -->
-                <div class="exo-products-section">
-                    <div class="exo-section-header">
-                        <h3>Meilleures ventes</h3>
-                        <a href="/shop" target="exo-shop-frame">Voir plus</a>
+                <div class="exo-carousel-wrapper">
+                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-new">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <div class="exo-products-carousel" id="carousel-new">
+                        <t t-set="new_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='create_date desc')"/>
+                        <t t-foreach="new_products" t-as="product">
+                            <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card exo-product-card-big">
+                                <div class="exo-product-card-img-wrap">
+                                    <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512" t-att-alt="product.name"/>
+                                </div>
+                                <div class="exo-product-card-body">
+                                    <h4 t-esc="product.name"/>
+                                    <p t-esc="product.categ_id.name"/>
+                                    <span><t t-esc="product.currency_id.symbol"/><t t-esc="'%.2f' % product.list_price"/></span>
+                                </div>
+                            </a>
+                        </t>
                     </div>
-                    <div class="exo-carousel-wrapper">
-                        <button class="exo-carousel-btn exo-carousel-prev"
-                            data-target="carousel-best">
-                            <i class="fa fa-chevron-left" />
-                        </button>
-                        <div class="exo-products-carousel" id="carousel-best">
-                            <t t-set="best_products"
-                                t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=8, order='write_date desc')" />
-                            <t t-foreach="best_products" t-as="product">
-                                <a t-attf-href="/shop/{{ slug(product) }}"
-                                    class="exo-product-card exo-product-card-big"
-                                    target="exo-shop-frame">
-                                    <div class="exo-product-card-img-wrap">
-                                        <img
-                                            t-attf-src="/web/image/product.template/{{ product.id }}/image_512"
-                                            t-att-alt="product.name" />
-                                    </div>
-                                    <div class="exo-product-card-body">
-                                        <h4 t-esc="product.name" />
-                                        <p t-esc="product.categ_id.name" />
-                                        <span>
-                                            <t t-esc="product.currency_id.symbol" />
-                                            <t t-esc="'%.2f' % product.list_price" />
-                                        </span>
-                                    </div>
-                                </a>
-                            </t>
-                        </div>
-                        <button class="exo-carousel-btn exo-carousel-next"
-                            data-target="carousel-best">
-                            <i class="fa fa-chevron-right" />
-                        </button>
-                    </div>
+                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-new">
+                        <i class="fa fa-chevron-right"/>
+                    </button>
                 </div>
             </div>
-        </section>
-        <script>
-            <![CDATA[ /* === FLÈCHES CAROUSEL === */ document.querySelectorAll('.exo-carousel-btn').forEach(function(btn) { btn.addEventListener('click', function() { var targetId = btn.getAttribute('data-target'); var carousel = document.getElementById(targetId); if (!carousel) return; var scrollAmount = 320; if (btn.classList.contains('exo-carousel-prev')) { carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); } else { carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' }); } }); }); window.addEventListener('load', function () { /* === NIVEAU 1 — déplie/replie les sous-catégories === */ document.querySelectorAll('.exo-l1-header').forEach(function(h) { var body = h.nextElementSibling; var chev = h.querySelector('.exo-l1-chevron'); body.style.display = 'none'; h.addEventListener('click', function(e) { if (e.target.tagName === 'A') return; e.preventDefault(); var isOpen = body.style.display !== 'none'; /* Ferme tous les L1 du même groupe */ var parent = h.closest('.exo-cat1-group'); if (parent) { parent.querySelectorAll('.exo-l1-header').forEach(function(sib) { if (sib === h) return; var sibBody = sib.nextElementSibling; var sibChev = sib.querySelector('.exo-l1-chevron'); if (sibBody) sibBody.style.display = 'none'; if (sibChev) { sibChev.style.transform = ''; sibChev.style.color = ''; } if (sibBody) { sibBody.querySelectorAll('.exo-l2-header').forEach(function(l2h) { var l2b = l2h.nextElementSibling; var l2c = l2h.querySelector('.exo-l2-chevron'); if (l2b) l2b.style.display = 'none'; if (l2c) { l2c.style.transform = ''; l2c.style.color = ''; } }); } }); } if (isOpen) { body.style.display = 'none'; chev.style.transform = ''; chev.style.color = ''; body.querySelectorAll('.exo-l2-header').forEach(function(l2h) { var l2b = l2h.nextElementSibling; var l2c = l2h.querySelector('.exo-l2-chevron'); if (l2b) l2b.style.display = 'none'; if (l2c) { l2c.style.transform = ''; l2c.style.color = ''; } }); } else { body.style.display = 'flex'; body.style.flexDirection = 'column'; chev.style.transform = 'rotate(90deg)'; chev.style.color = '#0d4dff'; } }); }); /* === NIVEAU 2 — déplie/replie les marques === */ document.querySelectorAll('.exo-l2-header').forEach(function(h) { var body = h.nextElementSibling; var chev = h.querySelector('.exo-l2-chevron'); body.style.display = 'none'; h.addEventListener('click', function(e) { if (e.target.tagName === 'A') return; e.preventDefault(); var isOpen = body.style.display !== 'none'; /* Ferme tous les L2 du même L1 */ var parentL1 = h.closest('.exo-l1-body'); if (parentL1) { parentL1.querySelectorAll('.exo-l2-header').forEach(function(sib) { if (sib === h) return; var sibBody = sib.nextElementSibling; var sibChev = sib.querySelector('.exo-l2-chevron'); if (sibBody) sibBody.style.display = 'none'; if (sibChev) { sibChev.style.transform = ''; sibChev.style.color = ''; } }); } if (isOpen) { body.style.display = 'none'; chev.style.transform = ''; chev.style.color = ''; } else { body.style.display = 'flex'; body.style.flexDirection = 'column'; chev.style.transform = 'rotate(90deg)'; chev.style.color = '#0d4dff'; } }); }); /* === LIENS sidebar — chargent dans l'iframe === */ document.querySelectorAll('.exo-l1-header a, .exo-l2-header a, .exo-leaf').forEach(function(a) { a.addEventListener('click', function(e) { var href = a.getAttribute('href'); if (!href || href === '#') return; /* Le target="exo-shop-frame" s'occupe du chargement dans l'iframe */ }); }); }); /* === CAROUSEL FLÈCHES + AUTOPLAY === */ function exoCarouselScroll(id, dir) { var el = document.getElementById(id); if (!el) return; var card = el.querySelector('.exo-product-card'); var w = card ? card.offsetWidth + 12 : 300; el.scrollBy({ left: dir * w * 3, behavior: 'smooth' }); } document.querySelectorAll('.exo-carousel-btn').forEach(function(btn) { btn.addEventListener('click', function() { var id = btn.getAttribute('data-target'); var dir = btn.classList.contains('exo-carousel-prev') ? -1 : 1; exoCarouselScroll(id, dir); }); }); /* Autoplay toutes les 4 secondes */ ['carousel-new', 'carousel-best'].forEach(function(id) { var el = document.getElementById(id); if (!el) return; setInterval(function() { var maxScroll = el.scrollWidth - el.clientWidth; if (el.scrollLeft >= maxScroll - 10) { el.scrollTo({ left: 0, behavior: 'smooth' }); } else { var card = el.querySelector('.exo-product-card'); var w = card ? card.offsetWidth + 12 : 300; el.scrollBy({ left: w, behavior: 'smooth' }); } }, 4000); }); ]]>
-        </script>
+
+            <!-- MEILLEURES VENTES -->
+            <div class="exo-products-section">
+                <div class="exo-section-header">
+                    <h3>Meilleures ventes</h3>
+                    <a href="/boutique">Voir plus</a>
+                </div>
+                <div class="exo-carousel-wrapper">
+                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-best">
+                        <i class="fa fa-chevron-left"/>
+                    </button>
+                    <div class="exo-products-carousel" id="carousel-best">
+                        <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='write_date desc')"/>
+                        <t t-foreach="best_products" t-as="product">
+                            <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card exo-product-card-big">
+                                <div class="exo-product-card-img-wrap">
+                                    <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512" t-att-alt="product.name"/>
+                                </div>
+                                <div class="exo-product-card-body">
+                                    <h4 t-esc="product.name"/>
+                                    <p t-esc="product.categ_id.name"/>
+                                    <span><t t-esc="product.currency_id.symbol"/><t t-esc="'%.2f' % product.list_price"/></span>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-best">
+                        <i class="fa fa-chevron-right"/>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <script><![CDATA[
+        (function() {
+            /* FLÈCHES */
+            document.querySelectorAll('.exo-carousel-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var id  = btn.getAttribute('data-target');
+                    var el  = document.getElementById(id);
+                    if (!el) return;
+                    var card = el.querySelector('.exo-product-card');
+                    var w    = card ? card.offsetWidth + 12 : 300;
+                    var dir  = btn.classList.contains('exo-carousel-prev') ? -1 : 1;
+                    el.scrollBy({ left: dir * w, behavior: 'smooth' });
+                });
+            });
+            /* AUTOPLAY 4s */
+            ['carousel-new', 'carousel-best'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                setInterval(function() {
+                    var max = el.scrollWidth - el.clientWidth;
+                    if (el.scrollLeft >= max - 10) {
+                        el.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        var card = el.querySelector('.exo-product-card');
+                        var w = card ? card.offsetWidth + 12 : 300;
+                        el.scrollBy({ left: w, behavior: 'smooth' });
+                    }
+                }, 4000);
+            });
+        })();
+        ]]></script>
+
     </template>
+
 </odoo>
