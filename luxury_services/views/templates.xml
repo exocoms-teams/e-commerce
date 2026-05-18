@@ -273,6 +273,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Destination -->
                                     <h5 class="mb-3 mt-4">Destination</h5>
                                     <div class="mb-3">
                                         <label class="form-label"><strong>Destination souhaitée *</strong></label>
@@ -386,6 +387,17 @@
                             <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
                             <input type="hidden" name="date_debut" t-att-value="date_debut"/>
                             <input type="hidden" name="date_fin" t-att-value="date_fin"/>
+                            <t t-if="destination">
+                                <tr>
+                                    <th>Destination</th>
+                                    <td>
+                                        <t t-esc="destination.name"/>
+                                        <t t-if="destination.pays_id">
+                                            — <t t-esc="destination.pays_id.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
                             <input type="hidden" name="notes" t-att-value="notes"/>
 
                             <div class="d-flex gap-3">
