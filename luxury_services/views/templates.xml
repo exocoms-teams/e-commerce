@@ -17,8 +17,8 @@
                        href="#"
                        class="btn btn-primary js_check_product a-submit flex-grow-1"
                        data-animation-selector=".o_wsale_product_images">
-                        <i class="fa fa-shopping-cart me-2"/>
-                        Ajouter au panier
+                        <i class="fa fa-envelope me-2"/>
+                        prendre contact
                     </a>
                 </div>
             </t>
@@ -63,8 +63,22 @@
                 <t t-if="product.capacite_personnes">
                     <span class="me-3">
                         <i class="fa fa-users me-1"/>
-                        <strong>Capacité :</strong>
+                        <strong>passagers :</strong>
                         <t t-esc="product.capacite_personnes"/> personnes
+                    </span>
+                </t>
+                <t t-if="product.nb_cabines">
+                    <span class="me-3">
+                        <i class="fa fa-bed me-1"/>
+                        <strong>Cabines :</strong>
+                        <t t-esc="product.nb_cabines"/>
+                    </span>
+                </t>
+                <t t-if="product.vitesse_croisiere">
+                    <span class="me-3">
+                        <i class="fa fa-tachometer me-1"/>
+                        <strong>Vitesse croisière :</strong>
+                        <t t-esc="product.vitesse_croisiere"/> nœuds
                     </span>
                 </t>
                 <t t-if ="product.constructeur_jet">
@@ -128,6 +142,12 @@
                         <i class="fa fa-clock-o me-1"/>
                         <strong>Durée min :</strong>
                         <t t-esc="product.duree_min_location"/> jours
+                    </span>
+
+                    <span>
+                        <i class="fa fa-location-arrow me-1"/>
+                        <strong>destination:</strong>
+                        <t t-esc="', '.join(product.destination_ids.mapped('name'))"/>
                     </span>
                 </t>
             </div>
@@ -253,6 +273,30 @@
                                         </div>
                                     </div>
 
+                                    <!-- Destination -->
+                                    <h5 class="mb-3 mt-4">Destination</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label"><strong>Destination souhaitée *</strong></label>
+
+                                        <t t-if="destinations">
+                                            <select name="destination_id" class="form-select" required="1">
+                                                <option value="">-- Sélectionnez une destination --</option>
+                                                <t t-foreach="destinations" t-as="dest">
+                                                    <option t-att-value="dest.id">
+                                                        <t t-esc="dest.name"/>
+                                                        <t t-if="dest.pays_id"> — <t t-esc="dest.pays_id.name"/></t>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </t>
+
+                                        <t t-else="">
+                                            <div class="alert alert-warning">
+                                                Aucune destination disponible pour ce produit.
+                                            </div>
+                                        </t>
+                                    </div>
+
                                     <!-- Notes -->
                                     <div class="mb-4">
                                         <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
@@ -343,6 +387,17 @@
                             <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
                             <input type="hidden" name="date_debut" t-att-value="date_debut"/>
                             <input type="hidden" name="date_fin" t-att-value="date_fin"/>
+                            <t t-if="destination">
+                                <tr>
+                                    <th>Destination</th>
+                                    <td>
+                                        <t t-esc="destination.name"/>
+                                        <t t-if="destination.pays_id">
+                                            — <t t-esc="destination.pays_id.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
                             <input type="hidden" name="notes" t-att-value="notes"/>
 
                             <div class="d-flex gap-3">
@@ -401,4 +456,124 @@
         </t>
     </template>
 
+    <!-- Filtres luxury dans la sidebar du shop -->
+    <template id="luxury_shop_filters"
+            inherit_id="website_sale.sidebar_dropzone_at_bottom"
+            name="Luxury - Filtres custom">
+
+        <xpath expr="//div[@id='oe_structure_website_sale_sidebar_bottom']" position="inside">
+            <div class="luxury_filters mt-3">
+
+                <form method="GET" t-att-action="request.httprequest.path" id="luxury_filter_form">
+
+                    <!-- Garde les paramètres existants -->
+                    <t t-foreach="request.params.items()" t-as="param">
+                        <t t-if="param[0] not in ('longueur_min', 'longueur_max', 'capacite_min', 'cabines_min', 'type_service', 'vitesse_min')">
+                            <input type="hidden"
+                                t-att-name="param[0]"
+                                t-att-value="param[1]"/>
+                        </t>
+                    </t>
+
+                    <!-- Type service -->
+                    <div class="mb-3 border-top pt-3">
+                        <h6 class="fw-bold small text-uppercase mb-2"
+                            style="color: #714b67;">Type</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                name="type_service" value=""
+                                id="type_tous"
+                                t-att-checked="not request.params.get('type_service')"/>
+                            <label class="form-check-label small" for="type_tous">Tous</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                name="type_service" value="location"
+                                id="type_location"
+                                t-att-checked="request.params.get('type_service') == 'location'"/>
+                            <label class="form-check-label small" for="type_location">
+                                <i class="fa fa-calendar me-1"/>À louer
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                name="type_service" value="vente"
+                                id="type_vente"
+                                t-att-checked="request.params.get('type_service') == 'vente'"/>
+                            <label class="form-check-label small" for="type_vente">
+                                <i class="fa fa-tag me-1"/>À vendre
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Longueur -->
+                    <div class="mb-3 border-top pt-3">
+                        <h6 class="fw-bold small text-uppercase mb-2"
+                            style="color: #714b67;">Longueur (m)</h6>
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <input type="number"
+                                    name="longueur_min"
+                                    class="form-control form-control-sm"
+                                    placeholder="Min"
+                                    t-att-value="request.params.get('longueur_min', '')"/>
+                            </div>
+                            <div class="col-6">
+                                <input type="number"
+                                    name="longueur_max"
+                                    class="form-control form-control-sm"
+                                    placeholder="Max"
+                                    t-att-value="request.params.get('longueur_max', '')"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Capacité -->
+                    <div class="mb-3 border-top pt-3">
+                        <h6 class="fw-bold small text-uppercase mb-2"
+                            style="color: #714b67;">passagers(pers.)</h6>
+                        <input type="number"
+                            name="capacite_min"
+                            class="form-control form-control-sm"
+                            placeholder="Ex: 8"
+                            t-att-value="request.params.get('capacite_min', '')"/>
+                    </div>
+
+                    <!-- Cabines -->
+                    <div class="mb-3 border-top pt-3">
+                        <h6 class="fw-bold small text-uppercase mb-2"
+                            style="color: #714b67;">Cabines </h6>
+                        <input type="number"
+                            name="cabines_min"
+                            class="form-control form-control-sm"
+                            placeholder="Ex: 3"
+                            t-att-value="request.params.get('cabines_min', '')"/>
+                    </div>
+
+                    <!-- Vitesse -->
+                    <div class="mb-3 border-top pt-3">
+                        <h6 class="fw-bold small text-uppercase mb-2"
+                            style="color: #714b67;">Vitesse (nœuds)</h6>
+                        <input type="number"
+                            name="vitesse_min"
+                            class="form-control form-control-sm"
+                            placeholder="Ex: 15"
+                            t-att-value="request.params.get('vitesse_min', '')"/>
+                    </div>
+
+                    <div class="d-grid gap-2 border-top pt-3">
+                        <button type="submit" class="btn btn-sm btn-luxury">
+                            <i class="fa fa-filter me-1"/>
+                            Appliquer
+                        </button>
+                        <a href="/shop" class="btn btn-sm btn-outline-secondary">
+                            Effacer
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </xpath>
+    </template>
+    
 </odoo>
