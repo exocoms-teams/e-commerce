@@ -24,14 +24,15 @@
          EXTENSION VUE LISTE DES PRODUITS (back-office)
          Ajoute la colonne Vendeur dans la liste des produits
          ═══════════════════════════════════════════════════════ -->
-    <record id="view_product_template_list_marketplace" model="ir.ui.view">
-        <field name="name">product.template.list.marketplace</field>
+    <record id="view_product_template_marketplace" model="ir.ui.view">
+        <field name="name">product.template.marketplace</field>
         <field name="model">product.template</field>
-        <field name="inherit_id"
-               ref="product.product_template_action_all"/>
+        <field name="inherit_id" ref="website_sale.product_template_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <field name="vendor_id" optional="show" string="Vendeur"/>
+            <xpath expr="//field[@name='website_id']" position="after">
+                <field name="vendor_id"
+                       string="Vendeur"
+                       options="{'no_create': True}"/>
             </xpath>
         </field>
     </record>
