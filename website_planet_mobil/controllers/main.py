@@ -5,7 +5,7 @@ from odoo.http import request
 
 class WebsitePlanetMobil(http.Controller):
 
-    @http.route(['/techshop', '/techshop/'], type='http', auth='public', website=True, sitemap=True)
+    @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
         top_ventes = request.env['planet.product'].sudo().search([('is_top_vente', '=', True)], limit=4)
         nouveautes = request.env['planet.product'].sudo().search([('is_nouveaute', '=', True)], limit=4)
@@ -31,7 +31,7 @@ class WebsitePlanetMobil(http.Controller):
             'nouveautes': nouveautes,
         })
 
-    @http.route('/techshop/avis', type='http', auth='public', website=True)
+    @http.route('/avis', type='http', auth='public', website=True)
     def avis(self, **kwargs):
         avis_list = [
             {'initiales': 'ML', 'nom': 'Marie L.', 'date': '12 janvier 2026', 'note': 5, 'titre': 'Livraison ultra rapide !', 'commentaire': "Commande passée le soir, reçue le lendemain matin. Le produit est exactement comme décrit, je suis vraiment ravie de mon achat. Je recommande sans hésiter !", 'produit': 'iPhone 15 Pro Max'},
@@ -43,11 +43,17 @@ class WebsitePlanetMobil(http.Controller):
         ]
         return request.render('website_planet_mobil.avis_page', {'avis_list': avis_list})
 
-    @http.route('/techshop/contact', type='http', auth='public', website=True)
+    @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
         return request.render('website_planet_mobil.contact_page', {})
 
-    @http.route('/techshop/shop', type='http', auth='public', website=True)
+    @http.route('/shop', type='http', auth='public', website=True)
     def shop(self, **kwargs):
-        products = request.env['planet.product'].sudo().search([], limit=12)
-        return request.render('website_planet_mobil.category_page', {'products': products})
+        category = kwargs.get('category')  #retourne none si pas de parametre
+        
+        domain = []
+        if category:
+            domain = [('category', '=', category)]
+
+        products = request.env['planet.product'].sudo().search(domain, limit=12)
+        return request.render('website_planet_mobil.category_page', {'products': products, 'category':category})
