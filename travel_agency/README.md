@@ -21,8 +21,8 @@ travel_agency/
 ```bash
 travel_agency/
 ├── views/
-│   ├── travel_reservation_views.xml  ← موجود
-│   └── payment_provider_views.xml    ← الجديد هنا
+│   ├── travel_reservation_views.xml    
+│   └── payment_provider_views.xml   
 └── payment/
     ├── __init__.py
     └── payment_provider.py
