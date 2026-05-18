@@ -158,6 +158,7 @@ class LuxuryController(WebsiteSale):
         return request.render('luxury_services.luxury_reservation_page', {
             'product': product,
             'pays_list': pays,
+            'destinations': product.destination_ids,
         })
 
     @http.route('/luxury/reserver/recap',
@@ -179,10 +180,12 @@ class LuxuryController(WebsiteSale):
         client_pays_id = int(kwargs.get('client_pays_id', 0))
         date_debut_str = kwargs.get('date_debut', '')
         date_fin_str = kwargs.get('date_fin', '')
+        destination_id = int(kwargs.get('destination_id', 0))
         notes = kwargs.get('notes', '').strip()
 
         product = request.env['product.template'].sudo().browse(product_id)
         pays = request.env['res.country'].sudo().browse(client_pays_id)
+        destination = request.env['luxury.destination'].sudo().browse(destination_id) if destination_id else None
 
         if not product.exists():
             return request.redirect('/shop')
@@ -221,6 +224,7 @@ class LuxuryController(WebsiteSale):
             return request.render('luxury_services.luxury_reservation_page', {
                 'product': product,
                 'pays_list': pays_list,
+                'destinations': product.destination_ids,
                 'error': 'Ce produit n\'est pas disponible pour ces dates.',
             })
 
@@ -240,6 +244,8 @@ class LuxuryController(WebsiteSale):
             'nb_jours': nb_jours,
             'prix_total': prix_total,
             'notes': notes,
+            'destinations': product.destination_ids,
+            'destination': destination,
         })
 
     @http.route('/luxury/reserver/submit',
@@ -261,6 +267,7 @@ class LuxuryController(WebsiteSale):
         client_pays_id = int(kwargs.get('client_pays_id', 0))
         date_debut_str = kwargs.get('date_debut', '')
         date_fin_str = kwargs.get('date_fin', '')
+        destination_id = int(kwargs.get('destination_id', 0))
         notes = kwargs.get('notes', '').strip()
 
         product = request.env['product.template'].sudo().browse(product_id)
@@ -285,6 +292,7 @@ class LuxuryController(WebsiteSale):
             'date_debut': date_debut,
             'date_fin': date_fin,
             'notes': notes,
+            'destianation_ids': destination_id if destination_id else False,
             'state': 'en_attente',
         })
 

@@ -17,7 +17,7 @@
                        href="#"
                        class="btn btn-primary js_check_product a-submit flex-grow-1"
                        data-animation-selector=".o_wsale_product_images">
-                        <i class="fa fa-shopping-cart me-2"/>
+                        <i class="fa fa-envelope me-2"/>
                         prendre contact
                     </a>
                 </div>
@@ -143,6 +143,12 @@
                         <strong>Durée min :</strong>
                         <t t-esc="product.duree_min_location"/> jours
                     </span>
+
+                    <span>
+                        <i class="fa fa-location-arrow me-1"/>
+                        <strong>destination:</strong>
+                        <t t-esc="product.destination_ids.name"/> jours
+                    </span>
                 </t>
             </div>
         </xpath>
@@ -265,6 +271,29 @@
                                             <input type="date" name="date_fin"
                                                    class="form-control" required="1"/>
                                         </div>
+                                    </div>
+
+                                    <h5 class="mb-3 mt-4">Destination</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label"><strong>Destination souhaitée *</strong></label>
+
+                                        <t t-if="destinations">
+                                            <select name="destination_id" class="form-select" required="1">
+                                                <option value="">-- Sélectionnez une destination --</option>
+                                                <t t-foreach="destinations" t-as="dest">
+                                                    <option t-att-value="dest.id">
+                                                        <t t-esc="dest.name"/>
+                                                        <t t-if="dest.pays_id"> — <t t-esc="dest.pays_id.name"/></t>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </t>
+
+                                        <t t-else="">
+                                            <div class="alert alert-warning">
+                                                Aucune destination disponible pour ce produit.
+                                            </div>
+                                        </t>
                                     </div>
 
                                     <!-- Notes -->
