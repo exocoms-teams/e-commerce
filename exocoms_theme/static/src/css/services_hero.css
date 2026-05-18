@@ -1,20 +1,21 @@
 /* ═══════════════════════════════════════════════════════════ */
-/* HERO SERVICES */
+/* HERO SERVICES                                              */
 /* ═══════════════════════════════════════════════════════════ */
 
 .services-hero-section {
     position: relative;
-    height: 70vh;
-    min-height: 480px;
-    max-height: 680px;
+    height: 72vh;
+    min-height: 500px;
+    max-height: 700px;
     width: 100%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 40%, #0d3b8f 70%, #006aff 100%);
+    background: linear-gradient(135deg, #07122a 0%, #0d2a6e 45%, #1a5fff 100%);
 }
 
+/* Image de fond légère */
 .services-hero-section::before {
     content: '';
     position: absolute;
@@ -22,82 +23,89 @@
     background-image: url('/exocoms_theme/static/src/img/hero_service.jpg');
     background-size: cover;
     background-position: center;
-    opacity: 0.12;
-    z-index: 1;
+    opacity: 0.15;
+    z-index: 0;
 }
 
+/* Effet lumineux */
 .services-hero-section::after {
     content: '';
     position: absolute;
-    top: -40%; right: -10%;
-    width: 600px; height: 600px;
+    bottom: -20%;
+    left: -10%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 65%);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%);
-    z-index: 1;
+    z-index: 0;
     animation: servicesFloat 20s ease-in-out infinite;
 }
 
 @keyframes servicesFloat {
-    0%, 100% { transform: translate(0,0) rotate(0deg); }
-    50% { transform: translate(30px,-30px) rotate(180deg); }
+    0%, 100% { transform: translate(0, 0); }
+    50%       { transform: translate(30px, -25px); }
 }
 
+/* Overlay */
 .services-hero-overlay {
     position: absolute;
     inset: 0;
+    background: linear-gradient(135deg,
+        rgba(7, 18, 42, 0.80) 0%,
+        rgba(7, 18, 42, 0.55) 55%,
+        rgba(13, 77, 255, 0.15) 100%);
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg,
-        rgba(15,23,42,0.7) 0%,
-        rgba(15,23,42,0.5) 50%,
-        rgba(15,23,42,0.4) 100%);
-    z-index: 2;
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* CONTENU HERO SERVICES                                      */
+/* ═══════════════════════════════════════════════════════════ */
 
 .services-hero-content {
     position: relative;
     z-index: 3;
-    max-width: 780px;
+    max-width: 820px;
     text-align: center;
     color: white;
-    padding: 0 24px;
-    animation: servicesFadeUp 0.8s ease-out;
+    padding: 0 32px;
+    animation: servicesFadeUp 0.9s ease-out;
 }
 
 @keyframes servicesFadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .services-hero-content h1 {
-    font-size: clamp(1.8rem, 4.5vw, 3rem);
-    font-weight: 800;
-    line-height: 1.15;
-    margin-bottom: 20px;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, #ffffff, #00d4ff);
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #ffffff 0%, #a8c8ff 50%, #00d4ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .services-hero-content p {
-    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-    line-height: 1.7;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.82);
     max-width: 640px;
-    margin: 0 auto 28px;
-    color: rgba(255,255,255,0.85);
+    margin: 0 auto 36px;
 }
 
-/* BOUTONS */
+/* Boutons */
 .services-hero-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
+    gap: 14px;
 }
 
 .services-hero-btn-primary,
@@ -106,46 +114,59 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 13px 28px;
+    padding: 15px 36px;
     border-radius: 50px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.25s ease;
     white-space: nowrap;
+    line-height: 1;
 }
 
 .services-hero-btn-primary {
     background: #0d4dff;
     color: white;
-    box-shadow: 0 6px 24px rgba(13,77,255,0.4);
+    box-shadow: 0 6px 28px rgba(13, 77, 255, 0.45);
+    border: none;
 }
 
 .services-hero-btn-primary:hover {
     background: #0a3ad4;
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(13,77,255,0.5);
+    box-shadow: 0 14px 36px rgba(13, 77, 255, 0.55);
 }
 
 .services-hero-btn-secondary {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.1);
     color: white;
-    border: 1.5px solid rgba(255,255,255,0.45);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(8px);
 }
 
 .services-hero-btn-secondary:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.18);
     border-color: white;
     color: white;
     transform: translateY(-2px);
 }
 
+/* ═══════════════════════════════════════════════════════════ */
+/* RESPONSIVE                                                 */
+/* ═══════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
     .services-hero-section { height: 80vh; }
-    .services-hero-content h1 { font-size: 1.8rem; }
-    .services-hero-buttons { flex-direction: column; align-items: center; }
+    .services-hero-content h1 { font-size: 2rem; }
+    .services-hero-content p  { font-size: 1rem; }
+    .services-hero-buttons    { flex-direction: column; align-items: center; }
     .services-hero-btn-primary,
     .services-hero-btn-secondary { width: 100%; max-width: 280px; }
+}
+
+@media (max-width: 480px) {
+    .services-hero-content h1 { font-size: 1.6rem; }
+    .services-hero-btn-primary,
+    .services-hero-btn-secondary { padding: 13px 24px; font-size: 14px; }
 }
