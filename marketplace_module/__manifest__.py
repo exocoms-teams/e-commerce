@@ -16,6 +16,10 @@
         'views/vendor_portal.xml',
     ],
 
+    'demo': [
+        'data/demo.xml',
+    ],
+
     'assets': {
         'web.assets_frontend': [
             'marketplace_module/static/src/css/marketplace.css',
