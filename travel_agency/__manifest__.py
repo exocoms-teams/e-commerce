@@ -1,6 +1,6 @@
 {
     'name': 'Travel Agency',
-    'version': '19.0.1.0.0',
+    'version': '1.0',
     'author': 'ARMOD07',
     'license': 'LGPL-3',
     'category': 'Sales',
@@ -9,6 +9,7 @@
         'security/ir.model.access.csv',
         'views/travel_reservation_views.xml',
         'views/travel_product_views.xml',
+        'views/payment_provider_views.xml',
     ],
     'installable': True,
     'application': True,
