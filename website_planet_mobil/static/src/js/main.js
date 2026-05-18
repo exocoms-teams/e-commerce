@@ -1,5 +1,5 @@
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('load', function () {
 
     var dropdown = document.querySelector('.tsp-nav-dropdown');
     if(dropdown){
