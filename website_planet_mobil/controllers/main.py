@@ -5,7 +5,7 @@ from odoo.http import request
 
 class WebsitePlanetMobil(http.Controller):
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/accueil', type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
         top_ventes = request.env['planet.product'].sudo().search([('is_top_vente', '=', True)], limit=4)
         nouveautes = request.env['planet.product'].sudo().search([('is_nouveaute', '=', True)], limit=4)
@@ -30,6 +30,10 @@ class WebsitePlanetMobil(http.Controller):
             'top_ventes': top_ventes,
             'nouveautes': nouveautes,
         })
+
+    @http.route('/', type='http', auth='public', website=True, sitemap=False)
+    def index(self, **kwargs):
+        return request.redirect('/accueil')
 
     @http.route('/avis', type='http', auth='public', website=True)
     def avis(self, **kwargs):
