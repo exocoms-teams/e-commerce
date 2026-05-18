@@ -8,11 +8,28 @@ from odoo.osv.expression import AND
 
 class LuxuryController(WebsiteSale):
 
+
+    def _get_vip_website(self):
+        return request.env['website'].search(
+            [('name', '=', 'VIP')], limit=1
+        )
+
+    def _is_vip_website(self):
+        vip = self._get_vip_website()
+        if not vip:
+            return False
+        return request.website.id == vip.id
+
+
+
+    
+
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         domain = super()._get_shop_domain(
             search, category, attribute_value_dict, search_in_description
         )
-    
+        if not self._is_vip_website():
+            return domain
         # En Odoo 19, reccuperer les params de GET
         params = request.httprequest.args
     
@@ -59,7 +76,11 @@ class LuxuryController(WebsiteSale):
         fuzzy_search_term, product_count, search_result = super()._shop_lookup_products(
             options, post, search, website
         )
-    
+
+
+        if not self._is_vip_website():
+            return fuzzy_search_term, product_count, search_result
+            
         params = request.httprequest.args
     
         # Filtre type service
@@ -119,6 +140,10 @@ class LuxuryController(WebsiteSale):
                 auth='public',
                 website=True)
     def reservation_page(self, product_id, **kwargs):
+
+        if not self._is_vip_website():
+            return request.redirect('/')
+            
         product = request.env['product.template'].sudo().browse(product_id)
 
         if not product.exists():
@@ -141,6 +166,10 @@ class LuxuryController(WebsiteSale):
                 website=True,
                 methods=['POST'])
     def reservation_recap(self, **kwargs):
+
+        if not self._is_vip_website():
+            return request.redirect('/')
+        
         product_id = int(kwargs.get('product_id', 0))
         client_name = kwargs.get('client_name', '').strip()
         client_email = kwargs.get('client_email', '').strip()
@@ -219,6 +248,10 @@ class LuxuryController(WebsiteSale):
                 website=True,
                 methods=['POST'])
     def reservation_submit(self, **kwargs):
+
+        if not self._is_vip_website():
+            return request.redirect('/')
+        
         product_id = int(kwargs.get('product_id', 0))
         client_name = kwargs.get('client_name', '').strip()
         client_email = kwargs.get('client_email', '').strip()
@@ -264,6 +297,10 @@ class LuxuryController(WebsiteSale):
                 auth='public',
                 website=True)
     def paiement_page(self, reservation_id, **kwargs):
+
+        if not self._is_vip_website():
+            return request.redirect('/')
+            
         reservation = request.env['luxury.reservation'].sudo().browse(reservation_id)
 
         if not reservation.exists():

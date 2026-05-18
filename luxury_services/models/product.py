@@ -1,8 +1,26 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+
+    is_luxury_product = fields.Boolean(
+        string='Est un produit Luxury',
+        compute='_compute_is_luxury_product',
+        store=False,
+    )
+
+    @api.depends('website_id')
+    def _compute_is_luxury_product(self):
+        vip_website = self.env['website'].search(
+            [('name', '=', 'VIP')], limit=1
+        )
+        for record in self:
+            record.is_luxury_product = (
+                vip_website and record.website_id.id == vip_website.id
+            )
+
+    
     # Type de service
     type_service = fields.Selection([
         ('vente', 'À vendre'),
@@ -38,6 +56,14 @@ class ProductTemplate(models.Model):
     prix_location_jour = fields.Float(string='Prix location / jour (€)')
     # Disponibilité
     disponible = fields.Boolean(string='Disponible à la location', default=True)
+
+    destination_ids = fields.Many2many(
+    'luxury.destination',
+    'product_luxury_destination_rel',
+    'product_id',
+    'destination_id',
+    string='Destinations disponibles',
+)
 
     def is_available_for_dates(self, date_debut, date_fin):
         """Vérifie si le produit est disponible pour les dates données"""
