@@ -1,16 +1,16 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-   
     var dropdown = document.querySelector('.tsp-nav-dropdown');
-    if (dropdown) {
-        var link = dropdown.querySelector('a');
-        link.addEventListener('click', function(e) {
+    if(dropdown){
+        var chevron = dropdown.querySelector('.tsp-chevron');
+        chevron.addEventListener("click", function(e){
             e.preventDefault();
             dropdown.classList.toggle('open');
             var submenu = dropdown.querySelector('.tsp-submenu');
-            if (submenu) submenu.style.display = dropdown.classList.contains('open') ? 'block' : 'none';
-        });
+            if(submenu) submenu.style.display = dropdown.classList.contains('open')? 'block' : 'none';
+        })
+
     }
 
    
