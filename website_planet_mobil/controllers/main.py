@@ -31,9 +31,6 @@ class WebsitePlanetMobil(http.Controller):
             'nouveautes': nouveautes,
         })
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=False)
-    def index(self, **kwargs):
-        return request.redirect('/accueil')
 
     @http.route('/avis', type='http', auth='public', website=True)
     def avis(self, **kwargs):
