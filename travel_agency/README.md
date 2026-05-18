@@ -16,3 +16,14 @@ travel_agency/
 ├── __init__.py
 └── __manifest__.py
 ```
+
+
+```bash
+travel_agency/
+├── views/
+│   ├── travel_reservation_views.xml  ← موجود
+│   └── payment_provider_views.xml    ← الجديد هنا
+└── payment/
+    ├── __init__.py
+    └── payment_provider.py
+```
