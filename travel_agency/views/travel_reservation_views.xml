@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_travel_reservation_form" model="ir.ui.view">
+        <field name="name">travel.reservation.form</field>
+        <field name="model">travel.reservation</field>
+        <field name="arch" type="xml">
+            <form string="Travel Reservation">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Client">
+                            <field name="client_name"/>
+                            <field name="client_email"/>
+                            <field name="client_phone"/>
+                            <field name="client_country"/>
+                        </group>
+                        <group string="Travel">
+                            <field name="product_id"/>
+                            <field name="date_depart"/>
+                            <field name="date_retour"/>
+                            <field name="nb_jours"/>
+                        </group>
+                        <group string="Travelers">
+                            <field name="nb_adultes"/>
+                            <field name="nb_enfants"/>
+                            <field name="nb_voyageurs"/>
+                            <field name="prix_total"/>
+                        </group>
+                    </group>
+                    <field name="notes"/>
+                    <field name="state" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_reservation_list" model="ir.ui.view">
+        <field name="name">travel.reservation.list</field>
+        <field name="model">travel.reservation</field>
+        <field name="arch" type="xml">
+            <list string="Reservations">
+                <field name="name"/>
+                <field name="client_name"/>
+                <field name="product_id"/>
+                <field name="date_depart"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_travel_reservation" model="ir.actions.act_window">
+        <field name="name">Travel Reservations</field>
+        <field name="res_model">travel.reservation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first reservation
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_travel_root" name="Travel" sequence="10"/>
+    <menuitem id="menu_travel_reservation" name="Reservations"
+              parent="menu_travel_root"
+              action="action_travel_reservation"/>
+</odoo>
