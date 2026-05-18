@@ -14,7 +14,8 @@
         # PAGES
         'views/pages/home.xml',
         'views/pages/services.xml',
-         'views/pages/mentions_legales.xml',
+        'views/pages/mentions_legales.xml',
+         'views/pages/boutique.xml',
 
         # PARTIALS
         'views/partials/hero.xml',
