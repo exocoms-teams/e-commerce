@@ -150,55 +150,55 @@ header#top {
   position: relative;
 }
 
+/* Fond semi-transparent par-dessus le contenu */
 .exo-search-overlay {
   display: none;
   position: fixed;
-  top: 80px;
+  top: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-bottom: 1px solid #e8ecf8;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  z-index: 998;
-  padding: 14px 40px;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px;
 }
 
 .exo-search-overlay.open {
   display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .exo-search-box {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 1400px;
-  margin: 0 auto;
   width: 100%;
+  max-width: 800px;
+  padding: 0 24px;
 }
 
 .exo-search-form {
   flex: 1;
   display: flex !important;
   align-items: center !important;
-  background: #f5f7fb;
-  border: 1.5px solid #e0e5f0;
-  border-radius: 50px;
-  padding: 0 8px 0 20px;
-  gap: 10px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px 0 24px;
+  gap: 12px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  height: 60px;
 }
 
 .exo-search-form:focus-within {
-  border-color: #0d4dff;
-  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.1);
-  background: white;
+  box-shadow: 0 8px 40px rgba(13, 77, 255, 0.25);
 }
 
 .exo-search-form i {
   color: #8890aa;
-  font-size: 15px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -208,26 +208,30 @@ header#top {
   background: transparent !important;
   outline: none !important;
   box-shadow: none !important;
-  font-size: 15px !important;
+  font-size: 18px !important;
   color: #08152d !important;
-  padding: 13px 0 !important;
+  padding: 0 !important;
 }
 
 .exo-search-form input::placeholder {
   color: #b0b8cc;
+  font-size: 17px;
 }
 
 .exo-search-form button[type="submit"] {
   background: #0d4dff;
   color: white;
   border: none;
-  border-radius: 50px;
-  padding: 9px 22px;
-  font-size: 13px;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
   transition: background 0.2s ease;
 }
 
@@ -236,13 +240,13 @@ header#top {
 }
 
 .exo-search-close {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
-  background: #f0f2f8;
-  color: #5a6480;
-  font-size: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -252,8 +256,7 @@ header#top {
 }
 
 .exo-search-close:hover {
-  background: #e0e4f0;
-  color: #08152d;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 /* =========================================================
