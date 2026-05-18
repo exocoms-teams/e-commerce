@@ -20,3 +20,7 @@ class Exocoms(http.Controller):
     @http.route('/mentions-legales', type='http', auth='public', website=True, sitemap=True)
     def mentions_legales(self, **kw):
         return request.render('exocoms_theme.mentions_legales', {})
+    
+    @http.route('/boutique', type='http', auth='public', website=True, sitemap=True)
+    def boutique(self, **kw):
+        return request.render('exocoms_theme.boutique_page', {})

@@ -19,6 +19,7 @@
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/dashbord.xml',
+        'views/partials/dashbord_boutique.xml',
         'views/partials/services_hero.xml',
         'views/partials/services_content.xml',
         'views/partials/mentions_legales_content.xml',
@@ -44,6 +45,7 @@
             'exocoms_theme/static/src/css/categories.css',
             'exocoms_theme/static/src/css/cta.css',
             'exocoms_theme/static/src/css/dashbord.css',
+            'exocoms_theme/static/src/css/dashbord_boutique.css',
             'exocoms_theme/static/src/css/services_content.css',
             'exocoms_theme/static/src/css/services_features.css',
             'exocoms_theme/static/src/css/services_hero.css',

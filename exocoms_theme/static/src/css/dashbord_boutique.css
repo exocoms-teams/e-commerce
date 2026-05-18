@@ -1,0 +1,1689 @@
+/* =========================================================
+   DASHBOARD SECTION
+========================================================= */
+
+.exo-dashboard-section {
+  padding: 20px 0 40px;
+  background: transparent;
+  margin-top: -80px;
+}
+
+/* =========================================================
+   DASHBOARD LAYOUT
+========================================================= */
+
+.exo-dashboard-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* =========================================================
+   SIDEBAR — posée sur la page, sans fond
+========================================================= */
+
+.exo-dashboard-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+  margin-top:-80px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.07);
+  padding: 20px 18px;
+}
+
+/* =========================================================
+   SIDEBAR TITLE
+========================================================= */
+
+.exo-sidebar-title {
+  background: transparent;
+  padding: 0 0 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 0;
+  border-bottom: 2px solid #e8ecf4;
+  margin-bottom: 10px;
+}
+
+.exo-sidebar-title i {
+  display: none;
+}
+
+.exo-sidebar-title span {
+  font-size: 20px;
+  font-weight: 800;
+  color: #08152d;
+  letter-spacing: -0.3px;
+  text-transform: none;
+}
+
+/* =========================================================
+   MENU GROUP
+========================================================= */
+
+.exo-menu-group {
+  position: relative;
+  border-bottom: none;
+}
+
+.exo-menu-group:last-child {
+  border-bottom: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* =========================================================
+   MAIN CATEGORY — niveau 0
+========================================================= */
+
+.exo-menu-main {
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: none;
+  position: relative;
+  background: transparent !important;
+}
+
+.exo-menu-main::after {
+  display: none;
+}
+
+.exo-menu-main .fa-chevron-down {
+  font-size: 9px;
+  color: #b0b8cc;
+  transition: transform 0.22s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   MENU LEFT
+========================================================= */
+
+.exo-menu-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #08152d;
+}
+
+.exo-menu-left i {
+  display: none;
+}
+
+.exo-menu-main:hover .exo-menu-left {
+  color: #0d4dff;
+}
+
+/* =========================================================
+   SUBMENU — niveau 1
+========================================================= */
+
+.exo-submenu {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 0 14px;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* =========================================================
+   SUB ITEM
+========================================================= */
+
+.exo-sub-item {
+  border-radius: 0;
+  overflow: visible;
+  margin-bottom: 0;
+}
+
+.exo-sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-radius: 0;
+  cursor: pointer;
+  background: transparent !important;
+  user-select: none;
+}
+
+.exo-sub-header a {
+  color: #08152d;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  transition: color 0.15s ease;
+  pointer-events: none;
+}
+
+.exo-sub-header:hover a {
+  color: #0d4dff;
+  text-decoration: none;
+}
+
+.exo-sub-chevron {
+  font-size: 8px;
+  color: #b0b8cc;
+  flex-shrink: 0;
+  transition: transform 0.22s ease, color 0.15s ease;
+  margin-left: 6px;
+}
+
+/* =========================================================
+   SUB BODY — niveau 2
+========================================================= */
+
+.exo-sub-body {
+  display: none;
+  flex-direction: column;
+  padding: 0 0 4px 14px;
+  gap: 0;
+}
+
+/* =========================================================
+   SUB GROUP
+========================================================= */
+
+.exo-sub-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2px;
+}
+
+.exo-sub-group:last-child {
+  margin-bottom: 0;
+}
+
+/* =========================================================
+   GROUP TITLE — niveau 2
+========================================================= */
+
+.exo-group-title {
+  display: block;
+  padding: 3px 0;
+  color: #2a3250;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+
+.exo-group-title::before {
+  display: none;
+}
+
+.exo-group-title:hover {
+  color: #0d4dff;
+  background: transparent;
+}
+
+/* =========================================================
+   LEAF — niveau 3 (marque)
+========================================================= */
+
+.exo-leaf {
+  display: block;
+  padding: 2px 0 2px 14px;
+  color: #4a5270;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 0;
+  transition: color 0.15s ease;
+}
+
+.exo-leaf::before {
+  display: none;
+}
+
+.exo-leaf:hover {
+  color: #0d4dff;
+  background: transparent;
+  padding-left: 14px;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   DASHBOARD CONTENT
+========================================================= */
+
+.exo-dashboard-content {
+  flex: 1;
+  background: white;
+  border-radius: 18px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: none;
+  border: 1px solid #eef0f6;
+}
+
+/* =========================================================
+   SHOP HEADER
+========================================================= */
+
+.exo-shop-header {
+  flex-shrink: 0;
+}
+
+.exo-shop-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #08152d;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+
+.exo-shop-header p {
+  font-size: 15px;
+  color: #8890aa;
+}
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.exo-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.exo-section-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2240;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exo-section-header h3::before {
+  content: '';
+  width: 14px;
+  height: 3px;
+  background: linear-gradient(90deg, #0d4dff, #4d8aff);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.exo-section-header a {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0d4dff;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #eef2ff;
+  transition: all 0.2s ease;
+}
+
+.exo-section-header a:hover {
+  background: #0d4dff;
+  color: white;
+}
+
+/* =========================================================
+   SHOP ODOO
+========================================================= */
+
+.exo-shop-odoo {
+  flex-shrink: 0;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eef0f6;
+}
+
+.exo-shop-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Grille produits natifs */
+.exo-products-native-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+/* Carte produit native */
+.exo-native-card {
+  display: flex;
+  flex-direction: column;
+  background: #fafbff;
+  border: 1px solid #eef0f8;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.22s ease;
+}
+
+.exo-native-card:hover {
+  border-color: #c0ceff;
+  box-shadow: 0 6px 24px rgba(13, 77, 255, 0.12);
+  transform: translateY(-3px);
+}
+
+.exo-native-card-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid #eef0f8;
+}
+
+.exo-native-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+}
+
+.exo-native-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exo-native-card-body h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a2240;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.exo-native-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0d4dff;
+}
+
+/* Responsive grille */
+@media (max-width: 1200px) {
+  .exo-products-native-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .exo-products-native-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================
+   CAROUSELS WRAPPER
+========================================================= */
+
+.exo-carousels-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.exo-products-section {
+  margin-bottom: 0;
+}
+
+/* =========================================================
+   PRODUCTS CAROUSEL
+========================================================= */
+
+.exo-products-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #dce5ff transparent;
+  margin-top: 10px;
+}
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.exo-product-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 220px;
+  max-width: 240px;
+  background: #fafbff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  border: 1px solid #eef0f8;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.exo-product-card:hover {
+  border-color: #c0ceff;
+  background: #f5f7ff;
+  box-shadow: 0 4px 16px rgba(13,77,255,0.1);
+  transform: translateY(-2px);
+}
+
+.exo-product-card img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+  border: 1px solid #eef0f6;
+}
+
+.exo-product-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.exo-product-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  color: #1a2240;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exo-product-card p {
+  font-size: 11px;
+  color: #8890aa;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exo-product-card span {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0d4dff;
+}
+
+/* =========================================================
+   PRODUCTS GRID (si utilisée ailleurs)
+========================================================= */
+
+.exo-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 70px;
+}
+
+/* =========================================================
+   PRODUCTS WRAPPER (si utilisé ailleurs)
+========================================================= */
+
+.exo-products-wrapper {
+  width: calc(100% - 430px);
+  margin-left: auto;
+  margin-top: 40px;
+}
+
+/* =========================================================
+   ODOO SHOP — OVERRIDE STYLES
+========================================================= */
+
+.exo-shop-odoo .o_wsale_products_grid_table_wrapper {
+  width: 100%;
+}
+
+.exo-shop-odoo .oe_product_cart {
+  border-radius: 14px !important;
+  overflow: hidden;
+  border: 1px solid #eef0f6 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  transition: 0.25s ease;
+}
+
+.exo-shop-odoo .oe_product_cart:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(13,77,255,0.1) !important;
+  border-color: #c0ceff !important;
+}
+
+.exo-shop-odoo .o_wsale_product_information {
+  padding: 14px !important;
+}
+
+.exo-shop-odoo .o_wsale_products_item_title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2240;
+}
+
+.exo-shop-odoo .text-primary {
+  color: #0d4dff !important;
+  font-weight: 700;
+}
+
+/* =========================================================
+   RESPONSIVE — 1200px
+========================================================= */
+
+@media (max-width: 1200px) {
+  .exo-dashboard-layout {
+    flex-direction: column;
+  }
+
+  .exo-dashboard-sidebar {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — 768px
+========================================================= */
+
+@media (max-width: 768px) {
+  .exo-dashboard-content {
+    padding: 20px;
+  }
+
+  .exo-shop-header h2 {
+    font-size: 24px;
+  }
+
+  .exo-product-card {
+    min-width: 180px;
+  }
+
+  .exo-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   CAT0 — titre de section fixe (Monétique, Informatique, Télécom)
+========================================================= */
+
+.exo-cat0 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #08152d;
+  padding: 12px 0 6px 0;
+  margin-top: 4px;
+  border-bottom: 2px solid #e8ecf4;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.exo-cat0:first-of-type {
+  padding-top: 4px;
+}
+
+/* =========================================================
+   CAT1 GROUP — conteneur des items niveau 1
+========================================================= */
+
+.exo-cat1-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4px;
+}
+
+/* =========================================================
+   L1 ITEM — ligne cliquable niveau 1 (ex: Monétique terminals)
+========================================================= */
+
+.exo-l1-item {
+  border-radius: 0;
+}
+
+.exo-l1-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.exo-l1-header a {
+  color: #08152d;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.exo-l1-header:hover a {
+  color: #0d4dff;
+}
+
+.exo-l1-chevron {
+  font-size: 8px;
+  color: #b0b8cc;
+  flex-shrink: 0;
+  transition: transform 0.22s ease, color 0.15s ease;
+  margin-left: 6px;
+}
+
+/* =========================================================
+   L1 BODY — contenu déplié niveau 1
+========================================================= */
+
+.exo-l1-body {
+  display: none;
+  flex-direction: column;
+  padding: 2px 0 4px 12px;
+  border-left: 2px solid #dce5ff;
+  margin: 2px 0 4px 6px;
+}
+
+/* =========================================================
+   L2 ITEM — ligne cliquable niveau 2 (ex: TPE Fixe)
+========================================================= */
+
+.exo-l2-item {
+  border-radius: 0;
+}
+
+.exo-l2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.exo-l2-header a {
+  color: #2a3250;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.exo-l2-header:hover a {
+  color: #0d4dff;
+}
+
+.exo-l2-chevron {
+  font-size: 7px;
+  color: #c0c6d6;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.15s ease;
+  margin-left: 4px;
+}
+
+/* =========================================================
+   L2 BODY — marques (INGENICO, PAX...)
+========================================================= */
+
+.exo-l2-body {
+  display: none;
+  flex-direction: column;
+  padding: 2px 0 4px 10px;
+  border-left: 2px solid #eef2ff;
+  margin: 1px 0 2px 4px;
+}
+
+/* =========================================================
+   LEAF — lien final dans l2-body
+========================================================= */
+
+.exo-leaf {
+  display: block;
+  padding: 2px 0;
+  color: #4a5270;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.exo-leaf:hover {
+  color: #0d4dff;
+}
+
+/* =========================================================
+   HEADER ICON BTN — style unifié
+========================================================= */
+
+.exo-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f4f4f4;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #222;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.exo-icon-btn:hover,
+.exo-search-trigger.active {
+  background: #0d4dff;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   SEARCH BAR — pleine largeur sous le header
+========================================================= */
+
+.exo-search-bar {
+  width: 100%;
+  background: white;
+  border-top: 1px solid #eef0f6;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: none;
+}
+
+.exo-search-bar.exo-search-open {
+  max-height: 90px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.exo-search-inner {
+  display: flex;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 32px;
+  gap: 12px;
+}
+
+.exo-search-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 1.5px solid #e0e5f0;
+  border-radius: 50px;
+  padding: 0 20px;
+  gap: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exo-search-form:focus-within {
+  border-color: #0d4dff;
+  box-shadow: 0 0 0 3px rgba(13, 77, 255, 0.1);
+  background: white;
+}
+
+.exo-search-icon {
+  color: #8890aa;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.exo-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: #08152d;
+  padding: 12px 0;
+  outline: none;
+}
+
+.exo-search-input::placeholder {
+  color: #aab0c4;
+}
+
+.exo-search-submit {
+  background: #0d4dff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.exo-search-submit:hover {
+  background: #0a3dd4;
+}
+
+.exo-search-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #5a6480;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.exo-search-close:hover {
+  background: #e0e4f0;
+  color: #08152d;
+}
+
+/* =========================================================
+   SHOP EMBARQUÉ — override styles Odoo dans le dashboard
+========================================================= */
+
+.exo-shop-embedded {
+  width: 100%;
+  min-height: 400px;
+}
+
+/* Cache les éléments inutiles du shop dans ce contexte */
+.exo-shop-embedded .o_wsale_products_header,
+.exo-shop-embedded .o_wsale_categories_top,
+.exo-shop-embedded #wrap > .container > h1,
+.exo-shop-embedded .breadcrumb {
+  display: none !important;
+}
+
+/* Grille produits */
+.exo-shop-embedded .o_wsale_products_grid_table_wrapper,
+.exo-shop-embedded .o_wsale_products_grid {
+  width: 100% !important;
+}
+
+/* Cards produits dans le shop embarqué */
+.exo-shop-embedded .oe_product_cart {
+  border-radius: 14px !important;
+  border: 1px solid #eef0f8 !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+  transition: all 0.22s ease !important;
+  overflow: hidden !important;
+}
+
+.exo-shop-embedded .oe_product_cart:hover {
+  border-color: #c0ceff !important;
+  box-shadow: 0 6px 24px rgba(13,77,255,0.12) !important;
+  transform: translateY(-3px) !important;
+}
+
+.exo-shop-embedded .o_wsale_product_btn .btn-primary {
+  background: #0d4dff !important;
+  border-color: #0d4dff !important;
+  border-radius: 50px !important;
+}
+
+.exo-shop-embedded .o_wsale_product_btn .btn-primary:hover {
+  background: #0a3ad4 !important;
+}
+
+.exo-shop-embedded .o_wsale_products_item_title {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1a2240 !important;
+}
+
+.exo-shop-embedded .text-primary,
+.exo-shop-embedded .oe_currency_value {
+  color: #0d4dff !important;
+  font-weight: 700 !important;
+}
+
+/* Pagination */
+.exo-shop-embedded .o_portal_pager,
+.exo-shop-embedded .page-item .page-link {
+  border-radius: 8px !important;
+}
+
+.exo-shop-embedded .page-item.active .page-link {
+  background: #0d4dff !important;
+  border-color: #0d4dff !important;
+}
+
+/* =========================================================
+   BREADCRUMB DASHBOARD
+========================================================= */
+
+.exo-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #8890aa;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.exo-breadcrumb .exo-bc-all {
+  color: #0d4dff;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exo-breadcrumb .exo-bc-all:hover {
+  text-decoration: underline;
+}
+
+.exo-breadcrumb .exo-bc-sep {
+  color: #c0c6d6;
+  font-size: 11px;
+}
+
+.exo-breadcrumb span:last-child {
+  color: #1a2240;
+  font-weight: 600;
+}
+
+/* =========================================================
+   SHOP ZONE
+========================================================= */
+
+.exo-shop-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
+  position: relative;
+}
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+.exo-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: #8890aa;
+  font-size: 14px;
+}
+
+.exo-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #eef0f8;
+  border-top-color: #0d4dff;
+  border-radius: 50%;
+  animation: exo-spin 0.7s linear infinite;
+}
+
+@keyframes exo-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =========================================================
+   AUCUN RÉSULTAT
+========================================================= */
+
+.exo-no-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: #aab0c4;
+}
+
+.exo-no-result i {
+  font-size: 36px;
+  color: #d0d5e8;
+}
+
+.exo-no-result p {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* =========================================================
+   LIEN ACTIF DANS LE MENU
+========================================================= */
+
+.exo-leaf-active {
+  color: #0d4dff !important;
+  font-weight: 700 !important;
+}
+
+.exo-l1-header a.exo-leaf-active,
+.exo-l2-header a.exo-leaf-active {
+  color: #0d4dff !important;
+  font-weight: 700 !important;
+}
+
+/* Transition grille au chargement */
+.exo-products-native-grid {
+  transition: opacity 0.2s ease;
+}
+
+/* =========================================================
+   FORCE LAYOUT — corrections critiques
+========================================================= */
+
+.exo-dashboard-section {
+  padding: 20px 0 40px !important;
+  background: #f0f2f8 !important;
+  margin-top: -80px !important;
+}
+
+.exo-dashboard-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 24px !important;
+  align-items: flex-start !important;
+}
+
+.exo-dashboard-sidebar {
+  width: 240px !important;
+  min-width: 240px !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+.exo-dashboard-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+  background: white !important;
+  border-radius: 18px !important;
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.exo-shop-odoo {
+  width: 100% !important;
+  height: 80vh !important;
+  min-height: 600px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid #eef0f6 !important;
+  flex-shrink: 0 !important;
+}
+
+.exo-shop-frame {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  display: block !important;
+}
+
+.exo-carousels-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+.exo-products-carousel {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow-x: auto !important;
+  gap: 10px !important;
+  padding-bottom: 6px !important;
+}
+
+.exo-product-card {
+  flex-shrink: 0 !important;
+  min-width: 200px !important;
+  max-width: 220px !important;
+}
+
+/* =========================================================
+   CAROUSELS FULLWIDTH — en bas du dashboard, pleine largeur
+========================================================= */
+
+.exo-carousels-fullwidth {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  background: white;
+  padding: 48px 40px 48px 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 39px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .exo-carousels-fullwidth {
+    padding: 40px 24px !important;
+  }
+}
+
+.exo-carousels-fullwidth .exo-products-section {
+  width: 100%;
+}
+
+.exo-carousels-fullwidth .exo-section-header {
+  margin-bottom: 14px;
+}
+
+.exo-carousels-fullwidth .exo-products-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.exo-carousels-fullwidth .exo-products-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.exo-carousels-fullwidth .exo-product-card {
+  min-width: 260px !important;
+  max-width: 280px !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: white !important;
+  border: 1px solid #eef0f8 !important;
+  transition: all 0.22s ease !important;
+}
+
+.exo-carousels-fullwidth .exo-product-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 32px rgba(13,77,255,0.12) !important;
+  border-color: #c0ceff !important;
+}
+
+/* Image grande en haut */
+.exo-carousels-fullwidth .exo-product-card img {
+  width: 100% !important;
+  height: 180px !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  background: #f5f7fb !important;
+  padding: 16px !important;
+  border: none !important;
+  border-bottom: 1px solid #eef0f8 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Corps de la carte */
+.exo-carousels-fullwidth .exo-product-card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 14px 16px 16px !important;
+}
+
+.exo-carousels-fullwidth .exo-product-card h4 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #08152d !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.exo-carousels-fullwidth .exo-product-card p {
+  font-size: 12px !important;
+  color: #8890aa !important;
+  margin: 0 !important;
+}
+
+.exo-carousels-fullwidth .exo-product-card span {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #08152d !important;
+  margin-top: 4px !important;
+  display: block !important;
+}
+
+/* Bouton Ajouter au panier */
+.exo-carousels-fullwidth .exo-product-card .exo-card-btn {
+  display: block !important;
+  width: calc(100% - 32px) !important;
+  margin: 0 16px 16px !important;
+  padding: 10px !important;
+  background: #0d4dff !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: background 0.2s ease !important;
+}
+
+.exo-carousels-fullwidth .exo-product-card .exo-card-btn:hover {
+  background: #0a3ad4 !important;
+}
+
+@media (max-width: 768px) {
+  .exo-carousels-fullwidth {
+    padding: 20px 16px;
+  }
+}
+
+/* =========================================================
+   CAROUSEL WRAPPER AVEC FLÈCHES
+========================================================= */
+
+.exo-carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.exo-carousel-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e0e5f0;
+  color: #1a2240;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.exo-carousel-btn:hover {
+  background: #0d4dff;
+  color: white;
+  border-color: #0d4dff;
+  box-shadow: 0 4px 16px rgba(13,77,255,0.3);
+}
+
+.exo-carousel-wrapper .exo-products-carousel {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding: 12px 8px;
+}
+
+.exo-carousel-wrapper .exo-products-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
+   GRANDE CARTE PRODUIT
+========================================================= */
+
+.exo-product-card-big {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  min-width: 240px !important;
+  max-width: 260px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: white !important;
+  border: 1px solid #eef0f8 !important;
+  text-decoration: none !important;
+  transition: all 0.22s ease !important;
+}
+
+.exo-product-card-big:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 32px rgba(13,77,255,0.12) !important;
+  border-color: #c0ceff !important;
+}
+
+.exo-product-card-img-wrap {
+  width: 100%;
+  height: 180px;
+  background: #f5f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid #eef0f8;
+}
+
+.exo-product-card-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  padding: 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.exo-product-card-big .exo-product-card-body {
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+.exo-product-card-big h4 {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #08152d !important;
+  white-space: normal !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.exo-product-card-big p {
+  font-size: 12px !important;
+  color: #8890aa !important;
+  margin: 0 !important;
+}
+
+.exo-product-card-big span {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0d4dff !important;
+  margin-top: 4px !important;
+}
+
+/* =========================================================
+   CAROUSEL WRAPPER — flèches + cadrage
+========================================================= */
+
+.exo-carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+/* Flèches */
+.exo-carousel-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e0e5f0;
+  color: #1a2240;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  z-index: 2;
+}
+
+.exo-carousel-btn:hover {
+  background: #0d4dff;
+  border-color: #0d4dff;
+  color: white;
+  box-shadow: 0 4px 16px rgba(13,77,255,0.3);
+}
+
+/* Le carousel entre les deux flèches */
+.exo-carousel-wrapper .exo-products-carousel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden !important;
+  scrollbar-width: none;
+  padding: 12px 8px;
+}
+
+.exo-carousel-wrapper .exo-products-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cartes dans le carousel avec flèches */
+.exo-product-card-big {
+  min-width: 260px !important;
+  max-width: 280px !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding: 20px !important;
+  gap: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
+  border: 1px solid #eef0f8 !important;
+  background: white !important;
+}
+
+.exo-product-card-big .exo-product-card-img-wrap {
+  width: 100%;
+  height: 160px;
+  background: #f8faff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid #eef0f6;
+}
+
+.exo-product-card-big .exo-product-card-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  padding: 12px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.exo-product-card-big h4 {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #08152d !important;
+  margin: 0 0 6px !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.exo-product-card-big p {
+  font-size: 12px !important;
+  color: #8890aa !important;
+  margin: 0 0 8px !important;
+}
+
+.exo-product-card-big span {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: #0d4dff !important;
+}
+
+.exo-product-card-big:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 10px 28px rgba(13,77,255,0.12) !important;
+  border-color: #c0ceff !important;
+}
+
+/* Espace entre le dashboard et les carousels */
+.exo-carousels-fullwidth {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+}
+
+.exo-carousels-fullwidth .exo-products-section {
+  padding: 0 40px;
+}
+
+/* =========================================================
+   FOND TRANSPARENT — tout se confond avec la page
+========================================================= */
+
+.exo-dashboard-section {
+  background: transparent !important;
+}
+
+.exo-dashboard-content {
+  background: white !important;
+  box-shadow: none !important;
+  border: 1px solid #eef0f6 !important;
+}
+
+.exo-dashboard-sidebar {
+  background: white !important;
+}
+
+.exo-carousels-fullwidth {
+  background: transparent !important;
+}
+
+.exo-shop-zone,
+.exo-shop-odoo {
+  background: transparent !important;
+}
+
+/* =========================================================
+   CORRECTIONS FINALES
+========================================================= */
+
+/* Fond iframe transparent */
+.exo-shop-odoo {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Carousels — ne pas couper en bas */
+.exo-carousels-fullwidth {
+  padding-bottom: 60px !important;
+  overflow: visible !important;
+}
+
+.exo-carousel-wrapper {
+  overflow: visible !important;
+}
+
+.exo-carousel-wrapper .exo-products-carousel {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  padding-bottom: 16px !important;
+}
+
+/* Les cartes ont assez d'espace pour leur ombre */
+.exo-product-card-big {
+  margin-bottom: 8px !important;
+}
+
+/* Flèches bien centrées verticalement sur l'image */
+.exo-carousel-btn {
+  position: relative !important;
+  top: -20px !important;
+}
+
+/* =========================================================
+   FORCE FOND BLANC — supprime tout gris résiduel
+========================================================= */
+
+.exo-dashboard-section,
+.exo-dashboard-section *,
+.exo-carousels-fullwidth {
+  background-color: transparent !important;
+}
+
+.exo-dashboard-sidebar {
+  background-color: white !important;
+}
+
+.exo-dashboard-content {
+  background-color: white !important;
+}
+
+.exo-product-card,
+.exo-product-card-big {
+  background-color: white !important;
+}
+
+.exo-carousels-fullwidth .exo-products-section {
+  background-color: transparent !important;
+}
+
+/* Supprime le margin-top négatif qui cause le fond gris */
+.exo-dashboard-section {
+  margin-top: -50px !important;
+  padding-top: 24px !important;
+  padding-bottom: 0 !important;
+}
+
+/* Supprime le margin négatif de la sidebar */
+.exo-dashboard-sidebar {
+  margin-top: -80px !important;
+  margin-bottom: 0 !important;
+}
+
