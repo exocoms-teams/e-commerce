@@ -116,3 +116,15 @@ class MarketplaceVendor(models.Model):
         if website:
             domain.append(('website_id', '=', website.id))
         return self.env['product.template'].search(domain)
+    
+    def action_view_products(self):
+        """Ouvre la liste des produits du vendeur depuis le back-office."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Produits de %s' % self.name,
+            'res_model': 'product.template',
+            'view_mode': 'list,form',
+            'domain': [('vendor_id', '=', self.id)],
+            'context': {'default_vendor_id': self.id},
+        }
