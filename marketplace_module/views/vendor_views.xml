@@ -1,3 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ═══════════════════════════════════════════════════════
+         VUE LISTE : tableau des vendeurs
+         Accessible via Marketplace > Vendeurs
+         ═══════════════════════════════════════════════════════ -->
+    <record id="view_marketplace_vendor_list" model="ir.ui.view">
+        <field name="name">marketplace.vendor.list</field>
+        <field name="model">marketplace.vendor</field>
+        <field name="arch" type="xml">
+            <list string="Vendeurs" decoration-muted="not active">
+                <!-- decoration-muted : affiche en gris les vendeurs desactives -->
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="product_count"
+                       string="Nb produits"/>
+                <field name="website_ids"
+                       widget="many2many_tags"/>
+                <field name="active"
+                       widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         VUE FORMULAIRE : edition d'un vendeur
+         Accessible en cliquant sur un vendeur dans la liste
+         ═══════════════════════════════════════════════════════ -->
+    <record id="view_marketplace_vendor_form" model="ir.ui.view">
+        <field name="name">marketplace.vendor.form</field>
+        <field name="model">marketplace.vendor</field>
+        <field name="arch" type="xml">
+            <form string="Vendeur">
+                <sheet>
+                    <!-- Bouton d'archivage (active/desactive) -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-archive">
+                            <field name="active"
+                                   widget="boolean_button"
+                                   options="{'terminology': 'active'}"/>
+                        </button>
+                        <!-- Compteur de produits (cliquable) -->
+                        <button name="action_view_products"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="product_count"
+                                   widget="statinfo"
+                                   string="Produits"/>
+                        </button>
+                    </div>
+
+                    <!-- Logo du vendeur -->
+                    <field name="logo"
+                           widget="image"
+                           class="oe_avatar"/>
+
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="Nom du vendeur"/>
+                        </h1>
+                    </div>
+
+                    <!-- Onglets du formulaire -->
+                    <notebook>
+                        <!-- Onglet 1 : informations generales -->
+                        <page string="Informations" name="info">
+                            <group>
+                                <group string="Contact">
+                                    <field name="partner_id"/>
+                                    <field name="email"
+                                           widget="email"/>
+                                    <field name="phone"
+                                           widget="phone"/>
+                                    <field name="slug"
+                                           placeholder="ex: mon-vendeur"/>
+                                </group>
+                                <group string="Sites web">
+                                    <field name="website_ids"
+                                           widget="many2many_tags"/>
+                                </group>
+                            </group>
+                            <group string="Description publique">
+                                <field name="description"
+                                       nolabel="1"
+                                       placeholder="Presentation du vendeur affichee sur le site public..."/>
+                            </group>
+                        </page>
+
+                        <!-- Onglet 2 : utilisateurs autorises -->
+                        <page string="Utilisateurs" name="users">
+                            <field name="user_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                    <field name="login"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- Onglet 3 : produits du vendeur -->
+                        <page string="Produits" name="products">
+                            <field name="product_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="list_price"
+                                           string="Prix HT"/>
+                                    <field name="website_published"
+                                           string="Publie"/>
+                                    <field name="website_id"
+                                           string="Site"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         ACTION : ouvrir la liste des vendeurs
+         Referencee par le menu ci-dessous
+         ═══════════════════════════════════════════════════════ -->
+    <record id="action_marketplace_vendors" model="ir.actions.act_window">
+        <field name="name">Vendeurs</field>
+        <field name="res_model">marketplace.vendor</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun vendeur enregistre.
+            </p>
+            <p>Creez votre premier vendeur pour commencer</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         MENUS : navigation dans le back-office Odoo
+         ═══════════════════════════════════════════════════════ -->
+    <!-- Menu racine -->
+    <menuitem id="menu_marketplace_root"
+              name="Marketplace"
+              sequence="30"
+              web_icon="marketplace_module,static/description/icon.png"/>
+
+    <!-- Sous-menu Vendeurs -->
+    <menuitem id="menu_marketplace_vendors"
+              name="Vendeurs"
+              parent="menu_marketplace_root"
+              action="action_marketplace_vendors"
+              sequence="10"/>
+
 </odoo>
