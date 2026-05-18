@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+# ── Modele marketplace.vendor ─────────────────────────────────────────────
+# Administrateur : acces complet
+access_vendor_admin,marketplace.vendor admin,marketplace_module.model_marketplace_vendor,base.group_system,1,1,1,1
+# Vendeur connecte : lire et modifier son propre enregistrement (la ir.rule filtre)
+access_vendor_vendor,marketplace.vendor vendeur,marketplace_module.model_marketplace_vendor,marketplace_module.group_marketplace_vendor,1,1,0,0
+# Utilisateur interne Odoo : lecture seule (pour les listes deroulantes en back-office)
+access_vendor_user,marketplace.vendor user,marketplace_module.model_marketplace_vendor,base.group_user,1,0,0,0
+
+# ── Modele product.template (acces etendu pour les vendeurs) ─────────────
+# Vendeur : peut modifier ses propres produits (la ir.rule filtre automatiquement)
+access_product_vendor,product.template vendeur,product.model_product_template,marketplace_module.group_marketplace_vendor,1,1,1,0
