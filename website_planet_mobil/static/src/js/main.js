@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var dropdown = document.querySelector('.tsp-nav-dropdown');
     if(dropdown){
         var chevron = dropdown.querySelector('.tsp-chevron');
+        console.log('chevron trouver', chevron);
         chevron.addEventListener("click", function(e){
             e.stopPropagation();
             e.preventDefault();
