@@ -5,12 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if(dropdown){
         var chevron = dropdown.querySelector('.tsp-chevron');
         chevron.addEventListener("click", function(e){
+            e.stopPropagation();
             e.preventDefault();
-            dropdown.classList.toggle('open');
             var submenu = dropdown.querySelector('.tsp-submenu');
-            if(submenu) submenu.style.display = dropdown.classList.contains('open')? 'block' : 'none';
+        if(submenu) submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
         })
-
     }
 
    
