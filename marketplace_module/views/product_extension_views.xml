@@ -1,3 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ═══════════════════════════════════════════════════════
+         EXTENSION VUE FORMULAIRE PRODUIT (back-office)
+         inherit_id : on herite de la vue native website_sale
+         ═══════════════════════════════════════════════════════ -->
+    <record id="view_product_template_marketplace" model="ir.ui.view">
+        <field name="name">product.template.marketplace</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="website_sale.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- xpath : localise l'endroit ou injecter dans la vue parente -->
+            <!-- On insere apres le champ website_published -->
+            <xpath expr="//field[@name='website_id']" position="after">
+                <field name="vendor_id"
+                       string="Vendeur"
+                       options="{'no_create': True}"
+                       help="Vendeur proprietaire de ce produit"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════
+         EXTENSION VUE LISTE DES PRODUITS (back-office)
+         Ajoute la colonne Vendeur dans la liste des produits
+         ═══════════════════════════════════════════════════════ -->
+    <record id="view_product_template_list_marketplace" model="ir.ui.view">
+        <field name="name">product.template.list.marketplace</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+               ref="product.product_template_action_all"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='list_price']" position="after">
+                <field name="vendor_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
