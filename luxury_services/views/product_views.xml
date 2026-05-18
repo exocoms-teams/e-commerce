@@ -6,8 +6,14 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
+
+            
+            <xpath expr="//sheet" position="inside">
+                <field name="is_luxury_product" invisible="1"/>
+            </xpath>
+            
             <xpath expr="//notebook" position="inside">
-                <page string="Luxury Services" name="luxury_services">
+                <page string="Luxury Services" name="luxury_services" invisible="not is_luxury_product">
                     <group string="Informations générales">
                         <group>
                             <field name="categorie_luxe"/>
@@ -21,6 +27,13 @@
                         <group>
                             <field name="longueur"/>
                             <field name="capacite_personnes"/>
+                        </group>
+                         <group>
+                            
+                            <field name="nb_cabines"/>
+                            <field name="vitesse_croisiere"/>
+                            <field name="annee_fabrication"/>
+                            <field name="pavillon"/>
                         </group>
                     </group>
                     <group string="Informations Jet"
@@ -40,6 +53,12 @@
                         <group>
                             <field name="duree_min_location"/>
                             <field name="prix_location_jour"/>
+                        </group>
+
+                        <group string="Destinations disponibles">
+                            <field name="destination_ids"
+                                   widget="many2many_tags"
+                                   placeholder="Ajouter une destination..."/>
                         </group>
                     </group>
                 </page>
