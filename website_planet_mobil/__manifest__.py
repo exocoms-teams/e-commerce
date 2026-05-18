@@ -19,6 +19,8 @@
     'assets': {
         'web.assets_frontend': [
             'website_planet_mobil/static/src/css/style.css',
+        ],
+        'web.assets_frontend_minimal': [
             'website_planet_mobil/static/src/js/main.js',
         ],
     },
