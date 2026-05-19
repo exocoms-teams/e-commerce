@@ -130,7 +130,7 @@
     gap: 16px;
     padding: 28px 40px;
     border-top: 1px solid #eef0f8;
-    background: white;
+    background: transparent;       /* ← fond transparent */
 }
 
 .exo-payment-bar-title {
@@ -148,18 +148,18 @@
     flex-wrap: wrap;
 }
 
-.exo-payment-logos img {
-    height: 32px;
+/* Logos SVG inline */
+.exo-pay-logo {
+    height: 36px;
     width: auto;
-    object-fit: contain;
-    filter: grayscale(20%);
     opacity: 0.85;
-    transition: opacity 0.2s, filter 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
+    border-radius: 6px;
 }
 
-.exo-payment-logos img:hover {
+.exo-pay-logo:hover {
     opacity: 1;
-    filter: grayscale(0%);
+    transform: translateY(-2px);
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -247,7 +247,7 @@
     }
     .services-grid { grid-template-columns: 1fr; }
     .exo-payment-bar { padding: 20px 16px; }
-    .exo-payment-logos img { height: 24px; }
+    .exo-pay-logo { height: 28px; }
 }
 
 @media (max-width: 480px) {
