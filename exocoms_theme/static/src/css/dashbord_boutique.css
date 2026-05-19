@@ -11,20 +11,11 @@
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 16px 24px;
-  align-items: stretch; /* ← stretch au lieu de start */
+  align-items: stretch;
 }
 
-/* Sidebar — colonne gauche */
-.exo-dashboard-sidebar {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-/* Content — colonne droite */
-.exo-dashboard-content {
-  grid-column: 2;
-  grid-row: 1;
-}
+.exo-dashboard-sidebar { grid-column: 1; grid-row: 1; }
+.exo-dashboard-content { grid-column: 2; grid-row: 1; }
 
 /* =========================================================
    SIDEBAR
@@ -150,6 +141,50 @@
   margin: 1px 0 2px 4px;
 }
 
+/* Niveau 3 (ex: modèles SUNMI) */
+.exo-l3-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.exo-l3-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.exo-l3-header a {
+  color: #2a3250;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+  pointer-events: none;
+  transition: color 0.15s;
+}
+
+.exo-l3-header:hover a { color: #0d4dff; }
+
+.exo-l3-chevron {
+  font-size: 7px;
+  color: #c0c6d6;
+  flex-shrink: 0;
+  margin-left: 4px;
+  transition: transform 0.2s, color 0.15s;
+}
+
+.exo-l3-body {
+  display: none;
+  flex-direction: column;
+  padding: 2px 0 4px 8px;
+  border-left: 2px solid #f0f4ff;
+  margin: 1px 0 2px 4px;
+}
+
+/* Feuilles */
 .exo-leaf {
   display: block;
   padding: 2px 0;
@@ -162,95 +197,11 @@
 
 .exo-leaf:hover { color: #0d4dff; }
 
-/* =========================================================
-   FOURCHETTE DE PRIX — sous la sidebar (ancienne version panneau latéral)
-========================================================= */
-
-.exo-price-filter {
-  background: white;
-  border-radius: 14px;
-  border: 1px solid #eef0f6;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  padding: 16px;
-}
-
-.exo-price-filter-title {
-  font-size: 13px;
-  font-weight: 800;
-  color: #08152d;
-  margin-bottom: 10px;
-}
-
-.exo-price-range-display {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #5a6480;
-  margin-bottom: 12px;
-}
-
-.exo-price-slider-wrapper {
-  position: relative;
-  height: 32px;
-  margin-bottom: 14px;
-}
-
-.exo-range-track {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: #e0e5f0;
-  border-radius: 2px;
-  transform: translateY(-50%);
-}
-
-.exo-range-fill {
-  position: absolute;
-  height: 100%;
-  background: #0d4dff;
-  border-radius: 2px;
-  left: 0;
-  width: 100%;
-}
-
-.exo-range {
-  position: absolute;
-  width: 100%;
-  height: 0;
-  background: transparent;
-  outline: none;
-  border: none;
-  pointer-events: none;
-  top: 50%;
-  transform: translateY(-50%);
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.exo-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #0d4dff;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(13,77,255,0.35);
-  cursor: pointer;
-  pointer-events: all;
-}
-
-.exo-range::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #0d4dff;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(13,77,255,0.35);
-  cursor: pointer;
-  pointer-events: all;
-}
+/* Éléments désactivés */
+.exo-l1-header-disabled { cursor: default; pointer-events: none; }
+.exo-l2-header-disabled { cursor: default; pointer-events: none; }
+.exo-disabled, .exo-leaf-disabled { color: #b0b8cc !important; cursor: default; pointer-events: none; }
+.exo-l1-header-disabled a, .exo-l2-header-disabled a { color: #b0b8cc !important; }
 
 /* =========================================================
    CONTENT
@@ -265,11 +216,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 100%;        /* ← s'étire sur toute la hauteur de la sidebar */
+  height: 100%;
   box-sizing: border-box;
 }
 
-/* Breadcrumb */
 .exo-breadcrumb-bar {
   display: flex;
   align-items: center;
@@ -278,22 +228,11 @@
   color: #5a6480;
 }
 
-.exo-breadcrumb-bar a {
-  color: #0d4dff;
-  text-decoration: none;
-  font-weight: 500;
-}
-
+.exo-breadcrumb-bar a { color: #0d4dff; text-decoration: none; font-weight: 500; }
 .exo-breadcrumb-bar a:hover { text-decoration: underline; }
-
 .exo-bc-sep { color: #b0b8cc; }
+.exo-bc-current { color: #08152d; font-weight: 600; }
 
-.exo-bc-current {
-  color: #08152d;
-  font-weight: 600;
-}
-
-/* Titre + filtre */
 .exo-content-header {
   display: flex;
   align-items: center;
@@ -320,53 +259,25 @@
   flex-shrink: 0;
 }
 
-.exo-filter-sort {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.exo-filter-sort label {
-  font-size: 13px;
-  color: #5a6480;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
+.exo-filter-sort { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.exo-filter-sort label { font-size: 13px; color: #5a6480; font-weight: 500; white-space: nowrap; }
 .exo-filter-sort select {
-  font-size: 13px;
-  color: #08152d;
-  font-weight: 600;
-  border: 1.5px solid #e0e5f0;
-  border-radius: 8px;
-  padding: 7px 12px;
-  background: white;
-  cursor: pointer;
-  outline: none;
+  font-size: 13px; color: #08152d; font-weight: 600;
+  border: 1.5px solid #e0e5f0; border-radius: 8px;
+  padding: 7px 12px; background: white; cursor: pointer; outline: none;
   transition: border-color 0.2s;
 }
+.exo-filter-sort select:focus { border-color: #0d4dff; box-shadow: 0 0 0 3px rgba(13,77,255,0.1); }
 
-.exo-filter-sort select:focus {
-  border-color: #0d4dff;
-  box-shadow: 0 0 0 3px rgba(13,77,255,0.1);
-}
-
-/* iframe — prend tout l'espace restant dans le content */
 .exo-shop-odoo {
-  flex: 1;             /* ← remplace height: 80vh */
+  flex: 1;
   min-height: 600px;
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #eef0f6;
 }
 
-.exo-shop-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
-}
+.exo-shop-frame { width: 100%; height: 100%; border: none; display: block; }
 
 /* =========================================================
    BARRE PRIX INLINE
@@ -389,69 +300,46 @@
 
 .exo-price-slider-inline .exo-range-track {
   position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: #e0e5f0;
-  border-radius: 999px;
+  top: 50%; left: 0; width: 100%; height: 4px;
+  background: #e0e5f0; border-radius: 999px;
   transform: translateY(-50%);
 }
 
 .exo-price-slider-inline .exo-range-fill {
-  position: absolute;
-  height: 100%;
-  background: #0d4dff;
-  border-radius: 999px;
+  position: absolute; height: 100%;
+  background: #0d4dff; border-radius: 999px;
 }
 
-.exo-price-slider-inline .exo-range {
-  position: absolute;
-  width: 100%;
-  height: 0;
-  top: 50%;
-  left: 0;
+.exo-range {
+  position: absolute; width: 100%; height: 0;
+  background: transparent; outline: none; border: none;
+  pointer-events: none; top: 50%;
   transform: translateY(-50%);
-  background: transparent;
-  pointer-events: none;
-  -webkit-appearance: none;
+  -webkit-appearance: none; appearance: none;
 }
 
-.exo-price-slider-inline .exo-range::-webkit-slider-thumb {
+.exo-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  pointer-events: auto;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #0d4dff;
-  border: 2px solid #fff;
-  cursor: pointer;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #0d4dff; border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(13,77,255,0.35);
+  cursor: pointer; pointer-events: all;
 }
 
-.exo-price-slider-inline .exo-range::-moz-range-thumb {
-  pointer-events: auto;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #0d4dff;
-  border: 2px solid #fff;
-  cursor: pointer;
+.exo-range::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #0d4dff; border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(13,77,255,0.35);
+  cursor: pointer; pointer-events: all;
 }
 
 .exo-price-apply {
-  width: auto;
-  white-space: nowrap;
-  padding: 9px 16px;
-  background: #0d4dff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
+  width: auto; white-space: nowrap;
+  padding: 9px 16px; background: #0d4dff; color: white;
+  border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
   transition: background 0.2s;
 }
-
 .exo-price-apply:hover { background: #0a3ad4; }
 
 /* =========================================================
@@ -459,29 +347,11 @@
 ========================================================= */
 
 @media (max-width: 1100px) {
-  .exo-dashboard-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    align-items: start;
-  }
-  .exo-dashboard-sidebar,
-  .exo-price-filter,
-  .exo-dashboard-content {
-    grid-column: 1;
-    grid-row: auto;
-  }
-  .exo-dashboard-sidebar {
-    position: relative;
-    top: 0;
-    max-height: none;
-  }
-  .exo-dashboard-content {
-    height: auto;
-  }
-  .exo-shop-odoo {
-    height: 70vh;
-    flex: none;
-  }
+  .exo-dashboard-layout { grid-template-columns: 1fr; align-items: start; }
+  .exo-dashboard-sidebar, .exo-dashboard-content { grid-column: 1; grid-row: auto; }
+  .exo-dashboard-sidebar { position: relative; top: 0; max-height: none; }
+  .exo-dashboard-content { height: auto; }
+  .exo-shop-odoo { height: 70vh; flex: none; }
 }
 
 @media (max-width: 768px) {
