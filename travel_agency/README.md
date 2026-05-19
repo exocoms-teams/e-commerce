@@ -27,3 +27,10 @@ travel_agency/
     ├── __init__.py
     └── payment_provider.py
 ```
+
+```bash
+travel_agency/
+└── report/
+    ├── __init__.py        
+    └── reservation_report.xml
+```    
