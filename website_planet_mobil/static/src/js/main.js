@@ -54,4 +54,66 @@ document.addEventListener('DOMContentLoaded', function () {
             if (form) form.innerHTML = '<span style="color:white;font-weight:600"><i class="fa fa-check-circle"></i> Merci ! Vous êtes bien inscrit(e) 🎉</span>';
         });
     }
+
+
+    document.querySelectorAll('.tsp-custom-select').forEach(function(select){
+        var selected = select.querySelector('.tsp-custom-selected');
+        var options = select.querySelector('.tsp-custom-options');
+
+        selected.addEventListener('click', function(e){
+            e.stopPropagation();
+            document.querySelectorAll('.tsp-custom-select').forEach(function(s){
+                if(s!==select) s.classList.remove('open');
+            });
+            select.classList.toggle('open');
+        });
+
+        options.querySelectorAll('input[type"checkbox"]').forEach(function(checkbox){
+            checkbox.addEventListener('change', function(){
+                var checked = options.querySelectorAll('input[type="checkbox"]:checked');
+                if(checked.lenght===0){
+                    selected.innerHTML='Toutes les <i class="fa fa-chevron-down"></i>';
+                }else if(checked.lenght===1){
+                        selected.innerHTML='1 sélectionné <i class="fa fa-chevron-down"></i>';
+                }else{
+                    selected.innerHTML= checked.length + ' sélectionnés <i class="fa fa-chevron-down"></i>';   
+                }
+  
+            });
+        });
+    });
+
+    document.addEventListener('click', function(){
+        document.querySelectorAll('.tsp-custom-select').forEach(function(s){
+            s.classList.remove('open');
+        })
+    })
+
+    document.querySelector('.tsp-filter-btn').addEventListener('click', function(){
+        var params = new URLSearchParams(window.location.search);
+        
+        var category = new URLSearchParams(window.location.search).get('category');
+        if (category) params.set('category', category);
+
+        document.querySelectorAll('.tsp-custom-select').forEach(function(select){
+            var filter = select.dataset.filter;
+            var checked = select.querySelectorAll('input[type="checkbox"]:checked');
+
+            if(checked.lenght>0){
+                var values = Array.from(checked).map(function(cb){
+                    return cb.closest('li').dataset.value;
+                });
+                params.set(filter, values.join(','));
+            }
+        });
+
+        var priceMin = document.querySelector('[data-filter="price_min"]');
+        var priceMax = document.querySelector('[data-filter="price_max"]');
+        if(priceMin.value) params.set('price_min', priceMin.value);
+        else params.delete('price_min');
+        if(priceMax.value) params.set('price_max', priceMax.value);
+        else params.delete('price_max');
+
+        window.location.href = '/shop?' + params.toString();
+    })
 });
