@@ -5,6 +5,22 @@
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
             <form string="Travel Reservation">
+                <header>
+                    <button name="action_waiting" string="Set Waiting"
+                            type="object" invisible="state != 'draft'"
+                            class="btn-secondary"/>
+                    <button name="action_confirm" string="Confirm"
+                            type="object" invisible="state != 'en_attente'"
+                            class="btn-primary"/>
+                    <button name="action_cancel" string="Cancel"
+                            type="object" invisible="state in ('cancel', 'confirmed')"
+                            class="btn-danger"/>
+                    <button name="action_reset" string="Reset to Draft"
+                            type="object" invisible="state != 'cancel'"
+                            class="btn-secondary"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,en_attente,confirmed,cancel"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="name"/></h1>
@@ -28,11 +44,10 @@
                             <field name="nb_voyageurs"/>
                             <field name="prix_total"/>
                             <field name="payment_provider_id"/>
-                            <field name="commission_amount"/> 
+                            <field name="commission_amount"/>
                         </group>
                     </group>
                     <field name="notes"/>
-                    <field name="state" invisible="1"/>
                 </sheet>
             </form>
         </field>
