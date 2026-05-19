@@ -68,12 +68,12 @@ document.addEventListener('DOMContentLoaded', function () {
             select.classList.toggle('open');
         });
 
-        options.querySelectorAll('input[type"checkbox"]').forEach(function(checkbox){
+        options.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox){
             checkbox.addEventListener('change', function(){
                 var checked = options.querySelectorAll('input[type="checkbox"]:checked');
-                if(checked.lenght===0){
+                if(checked.length ===0){
                     selected.innerHTML='Toutes les <i class="fa fa-chevron-down"></i>';
-                }else if(checked.lenght===1){
+                }else if(checked.length ===1){
                         selected.innerHTML='1 sélectionné <i class="fa fa-chevron-down"></i>';
                 }else{
                     selected.innerHTML= checked.length + ' sélectionnés <i class="fa fa-chevron-down"></i>';   
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var filter = select.dataset.filter;
             var checked = select.querySelectorAll('input[type="checkbox"]:checked');
 
-            if(checked.lenght>0){
+            if(checked.length >0){
                 var values = Array.from(checked).map(function(cb){
                     return cb.closest('li').dataset.value;
                 });
