@@ -47,3 +47,21 @@ class TravelReservation(models.Model):
                 rec.commission_amount = rec.prix_total * (rec.payment_provider_id.commission_rate / 100)
             else:
                 rec.commission_amount = 0.0
+
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'confirmed'
+
+    def action_cancel(self):
+        for rec in self:
+            rec.state = 'cancel'
+
+    def action_waiting(self):
+        for rec in self:
+            rec.state = 'en_attente'
+
+    def action_reset(self):
+        for rec in self:
+            rec.state = 'draft'
+                
+                
