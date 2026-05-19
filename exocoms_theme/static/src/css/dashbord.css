@@ -97,17 +97,17 @@
   scroll-behavior: smooth;
   scrollbar-width: none;
   padding: 8px 4px 12px;
+  align-items: stretch;
 }
 
 .exo-products-carousel::-webkit-scrollbar {
   display: none;
 }
 
-/* Carte produit big */
+/* ── Toutes les cartes : taille identique ── */
 .exo-product-card-big {
-  flex-shrink: 0;
-  min-width: 220px;
-  max-width: 240px;
+  flex: 0 0 220px;           /* largeur fixe, ne rétrécit pas */
+  width: 220px;
   display: flex;
   flex-direction: column;
   background: white;
@@ -124,15 +124,17 @@
   border-color: #c0ceff;
 }
 
+/* Image — hauteur fixe identique pour toutes les cartes */
 .exo-product-card-img-wrap {
   width: 100%;
-  height: 160px;
+  height: 180px;             /* hauteur uniforme */
   background: #f8faff;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border-bottom: 1px solid #eef0f8;
+  flex-shrink: 0;            /* ne se compresse pas */
 }
 
 .exo-product-card-img-wrap img {
@@ -142,11 +144,13 @@
   padding: 16px;
 }
 
+/* Corps texte */
 .exo-product-card-body {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;                   /* prend le reste de la hauteur */
 }
 
 .exo-product-card-big h4 {
@@ -176,5 +180,6 @@
 
 @media (max-width: 768px) {
   .exo-carousels-fullwidth { padding: 32px 16px; gap: 28px; }
-  .exo-product-card-big { min-width: 180px; }
+  .exo-product-card-big { flex: 0 0 180px; width: 180px; }
+  .exo-product-card-img-wrap { height: 140px; }
 }

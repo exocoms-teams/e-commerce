@@ -10,27 +10,20 @@
 .exo-dashboard-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  grid-template-rows: auto auto;
   gap: 16px 24px;
-  align-items: start;
+  align-items: stretch; /* ← stretch au lieu de start */
 }
 
-/* Sidebar — colonne gauche ligne 1 */
+/* Sidebar — colonne gauche */
 .exo-dashboard-sidebar {
   grid-column: 1;
   grid-row: 1;
 }
 
-/* Fourchette de prix — colonne gauche ligne 2 */
-.exo-price-filter {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-/* Content — colonne droite, toutes les lignes */
+/* Content — colonne droite */
 .exo-dashboard-content {
   grid-column: 2;
-  grid-row: 1 / 3;
+  grid-row: 1;
 }
 
 /* =========================================================
@@ -170,7 +163,7 @@
 .exo-leaf:hover { color: #0d4dff; }
 
 /* =========================================================
-   FOURCHETTE DE PRIX — sous la sidebar
+   FOURCHETTE DE PRIX — sous la sidebar (ancienne version panneau latéral)
 ========================================================= */
 
 .exo-price-filter {
@@ -225,7 +218,7 @@
 .exo-range {
   position: absolute;
   width: 100%;
-  height: 4px;
+  height: 0;
   background: transparent;
   outline: none;
   border: none;
@@ -259,27 +252,11 @@
   pointer-events: all;
 }
 
-.exo-price-apply {
-  width: 100%;
-  padding: 9px;
-  background: #0d4dff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.exo-price-apply:hover { background: #0a3ad4; }
-
 /* =========================================================
    CONTENT
 ========================================================= */
 
 .exo-dashboard-content {
-  flex: 1;
   min-width: 0;
   background: white;
   border-radius: 16px;
@@ -288,6 +265,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;        /* ← s'étire sur toute la hauteur de la sidebar */
+  box-sizing: border-box;
 }
 
 /* Breadcrumb */
@@ -373,10 +352,9 @@
   box-shadow: 0 0 0 3px rgba(13,77,255,0.1);
 }
 
-/* iframe */
+/* iframe — prend tout l'espace restant dans le content */
 .exo-shop-odoo {
-  width: 100%;
-  height: 80vh;
+  flex: 1;             /* ← remplace height: 80vh */
   min-height: 600px;
   border-radius: 10px;
   overflow: hidden;
@@ -391,34 +369,6 @@
 }
 
 /* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 1100px) {
-  .exo-dashboard-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
-  .exo-dashboard-sidebar,
-  .exo-price-filter,
-  .exo-dashboard-content {
-    grid-column: 1;
-    grid-row: auto;
-  }
-  .exo-dashboard-sidebar {
-    position: relative;
-    top: 0;
-    max-height: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .exo-boutique-section { padding: 16px 0 40px; }
-  .exo-dashboard-content { padding: 14px; }
-  .exo-shop-odoo { height: 70vh; }
-  .exo-content-header { flex-direction: column; align-items: flex-start; }
-}
-/* =========================================================
    BARRE PRIX INLINE
 ========================================================= */
 
@@ -427,14 +377,14 @@
   align-items: center;
   gap: 18px;
   width: 100%;
-  margin-bottom: 10px;
   flex-wrap: nowrap;
 }
 
 .exo-price-slider-inline {
   position: relative;
   height: 24px;
-  width: 100%;
+  flex: 1;
+  min-width: 220px;
 }
 
 .exo-price-slider-inline .exo-range-track {
@@ -458,6 +408,7 @@
 .exo-price-slider-inline .exo-range {
   position: absolute;
   width: 100%;
+  height: 0;
   top: 50%;
   left: 0;
   transform: translateY(-50%);
@@ -486,14 +437,56 @@
   border: 2px solid #fff;
   cursor: pointer;
 }
-.exo-range {
-  height: 0;
-}
-.exo-price-slider-inline {
-  flex: 1;
-  min-width: 220px;
-}
+
 .exo-price-apply {
   width: auto;
   white-space: nowrap;
+  padding: 9px 16px;
+  background: #0d4dff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.exo-price-apply:hover { background: #0a3ad4; }
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .exo-dashboard-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    align-items: start;
+  }
+  .exo-dashboard-sidebar,
+  .exo-price-filter,
+  .exo-dashboard-content {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .exo-dashboard-sidebar {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+  .exo-dashboard-content {
+    height: auto;
+  }
+  .exo-shop-odoo {
+    height: 70vh;
+    flex: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .exo-boutique-section { padding: 16px 0 40px; }
+  .exo-dashboard-content { padding: 14px; }
+  .exo-shop-odoo { height: 70vh; }
+  .exo-content-header { flex-direction: column; align-items: flex-start; }
 }
