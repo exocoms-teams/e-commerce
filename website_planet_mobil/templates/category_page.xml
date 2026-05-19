@@ -29,128 +29,259 @@
 
                     <div class="tsp-filter-group">
                         <label>Marque</label>
-                        <select class="tsp-filter-select">
-                            <option value="">Toutes</option>
-                            <t t-if="brands">
-                                <t t-foreach="brands" t-as="brand">
-                                    <option t-att-value="brand"><t t-out="brand"/></option>
+                        <div class="tsp-custom-select" data-filter="marque">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="">Toutes</li>
+                                <t t-if="brands">
+                                    <t t-foreach="brands" t-as="brand">
+                                        <li t-att-data-value="brand">
+                                            <input type="checkbox" t-att-id="'marque-' + brand"/>
+                                            <label t-att-for="'marque-' + brand"><t t-out="brand"/></label>
+                                        </li>
+                                    </t>
                                 </t>
-                            </t>
-                            <t t-else="">
-                                <option value="apple">Apple</option>
-                                <option value="samsung">Samsung</option>
-                                <option value="sony">Sony</option>
-                                <option value="lg">LG</option>
-                            </t>
-                        </select>
+                                <t t-else="">
+                                    <li data-value="apple">
+                                        <input type="checkbox" id="marque-apple"/>
+                                        <label for="marque-apple">Apple</label>
+                                    </li>
+                                    <li data-value="samsung">
+                                        <input type="checkbox" id="marque-samsung"/>
+                                        <label for="marque-samsung">Samsung</label>
+                                    </li>
+                                    <li data-value="sony">
+                                        <input type="checkbox" id="marque-sony"/>
+                                        <label for="marque-sony">Sony</label>
+                                    </li>
+                                    <li data-value="lg">
+                                        <input type="checkbox" id="marque-lg"/>
+                                        <label for="marque-lg">LG</label>
+                                    </li>                                
+                                </t>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="tsp-filter-group">
                         <label>Note</label>
-                        <select class="tsp-filter-select">
-                            <option value="">Toutes</option>
-                            <option value="5">⭐⭐⭐⭐⭐</option>
-                            <option value="4">⭐⭐⭐ et +</option>
-                            <option value="3">⭐⭐ et +</option>
-                        </select>
+                        <div class="tsp-custom-select" data-filter="note">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="5">
+                                    <input type="checkbox" id="note-5"/>
+                                    <label for="note-5">⭐⭐⭐⭐⭐</label>
+                                </li>
+                                <li data-value="4">
+                                    <input type="checkbox" id="note-4"/>
+                                    <label for="note-4">⭐⭐⭐⭐ et +</label>
+                                </li>
+                                <li data-value="3">
+                                    <input type="checkbox" id="note-3"/>
+                                    <label for="note-3">⭐⭐⭐ et +</label>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="tsp-filter-group">
                         <label>Couleur</label>
-                        <select class="tsp-filter-select">
-                            <option value="">Toutes</option>
-                            <t t-if="colors">
-                                <t t-foreach="colors" t-as="color">
-                                    <option t-att-value="color"><t t-out="color"/></option>
+                        <div class="tsp-custom-select" data-filter="couleur">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/> </div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="">Toutes</li>
+                                <t t-if="colors">
+                                    <t t-foreach="colors" t-as="color">
+                                        <li t-att-data-value="color">
+                                            <input type="checkbox" t-att-id="'couleur-' + color"/>
+                                            <label t-att-for="'couleur-' + color"><t t-out="color"/></label>                                   
+                                        </li>
+                                    </t>
                                 </t>
-                            </t>
-
-                            <t t-else="">
-                                <option value="noir">Noir</option>
-                                <option value="blanc">Blanc</option>
-                                <option value="bleu">Bleu</option>
-                                <option value="rouge">Rouge</option>
-                                <option value="rose">Rose</option>
-                                <option value="or">Or</option>
-                            </t>
-                        </select>
+                                <t t-else="">
+                                    <li data-value="noir">
+                                        <input type="checkbox" id="couleur-noir"/>
+                                        <label for="couleur-noir">Noir</label>
+                                    </li>
+                                    <li data-value="blanc">
+                                        <input type="checkbox" id="couleur-blanc"/>
+                                        <label for="couleur-blanc">Blanc</label>
+                                    </li>
+                                    <li data-value="bleu">
+                                        <input type="checkbox" id="couleur-bleu"/>
+                                        <label for="couleur-bleu">Bleu</label>
+                                    </li>
+                                    <li data-value="rouge">
+                                        <input type="checkbox" id="couleur-rouge"/>
+                                        <label for="couleur-rouge">Rouge</label>
+                                    </li>
+                                    <li data-value="rose">
+                                        <input type="checkbox" id="couleur-rose"/>
+                                        <label for="couleur-rose">Rose</label>
+                                    </li>
+                                    <li data-value="or">
+                                        <input type="checkbox" id="couleur-or"/>
+                                        <label for="couleur-or">Or</label>
+                                    </li>                           
+                                </t>
+                            </ul>
+                        </div>
                     </div>
+
+                   
 
                     <t t-if="category == 'Smartphones'">
                         <div class="tsp-filter-group">
                             <label>Système</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Tous</option>
-                                <option value="ios">iOS</option>
-                                <option value="abdroid">Android</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="systeme">
+                                <div class="tsp-custom-selected">Tous <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                <li data-value="ios">
+                                    <input type="checkbox" id="systeme-ios"/>
+                                    <label for="systeme-ios">iOS</label>
+                                </li>
+                                <li data-value="android">
+                                    <input type="checkbox" id="systeme-android"/>
+                                    <label for="systeme-android">Android</label>
+                                </li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="tsp-filter-group">
                             <label>Stockage</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Tous</option>
-                                <option value="64">64 GB</option>
-                                <option value="128">128 GB</option>
-                                <option value="256">256 GB</option>
-                                <option value="512">512 GB</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="stockage">
+                                <div class="tsp-custom-selected">Tous <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="64">
+                                        <input type="checkbox" id="stockage-64"/>
+                                        <label for="stockage-64">64 GB</label>
+                                    </li>
+                                    <li data-value="128">
+                                        <input type="checkbox" id="stockage-128"/>
+                                        <label for="stockage-128">128 GB</label>
+                                    </li>
+                                    <li data-value="256">
+                                        <input type="checkbox" id="stockage-256"/>
+                                        <label for="stockage-256">256 GB</label>
+                                    </li>
+                                    <li data-value="512">
+                                        <input type="checkbox" id="stockage-512"/>
+                                        <label for="stockage-512">512 GB</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="tsp-filter-group">
                             <label>Taille écran</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Toutes</option>
-                                <option value="5">5"</option>
-                                <option value="6">6"</option>
-                                <option value="6.5">6.5"</option>
-                                <option value="7">7"</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="taille">
+                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="5">
+                                        <input type="checkbox" id="taille-5"/>
+                                        <label for="taille-5">5"</label>
+                                    </li>
+                                    <li data-value="6">
+                                        <input type="checkbox" id="taille-6"/>
+                                        <label for="taille-6">6"</label>
+                                    </li>
+                                    <li data-value="6.5">
+                                        <input type="checkbox" id="taille-6.5"/>
+                                        <label for="taille-6.5">6.5"</label>
+                                    </li>
+                                    <li data-value="7">
+                                        <input type="checkbox" id="taille-7"/>
+                                        <label for="taille-7">7"</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </t>
 
                     <t t-if="category=='Montres'">
                         <div class="tsp-filter-group">
                             <label>Compatibilité</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Toutes</option>
-                                <option value="ios">iOS</option>
-                                <option value="android">Android</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="compatibilite">
+                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="ios">
+                                        <input type="checkbox" id="compat-ios"/>
+                                        <label for="compat-ios">iOS</label>
+                                    </li>
+                                    <li data-value="android">
+                                        <input type="checkbox" id="compat-android"/>
+                                        <label for="compat-android">Android</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </t>
 
                     <t t-if="category=='Televesion'">
                         <div class="tsp-filter-group">
                             <label>Taille</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Toutes</option>
-                                <option value="43">43"</option>
-                                <option value="55">55"</option>
-                                <option value="65">65"</option>
-                                <option value="75">75"</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="taille">
+                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="43">
+                                        <input type="checkbox" id="taille-43"/>
+                                        <label for="taille-43">43"</label>
+                                    </li>
+                                    <li data-value="55">
+                                        <input type="checkbox" id="taille-55"/>
+                                        <label for="taille-55">55"</label>
+                                    </li>
+                                    <li data-value="65">
+                                        <input type="checkbox" id="taille-65"/>
+                                        <label for="taille-65">65"</label>
+                                    </li>
+                                    <li data-value="75">
+                                        <input type="checkbox" id="taille-75"/>
+                                        <label for="taille-75">75"</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="tsp-filter-group">
                             <label>Resolution</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Toutes</option>
-                                <option value="4k">4K"</option>
-                                <option value="8K">8K"</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="resolution">
+                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="4k">
+                                        <input type="checkbox" id="resolution-4k"/>
+                                        <label for="resolution-4k">4K</label>
+                                    </li>
+                                    <li data-value="8k">
+                                        <input type="checkbox" id="resolution-8k"/>
+                                        <label for="resolution-8k">8K</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </t>
 
                     <t t-if="category == 'Accessoires'">
                         <div class="tsp-filter-group">
                             <label>Compatibilité</label>
-                            <select class="tsp-filter-select">
-                                <option value="">Toutes</option>
-                                <option value="iphone">iPhone</option>
-                                <option value="samsung">Samsung</option>
-                                <option value="universel">Universel</option>
-                            </select>
+                            <div class="tsp-custom-select" data-filter="compatibilite">
+                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
+                                <ul class="tsp-custom-options">
+                                    <li data-value="iphone">
+                                        <input type="checkbox" id="compat-iphone"/>
+                                        <label for="compat-iphone">iPhone</label>
+                                    </li>
+                                    <li data-value="samsung">
+                                        <input type="checkbox" id="compat-samsung"/>
+                                        <label for="compat-samsung">Samsung</label>
+                                    </li>
+                                    <li data-value="universel">
+                                        <input type="checkbox" id="compat-universel"/>
+                                        <label for="compat-universel">Universel</label>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </t>
 
