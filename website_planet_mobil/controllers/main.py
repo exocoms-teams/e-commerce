@@ -57,4 +57,23 @@ class WebsitePlanetMobil(http.Controller):
             domain = [('category', '=', category)]
 
         products = request.env['planet.product'].sudo().search(domain, limit=12)
-        return request.render('website_planet_mobil.category_page', {'products': products, 'category':category})
+
+        if not products:    #temporaire pour remplacer bd
+            products = [
+                {'id': 1, 'name': 'iPhone 15 Pro Max', 'description': "Le smartphone le plus puissant d'Apple", 'price': 1299, 'rating': 5, 'badge': 'Nouveau', 'image_url': '/website_planet_mobil/static/src/img/iphone15.jpg'},
+                {'id': 2, 'name': 'Samsung Galaxy S21', 'description': 'Le flagship Android ultime', 'price': 1199, 'rating': 5, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/samsung_s21.jpg'},
+                {'id': 3, 'name': 'Sony WH-1000XM5', 'description': 'Casque à réduction de bruit', 'price': 379, 'rating': 4, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/sony_wh.jpg'},
+                {'id': 4, 'name': 'Apple Watch Series 9', 'description': 'Montre connectée Apple', 'price': 449, 'rating': 5, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/apple_watch.jpg'},               
+            ]
+
+        brands = request.env['planet.product'].sudo().search([]).mapped('brand')
+        brands = list(set(filter(None, brands)))
+
+        colors = request.env['planet.product'].sudo().search([]).mapped('color')
+        colors = list(set(filter(None, colors)))
+        return request.render('website_planet_mobil.category_page', {
+            'products': products, 
+            'category': category,
+            'brands' : brands,
+            'colors': colors,
+        })

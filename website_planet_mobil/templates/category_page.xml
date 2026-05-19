@@ -31,10 +31,17 @@
                         <label>Marque</label>
                         <select class="tsp-filter-select">
                             <option value="">Toutes</option>
-                            <option value="apple">Apple</option>
-                            <option value="samsung">Samsung</option>
-                            <option value="sony">Sony</option>
-                            <option value="lg">LG</option>
+                            <t t-if="brands">
+                                <t t-foreach="brands" t-as="brand">
+                                    <option t-att-value="brand"><t t-out="brand"/></option>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <option value="apple">Apple</option>
+                                <option value="samsung">Samsung</option>
+                                <option value="sony">Sony</option>
+                                <option value="lg">LG</option>
+                            </t>
                         </select>
                     </div>
 
@@ -47,22 +54,125 @@
                             <option value="3">⭐⭐ et +</option>
                         </select>
                     </div>
+
+                    <div class="tsp-filter-group">
+                        <label>Couleur</label>
+                        <select class="tsp-filter-select">
+                            <option value="">Toutes</option>
+                            <t t-if="colors">
+                                <t t-foreach="colors" t-as="color">
+                                    <option t-att-value="color"><t t-out="color"/></option>
+                                </t>
+                            </t>
+
+                            <t t-else="">
+                                <option value="noir">Noir</option>
+                                <option value="blanc">Blanc</option>
+                                <option value="bleu">Bleu</option>
+                                <option value="rouge">Rouge</option>
+                                <option value="rose">Rose</option>
+                                <option value="or">Or</option>
+                            </t>
+                        </select>
+                    </div>
+
+                    <t t-if="category == 'Smartphones'">
+                        <div class="tsp-filter-group">
+                            <label>Système</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Tous</option>
+                                <option value="ios">iOS</option>
+                                <option value="abdroid">Android</option>
+                            </select>
+                        </div>
+
+                        <div class="tsp-filter-group">
+                            <label>Stockage</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Tous</option>
+                                <option value="64">64 GB</option>
+                                <option value="128">128 GB</option>
+                                <option value="256">256 GB</option>
+                                <option value="512">512 GB</option>
+                            </select>
+                        </div>
+
+                        <div class="tsp-filter-group">
+                            <label>Taille écran</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Toutes</option>
+                                <option value="5">5"</option>
+                                <option value="6">6"</option>
+                                <option value="6.5">6.5"</option>
+                                <option value="7">7"</option>
+                            </select>
+                        </div>
+                    </t>
+
+                    <t t-if="category=='Montres'">
+                        <div class="tsp-filter-group">
+                            <label>Compatibilité</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Toutes</option>
+                                <option value="ios">iOS</option>
+                                <option value="android">Android</option>
+                            </select>
+                        </div>
+                    </t>
+
+                    <t t-if="category=='Televesion'">
+                        <div class="tsp-filter-group">
+                            <label>Taille</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Toutes</option>
+                                <option value="43">43"</option>
+                                <option value="55">55"</option>
+                                <option value="65">65"</option>
+                                <option value="75">75"</option>
+                            </select>
+                        </div>
+
+                        <div class="tsp-filter-group">
+                            <label>Resolution</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Toutes</option>
+                                <option value="4k">4K"</option>
+                                <option value="8K">8K"</option>
+                            </select>
+                        </div>
+                    </t>
+
+                    <t t-if="category == 'Accessoires'">
+                        <div class="tsp-filter-group">
+                            <label>Compatibilité</label>
+                            <select class="tsp-filter-select">
+                                <option value="">Toutes</option>
+                                <option value="iphone">iPhone</option>
+                                <option value="samsung">Samsung</option>
+                                <option value="universel">Universel</option>
+                            </select>
+                        </div>
+                    </t>
+
+                    <button class="tsp-filter-btn">
+                        <i class="fa fa-filter"/> Filtrer
+                    </button>
                 </div>
 
-                <button class="tsp-filter-btn">
-                    <i class="fa fa-filter"/> Filtrer
-                </button>
+
 
                 <div class="tsp-products-grid">
                     <t t-foreach="products" t-as="product">
                         <div class="tsp-card">
                             <div class="tsp-card-img-wrap">
-                                <t t-if="product.badge">
-                                    <span class="tsp-badge"><t t-out="product.badge"/></span>
+                                <t t-if="product['badge'] if isinstance(product, dict) else product.badge">
+                                    <span class="tsp-badge">
+                                        <t t-out="product['badge'] is isinstance(product, dict) else product.badge"/>
+                                    </span>
                                 </t>
                                 <img
-                                    t-att-src="'/web/image/planet.product/' + str(product.id) + '/image'"
-                                    t-att-alt="product.name"
+                                    t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                                    t-att-alt="product['name'] if isinstance(product, dict) else product.name"
                                     class="tsp-card-img"
                                     onerror="this.parentElement.classList.add('tsp-img-placeholder')"
                                 />
@@ -72,17 +182,18 @@
                             </div>
                             <div class="tsp-card-body">
                                 <div class="tsp-stars">
+                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
                                     <t t-foreach="range(5)" t-as="star_i">
-                                        <i t-if="star_i &lt; int(product.rating)" class="fa fa-star tsp-star-on"/>
+                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
                                         <i t-else="" class="fa fa-star tsp-star-off"/>
                                     </t>
-                                    <span class="tsp-stars-count">(<t t-out="product.rating"/>)</span>
+                                    <span class="tsp-stars-count">(<t t-out="prod_rating"/>)</span>
                                 </div>
-                                <h3 class="tsp-card-name"><t t-out="product.name"/></h3>
-                                <p class="tsp-card-desc"><t t-out="product.description"/></p>
+                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
+                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
                                 <div class="tsp-card-footer">
-                                    <span class="tsp-price"><t t-out="product.price"/>€</span>
-                                    <a t-attf-href="/shop/product/#{product.id}" class="tsp-btn tsp-btn-add">
+                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>€</span>
+                                    <a t-attf-href="/shop/product/#{product['id'] if isinstance(product, dict) else product.id}" class="tsp-btn tsp-btn-add">
                                         <i class="fa fa-shopping-cart"/> Ajouter
                                     </a>
                                 </div>
