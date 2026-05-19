@@ -202,14 +202,23 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     padding: 12px 36px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 24px;      
     box-shadow: var(--shadow);
+    margin-bottom: 24px;
 }
 
 .tsp-filter-group{
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.tsp-filter-price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap:  nowrap;
 }
 
 .tsp-filter-group label{
@@ -227,24 +236,95 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     font-size: 0.88rem;
     outline: none;
     color: var(--text);
+    background: var(--bg);
 }
 
 .tsp-filter-input:focus{
     border-color: var(--blue);
+    background-color: var(--white);
 }
 
-.tsp-filter-select{
+.tsp-custom-select{
+    position: relative;
+    min-width: 120px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tsp-custom-selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding: 7px 10px;
-    border:  2px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--radius-sm);
     font-size: 0.88rem;
     color: var(--text);
-    outline: none;
-    cursor: pointer;
+    background: var(--bg);
+    transition: border-color 0.2s;
 }
 
-.tsp-filter-select:focus{
+.tsp-custom-select.open .tsp-custom-selected{
     border-color: var(--blue);
+    background: var(--white);
+}
+
+.tsp-custom-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    background: var(--white);
+    border: 2px solid var(--blue);
+    border-radius: var(--radius-sm);
+    z-index: 200;
+    box-shadow: var(--shadow-h);
+    overflow: hidden;
+}
+
+.tsp-custom-select.open .tsp-custom-options {
+    display: block;
+}
+
+.tsp-custom-options li{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.tsp-custom-options li:hover{
+    background-color: var(--blue-light);
+}
+
+.tsp-custom-options li input[type="checkbox"]{
+    accent-color: var(--blue);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.tsp-custom-options li label {
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text);
+    white-space: nowrap;
+    font-weight: 400;
+}
+
+.tsp-custom-selected .fa-chevron-down {
+    font-size: 0.75rem;
+    color: var(--muted);
+    transition: transform 0.2s;
+}
+
+.tsp-custom-select.open .fa-chevron-down {
+    transform: rotate(180deg);
 }
 
 .tsp-filter-btn{
@@ -258,7 +338,6 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); co
     font-weight: 600;
     cursor: pointer;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
     transition: background 0.2s;
