@@ -89,6 +89,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    document.querySelectorAll('.tsp-custom-options').forEach(function(options){
+        options.addEventListener('click', function(e){
+            e.stopPropagation();
+        })
+    })
+
     document.querySelector('.tsp-filter-btn').addEventListener('click', function(){
         var params = new URLSearchParams(window.location.search);
         
