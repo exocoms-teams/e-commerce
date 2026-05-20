@@ -7,6 +7,7 @@
     'depends': ['website', 'website_sale'],
     'data': [
         'security/ir.model.access.csv',
+        'data/products.xml',
         'views/templates/layout.xml',
         'views/templates/components.xml',
         'views/pages/home.xml',
