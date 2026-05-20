@@ -141,14 +141,13 @@
     gap: 10px;
 }
 
-/* DETAIL SECTION — grille 3 colonnes avec image + titre + texte */
+/* DETAIL SECTION */
 .service-detail-section {
     display: block;
     padding: 64px 0;
     background: #f8fafc;
 }
 
-/* Réutilise la grille des cards */
 .service-detail-section .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -161,7 +160,7 @@
     gap: 20px;
 }
 
-/* Carte détail — image en haut, texte en bas */
+/* Carte détail */
 .service-detail-card {
     background: white;
     border-radius: 20px;
@@ -194,25 +193,30 @@
 }
 
 .service-detail-card-body {
-    padding: 24px;
+    padding: 28px 24px;
 }
 
+/* ── Titre : centré, plus grand ── */
 .service-detail-card-body h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 800;
     color: #08152d;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     line-height: 1.3;
+    text-align: center;
 }
 
+/* ── Texte : plus grand, plus foncé, bien lisible ── */
 .service-detail-card-body p {
-    font-size: 14px;
-    line-height: 1.75;
-    color: #5a6480;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #1e2a45;
     margin: 0;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Ancienne structure — conservée pour compatibilité */
+/* Ancienne structure */
 .service-detail-content h2 {
     font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 800;
@@ -226,20 +230,18 @@
     color: #5a6480;
 }
 
-@media (max-width: 1100px) {
-    .service-detail-section .services-grid { grid-template-columns: repeat(2,1fr); }
-}
-
-@media (max-width: 768px) {
-    .service-detail-section .services-grid { grid-template-columns: 1fr; padding: 0 20px; }
-}
+/* ═══════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 1100px) {
-    .services-grid { grid-template-columns: repeat(2,1fr); }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .service-detail-section .services-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
     .services-grid { grid-template-columns: 1fr; padding: 0 20px; }
+    .service-detail-section .services-grid { grid-template-columns: 1fr; padding: 0 20px; }
     .service-card { height: 300px; }
     .section-header h2 { font-size: 1.8rem; }
 }
