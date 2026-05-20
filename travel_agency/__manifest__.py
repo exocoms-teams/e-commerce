@@ -11,7 +11,10 @@
         'views/travel_product_views.xml',
         'views/payment_provider_views.xml',
         'report/reservation_report.xml',
+        'payment_module/views/payment_transaction_views.xml',
     ],
     'installable': True,
     'application': True,
 }
+
+#AMIRA
