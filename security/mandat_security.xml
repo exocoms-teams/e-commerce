@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Catégorie -->
+        <record id="module_category_mandat" model="ir.module.category">
+            <field name="name">Mandat Administratif</field>
+            <field name="description">Gestion des mandats administratifs</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- Groupe : Utilisateur (saisie et liquidation) -->
+        <record id="group_mandat_user" model="res.groups">
+            <field name="name">Utilisateur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Peut créer et mettre en liquidation des mandats.</field>
+        </record>
+
+        <!-- Groupe : Ordonnateur -->
+        <record id="group_mandat_ordonnateur" model="res.groups">
+            <field name="name">Ordonnateur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_user'))]"/>
+            <field name="comment">Peut ordonnancer les mandats (phase 2).</field>
+        </record>
+
+        <!-- Groupe : Comptable public -->
+        <record id="group_mandat_comptable" model="res.groups">
+            <field name="name">Comptable Public</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_ordonnateur'))]"/>
+            <field name="comment">Peut prendre en charge et payer les mandats.</field>
+        </record>
+
+        <!-- Groupe : Administrateur -->
+        <record id="group_mandat_admin" model="res.groups">
+            <field name="name">Administrateur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_comptable'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

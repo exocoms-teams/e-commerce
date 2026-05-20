@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action rapport -->
+    <record id="action_report_mandat_administratif" model="ir.actions.report">
+        <field name="name">Mandat Administratif</field>
+        <field name="model">mandat.administratif</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mandat_administratif.report_mandat_administratif_doc</field>
+        <field name="report_file">mandat_administratif.report_mandat_administratif_doc</field>
+        <field name="binding_model_id" ref="model_mandat_administratif"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- Template QWeb -->
+    <template id="report_mandat_administratif_doc">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- En-tête officiel -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h4>MANDAT DE PAIEMENT</h4>
+                                <p class="text-muted">Dépense publique - Article L.1617-1 CGCT</p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h4>N° <span t-field="o.name"/></h4>
+                                <p>Exercice <span t-field="o.exercice_budgetaire"/></p>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- Parties -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>ORDONNATEUR</strong><br/>
+                                <span t-field="o.ordonnateur_id.name"/><br/>
+                                <span t-field="o.ordonnateur_id.street"/><br/>
+                                <span t-field="o.ordonnateur_id.zip"/> <span t-field="o.ordonnateur_id.city"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>COMPTABLE PUBLIC ASSIGNATAIRE</strong><br/>
+                                <span t-field="o.comptable_id.name"/><br/>
+                                <span t-field="o.comptable_id.street"/><br/>
+                                <span t-field="o.comptable_id.zip"/> <span t-field="o.comptable_id.city"/>
+                            </div>
+                        </div>
+
+                        <!-- Créancier -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="border p-3 bg-light">
+                                    <strong>CRÉANCIER</strong><br/>
+                                    <span t-field="o.creancier_id.name"/><br/>
+                                    <span t-field="o.creancier_id.street"/><br/>
+                                    <span t-field="o.creancier_id.zip"/> <span t-field="o.creancier_id.city"/><br/>
+                                    <t t-if="o.creancier_id.vat">
+                                        TVA intracom : <span t-field="o.creancier_id.vat"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Objet et références -->
+                        <table class="table table-bordered mb-3">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light" style="width:30%">Objet du mandat</th>
+                                    <td><span t-field="o.reference_objet"/></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Date du mandat</th>
+                                    <td><span t-field="o.date_mandat" t-options='{"format": "dd/MM/yyyy"}'/></td>
+                                </tr>
+                                <tr t-if="o.numero_marche">
+                                    <th class="bg-light">N° de marché</th>
+                                    <td><span t-field="o.numero_marche"/></td>
+                                </tr>
+                                <tr t-if="o.invoice_id">
+                                    <th class="bg-light">Facture</th>
+                                    <td><span t-field="o.invoice_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Imputation budgétaire</th>
+                                    <td><span t-field="o.imputation_budgetaire"/></td>
+                                </tr>
+                                <tr t-if="o.engagement_id">
+                                    <th class="bg-light">Engagement budgétaire</th>
+                                    <td><span t-field="o.engagement_id.name"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Montants -->
+                        <table class="table table-bordered mb-4">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th colspan="2" class="text-center">DÉCOMPTE DU MANDAT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Montant HT</td>
+                                    <td class="text-end">
+                                        <span t-field="o.montant_ht"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TVA (<span t-field="o.taux_tva"/>%)</td>
+                                    <td class="text-end">
+                                        <span t-field="o.montant_tva"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Montant TTC</strong></td>
+                                    <td class="text-end"><strong>
+                                        <span t-field="o.montant_ttc"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </strong></td>
+                                </tr>
+                                <tr t-if="o.retenue_garantie">
+                                    <td>Retenue de garantie</td>
+                                    <td class="text-end text-danger">
+                                        - <span t-field="o.retenue_garantie"
+                                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td><strong>NET À PAYER</strong></td>
+                                    <td class="text-end"><strong>
+                                        <span t-field="o.montant_net_payer"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Mode de paiement -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Mode de paiement :</strong>
+                                <span t-field="o.mode_paiement"/>
+                            </div>
+                            <div class="col-6" t-if="o.iban_creancier">
+                                <strong>IBAN :</strong>
+                                <span t-field="o.iban_creancier"/>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <div class="border p-3" style="min-height: 80px;">
+                                    <strong>L'Ordonnateur</strong><br/>
+                                    <small>Signature et cachet</small>
+                                    <br/><br/>
+                                    <span t-field="o.date_ordonnancement" t-options='{"format": "dd/MM/yyyy"}'/>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="border p-3" style="min-height: 80px;">
+                                    <strong>Le Comptable</strong><br/>
+                                    <small>Pris en charge le</small>
+                                    <br/><br/>
+                                    <span t-field="o.date_prise_en_charge" t-options='{"format": "dd/MM/yyyy"}'/>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="border p-3" style="min-height: 80px;">
+                                    <strong>Date de paiement</strong>
+                                    <br/><br/>
+                                    <span t-field="o.date_paiement" t-options='{"format": "dd/MM/yyyy"}'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

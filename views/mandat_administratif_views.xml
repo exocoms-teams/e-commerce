@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ══════════════════════════════════════════════════════════
+         MANDAT ADMINISTRATIF - VUES
+    ══════════════════════════════════════════════════════════ -->
+
+    <!-- Vue formulaire -->
+    <record id="view_mandat_administratif_form" model="ir.ui.view">
+        <field name="name">mandat.administratif.form</field>
+        <field name="model">mandat.administratif</field>
+        <field name="arch" type="xml">
+            <form string="Mandat Administratif">
+                <header>
+                    <button name="action_mettre_en_liquidation"
+                            string="Mettre en liquidation"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'brouillon'"
+                            groups="mandat_administratif.group_mandat_user"/>
+                    <button name="action_ordonnancer"
+                            string="Ordonnancer"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'liquidation'"
+                            groups="mandat_administratif.group_mandat_ordonnateur"/>
+                    <button name="action_prendre_en_charge"
+                            string="Prendre en charge"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'ordonnancement'"
+                            groups="mandat_administratif.group_mandat_comptable"/>
+                    <button name="action_payer"
+                            string="Valider le paiement"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'prise_en_charge'"
+                            groups="mandat_administratif.group_mandat_comptable"/>
+                    <button name="action_rejeter"
+                            string="Rejeter"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('brouillon', 'paye', 'annule', 'rejete')"
+                            groups="mandat_administratif.group_mandat_comptable"/>
+                    <button name="action_annuler"
+                            string="Annuler"
+                            type="object"
+                            invisible="state in ('paye', 'annule', 'rejete')"
+                            groups="mandat_administratif.group_mandat_admin"/>
+                    <button name="action_remettre_brouillon"
+                            string="Remettre en brouillon"
+                            type="object"
+                            invisible="state not in ('rejete', 'annule', 'liquidation')"
+                            groups="mandat_administratif.group_mandat_admin"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="brouillon,liquidation,ordonnancement,prise_en_charge,paye"/>
+                </header>
+
+                <sheet>
+                    <!-- Alerte retard -->
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not is_late">
+                        <i class="fa fa-exclamation-triangle"/> Ce mandat est en retard de
+                        <field name="days_overdue" readonly="1"/> jour(s).
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1" placeholder="Numéro attribué à l'ordonnancement"/>
+                        </h1>
+                        <h3>
+                            <field name="reference_objet" placeholder="Objet du mandat..."
+                                   readonly="state not in ('brouillon', 'liquidation')"/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group string="Identification">
+                            <field name="date_mandat" readonly="state not in ('brouillon', 'liquidation')"/>
+                            <field name="date_echeance"/>
+                            <field name="exercice_budgetaire"/>
+                            <field name="numero_marche"/>
+                            <field name="bordereau_id" readonly="1"/>
+                        </group>
+                        <group string="Parties">
+                            <field name="ordonnateur_id" readonly="state not in ('brouillon', 'liquidation')"/>
+                            <field name="comptable_id" readonly="state not in ('brouillon', 'liquidation')"/>
+                            <field name="creancier_id" readonly="state not in ('brouillon', 'liquidation')"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Onglet Montants -->
+                        <page string="Montants et imputation" name="montants">
+                            <group>
+                                <group string="Imputation budgétaire">
+                                    <field name="imputation_budgetaire"
+                                           readonly="state not in ('brouillon', 'liquidation')"
+                                           placeholder="ex: 011-6064"/>
+                                    <field name="engagement_id"
+                                           readonly="state not in ('brouillon', 'liquidation')"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                                <group string="Montants">
+                                    <field name="taux_tva" readonly="state not in ('brouillon', 'liquidation')"/>
+                                    <field name="montant_ht" readonly="state not in ('brouillon', 'liquidation')"/>
+                                    <field name="montant_tva" readonly="1"/>
+                                    <field name="montant_ttc" readonly="1" class="fw-bold"/>
+                                    <field name="retenue_garantie" readonly="state not in ('brouillon', 'liquidation')"/>
+                                    <field name="montant_net_payer" readonly="1" class="fw-bold text-success"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Onglet Paiement -->
+                        <page string="Modalités de paiement" name="paiement">
+                            <group>
+                                <group string="Mode de paiement">
+                                    <field name="mode_paiement" readonly="state not in ('brouillon', 'liquidation', 'ordonnancement')"/>
+                                    <field name="journal_id" readonly="state not in ('brouillon', 'liquidation', 'ordonnancement')"/>
+                                    <field name="iban_creancier" readonly="1"/>
+                                </group>
+                                <group string="Dates de traitement" invisible="state == 'brouillon'">
+                                    <field name="date_liquidation" readonly="1"/>
+                                    <field name="date_ordonnancement" readonly="1"/>
+                                    <field name="date_prise_en_charge" readonly="1"/>
+                                    <field name="date_paiement" readonly="1"/>
+                                </group>
+                            </group>
+                            <group string="Intervenants" invisible="state == 'brouillon'">
+                                <field name="user_liquidateur_id" readonly="1"/>
+                                <field name="user_ordonnateur_id" readonly="1"/>
+                                <field name="user_comptable_id" readonly="1"/>
+                            </group>
+                            <group string="Motif de rejet" invisible="state != 'rejete'">
+                                <field name="motif_rejet" readonly="1" nolabel="1"/>
+                            </group>
+                        </page>
+
+                        <!-- Onglet Documents -->
+                        <page string="Documents justificatifs" name="documents">
+                            <group>
+                                <field name="invoice_id"
+                                       readonly="state not in ('brouillon', 'liquidation')"
+                                       domain="[('move_type', 'in', ['in_invoice', 'in_refund']), ('state', '=', 'posted')]"/>
+                                <field name="purchase_order_id"
+                                       readonly="state not in ('brouillon', 'liquidation')"/>
+                            </group>
+                            <field name="piece_jointe_ids" widget="many2many_binary" string="Pièces jointes"/>
+                        </page>
+
+                        <!-- Notes -->
+                        <page string="Notes internes" name="notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="view_mandat_administratif_list" model="ir.ui.view">
+        <field name="name">mandat.administratif.list</field>
+        <field name="model">mandat.administratif</field>
+        <field name="arch" type="xml">
+            <list string="Mandats Administratifs" decoration-danger="is_late" decoration-muted="state in ('annule','rejete')">
+                <field name="name"/>
+                <field name="date_mandat"/>
+                <field name="reference_objet"/>
+                <field name="creancier_id"/>
+                <field name="imputation_budgetaire"/>
+                <field name="montant_net_payer" sum="Total net à payer"/>
+                <field name="date_echeance"/>
+                <field name="bordereau_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'liquidation'"
+                       decoration-warning="state == 'ordonnancement'"
+                       decoration-primary="state == 'prise_en_charge'"
+                       decoration-success="state == 'paye'"
+                       decoration-danger="state in ('rejete', 'annule')"/>
+                <field name="is_late" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue kanban -->
+    <record id="view_mandat_administratif_kanban" model="ir.ui.view">
+        <field name="name">mandat.administratif.kanban</field>
+        <field name="model">mandat.administratif</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="reference_objet"/>
+                <field name="creancier_id"/>
+                <field name="montant_net_payer"/>
+                <field name="currency_id"/>
+                <field name="state"/>
+                <field name="is_late"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong><field name="name"/></strong>
+                                    <span t-if="record.is_late.raw_value" class="badge bg-danger ms-1">En retard</span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <p><field name="reference_objet"/></p>
+                                <p><strong>Créancier :</strong> <field name="creancier_id"/></p>
+                                <p class="fw-bold text-success">
+                                    <field name="montant_net_payer" widget="monetary"/>
+                                </p>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_mandat_administratif_search" model="ir.ui.view">
+        <field name="name">mandat.administratif.search</field>
+        <field name="model">mandat.administratif</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un mandat">
+                <field name="name" string="Numéro"/>
+                <field name="reference_objet"/>
+                <field name="creancier_id"/>
+                <field name="imputation_budgetaire"/>
+                <field name="numero_marche"/>
+                <separator/>
+                <filter name="filter_brouillon" string="Brouillon" domain="[('state','=','brouillon')]"/>
+                <filter name="filter_liquidation" string="En liquidation" domain="[('state','=','liquidation')]"/>
+                <filter name="filter_ordonnancement" string="Ordonnancé" domain="[('state','=','ordonnancement')]"/>
+                <filter name="filter_prise_en_charge" string="Pris en charge" domain="[('state','=','prise_en_charge')]"/>
+                <filter name="filter_paye" string="Payé" domain="[('state','=','paye')]"/>
+                <filter name="filter_rejete" string="Rejeté" domain="[('state','=','rejete')]"/>
+                <separator/>
+                <filter name="filter_en_retard" string="En retard" domain="[('is_late','=',True)]"/>
+                <separator/>
+                <filter name="filter_exercice_courant" string="Exercice courant"
+                        domain="[('exercice_budgetaire','=',context_today().year)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_creancier" string="Créancier" context="{'group_by': 'creancier_id'}"/>
+                    <filter name="group_exercice" string="Exercice" context="{'group_by': 'exercice_budgetaire'}"/>
+                    <filter name="group_imputation" string="Imputation" context="{'group_by': 'imputation_budgetaire'}"/>
+                    <filter name="group_mois" string="Mois" context="{'group_by': 'date_mandat:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action principale -->
+    <record id="action_mandat_administratif" model="ir.actions.act_window">
+        <field name="name">Mandats Administratifs</field>
+        <field name="res_model">mandat.administratif</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_mandat_administratif_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer votre premier mandat administratif
+            </p>
+            <p>
+                Les mandats administratifs permettent de matérialiser l'ordre
+                donné au comptable public de payer une dépense.
+            </p>
+        </field>
+    </record>
+</odoo>

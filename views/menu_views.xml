@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu racine -->
+    <menuitem id="menu_mandat_root"
+              name="Mandats Administratifs"
+              sequence="60"
+              web_icon="mandat_administratif,static/description/icon.png"
+              groups="mandat_administratif.group_mandat_user"/>
+
+    <!-- Menu principal -->
+    <menuitem id="menu_mandat_main"
+              name="Mandats"
+              parent="menu_mandat_root"
+              sequence="10"/>
+
+    <menuitem id="menu_mandat_list"
+              name="Tous les mandats"
+              parent="menu_mandat_main"
+              action="action_mandat_administratif"
+              sequence="10"/>
+
+    <menuitem id="menu_mandat_a_traiter"
+              name="À traiter"
+              parent="menu_mandat_main"
+              action="action_mandat_administratif"
+              sequence="20"/>
+
+    <!-- Bordereaux -->
+    <menuitem id="menu_bordereau_main"
+              name="Bordereaux"
+              parent="menu_mandat_root"
+              sequence="20"
+              groups="mandat_administratif.group_mandat_ordonnateur"/>
+
+    <menuitem id="menu_bordereau_list"
+              name="Bordereaux de mandats"
+              parent="menu_bordereau_main"
+              action="action_bordereau_mandat"
+              sequence="10"/>
+
+    <!-- Budget -->
+    <menuitem id="menu_budget_main"
+              name="Budget"
+              parent="menu_mandat_root"
+              sequence="30"
+              groups="mandat_administratif.group_mandat_ordonnateur"/>
+
+    <menuitem id="menu_engagement_list"
+              name="Engagements budgétaires"
+              parent="menu_budget_main"
+              action="action_engagement_budgetaire"
+              sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_mandat_config"
+              name="Configuration"
+              parent="menu_mandat_root"
+              sequence="100"
+              groups="mandat_administratif.group_mandat_admin"/>
+</odoo>

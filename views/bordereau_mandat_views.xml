@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire Bordereau -->
+    <record id="view_bordereau_mandat_form" model="ir.ui.view">
+        <field name="name">bordereau.mandat.form</field>
+        <field name="model">bordereau.mandat</field>
+        <field name="arch" type="xml">
+            <form string="Bordereau de Mandats">
+                <header>
+                    <button name="action_emettre" string="Émettre" type="object"
+                            class="btn-primary" invisible="state != 'brouillon'"
+                            groups="mandat_administratif.group_mandat_ordonnateur"/>
+                    <button name="action_transmettre" string="Transmettre au comptable" type="object"
+                            class="btn-primary" invisible="state != 'emis'"
+                            groups="mandat_administratif.group_mandat_ordonnateur"/>
+                    <button name="action_cloturer" string="Clôturer" type="object"
+                            invisible="state != 'transmis'"
+                            groups="mandat_administratif.group_mandat_comptable"/>
+                    <button name="action_imprimer" string="Imprimer" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,emis,transmis,clos"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informations générales">
+                            <field name="date_bordereau"/>
+                            <field name="exercice_budgetaire"/>
+                        </group>
+                        <group string="Parties">
+                            <field name="ordonnateur_id"/>
+                            <field name="comptable_id"/>
+                        </group>
+                    </group>
+                    <group string="Totaux" class="bg-light p-2 rounded">
+                        <field name="nombre_mandats" readonly="1"/>
+                        <field name="montant_total" readonly="1" class="fw-bold"/>
+                    </group>
+                    <field name="mandat_ids" readonly="state != 'brouillon'">
+                        <list>
+                            <field name="name"/>
+                            <field name="date_mandat"/>
+                            <field name="creancier_id"/>
+                            <field name="reference_objet"/>
+                            <field name="imputation_budgetaire"/>
+                            <field name="montant_ht"/>
+                            <field name="montant_tva"/>
+                            <field name="montant_net_payer" sum="Total net"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="notes" placeholder="Observations..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste Bordereau -->
+    <record id="view_bordereau_mandat_list" model="ir.ui.view">
+        <field name="name">bordereau.mandat.list</field>
+        <field name="model">bordereau.mandat</field>
+        <field name="arch" type="xml">
+            <list string="Bordereaux de Mandats">
+                <field name="name"/>
+                <field name="date_bordereau"/>
+                <field name="exercice_budgetaire"/>
+                <field name="ordonnateur_id"/>
+                <field name="nombre_mandats"/>
+                <field name="montant_total" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'emis'"
+                       decoration-warning="state == 'transmis'"
+                       decoration-success="state == 'clos'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_bordereau_mandat" model="ir.actions.act_window">
+        <field name="name">Bordereaux de Mandats</field>
+        <field name="res_model">bordereau.mandat</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════
+         ENGAGEMENT BUDGÉTAIRE - VUES
+    ══════════════════════════════════════════════════════════ -->
+
+    <record id="view_engagement_budgetaire_form" model="ir.ui.view">
+        <field name="name">engagement.budgetaire.form</field>
+        <field name="model">engagement.budgetaire</field>
+        <field name="arch" type="xml">
+            <form string="Engagement Budgétaire">
+                <header>
+                    <button name="action_solder" string="Solder" type="object"
+                            invisible="state != 'ouvert'"
+                            groups="mandat_administratif.group_mandat_ordonnateur"/>
+                    <button name="action_annuler" string="Annuler l'engagement" type="object"
+                            invisible="state != 'ouvert'"
+                            groups="mandat_administratif.group_mandat_admin"/>
+                    <field name="state" widget="statusbar" statusbar_visible="ouvert,solde"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="intitule" placeholder="Intitulé de l'engagement..."/></h3>
+                    </div>
+                    <group>
+                        <group string="Identification">
+                            <field name="date_engagement"/>
+                            <field name="exercice_budgetaire"/>
+                            <field name="imputation_budgetaire" placeholder="ex: 011-6064"/>
+                            <field name="fournisseur_id"/>
+                            <field name="purchase_order_id"/>
+                        </group>
+                        <group string="Suivi financier">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="montant_engage"/>
+                            <field name="montant_consomme" readonly="1"/>
+                            <field name="montant_disponible" readonly="1"
+                                   decoration-danger="montant_disponible &lt; 0"
+                                   decoration-warning="montant_disponible &lt; montant_engage * 0.1"/>
+                            <field name="taux_consommation" readonly="1" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <field name="mandat_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date_mandat"/>
+                            <field name="reference_objet"/>
+                            <field name="montant_net_payer"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_engagement_budgetaire_list" model="ir.ui.view">
+        <field name="name">engagement.budgetaire.list</field>
+        <field name="model">engagement.budgetaire</field>
+        <field name="arch" type="xml">
+            <list string="Engagements Budgétaires"
+                  decoration-danger="montant_disponible &lt; 0"
+                  decoration-muted="state != 'ouvert'">
+                <field name="name"/>
+                <field name="intitule"/>
+                <field name="exercice_budgetaire"/>
+                <field name="imputation_budgetaire"/>
+                <field name="fournisseur_id"/>
+                <field name="montant_engage" sum="Total engagé"/>
+                <field name="montant_consomme" sum="Total consommé"/>
+                <field name="montant_disponible" sum="Total disponible"/>
+                <field name="taux_consommation" widget="progressbar"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'ouvert'"
+                       decoration-muted="state == 'solde'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_engagement_budgetaire" model="ir.actions.act_window">
+        <field name="name">Engagements Budgétaires</field>
+        <field name="res_model">engagement.budgetaire</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
