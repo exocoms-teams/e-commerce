@@ -14,7 +14,7 @@
                 </div>
                 <div class="exo-products-carousel" id="carousel-new">
                     <t t-set="new_products"
-                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=5, order='create_date desc')" />
+                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='create_date desc')" />
                     <t t-foreach="new_products" t-as="product">
                         <a t-attf-href="/shop/{{ slug(product) }}"
                             class="exo-product-card exo-product-card-big">
@@ -44,7 +44,7 @@
                 </div>
                 <div class="exo-products-carousel" id="carousel-best">
                     <t t-set="best_products"
-                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=5, order='write_date desc')" />
+                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='write_date desc')" />
                     <t t-foreach="best_products" t-as="product">
                         <a t-attf-href="/shop/{{ slug(product) }}"
                             class="exo-product-card exo-product-card-big">
