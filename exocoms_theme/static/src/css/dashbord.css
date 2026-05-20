@@ -4,12 +4,12 @@
 
 .exo-carousels-fullwidth {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 48px 40px;
+  padding: 60px 48px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 60px;
   background: transparent;
   box-sizing: border-box;
 }
@@ -19,34 +19,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .exo-section-header h3 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   color: #08152d;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
 }
 
 .exo-section-header h3::before {
   content: '';
-  width: 14px;
-  height: 3px;
+  width: 16px;
+  height: 4px;
   background: linear-gradient(90deg, #0d4dff, #4d8aff);
   border-radius: 2px;
   flex-shrink: 0;
 }
 
 .exo-section-header a {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #0d4dff;
   text-decoration: none;
-  padding: 5px 14px;
+  padding: 6px 18px;
   border-radius: 20px;
   background: #eef2ff;
   transition: all 0.2s ease;
@@ -61,26 +61,26 @@
 .exo-carousel-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
 }
 
 /* Flèches */
 .exo-carousel-btn {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: white;
   border: 1px solid #e0e5f0;
   color: #1a2240;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 2;
 }
 
@@ -88,18 +88,18 @@
   background: #0d4dff;
   border-color: #0d4dff;
   color: white;
-  box-shadow: 0 4px 14px rgba(13,77,255,0.3);
+  box-shadow: 0 6px 20px rgba(13,77,255,0.35);
 }
 
-/* Carousel scroll — affiche 5 cartes à la fois */
+/* Carousel scroll */
 .exo-products-carousel {
   flex: 1;
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  padding: 12px 4px 16px;
+  padding: 16px 8px 20px;
   align-items: stretch;
 }
 
@@ -107,61 +107,62 @@
   display: none;
 }
 
-/* Carte — largeur calculée pour 5 visibles à la fois */
+/* ── Carte : grande comme Cdiscount ── */
 .exo-product-card-big {
-  flex: 0 0 calc(20% - 13px);  /* 5 cartes avec gap de 16px */
-  min-width: 160px;
+  flex: 0 0 calc(20% - 16px);   /* 5 cartes visibles */
+  min-width: 200px;
   display: flex;
   flex-direction: column;
   background: white;
-  border: 1px solid #eef0f8;
-  border-radius: 16px;
+  border: 1px solid #e8ecf4;
+  border-radius: 12px;
   overflow: hidden;
   text-decoration: none;
   transition: all 0.22s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .exo-product-card-big:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(13,77,255,0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(13,77,255,0.14);
   border-color: #c0ceff;
 }
 
-/* Zone image */
+/* Zone image — grande hauteur */
 .exo-product-card-img-wrap {
   width: 100%;
-  height: 180px;
+  height: 240px;            /* ← grande hauteur image */
   background: #f8faff;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-bottom: 1px solid #eef0f8;
   flex-shrink: 0;
 }
 
 .exo-product-card-img-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  padding: 0;
+  object-fit: contain;      /* ← contain pour voir le produit entier */
+  padding: 16px;
 }
 
 /* Corps texte */
 .exo-product-card-body {
-  padding: 14px 16px;
+  padding: 16px 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1;
+  border-top: 1px solid #f0f2f8;
 }
 
 .exo-product-card-big h4 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #08152d;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -175,22 +176,30 @@
 }
 
 .exo-product-card-big span {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #0d4dff;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
-@media (max-width: 1100px) {
-  .exo-product-card-big { flex: 0 0 calc(33.33% - 11px); }
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .exo-product-card-big { flex: 0 0 calc(25% - 15px); }
+}
+
+@media (max-width: 900px) {
+  .exo-product-card-big { flex: 0 0 calc(33.33% - 14px); }
 }
 
 @media (max-width: 768px) {
-  .exo-carousels-fullwidth { padding: 32px 16px; gap: 28px; }
-  .exo-product-card-big { flex: 0 0 calc(50% - 8px); }
-  .exo-product-card-img-wrap { height: 140px; }
+  .exo-carousels-fullwidth { padding: 40px 20px; gap: 40px; }
+  .exo-product-card-big { flex: 0 0 calc(50% - 10px); }
+  .exo-product-card-img-wrap { height: 180px; }
 }
 
 @media (max-width: 480px) {
-  .exo-product-card-big { flex: 0 0 80%; }
+  .exo-product-card-big { flex: 0 0 75%; }
 }
