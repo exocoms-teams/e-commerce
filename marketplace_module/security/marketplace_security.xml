@@ -1,60 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!--
-            noupdate="1" : ces enregistrements ne sont pas mis a jour lors des mises a jour du module.
-            Indispensable pour la securite : evite qu'une mise a jour efface les droits configures.
-        -->
 
-        <!-- ═══════════════════════════════════════════════════════
-             GROUPE VENDEUR
-             Apparait dans : Odoo > Parametres > Utilisateurs > Groupes
-             ═══════════════════════════════════════════════════════ -->
-        <record id="group_marketplace_vendor" model="res.groups">
-            <field name="name">Vendeur Marketplace</field>
-            <!-- Le groupe Vendeur herite des droits du groupe Portal -->
-            <!-- Cela permet aux vendeurs d'acceder au portail Odoo  -->
-            <field name="implied_ids"
-                   eval="[(4, ref('base.group_user'))]"/>
+        <!-- Categorie Marketplace (necesaire pour afficher le groupe sur la fiche utilisateur) -->
+        <record id="module_category_marketplace" model="ir.module.category">
+            <field name="name">Marketplace</field>
+            <field name="sequence">100</field>
         </record>
 
-        <!-- ═══════════════════════════════════════════════════════
-             REGLE : un vendeur ne voit QUE ses propres enregistrements
-             Appliquee au modele marketplace.vendor
-             ═══════════════════════════════════════════════════════ -->
+        <!-- Groupe Vendeur -->
+        <record id="group_marketplace_vendor" model="res.groups">
+            <field name="name">Vendeur</field>
+            <field name="category_id" ref="marketplace_module.module_category_marketplace"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- REGLE : vendeur voit uniquement son propre enregistrement -->
         <record id="rule_vendor_own_record" model="ir.rule">
             <field name="name">Vendeur : acces a son propre enregistrement</field>
-            <field name="model_id"
-                   ref="marketplace_module.model_marketplace_vendor"/>
-            <field name="domain_force">
-                [('user_ids', 'in', [user.id])]
-            </field>
-            <field name="groups"
-                   eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
-            <!-- perm_read=1 : la regle s'applique sur les lectures -->
+            <field name="model_id" ref="marketplace_module.model_marketplace_vendor"/>
+            <field name="domain_force">[('user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- ═══════════════════════════════════════════════════════
-             REGLE : un vendeur ne voit QUE ses propres produits 
-             Appliquee au modele product.template
-             ═══════════════════════════════════════════════════════ -->
+        <!-- REGLE : vendeur voit uniquement ses propres produits -->
         <record id="rule_vendor_own_products" model="ir.rule">
             <field name="name">Vendeur : produits de son catalogue uniquement</field>
-            <field name="model_id"
-                   ref="product.model_product_template"/>
+            <field name="model_id" ref="product.model_product_template"/>
             <field name="domain_force">
-                ['|',
-                    ('vendor_id', '=', False),
-                    ('vendor_id.user_ids', 'in', [user.id])
-                ]
+                ['|', ('vendor_id', '=', False), ('vendor_id.user_ids', 'in', [user.id])]
             </field>
-            <!-- '|' = OU : le vendeur voit les produits sans vendeur OU ses propres produits -->
-            <field name="groups"
-                   eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
+            <field name="groups" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
