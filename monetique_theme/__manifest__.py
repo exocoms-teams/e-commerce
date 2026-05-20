@@ -10,6 +10,7 @@
         'views/templates/layout.xml',
         'views/templates/components.xml',
         'views/pages/home.xml',
+        'views/pages/audit.xml',
     ],
     'assets': {
         'web.assets_frontend': [
