@@ -16,7 +16,7 @@ class TravelReservation(models.Model):
     nb_adultes = fields.Integer(string='Adults', default=1)
     nb_enfants = fields.Integer(string='Children', default=0)
     nb_voyageurs = fields.Integer(string='Total Travelers', compute='_compute_total', store=True)
-    prix_total = fields.Float(string='Total Price')
+    prix_total = fields.Float(string='Total Price', compute='_compute_prix_total', store=True)
     payment_provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider')
     commission_amount = fields.Float(string='Commission Amount', compute='_compute_commission', store=True)
     notes = fields.Text(string='Notes')
@@ -39,6 +39,14 @@ class TravelReservation(models.Model):
     def _compute_total(self):
         for rec in self:
             rec.nb_voyageurs = rec.nb_adultes + rec.nb_enfants
+
+    @api.depends('nb_voyageurs', 'product_id')
+    def _compute_prix_total(self):
+        for rec in self:
+            if rec.product_id and rec.nb_voyageurs:
+                rec.prix_total = rec.nb_voyageurs * rec.product_id.prix_par_personne
+            else:
+                rec.prix_total = 0.0
 
     @api.depends('prix_total', 'payment_provider_id')
     def _compute_commission(self):
@@ -63,5 +71,3 @@ class TravelReservation(models.Model):
     def action_reset(self):
         for rec in self:
             rec.state = 'draft'
-                
-                
