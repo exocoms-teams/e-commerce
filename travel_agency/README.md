@@ -34,3 +34,14 @@ travel_agency/
     ├── __init__.py        
     └── reservation_report.xml
 ```    
+
+``` bash
+travel_agency/
+└── payment_module/
+    ├── __init__.py
+    ├── models/
+    │   ├── __init__.py
+    │   └── payment_transaction.py
+    └── views/
+        └── payment_transaction_views.xml  
+```         
