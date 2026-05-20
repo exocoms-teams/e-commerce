@@ -4,8 +4,8 @@
 
 .exo-carousels-fullwidth {
   width: 100%;
-  max-width: 1400px;       /* ← centré avec une largeur max */
-  margin: 0 auto;          /* ← centrage horizontal */
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 48px 40px;
   display: flex;
   flex-direction: column;
@@ -91,13 +91,14 @@
   box-shadow: 0 4px 14px rgba(13,77,255,0.3);
 }
 
-/* Carousel scroll — limité à 5 cartes visibles */
+/* Carousel scroll — affiche 5 cartes à la fois */
 .exo-products-carousel {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);  /* ← exactement 5 colonnes */
+  display: flex;
   gap: 16px;
-  overflow-x: hidden;                      /* ← pas de scroll horizontal */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
   padding: 12px 4px 16px;
   align-items: stretch;
 }
@@ -106,10 +107,10 @@
   display: none;
 }
 
-/* ── Cartes : s'adaptent à la grille ── */
+/* Carte — largeur calculée pour 5 visibles à la fois */
 .exo-product-card-big {
-  width: 100%;              /* ← prend la largeur de la colonne */
-  flex: none;
+  flex: 0 0 calc(20% - 13px);  /* 5 cartes avec gap de 16px */
+  min-width: 160px;
   display: flex;
   flex-direction: column;
   background: white;
@@ -181,15 +182,15 @@
 }
 
 @media (max-width: 1100px) {
-  .exo-products-carousel { grid-template-columns: repeat(3, 1fr); }
+  .exo-product-card-big { flex: 0 0 calc(33.33% - 11px); }
 }
 
 @media (max-width: 768px) {
   .exo-carousels-fullwidth { padding: 32px 16px; gap: 28px; }
-  .exo-products-carousel { grid-template-columns: repeat(2, 1fr); }
+  .exo-product-card-big { flex: 0 0 calc(50% - 8px); }
   .exo-product-card-img-wrap { height: 140px; }
 }
 
 @media (max-width: 480px) {
-  .exo-products-carousel { grid-template-columns: 1fr; }
+  .exo-product-card-big { flex: 0 0 80%; }
 }
