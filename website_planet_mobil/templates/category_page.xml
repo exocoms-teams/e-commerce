@@ -294,42 +294,46 @@
 
                 <div class="tsp-products-grid">
                     <t t-foreach="products" t-as="product">
-                        <div class="tsp-card">
-                            <div class="tsp-card-img-wrap">
-                                <t t-if="product['badge'] if isinstance(product, dict) else product.badge">
-                                    <span class="tsp-badge">
-                                        <t t-out="product['badge'] if isinstance(product, dict) else product.badge"/>
-                                    </span>
-                                </t>
-                                <img
-                                    t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
-                                    t-att-alt="product['name'] if isinstance(product, dict) else product.name"
-                                    class="tsp-card-img"
-                                    onerror="this.parentElement.classList.add('tsp-img-placeholder')"
-                                />
-                                <button class="tsp-wishlist-btn">
-                                    <i class="fa fa-heart-o"/>
-                                </button>
-                            </div>
-                            <div class="tsp-card-body">
-                                <div class="tsp-stars">
-                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
-                                    <t t-foreach="range(5)" t-as="star_i">
-                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
-                                        <i t-else="" class="fa fa-star tsp-star-off"/>
+                        <a t-attf-href="/shop/product/#{product['id'] if isinstance(product, dict) else product.id}" class="tsp-card-link">
+                            <div class="tsp-card">
+                                <div class="tsp-card-img-wrap">
+                                    <t t-if="product['badge'] if isinstance(product, dict) else product.badge">
+                                        <span class="tsp-badge">
+                                            <t t-out="product['badge'] if isinstance(product, dict) else product.badge"/>
+                                        </span>
                                     </t>
-                                    <span class="tsp-stars-count">(<t t-out="prod_rating"/>)</span>
+                                    <img
+                                        t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                                        t-att-alt="product['name'] if isinstance(product, dict) else product.name"
+                                        class="tsp-card-img"
+                                        onerror="this.parentElement.classList.add('tsp-img-placeholder')"
+                                    />
+                                    <button class="tsp-wishlist-btn">
+                                        <i class="fa fa-heart-o"/>
+                                    </button>
                                 </div>
-                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
-                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
-                                <div class="tsp-card-footer">
-                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>€</span>
-                                    <a t-attf-href="/shop/product/#{product['id'] if isinstance(product, dict) else product.id}" class="tsp-btn tsp-btn-add">
-                                        <i class="fa fa-shopping-cart"/> Ajouter
-                                    </a>
+                                <div class="tsp-card-body">
+                                    <div class="tsp-stars">
+                                        <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
+                                        <t t-foreach="range(5)" t-as="star_i">
+                                            <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
+                                            <i t-else="" class="fa fa-star tsp-star-off"/>
+                                        </t>
+                                        <span class="tsp-stars-count">(<t t-out="prod_rating"/>)</span>
+                                    </div>
+                                    <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
+                                    <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
+                                    <div class="tsp-card-footer">
+                                        <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>
+                                            €
+                                        </span>
+                                        <a t-attf-href="/shop/product/#{product['id'] if isinstance(product, dict) else product.id}" class="tsp-btn tsp-btn-add" onclick="event.stopPropagation();">
+                                            <i class="fa fa-shopping-cart"/> Ajouter
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </t>
                 </div>
             </section>
