@@ -12,28 +12,27 @@
                     <h3>Nouveautés</h3>
                     <a href="/boutique">Voir plus</a>
                 </div>
-                <div class="exo-carousel-wrapper">
-                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-new">
-                        <i class="fa fa-chevron-left"/>
-                    </button>
-                    <div class="exo-products-carousel" id="carousel-new">
-                        <t t-set="new_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='create_date desc')"/>
-                        <t t-foreach="new_products" t-as="product">
-                            <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card exo-product-card-big">
-                                <div class="exo-product-card-img-wrap">
-                                    <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512" t-att-alt="product.name"/>
-                                </div>
-                                <div class="exo-product-card-body">
-                                    <h4 t-esc="product.name"/>
-                                    <p t-esc="product.categ_id.name"/>
-                                    <span><t t-esc="product.currency_id.symbol"/><t t-esc="'%.2f' % product.list_price"/></span>
-                                </div>
-                            </a>
-                        </t>
-                    </div>
-                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-new">
-                        <i class="fa fa-chevron-right"/>
-                    </button>
+                <div class="exo-products-carousel" id="carousel-new">
+                    <t t-set="new_products"
+                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=5, order='create_date desc')" />
+                    <t t-foreach="new_products" t-as="product">
+                        <a t-attf-href="/shop/{{ slug(product) }}"
+                            class="exo-product-card exo-product-card-big">
+                            <div class="exo-product-card-img-wrap">
+                                <img
+                                    t-attf-src="/web/image/product.template/{{ product.id }}/image_512"
+                                    t-att-alt="product.name" />
+                            </div>
+                            <div class="exo-product-card-body">
+                                <h4 t-esc="product.name" />
+                                <p t-esc="product.categ_id.name" />
+                                <span>
+                                    <t t-esc="product.currency_id.symbol" />
+                                    <t t-esc="'%.2f' % product.list_price" />
+                                </span>
+                            </div>
+                        </a>
+                    </t>
                 </div>
             </div>
 
@@ -43,64 +42,31 @@
                     <h3>Meilleures ventes</h3>
                     <a href="/boutique">Voir plus</a>
                 </div>
-                <div class="exo-carousel-wrapper">
-                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-best">
-                        <i class="fa fa-chevron-left"/>
-                    </button>
-                    <div class="exo-products-carousel" id="carousel-best">
-                        <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=10, order='write_date desc')"/>
-                        <t t-foreach="best_products" t-as="product">
-                            <a t-attf-href="/shop/{{ slug(product) }}" class="exo-product-card exo-product-card-big">
-                                <div class="exo-product-card-img-wrap">
-                                    <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512" t-att-alt="product.name"/>
-                                </div>
-                                <div class="exo-product-card-body">
-                                    <h4 t-esc="product.name"/>
-                                    <p t-esc="product.categ_id.name"/>
-                                    <span><t t-esc="product.currency_id.symbol"/><t t-esc="'%.2f' % product.list_price"/></span>
-                                </div>
-                            </a>
-                        </t>
-                    </div>
-                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-best">
-                        <i class="fa fa-chevron-right"/>
-                    </button>
+                <div class="exo-products-carousel" id="carousel-best">
+                    <t t-set="best_products"
+                        t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=5, order='write_date desc')" />
+                    <t t-foreach="best_products" t-as="product">
+                        <a t-attf-href="/shop/{{ slug(product) }}"
+                            class="exo-product-card exo-product-card-big">
+                            <div class="exo-product-card-img-wrap">
+                                <img
+                                    t-attf-src="/web/image/product.template/{{ product.id }}/image_512"
+                                    t-att-alt="product.name" />
+                            </div>
+                            <div class="exo-product-card-body">
+                                <h4 t-esc="product.name" />
+                                <p t-esc="product.categ_id.name" />
+                                <span>
+                                    <t t-esc="product.currency_id.symbol" />
+                                    <t t-esc="'%.2f' % product.list_price" />
+                                </span>
+                            </div>
+                        </a>
+                    </t>
                 </div>
             </div>
 
         </div>
-
-        <script><![CDATA[
-        (function() {
-            /* FLÈCHES */
-            document.querySelectorAll('.exo-carousel-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var id  = btn.getAttribute('data-target');
-                    var el  = document.getElementById(id);
-                    if (!el) return;
-                    var card = el.querySelector('.exo-product-card');
-                    var w    = card ? card.offsetWidth + 12 : 300;
-                    var dir  = btn.classList.contains('exo-carousel-prev') ? -1 : 1;
-                    el.scrollBy({ left: dir * w, behavior: 'smooth' });
-                });
-            });
-            /* AUTOPLAY 4s */
-            ['carousel-new', 'carousel-best'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                setInterval(function() {
-                    var max = el.scrollWidth - el.clientWidth;
-                    if (el.scrollLeft >= max - 10) {
-                        el.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        var card = el.querySelector('.exo-product-card');
-                        var w = card ? card.offsetWidth + 12 : 300;
-                        el.scrollBy({ left: w, behavior: 'smooth' });
-                    }
-                }, 4000);
-            });
-        })();
-        ]]></script>
 
     </template>
 

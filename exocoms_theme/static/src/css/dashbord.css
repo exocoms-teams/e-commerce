@@ -4,6 +4,8 @@
 
 .exo-carousels-fullwidth {
   width: 100%;
+  max-width: 1400px;       /* ← centré avec une largeur max */
+  margin: 0 auto;          /* ← centrage horizontal */
   padding: 48px 40px;
   display: flex;
   flex-direction: column;
@@ -79,6 +81,7 @@
   flex-shrink: 0;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 2;
 }
 
 .exo-carousel-btn:hover {
@@ -88,14 +91,13 @@
   box-shadow: 0 4px 14px rgba(13,77,255,0.3);
 }
 
-/* Carousel scroll */
+/* Carousel scroll — limité à 5 cartes visibles */
 .exo-products-carousel {
   flex: 1;
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);  /* ← exactement 5 colonnes */
+  gap: 16px;
+  overflow-x: hidden;                      /* ← pas de scroll horizontal */
   padding: 12px 4px 16px;
   align-items: stretch;
 }
@@ -104,10 +106,10 @@
   display: none;
 }
 
-/* ── Cartes : 280px ── */
+/* ── Cartes : s'adaptent à la grille ── */
 .exo-product-card-big {
-  flex: 0 0 280px;
-  width: 280px;
+  width: 100%;              /* ← prend la largeur de la colonne */
+  flex: none;
   display: flex;
   flex-direction: column;
   background: white;
@@ -127,7 +129,7 @@
 /* Zone image */
 .exo-product-card-img-wrap {
   width: 100%;
-  height: 220px;
+  height: 180px;
   background: #f8faff;
   display: flex;
   align-items: center;
@@ -137,17 +139,16 @@
   flex-shrink: 0;
 }
 
-/* Image — padding réduit pour qu'elle remplisse mieux */
 .exo-product-card-img-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* ← cover au lieu de contain : remplit toute la zone */
-  padding: 0;          /* ← suppression du padding */
+  object-fit: cover;
+  padding: 0;
 }
 
 /* Corps texte */
 .exo-product-card-body {
-  padding: 16px 18px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -155,7 +156,7 @@
 }
 
 .exo-product-card-big h4 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #08152d;
   margin: 0;
@@ -173,14 +174,22 @@
 }
 
 .exo-product-card-big span {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: #0d4dff;
   margin-top: 4px;
 }
 
+@media (max-width: 1100px) {
+  .exo-products-carousel { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 768px) {
   .exo-carousels-fullwidth { padding: 32px 16px; gap: 28px; }
-  .exo-product-card-big { flex: 0 0 200px; width: 200px; }
-  .exo-product-card-img-wrap { height: 160px; }
+  .exo-products-carousel { grid-template-columns: repeat(2, 1fr); }
+  .exo-product-card-img-wrap { height: 140px; }
+}
+
+@media (max-width: 480px) {
+  .exo-products-carousel { grid-template-columns: 1fr; }
 }
