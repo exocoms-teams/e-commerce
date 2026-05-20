@@ -77,3 +77,19 @@ class WebsitePlanetMobil(http.Controller):
             'brands' : brands,
             'colors': colors,
         })
+
+    @http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
+    def product(self, product_id, **kwargs):
+        product = request.env['planet.product'].sudo().search([('id', '=', product_id)], limit=1)
+
+        if not product:
+            #return request.not_found()     pour linstant pas de base, creer produits fictifs
+            fake_products = {
+                1:  {'id': 1, 'name': 'iPhone 15 Pro Max', 'description': "Le smartphone le plus puissant d'Apple", 'price': 1299, 'rating': 5, 'badge': 'Nouveau', 'image_url': '/website_planet_mobil/static/src/img/iphone15.jpg'},
+                2:  {'id': 2, 'name': 'Samsung Galaxy S21', 'description': 'Le flagship Android ultime', 'price': 1199, 'rating': 5, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/samsung_s21.jpg'},
+                3:  {'id': 3, 'name': 'Sony WH-1000XM5', 'description': 'Casque Ã  rÃ©duction de bruit', 'price': 379, 'rating': 4, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/sony_wh.jpg'},
+                4:  {'id': 4, 'name': 'Apple Watch Series 9', 'description': 'Montre connectÃ©e Apple', 'price': 449, 'rating': 5, 'badge': False, 'image_url': '/website_planet_mobil/static/src/img/apple_watch.jpg'},  
+            }
+            product = fake_products.get(product_id, fake_products[1])
+        return request.render('website_planet_mobil.product_page', {'product': product})
+

@@ -10,32 +10,41 @@
 
                     <div class="tsp-product-detail-img-wrap">
                         <img
-                            t-att-src="'/web/image/planet.product/' + str(product.id) + '/image'"
-                            t-att-alt="product.name"
+                            t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                            t-att-alt="product['name'] if isinstance(product, dict) else product.name"
                             class="tsp-product-detail-img"
                             onerror="this.parentElement.classList.add('tsp-img-placeholder')"
                         />
                     </div>
 
                     <div class="tsp-product-detail-info">
-                        <t t-if="product.badge">
-                            <span class="tsp-badge mb-3"><t t-out="product.badge"/></span>
+                        <t t-if="product['badge'] if isinstance(product, dict) else product.badge">
+                            <span class="tsp-badge mb-3">
+                                <t t-out="product['badge'] if isinstance(product, dict) else product.badge"/>
+                            </span>
                         </t>
 
-                        <h1 class="tsp-product-detail-name"><t t-out="product.name"/></h1>
+                        <h1 class="tsp-product-detail-name">
+                            <t t-out="product['name'] if isinstance(product, dict) else product.name"/>
+                        </h1>
 
                         <div class="tsp-stars tsp-stars-lg mb-3">
+                            <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
                             <t t-foreach="range(5)" t-as="star_i">
-                                <i t-if="star_i &lt; int(product.rating)" class="fa fa-star tsp-star-on"/>
+                                <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
                                 <i t-else="" class="fa fa-star tsp-star-off"/>
                             </t>
-                            <span class="tsp-stars-count">(<t t-out="product.rating"/>)</span>
+                            <span class="tsp-stars-count">(<t t-out="prod_rating"/>)</span>
                         </div>
 
-                        <p class="tsp-product-detail-desc"><t t-out="product.description"/></p>
+                        <p class="tsp-product-detail-desc">
+                            <t t-out="product['description'] if isinstance(product, dict) else product.description"/>
+                        </p>
 
                         <div class="tsp-product-detail-footer">
-                            <span class="tsp-price tsp-price-lg"><t t-out="product.price"/>€</span>
+                            <span class="tsp-price tsp-price-lg">
+                                <t t-out="product['price'] if isinstance(product, dict) else product.price"/>€
+                            </span>
                             <button class="tsp-btn tsp-btn-add tsp-btn-lg">
                                 <i class="fa fa-shopping-cart"/> Ajouter au panier
                             </button>
