@@ -319,3 +319,17 @@ class LuxuryController(WebsiteSale):
         return request.render('luxury_services.luxury_paiement_page', {
             'reservation': reservation,
         })
+        
+        
+        
+    #url page maintenance
+    @http.route(
+        '/maintenance',
+        type='http',
+        auth='public',
+        website=True
+    )
+    def maintenance_page(self, **kwargs):
+        return request.render(
+            'luxury_services.luxury_maintenance_page'
+        )

@@ -11,6 +11,7 @@
         'views/reservation_views.xml',
         'views/templates.xml',
         'views/luxury_destination_views.xml',
+        'views/maintenance_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [

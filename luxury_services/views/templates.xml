@@ -9,36 +9,53 @@
 
         <xpath expr="//div[@id='add_to_cart_wrap']" position="replace">
 
-            <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
-                <div id="add_to_cart_wrap"
-                     class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
-                    <a id="add_to_cart"
-                       role="button"
-                       href="#"
-                       class="btn btn-primary js_check_product a-submit flex-grow-1"
-                       data-animation-selector=".o_wsale_product_images">
-                        <i class="fa fa-envelope me-2"/>
-                        prendre contact
-                    </a>
-                </div>
-            </t>
+            <t t-if="request.website.id == 14">
 
-            <t t-if="product.type_service in ('location', 'les_deux')">
-                <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
-                    <t t-if="product.disponible">
-                        <a role="button"
-                           class="btn btn-luxury flex-grow-1"
-                           t-attf-href="/luxury/reserver/#{product.id}">
-                            <i class="fa fa-calendar me-2"/>
-                            Réserver
+                <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
+                    <div id="add_to_cart_wrap"
+                        class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                        <a id="add_to_cart"
+                        role="button"
+                        href="#"
+                        class="btn btn-primary js_check_product a-submit flex-grow-1"
+                        data-animation-selector=".o_wsale_product_images">
+                            <i class="fa fa-envelope me-2"/>
+                            prendre contact
                         </a>
-                    </t>
-                    <t t-else="">
-                        <button class="btn btn-secondary flex-grow-1" disabled="1">
-                            <i class="fa fa-times me-2"/>
-                            Non disponible
-                        </button>
-                    </t>
+                    </div>
+                </t>
+
+                <t t-if="product.type_service in ('location', 'les_deux')">
+                    <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                        <t t-if="product.disponible">
+                            <a role="button"
+                            class="btn btn-luxury flex-grow-1"
+                            t-attf-href="/luxury/reserver/#{product.id}">
+                                <i class="fa fa-calendar me-2"/>
+                                Réserver
+                            </a>
+                        </t>
+                        <t t-else="">
+                            <button class="btn btn-secondary flex-grow-1" disabled="1">
+                                <i class="fa fa-times me-2"/>
+                                Non disponible
+                            </button>
+                        </t>
+                    </div>
+                </t>
+            </t>
+           
+            <t t-else="">
+                <div id="add_to_cart_wrap"
+                    class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                    <a id="add_to_cart"
+                    role="button"
+                    href="#"
+                    class="btn btn-primary js_check_product a-submit flex-grow-1"
+                    data-animation-selector=".o_wsale_product_images">
+                        <i class="fa fa-shopping-cart me-2"/>
+                        Ajouter au panier
+                    </a>
                 </div>
             </t>
 
@@ -52,407 +69,422 @@
               >
 
         <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="after">
-            <div t-if="product.categorie_luxe" class="luxury_info o_wsale_product_details_content_section mb-4 p-3">
-                <t t-if="product.longueur">
-                    <span class="me-3">
-                        <i class="fa fa-arrows-h me-1"/>
-                        <strong>Longueur :</strong>
-                        <t t-esc="product.longueur"/> m
-                    </span>
-                </t>
-                <t t-if="product.capacite_personnes">
-                    <span class="me-3">
-                        <i class="fa fa-users me-1"/>
-                        <strong>passagers :</strong>
-                        <t t-esc="product.capacite_personnes"/> personnes
-                    </span>
-                </t>
-                <t t-if="product.nb_cabines">
-                    <span class="me-3">
-                        <i class="fa fa-bed me-1"/>
-                        <strong>Cabines :</strong>
-                        <t t-esc="product.nb_cabines"/>
-                    </span>
-                </t>
-                <t t-if="product.vitesse_croisiere">
-                    <span class="me-3">
-                        <i class="fa fa-tachometer me-1"/>
-                        <strong>Vitesse croisière :</strong>
-                        <t t-esc="product.vitesse_croisiere"/> nœuds
-                    </span>
-                </t>
-                <t t-if ="product.constructeur_jet">
-                    <span class="me-3">
-                        <i class="fa fa-cogs me-1"/>
-                        <strong>Constructeur :</strong>
-                        <t t-esc="product.constructeur_jet"/>
-                    </span>     
-                </t>
-                <t t-if ="product.modele_jet">
-                    <span class="me-3">
-                        <i class="fa fa-plane me-1"/>
-                        <strong>Modèle :</strong>
-                        <t t-esc="product.modele_jet"/>
-                    </span>
-                     
-                </t>
-                <t t-if ="product.autonomie_vol">
-                    <span class="me-3">
-                        <i class="fa fa-clock-o me-1"/>
-                        <strong>Autonomie de vol :</strong>
-                        <t t-esc="product.autonomie_vol"/> heures
-                    </span>
 
-                </t>
-                <t t-if ="product.vitesse_max">
-                    <span class="me-3">
-                        <i class="fa fa-tachometer me-1"/>
-                        <strong>Vitesse max :</strong>
-                        <t t-esc="product.vitesse_max"/> km/h
-                    </span> 
-                </t>
-                <t t-if ="product.nombre_moteurs">
-                    <span class="me-3"> 
-                        <i class="fa fa-cogs me-1"/>
-                        <strong>Nombre de moteurs :</strong>
-                        <t t-esc="product.nombre_moteurs"/>
-                    </span>
-                </t>
-                <t t-if ="product.altitude_max">
-                    <span class="me-3">
-                        <i class="fa fa-plane me-1"/>
-                        <strong>Altitude max :</strong>
-                        <t t-esc="product.altitude_max"/> m
-                    </span>
-                </t>
-                <t t-if ="product.equipage">
-                    <span class="me-3">
-                        <i class="fa fa-users me-1"/>
-                        <strong>Equipage :</strong>
-                        <t t-esc="product.equipage"/>
-                    </span>
-                </t>
-                <t t-if="product.type_service in ('location', 'les_deux')">
-                    <span class="me-3">
-                        <i class="fa fa-tag me-1"/>
-                        <strong>Prix/jour :</strong>
-                        <t t-esc="product.prix_location_jour"/> €
-                    </span>
-                    <span>
-                        <i class="fa fa-clock-o me-1"/>
-                        <strong>Durée min :</strong>
-                        <t t-esc="product.duree_min_location"/> jours
-                    </span>
+            <t t-if="request.website.id == 14">
+                <div t-if="product.categorie_luxe" class="luxury_info o_wsale_product_details_content_section mb-4 p-3">
+                    <t t-if="product.longueur">
+                        <span class="me-3">
+                            <i class="fa fa-arrows-h me-1"/>
+                            <strong>Longueur :</strong>
+                            <t t-esc="product.longueur"/> m
+                        </span>
+                    </t>
+                    <t t-if="product.capacite_personnes">
+                        <span class="me-3">
+                            <i class="fa fa-users me-1"/>
+                            <strong>passagers :</strong>
+                            <t t-esc="product.capacite_personnes"/> personnes
+                        </span>
+                    </t>
+                    <t t-if="product.nb_cabines">
+                        <span class="me-3">
+                            <i class="fa fa-bed me-1"/>
+                            <strong>Cabines :</strong>
+                            <t t-esc="product.nb_cabines"/>
+                        </span>
+                    </t>
+                    <t t-if="product.vitesse_croisiere">
+                        <span class="me-3">
+                            <i class="fa fa-tachometer me-1"/>
+                            <strong>Vitesse croisière :</strong>
+                            <t t-esc="product.vitesse_croisiere"/> nœuds
+                        </span>
+                    </t>
+                    <t t-if ="product.constructeur_jet">
+                        <span class="me-3">
+                            <i class="fa fa-cogs me-1"/>
+                            <strong>Constructeur :</strong>
+                            <t t-esc="product.constructeur_jet"/>
+                        </span>     
+                    </t>
+                    <t t-if ="product.modele_jet">
+                        <span class="me-3">
+                            <i class="fa fa-plane me-1"/>
+                            <strong>Modèle :</strong>
+                            <t t-esc="product.modele_jet"/>
+                        </span>
+                        
+                    </t>
+                    <t t-if ="product.autonomie_vol">
+                        <span class="me-3">
+                            <i class="fa fa-clock-o me-1"/>
+                            <strong>Autonomie de vol :</strong>
+                            <t t-esc="product.autonomie_vol"/> heures
+                        </span>
 
-                    <span>
-                        <i class="fa fa-location-arrow me-1"/>
-                        <strong>destination:</strong>
-                        <t t-esc="', '.join(product.destination_ids.mapped('name'))"/>
-                    </span>
-                </t>
-            </div>
+                    </t>
+                    <t t-if ="product.vitesse_max">
+                        <span class="me-3">
+                            <i class="fa fa-tachometer me-1"/>
+                            <strong>Vitesse max :</strong>
+                            <t t-esc="product.vitesse_max"/> km/h
+                        </span> 
+                    </t>
+                    <t t-if ="product.nombre_moteurs">
+                        <span class="me-3"> 
+                            <i class="fa fa-cogs me-1"/>
+                            <strong>Nombre de moteurs :</strong>
+                            <t t-esc="product.nombre_moteurs"/>
+                        </span>
+                    </t>
+                    <t t-if ="product.altitude_max">
+                        <span class="me-3">
+                            <i class="fa fa-plane me-1"/>
+                            <strong>Altitude max :</strong>
+                            <t t-esc="product.altitude_max"/> m
+                        </span>
+                    </t>
+                    <t t-if ="product.equipage">
+                        <span class="me-3">
+                            <i class="fa fa-users me-1"/>
+                            <strong>Equipage :</strong>
+                            <t t-esc="product.equipage"/>
+                        </span>
+                    </t>
+                    <t t-if="product.type_service in ('location', 'les_deux')">
+                        <span class="me-3">
+                            <i class="fa fa-tag me-1"/>
+                            <strong>Prix/jour :</strong>
+                            <t t-esc="product.prix_location_jour"/> €
+                        </span>
+                        <span>
+                            <i class="fa fa-clock-o me-1"/>
+                            <strong>Durée min :</strong>
+                            <t t-esc="product.duree_min_location"/> jours
+                        </span>
+
+                        <span>
+                            <i class="fa fa-location-arrow me-1"/>
+                            <strong>destination:</strong>
+                            <t t-esc="', '.join(product.destination_ids.mapped('name'))"/>
+                        </span>
+                    </t>
+                </div>
+                
+            </t>
+            
+            
+
+            
         </xpath>
     </template>
 
     <!-- Page formulaire de réservation -->
     <template id="luxury_reservation_page" name="Page de réservation">
-        <t t-call="website.layout">
-            <div class="container mt-5 mb-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <h1 class="mb-4">
-                            <i class="fa fa-calendar me-2"/>
-                            Réserver — <t t-esc="product.name"/>
-                        </h1>
+        <t t-if="request.website.id == 14">
+            <t t-call="website.layout">
+                <div class="container mt-5 mb-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <h1 class="mb-4">
+                                <i class="fa fa-calendar me-2"/>
+                                Réserver — <t t-esc="product.name"/>
+                            </h1>
 
-                        <div t-if="error" class="alert alert-danger">
-                            <t t-esc="error"/>
-                        </div>
+                            <div t-if="error" class="alert alert-danger">
+                                <t t-esc="error"/>
+                            </div>
 
-                        <!-- Infos produit -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <t t-if="product.image_1920">
-                                            <img t-attf-src="/web/image/product.template/#{product.id}/image_1920"
-                                                 class="img-fluid rounded"/>
-                                        </t>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <h4><t t-esc="product.name"/></h4>
-                                        <p t-if="product.longueur">
-                                            <strong>Longueur :</strong>
-                                            <t t-esc="product.longueur"/> m
-                                        </p>
-                                        <p t-if="product.capacite_personnes">
-                                            <strong>Capacité :</strong>
-                                            <t t-esc="product.capacite_personnes"/> personnes
-                                        </p>
-                                        <p>
-                                            <strong>Prix/jour :</strong>
-                                            <t t-esc="product.prix_location_jour"/> €
-                                        </p>
-                                        <p>
-                                            <strong>Durée minimum :</strong>
-                                            <t t-esc="product.duree_min_location"/> jours
-                                        </p>
+                            <!-- Infos produit -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <t t-if="product.image_1920">
+                                                <img t-attf-src="/web/image/product.template/#{product.id}/image_1920"
+                                                    class="img-fluid rounded"/>
+                                            </t>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h4><t t-esc="product.name"/></h4>
+                                            <p t-if="product.longueur">
+                                                <strong>Longueur :</strong>
+                                                <t t-esc="product.longueur"/> m
+                                            </p>
+                                            <p t-if="product.capacite_personnes">
+                                                <strong>Capacité :</strong>
+                                                <t t-esc="product.capacite_personnes"/> personnes
+                                            </p>
+                                            <p>
+                                                <strong>Prix/jour :</strong>
+                                                <t t-esc="product.prix_location_jour"/> €
+                                            </p>
+                                            <p>
+                                                <strong>Durée minimum :</strong>
+                                                <t t-esc="product.duree_min_location"/> jours
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Formulaire -->
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Vos informations</h4>
-                                <form action="/luxury/reserver/recap" method="POST">
-                                    <input type="hidden" name="csrf_token"
-                                           t-att-value="request.csrf_token()"/>
-                                    <input type="hidden" name="product_id"
-                                           t-att-value="product.id"/>
+                            <!-- Formulaire -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Vos informations</h4>
+                                    <form action="/luxury/reserver/recap" method="POST">
+                                        <input type="hidden" name="csrf_token"
+                                            t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="product_id"
+                                            t-att-value="product.id"/>
 
-                                    <!-- Identité -->
-                                    <h5 class="mb-3">Identité</h5>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label"><strong>Nom complet *</strong></label>
-                                            <input type="text" name="client_name"
-                                                   class="form-control" required="1"/>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label"><strong>Email *</strong></label>
-                                            <input type="email" name="client_email"
-                                                   class="form-control" required="1"/>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label"><strong>Téléphone</strong></label>
-                                        <input type="tel" name="client_phone"
-                                               class="form-control"/>
-                                    </div>
-
-                                    <!-- Adresse -->
-                                    <h5 class="mb-3 mt-4">Adresse</h5>
-                                    <div class="mb-3">
-                                        <label class="form-label"><strong>Adresse *</strong></label>
-                                        <input type="text" name="client_adresse"
-                                               class="form-control" required="1"/>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3">
-                                            <label class="form-label"><strong>Code postal *</strong></label>
-                                            <input type="text" name="client_code_postal"
-                                                   class="form-control" required="1"/>
-                                        </div>
-                                        <div class="col-md-8 mb-3">
-                                            <label class="form-label"><strong>Pays *</strong></label>
-                                            <select name="client_pays_id"
-                                                    class="form-select" required="1">
-                                                <option value="">-- Sélectionnez un pays --</option>
-                                                <t t-foreach="pays_list" t-as="pays">
-                                                    <option t-att-value="pays.id"
-                                                            t-esc="pays.name"/>
-                                                </t>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Dates -->
-                                    <h5 class="mb-3 mt-4">Dates de réservation</h5>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label"><strong>Date de début *</strong></label>
-                                            <input type="date" name="date_debut"
-                                                   class="form-control" required="1"/>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label"><strong>Date de fin *</strong></label>
-                                            <input type="date" name="date_fin"
-                                                   class="form-control" required="1"/>
-                                        </div>
-                                    </div>
-
-                                    <!-- Destination -->
-                                    <h5 class="mb-3 mt-4">Destination</h5>
-                                    <div class="mb-3">
-                                        <label class="form-label"><strong>Destination souhaitée *</strong></label>
-
-                                        <t t-if="destinations">
-                                            <select name="destination_id" class="form-select" required="1">
-                                                <option value="">-- Sélectionnez une destination --</option>
-                                                <t t-foreach="destinations" t-as="dest">
-                                                    <option t-att-value="dest.id">
-                                                        <t t-esc="dest.name"/>
-                                                        <t t-if="dest.pays_id"> — <t t-esc="dest.pays_id.name"/></t>
-                                                    </option>
-                                                </t>
-                                            </select>
-                                        </t>
-
-                                        <t t-else="">
-                                            <div class="alert alert-warning">
-                                                Aucune destination disponible pour ce produit.
+                                        <!-- Identité -->
+                                        <h5 class="mb-3">Identité</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label"><strong>Nom complet *</strong></label>
+                                                <input type="text" name="client_name"
+                                                    class="form-control" required="1"/>
                                             </div>
-                                        </t>
-                                    </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label"><strong>Email *</strong></label>
+                                                <input type="email" name="client_email"
+                                                    class="form-control" required="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Téléphone</strong></label>
+                                            <input type="tel" name="client_phone"
+                                                class="form-control"/>
+                                        </div>
 
-                                    <!-- Notes -->
-                                    <div class="mb-4">
-                                        <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
-                                        <textarea name="notes" class="form-control" rows="3"/>
-                                    </div>
+                                        <!-- Adresse -->
+                                        <h5 class="mb-3 mt-4">Adresse</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Adresse *</strong></label>
+                                            <input type="text" name="client_adresse"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label"><strong>Code postal *</strong></label>
+                                                <input type="text" name="client_code_postal"
+                                                    class="form-control" required="1"/>
+                                            </div>
+                                            <div class="col-md-8 mb-3">
+                                                <label class="form-label"><strong>Pays *</strong></label>
+                                                <select name="client_pays_id"
+                                                        class="form-select" required="1">
+                                                    <option value="">-- Sélectionnez un pays --</option>
+                                                    <t t-foreach="pays_list" t-as="pays">
+                                                        <option t-att-value="pays.id"
+                                                                t-esc="pays.name"/>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
 
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary btn-lg">
-                                            <i class="fa fa-arrow-right me-2"/>
-                                            Voir le récapitulatif
-                                        </button>
-                                    </div>
-                                </form>
+                                        <!-- Dates -->
+                                        <h5 class="mb-3 mt-4">Dates de réservation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label"><strong>Date de début *</strong></label>
+                                                <input type="date" name="date_debut"
+                                                    class="form-control" required="1"/>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label"><strong>Date de fin *</strong></label>
+                                                <input type="date" name="date_fin"
+                                                    class="form-control" required="1"/>
+                                            </div>
+                                        </div>
+
+                                        <!-- Destination -->
+                                        <h5 class="mb-3 mt-4">Destination</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Destination souhaitée *</strong></label>
+
+                                            <t t-if="destinations">
+                                                <select name="destination_id" class="form-select" required="1">
+                                                    <option value="">-- Sélectionnez une destination --</option>
+                                                    <t t-foreach="destinations" t-as="dest">
+                                                        <option t-att-value="dest.id">
+                                                            <t t-esc="dest.name"/>
+                                                            <t t-if="dest.pays_id"> — <t t-esc="dest.pays_id.name"/></t>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </t>
+
+                                            <t t-else="">
+                                                <div class="alert alert-warning">
+                                                    Aucune destination disponible pour ce produit.
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Notes -->
+                                        <div class="mb-4">
+                                            <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
+                                            <textarea name="notes" class="form-control" rows="3"/>
+                                        </div>
+
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fa fa-arrow-right me-2"/>
+                                                Voir le récapitulatif
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </t>
         </t>
     </template>
 
     <!-- Page récapitulatif -->
     <template id="luxury_reservation_recap" name="Récapitulatif réservation">
-        <t t-call="website.layout">
-            <div class="container mt-5 mb-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <h1 class="mb-4">
-                            <i class="fa fa-list me-2"/>
-                            Récapitulatif de votre réservation
-                        </h1>
+        <t t-if="request.website.id == 14">
+            <t t-call="website.layout">
+                <div class="container mt-5 mb-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <h1 class="mb-4">
+                                <i class="fa fa-list me-2"/>
+                                Récapitulatif de votre réservation
+                            </h1>
 
-                        <div class="card mb-4">
-                            <div class="card-header bg-luxury text-white">
-                                <h5 class="mb-0">Produit réservé</h5>
-                            </div>
-                            <div class="card-body">
-                                <h4><t t-esc="product.name"/></h4>
-                                <div class="row mt-3">
-                                    <div class="col-md-6">
-                                        <p><strong>Date de début :</strong> <t t-esc="date_debut"/></p>
-                                        <p><strong>Date de fin :</strong> <t t-esc="date_fin"/></p>
-                                        <p><strong>Durée :</strong> <t t-esc="nb_jours"/> jours</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Prix/jour :</strong> <t t-esc="product.prix_location_jour"/> €</p>
-                                        <h4 class="text-success">
-                                            <strong>Total : <t t-esc="prix_total"/> €</strong>
-                                        </h4>
+                            <div class="card mb-4">
+                                <div class="card-header bg-luxury text-white">
+                                    <h5 class="mb-0">Produit réservé</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h4><t t-esc="product.name"/></h4>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <p><strong>Date de début :</strong> <t t-esc="date_debut"/></p>
+                                            <p><strong>Date de fin :</strong> <t t-esc="date_fin"/></p>
+                                            <p><strong>Durée :</strong> <t t-esc="nb_jours"/> jours</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Prix/jour :</strong> <t t-esc="product.prix_location_jour"/> €</p>
+                                            <h4 class="text-success">
+                                                <strong>Total : <t t-esc="prix_total"/> €</strong>
+                                            </h4>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Vos informations</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Nom :</strong> <t t-esc="client_name"/></p>
-                                        <p><strong>Email :</strong> <t t-esc="client_email"/></p>
-                                        <p><strong>Téléphone :</strong> <t t-esc="client_phone"/></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Adresse :</strong> <t t-esc="client_adresse"/></p>
-                                        <p><strong>Code postal :</strong> <t t-esc="client_code_postal"/></p>
-                                        <p><strong>Pays :</strong> <t t-esc="client_pays.name"/></p>
-                                    </div>
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Vos informations</h5>
                                 </div>
-                                <t t-if="notes">
-                                    <p><strong>Notes :</strong> <t t-esc="notes"/></p>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Nom :</strong> <t t-esc="client_name"/></p>
+                                            <p><strong>Email :</strong> <t t-esc="client_email"/></p>
+                                            <p><strong>Téléphone :</strong> <t t-esc="client_phone"/></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Adresse :</strong> <t t-esc="client_adresse"/></p>
+                                            <p><strong>Code postal :</strong> <t t-esc="client_code_postal"/></p>
+                                            <p><strong>Pays :</strong> <t t-esc="client_pays.name"/></p>
+                                        </div>
+                                    </div>
+                                    <t t-if="notes">
+                                        <p><strong>Notes :</strong> <t t-esc="notes"/></p>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Formulaire de confirmation -->
+                            <form action="/luxury/reserver/submit" method="POST">
+                                <input type="hidden" name="csrf_token"
+                                    t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                <input type="hidden" name="client_name" t-att-value="client_name"/>
+                                <input type="hidden" name="client_email" t-att-value="client_email"/>
+                                <input type="hidden" name="client_phone" t-att-value="client_phone"/>
+                                <input type="hidden" name="client_adresse" t-att-value="client_adresse"/>
+                                <input type="hidden" name="client_code_postal" t-att-value="client_code_postal"/>
+                                <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
+                                <input type="hidden" name="date_debut" t-att-value="date_debut"/>
+                                <input type="hidden" name="date_fin" t-att-value="date_fin"/>
+                                <t t-if="destination">
+                                    <tr>
+                                        <th>Destination</th>
+                                        <td>
+                                            <t t-esc="destination.name"/>
+                                            <t t-if="destination.pays_id">
+                                                — <t t-esc="destination.pays_id.name"/>
+                                            </t>
+                                        </td>
+                                    </tr>
                                 </t>
-                            </div>
+                                <input type="hidden" name="notes" t-att-value="notes"/>
+
+                                <div class="d-flex gap-3">
+                                    <a t-attf-href="/luxury/reserver/#{product.id}"
+                                    class="btn btn-secondary btn-lg flex-grow-1">
+                                        <i class="fa fa-arrow-left me-2"/>
+                                        Modifier
+                                    </a>
+                                    <button type="submit"
+                                            class="btn btn-success btn-lg flex-grow-1">
+                                        <i class="fa fa-check me-2"/>
+                                        Confirmer la réservation
+                                    </button>
+                                </div>
+                            </form>
+
                         </div>
-
-                        <!-- Formulaire de confirmation -->
-                        <form action="/luxury/reserver/submit" method="POST">
-                            <input type="hidden" name="csrf_token"
-                                   t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="product_id" t-att-value="product.id"/>
-                            <input type="hidden" name="client_name" t-att-value="client_name"/>
-                            <input type="hidden" name="client_email" t-att-value="client_email"/>
-                            <input type="hidden" name="client_phone" t-att-value="client_phone"/>
-                            <input type="hidden" name="client_adresse" t-att-value="client_adresse"/>
-                            <input type="hidden" name="client_code_postal" t-att-value="client_code_postal"/>
-                            <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
-                            <input type="hidden" name="date_debut" t-att-value="date_debut"/>
-                            <input type="hidden" name="date_fin" t-att-value="date_fin"/>
-                            <t t-if="destination">
-                                <tr>
-                                    <th>Destination</th>
-                                    <td>
-                                        <t t-esc="destination.name"/>
-                                        <t t-if="destination.pays_id">
-                                            — <t t-esc="destination.pays_id.name"/>
-                                        </t>
-                                    </td>
-                                </tr>
-                            </t>
-                            <input type="hidden" name="notes" t-att-value="notes"/>
-
-                            <div class="d-flex gap-3">
-                                <a t-attf-href="/luxury/reserver/#{product.id}"
-                                   class="btn btn-secondary btn-lg flex-grow-1">
-                                    <i class="fa fa-arrow-left me-2"/>
-                                    Modifier
-                                </a>
-                                <button type="submit"
-                                        class="btn btn-success btn-lg flex-grow-1">
-                                    <i class="fa fa-check me-2"/>
-                                    Confirmer la réservation
-                                </button>
-                            </div>
-                        </form>
-
                     </div>
                 </div>
-            </div>
+            </t>
         </t>
+        
     </template>
 
     <!-- Page confirmation finale -->
     <template id="luxury_reservation_confirm" name="Confirmation réservation">
-        <t t-call="website.layout">
-            <div class="container mt-5 mb-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6 text-center">
-                        <i class="fa fa-check-circle fa-5x text-success mb-4"/>
-                        <h1>Réservation confirmée !</h1>
-                        <p class="lead">
-                            Merci <strong><t t-esc="reservation.client_name"/></strong> !
-                            Votre demande de réservation a bien été enregistrée. 
-                            Nous vous contacterons sous peu à l'adresse <strong><t t-esc="reservation.client_email"/></strong> pour confirmer les détails et finaliser votre réservation.
-                        </p>
-                        <div class="card mt-4 text-start">
-                            <div class="card-body">
-                                <p><strong>Référence :</strong> <t t-esc="reservation.name"/></p>
-                                <p><strong>Produit :</strong> <t t-esc="reservation.product_id.name"/></p>
-                                <p><strong>Du :</strong> <t t-esc="reservation.date_debut"/></p>
-                                <p><strong>Au :</strong> <t t-esc="reservation.date_fin"/></p>
-                                <p><strong>Durée :</strong> <t t-esc="reservation.nb_jours"/> jours</p>
-                                <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
-                                <hr/>
-                                <p><strong>Adresse :</strong> <t t-esc="reservation.client_adresse"/></p>
-                                <p><strong>Code postal :</strong> <t t-esc="reservation.client_code_postal"/></p>
-                                <p><strong>Pays :</strong> <t t-esc="reservation.client_pays.name"/></p>
+        <t t-if="request.website.id == 14">
+            <t t-call="website.layout">
+                <div class="container mt-5 mb-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6 text-center">
+                            <i class="fa fa-check-circle fa-5x text-success mb-4"/>
+                            <h1>Réservation confirmée !</h1>
+                            <p class="lead">
+                                Merci <strong><t t-esc="reservation.client_name"/></strong> !
+                                Votre demande de réservation a bien été enregistrée. 
+                                Nous vous contacterons sous peu à l'adresse <strong><t t-esc="reservation.client_email"/></strong> pour confirmer les détails et finaliser votre réservation.
+                            </p>
+                            <div class="card mt-4 text-start">
+                                <div class="card-body">
+                                    <p><strong>Référence :</strong> <t t-esc="reservation.name"/></p>
+                                    <p><strong>Produit :</strong> <t t-esc="reservation.product_id.name"/></p>
+                                    <p><strong>Du :</strong> <t t-esc="reservation.date_debut"/></p>
+                                    <p><strong>Au :</strong> <t t-esc="reservation.date_fin"/></p>
+                                    <p><strong>Durée :</strong> <t t-esc="reservation.nb_jours"/> jours</p>
+                                    <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
+                                    <hr/>
+                                    <p><strong>Adresse :</strong> <t t-esc="reservation.client_adresse"/></p>
+                                    <p><strong>Code postal :</strong> <t t-esc="reservation.client_code_postal"/></p>
+                                    <p><strong>Pays :</strong> <t t-esc="reservation.client_pays.name"/></p>
+                                </div>
                             </div>
+                            <a href="/" class="btn btn-primary mt-4">
+                                Retour à l'accueil
+                            </a>
                         </div>
-                        <a href="/" class="btn btn-primary mt-4">
-                            Retour à l'accueil
-                        </a>
                     </div>
                 </div>
-            </div>
+            </t>
         </t>
     </template>
 
@@ -462,117 +494,120 @@
             name="Luxury - Filtres custom">
 
         <xpath expr="//div[@id='oe_structure_website_sale_sidebar_bottom']" position="inside">
-            <div class="luxury_filters mt-3">
 
-                <form method="GET" t-att-action="request.httprequest.path" id="luxury_filter_form">
+            <t t-if="request.website.id == 14"> 
+                <div class="luxury_filters mt-3">
 
-                    <!-- Garde les paramètres existants -->
-                    <t t-foreach="request.params.items()" t-as="param">
-                        <t t-if="param[0] not in ('longueur_min', 'longueur_max', 'capacite_min', 'cabines_min', 'type_service', 'vitesse_min')">
-                            <input type="hidden"
-                                t-att-name="param[0]"
-                                t-att-value="param[1]"/>
+                    <form method="GET" t-att-action="request.httprequest.path" id="luxury_filter_form">
+
+                        <!-- Garde les paramètres existants -->
+                        <t t-foreach="request.params.items()" t-as="param">
+                            <t t-if="param[0] not in ('longueur_min', 'longueur_max', 'capacite_min', 'cabines_min', 'type_service', 'vitesse_min')">
+                                <input type="hidden"
+                                    t-att-name="param[0]"
+                                    t-att-value="param[1]"/>
+                            </t>
                         </t>
-                    </t>
 
-                    <!-- Type service -->
-                    <div class="mb-3 border-top pt-3">
-                        <h6 class="fw-bold small text-uppercase mb-2"
-                            style="color: #714b67;">Type</h6>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio"
-                                name="type_service" value=""
-                                id="type_tous"
-                                t-att-checked="not request.params.get('type_service')"/>
-                            <label class="form-check-label small" for="type_tous">Tous</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio"
-                                name="type_service" value="location"
-                                id="type_location"
-                                t-att-checked="request.params.get('type_service') == 'location'"/>
-                            <label class="form-check-label small" for="type_location">
-                                <i class="fa fa-calendar me-1"/>À louer
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio"
-                                name="type_service" value="vente"
-                                id="type_vente"
-                                t-att-checked="request.params.get('type_service') == 'vente'"/>
-                            <label class="form-check-label small" for="type_vente">
-                                <i class="fa fa-tag me-1"/>À vendre
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Longueur -->
-                    <div class="mb-3 border-top pt-3">
-                        <h6 class="fw-bold small text-uppercase mb-2"
-                            style="color: #714b67;">Longueur (m)</h6>
-                        <div class="row g-1">
-                            <div class="col-6">
-                                <input type="number"
-                                    name="longueur_min"
-                                    class="form-control form-control-sm"
-                                    placeholder="Min"
-                                    t-att-value="request.params.get('longueur_min', '')"/>
+                        <!-- Type service -->
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">Type</h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                    name="type_service" value=""
+                                    id="type_tous"
+                                    t-att-checked="not request.params.get('type_service')"/>
+                                <label class="form-check-label small" for="type_tous">Tous</label>
                             </div>
-                            <div class="col-6">
-                                <input type="number"
-                                    name="longueur_max"
-                                    class="form-control form-control-sm"
-                                    placeholder="Max"
-                                    t-att-value="request.params.get('longueur_max', '')"/>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                    name="type_service" value="location"
+                                    id="type_location"
+                                    t-att-checked="request.params.get('type_service') == 'location'"/>
+                                <label class="form-check-label small" for="type_location">
+                                    <i class="fa fa-calendar me-1"/>À louer
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                    name="type_service" value="vente"
+                                    id="type_vente"
+                                    t-att-checked="request.params.get('type_service') == 'vente'"/>
+                                <label class="form-check-label small" for="type_vente">
+                                    <i class="fa fa-tag me-1"/>À vendre
+                                </label>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Capacité -->
-                    <div class="mb-3 border-top pt-3">
-                        <h6 class="fw-bold small text-uppercase mb-2"
-                            style="color: #714b67;">passagers(pers.)</h6>
-                        <input type="number"
-                            name="capacite_min"
-                            class="form-control form-control-sm"
-                            placeholder="Ex: 8"
-                            t-att-value="request.params.get('capacite_min', '')"/>
-                    </div>
+                        <!-- Longueur -->
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">Longueur (m)</h6>
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <input type="number"
+                                        name="longueur_min"
+                                        class="form-control form-control-sm"
+                                        placeholder="Min"
+                                        t-att-value="request.params.get('longueur_min', '')"/>
+                                </div>
+                                <div class="col-6">
+                                    <input type="number"
+                                        name="longueur_max"
+                                        class="form-control form-control-sm"
+                                        placeholder="Max"
+                                        t-att-value="request.params.get('longueur_max', '')"/>
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Cabines -->
-                    <div class="mb-3 border-top pt-3">
-                        <h6 class="fw-bold small text-uppercase mb-2"
-                            style="color: #714b67;">Cabines </h6>
-                        <input type="number"
-                            name="cabines_min"
-                            class="form-control form-control-sm"
-                            placeholder="Ex: 3"
-                            t-att-value="request.params.get('cabines_min', '')"/>
-                    </div>
+                        <!-- Capacité -->
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">passagers(pers.)</h6>
+                            <input type="number"
+                                name="capacite_min"
+                                class="form-control form-control-sm"
+                                placeholder="Ex: 8"
+                                t-att-value="request.params.get('capacite_min', '')"/>
+                        </div>
 
-                    <!-- Vitesse -->
-                    <div class="mb-3 border-top pt-3">
-                        <h6 class="fw-bold small text-uppercase mb-2"
-                            style="color: #714b67;">Vitesse (nœuds)</h6>
-                        <input type="number"
-                            name="vitesse_min"
-                            class="form-control form-control-sm"
-                            placeholder="Ex: 15"
-                            t-att-value="request.params.get('vitesse_min', '')"/>
-                    </div>
+                        <!-- Cabines -->
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">Cabines </h6>
+                            <input type="number"
+                                name="cabines_min"
+                                class="form-control form-control-sm"
+                                placeholder="Ex: 3"
+                                t-att-value="request.params.get('cabines_min', '')"/>
+                        </div>
 
-                    <div class="d-grid gap-2 border-top pt-3">
-                        <button type="submit" class="btn btn-sm btn-luxury">
-                            <i class="fa fa-filter me-1"/>
-                            Appliquer
-                        </button>
-                        <a href="/shop" class="btn btn-sm btn-outline-secondary">
-                            Effacer
-                        </a>
-                    </div>
+                        <!-- Vitesse -->
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">Vitesse (nœuds)</h6>
+                            <input type="number"
+                                name="vitesse_min"
+                                class="form-control form-control-sm"
+                                placeholder="Ex: 15"
+                                t-att-value="request.params.get('vitesse_min', '')"/>
+                        </div>
 
-                </form>
-            </div>
+                        <div class="d-grid gap-2 border-top pt-3">
+                            <button type="submit" class="btn btn-sm btn-luxury">
+                                <i class="fa fa-filter me-1"/>
+                                Appliquer
+                            </button>
+                            <a href="/shop" class="btn btn-sm btn-outline-secondary">
+                                Effacer
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </t>
         </xpath>
     </template>
     
