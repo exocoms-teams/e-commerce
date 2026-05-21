@@ -24,7 +24,7 @@ class WebsitePlanetMobil(http.Controller):
             top_ventes = [p for p in  FAKE_PRODUCTS.values() if p['is_top_vente']]
 
         if not nouveautes:
-            nouveautes = [p for p in FAKE_PRODUCTS.values() if p['is_noveaute']]
+            nouveautes = [p for p in FAKE_PRODUCTS.values() if p['is_nouveaute']]
 
         return request.render('website_planet_mobil.homepage', {
             'top_ventes': top_ventes,
