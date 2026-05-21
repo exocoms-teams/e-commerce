@@ -257,47 +257,67 @@
          Variables Python disponibles : vendor, orders
          ═══════════════════════════════════════════════════════ -->
     <template id="vendor_orders"
-              name="Portail Vendeur - Commandes">
+          name="Portail Vendeur - Commandes">
         <t t-call="website.layout">
             <div class="mn-vendor-portal">
                 <div class="mn-vendor-header">
                     <div class="mn-container">
-                        <h1>Commandes recentes</h1>
+                        <div class="mn-vendor-header__inner">
+                            <div class="mn-vendor-header__info">
+                                <h1 class="mn-vendor-header__name">Commandes recentes</h1>
+                            </div>
+                            <nav class="mn-vendor-nav">
+                                <a href="/vendor/dashboard"
+                                    class="mn-vendor-nav__link">
+                                        Tableau de bord
+                                </a>
+                                <a href="/vendor/products"
+                                    class="mn-vendor-nav__link">
+                                        Mes produits
+                                </a>
+                                <a href="/vendor/orders"
+                                    class="mn-vendor-nav__link mn-vendor-nav__link--active">
+                                        Mes commandes
+                                </a>
+                            </nav>
+                        </div>
                     </div>
                 </div>
                 <div class="mn-vendor-body">
                     <div class="mn-container">
+                        <!-- Message si aucune commande -->
                         <t t-if="not orders">
-                            <p>Aucune commande pour le moment.</p>
+                            <p style="margin-bottom:20px; color:#6B7280;">
+                                Aucune commande pour le moment.
+                            </p>
                         </t>
-                        <t t-else="">
-                            <table class="mn-vendor-table">
-                                <thead>
+                        <!-- Table toujours visible -->
+                        <table class="mn-vendor-table">
+                            <thead>
+                                <tr>
+                                    <th>Commande</th>
+                                    <th>Date</th>
+                                    <th>Produit</th>
+                                    <th>Quantite</th>
+                                    <th>Montant HT</th>
+                                    <th>Etat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="orders" t-as="line">
                                     <tr>
-                                        <th>Commande</th>
-                                        <th>Date</th>
-                                        <th>Produit</th>
-                                        <th>Quantite</th>
-                                        <th>Montant HT</th>
-                                        <th>Etat</th>
+                                        <td t-esc="line.order_id.name"/>
+                                        <td t-esc="line.order_id.date_order.strftime('%d/%m/%Y')"/>
+                                        <td t-esc="line.product_id.name"/>
+                                        <td t-esc="int(line.product_uom_qty)"/>
+                                        <td>
+                                            <t t-esc="'%.2f EUR' % line.price_subtotal"/>
+                                        </td>
+                                        <td t-esc="line.order_id.state"/>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="orders" t-as="line">
-                                        <tr>
-                                            <td t-esc="line.order_id.name"/>
-                                            <td t-esc="line.order_id.date_order.strftime('%d/%m/%Y')"/>
-                                            <td t-esc="line.product_id.name"/>
-                                            <td t-esc="int(line.product_uom_qty)"/>
-                                            <td>
-                                                <t t-esc="'%.2f EUR' % line.price_subtotal"/>
-                                            </td>
-                                            <td t-esc="line.order_id.state"/>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </t>
+                                </t>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
