@@ -189,13 +189,13 @@ class VendorPortal(http.Controller):
 
     # ── Route 4 : Commandes du vendeur (lecture seule) ────────────────────
     @http.route(
-        '/vendor/orders',
-        type='http',
-        auth='user',
-        website=True,
-        sitemap=False,
-    )
-    def vendor_orders(self, **kw):
+    '/vendor/orders',
+    type='http',
+    auth='user',
+    website=True,
+    sitemap=False,
+)
+    def vendor_orders(self, page=1, status=None, **kw):
         """
         Affiche les commandes liees aux produits du vendeur (F-02-04).
         Lecture seule : le vendeur ne peut pas modifier les commandes.
@@ -204,26 +204,42 @@ class VendorPortal(http.Controller):
         if not vendor:
             return request.redirect('/shop')
 
-        # Lignes de commande dont le produit appartient a ce vendeur
+        ITEMS_PER_PAGE = 10
+
+        # Domaine de base
         product_ids = request.env['product.template'].sudo().search(
             [('vendor_id', '=', vendor.id)]
         ).mapped('product_variant_ids').ids
 
-        orders = []
-        if product_ids:
-            orders = request.env['sale.order.line'].sudo().search(
-                [
-                    ('product_id', 'in', product_ids),
-                    ('order_id.state', 'in', ['sale', 'done']),
-                ],
-                order='order_id desc',
-                limit=50  # 50 commandes les plus recentes
-            )
+        domain = [
+            ('product_id', 'in', product_ids),
+            ('order_id.state', 'in', ['draft', 'sent', 'sale', 'done', 'cancel']),
+        ]
+
+        # Filtre par statut
+        if status:
+            domain.append(('order_id.state', '=', status))
+
+        # Total pour pagination
+        total = request.env['sale.order.line'].sudo().search_count(domain)
+
+        # Commandes paginées
+        offset = (int(page) - 1) * ITEMS_PER_PAGE
+        orders = request.env['sale.order.line'].sudo().search(
+            domain,
+            order='order_id desc',
+            limit=ITEMS_PER_PAGE,
+            offset=offset,
+        )
 
         return request.render(
             'marketplace_module.vendor_orders',
             {
                 'vendor': vendor,
                 'orders': orders,
+                'total': total,
+                'page': int(page),
+                'items_per_page': ITEMS_PER_PAGE,
+                'status': status or '',
             }
         )
