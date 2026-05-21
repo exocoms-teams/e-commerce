@@ -19,6 +19,15 @@ class LuxuryReservation(models.Model):
         required=True,
         domain="[('type_service', 'in', ['location', 'les_deux'])]"
     )
+    
+    destination_ids = fields.Many2many(
+    'luxury.destination',
+    'luxury_reservation_destination_rel',
+    'reservation_id',
+    'destination_id',
+    string='Destinations'
+)
+    
     client_id = fields.Many2one('res.partner', string='Client')
     client_name = fields.Char(string='Nom du client', required=True)
     client_email = fields.Char(string='Email du client', required=True)

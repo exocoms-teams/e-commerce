@@ -292,7 +292,7 @@ class LuxuryController(WebsiteSale):
             'date_debut': date_debut,
             'date_fin': date_fin,
             'notes': notes,
-            'destianation_ids': destination_id if destination_id else False,
+            'destination_ids': destination_id if destination_id else False,
             'state': 'en_attente',
         })
 
@@ -330,6 +330,56 @@ class LuxuryController(WebsiteSale):
         website=True
     )
     def maintenance_page(self, **kwargs):
+        
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+        
         return request.render(
             'luxury_services.luxury_maintenance_page'
         )
+        
+        
+    @http.route('/maintenance/submit',
+            type='http',
+            auth='public',
+            website=True,
+            methods=['POST'])
+    def maintenance_submit(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        # Récupération des champs
+        client_name = kwargs.get('client_name', '').strip()
+        client_email = kwargs.get('client_email', '').strip()
+        client_phone = kwargs.get('client_phone', '').strip()
+        type_vehicule = kwargs.get('type_vehicule', '').strip()
+        annee = kwargs.get('annee', '').strip()
+        modele = kwargs.get('modele', '').strip()
+        type_intervention = kwargs.get('type_intervention', '').strip()
+        localisation = kwargs.get('localisation', '').strip()
+        description = kwargs.get('description', '').strip()
+
+        # Validation minimale
+        if not client_name or not client_email or not modele:
+            return request.render('luxury_services.luxury_maintenance_page', {
+                'error': 'Veuillez remplir tous les champs obligatoires.',
+            })
+
+        # Création en base
+        request.env['luxury.maintenance.request'].sudo().create({
+            'client_name': client_name,
+            'client_email': client_email,
+            'client_phone': client_phone,
+            'type_vehicule': type_vehicule or False,
+            'annee': int(annee) if annee.isdigit() else False,
+            'modele': modele,
+            'type_intervention': type_intervention or False,
+            'localisation': localisation,
+            'description': description,
+            'state': 'draft',
+        })
+
+        return request.render('luxury_services.luxury_maintenance_confirm', {
+            'client_name': client_name,
+            'client_email': client_email,
+        })

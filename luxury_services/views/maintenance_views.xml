@@ -3,6 +3,15 @@
 <template id="luxury_maintenance_page" name="Page Maintenance VIP">
     <t t-call="website.layout">
 
+        <t t-if="error">
+            <div class="container mt-3">
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle me-2"/>
+                    <t t-esc="error"/>
+                </div>
+            </div>
+        </t>
+
         <!-- ═══════════════════════════════════════════
              SECTION 1 — HERO
         ═══════════════════════════════════════════ -->
@@ -486,6 +495,61 @@
             </div>
         </section>
 
+    </t>
+</template>
+
+<template id="luxury_maintenance_confirm" name="Confirmation Maintenance">
+    <t t-call="website.layout">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+
+                    <div class="mb-4">
+                        <i class="fa fa-check-circle fa-5x"
+                           style="color: #c9a84c;"/>
+                    </div>
+
+                    <h1 class="fw-bold mb-3" style="color: #1a1a1a;">
+                        Demande envoyée !
+                    </h1>
+
+                    <p class="lead text-muted mb-4">
+                        Merci <strong t-esc="client_name"/>,
+                        votre demande de maintenance a bien été reçue.
+                        Notre équipe vous contactera sous <strong>24h</strong>
+                        à l'adresse <strong t-esc="client_email"/>.
+                    </p>
+
+                    <div class="card border-0 shadow-sm p-4 mb-4 text-start">
+                        <p class="mb-2">
+                            <i class="fa fa-check me-2" style="color: #c9a84c;"/>
+                            Devis gratuit sans engagement
+                        </p>
+                        <p class="mb-2">
+                            <i class="fa fa-check me-2" style="color: #c9a84c;"/>
+                            Réponse sous 24h par email
+                        </p>
+                        <p class="mb-0">
+                            <i class="fa fa-check me-2" style="color: #c9a84c;"/>
+                            Technicien certifié disponible 24/7
+                        </p>
+                    </div>
+
+                    <a href="/maintenance"
+                       class="btn btn-outline-secondary me-2">
+                        <i class="fa fa-arrow-left me-2"/>
+                        Retour
+                    </a>
+                    <a href="/"
+                       class="btn fw-semibold"
+                       style="background: #c9a84c; color: #000;">
+                        <i class="fa fa-home me-2"/>
+                        Accueil
+                    </a>
+
+                </div>
+            </div>
+        </div>
     </t>
 </template>
 </odoo>

@@ -399,6 +399,17 @@
                                     <t t-if="notes">
                                         <p><strong>Notes :</strong> <t t-esc="notes"/></p>
                                     </t>
+                                    <t t-if="destination">
+                                        <tr>
+                                            <th>Destination</th>
+                                            <td>
+                                                <t t-esc="destination.name"/>
+                                                <t t-if="destination.pays_id">
+                                                    , <t t-esc="destination.pays_id.name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </div>
                             </div>
 
@@ -415,18 +426,8 @@
                                 <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
                                 <input type="hidden" name="date_debut" t-att-value="date_debut"/>
                                 <input type="hidden" name="date_fin" t-att-value="date_fin"/>
-                                <t t-if="destination">
-                                    <tr>
-                                        <th>Destination</th>
-                                        <td>
-                                            <t t-esc="destination.name"/>
-                                            <t t-if="destination.pays_id">
-                                                — <t t-esc="destination.pays_id.name"/>
-                                            </t>
-                                        </td>
-                                    </tr>
-                                </t>
                                 <input type="hidden" name="notes" t-att-value="notes"/>
+                                <input type="hidden" name="destination_id" t-att-value="destination.name if destination else ''"/>
 
                                 <div class="d-flex gap-3">
                                     <a t-attf-href="/luxury/reserver/#{product.id}"
@@ -472,6 +473,9 @@
                                     <p><strong>Au :</strong> <t t-esc="reservation.date_fin"/></p>
                                     <p><strong>Durée :</strong> <t t-esc="reservation.nb_jours"/> jours</p>
                                     <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
+                                    <t t-foreach="reservation.destination_ids" t-as="destination">
+                                        <p><strong>Destination :</strong> <t t-esc="destination.name"/> <t t-if="destination.pays_id">, <t t-esc="destination.pays_id.name"/></t></p>
+                                    </t>
                                     <hr/>
                                     <p><strong>Adresse :</strong> <t t-esc="reservation.client_adresse"/></p>
                                     <p><strong>Code postal :</strong> <t t-esc="reservation.client_code_postal"/></p>

@@ -63,7 +63,7 @@ class ProductTemplate(models.Model):
     'product_id',
     'destination_id',
     string='Destinations disponibles',
-)
+    )
 
     def is_available_for_dates(self, date_debut, date_fin):
         """Vérifie si le produit est disponible pour les dates données"""
