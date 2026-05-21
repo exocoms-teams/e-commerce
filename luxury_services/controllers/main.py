@@ -383,3 +383,20 @@ class LuxuryController(WebsiteSale):
             'client_name': client_name,
             'client_email': client_email,
         })
+        
+        
+        
+    #pge à propos
+    @http.route('/a-propos', type='http', auth='public', website=True)
+    def about_page(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+        return request.render('luxury_services.luxury_about_page', {})
+    
+    
+    #page destination
+    @http.route('/_destinations', type='http', auth='public', website=True)
+    def destinations_page(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+        return request.render('luxury_services.luxury_destinations_page', {})

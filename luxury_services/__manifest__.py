@@ -13,6 +13,8 @@
         'views/luxury_destination_views.xml',
         'views/maintenance_views.xml',
         'views/maintenance_back_views.xml',
+        'views/destination_views.xml',
+        'views/a_propos_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [
