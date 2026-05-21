@@ -141,6 +141,12 @@
         </field>
     </record>
 
+    <record id="action_open_vendor_portal" model="ir.actions.act_url">
+        <field name="name">Mon portail vendeur</field>
+        <field name="url">/vendor/dashboard</field>
+        <field name="target">self</field>
+    </record>
+
     <!-- ═══════════════════════════════════════════════════════
          MENUS : navigation dans le back-office Odoo
          ═══════════════════════════════════════════════════════ -->
@@ -156,5 +162,12 @@
               parent="menu_marketplace_root"
               action="action_marketplace_vendors"
               sequence="10"/>
+
+    <menuitem id="menu_my_vendor_portal"
+          name="Mon portail vendeur"
+          parent="menu_marketplace_root"
+          action="action_open_vendor_portal"
+          sequence="20"
+          groups="marketplace_module.group_marketplace_vendor"/>
 
 </odoo>
