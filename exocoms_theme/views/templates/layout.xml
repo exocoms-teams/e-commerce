@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Injecte le thème dans TOUTES les pages via website.layout -->
     <template id="custom_theme_assets"
-              inherit_id="website.layout"
-              name="Exocoms Theme">
+        inherit_id="website.layout"
+        name="Exocoms Theme Assets">
 
         <!-- CSS dans le head -->
         <xpath expr="//head" position="inside">
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/home.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/hero.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/features.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/products.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/footer.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/categories.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/cta.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_hero.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_features.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_content.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css"/>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/home.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/hero.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/features.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/products.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/footer.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/categories.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/cta.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_hero.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_features.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_content.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css" />
+            <link rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         </xpath>
 
-        <!-- Remplace le header natif Odoo par le nôtre -->
+        <!-- Remplace le header natif Odoo -->
         <xpath expr="//header[@id='top']" position="replace">
-            <t t-call="exocoms_theme.custom_header"/>
+            <t t-call="exocoms_theme.custom_header" />
         </xpath>
 
-        <!-- Remplace le footer natif Odoo par le nôtre -->
+        <!-- Remplace le footer natif Odoo -->
         <xpath expr="//footer" position="replace">
-            <t t-call="exocoms_theme.custom_footer"/>
+            <t t-call="exocoms_theme.custom_footer" />
         </xpath>
 
     </template>
 
-    <!-- custom_layout reste pour compatibilité avec les pages existantes -->
+    <!-- custom_layout simplifié — appelle juste website.layout sans rien ajouter -->
     <template id="custom_layout" name="Custom Layout">
         <t t-call="website.layout">
-            <t t-out="0"/>
+            <t t-out="0" />
         </t>
     </template>
 
