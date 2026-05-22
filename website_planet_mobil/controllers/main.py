@@ -3,7 +3,7 @@ from odoo import http
 from odoo.http import request
 
 FAKE_PRODUCTS = {
-    1: {'id': 1, 'name': 'iPhone 15 Pro Max', 'description': "Le smartphone le plus puissant d'Apple avec...", 'price': 1299, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/iphone15.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'ean': '0194253408222', 'specs': {
+    1: {'id': 1, 'name': 'iPhone 15 Pro Max', 'description': "Le smartphone le plus puissant d'Apple avec...", 'price': 1299, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/iphone15.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'is_promotion': True, 'ean': '0194253408222', 'specs': {
         'Processeur': 'Apple A17 Pro',
         'Mémoire': '256 GB',
         'Écran': '6.7" Super Retina XDR',
@@ -15,7 +15,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '159.9 x 76.7 x 8.25 mm',
         'Poids': '221 g',
     }},
-    2: {'id': 2, 'name': 'Samsung Galaxy S21 Ultra', 'description': 'Le flagship Android ultime avec S Pen intégré', 'price': 1199, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/samsung_s21.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'ean': '8806090945182', 'specs': {
+    2: {'id': 2, 'name': 'Samsung Galaxy S21 Ultra', 'description': 'Le flagship Android ultime avec S Pen intégré', 'price': 1199, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/samsung_s21.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'is_promotion': False, 'ean': '8806090945182', 'specs': {
         'Processeur': 'Exynos 2100',
         'Mémoire': '256 GB',
         'RAM': '12 GB',
@@ -28,7 +28,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '165.1 x 75.6 x 8.9 mm',
         'Poids': '227 g',
     }},
-    3: {'id': 3, 'name': 'Apple Watch Series 9', 'description': 'Montre connectée avec écran toujours actif et...', 'price': 449, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/apple_watch.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'ean': '0194253966509', 'specs': {
+    3: {'id': 3, 'name': 'Apple Watch Series 9', 'description': 'Montre connectée avec écran toujours actif et...', 'price': 449, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/apple_watch.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'is_promotion': False, 'ean': '0194253966509', 'specs': {
         'Processeur': 'Apple S9',
         'Écran': 'LTPO OLED 45mm',
         'Résolution': '484 x 396 pixels',
@@ -40,7 +40,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '45 x 38 x 10.7 mm',
         'Poids': '38.7 g',
     }},
-    4: {'id': 4, 'name': 'Samsung Galaxy Watch 6', 'description': 'Suivi santé avancé et autonomie...', 'price': 399, 'rating': 4, 'image_url': '/website_planet_mobil/static/src/img/samsung_watch.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'ean': '8806094955627', 'specs': {
+    4: {'id': 4, 'name': 'Samsung Galaxy Watch 6', 'description': 'Suivi santé avancé et autonomie...', 'price': 399, 'rating': 4, 'image_url': '/website_planet_mobil/static/src/img/samsung_watch.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'is_promotion': True, 'ean': '8806094955627', 'specs': {
         'Processeur': 'Exynos W930',
         'Écran': 'Super AMOLED 44mm',
         'Résolution': '480 x 480 pixels',
@@ -52,7 +52,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '44 x 44 x 9 mm',
         'Poids': '33 g',
     }},
-    5: {'id': 5, 'name': 'Google Pixel 8 Pro', 'description': 'Intelligence artificielle au service de la...', 'price': 999, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/pixel8.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'ean': '0840244700448', 'specs': {
+    5: {'id': 5, 'name': 'Google Pixel 8 Pro', 'description': 'Intelligence artificielle au service de la...', 'price': 999, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/pixel8.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': False, 'ean': '0840244700448', 'specs': {
         'Processeur': 'Google Tensor G3',
         'Mémoire': '128 GB',
         'RAM': '12 GB',
@@ -65,7 +65,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '162.6 x 76.5 x 8.8 mm',
         'Poids': '213 g',
     }},
-    6: {'id': 6, 'name': 'OnePlus 12', 'description': 'Performance flagship à prix accessible', 'price': 899, 'rating': 4, 'image_url': '/website_planet_mobil/static/src/img/oneplus12.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'ean': '6921815624073', 'specs': {
+    6: {'id': 6, 'name': 'OnePlus 12', 'description': 'Performance flagship à prix accessible', 'price': 899, 'rating': 4, 'image_url': '/website_planet_mobil/static/src/img/oneplus12.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': False, 'ean': '6921815624073', 'specs': {
         'Processeur': 'Snapdragon 8 Gen 3',
         'Mémoire': '256 GB',
         'RAM': '12 GB',
@@ -78,7 +78,7 @@ FAKE_PRODUCTS = {
         'Dimensions': '164.3 x 75.8 x 9.15 mm',
         'Poids': '220 g',
     }},
-    7: {'id': 7, 'name': 'Sony WH-1000XM5', 'description': 'Casque à réduction de bruit active premium', 'price': 379, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/sony_wh.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'ean': '4548736132504', 'specs': {
+    7: {'id': 7, 'name': 'Sony WH-1000XM5', 'description': 'Casque à réduction de bruit active premium', 'price': 379, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/sony_wh.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': True, 'ean': '4548736132504', 'specs': {
         'Type': 'Casque supra-auriculaire',
         'Réduction de bruit': 'Active (ANC)',
         'Autonomie': '30 heures',
@@ -89,7 +89,7 @@ FAKE_PRODUCTS = {
         'Poids': '250 g',
         'Couleurs disponibles': 'Noir, Blanc',
     }},
-    8: {'id': 8, 'name': 'LG OLED C3 55"', 'description': 'TV OLED 4K 120Hz pour gaming et cinéma', 'price': 1599, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/lg_oled.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'ean': '8806084076756', 'specs': {
+    8: {'id': 8, 'name': 'LG OLED C3 55"', 'description': 'TV OLED 4K 120Hz pour gaming et cinéma', 'price': 1599, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/lg_oled.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': False, 'ean': '8806084076756', 'specs': {
         'Taille': '55 pouces',
         'Technologie': 'OLED evo',
         'Résolution': '4K UHD 3840 x 2160',
@@ -143,13 +143,23 @@ class WebsitePlanetMobil(http.Controller):
         category = kwargs.get('category')  #retourne none si pas de parametre
         
         domain = []
-        if category:
+        if category=='Nouveautes':
+            domain = [('is_nouveaute', '=', True)]
+        elif category=='Promotions':
+            domain = [('is_promotion', '=', True)]
+        elif category:
             domain = [('category', '=', category)]
 
         products = request.env['planet.product'].sudo().search(domain, limit=12)
 
         if not products:    #temporaire pour remplacer bd
             products = list(FAKE_PRODUCTS.values())
+            if category == 'Nouveautes':
+                products = [p for p in FAKE_PRODUCTS.values() if p['is_nouveaute']]
+            elif category == 'Promotions':
+                products = [p for p in FAKE_PRODUCTS.values() if p.get('is_promotion')]
+            elif category:
+                products = [p for p in FAKE_PRODUCTS.values()]
 
         brands = request.env['planet.product'].sudo().search([]).mapped('brand')
         brands = list(set(filter(None, brands)))
