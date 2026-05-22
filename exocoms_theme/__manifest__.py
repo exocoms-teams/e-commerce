@@ -11,11 +11,6 @@
     'data': [
         #DATA
         'data/website_data.xml',
-
-        # PARTIALS
-
-        'views/partials/dashbord_boutique.xml',
-
         # PAGES
         'views/pages/home.xml',
         'views/pages/services.xml',
@@ -25,6 +20,7 @@
         # PARTIALS
         'views/partials/hero.xml',
         'views/partials/dashbord.xml',
+        'views/partials/dashbord_boutique.xml',
         'views/partials/services_hero.xml',
         'views/partials/services_content.xml',
         'views/partials/mentions_legales_content.xml',
