@@ -10,7 +10,8 @@ class PlanetProduct(models.Model):
     name = fields.Char(string='Nom du produit', required=True)
     category = fields.Char(string='Categorie', required=False)       #manquant 
     brand = fields.Char(string='Marque', required=False)           #manquant
-    color = fields.Char(string='Couleur', required=False)          #manquant    
+    color = fields.Char(string='Couleur', required=False)          #manquant  
+    specs = fields.Char(string='Caracteristiques', required=False)
     description = fields.Text(string='Description')
     price = fields.Float(string='Prix (€)', required=True, default=0.0)
     rating = fields.Float(string='Note', default=5.0)
