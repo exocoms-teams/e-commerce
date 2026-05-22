@@ -277,33 +277,41 @@
             <div class="mn-vendor-body">
                 <div class="mn-container">
 
-                    <!-- Filtre par statut -->
-                    <div class="mn-vendor-filter" style="margin-bottom:24px; display:flex; align-items:center; gap:12px;">
-                        <label style="font-weight:600; font-size:14px; color:#374151;">Filtrer par statut :</label>
-                        <a t-attf-href="/vendor/orders?status="
-                           t-attf-class="mn-vendor-badge #{'' if status else 'mn-vendor-badge--blue'}">
-                            Tous
-                        </a>
-                        <a t-attf-href="/vendor/orders?status=draft"
-                           t-attf-class="mn-vendor-badge #{status == 'draft' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
-                            Brouillon
-                        </a>
-                        <a t-attf-href="/vendor/orders?status=sent"
-                           t-attf-class="mn-vendor-badge #{status == 'sent' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
-                            Devis envoye
-                        </a>
-                        <a t-attf-href="/vendor/orders?status=sale"
-                           t-attf-class="mn-vendor-badge #{status == 'sale' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
-                            Confirme
-                        </a>
-                        <a t-attf-href="/vendor/orders?status=done"
-                           t-attf-class="mn-vendor-badge #{status == 'done' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
-                            Livre
-                        </a>
-                        <a t-attf-href="/vendor/orders?status=cancel"
-                           t-attf-class="mn-vendor-badge #{status == 'cancel' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
-                            Annule
-                        </a>
+                    <!-- Filtre par statut avec total -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-weight:600; font-size:14px; color:#374151;">Filtrer :</span>
+                            <a t-attf-href="/vendor/orders"
+                               t-attf-class="mn-vendor-badge #{not status and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Tous
+                            </a>
+                            <a t-attf-href="/vendor/orders?status=draft"
+                               t-attf-class="mn-vendor-badge #{status == 'draft' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Brouillon
+                            </a>
+                            <a t-attf-href="/vendor/orders?status=sent"
+                               t-attf-class="mn-vendor-badge #{status == 'sent' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Devis envoye
+                            </a>
+                            <a t-attf-href="/vendor/orders?status=sale"
+                               t-attf-class="mn-vendor-badge #{status == 'sale' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Confirme
+                            </a>
+                            <a t-attf-href="/vendor/orders?status=done"
+                               t-attf-class="mn-vendor-badge #{status == 'done' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Livre
+                            </a>
+                            <a t-attf-href="/vendor/orders?status=cancel"
+                               t-attf-class="mn-vendor-badge #{status == 'cancel' and 'mn-vendor-badge--blue' or 'mn-vendor-badge--gray'}">
+                                Annule
+                            </a>
+                        </div>
+                        <!-- Total commandes selon filtre -->
+                        <span style="font-size:14px; color:#6B7280;">
+                            <strong style="color:#2563EB;">
+                                <t t-esc="total_orders"/>
+                            </strong> commande(s)
+                        </span>
                     </div>
 
                     <!-- Message aucune commande -->
@@ -313,13 +321,14 @@
                         </p>
                     </t>
 
-                    <!-- Table toujours visible -->
+                    <!-- Table -->
                     <table class="mn-vendor-table">
                         <thead>
                             <tr>
                                 <th>Commande</th>
                                 <th>Date</th>
                                 <th>Produit</th>
+                                <th>Prix unitaire</th>
                                 <th>Quantite</th>
                                 <th>Montant HT</th>
                                 <th>Statut</th>
@@ -331,18 +340,22 @@
                                     <td t-esc="line.order_id.name"/>
                                     <td t-esc="line.order_id.date_order.strftime('%d/%m/%Y')"/>
                                     <td t-esc="line.product_id.name"/>
-                                    <td t-esc="int(line.product_uom_qty)"/>
-                                    <td><t t-esc="'%.2f EUR' % line.price_subtotal"/></td>
                                     <td>
-                                        <!-- Traduction du statut en francais -->
+                                        <t t-esc="'%.2f EUR' % line.price_unit"/>
+                                    </td>
+                                    <td t-esc="int(line.product_uom_qty)"/>
+                                    <td>
+                                        <t t-esc="'%.2f EUR' % line.price_subtotal"/>
+                                    </td>
+                                    <td>
                                         <t t-if="line.order_id.state == 'draft'">
                                             <span class="mn-vendor-badge mn-vendor-badge--gray">Brouillon</span>
                                         </t>
                                         <t t-elif="line.order_id.state == 'sent'">
-                                            <span class="mn-vendor-badge" style="background:#DBEAFE;color:#1E40AF;">Devis envoye</span>
+                                            <span class="mn-vendor-badge mn-vendor-badge--blue">Devis envoye</span>
                                         </t>
                                         <t t-elif="line.order_id.state == 'sale'">
-                                            <span class="mn-vendor-badge" style="background:#DBEAFE;color:#1E40AF;">Confirme</span>
+                                            <span class="mn-vendor-badge mn-vendor-badge--blue">Confirme</span>
                                         </t>
                                         <t t-elif="line.order_id.state == 'done'">
                                             <span class="mn-vendor-badge mn-vendor-badge--green">Livre</span>
@@ -359,11 +372,11 @@
                                 </tr>
                             </t>
                         </tbody>
-                        <!-- Total en bas de table -->
+                        <!-- Total montant HT en bas -->
                         <tfoot t-if="orders">
                             <tr style="background:#F3F4F6;">
-                                <td colspan="4" style="padding:14px 16px; font-weight:700; color:#111827;">
-                                    TOTAL
+                                <td colspan="5" style="padding:14px 16px; font-weight:700; color:#111827;">
+                                    TOTAL MONTANT HT
                                 </td>
                                 <td style="padding:14px 16px; font-weight:700; color:#2563EB;">
                                     <t t-esc="'%.2f EUR' % sum(line.price_subtotal for line in orders)"/>
@@ -376,7 +389,6 @@
                     <!-- Pagination -->
                     <div t-if="total > items_per_page"
                          style="display:flex; justify-content:center; align-items:center; gap:16px; margin-top:32px;">
-                        <!-- Bouton Precedent -->
                         <a t-if="page > 1"
                            t-attf-href="/vendor/orders?page=#{page - 1}&amp;status=#{status or ''}"
                            class="mn-btn mn-btn--outline">
@@ -387,13 +399,10 @@
                               style="opacity:0.4; cursor:not-allowed;">
                             ← Precedent
                         </span>
-
-                        <!-- Numero de page -->
                         <span style="font-size:14px; color:#6B7280;">
-                            Page <t t-esc="page"/> sur <t t-esc="(total + items_per_page - 1) // items_per_page"/>
+                            Page <t t-esc="page"/> sur
+                            <t t-esc="(total + items_per_page - 1) // items_per_page"/>
                         </span>
-
-                        <!-- Bouton Suivant -->
                         <a t-if="page * items_per_page &lt; total"
                            t-attf-href="/vendor/orders?page=#{page + 1}&amp;status=#{status or ''}"
                            class="mn-btn mn-btn--outline">

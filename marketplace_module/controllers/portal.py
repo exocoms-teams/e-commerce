@@ -33,36 +33,31 @@ class VendorPortal(http.Controller):
 
     # ── Route 1 : Tableau de bord ──────────────────────────────────────────
     @http.route(
-        '/vendor/dashboard',
-        type='http',
-        auth='user',        # connexion requise (F-04-04)
-        website=True,       # compatible multi-website (F-03-05)
-        sitemap=False,      # ne pas indexer dans le sitemap public
-    )
+    '/vendor/dashboard',
+    type='http',
+    auth='user',
+    website=True,
+    sitemap=False,
+)
     def vendor_dashboard(self, **kw):
-        """
-        Page principale du portail vendeur.
-        Affiche les stats et la liste des produits du vendeur connecte.
-        """
         vendor = self._get_vendor_or_redirect()
         if not vendor:
             return request.redirect('/shop')
 
-        # Produits du vendeur (filtre vendor_id = ce vendeur)
         products = request.env['product.template'].sudo().search(
             [('vendor_id', '=', vendor.id)],
             order='name asc'
         )
 
-        # Comptage des commandes du mois en cours
-        from datetime import datetime, timedelta
+        # Comptage commandes du mois — tous statuts sauf cancel
+        from datetime import datetime
         first_day = datetime.now().replace(day=1, hour=0, minute=0, second=0)
         product_ids = products.mapped('product_variant_ids').ids
         orders_count = 0
         if product_ids:
             order_lines = request.env['sale.order.line'].sudo().search([
                 ('product_id', 'in', product_ids),
-                ('order_id.state', 'in', ['sale', 'done']),
+                ('order_id.state', 'not in', ['cancel']),
                 ('order_id.date_order', '>=', first_day),
             ])
             orders_count = len(order_lines.mapped('order_id'))
@@ -196,29 +191,30 @@ class VendorPortal(http.Controller):
     sitemap=False,
 )
     def vendor_orders(self, page=1, status=None, **kw):
-        """
-        Affiche les commandes liees aux produits du vendeur (F-02-04).
-        Lecture seule : le vendeur ne peut pas modifier les commandes.
-        """
         vendor = self._get_vendor_or_redirect()
         if not vendor:
             return request.redirect('/shop')
 
         ITEMS_PER_PAGE = 10
 
-        # Domaine de base
         product_ids = request.env['product.template'].sudo().search(
             [('vendor_id', '=', vendor.id)]
         ).mapped('product_variant_ids').ids
 
+        # Domaine de base — tous statuts sauf cancel
         domain = [
             ('product_id', 'in', product_ids),
-            ('order_id.state', 'in', ['draft', 'sent', 'sale', 'done', 'cancel']),
+            ('order_id.state', 'not in', ['cancel']),
         ]
 
         # Filtre par statut
         if status:
             domain.append(('order_id.state', '=', status))
+
+        # Total commandes pour le badge
+        total_orders = len(
+            request.env['sale.order.line'].sudo().search(domain).mapped('order_id')
+        )
 
         # Total pour pagination
         total = request.env['sale.order.line'].sudo().search_count(domain)
@@ -238,6 +234,7 @@ class VendorPortal(http.Controller):
                 'vendor': vendor,
                 'orders': orders,
                 'total': total,
+                'total_orders': total_orders,
                 'page': int(page),
                 'items_per_page': ITEMS_PER_PAGE,
                 'status': status or '',
