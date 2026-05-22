@@ -159,7 +159,7 @@ class WebsitePlanetMobil(http.Controller):
             elif category == 'Promotions':
                 products = [p for p in FAKE_PRODUCTS.values() if p.get('is_promotion')]
             elif category:
-                products = [p for p in FAKE_PRODUCTS.values()]
+                products = [p for p in FAKE_PRODUCTS.values() if p.get('category') == category]
 
         brands = request.env['planet.product'].sudo().search([]).mapped('brand')
         brands = list(set(filter(None, brands)))
