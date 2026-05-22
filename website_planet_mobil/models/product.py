@@ -10,7 +10,8 @@ class PlanetProduct(models.Model):
     name = fields.Char(string='Nom du produit', required=True)
     category = fields.Char(string='Categorie', required=False)       #manquant 
     brand = fields.Char(string='Marque', required=False)           #manquant
-    color = fields.Char(string='Couleur', required=False)          #manquant    
+    color = fields.Char(string='Couleur', required=False)          #manquant  
+    specs = fields.Char(string='Caracteristiques', required=False) #manquant
     description = fields.Text(string='Description')
     price = fields.Float(string='Prix (€)', required=True, default=0.0)
     rating = fields.Float(string='Note', default=5.0)
@@ -19,6 +20,7 @@ class PlanetProduct(models.Model):
     badge = fields.Char(string='Badge (ex: Nouveau, Promo)')
     is_top_vente = fields.Boolean(string='Top Vente', default=False)
     is_nouveaute = fields.Boolean(string='Nouveauté', default=False)
+    is_promotion = fields.Boolean(string='Promotion', default=True) #manquant
     sequence = fields.Integer(string='Ordre', default=10)
     active = fields.Boolean(string='Actif', default=True)
 
