@@ -89,7 +89,7 @@ FAKE_PRODUCTS = {
         'Poids': '250 g',
         'Couleurs disponibles': 'Noir, Blanc',
     }},
-    8: {'id': 8, 'name': 'LG OLED C3 55"', 'category': 'Television', 'description': 'TV OLED 4K 120Hz pour gaming et cinéma', 'price': 1599, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/lg_oled.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': False, 'ean': '8806084076756', 'specs': {
+    8: {'id': 8, 'name': 'LG OLED C3 55"', 'category': 'Televisions', 'description': 'TV OLED 4K 120Hz pour gaming et cinéma', 'price': 1599, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/lg_oled.jpg', 'badge': 'Nouveau', 'is_top_vente': False, 'is_nouveaute': True, 'is_promotion': False, 'ean': '8806084076756', 'specs': {
         'Taille': '55 pouces',
         'Technologie': 'OLED evo',
         'Résolution': '4K UHD 3840 x 2160',
