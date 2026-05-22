@@ -16,10 +16,13 @@
         'views/destination_views.xml',
         'views/a_propos_views.xml',
         'views/service_convierge_views.xml',
+        'views/concierge_back_views.xml',
+        'views/home_page_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [
             'luxury_services/static/src/scss/custom.scss',
+            'luxury_services/static/src/js/luxury_custom.css',
         ],
     },
     'installable': True,

@@ -433,3 +433,11 @@ class LuxuryController(WebsiteSale):
         return request.render('luxury_services.luxury_concierge_confirm', {
             'client_name': kwargs.get('client_name', '').strip(),
         })
+        
+        
+    #page d'accueil
+    @http.route('/', type='http', auth='public', website=True)
+    def home_page(self, **kwargs):
+        if not self._is_vip_website():
+            return super().index(**kwargs)
+        return request.render('luxury_services.luxury_home_page', {})
