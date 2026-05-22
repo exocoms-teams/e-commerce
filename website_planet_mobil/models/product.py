@@ -21,7 +21,7 @@ class PlanetProduct(models.Model):
     is_top_vente = fields.Boolean(string='Top Vente', default=False)
     is_nouveaute = fields.Boolean(string='Nouveauté', default=False)
     ean = fields.Char(string='Code barre EAN', default=False)   #manquant
-    is_promotion = fields.Boolean(string='Promotion', default=True) #manquant
+    is_promotion = fields.Boolean(string='Promotion', default=False) #manquant
     sequence = fields.Integer(string='Ordre', default=10)
     active = fields.Boolean(string='Actif', default=True)
 
