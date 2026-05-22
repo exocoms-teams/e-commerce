@@ -23,4 +23,4 @@ class Exocoms(http.Controller):
     
     @http.route('/boutique', type='http', auth='public', website=True, sitemap=True)
     def boutique(self, **kw):
-        return request.render('exocoms_theme.boutique_page', {})
+        return request.render('exocoms_theme.boutique_inject_sidebar', {})
