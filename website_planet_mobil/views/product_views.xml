@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_planet_product_form" model="ir.ui.view">
+        <field name="name">planet.product.form</field>
+        <field name="model">planet.product</field>
+        <field name="arch" type="xml">
+            <form string="Produit">
+                <sheet> 
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <field name="name" placeholder="Nom du produit"/>
+                    </div>
+                    <group>
+                        <group string="Informations générales">
+                            <field name="category"/>
+                            <field name="brand"/>
+                            <field name="price"/>
+                            <field name="rating"/>
+                            <field name="ean"/>
+                            <field name="color"/>
+                        </group>
+                        <group string="Statut">
+                            <field name="is_top_vente"/>
+                            <field name="is_nouveaute"/>
+                            <field name="is_promotion"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <filed name="description"/>
+                        </page>
+                        <page string="Caractéristiques">
+                            <field name="specs"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_planet_product_tree" model="ir.ui.view">
+        <field name="name">planet.product.tree</field>
+        <field name="model">planet.product</field>
+        <field name="arch" type="xml">
+            <tree string="Produits">
+                <field name="name"/>
+                <field name="category"/>
+                <field name="brand"/>
+                <field name="price"/>
+                <field name="rating"/>
+                <field name="ean"/>
+                <field name="color"/>
+                <field name="is_top_vente"/>
+                <field name="is_nouveaute"/>
+                <field name="is_promotion"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_planet_product" model="ir.action.act_windew">
+        <field name="name">Produits</field>
+        <field name="res_model">planet.product</field>
+        <field name="view_mode">tree, form</field>
+    </record>
+
+    <menuitem
+        id="menu_planet_mobil"
+        name="Planet Mobil"
+        sequence="10"/>
+
+    <menuitem 
+        id="menu_planet_product"
+        name="Produits"
+        parent="menu_planet_mobil"
+        action="action_planet_product"/>
+</odoo>

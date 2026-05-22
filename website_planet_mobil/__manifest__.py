@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'planet Mobil- Website Planet Mobil',
-    'version': '19.0.1.0.3',
+    'version': '19.0.1.0.4',
     'category': 'Website/eCommerce',
     'summary': 'Page d\'accueil e-commerce Planet Mobil',
     'author': 'Planet Mobil',
     'depends': ['website', 'web', 'portal'],
     'data': [
         'security/ir.model.access.csv',
+        'views/product_views.xml',
         'templates/header.xml',
         'templates/footer.xml',
         'templates/homepage.xml',
