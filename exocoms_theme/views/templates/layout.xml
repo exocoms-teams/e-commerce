@@ -1,78 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
 
+    <!-- Injecte le thème dans TOUTES les pages via website.layout -->
+    <template id="custom_theme_assets"
+              inherit_id="website.layout"
+              name="Exocoms Theme">
+
+        <!-- CSS dans le head -->
+        <xpath expr="//head" position="inside">
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/home.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/hero.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/features.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/products.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/footer.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/categories.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/cta.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_hero.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_features.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/services_content.css"/>
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+        </xpath>
+
+        <!-- Remplace le header natif Odoo par le nôtre -->
+        <xpath expr="//header[@id='top']" position="replace">
+            <t t-call="exocoms_theme.custom_header"/>
+        </xpath>
+
+        <!-- Remplace le footer natif Odoo par le nôtre -->
+        <xpath expr="//footer" position="replace">
+            <t t-call="exocoms_theme.custom_footer"/>
+        </xpath>
+
+    </template>
+
+    <!-- custom_layout reste pour compatibilité avec les pages existantes -->
     <template id="custom_layout" name="Custom Layout">
-
         <t t-call="website.layout">
-
-            <!-- CSS - DESIGN SYSTEM & CORE -->
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/layout.css" />
-
-            <!-- CSS - COMPONENTS -->
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/header.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/home.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/hero.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/features.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/products.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/footer.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/categories.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/dashbord.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/dashbord_boutique.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/cta.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/services_hero.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/services_features.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/services_content.css" />
-
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/services_content.css" />
-
-
-            <!-- CSS - ANIMATIONS & UTILITIES -->
-            <link rel="stylesheet"
-                href="/exocoms_theme/static/src/css/animations.css" />
-
-            <!-- FONT AWESOME -->
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-            <!-- HEADER -->
-            <t t-call="exocoms_theme.custom_header" />
-
-            <!-- CONTENU -->
-            <t t-out="0" />
-
-            <!-- FOOTER -->
-            <t t-call="exocoms_theme.custom_footer" />
-
+            <t t-out="0"/>
         </t>
-
     </template>
 
 </odoo>
