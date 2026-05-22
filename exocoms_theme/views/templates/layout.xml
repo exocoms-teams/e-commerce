@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="custom_theme_assets"
-        inherit_id="website.layout"
-        name="Exocoms Theme Assets">
+    <template id="custom_layout" name="Custom Layout">
 
-        <!-- CSS dans le head -->
-        <xpath expr="//head" position="inside">
+        <t t-call="website.layout">
+
+            <!-- CSS -->
             <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css" />
             <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css" />
             <link rel="stylesheet" href="/exocoms_theme/static/src/css/home.css" />
@@ -24,25 +23,48 @@
             <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css" />
             <link rel="stylesheet"
                 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+            <!-- HEADER -->
+            <t t-call="exocoms_theme.custom_header" />
+
+            <!-- CONTENU -->
+            <t t-out="0" />
+
+            <!-- FOOTER -->
+            <t t-call="exocoms_theme.custom_footer" />
+
+        </t>
+
+    </template>
+
+    <!-- Template séparé pour la boutique — injecte CSS + header + footer dans website_sale.products -->
+    <template id="boutique_theme_assets"
+        inherit_id="website_sale.products"
+        name="Boutique Theme Assets">
+
+        <xpath expr="//head" position="inside">
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/footer.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/products.css" />
+            <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css" />
+            <link rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         </xpath>
 
-        <!-- Remplace le header natif Odoo -->
         <xpath expr="//header[@id='top']" position="replace">
             <t t-call="exocoms_theme.custom_header" />
         </xpath>
 
-        <!-- Remplace le footer natif Odoo -->
         <xpath expr="//footer" position="replace">
             <t t-call="exocoms_theme.custom_footer" />
         </xpath>
 
-    </template>
+        <xpath expr="//div[@id='products_grid']" position="before">
+            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar" />
+        </xpath>
 
-    <!-- custom_layout simplifié — appelle juste website.layout sans rien ajouter -->
-    <template id="custom_layout" name="Custom Layout">
-        <t t-call="website.layout">
-            <t t-out="0" />
-        </t>
     </template>
 
 </odoo>
