@@ -22,7 +22,7 @@
     'assets': {
         'web.assets_frontend': [
             'luxury_services/static/src/scss/custom.scss',
-            'luxury_services/static/src/js/luxury_custom.scss',
+            
         ],
     },
     'installable': True,
