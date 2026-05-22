@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+import json
 
 FAKE_PRODUCTS = {
     1: {'id': 1, 'name': 'iPhone 15 Pro Max', 'category': 'Smartphones', 'description': "Le smartphone le plus puissant d'Apple avec...", 'price': 1299, 'rating': 5, 'image_url': '/website_planet_mobil/static/src/img/iphone15.jpg', 'badge': False, 'is_top_vente': True, 'is_nouveaute': False, 'is_promotion': True, 'ean': '0194253408222', 'specs': {
