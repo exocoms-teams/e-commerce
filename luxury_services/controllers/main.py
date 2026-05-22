@@ -4,6 +4,7 @@ from datetime import datetime
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.fields import Domain
 from odoo.osv.expression import AND
+from odoo.addons.website.controllers.main import Website
 
 
 class LuxuryController(WebsiteSale):
