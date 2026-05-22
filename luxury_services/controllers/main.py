@@ -395,8 +395,41 @@ class LuxuryController(WebsiteSale):
     
     
     #page destination
-    @http.route('/_destinations', type='http', auth='public', website=True)
+    @http.route('/destinations', type='http', auth='public', website=True)
     def destinations_page(self, **kwargs):
         if not self._is_vip_website():
             return request.redirect('/shop')
         return request.render('luxury_services.luxury_destinations_page', {})
+    
+    
+    
+    #page concierge
+    @http.route('/concierge', type='http', auth='public', website=True)
+    def concierge_page(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+        return request.render('luxury_services.luxury_concierge_page', {})
+
+
+    @http.route('/concierge/submit', type='http', auth='public',
+                website=True, methods=['POST'])
+    def concierge_submit(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        request.env['luxury.concierge.request'].sudo().create({
+            'client_name':    kwargs.get('client_name', '').strip(),
+            'client_email':   kwargs.get('client_email', '').strip(),
+            'client_phone':   kwargs.get('client_phone', '').strip(),
+            'type_service':   kwargs.get('type_service', ''),
+            'destination':    kwargs.get('destination', '').strip(),
+            'date_souhaitee': kwargs.get('date_souhaitee') or False,
+            'nb_personnes':   int(kwargs.get('nb_personnes') or 0) or False,
+            'description':    kwargs.get('description', '').strip(),
+            'budget':         kwargs.get('budget', ''),
+            'state':          'draft',
+        })
+
+        return request.render('luxury_services.luxury_concierge_confirm', {
+            'client_name': kwargs.get('client_name', '').strip(),
+        })

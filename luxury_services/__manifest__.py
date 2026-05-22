@@ -15,6 +15,7 @@
         'views/maintenance_back_views.xml',
         'views/destination_views.xml',
         'views/a_propos_views.xml',
+        'views/service_convierge_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [
