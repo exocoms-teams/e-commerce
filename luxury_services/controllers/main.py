@@ -439,5 +439,6 @@ class LuxuryController(WebsiteSale):
     @http.route('/', type='http', auth='public', website=True)
     def home_page(self, **kwargs):
         if not self._is_vip_website():
-            return super().index(**kwargs)
+            
+            return request.render('website.homepage', {})
         return request.render('luxury_services.luxury_home_page', {})
