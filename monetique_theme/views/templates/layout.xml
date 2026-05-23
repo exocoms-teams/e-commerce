@@ -5,27 +5,39 @@
 
         <xpath expr="//head" position="inside">
             <style>
-                /* ── Masquer tous les elements inutiles de la navbar ── */
-
-                /* Recherche */
+                /* Recherche - masquer icone et barre */
                 .o_searchbar_form,
                 .o_header_search_btn,
-                .o_search_order_by,
                 button[data-bs-target="#o_search_modal"],
-                #o_search_modal { display: none !important; }
+                #o_search_modal,
+                .o_header_mobile_search { display: none !important; }
 
                 /* Panier */
                 .o_wsale_my_cart,
                 a[href*="/shop/cart"] { display: none !important; }
 
-                /* Telephone natif Odoo */
+                /* Telephone natif */
                 .o_header_phone,
-                .js_phone { display: none !important; }
+                .js_phone,
+                a[href^="tel:"].o_phone { display: none !important; }
 
-                /* Sign In — cacher le texte et restyle en "Espace Artisan" */
+                /* Contact Us natif Odoo */
+                .o_main_navbar a[href="/contactus"],
+                .o_main_navbar li:has(> a[href="/contactus"]),
+                a.btn[href="/contactus"],
+                .o_main_navbar .btn[href="/contactus"] { display: none !important; }
+
+                /* Shop */
+                .o_main_navbar a[href="/shop"],
+                .o_main_navbar li:has(> a[href="/shop"]) { display: none !important; }
+
+                /* Extra menu + bouton */
+                .o_extra_menu_items { display: none !important; }
+
+                /* Sign in : masquer le texte "Sign in" et afficher "Espace Artisan" */
                 a.o_sign_in,
-                .o_sign_in_sign_up a,
-                a[href="/web/login"] {
+                a[href="/web/login"],
+                .o_sign_in_sign_up a {
                     background: #C62828 !important;
                     color: white !important;
                     padding: 7px 16px !important;
@@ -34,29 +46,15 @@
                     font-size: 13px !important;
                     font-family: 'Inter', sans-serif !important;
                     border: none !important;
+                    text-decoration: none !important;
+                    font-size: 0 !important;
                 }
-                a.o_sign_in span,
-                a[href="/web/login"] span { display: none !important; }
                 a.o_sign_in::after,
-                a[href="/web/login"]::after { content: ' Espace Artisan'; }
-
-                /* Contact Us Odoo */
-                .o_main_navbar a[href="/contactus"],
-                .o_main_navbar li:has(> a[href="/contactus"]) { display: none !important; }
-
-                /* Shop */
-                .o_main_navbar a[href="/shop"],
-                .o_main_navbar li:has(> a[href="/shop"]) { display: none !important; }
-
-                /* Home natif */
-                .o_main_navbar a[href="/"]:not(.o_logo):not(.navbar-brand),
-                .o_main_navbar li:has(> a[href="/"]) { display: none !important; }
-
-                /* Extra menu items (le + bouton) */
-                .o_extra_menu_items { display: none !important; }
-
-                /* Icone recherche mobile */
-                .o_header_mobile_search { display: none !important; }
+                a[href="/web/login"]::after,
+                .o_sign_in_sign_up a::after {
+                    content: 'Espace Artisan';
+                    font-size: 13px !important;
+                }
             </style>
         </xpath>
 
