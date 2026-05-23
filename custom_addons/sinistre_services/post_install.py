@@ -23,13 +23,27 @@ def uninstall_hook(env):
     pass
 
 def _cleanup_menus(env):
-    """Supprime les menus par défaut inutiles."""
     try:
-        to_delete = env['website.menu'].search([
-            ('name', 'in', ['Home', 'Shop', 'Contact us', 'Contact Us', 'Accueil']),
-        ])
-        to_delete.unlink()
-        _logger.info("[sinistre_services] Menus inutiles supprimes")
+        # Supprimer menus inutiles
+        env['website.menu'].search([
+            ('name', 'in', ['Home', 'Shop', 'Contact us', 'Contact Us', 'Accueil'])
+        ]).unlink()
+        
+        # Recréer les bons menus si absents
+        top = env['website.menu'].search([('name', 'like', 'Top Menu')], limit=1)
+        if top:
+            existing = env['website.menu'].search([('parent_id', '=', top.id)]).mapped('url')
+            menus = [
+                ('Accueil', '/', 10),
+                ('Nos Services', '/nos-services', 20),
+                ('Assurances', '/assurances', 30),
+                ("Demande d'intervention", '/demande-intervention', 40),
+                ('Urgence', '/urgence', 50),
+            ]
+            for name, url, seq in menus:
+                if url not in existing:
+                    env['website.menu'].create({'name': name, 'url': url, 'parent_id': top.id, 'sequence': seq})
+        _logger.info("[sinistre_services] Menus configures")
     except Exception as e:
         _logger.warning(f"[sinistre_services] Cleanup menus failed: {e}")
 
