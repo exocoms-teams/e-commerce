@@ -3,33 +3,60 @@
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
 
-        <!-- Tout via CSS : masquer elements non voulus + injecter bouton Espace Artisan -->
         <xpath expr="//head" position="inside">
             <style>
-                /* Masquer panier, recherche, tel, sign in, contact us */
-                .o_wsale_my_cart { display: none !important; }
-                .o_searchbar_form { display: none !important; }
-                .o_header_search_btn { display: none !important; }
+                /* ── Masquer tous les elements inutiles de la navbar ── */
+
+                /* Recherche */
+                .o_searchbar_form,
+                .o_header_search_btn,
+                .o_search_order_by,
+                button[data-bs-target="#o_search_modal"],
                 #o_search_modal { display: none !important; }
+
+                /* Panier */
+                .o_wsale_my_cart,
+                a[href*="/shop/cart"] { display: none !important; }
+
+                /* Telephone natif Odoo */
+                .o_header_phone,
+                .js_phone { display: none !important; }
+
+                /* Sign In — cacher le texte et restyle en "Espace Artisan" */
+                a.o_sign_in,
+                .o_sign_in_sign_up a,
+                a[href="/web/login"] {
+                    background: #C62828 !important;
+                    color: white !important;
+                    padding: 7px 16px !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                    font-size: 13px !important;
+                    font-family: 'Inter', sans-serif !important;
+                    border: none !important;
+                }
+                a.o_sign_in span,
+                a[href="/web/login"] span { display: none !important; }
+                a.o_sign_in::after,
+                a[href="/web/login"]::after { content: ' Espace Artisan'; }
+
+                /* Contact Us Odoo */
+                .o_main_navbar a[href="/contactus"],
+                .o_main_navbar li:has(> a[href="/contactus"]) { display: none !important; }
+
+                /* Shop */
+                .o_main_navbar a[href="/shop"],
+                .o_main_navbar li:has(> a[href="/shop"]) { display: none !important; }
+
+                /* Home natif */
+                .o_main_navbar a[href="/"]:not(.o_logo):not(.navbar-brand),
+                .o_main_navbar li:has(> a[href="/"]) { display: none !important; }
+
+                /* Extra menu items (le + bouton) */
                 .o_extra_menu_items { display: none !important; }
 
-                /* Masquer Home, Shop, Contact Us de la navbar Odoo */
-                .o_main_navbar a[href="/"],
-                .o_main_navbar a[href="/shop"],
-                .o_main_navbar a[href="/contactus"],
-                .o_main_navbar a[href="/web/login"] { display: none !important; }
-                .o_main_navbar li:has(a[href="/"]),
-                .o_main_navbar li:has(a[href="/shop"]),
-                .o_main_navbar li:has(a[href="/contactus"]) { display: none !important; }
-
-                /* Injecter Espace Artisan apres les nav items via pseudo - impossible en CSS pur */
-                /* On masque le phone natif et sign in */
-                .o_header_phone { display: none !important; }
-                header .o_sign_in_sign_up { display: none !important; }
-
-                /* Bouton Espace Artisan fixe dans la navbar */
-                body::before { content: none; }
-                .o_main_navbar .o_navbar_sign_in { display: none !important; }
+                /* Icone recherche mobile */
+                .o_header_mobile_search { display: none !important; }
             </style>
         </xpath>
 
