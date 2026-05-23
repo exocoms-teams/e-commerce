@@ -2,9 +2,28 @@
 <odoo>
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
+
+        <!-- Masquer le panier -->
+        <xpath expr="//a[contains(@class,'o_wsale_my_cart') or contains(@href,'/shop/cart')]" position="replace"/>
+
+        <!-- Masquer la recherche -->
+        <xpath expr="//div[contains(@class,'o_searchbar_form')]" position="replace"/>
+
+        <!-- Remplacer "Sign in" par "Espace Artisan" -->
+        <xpath expr="//a[contains(@href,'/web/login')]" position="replace">
+            <a href="/intervenant/login" class="btn btn-primary" style="background:#C62828;border-color:#C62828;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;">
+                <i class="fa fa-user" aria-hidden="true" style="margin-right:5px;"/> Espace Artisan
+            </a>
+        </xpath>
+
+        <!-- Masquer "Contact Us" du header Odoo par defaut -->
+        <xpath expr="//a[contains(@href,'/contactus')]" position="replace"/>
+
+        <!-- Footer sinistres -->
         <xpath expr="//footer" position="replace">
             <t t-call="monetique_theme.footer"/>
         </xpath>
+
     </template>
 
     <template id="footer" name="Sinistre Services Footer">
@@ -21,13 +40,13 @@
                                 <span class="mn-badge">Artisans Certifies</span>
                             </div>
                             <div style="display:flex;gap:10px;margin-top:20px;">
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;transition:all .2s;" aria-label="Facebook">
+                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="Facebook">
                                     <i class="fa fa-facebook" aria-hidden="true"/>
                                 </a>
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;transition:all .2s;" aria-label="LinkedIn">
+                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="LinkedIn">
                                     <i class="fa fa-linkedin" aria-hidden="true"/>
                                 </a>
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;transition:all .2s;" aria-label="Twitter">
+                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="Twitter">
                                     <i class="fa fa-twitter" aria-hidden="true"/>
                                 </a>
                             </div>
@@ -50,10 +69,10 @@
                             <ul>
                                 <li><a href="/demande-intervention">Particuliers</a></li>
                                 <li><a href="/demande-intervention">Entreprises</a></li>
-                                <li><a href="/demande-intervention">Assurances</a></li>
-                                <li><a href="/contact">API Assureurs</a></li>
+                                <li><a href="/assurances">Assurances</a></li>
+                                <li><a href="/assurances/api-access">API Assureurs</a></li>
                                 <li><a href="/intervenant/login">Espace Artisan</a></li>
-                                <li><a href="/contact">Rejoindre le reseau</a></li>
+                                <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
                             </ul>
                         </div>
 
@@ -85,7 +104,6 @@
                                     </a>
                                 </li>
                             </ul>
-                            <!-- Bouton urgence -->
                             <div style="margin-top:20px;">
                                 <a href="tel:+33100000000" class="mn-btn mn-btn--primary mn-btn--sm" style="width:100%;justify-content:center;">
                                     <i class="fa fa-phone" aria-hidden="true"/> Appel urgence
