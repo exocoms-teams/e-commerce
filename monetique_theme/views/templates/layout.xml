@@ -3,21 +3,26 @@
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
 
-        <!-- Masquer le panier -->
-        <xpath expr="//a[contains(@class,'o_wsale_my_cart') or contains(@href,'/shop/cart')]" position="replace"/>
-
-        <!-- Masquer la recherche -->
-        <xpath expr="//div[contains(@class,'o_searchbar_form')]" position="replace"/>
-
-        <!-- Remplacer "Sign in" par "Espace Artisan" -->
-        <xpath expr="//a[contains(@href,'/web/login')]" position="replace">
-            <a href="/intervenant/login" class="btn btn-primary" style="background:#C62828;border-color:#C62828;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;">
-                <i class="fa fa-user" aria-hidden="true" style="margin-right:5px;"/> Espace Artisan
-            </a>
+        <!-- Masquer cart, recherche, tel et Contact Us via CSS -->
+        <xpath expr="//head" position="inside">
+            <style>
+                .o_wsale_my_cart,
+                .o_searchbar_form,
+                a[href="/shop/cart"],
+                .o_header_search,
+                span.o_search_order_by,
+                li.nav-item a[href="/contactus"],
+                a[href="/contactus"] { display: none !important; }
+                .o_header_mobile_search { display: none !important; }
+            </style>
         </xpath>
 
-        <!-- Masquer "Contact Us" du header Odoo par defaut -->
-        <xpath expr="//a[contains(@href,'/contactus')]" position="replace"/>
+        <!-- Remplacer Sign in par Espace Artisan -->
+        <xpath expr="//a[contains(@href,'/web/login')]" position="replace">
+            <a href="/intervenant/login" style="display:inline-flex;align-items:center;gap:6px;background:#C62828;color:white;padding:8px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;text-decoration:none;">
+                <i class="fa fa-user" aria-hidden="true"/> Espace Artisan
+            </a>
+        </xpath>
 
         <!-- Footer sinistres -->
         <xpath expr="//footer" position="replace">
@@ -51,7 +56,6 @@
                                 </a>
                             </div>
                         </div>
-
                         <div class="mn-footer__col">
                             <h4>Interventions</h4>
                             <ul>
@@ -63,7 +67,6 @@
                                 <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true"/>Urgence 24h/24</a></li>
                             </ul>
                         </div>
-
                         <div class="mn-footer__col">
                             <h4>Clients</h4>
                             <ul>
@@ -75,34 +78,13 @@
                                 <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
                             </ul>
                         </div>
-
                         <div class="mn-footer__col">
                             <h4>Contact</h4>
                             <ul>
-                                <li>
-                                    <a href="tel:+33100000000">
-                                        <i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true"/>
-                                        01 XX XX XX XX
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="mailto:contact@sinistre-services.fr">
-                                        <i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true"/>
-                                        contact@sinistre-services.fr
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/urgence">
-                                        <i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true"/>
-                                        Urgences 24h/24 7j/7
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/contact">
-                                        <i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true"/>
-                                        Nous contacter
-                                    </a>
-                                </li>
+                                <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true"/>01 XX XX XX XX</a></li>
+                                <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true"/>contact@sinistre-services.fr</a></li>
+                                <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true"/>Urgences 24h/24 7j/7</a></li>
+                                <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true"/>Nous contacter</a></li>
                             </ul>
                             <div style="margin-top:20px;">
                                 <a href="tel:+33100000000" class="mn-btn mn-btn--primary mn-btn--sm" style="width:100%;justify-content:center;">
@@ -110,7 +92,6 @@
                                 </a>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
