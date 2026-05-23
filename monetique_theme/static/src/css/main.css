@@ -135,5 +135,79 @@ a{color:inherit;text-decoration:none}ul{list-style:none}img{max-width:100%;displ
 .mn-page-hero{background:linear-gradient(135deg,#EFF6FF 0%,#F0F4FF 100%);padding:60px 0 40px;text-align:center;position:relative;overflow:hidden}
 .mn-page-hero h1{font-size:42px;font-weight:800;letter-spacing:-.025em;color:var(--mn-dark);margin-bottom:12px}
 .mn-page-hero p{font-size:17px;color:var(--mn-gray-500);max-width:520px;margin:0 auto}
+
+/* ════════════════════════════════════════════════
+   FORMULAIRES — classes à ajouter à main.css
+════════════════════════════════════════════════ */
+
+/* ── Page Hero rouge (pages internes) ── */
+.mn-page-hero { background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%); padding: 60px 0 40px; text-align: center; position: relative; overflow: hidden; }
+.mn-page-hero::before { content: ''; position: absolute; top: -50%; right: -5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%); border-radius: 50%; }
+.mn-page-hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -.025em; color: white; margin-bottom: 12px; position: relative; z-index: 1; }
+.mn-page-hero p { font-size: 17px; color: rgba(255,255,255,.8); max-width: 520px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* ── Carte formulaire ── */
+.mn-form-card { background: white; border: 1px solid #E5E7EB; border-radius: 22px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+.mn-form-card h2 { font-size: 28px; font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+.mn-form-sub { font-size: 14px; color: #6B7280; margin-bottom: 28px; display: block; }
+
+/* ── Grille 2 colonnes ── */
+.mn-form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Groupe champ + label ── */
+.mn-form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.mn-form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+.mn-form-group input,
+.mn-form-group select,
+.mn-form-group textarea {
+    padding: 11px 14px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+    color: #111827;
+}
+.mn-form-group input:focus,
+.mn-form-group select:focus,
+.mn-form-group textarea:focus {
+    border-color: #C62828;
+    box-shadow: 0 0 0 3px rgba(198,40,40,.08);
+}
+.mn-form-group textarea { resize: vertical; min-height: 120px; }
+.required { color: #C62828; }
+.mn-form-submit { margin-top: 8px; }
+
+/* ── Alertes ── */
+.mn-form-alert { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+.mn-form-alert-error { background: #FFF5F5; border: 1px solid #FFCDD2; color: #C62828; }
+.mn-form-alert-success { background: #F0FDF4; border: 1px solid #A7F3D0; color: #065F46; }
+
+/* ── Layout contact (formulaire + sidebar) ── */
+.mn-contact-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+.mn-contact-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+/* ── Carte info contact ── */
+.mn-contact-info-card { background: white; border: 1px solid #E5E7EB; border-radius: 14px; padding: 28px; }
+.mn-contact-info-card h3 { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 20px; }
+.mn-contact-detail { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+.mn-contact-detail:last-child { margin-bottom: 0; }
+.mn-contact-detail-icon { width: 36px; height: 36px; background: rgba(198,40,40,.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #C62828; font-size: 16px; flex-shrink: 0; }
+.mn-contact-detail-label { font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 2px; }
+.mn-contact-detail-val { font-size: 14px; font-weight: 600; color: #0F172A; display: block; }
+.mn-contact-detail-val:hover { color: #C62828; }
+
+/* ── Responsive formulaires ── */
+@media (max-width: 768px) {
+    .mn-form-row-2 { grid-template-columns: 1fr; }
+    .mn-contact-grid { grid-template-columns: 1fr; }
+    .mn-form-card { padding: 24px; }
+    .mn-page-hero h1 { font-size: 30px; }
+}
+
 @media(max-width:1024px){.mn-grid--4{grid-template-columns:repeat(2,1fr)}.mn-products__grid{grid-template-columns:repeat(2,1fr)}.mn-footer__grid{grid-template-columns:1fr 1fr}.mn-hero__title{font-size:42px}.mn-cta__inner h2{font-size:32px}}
 @media(max-width:768px){.mn-hero__inner{grid-template-columns:1fr}.mn-hero__visual{display:none}.mn-hero__title{font-size:34px}.mn-stats__grid{grid-template-columns:repeat(2,1fr)}.mn-stat{border-bottom:1px solid rgba(255,255,255,.08)}.mn-grid--3{grid-template-columns:1fr}.mn-grid--4{grid-template-columns:1fr}.mn-products__grid{grid-template-columns:1fr}.mn-footer__grid{grid-template-columns:1fr;gap:32px}.mn-cta__inner h2{font-size:26px}.mn-section__header h2{font-size:30px}}
