@@ -3,11 +3,31 @@
 
     <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
 
-        <!-- Remplacer Sign in par Espace Artisan -->
-        <xpath expr="//a[contains(@href,'/web/login')]" position="replace">
-            <a href="/intervenant/login" style="display:inline-flex;align-items:center;gap:6px;background:#C62828;color:white;padding:8px 16px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;text-decoration:none;">
-                <i class="fa fa-user" aria-hidden="true"/> Espace Artisan
-            </a>
+        <!-- Masquer cart, recherche, tel et Contact Us via CSS -->
+        <xpath expr="//head" position="inside">
+            <style>
+                .o_wsale_my_cart,
+                .o_searchbar_form,
+                a[href="/shop/cart"],
+                .o_header_search,
+                span.o_search_order_by,
+                li.nav-item a[href="/contactus"],
+                a[href="/contactus"] { display: none !important; }
+                .o_header_mobile_search { display: none !important; }
+                /* Masquer Sign in natif */
+                .o_sign_in, a.nav-link[href="/web/login"], li a[href*="login"] { display: none !important; }
+                /* Bouton Espace Artisan */
+                .o_main_navbar .o_navbar_sign_in { display: none !important; }
+            </style>
+        </xpath>
+
+        <!-- Ajouter bouton Espace Artisan dans le header -->
+        <xpath expr="//header" position="inside">
+            <div style="position:fixed;top:8px;right:16px;z-index:2000;">
+                <a href="/intervenant/login" style="display:inline-flex;align-items:center;gap:6px;background:#C62828;color:white;padding:7px 14px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-decoration:none;">
+                    <i class="fa fa-user" aria-hidden="true"/> Espace Artisan
+                </a>
+            </div>
         </xpath>
 
         <!-- Footer sinistres -->
