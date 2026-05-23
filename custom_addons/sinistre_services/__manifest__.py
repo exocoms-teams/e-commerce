@@ -39,7 +39,9 @@
     'wizard/assigner_mission_view.xml',
 ],
 'assets': {
-    'web.assets_frontend': [],
+    'web.assets_frontend': [
+        'monetique_theme/static/src/css/main.css',
+    ],
     'web.assets_backend': [
         'sinistre_services/static/src/css/backend.css',
     ],
