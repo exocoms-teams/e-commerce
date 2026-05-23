@@ -17,11 +17,21 @@ def post_install_hook(env):
     _setup_admin_rights(env)
     _setup_test_intervenant(env)
     _logger.info("[sinistre_services] Post-install hook terminé")
-
+    _cleanup_menus(env)
 
 def uninstall_hook(env):
     pass
 
+def _cleanup_menus(env):
+    """Supprime les menus par défaut inutiles."""
+    try:
+        to_delete = env['website.menu'].search([
+            ('name', 'in', ['Home', 'Shop', 'Contact us', 'Contact Us', 'Accueil']),
+        ])
+        to_delete.unlink()
+        _logger.info("[sinistre_services] Menus inutiles supprimes")
+    except Exception as e:
+        _logger.warning(f"[sinistre_services] Cleanup menus failed: {e}")
 
 def _setup_admin_rights(env):
     """Donne les droits Sinistre Admin à l'utilisateur Administrator."""
