@@ -63,12 +63,11 @@ window.App = (() => {
             console.warn('[SW] Erreur enregistrement:', err);
         }
     }
-
-    /* ── Auth screens ── */
+    
     function showLogin() {
         _hideSplash();
-        document.getElementById('screen-login').style.display = 'flex';
-        document.getElementById('screen-app').style.display   = 'none';
+        // Rediriger vers la page login Odoo au lieu d'afficher l'écran PWA
+        window.location.href = '/intervenant/login';
     }
 
     function showApp() {
