@@ -368,31 +368,48 @@
 
             <!-- ── Vue Dashboard ── -->
             <div id="view-dashboard" class="view active">
-                <div class="view-scroll">
-                    <div class="stats-bar" id="statsBar">
-                        <div class="stat-chip">
-                            <span class="stat-chip-num" id="statNouveau">–</span>
-                            <span class="stat-chip-label">Nouvelles</span>
+                <div class="view-scroll" style="padding:0 0 80px;">
+
+                    <!-- Bandeau bienvenue -->
+                    <div style="background:linear-gradient(135deg,#B71C1C,#C62828);padding:20px 20px 48px;position:relative;overflow:hidden;">
+                        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.06);border-radius:50%;"></div>
+                        <p style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:4px;">Bonjour 👋</p>
+                        <h2 style="font-size:22px;font-weight:800;color:white;letter-spacing:-.02em;" id="dashWelcome">Mes missions</h2>
+                    </div>
+
+                    <!-- Cartes stats en chevauchement -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:-28px 16px 0;position:relative;z-index:2;margin-bottom:20px;">
+                        <div style="background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">
+                            <div class="stat-chip-num" id="statNouveau" style="font-size:26px;font-weight:800;color:#1E40AF;display:block;line-height:1;">–</div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:4px;font-weight:500;">Nouvelles</div>
                         </div>
-                        <div class="stat-chip urgent">
-                            <span class="stat-chip-num" id="statUrgent">–</span>
-                            <span class="stat-chip-label">Urgentes</span>
+                        <div style="background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(198,40,40,.3);">
+                            <div class="stat-chip-num" id="statUrgent" style="font-size:26px;font-weight:800;color:white;display:block;line-height:1;">–</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:4px;font-weight:500;">Urgentes</div>
                         </div>
-                        <div class="stat-chip done">
-                            <span class="stat-chip-num" id="statTermine">–</span>
-                            <span class="stat-chip-label">Ce mois</span>
+                        <div style="background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">
+                            <div class="stat-chip-num" id="statTermine" style="font-size:26px;font-weight:800;color:#10B981;display:block;line-height:1;">–</div>
+                            <div style="font-size:11px;color:#6B7280;margin-top:4px;font-weight:500;">Ce mois</div>
                         </div>
                     </div>
-                    <div class="filter-bar">
-                        <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all', this)">Toutes</button>
-                        <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau', this)">Nouvelles</button>
-                        <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours', this)">En cours</button>
-                        <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine', this)">Terminees</button>
+
+                    <!-- Filtres -->
+                    <div style="padding:0 16px 12px;">
+                        <div class="filter-bar">
+                            <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all', this)">Toutes</button>
+                            <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau', this)">Nouvelles</button>
+                            <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours', this)">En cours</button>
+                            <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine', this)">Terminees</button>
+                        </div>
                     </div>
+
+                    <!-- Pull-to-refresh -->
                     <div id="refreshZone" class="refresh-zone">
                         <div class="refresh-spinner" id="refreshSpinner"></div>
                     </div>
-                    <div id="missionList" class="mission-list">
+
+                    <!-- Liste missions -->
+                    <div style="padding:0 16px;" id="missionList" class="mission-list">
                         <div class="empty-state" id="emptyState" style="display:none">
                             <div class="empty-icon">📋</div>
                             <p>Aucune mission pour le moment</p>
@@ -614,6 +631,23 @@
 
             // Appeler au chargement si déjà connecté
             setTimeout(_updateProfile, 2000);
+
+            // Patch Auth.logout pour rediriger vers /intervenant/login
+            if (window.Auth && Auth.logout) {
+                var origLogout = Auth.logout.bind(Auth);
+                Auth.logout = async function() {
+                    try { await fetch('/web/session/destroy', {method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jsonrpc:'2.0',method:'call',params:{}})}); } catch(e) {}
+                    localStorage.removeItem('ss_user');
+                    window.location.href = '/intervenant/login';
+                };
+            }
+
+            // Patch App.showLogin pour rediriger
+            if (window.App) {
+                App.showLogin = function() {
+                    window.location.href = '/intervenant/login';
+                };
+            }
         });
     </script>
 
