@@ -55,132 +55,49 @@
                     content: 'Espace Artisan';
                     font-size: 13px !important;
                 }
-                /* ════════════════════════════════════════════
-                   NAVBAR — hover + page active colorée
-                ════════════════════════════════════════════ */
-                
-                /* Base nav links */
-                .o_main_navbar .nav-link,
-                .o_main_navbar .navbar-nav .nav-link {
+                /* ── Navbar active + hover ── */
+
+                /* Hover : tous les liens */
+                .o_main_navbar .nav-link {
                     position: relative;
-                    font-weight: 500;
-                    font-size: 14px;
-                    color: #374151 !important;
-                    padding: 8px 4px !important;
-                    transition: color .2s ease;
+                    transition: color .2s;
                 }
-                
-                /* Ligne animée sous le lien */
-                .o_main_navbar .nav-link::after,
-                .o_main_navbar .navbar-nav .nav-link::after {
+                .o_main_navbar .nav-link::after {
                     content: '';
                     position: absolute;
-                    bottom: 0; left: 50%; right: 50%;
+                    bottom: -2px; left: 50%; right: 50%;
                     height: 2px;
+                    background: #1E40AF;
                     border-radius: 2px;
-                    transition: left .25s ease, right .25s ease, background-color .2s;
+                    transition: left .2s, right .2s;
                 }
-                
-                /* ── Hover générique : rouge ── */
-                .o_main_navbar .nav-link:hover,
-                .o_main_navbar .navbar-nav .nav-link:hover {
-                    color: #C62828 !important;
-                }
-                .o_main_navbar .nav-link:hover::after,
-                .o_main_navbar .navbar-nav .nav-link:hover::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Page Accueil active ── */
-                body.o_home_page .o_main_navbar a[href="/"],
-                body[data-url="/"] .o_main_navbar a.nav-link[href="/"] {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                body.o_home_page .o_main_navbar a[href="/"]::after,
-                body[data-url="/"] .o_main_navbar a.nav-link[href="/"]::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Page Assurances active : bleu ── */
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href="/assurances"],
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href*="assurances"] {
-                    color: #1E40AF !important;
-                    font-weight: 700;
-                }
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href="/assurances"]::after,
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href*="assurances"]::after {
-                    left: 0; right: 0;
-                    background: #1E40AF;
-                }
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href="/assurances"]:hover,
-                body[data-url^="/assurances"] .o_main_navbar a.nav-link[href*="assurances"]:hover {
-                    color: #1E3A8A !important;
-                }
-                
-                /* ── Page Urgence active : rouge vif ── */
-                body[data-url^="/urgence"] .o_main_navbar a.nav-link[href="/urgence"] {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                body[data-url^="/urgence"] .o_main_navbar a.nav-link[href="/urgence"]::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Nos Services active ── */
-                body[data-url^="/nos-services"] .o_main_navbar a.nav-link[href="/nos-services"] {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                body[data-url^="/nos-services"] .o_main_navbar a.nav-link[href="/nos-services"]::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Demande active ── */
-                body[data-url^="/demande-intervention"] .o_main_navbar a.nav-link[href="/demande-intervention"] {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                body[data-url^="/demande-intervention"] .o_main_navbar a.nav-link[href="/demande-intervention"]::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Contact active ── */
-                body[data-url^="/contact"] .o_main_navbar a.nav-link[href="/contact"] {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                body[data-url^="/contact"] .o_main_navbar a.nav-link[href="/contact"]::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* ── Fallback via JS (classe o_current_menu_item ajoutée par Odoo) ── */
-                .o_main_navbar .o_current_menu_item > .nav-link,
-                .o_main_navbar .nav-item.active > .nav-link {
-                    color: #C62828 !important;
-                    font-weight: 700;
-                }
-                .o_main_navbar .o_current_menu_item > .nav-link::after,
-                .o_main_navbar .nav-item.active > .nav-link::after {
-                    left: 0; right: 0;
-                    background: #C62828;
-                }
-                
-                /* Exception Assurances via o_current_menu_item */
-                .o_main_navbar .o_current_menu_item > .nav-link[href="/assurances"],
-                .o_main_navbar .nav-item.active > .nav-link[href="/assurances"] {
+                .o_main_navbar .nav-link:hover {
                     color: #1E40AF !important;
                 }
-                .o_main_navbar .o_current_menu_item > .nav-link[href="/assurances"]::after,
-                .o_main_navbar .nav-item.active > .nav-link[href="/assurances"]::after {
-                    background: #1E40AF;
+                .o_main_navbar .nav-link:hover::after {
+                    left: 0; right: 0;
                 }
+                
+                /* Page active : li.o_current_menu_item */
+                .o_main_navbar .o_current_menu_item .nav-link {
+                    color: #1E40AF !important;
+                    font-weight: 700 !important;
+                }
+                .o_main_navbar .o_current_menu_item .nav-link::after {
+                    left: 0 !important;
+                    right: 0 !important;
+                    background: #1E40AF !important;
+                }
+                
+                /* Exception : Assurances → couleur différente */
+                .o_main_navbar .o_current_menu_item .nav-link[href="/assurances"] {
+                    color: #C62828 !important;
+                }
+                .o_main_navbar .o_current_menu_item .nav-link[href="/assurances"]::after {
+                    background: #C62828 !important;
+                }
+                
+                
             </style>
         </xpath>
 
