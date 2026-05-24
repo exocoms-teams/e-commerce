@@ -145,7 +145,7 @@
         /* ── Dashboard bandeau ── */
         .dash-header {
             background: linear-gradient(135deg, #1E3A8A, #1E40AF);
-            padding: 20px 20px 24px;    /* ← normal */
+            padding: 20px 20px 56px; position: relative; overflow: hidden;
         }
         .dash-header::before {
             content: ''; position: absolute; top: -40px; right: -40px;
@@ -163,10 +163,9 @@
         .dash-name { font-size: 22px; font-weight: 800; color: white; letter-spacing: -.02em; font-family: 'Inter', sans-serif; position: relative; z-index: 1; }
 
         /* ── Stats cards flottantes ── */
-        /* Après */
         .dash-stats {
             display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px; margin: 16px 16px 0;    /* ← positif */
+            gap: 12px; margin: -32px 16px 0;
             position: relative; z-index: 2; margin-bottom: 20px;
         }
         .dash-stat-card {
@@ -328,7 +327,7 @@
                         <polyline points="15 18 9 12 15 6"/>
                     </svg>
                 </button>
-                <h1 class="topbar-title" id="topbarTitle">Mes Missions</h1>
+                <h1 class="topbar-title" id="topbarTitle">Bonjour !</h1>
                 <div class="topbar-right">
                     <button class="topbar-action" id="notifBtn" onclick="FCM.requestPermission()" title="Notifications">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -609,10 +608,35 @@
                 if (av) av.textContent = initials || '?';
                 if (pn) pn.textContent = name;
                 if (pe) pe.textContent = user.email || user.username || '—';
+                // Mettre à jour topbar title
+                var firstName = name.split(' ')[0];
+                var tb = document.getElementById('topbarTitle');
+                if (tb && (tb.textContent === 'Bonjour !' || tb.textContent.startsWith('Bonjour'))) {
+                    tb.textContent = 'Bonjour, ' + firstName + ' !';
+                }
+                // Mettre à jour greeting dashboard
+                var dw = document.getElementById('dashWelcome');
+                if (dw) dw.textContent = firstName + ' 👋';
             }
 
             // Appeler au chargement si déjà connecté
             setTimeout(_updateProfile, 2000);
+            // Aussi mettre à jour le topbar quand App.showView change de vue
+            var origShowView = App.showView;
+            if (origShowView) {
+                App.showView = function(viewId, title) {
+                    origShowView.call(App, viewId, title);
+                    // Remettre le nom si on revient au dashboard
+                    if (viewId === 'dashboard') {
+                        var user2 = Auth.getUser ? Auth.getUser() : null;
+                        if (!user2) { try { user2 = JSON.parse(localStorage.getItem('ss_user')||'{}'); } catch(e){} }
+                        if (user2 && user2.name) {
+                            var tb2 = document.getElementById('topbarTitle');
+                            if (tb2) tb2.textContent = 'Bonjour, ' + user2.name.split(' ')[0] + ' !';
+                        }
+                    }
+                };
+            }
 
             // Patch Auth.logout pour rediriger vers /intervenant/login
             if (window.Auth && Auth.logout) {
