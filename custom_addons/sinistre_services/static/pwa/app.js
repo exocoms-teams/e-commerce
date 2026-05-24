@@ -9,25 +9,43 @@ window.App = (() => {
 
     /* ── Démarrage ── */
     async function init() {
-        // Enregistrer le Service Worker
-        await _registerSW();
+    await _registerSW();
+    await _sleep(1400);
 
-        // Animation splash
-        await _sleep(1400);
-
-        // Vérifier session
-        const user = Auth.loadFromStorage();
-        if (user) {
-            const valid = await Auth.verify().catch(() => false);
-            if (valid) {
-                showApp();
-                return;
-            }
-        }
-
-        // Pas de session valide
-        showLogin();
+    // 1. Vérifier session localStorage existante
+    const user = Auth.loadFromStorage();
+    if (user) {
+        const valid = await Auth.verify().catch(() => false);
+        if (valid) { showApp(); return; }
     }
+
+    // 2. Vérifier session Odoo cookie (venant de /intervenant/login)
+    try {
+        const resp = await fetch('/web/session/get_session_info', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} })
+        });
+        const data = await resp.json();
+        if (data.result && data.result.uid > 0) {
+            // Session Odoo valide — sauvegarder et afficher l'app
+            const u = {
+                uid:   data.result.uid,
+                name:  data.result.name,
+                email: data.result.username,
+                lang:  data.result.lang,
+            };
+            localStorage.setItem('ss_user', JSON.stringify(u));
+            Auth.loadFromStorage();
+            showApp();
+            return;
+        }
+    } catch(e) {}
+
+    // 3. Aucune session → afficher login
+    showLogin();
+}
 
     async function _registerSW() {
         if (!('serviceWorker' in navigator)) return;
