@@ -16,33 +16,40 @@
     <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
 
-    <!-- Design system PWA existant -->
+    <!-- Design system PWA -->
     <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 
-    <!-- Override login avec thème Monétique rouge -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --red: #C62828;
+            --red-dark: #B71C1C;
+            --blue: #1E40AF;
+            --dark: #0F172A;
+            --gray-500: #6B7280;
+            --gray-200: #E5E7EB;
+            --gray-50: #F9FAFB;
+        }
 
         /* ── Splash rouge ── */
         .splash {
             background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%) !important;
         }
-        .splash-icon { font-size: 64px; }
 
-        /* ── Écran login redesigné ── */
+        /* ── Login redesigné ── */
         #screen-login {
-            background: #F9FAFB;
+            background: var(--gray-50);
             display: flex;
             flex-direction: column;
             min-height: 100dvh;
         }
 
-        /* Header rouge immersif */
-        .login-header-new {
+        .login-header {
             background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
             padding: 52px 24px 72px;
             text-align: center;
@@ -50,85 +57,73 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-        .login-header-new::before {
+        .login-header::before {
             content: '';
             position: absolute; top: -60px; right: -60px;
             width: 220px; height: 220px;
             background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
             border-radius: 50%;
         }
-        .login-header-new::after {
-            content: '';
-            position: absolute; bottom: -50px; left: -40px;
-            width: 180px; height: 180px;
-            background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        .login-logo-new {
+        .login-logo-box {
             width: 68px; height: 68px;
             background: rgba(255,255,255,.15);
             border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 34px;
-            margin: 0 auto 16px;
-            position: relative; z-index: 1;
+            font-size: 34px; margin: 0 auto 16px;
             border: 2px solid rgba(255,255,255,.2);
-            backdrop-filter: blur(10px);
+            position: relative; z-index: 1;
         }
-        .login-title-new {
+        .login-title {
             font-family: 'Inter', sans-serif;
             font-size: 28px; font-weight: 800;
             color: white; letter-spacing: -.03em;
-            margin-bottom: 6px;
-            position: relative; z-index: 1;
+            margin-bottom: 6px; position: relative; z-index: 1;
         }
-        .login-sub-new {
+        .login-subtitle {
             font-size: 14px; color: rgba(255,255,255,.75);
             position: relative; z-index: 1;
         }
 
-        /* Carte blanche arrondie */
-        .login-card-new {
+        .login-card {
             background: white;
             border-radius: 28px 28px 0 0;
             margin-top: -28px;
             padding: 32px 24px 24px;
-            flex: 1;
-            position: relative; z-index: 2;
+            flex: 1; position: relative; z-index: 2;
             box-shadow: 0 -4px 24px rgba(0,0,0,.08);
             overflow-y: auto;
         }
-        .login-card-new h2 {
+        .login-card h2 {
             font-family: 'Inter', sans-serif;
-            font-size: 20px; font-weight: 700;
-            color: #0F172A; margin-bottom: 4px;
+            font-size: 22px; font-weight: 800;
+            color: var(--dark); margin-bottom: 4px;
         }
         .login-card-desc {
-            font-size: 13px; color: #6B7280; margin-bottom: 24px;
+            font-size: 13px; color: var(--gray-500); margin-bottom: 28px;
         }
 
-        /* Champs redessinés */
-        .login-card-new .field-group { margin-bottom: 16px; }
-        .login-card-new .field-label {
+        /* Champs */
+        .lf-group { margin-bottom: 16px; }
+        .lf-label {
             display: block; font-size: 11px; font-weight: 700;
-            color: #374151; margin-bottom: 6px;
+            color: #374151; margin-bottom: 7px;
             text-transform: uppercase; letter-spacing: .6px;
         }
-        .login-card-new .field-input {
+        .lf-input {
             width: 100%; padding: 13px 16px;
-            border: 1.5px solid #E5E7EB; border-radius: 12px;
+            border: 1.5px solid var(--gray-200); border-radius: 12px;
             font-size: 15px; font-family: 'Inter', sans-serif;
-            color: #0F172A; background: #F9FAFB;
-            transition: border-color .2s, box-shadow .2s; outline: none;
-            box-sizing: border-box;
+            color: var(--dark); background: var(--gray-50);
+            transition: border-color .2s, box-shadow .2s;
+            outline: none; box-sizing: border-box;
         }
-        .login-card-new .field-input:focus {
-            border-color: #C62828; background: white;
+        .lf-input:focus {
+            border-color: var(--red); background: white;
             box-shadow: 0 0 0 3px rgba(198,40,40,.08);
         }
 
-        /* Bouton principal rouge */
-        .btn-login-primary {
+        /* Bouton connexion */
+        .btn-login {
             width: 100%; padding: 15px;
             background: linear-gradient(135deg, #B71C1C, #C62828);
             color: white; border: none; border-radius: 12px;
@@ -139,35 +134,43 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 4px;
         }
-        .btn-login-primary:active { transform: scale(.98); box-shadow: 0 2px 8px rgba(198,40,40,.3); }
-        .btn-login-primary:disabled { opacity: .65; cursor: not-allowed; }
+        .btn-login:active { transform: scale(.98); }
+        .btn-login:disabled { opacity: .65; cursor: not-allowed; }
+
+        /* Erreur */
+        #loginError {
+            display: none; padding: 12px 16px;
+            background: #FFF5F5; border: 1px solid #FFCDD2;
+            border-radius: 10px; color: var(--red);
+            font-size: 13px; margin-bottom: 16px;
+        }
 
         /* Séparateur */
-        .login-divider {
+        .lf-divider {
             display: flex; align-items: center; gap: 12px;
             margin: 24px 0;
         }
-        .login-divider::before, .login-divider::after {
-            content: ''; flex: 1; height: 1px; background: #E5E7EB;
+        .lf-divider::before, .lf-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--gray-200);
         }
-        .login-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; white-space: nowrap; }
+        .lf-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
 
-        /* Bloc rejoindre le réseau */
-        .join-network-block {
+        /* Bloc rejoindre */
+        .join-block {
             background: linear-gradient(135deg, #FFF5F5, white);
             border: 1px solid rgba(198,40,40,.15);
-            border-radius: 18px; padding: 20px;
+            border-radius: 16px; padding: 20px;
         }
-        .join-network-block h3 {
+        .join-block h3 {
             font-family: 'Inter', sans-serif;
             font-size: 15px; font-weight: 700;
-            color: #0F172A; margin-bottom: 6px;
+            color: var(--dark); margin-bottom: 6px;
         }
-        .join-network-block p {
-            font-size: 13px; color: #6B7280;
+        .join-block p {
+            font-size: 13px; color: var(--gray-500);
             margin-bottom: 14px; line-height: 1.6;
         }
-        .join-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .join-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
         .join-perk {
             display: flex; align-items: center; gap: 10px;
             font-size: 13px; color: #374151;
@@ -178,68 +181,89 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 14px; flex-shrink: 0;
         }
-        .btn-join-network {
-            width: 100%; padding: 13px;
-            background: white; color: #C62828;
-            border: 2px solid #C62828; border-radius: 12px;
+        .btn-join {
+            width: 100%; padding: 12px;
+            background: white; color: var(--red);
+            border: 2px solid var(--red); border-radius: 10px;
             font-size: 14px; font-weight: 700;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer; transition: background .15s;
+            font-family: 'Inter', sans-serif; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none; transition: background .15s;
         }
-        .btn-join-network:active { background: #FFF5F5; }
+        .btn-join:active { background: #FFF5F5; }
 
-        /* Alerte erreur */
-        .login-error-new {
-            display: none; padding: 12px 16px;
-            background: #FFF5F5; border: 1px solid #FFCDD2;
-            border-radius: 10px; color: #C62828;
-            font-size: 13px; margin-bottom: 16px;
-            align-items: center; gap: 8px;
+        .login-back {
+            text-align: center; padding: 16px 0 4px;
+            font-size: 12px; color: #9CA3AF;
         }
-        .login-error-new.show { display: flex; }
+        .login-back a { color: var(--red); font-weight: 600; text-decoration: none; }
 
         /* Spinner */
-        .btn-spinner {
+        .spin {
             width: 18px; height: 18px;
             border: 2px solid rgba(255,255,255,.4);
             border-top-color: white; border-radius: 50%;
-            animation: btnSpin .7s linear infinite;
-            display: none; flex-shrink: 0;
+            animation: spin .7s linear infinite; display: none;
         }
-        @keyframes btnSpin { to { transform: rotate(360deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Lien retour site */
-        .login-back-link {
-            text-align: center; padding: 16px 0 8px;
-            font-size: 12px; color: #9CA3AF;
-        }
-        .login-back-link a { color: #C62828; font-weight: 600; text-decoration: none; }
-
-        /* ── Topbar rouge pour l'app ── */
+        /* ── App topbar rouge ── */
         .topbar {
             background: linear-gradient(135deg, #B71C1C, #C62828) !important;
         }
 
-        /* ── Bottom nav : icone active rouge ── */
-        .bottomnav-item.active { color: #C62828 !important; }
-        .bottomnav-item.active span { color: #C62828 !important; }
+        /* ── Bottom nav actif rouge ── */
+        .bottomnav-item.active { color: var(--red) !important; }
+        .bottomnav-item.active span { color: var(--red) !important; }
 
-        /* ── Filtres dashboard : actif rouge ── */
+        /* ── Filtres actifs rouge ── */
         .filter-btn.active {
-            background: #C62828 !important;
+            background: var(--red) !important;
             color: white !important;
-            border-color: #C62828 !important;
+            border-color: var(--red) !important;
         }
 
-        /* ── Stats bar : urgentes rouge ── */
+        /* ── Stat chips ── */
         .stat-chip.urgent { background: rgba(198,40,40,.1) !important; }
-        .stat-chip.urgent .stat-chip-num { color: #C62828 !important; }
+        .stat-chip.urgent .stat-chip-num { color: var(--red) !important; }
+
+        /* ── Profil header rouge ── */
+        .profile-header-block {
+            background: linear-gradient(135deg, #B71C1C, #C62828);
+            padding: 32px 24px 24px; text-align: center; color: white;
+        }
+        .profile-avatar-circle {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: rgba(255,255,255,.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; font-weight: 800; color: white;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255,255,255,.3);
+            font-family: 'Inter', sans-serif;
+        }
+        .profile-name-txt { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .profile-role-txt { font-size: 13px; opacity: .75; }
+        .profile-item-row {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 20px; background: white;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 14px; color: var(--dark);
+        }
+        .profile-item-icon { font-size: 20px; width: 32px; text-align: center; }
+        .profile-item-label { flex: 1; }
+        .profile-item-arrow { color: var(--gray-500); }
+        .btn-deconnect {
+            width: calc(100% - 32px); margin: 20px 16px;
+            padding: 14px; background: white; color: var(--red);
+            border: 2px solid var(--red); border-radius: 12px;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Splash screen -->
+    <!-- ══ SPLASH ══ -->
     <div id="splash" class="splash">
         <div class="splash-inner">
             <div class="splash-icon">🔧</div>
@@ -249,59 +273,47 @@
         </div>
     </div>
 
-    <!-- App root -->
     <div id="app" style="display:none">
 
-        <!-- ══ LOGIN ══ -->
+        <!-- ══ ÉCRAN LOGIN ══ -->
         <div id="screen-login" class="screen" style="display:none">
-
-            <!-- Header rouge -->
-            <div class="login-header-new">
-                <div class="login-logo-new">🔧</div>
-                <h1 class="login-title-new">Sinistre Pro</h1>
-                <p class="login-sub-new">Connectez-vous a votre espace intervenant</p>
+            <div class="login-header">
+                <div class="login-logo-box">🔧</div>
+                <h1 class="login-title">Sinistre Pro</h1>
+                <p class="login-subtitle">Connectez-vous a votre espace intervenant</p>
             </div>
-
-            <!-- Carte formulaire -->
-            <div class="login-card-new">
+            <div class="login-card">
                 <h2>Bon retour !</h2>
                 <p class="login-card-desc">Entrez vos identifiants pour acceder a vos missions</p>
 
-                <!-- Erreur -->
-                <div id="loginError" class="login-error-new">
-                    <span>⚠️</span>
-                    <span id="loginErrorMsg">Identifiants incorrects</span>
-                </div>
+                <div id="loginError"></div>
 
-                <!-- Formulaire -->
                 <form id="loginForm" class="login-form">
-                    <div class="field-group">
-                        <label class="field-label">Email</label>
-                        <input type="email" id="loginEmail" class="field-input"
+                    <div class="lf-group">
+                        <label class="lf-label">Email</label>
+                        <input type="email" id="loginEmail" class="lf-input"
                                placeholder="votre@email.fr" autocomplete="email" required/>
                     </div>
-                    <div class="field-group">
-                        <label class="field-label">Mot de passe</label>
-                        <input type="password" id="loginPassword" class="field-input"
+                    <div class="lf-group">
+                        <label class="lf-label">Mot de passe</label>
+                        <input type="password" id="loginPassword" class="lf-input"
                                placeholder="••••••••" autocomplete="current-password" required/>
                     </div>
-                    <button type="submit" id="loginBtn" class="btn-login-primary">
-                        <div class="btn-spinner" id="loginSpinner"></div>
-                        <span id="loginBtnText">Se connecter</span>
+                    <button type="submit" id="loginBtn" class="btn-login">
+                        <div class="spin" id="loginSpinEl"></div>
+                        <span>Se connecter</span>
                     </button>
                 </form>
 
-                <!-- Séparateur -->
-                <div class="login-divider"><span>Vous n'avez pas de compte ?</span></div>
+                <div class="lf-divider"><span>Pas encore dans le reseau ?</span></div>
 
-                <!-- Rejoindre le réseau -->
-                <div class="join-network-block">
+                <div class="join-block">
                     <h3>Rejoignez notre reseau d'artisans</h3>
-                    <p>Recevez des missions qualifiees, gerez votre planning et encaissez rapidement.</p>
+                    <p>Inscription gratuite. Premieres missions des la validation de votre dossier.</p>
                     <div class="join-perks">
                         <div class="join-perk">
                             <div class="join-perk-icon">📱</div>
-                            <span>App mobile + missions en temps reel</span>
+                            <span>Missions en temps reel sur votre mobile</span>
                         </div>
                         <div class="join-perk">
                             <div class="join-perk-icon">💰</div>
@@ -309,24 +321,23 @@
                         </div>
                         <div class="join-perk">
                             <div class="join-perk-icon">📍</div>
-                            <span>Missions uniquement dans votre zone</span>
+                            <span>Uniquement dans votre zone</span>
                         </div>
                     </div>
-                    <button class="btn-join-network" onclick="window.location.href='/rejoindre-le-reseau'">
-                        ➕ Rejoindre le reseau artisan
-                    </button>
+                    <a href="/rejoindre-le-reseau" class="btn-join">
+                        + Devenir artisan partenaire
+                    </a>
                 </div>
 
-                <!-- Retour site -->
-                <div class="login-back-link">
+                <div class="login-back">
                     <a href="/">← Retour au site</a>
                     &nbsp;·&nbsp;
-                    <a href="/contact">Aide &amp; support</a>
+                    <a href="/contact">Aide</a>
                 </div>
             </div>
         </div>
 
-        <!-- ══ APP (après connexion) ══ -->
+        <!-- ══ APP PRINCIPALE ══ -->
         <div id="screen-app" class="screen" style="display:none">
 
             <!-- Top bar -->
@@ -338,7 +349,7 @@
                 </button>
                 <h1 class="topbar-title" id="topbarTitle">Mes Missions</h1>
                 <div class="topbar-right">
-                    <button class="topbar-action" id="notifBtn" onclick="FCM.requestPermission()" title="Activer notifications">
+                    <button class="topbar-action" id="notifBtn" onclick="FCM.requestPermission()" title="Notifications">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -355,7 +366,7 @@
                 </div>
             </header>
 
-            <!-- Vue Dashboard -->
+            <!-- ── Vue Dashboard ── -->
             <div id="view-dashboard" class="view active">
                 <div class="view-scroll">
                     <div class="stats-bar" id="statsBar">
@@ -395,7 +406,7 @@
                 </div>
             </div>
 
-            <!-- Vue Detail mission -->
+            <!-- ── Vue Détail mission ── -->
             <div id="view-mission" class="view" style="display:none">
                 <div class="view-scroll" id="missionDetailScroll">
                     <div class="mission-status-banner" id="missionBanner">
@@ -439,7 +450,7 @@
                 </div>
             </div>
 
-            <!-- Vue Devis -->
+            <!-- ── Vue Devis ── -->
             <div id="view-devis" class="view" style="display:none">
                 <div class="view-scroll">
                     <div class="card">
@@ -463,7 +474,7 @@
                 </div>
             </div>
 
-            <!-- Vue Signature -->
+            <!-- ── Vue Signature ── -->
             <div id="view-signature" class="view" style="display:none">
                 <div class="view-scroll">
                     <div class="card">
@@ -481,6 +492,44 @@
                         <button class="btn btn-primary btn-block" onclick="Signature.confirm()">✅ Confirmer l'acceptation</button>
                         <button class="btn btn-danger btn-block" onclick="Signature.refuse()">❌ Client refuse le devis</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- ── Vue Profil ── -->
+            <div id="view-profile" class="view" style="display:none">
+                <div class="view-scroll" style="padding:0 0 80px;">
+                    <div class="profile-header-block">
+                        <div class="profile-avatar-circle" id="profileAvatar">?</div>
+                        <div class="profile-name-txt" id="profileName">—</div>
+                        <div class="profile-role-txt">Artisan certifie</div>
+                    </div>
+                    <div class="profile-item-row">
+                        <span class="profile-item-icon">📧</span>
+                        <span class="profile-item-label" id="profileEmail">—</span>
+                    </div>
+                    <div class="profile-item-row">
+                        <span class="profile-item-icon">🔧</span>
+                        <span class="profile-item-label" id="profileSpecialite">Artisan certifie</span>
+                    </div>
+                    <div class="profile-item-row">
+                        <span class="profile-item-icon">💰</span>
+                        <span class="profile-item-label">Commission plateforme : 15%</span>
+                    </div>
+                    <div class="profile-item-row">
+                        <span class="profile-item-icon">⭐</span>
+                        <span class="profile-item-label">Note : <strong id="profileNote">—</strong></span>
+                    </div>
+                    <div class="profile-item-row" onclick="window.location.href='/contact'" style="cursor:pointer;">
+                        <span class="profile-item-icon">❓</span>
+                        <span class="profile-item-label">Aide et support</span>
+                        <span class="profile-item-arrow">›</span>
+                    </div>
+                    <div class="profile-item-row" onclick="window.location.href='/rejoindre-le-reseau'" style="cursor:pointer;">
+                        <span class="profile-item-icon">📋</span>
+                        <span class="profile-item-label">Mon dossier artisan</span>
+                        <span class="profile-item-arrow">›</span>
+                    </div>
+                    <button class="btn-deconnect" onclick="Auth.logout()">Se deconnecter</button>
                 </div>
             </div>
 
@@ -512,7 +561,7 @@
     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
     <input type="file" id="galleryInput" accept="image/*" style="display:none"/>
 
-    <!-- Scripts PWA existants -->
+    <!-- Scripts PWA -->
     <script src="/sinistre_services/static/pwa/src/services/config.js"></script>
     <script src="/sinistre_services/static/pwa/src/services/api.js"></script>
     <script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
@@ -526,30 +575,47 @@
     <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
     <script src="/sinistre_services/static/pwa/app.js"></script>
 
-    <!-- Override login form avec le nouveau style -->
+    <!-- Patch : mise à jour profil après connexion + spinner login -->
     <script>
-        // Surcharge du submit login pour afficher spinner + erreur stylisée
         document.addEventListener('DOMContentLoaded', function() {
+            // Patch spinner sur le bouton login
             var form = document.getElementById('loginForm');
-            if (!form) return;
-            var btn = document.getElementById('loginBtn');
-            var spinner = document.getElementById('loginSpinner');
-            var btnText = document.getElementById('loginBtnText');
-            var errorDiv = document.getElementById('loginError');
-            var errorMsg = document.getElementById('loginErrorMsg');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    var spinner = document.getElementById('loginSpinEl');
+                    if (spinner) spinner.style.display = 'block';
+                });
+            }
 
-            // Monkey-patch Auth.showLoginError si disponible
-            if (window.Auth) {
-                var origShowError = Auth.showLoginError;
-                Auth.showLoginError = function(msg) {
-                    if (errorDiv && errorMsg) {
-                        errorMsg.textContent = msg || 'Identifiants incorrects';
-                        errorDiv.classList.add('show');
-                    }
-                    if (origShowError) origShowError.call(Auth, msg);
+            // Patch : mettre à jour le profil quand l'app s'affiche
+            var origShowApp = App.showApp;
+            if (origShowApp) {
+                App.showApp = function() {
+                    origShowApp.call(App);
+                    _updateProfile();
                 };
             }
+
+            function _updateProfile() {
+                var user = Auth.getUser ? Auth.getUser() : null;
+                if (!user) {
+                    try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+                }
+                if (!user || !user.name) return;
+                var name = user.name || '';
+                var initials = name.split(' ').map(function(w) { return w[0] || ''; }).join('').substring(0,2).toUpperCase();
+                var av = document.getElementById('profileAvatar');
+                var pn = document.getElementById('profileName');
+                var pe = document.getElementById('profileEmail');
+                if (av) av.textContent = initials || '?';
+                if (pn) pn.textContent = name;
+                if (pe) pe.textContent = user.email || user.username || '—';
+            }
+
+            // Appeler au chargement si déjà connecté
+            setTimeout(_updateProfile, 2000);
         });
     </script>
+
 </body>
 </html>
