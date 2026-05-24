@@ -5,7 +5,7 @@
 
         <xpath expr="//head" position="inside">
             <style>
-               /* ── Navbar hover + page active ── */
+                /* Navbar hover + page active */
                 .o_main_navbar a.nav-link {
                     position: relative;
                     transition: color .2s;
@@ -19,50 +19,27 @@
                     border-radius: 2px;
                     transition: left .2s, right .2s;
                 }
-                
-                /* Hover */
-                .o_main_navbar a.nav-link:hover {
-                    color: #1E40AF !important;
-                }
-                .o_main_navbar a.nav-link:hover::after {
-                    left: 0; right: 0;
-                }
-                
-                /* Page active — classe "active" sur le <a> */
-                .o_main_navbar a.nav-link.active {
-                    color: #1E40AF !important;
-                    font-weight: 700 !important;
-                }
-                .o_main_navbar a.nav-link.active::after {
-                    left: 0 !important;
-                    right: 0 !important;
-                }
-                
-                /* Assurances → rouge */
+                .o_main_navbar a.nav-link:hover { color: #1E40AF !important; }
+                .o_main_navbar a.nav-link:hover::after { left: 0; right: 0; }
+                .o_main_navbar a.nav-link.active { color: #1E40AF !important; font-weight: 700 !important; }
+                .o_main_navbar a.nav-link.active::after { left: 0 !important; right: 0 !important; }
                 .o_main_navbar a.nav-link.active[href*="assurances"],
-                .o_main_navbar a.nav-link:hover[href*="assurances"] {
-                    color: #C62828 !important;
-                }
+                .o_main_navbar a.nav-link:hover[href*="assurances"] { color: #C62828 !important; }
                 .o_main_navbar a.nav-link.active[href*="assurances"]::after,
-                .o_main_navbar a.nav-link:hover[href*="assurances"]::after {
-                    background: #C62828 !important;
-                }
-                
-                /* Masquer sign in, recherche, tel, contactus */
+                .o_main_navbar a.nav-link:hover[href*="assurances"]::after { background: #C62828 !important; }
+
+                /* Masquer elements inutiles */
                 .o_searchbar_form,
                 .o_header_search_btn,
                 button[data-bs-target="#o_search_modal"],
                 .o_wsale_my_cart,
                 .o_wsale_my_wish,
-                a[href^="tel:"].nav-link,
-                a.nav-link.o_nav-link_secondary,
+                a.o_nav-link_secondary,
                 a[href="/contactus"],
                 a.btn_cta { display: none !important; }
-                
             </style>
         </xpath>
 
-        <!-- Footer sinistres -->
         <xpath expr="//footer" position="replace">
             <t t-call="monetique_theme.footer"/>
         </xpath>
@@ -74,6 +51,7 @@
             <div class="mn-footer__top">
                 <div class="mn-container">
                     <div class="mn-footer__grid">
+
                         <div class="mn-footer__brand">
                             <a href="/" class="mn-footer__logo">Sinistre <span style="color:#C62828">Services</span></a>
                             <p>Plateforme de gestion des sinistres — Artisans certifies disponibles 24h/24 partout en France depuis 2015.</p>
@@ -83,22 +61,30 @@
                                 <span class="mn-badge">Artisans Certifies</span>
                             </div>
                             <div style="display:flex;gap:10px;margin-top:20px;">
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"/></a>
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"/></a>
-                                <a href="#" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"/></a>
+                                <a href="#" aria-label="Facebook" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
+                                    <i class="fa fa-facebook" aria-hidden="true">&#160;</i>
+                                </a>
+                                <a href="#" aria-label="LinkedIn" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
+                                    <i class="fa fa-linkedin" aria-hidden="true">&#160;</i>
+                                </a>
+                                <a href="#" aria-label="Twitter" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
+                                    <i class="fa fa-twitter" aria-hidden="true">&#160;</i>
+                                </a>
                             </div>
                         </div>
+
                         <div class="mn-footer__col">
                             <h4>Interventions</h4>
                             <ul>
-                                <li><a href="/nos-services#serrurerie"><i class="fa fa-lock" style="width:14px;margin-right:6px;" aria-hidden="true"/>Serrurerie</a></li>
-                                <li><a href="/nos-services#plomberie"><i class="fa fa-tint" style="width:14px;margin-right:6px;" aria-hidden="true"/>Plomberie</a></li>
-                                <li><a href="/nos-services#menuiserie"><i class="fa fa-home" style="width:14px;margin-right:6px;" aria-hidden="true"/>Menuiserie</a></li>
-                                <li><a href="/nos-services#vitrerie"><i class="fa fa-th-large" style="width:14px;margin-right:6px;" aria-hidden="true"/>Vitrerie</a></li>
-                                <li><a href="/nos-services#electricite"><i class="fa fa-bolt" style="width:14px;margin-right:6px;" aria-hidden="true"/>Electricite</a></li>
-                                <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true"/>Urgence 24h/24</a></li>
+                                <li><a href="/nos-services#serrurerie"><i class="fa fa-lock" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Serrurerie</a></li>
+                                <li><a href="/nos-services#plomberie"><i class="fa fa-tint" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Plomberie</a></li>
+                                <li><a href="/nos-services#menuiserie"><i class="fa fa-home" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Menuiserie</a></li>
+                                <li><a href="/nos-services#vitrerie"><i class="fa fa-th-large" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Vitrerie</a></li>
+                                <li><a href="/nos-services#electricite"><i class="fa fa-bolt" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Electricite</a></li>
+                                <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true">&#160;</i>Urgence 24h/24</a></li>
                             </ul>
                         </div>
+
                         <div class="mn-footer__col">
                             <h4>Clients</h4>
                             <ul>
@@ -110,20 +96,22 @@
                                 <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
                             </ul>
                         </div>
+
                         <div class="mn-footer__col">
                             <h4>Contact</h4>
                             <ul>
-                                <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true"/>01 XX XX XX XX</a></li>
-                                <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true"/>contact@sinistre-services.fr</a></li>
-                                <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true"/>Urgences 24h/24 7j/7</a></li>
-                                <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true"/>Nous contacter</a></li>
+                                <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>01 XX XX XX XX</a></li>
+                                <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>contact@sinistre-services.fr</a></li>
+                                <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Urgences 24h/24 7j/7</a></li>
+                                <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Nous contacter</a></li>
                             </ul>
                             <div style="margin-top:20px;">
                                 <a href="tel:+33100000000" class="mn-btn mn-btn--secondary mn-btn--sm" style="width:100%;justify-content:center;">
-                                    <i class="fa fa-phone" style="color:white;" aria-hidden="true"/> Appel urgence
+                                    <i class="fa fa-phone" style="color:white;" aria-hidden="true">&#160;</i> Appel urgence
                                 </a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
