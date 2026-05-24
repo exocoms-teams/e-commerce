@@ -7,670 +7,629 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
     <meta name="apple-mobile-web-app-title" content="Sinistre Pro"/>
-    <meta name="theme-color" content="#C62828"/>
+    <meta name="theme-color" content="#1E40AF"/>
     <meta name="description" content="Application intervenant — Sinistre Services"/>
-
     <title>Sinistre Pro — Espace Intervenant</title>
-
     <link rel="manifest" href="/sinistre_services/static/pwa/manifest.json"/>
     <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
-
-    <!-- Design system PWA -->
     <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
-
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+        /* ── Variables ── */
         :root {
-            --primary: #1E40AF;
-            --primary-dark: #1E3A8A;
-            --primary-light: #3B82F6;
-            --primary-pale: #EFF6FF;
-            --red: #C62828;
-            --green: #10B981;
-            --dark: #0F172A;
-            --gray-700: #374151;
-            --gray-500: #6B7280;
-            --gray-200: #E5E7EB;
-            --gray-50: #F9FAFB;
+            --p:    #1E40AF;
+            --pd:   #1E3A8A;
+            --pl:   #3B82F6;
+            --pale: #EFF6FF;
+            --red:  #C62828;
+            --grn:  #10B981;
+            --drk:  #0F172A;
+            --g7:   #374151;
+            --g5:   #6B7280;
+            --g2:   #E5E7EB;
+            --g0:   #F9FAFB;
         }
 
-        /* ── Splash bleu ── */
-        .splash {
-            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%) !important;
+        /* ── Reset & base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: var(--g0); }
+
+        /* ── Splash ── */
+        .splash { background: linear-gradient(135deg, var(--pd) 0%, var(--p) 100%) !important; }
+        .splash-title { font-family: 'Inter', sans-serif !important; }
+
+        /* ── App layout ── */
+        #app { height: 100dvh; display: flex; flex-direction: column; }
+        .screen { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+        /* ── View system — CRITIQUE ── */
+        .view {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            background: var(--g0);
         }
+        .view.active { display: flex; }
+        .view-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            background: linear-gradient(135deg, var(--pd), var(--p)) !important;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .topbar-title { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; }
+
+        /* ── Bottom nav ── */
+        .bottomnav { flex-shrink: 0; background: white; border-top: 1px solid var(--g2); z-index: 10; }
+        .bottomnav-item { color: var(--g5) !important; font-family: 'Inter', sans-serif; }
+        .bottomnav-item svg { stroke: var(--g5) !important; }
+        .bottomnav-item.active { color: var(--p) !important; }
+        .bottomnav-item.active svg { stroke: var(--p) !important; }
+        .bottomnav-item span { font-size: 11px; font-weight: 600; }
+
+        /* ── Filtres ── */
+        .filter-btn {
+            padding: 7px 16px; border-radius: 99px;
+            border: 1.5px solid var(--g2); font-size: 13px; font-weight: 600;
+            background: white; color: var(--g7); cursor: pointer; white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-btn.active { background: var(--p) !important; color: white !important; border-color: var(--p) !important; }
+
+        /* ── Mission cards ── */
+        .mission-card {
+            background: white !important; border-radius: 14px !important;
+            border: 1px solid var(--g2) !important; padding: 16px !important;
+            margin-bottom: 10px !important; box-shadow: 0 2px 8px rgba(0,0,0,.05) !important;
+            transition: transform .15s, box-shadow .2s !important;
+        }
+        .mission-card:active { transform: scale(.99) !important; }
+        .mission-card.tres_urgente { border-left: 4px solid var(--red) !important; }
+        .mission-card.urgente { border-left: 4px solid #F59E0B !important; }
+        .mission-ref { font-size: 12px; font-weight: 700; color: var(--p); }
+        .mission-type { font-size: 15px; font-weight: 700; color: var(--drk); margin: 5px 0 4px; }
+        .mission-client, .mission-adresse { font-size: 13px; color: var(--g5); }
+
+        /* ── Dashboard header ── */
+        .dash-hero {
+            background: linear-gradient(135deg, var(--pd) 0%, var(--p) 100%);
+            padding: 20px 20px 20px; position: relative; overflow: hidden;
+        }
+        .dash-hero::after {
+            content: ''; position: absolute; top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+
+        /* ── Stats grid ── */
+        .dash-stats {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; padding: 16px 16px 0;
+        }
+        .dash-stat {
+            background: white; border-radius: 14px; padding: 16px 12px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        }
+        .dash-stat.accent {
+            background: linear-gradient(135deg, var(--pd), var(--p));
+            box-shadow: 0 4px 16px rgba(30,64,175,.3);
+        }
+        .dash-stat-num {
+            font-size: 28px; font-weight: 800; color: var(--p);
+            display: block; line-height: 1; font-family: 'Inter', sans-serif;
+        }
+        .dash-stat.accent .dash-stat-num { color: white; }
+        .dash-stat-lbl {
+            font-size: 10px; color: var(--g5); margin-top: 5px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        }
+        .dash-stat.accent .dash-stat-lbl { color: rgba(255,255,255,.7); }
+
+        /* ── Section ── */
+        .dash-section { padding: 16px 16px 0; }
+        .dash-section-title { font-size: 15px; font-weight: 700; color: var(--drk); margin-bottom: 12px; }
+
+        /* ── Profil ── */
+        #view-profile { background: var(--g0); }
+        .prof-hero {
+            background: linear-gradient(135deg, var(--pd) 0%, var(--p) 100%);
+            padding: 36px 24px 28px; text-align: center;
+        }
+        .prof-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(255,255,255,.2); border: 3px solid rgba(255,255,255,.35);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: white;
+            margin: 0 auto 14px; letter-spacing: -.02em;
+        }
+        .prof-name { font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; }
+        .prof-role { font-size: 13px; color: rgba(255,255,255,.7); }
+        .prof-list { background: white; margin-top: 16px; border-radius: 16px 16px 0 0; }
+        .prof-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 20px; border-bottom: 1px solid var(--g2);
+            font-size: 14px; color: var(--drk); cursor: default;
+        }
+        .prof-item:last-child { border-bottom: none; }
+        .prof-item-icon { font-size: 20px; width: 36px; text-align: center; flex-shrink: 0; }
+        .prof-item-label { flex: 1; font-weight: 500; }
+        .prof-item-sub { font-size: 12px; color: var(--g5); margin-top: 2px; }
+        .prof-item-arrow { color: var(--g5); font-size: 18px; }
+        .prof-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(30,64,175,.08); color: var(--p);
+            padding: 3px 10px; border-radius: 99px;
+            font-size: 12px; font-weight: 600;
+        }
+        .prof-logout {
+            width: calc(100% - 32px); margin: 20px 16px;
+            padding: 14px; background: white; color: var(--red);
+            border: 2px solid var(--red); border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background .15s;
+        }
+        .prof-logout:active { background: #FFF5F5; }
 
         /* ── Login ── */
-        #screen-login {
-            background: var(--gray-50);
-            display: flex; flex-direction: column; min-height: 100dvh;
+        #screen-login { background: var(--g0); min-height: 100dvh; display: flex; flex-direction: column; }
+        .login-hero {
+            background: linear-gradient(135deg, var(--pd) 0%, var(--p) 100%);
+            padding: 52px 24px 72px; text-align: center; position: relative; overflow: hidden; flex-shrink: 0;
         }
-        .login-header {
-            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
-            padding: 52px 24px 72px; text-align: center;
-            position: relative; overflow: hidden; flex-shrink: 0;
-        }
-        .login-header::before {
+        .login-hero::before {
             content: ''; position: absolute; top: -60px; right: -60px;
             width: 220px; height: 220px;
             background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
             border-radius: 50%;
         }
-        .login-logo-box {
-            width: 68px; height: 68px;
-            background: rgba(255,255,255,.15); border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
+        .login-icon {
+            width: 68px; height: 68px; background: rgba(255,255,255,.15);
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
             font-size: 34px; margin: 0 auto 16px;
             border: 2px solid rgba(255,255,255,.2); position: relative; z-index: 1;
         }
-        .login-title {
-            font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 800;
-            color: white; letter-spacing: -.03em; margin-bottom: 6px;
-            position: relative; z-index: 1;
+        .login-hero h1 {
+            font-size: 28px; font-weight: 800; color: white;
+            letter-spacing: -.03em; margin-bottom: 6px; position: relative; z-index: 1;
         }
-        .login-subtitle { font-size: 14px; color: rgba(255,255,255,.75); position: relative; z-index: 1; }
+        .login-hero p { font-size: 14px; color: rgba(255,255,255,.75); position: relative; z-index: 1; }
         .login-card {
-            background: white; border-radius: 28px 28px 0 0; margin-top: -28px;
-            padding: 32px 24px 24px; flex: 1; position: relative; z-index: 2;
-            box-shadow: 0 -4px 24px rgba(0,0,0,.08); overflow-y: auto;
+            background: white; border-radius: 28px 28px 0 0;
+            margin-top: -28px; padding: 32px 24px; flex: 1;
+            position: relative; z-index: 2; box-shadow: 0 -4px 24px rgba(0,0,0,.08); overflow-y: auto;
         }
-        .login-card h2 { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
-        .login-card-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 28px; }
-        .lf-group { margin-bottom: 16px; }
-        .lf-label { display: block; font-size: 11px; font-weight: 700; color: var(--gray-700); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .6px; }
-        .lf-input {
-            width: 100%; padding: 13px 16px; border: 1.5px solid var(--gray-200);
-            border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
-            color: var(--dark); background: var(--gray-50);
-            transition: border-color .2s, box-shadow .2s; outline: none; box-sizing: border-box;
+        .login-card h2 { font-size: 22px; font-weight: 800; color: var(--drk); margin-bottom: 4px; }
+        .login-card-sub { font-size: 13px; color: var(--g5); margin-bottom: 28px; }
+        .lf-grp { margin-bottom: 16px; }
+        .lf-lbl {
+            display: block; font-size: 11px; font-weight: 700;
+            color: var(--g7); margin-bottom: 7px;
+            text-transform: uppercase; letter-spacing: .6px;
         }
-        .lf-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(30,64,175,.08); }
+        .lf-inp {
+            width: 100%; padding: 13px 16px;
+            border: 1.5px solid var(--g2); border-radius: 12px;
+            font-size: 15px; font-family: 'Inter', sans-serif;
+            color: var(--drk); background: var(--g0);
+            transition: border-color .2s, box-shadow .2s; outline: none;
+        }
+        .lf-inp:focus { border-color: var(--p); background: white; box-shadow: 0 0 0 3px rgba(30,64,175,.08); }
         .btn-login {
             width: 100%; padding: 15px;
-            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
+            background: linear-gradient(135deg, var(--pd), var(--p));
             color: white; border: none; border-radius: 12px;
             font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
             cursor: pointer; box-shadow: 0 4px 16px rgba(30,64,175,.35);
-            transition: transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 4px; transition: transform .15s;
         }
         .btn-login:active { transform: scale(.98); }
         .btn-login:disabled { opacity: .65; cursor: not-allowed; }
         #loginError { display: none; padding: 12px 16px; background: #FFF5F5; border: 1px solid #FFCDD2; border-radius: 10px; color: var(--red); font-size: 13px; margin-bottom: 16px; }
-        .lf-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
-        .lf-divider::before, .lf-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
-        .lf-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
-        .join-block { background: linear-gradient(135deg, var(--primary-pale), white); border: 1px solid #BFDBFE; border-radius: 16px; padding: 20px; }
-        .join-block h3 { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-        .join-block p { font-size: 13px; color: var(--gray-500); margin-bottom: 14px; line-height: 1.6; }
+        .lf-div { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+        .lf-div::before, .lf-div::after { content: ''; flex: 1; height: 1px; background: var(--g2); }
+        .lf-div span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
+        .join-box { background: linear-gradient(135deg, var(--pale), white); border: 1px solid #BFDBFE; border-radius: 16px; padding: 20px; }
+        .join-box h3 { font-size: 15px; font-weight: 700; color: var(--p); margin-bottom: 6px; }
+        .join-box p { font-size: 13px; color: var(--g5); margin-bottom: 14px; line-height: 1.6; }
         .join-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-        .join-perk { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-700); }
-        .join-perk-icon { width: 28px; height: 28px; background: rgba(30,64,175,.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-        .btn-join { width: 100%; padding: 12px; background: white; color: var(--primary); border: 2px solid var(--primary); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .join-perk { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--g7); }
+        .join-perk-ico { width: 28px; height: 28px; background: rgba(30,64,175,.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .btn-join { width: 100%; padding: 12px; background: white; color: var(--p); border: 2px solid var(--p); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
         .login-back { text-align: center; padding: 16px 0 4px; font-size: 12px; color: #9CA3AF; }
-        .login-back a { color: var(--primary); font-weight: 600; text-decoration: none; }
-        .spin { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+        .login-back a { color: var(--p); font-weight: 600; text-decoration: none; }
+        .spin { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: none; flex-shrink: 0; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── Topbar bleu ── */
-        .topbar { background: linear-gradient(135deg, #1E3A8A, #1E40AF) !important; }
-
-        /* ── Bottom nav actif bleu ── */
-        .bottomnav-item { color: var(--gray-500) !important; }
-        .bottomnav-item svg { stroke: var(--gray-500) !important; }
-        .bottomnav-item.active { color: var(--primary) !important; }
-        .bottomnav-item.active svg { stroke: var(--primary) !important; }
-        .bottomnav-item span { font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; }
-
-        /* ── Filtres actifs bleu ── */
-        .filter-btn {
-            padding: 7px 16px; border-radius: 99px;
-            border: 1.5px solid var(--gray-200);
-            font-size: 13px; font-weight: 600;
-            background: white; color: var(--gray-700);
-            font-family: 'Inter', sans-serif; cursor: pointer;
-            white-space: nowrap;
-        }
-        .filter-btn.active { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
-
-        /* ── Stats chips ── */
-        .stat-chip-num { font-family: 'Inter', sans-serif !important; }
-        .stat-chip.urgent .stat-chip-num { color: var(--red) !important; }
-        .stat-chip.done .stat-chip-num { color: var(--green) !important; }
-
-        /* ── Dashboard bandeau ── */
-        .dash-header {
-            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
-            padding: 20px 20px 56px; position: relative; overflow: hidden;
-        }
-        .dash-header::before {
-            content: ''; position: absolute; top: -40px; right: -40px;
-            width: 160px; height: 160px;
-            background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        .dash-header::after {
-            content: ''; position: absolute; bottom: -20px; left: -20px;
-            width: 100px; height: 100px;
-            background: radial-gradient(circle, rgba(255,255,255,.05) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-        .dash-greeting { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 2px; font-family: 'Inter', sans-serif; }
-        .dash-name { font-size: 22px; font-weight: 800; color: white; letter-spacing: -.02em; font-family: 'Inter', sans-serif; position: relative; z-index: 1; }
-
-        /* ── Stats cards flottantes ── */
-        .dash-stats {
-            display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px; margin: -32px 16px 0;
-            position: relative; z-index: 2; margin-bottom: 20px;
-        }
-        .dash-stat-card {
-            background: white; border-radius: 14px; padding: 16px;
-            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,.1);
-        }
-        .dash-stat-card.primary {
-            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
-            box-shadow: 0 4px 20px rgba(30,64,175,.3);
-        }
-        .dash-stat-num {
-            font-size: 28px; font-weight: 800; color: var(--primary);
-            display: block; line-height: 1; font-family: 'Inter', sans-serif;
-        }
-        .dash-stat-card.primary .dash-stat-num { color: white; }
-        .dash-stat-label {
-            font-size: 11px; color: var(--gray-500); margin-top: 4px;
-            font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
-            font-family: 'Inter', sans-serif;
-        }
-        .dash-stat-card.primary .dash-stat-label { color: rgba(255,255,255,.7); }
-
-        /* ── Section titre ── */
-        .dash-section-title {
-            font-size: 16px; font-weight: 700; color: var(--dark);
-            font-family: 'Inter', sans-serif; margin-bottom: 12px;
-        }
-
-        /* ── Mission cards redesignées ── */
-        .mission-card {
-            background: white !important; border-radius: 14px !important;
-            border: 1px solid var(--gray-200) !important;
-            padding: 16px !important; margin-bottom: 10px !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,.04) !important;
-            transition: box-shadow .2s, transform .15s !important;
-        }
-        .mission-card:active { transform: scale(.99) !important; box-shadow: 0 4px 16px rgba(0,0,0,.08) !important; }
-        .mission-card.tres_urgente { border-left: 4px solid var(--red) !important; }
-        .mission-card.urgente { border-left: 4px solid #F59E0B !important; }
-        .mission-ref { font-size: 12px; font-weight: 700; color: var(--primary); font-family: 'Inter', sans-serif; }
-        .mission-type { font-size: 15px; font-weight: 700; color: var(--dark); margin: 6px 0 4px; font-family: 'Inter', sans-serif; }
-        .mission-client, .mission-adresse { font-size: 13px; color: var(--gray-500); }
-
-        /* ── Profil ── */
-        .profile-header-block {
-            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
-            padding: 32px 24px 28px; text-align: center; color: white;
-        }
-        .profile-avatar-circle {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: rgba(255,255,255,.2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; font-weight: 800; color: white;
-            margin: 0 auto 14px; border: 3px solid rgba(255,255,255,.3);
-            font-family: 'Inter', sans-serif; letter-spacing: -.02em;
-        }
-        .profile-name-txt { font-size: 22px; font-weight: 800; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
-        .profile-role-txt { font-size: 13px; opacity: .75; }
-        .profile-item-row {
-            display: flex; align-items: center; gap: 16px;
-            padding: 16px 20px; background: white;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 14px; color: var(--dark); font-family: 'Inter', sans-serif;
-        }
-        .profile-item-icon { font-size: 20px; width: 32px; text-align: center; }
-        .profile-item-label { flex: 1; }
-        .profile-item-arrow { color: var(--gray-500); font-size: 18px; }
-        .btn-deconnect {
-            width: calc(100% - 32px); margin: 20px 16px;
-            padding: 14px; background: white; color: var(--primary);
-            border: 2px solid var(--primary); border-radius: 12px;
-            font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
-        }
-
-        /* ── Fix vues superposées ── */
-        #screen-app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
-        .view { display: none !important; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
-        .view.active { display: flex !important; }
-        .view-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
-        .bottomnav { flex-shrink: 0; }
-        .topbar { flex-shrink: 0; }
-
-        /* ── Dashboard scroll ── */
-        #view-dashboard .view-scroll { padding-bottom: 0 !important; }
-
-        /* ── Fix superposition stats/profil ── */
-        #view-profile { background: var(--gray-50); }
-        #view-dashboard { background: var(--gray-50); }
     </style>
 </head>
 <body>
 
-    <!-- ══ SPLASH ══ -->
-    <div id="splash" class="splash">
-        <div class="splash-inner">
-            <div class="splash-icon">🔧</div>
-            <h1 class="splash-title">Sinistre Pro</h1>
-            <p class="splash-sub">Espace Intervenant</p>
-            <div class="splash-loader"><div class="splash-bar"></div></div>
+<!-- ══ SPLASH ══ -->
+<div id="splash" class="splash">
+    <div class="splash-inner">
+        <div class="splash-icon">🔧</div>
+        <h1 class="splash-title">Sinistre Pro</h1>
+        <p class="splash-sub">Espace Intervenant</p>
+        <div class="splash-loader"><div class="splash-bar"></div></div>
+    </div>
+</div>
+
+<div id="app" style="display:none">
+
+    <!-- ══ LOGIN ══ -->
+    <div id="screen-login" class="screen" style="display:none">
+        <div class="login-hero">
+            <div class="login-icon">🔧</div>
+            <h1>Sinistre Pro</h1>
+            <p>Connectez-vous a votre espace intervenant</p>
+        </div>
+        <div class="login-card">
+            <h2>Bon retour !</h2>
+            <p class="login-card-sub">Entrez vos identifiants pour acceder a vos missions</p>
+            <div id="loginError"></div>
+            <form id="loginForm" class="login-form">
+                <div class="lf-grp">
+                    <label class="lf-lbl">Email</label>
+                    <input type="email" id="loginEmail" class="lf-inp" placeholder="votre@email.fr" autocomplete="email" required/>
+                </div>
+                <div class="lf-grp">
+                    <label class="lf-lbl">Mot de passe</label>
+                    <input type="password" id="loginPassword" class="lf-inp" placeholder="••••••••" autocomplete="current-password" required/>
+                </div>
+                <button type="submit" id="loginBtn" class="btn-login">
+                    <div class="spin" id="loginSpinEl"></div>
+                    <span>Se connecter</span>
+                </button>
+            </form>
+            <div class="lf-div"><span>Pas encore dans le reseau ?</span></div>
+            <div class="join-box">
+                <h3>Rejoignez notre reseau d'artisans</h3>
+                <p>Inscription gratuite. Premieres missions des la validation de votre dossier.</p>
+                <div class="join-perks">
+                    <div class="join-perk"><div class="join-perk-ico">📱</div><span>Missions en temps reel sur votre mobile</span></div>
+                    <div class="join-perk"><div class="join-perk-ico">💰</div><span>Paiement garanti sous 48h, zero impaye</span></div>
+                    <div class="join-perk"><div class="join-perk-ico">📍</div><span>Uniquement dans votre zone geographique</span></div>
+                </div>
+                <a href="/rejoindre-le-reseau" class="btn-join">+ Devenir artisan partenaire</a>
+            </div>
+            <div class="login-back">
+                <a href="/">← Retour au site</a>
+                &nbsp;·&nbsp;
+                <a href="/contact">Aide</a>
+            </div>
         </div>
     </div>
 
-    <div id="app" style="display:none">
+    <!-- ══ APP ══ -->
+    <div id="screen-app" class="screen" style="display:none">
 
-        <!-- ══ ÉCRAN LOGIN ══ -->
-        <div id="screen-login" class="screen" style="display:none">
-            <div class="login-header">
-                <div class="login-logo-box">🔧</div>
-                <h1 class="login-title">Sinistre Pro</h1>
-                <p class="login-subtitle">Connectez-vous a votre espace intervenant</p>
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="topbar-back" id="backBtn" onclick="App.goBack()" style="display:none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h1 class="topbar-title" id="topbarTitle">Bonjour !</h1>
+            <div class="topbar-right">
+                <button class="topbar-action" id="notifBtn" onclick="FCM.requestPermission()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notif-dot" id="notifDot" style="display:none"></span>
+                </button>
+                <button class="topbar-action" id="logoutTopBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </button>
             </div>
-            <div class="login-card">
-                <h2>Bon retour !</h2>
-                <p class="login-card-desc">Entrez vos identifiants pour acceder a vos missions</p>
+        </header>
 
-                <div id="loginError"></div>
-
-                <form id="loginForm" class="login-form">
-                    <div class="lf-group">
-                        <label class="lf-label">Email</label>
-                        <input type="email" id="loginEmail" class="lf-input"
-                               placeholder="votre@email.fr" autocomplete="email" required/>
-                    </div>
-                    <div class="lf-group">
-                        <label class="lf-label">Mot de passe</label>
-                        <input type="password" id="loginPassword" class="lf-input"
-                               placeholder="••••••••" autocomplete="current-password" required/>
-                    </div>
-                    <button type="submit" id="loginBtn" class="btn-login">
-                        <div class="spin" id="loginSpinEl"></div>
-                        <span>Se connecter</span>
-                    </button>
-                </form>
-
-                <div class="lf-divider"><span>Pas encore dans le reseau ?</span></div>
-
-                <div class="join-block">
-                    <h3>Rejoignez notre reseau d'artisans</h3>
-                    <p>Inscription gratuite. Premieres missions des la validation de votre dossier.</p>
-                    <div class="join-perks">
-                        <div class="join-perk">
-                            <div class="join-perk-icon">📱</div>
-                            <span>Missions en temps reel sur votre mobile</span>
-                        </div>
-                        <div class="join-perk">
-                            <div class="join-perk-icon">💰</div>
-                            <span>Paiement garanti sous 48h, zero impaye</span>
-                        </div>
-                        <div class="join-perk">
-                            <div class="join-perk-icon">📍</div>
-                            <span>Uniquement dans votre zone</span>
-                        </div>
-                    </div>
-                    <a href="/rejoindre-le-reseau" class="btn-join">
-                        + Devenir artisan partenaire
-                    </a>
+        <!-- Vue Dashboard -->
+        <div id="view-dashboard" class="view active">
+            <div class="view-scroll">
+                <!-- Hero bleu -->
+                <div class="dash-hero">
+                    <!-- vide, juste la couleur -->
                 </div>
+                <!-- Stats -->
+                <div class="dash-stats">
+                    <div class="dash-stat">
+                        <span class="dash-stat-num" id="statNouveau">–</span>
+                        <div class="dash-stat-lbl">Nouvelles</div>
+                    </div>
+                    <div class="dash-stat accent">
+                        <span class="dash-stat-num" id="statUrgent">–</span>
+                        <div class="dash-stat-lbl">Urgentes</div>
+                    </div>
+                    <div class="dash-stat">
+                        <span class="dash-stat-num" style="color:var(--grn);" id="statTermine">–</span>
+                        <div class="dash-stat-lbl">Ce mois</div>
+                    </div>
+                </div>
+                <!-- Filtres -->
+                <div class="dash-section" style="padding-bottom:12px;">
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all',this)">Toutes</button>
+                        <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau',this)">Nouvelles</button>
+                        <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours',this)">En cours</button>
+                        <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine',this)">Terminees</button>
+                    </div>
+                </div>
+                <!-- Pull-to-refresh -->
+                <div id="refreshZone" class="refresh-zone">
+                    <div class="refresh-spinner" id="refreshSpinner"></div>
+                </div>
+                <!-- Liste -->
+                <div class="dash-section">
+                    <div id="missionList" class="mission-list">
+                        <div class="empty-state" id="emptyState" style="display:none">
+                            <div class="empty-icon">📋</div>
+                            <p>Aucune mission pour le moment</p>
+                        </div>
+                        <div class="skeleton-list" id="skeletonList">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="height:20px;"></div>
+            </div>
+        </div>
 
-                <div class="login-back">
-                    <a href="/">← Retour au site</a>
-                    &nbsp;·&nbsp;
-                    <a href="/contact">Aide</a>
+        <!-- Vue Détail mission -->
+        <div id="view-mission" class="view">
+            <div class="view-scroll" id="missionDetailScroll">
+                <div class="mission-status-banner" id="missionBanner"><span id="missionBannerIcon">⏳</span><span id="missionBannerText">Nouveau</span></div>
+                <div class="card"><div class="card-header"><span class="card-icon">👤</span><h3 class="card-title">Client</h3></div><div class="info-grid" id="clientInfo"></div></div>
+                <div class="card"><div class="card-header"><span class="card-icon">🔧</span><h3 class="card-title">Intervention</h3></div><div class="info-grid" id="interventionInfo"></div></div>
+                <div class="card"><div class="card-header"><span class="card-icon">📝</span><h3 class="card-title">Description</h3></div><p class="description-text" id="descriptionText"></p></div>
+                <div class="card">
+                    <div class="card-header"><span class="card-icon">📷</span><h3 class="card-title">Photos</h3><span class="photo-counts" id="photoCounts"></span></div>
+                    <div class="photos-grid" id="photosGrid"></div>
+                    <div class="photos-actions">
+                        <button class="btn btn-outline btn-sm" onclick="Photos.capture('avant')" id="btnPhotoAvant">📸 Photo AVANT</button>
+                        <button class="btn btn-outline btn-sm" onclick="Photos.capture('apres')" id="btnPhotoApres">📸 Photo APRES</button>
+                    </div>
+                </div>
+                <div class="card" id="devisCard">
+                    <div class="card-header"><span class="card-icon">💶</span><h3 class="card-title">Devis</h3><span class="devis-status-badge" id="devisStatusBadge"></span></div>
+                    <div id="devisContent"></div>
+                </div>
+                <div class="actions-block" id="missionActions"></div>
+                <div style="height:24px;"></div>
+            </div>
+        </div>
+
+        <!-- Vue Devis -->
+        <div id="view-devis" class="view">
+            <div class="view-scroll">
+                <div class="card">
+                    <h3 class="section-title">Creer un devis</h3>
+                    <div id="devisLignes" class="devis-lignes"></div>
+                    <button class="btn btn-outline btn-sm" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button>
+                </div>
+                <div class="card devis-totaux">
+                    <div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div>
+                    <div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div>
+                    <div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div>
+                </div>
+                <div class="card">
+                    <label class="field-label">Note pour le client</label>
+                    <textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complementaires…"></textarea>
+                </div>
+                <div class="actions-block">
+                    <button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button>
+                    <button class="btn btn-primary btn-block" id="btnEnvoyerDevis" style="background:var(--grn)" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button>
                 </div>
             </div>
         </div>
 
-        <!-- ══ APP PRINCIPALE ══ -->
-        <div id="screen-app" class="screen" style="display:none">
-
-            <!-- Top bar -->
-            <header class="topbar">
-                <button class="topbar-back" id="backBtn" onclick="App.goBack()" style="display:none">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <polyline points="15 18 9 12 15 6"/>
-                    </svg>
-                </button>
-                <h1 class="topbar-title" id="topbarTitle">Bonjour !</h1>
-                <div class="topbar-right">
-                    <button class="topbar-action" id="notifBtn" onclick="FCM.requestPermission()" title="Notifications">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                        </svg>
-                        <span class="notif-dot" id="notifDot" style="display:none"></span>
-                    </button>
-                    <button class="topbar-action" onclick="Auth.logout()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                    </button>
+        <!-- Vue Signature -->
+        <div id="view-signature" class="view">
+            <div class="view-scroll">
+                <div class="card">
+                    <h3 class="section-title">Signature du client</h3>
+                    <p class="field-sub">Le client signe pour accepter le devis</p>
+                    <div class="signature-wrap"><canvas id="signatureCanvas"></canvas><div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div></div>
+                    <div class="signature-actions"><button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button></div>
                 </div>
-            </header>
-
-            <!-- ── Vue Dashboard ── -->
-            <div id="view-dashboard" class="view active">
-                <div class="view-scroll" style="padding:0 0 80px;">
-
-                    <!-- Header bleu -->
-                    <div class="dash-header">
-                        <p class="dash-greeting">Bonjour 👋</p>
-                        <h2 class="dash-name" id="dashWelcome">Mes missions</h2>
-                    </div>
-
-                    <!-- Stats flottantes -->
-                    <div class="dash-stats">
-                        <div class="dash-stat-card">
-                            <span class="dash-stat-num" id="statNouveau">–</span>
-                            <div class="dash-stat-label">Nouvelles</div>
-                        </div>
-                        <div class="dash-stat-card primary">
-                            <span class="dash-stat-num" id="statUrgent">–</span>
-                            <div class="dash-stat-label">Urgentes</div>
-                        </div>
-                        <div class="dash-stat-card">
-                            <span class="dash-stat-num" style="color:#10B981;" id="statTermine">–</span>
-                            <div class="dash-stat-label">Ce mois</div>
-                        </div>
-                    </div>
-
-                    <!-- Filtres -->
-                    <div style="padding:0 16px 14px;">
-                        <div class="filter-bar" style="gap:8px;">
-                            <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all', this)">Toutes</button>
-                            <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau', this)">Nouvelles</button>
-                            <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours', this)">En cours</button>
-                            <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine', this)">Terminees</button>
-                        </div>
-                    </div>
-
-                    <!-- Pull-to-refresh -->
-                    <div id="refreshZone" class="refresh-zone">
-                        <div class="refresh-spinner" id="refreshSpinner"></div>
-                    </div>
-
-                    <!-- Liste missions -->
-                    <div style="padding:0 16px;">
-                        <div id="missionList" class="mission-list">
-                            <div class="empty-state" id="emptyState" style="display:none">
-                                <div class="empty-icon">📋</div>
-                                <p>Aucune mission pour le moment</p>
-                            </div>
-                            <div class="skeleton-list" id="skeletonList">
-                                <div class="skeleton-card"></div>
-                                <div class="skeleton-card"></div>
-                                <div class="skeleton-card"></div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="actions-block">
+                    <button class="btn btn-primary btn-block" onclick="Signature.confirm()">✅ Confirmer l'acceptation</button>
+                    <button class="btn btn-danger btn-block" onclick="Signature.refuse()">❌ Client refuse le devis</button>
                 </div>
             </div>
-
-            <!-- ── Vue Détail mission ── -->
-            <div id="view-mission" class="view">
-                <div class="view-scroll" id="missionDetailScroll">
-                    <div class="mission-status-banner" id="missionBanner">
-                        <span id="missionBannerIcon">⏳</span>
-                        <span id="missionBannerText">Nouveau</span>
-                    </div>
-                    <div class="card">
-                        <div class="card-header"><span class="card-icon">👤</span><h3 class="card-title">Client</h3></div>
-                        <div class="info-grid" id="clientInfo"></div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header"><span class="card-icon">🔧</span><h3 class="card-title">Intervention</h3></div>
-                        <div class="info-grid" id="interventionInfo"></div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header"><span class="card-icon">📝</span><h3 class="card-title">Description</h3></div>
-                        <p class="description-text" id="descriptionText"></p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">📷</span>
-                            <h3 class="card-title">Photos</h3>
-                            <span class="photo-counts" id="photoCounts"></span>
-                        </div>
-                        <div class="photos-grid" id="photosGrid"></div>
-                        <div class="photos-actions">
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('avant')" id="btnPhotoAvant">📸 Photo AVANT</button>
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('apres')" id="btnPhotoApres">📸 Photo APRES</button>
-                        </div>
-                    </div>
-                    <div class="card" id="devisCard">
-                        <div class="card-header">
-                            <span class="card-icon">💶</span>
-                            <h3 class="card-title">Devis</h3>
-                            <span class="devis-status-badge" id="devisStatusBadge"></span>
-                        </div>
-                        <div id="devisContent"></div>
-                    </div>
-                    <div class="actions-block" id="missionActions"></div>
-                    <div style="height:24px;"></div>
-                </div>
-            </div>
-
-            <!-- ── Vue Devis ── -->
-            <div id="view-devis" class="view">
-                <div class="view-scroll">
-                    <div class="card">
-                        <h3 class="section-title">Creer un devis</h3>
-                        <div id="devisLignes" class="devis-lignes"></div>
-                        <button class="btn btn-outline btn-sm" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button>
-                    </div>
-                    <div class="card devis-totaux">
-                        <div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div>
-                        <div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div>
-                        <div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div>
-                    </div>
-                    <div class="card">
-                        <label class="field-label">Note pour le client</label>
-                        <textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complementaires…"></textarea>
-                    </div>
-                    <div class="actions-block">
-                        <button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button>
-                        <button class="btn btn-primary btn-block" id="btnEnvoyerDevis" style="background:var(--green)" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Vue Signature ── -->
-            <div id="view-signature" class="view">
-                <div class="view-scroll">
-                    <div class="card">
-                        <h3 class="section-title">Signature du client</h3>
-                        <p class="field-sub">Le client signe pour accepter le devis</p>
-                        <div class="signature-wrap">
-                            <canvas id="signatureCanvas"></canvas>
-                            <div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div>
-                        </div>
-                        <div class="signature-actions">
-                            <button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button>
-                        </div>
-                    </div>
-                    <div class="actions-block">
-                        <button class="btn btn-primary btn-block" onclick="Signature.confirm()">✅ Confirmer l'acceptation</button>
-                        <button class="btn btn-danger btn-block" onclick="Signature.refuse()">❌ Client refuse le devis</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Vue Profil ── -->
-            <div id="view-profile" class="view">
-                <div class="view-scroll" style="padding:0 0 80px;">
-                    <div class="profile-header-block">
-                        <div class="profile-avatar-circle" id="profileAvatar">?</div>
-                        <div class="profile-name-txt" id="profileName">—</div>
-                        <div class="profile-role-txt">Artisan certifie</div>
-                    </div>
-                    <div class="profile-item-row">
-                        <span class="profile-item-icon">📧</span>
-                        <span class="profile-item-label" id="profileEmail">—</span>
-                    </div>
-                    <div class="profile-item-row">
-                        <span class="profile-item-icon">🔧</span>
-                        <span class="profile-item-label" id="profileSpecialite">Artisan certifie</span>
-                    </div>
-                    <div class="profile-item-row">
-                        <span class="profile-item-icon">💰</span>
-                        <span class="profile-item-label">Commission plateforme : 15%</span>
-                    </div>
-                    <div class="profile-item-row">
-                        <span class="profile-item-icon">⭐</span>
-                        <span class="profile-item-label">Note : <strong id="profileNote">—</strong></span>
-                    </div>
-                    <div class="profile-item-row" onclick="window.location.href='/contact'" style="cursor:pointer;">
-                        <span class="profile-item-icon">❓</span>
-                        <span class="profile-item-label">Aide et support</span>
-                        <span class="profile-item-arrow">›</span>
-                    </div>
-                    <div class="profile-item-row" onclick="window.location.href='/rejoindre-le-reseau'" style="cursor:pointer;">
-                        <span class="profile-item-icon">📋</span>
-                        <span class="profile-item-label">Mon dossier artisan</span>
-                        <span class="profile-item-arrow">›</span>
-                    </div>
-                    <button class="btn-deconnect" onclick="Auth.logout()">Se deconnecter</button>
-                </div>
-            </div>
-
-            <!-- Bottom nav -->
-            <nav class="bottomnav">
-                <button class="bottomnav-item active" onclick="App.showView('dashboard')" id="nav-dashboard">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                    <span>Missions</span>
-                </button>
-                <button class="bottomnav-item" onclick="App.showView('profile')" id="nav-profile">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    <span>Profil</span>
-                </button>
-            </nav>
-
         </div>
-    </div>
 
-    <!-- Toast -->
-    <div id="toastContainer" class="toast-container"></div>
+        <!-- Vue Profil -->
+        <div id="view-profile" class="view">
+            <div class="view-scroll" style="padding-bottom:80px;">
+                <!-- Hero profil -->
+                <div class="prof-hero">
+                    <div class="prof-avatar" id="profileAvatar">?</div>
+                    <div class="prof-name" id="profileName">—</div>
+                    <div class="prof-role">Artisan certifie</div>
+                </div>
+                <!-- Infos -->
+                <div class="prof-list">
+                    <div class="prof-item">
+                        <span class="prof-item-icon">📧</span>
+                        <div>
+                            <div class="prof-item-label" id="profileEmail">—</div>
+                            <div class="prof-item-sub">Email professionnel</div>
+                        </div>
+                    </div>
+                    <div class="prof-item">
+                        <span class="prof-item-icon">🔧</span>
+                        <div>
+                            <div class="prof-item-label" id="profileSpecialite">Artisan certifie</div>
+                            <div class="prof-item-sub">Specialite</div>
+                        </div>
+                    </div>
+                    <div class="prof-item">
+                        <span class="prof-item-icon">💰</span>
+                        <div>
+                            <div class="prof-item-label">Commission plateforme</div>
+                            <div class="prof-item-sub">15% par mission</div>
+                        </div>
+                    </div>
+                    <div class="prof-item">
+                        <span class="prof-item-icon">⭐</span>
+                        <div>
+                            <div class="prof-item-label">Note clients</div>
+                            <div class="prof-item-sub" id="profileNote">Non disponible</div>
+                        </div>
+                    </div>
+                    <div class="prof-item" onclick="window.location.href='/contact'" style="cursor:pointer;">
+                        <span class="prof-item-icon">❓</span>
+                        <div class="prof-item-label">Aide et support</div>
+                        <span class="prof-item-arrow">›</span>
+                    </div>
+                    <div class="prof-item" onclick="window.location.href='/rejoindre-le-reseau'" style="cursor:pointer;">
+                        <span class="prof-item-icon">📋</span>
+                        <div class="prof-item-label">Mon dossier artisan</div>
+                        <span class="prof-item-arrow">›</span>
+                    </div>
+                </div>
+                <button class="prof-logout" id="logoutProfileBtn">Se deconnecter</button>
+            </div>
+        </div>
 
-    <!-- Camera inputs -->
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
-    <input type="file" id="galleryInput" accept="image/*" style="display:none"/>
+        <!-- Bottom nav -->
+        <nav class="bottomnav">
+            <button class="bottomnav-item active" onclick="App.showView('dashboard')" id="nav-dashboard">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Missions</span>
+            </button>
+            <button class="bottomnav-item" onclick="App.showView('profile')" id="nav-profile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profil</span>
+            </button>
+        </nav>
 
-    <!-- Scripts PWA -->
-    <script src="/sinistre_services/static/pwa/src/services/config.js"></script>
-    <script src="/sinistre_services/static/pwa/src/services/api.js"></script>
-    <script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
-    <script src="/sinistre_services/static/pwa/src/services/fcm.js"></script>
-    <script src="/sinistre_services/static/pwa/src/services/offline.js"></script>
-    <script src="/sinistre_services/static/pwa/src/components/toast.js"></script>
-    <script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
-    <script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
-    <script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
-    <script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
-    <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
-    <script src="/sinistre_services/static/pwa/app.js"></script>
+    </div><!-- /screen-app -->
+</div><!-- /app -->
 
-    <!-- Patch : mise à jour profil après connexion + spinner login -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Patch spinner sur le bouton login
-            var form = document.getElementById('loginForm');
-            if (form) {
-                form.addEventListener('submit', function() {
-                    var spinner = document.getElementById('loginSpinEl');
-                    if (spinner) spinner.style.display = 'block';
-                });
-            }
+<!-- Toast & inputs -->
+<div id="toastContainer" class="toast-container"></div>
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
+<input type="file" id="galleryInput" accept="image/*" style="display:none"/>
 
-            // Patch : mettre à jour le profil quand l'app s'affiche
-            var origShowApp = App.showApp;
-            if (origShowApp) {
-                App.showApp = function() {
-                    origShowApp.call(App);
-                    _updateProfile();
-                };
-            }
+<!-- Scripts PWA -->
+<script src="/sinistre_services/static/pwa/src/services/config.js"></script>
+<script src="/sinistre_services/static/pwa/src/services/api.js"></script>
+<script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
+<script src="/sinistre_services/static/pwa/src/services/fcm.js"></script>
+<script src="/sinistre_services/static/pwa/src/services/offline.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/toast.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
+<script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
+<script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
+<script src="/sinistre_services/static/pwa/app.js"></script>
 
-            function _updateProfile() {
-                var user = Auth.getUser ? Auth.getUser() : null;
-                if (!user) {
-                    try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-                }
-                if (!user || !user.name) return;
-                var name = user.name || '';
-                var initials = name.split(' ').map(function(w) { return w[0] || ''; }).join('').substring(0,2).toUpperCase();
-                var av = document.getElementById('profileAvatar');
-                var pn = document.getElementById('profileName');
-                var pe = document.getElementById('profileEmail');
-                if (av) av.textContent = initials || '?';
-                if (pn) pn.textContent = name;
-                if (pe) pe.textContent = user.email || user.username || '—';
-                // Mettre à jour topbar title
-                var firstName = name.split(' ')[0];
-                var tb = document.getElementById('topbarTitle');
-                if (tb && (tb.textContent === 'Bonjour !' || tb.textContent.startsWith('Bonjour'))) {
-                    tb.textContent = 'Bonjour, ' + firstName + ' !';
-                }
-                // Mettre à jour greeting dashboard
-                var dw = document.getElementById('dashWelcome');
-                if (dw) dw.textContent = firstName + ' 👋';
-            }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
 
-            // Appeler au chargement si déjà connecté
-            setTimeout(_updateProfile, 2000);
-            // Aussi mettre à jour le topbar quand App.showView change de vue
-            var origShowView = App.showView;
-            if (origShowView) {
-                App.showView = function(viewId, title) {
-                    origShowView.call(App, viewId, title);
-                    // Remettre le nom si on revient au dashboard
-                    if (viewId === 'dashboard') {
-                        var user2 = Auth.getUser ? Auth.getUser() : null;
-                        if (!user2) { try { user2 = JSON.parse(localStorage.getItem('ss_user')||'{}'); } catch(e){} }
-                        if (user2 && user2.name) {
-                            var tb2 = document.getElementById('topbarTitle');
-                            if (tb2) tb2.textContent = 'Bonjour, ' + user2.name.split(' ')[0] + ' !';
-                        }
-                    }
-                };
-            }
-
-            // Patch Auth.logout pour rediriger vers /intervenant/login
-            if (window.Auth && Auth.logout) {
-                var origLogout = Auth.logout.bind(Auth);
-                Auth.logout = async function() {
-                    try { await fetch('/web/session/destroy', {method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({jsonrpc:'2.0',method:'call',params:{}})}); } catch(e) {}
-                    localStorage.removeItem('ss_user');
-                    window.location.href = '/intervenant/login';
-                };
-            }
-
-            // Patch App.showLogin pour rediriger
-            if (window.App) {
-                App.showLogin = function() {
-                    window.location.href = '/intervenant/login';
-                };
-            }
+    // ── Logout handler ──
+    function doLogout() {
+        fetch('/web/session/destroy', {
+            method: 'POST', credentials: 'include',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}})
+        }).catch(function(){}).finally(function() {
+            localStorage.removeItem('ss_user');
+            window.location.href = '/intervenant/login';
         });
-    </script>
+    }
+
+    var lob = document.getElementById('logoutTopBtn');
+    if (lob) lob.addEventListener('click', doLogout);
+    var lpb = document.getElementById('logoutProfileBtn');
+    if (lpb) lpb.addEventListener('click', doLogout);
+
+    // Patch Auth.logout
+    if (window.Auth) Auth.logout = doLogout;
+
+    // ── Patch App.showLogin ──
+    if (window.App) {
+        App.showLogin = function() { window.location.href = '/intervenant/login'; };
+    }
+
+    // ── Mise à jour profil ──
+    function updateProfile() {
+        var user = (Auth && Auth.getUser) ? Auth.getUser() : null;
+        if (!user) {
+            try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        }
+        if (!user || !user.name) return;
+
+        var name = user.name || '';
+        var first = name.split(' ')[0];
+        var initials = name.split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+
+        // Topbar
+        var tb = document.getElementById('topbarTitle');
+        if (tb) tb.textContent = 'Bonjour, ' + first + ' !';
+
+        // Profil
+        var av = document.getElementById('profileAvatar');
+        var pn = document.getElementById('profileName');
+        var pe = document.getElementById('profileEmail');
+        if (av) av.textContent = initials || '?';
+        if (pn) pn.textContent = name;
+        if (pe) pe.textContent = user.email || user.username || '—';
+    }
+
+    // ── Patch App.showApp ──
+    if (window.App && App.showApp) {
+        var origShowApp = App.showApp.bind(App);
+        App.showApp = function() {
+            origShowApp();
+            setTimeout(updateProfile, 300);
+        };
+    }
+
+    // ── Patch App.showView pour topbar title ──
+    if (window.App && App.showView) {
+        var origShowView = App.showView.bind(App);
+        App.showView = function(viewId, title) {
+            origShowView(viewId, title);
+            if (viewId === 'dashboard' || !title) {
+                var user2 = (Auth && Auth.getUser) ? Auth.getUser() : null;
+                if (!user2) { try { user2 = JSON.parse(localStorage.getItem('ss_user')||'{}'); } catch(e){} }
+                if (user2 && user2.name) {
+                    var tb2 = document.getElementById('topbarTitle');
+                    if (tb2 && viewId === 'dashboard') tb2.textContent = 'Bonjour, ' + user2.name.split(' ')[0] + ' !';
+                }
+            }
+        };
+    }
+
+    // ── Spinner login ──
+    var lf = document.getElementById('loginForm');
+    if (lf) {
+        lf.addEventListener('submit', function() {
+            var s = document.getElementById('loginSpinEl');
+            if (s) s.style.display = 'block';
+        });
+    }
+
+    // Appel initial
+    setTimeout(updateProfile, 1500);
+});
+</script>
 
 </body>
 </html>
