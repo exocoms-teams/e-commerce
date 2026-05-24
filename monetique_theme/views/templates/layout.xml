@@ -5,64 +5,12 @@
 
         <xpath expr="//head" position="inside">
             <style>
-                /* Recherche - masquer icone et barre */
-                .o_searchbar_form,
-                .o_header_search_btn,
-                button[data-bs-target="#o_search_modal"],
-                #o_search_modal,
-                .o_header_mobile_search { display: none !important; }
-
-                /* Panier */
-                .o_wsale_my_cart,
-                a[href*="/shop/cart"] { display: none !important; }
-
-                /* Telephone natif */
-                .o_header_phone,
-                .js_phone,
-                a[href^="tel:"].o_phone { display: none !important; }
-
-                /* Contact Us natif Odoo */
-                .o_main_navbar a[href="/contactus"],
-                .o_main_navbar li:has(> a[href="/contactus"]),
-                a.btn[href="/contactus"],
-                .o_main_navbar .btn[href="/contactus"] { display: none !important; }
-
-                /* Shop */
-                .o_main_navbar a[href="/shop"],
-                .o_main_navbar li:has(> a[href="/shop"]) { display: none !important; }
-
-                /* Extra menu + bouton */
-                .o_extra_menu_items { display: none !important; }
-
-                /* Sign in : masquer le texte "Sign in" et afficher "Espace Artisan" */
-                a.o_sign_in,
-                a[href="/web/login"],
-                .o_sign_in_sign_up a {
-                    background: var(--mn-blue) !important;
-                    color: white !important;
-                    padding: 7px 16px !important;
-                    border-radius: 8px !important;
-                    font-weight: 600 !important;
-                    font-size: 13px !important;
-                    font-family: 'Inter', sans-serif !important;
-                    border: none !important;
-                    text-decoration: none !important;
-                    font-size: 0 !important;
-                }
-                a.o_sign_in::after,
-                a[href="/web/login"]::after,
-                .o_sign_in_sign_up a::after {
-                    content: 'Espace Artisan';
-                    font-size: 13px !important;
-                }
-                /* ── Navbar active + hover ── */
-
-                /* Hover : tous les liens */
-                .o_main_navbar .nav-link {
+               /* ── Navbar hover + page active ── */
+                .o_main_navbar a.nav-link {
                     position: relative;
                     transition: color .2s;
                 }
-                .o_main_navbar .nav-link::after {
+                .o_main_navbar a.nav-link::after {
                     content: '';
                     position: absolute;
                     bottom: -2px; left: 50%; right: 50%;
@@ -71,32 +19,45 @@
                     border-radius: 2px;
                     transition: left .2s, right .2s;
                 }
-                .o_main_navbar .nav-link:hover {
+                
+                /* Hover */
+                .o_main_navbar a.nav-link:hover {
                     color: #1E40AF !important;
                 }
-                .o_main_navbar .nav-link:hover::after {
+                .o_main_navbar a.nav-link:hover::after {
                     left: 0; right: 0;
                 }
                 
-                /* Page active : li.o_current_menu_item */
-                .o_main_navbar .o_current_menu_item .nav-link {
+                /* Page active — classe "active" sur le <a> */
+                .o_main_navbar a.nav-link.active {
                     color: #1E40AF !important;
                     font-weight: 700 !important;
                 }
-                .o_main_navbar .o_current_menu_item .nav-link::after {
+                .o_main_navbar a.nav-link.active::after {
                     left: 0 !important;
                     right: 0 !important;
-                    background: #1E40AF !important;
                 }
                 
-                /* Exception : Assurances → couleur différente */
-                .o_main_navbar .o_current_menu_item .nav-link[href="/assurances"] {
+                /* Assurances → rouge */
+                .o_main_navbar a.nav-link.active[href*="assurances"],
+                .o_main_navbar a.nav-link:hover[href*="assurances"] {
                     color: #C62828 !important;
                 }
-                .o_main_navbar .o_current_menu_item .nav-link[href="/assurances"]::after {
+                .o_main_navbar a.nav-link.active[href*="assurances"]::after,
+                .o_main_navbar a.nav-link:hover[href*="assurances"]::after {
                     background: #C62828 !important;
                 }
                 
+                /* Masquer sign in, recherche, tel, contactus */
+                .o_searchbar_form,
+                .o_header_search_btn,
+                button[data-bs-target="#o_search_modal"],
+                .o_wsale_my_cart,
+                .o_wsale_my_wish,
+                a[href^="tel:"].nav-link,
+                a.nav-link.o_nav-link_secondary,
+                a[href="/contactus"],
+                a.btn_cta { display: none !important; }
                 
             </style>
         </xpath>
