@@ -86,6 +86,13 @@ window.App = (() => {
 
         // Rejouer queue offline si en ligne
         if (Offline.isOnline()) Offline.processQueue();
+
+        // Nom dashboard
+        const u = Auth.getUser();
+        if (u && u.name) {
+            const el = document.getElementById('dashWelcome');
+            if (el) el.textContent = 'Bonjour, ' + u.name.split(' ')[0] + ' !';
+        }
     }
 
     function _hideSplash() {
