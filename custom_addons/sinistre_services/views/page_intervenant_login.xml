@@ -1,187 +1,430 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="layout" name="monetiques.fr Layout" inherit_id="website.layout" customize_show="False">
+<template id="page_intervenant_login" name="Espace Artisan — Connexion">
+    <t t-call="website.layout">
+        <t t-set="no_header" t-value="True"/>
+        <t t-set="no_footer" t-value="True"/>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap');
 
-        <xpath expr="//header" position="attributes">
-            <attribute name="t-att-style">'display:none' if no_header else ''</attribute>
-        </xpath>
+            body { background: #F0F4FF !important; font-family: 'Inter', sans-serif !important; }
+            #wrapwrap { background: #F0F4FF !important; }
+            /* Masquer header et footer sur la page login */
+            header.o_header_standard, header#top, nav.o_main_navbar { display: none !important; }
+            footer, .mn-footer { display: none !important; }
+            #wrapwrap { padding-top: 0 !important; }
 
-        <xpath expr="//head" position="inside">
-            <style>
-                /* ── Recherche ── */
-                .o_searchbar_form,
-                .o_header_search_btn,
-                button[data-bs-target="#o_search_modal"],
-                #o_search_modal,
-                .o_header_mobile_search { display: none !important; }
+            .artisan-page {
+                min-height: 100vh;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
 
-                /* ── Panier ── */
-                .o_wsale_my_cart,
-                a[href*="/shop/cart"] { display: none !important; }
+            /* ── Panneau gauche bleu ── */
+            .artisan-left {
+                background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%);
+                padding: 60px 56px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+            .artisan-left::before {
+                content: '';
+                position: absolute; top: -80px; right: -80px;
+                width: 320px; height: 320px;
+                background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+                border-radius: 50%;
+            }
+            .artisan-left::after {
+                content: '';
+                position: absolute; bottom: -60px; left: -60px;
+                width: 260px; height: 260px;
+                background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+                border-radius: 50%;
+            }
+            .artisan-logo {
+                display: flex; align-items: center; gap: 12px;
+                margin-bottom: 56px; position: relative; z-index: 1;
+            }
+            .artisan-logo-icon {
+                width: 48px; height: 48px;
+                background: rgba(255,255,255,.15);
+                border-radius: 14px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 24px;
+                border: 1px solid rgba(255,255,255,.2);
+            }
+            .artisan-logo-text {
+                font-size: 20px; font-weight: 800;
+                color: white; letter-spacing: -.025em;
+            }
+            .artisan-logo-text span { color: #93C5FD; }
 
-                /* ── Telephone natif ── */
-                .o_header_phone,
-                .js_phone,
-                a[href^="tel:"].o_phone { display: none !important; }
+            .artisan-left h1 {
+                font-size: 38px; font-weight: 800;
+                color: white; letter-spacing: -.03em;
+                line-height: 1.15; margin-bottom: 16px;
+                position: relative; z-index: 1;
+            }
+            .artisan-left h1 span {
+                background: linear-gradient(135deg, #93C5FD, #60A5FA);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .artisan-left p {
+                font-size: 16px; color: rgba(255,255,255,.7);
+                line-height: 1.7; margin-bottom: 48px;
+                position: relative; z-index: 1;
+            }
 
-                /* ── Contact Us + Shop Odoo ── */
-                .o_main_navbar a[href="/contactus"],
-                .o_main_navbar li:has(> a[href="/contactus"]),
-                a.btn[href="/contactus"],
-                .o_main_navbar .btn[href="/contactus"],
-                .o_main_navbar a[href="/shop"],
-                .o_main_navbar li:has(> a[href="/shop"]),
-                .o_extra_menu_items { display: none !important; }
+            .artisan-perks {
+                display: flex; flex-direction: column; gap: 20px;
+                position: relative; z-index: 1;
+            }
+            .artisan-perk {
+                display: flex; align-items: flex-start; gap: 16px;
+            }
+            .artisan-perk-icon {
+                width: 44px; height: 44px; flex-shrink: 0;
+                background: rgba(255,255,255,.1);
+                border: 1px solid rgba(255,255,255,.15);
+                border-radius: 12px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 20px;
+            }
+            .artisan-perk-content h4 {
+                font-size: 15px; font-weight: 700;
+                color: white; margin-bottom: 3px;
+            }
+            .artisan-perk-content p {
+                font-size: 13px; color: rgba(255,255,255,.6);
+                line-height: 1.5; margin-bottom: 0;
+            }
 
-                /* ── Navbar hover + active ── */
-                .o_main_navbar a.nav-link {
-                    position: relative;
-                    transition: color .2s;
-                }
-                .o_main_navbar a.nav-link::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -2px; left: 50%; right: 50%;
-                    height: 2px;
-                    background: #1E40AF;
-                    border-radius: 2px;
-                    transition: left .2s, right .2s;
-                }
-                .o_main_navbar a.nav-link:hover { color: #1E40AF !important; }
-                .o_main_navbar a.nav-link:hover::after { left: 0; right: 0; }
-                .o_main_navbar a.nav-link.active { color: #1E40AF !important; font-weight: 700 !important; }
-                .o_main_navbar a.nav-link.active::after { left: 0 !important; right: 0 !important; }
+            .artisan-stats {
+                display: grid; grid-template-columns: 1fr 1fr 1fr;
+                gap: 12px; margin-top: 48px;
+                position: relative; z-index: 1;
+                padding-top: 40px;
+                border-top: 1px solid rgba(255,255,255,.1);
+            }
+            .artisan-stat { text-align: center; }
+            .artisan-stat-num {
+                display: block; font-size: 24px; font-weight: 800;
+                color: white; letter-spacing: -.02em;
+            }
+            .artisan-stat-label {
+                display: block; font-size: 11px;
+                color: rgba(255,255,255,.5);
+                text-transform: uppercase; letter-spacing: .05em; font-weight: 500;
+            }
 
-                /* ── Bouton Espace Artisan (Sign in restyled) ── */
-                a.o_sign_in,
-                a[href="/web/login"],
-                .o_sign_in_sign_up a,
-                a.o_nav_link_btn {
-                    background: #1E40AF !important;
-                    color: white !important;
-                    padding: 7px 16px !important;
-                    border-radius: 8px !important;
-                    font-weight: 600 !important;
-                    font-family: 'Inter', sans-serif !important;
-                    border: none !important;
-                    text-decoration: none !important;
-                    font-size: 0 !important;
-                    cursor: pointer !important;
-                }
-                a.o_sign_in::after,
-                a[href="/web/login"]::after,
-                .o_sign_in_sign_up a::after,
-                a.o_nav_link_btn::after {
-                    content: 'Espace Artisan';
-                    font-size: 13px !important;
-                }
-            </style>
-        </xpath>
+            /* ── Panneau droit blanc ── */
+            .artisan-right {
+                background: white;
+                display: flex; flex-direction: column;
+                justify-content: center; align-items: center;
+                padding: 60px 56px;
+            }
+            .artisan-form-wrap { width: 100%; max-width: 400px; }
 
-        <!-- Script : rediriger Sign in vers la PWA -->
-        <xpath expr="//head" position="inside">
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Rediriger tous les liens /web/login vers /intervenant/login
-                    var selectors = [
-                        'a[href="/web/login"]',
-                        'a.o_sign_in',
-                        'a.o_nav_link_btn',
-                        '.o_sign_in_sign_up a'
-                    ];
-                    selectors.forEach(function(sel) {
-                        document.querySelectorAll(sel).forEach(function(el) {
-                            el.href = '/intervenant/login';
-                            el.removeAttribute('data-action');
-                        });
-                    });
-                });
-            </script>
-        </xpath>
+            .artisan-form-title {
+                font-size: 28px; font-weight: 800;
+                color: #0F172A; letter-spacing: -.025em;
+                margin-bottom: 8px;
+            }
+            .artisan-form-sub {
+                font-size: 14px; color: #6B7280;
+                margin-bottom: 36px; line-height: 1.6;
+            }
 
-        <!-- Footer sinistres -->
-        <xpath expr="//footer" position="replace">
-            <t t-if="not no_footer" t-call="monetique_theme.footer"/>
-        </xpath>
+            /* Champs */
+            .a-field { margin-bottom: 20px; }
+            .a-label {
+                display: block; font-size: 12px; font-weight: 700;
+                color: #374151; margin-bottom: 8px;
+                text-transform: uppercase; letter-spacing: .6px;
+            }
+            .a-input {
+                width: 100%; padding: 14px 16px;
+                border: 1.5px solid #E5E7EB; border-radius: 12px;
+                font-size: 15px; font-family: 'Inter', sans-serif;
+                color: #0F172A; background: #F9FAFB;
+                transition: border-color .2s, box-shadow .2s; outline: none;
+                box-sizing: border-box;
+            }
+            .a-input:focus {
+                border-color: #1E40AF; background: white;
+                box-shadow: 0 0 0 3px rgba(30,64,175,.08);
+            }
 
-    </template>
+            /* Bouton connexion bleu */
+            .a-btn-primary {
+                width: 100%; padding: 15px;
+                background: linear-gradient(135deg, #1E3A8A, #1E40AF);
+                color: white; border: none; border-radius: 12px;
+                font-size: 15px; font-weight: 700;
+                font-family: 'Inter', sans-serif;
+                cursor: pointer; margin-top: 4px;
+                box-shadow: 0 4px 16px rgba(30,64,175,.35);
+                transition: transform .15s, box-shadow .15s;
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+            }
+            .a-btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(30,64,175,.4);
+            }
+            .a-btn-primary:active { transform: scale(.98); }
 
-    <template id="footer" name="Sinistre Services Footer">
-        <footer class="mn-footer">
-            <div class="mn-footer__top">
-                <div class="mn-container">
-                    <div class="mn-footer__grid">
-                        <div class="mn-footer__brand">
-                            <a href="/" class="mn-footer__logo">Sinistre <span style="color:#C62828">Services</span></a>
-                            <p>Plateforme de gestion des sinistres — Artisans certifies disponibles 24h/24 partout en France depuis 2015.</p>
-                            <div class="mn-footer__badges">
-                                <span class="mn-badge">Agree Assurances</span>
-                                <span class="mn-badge">24h/24</span>
-                                <span class="mn-badge">Artisans Certifies</span>
-                            </div>
-                            <div style="display:flex;gap:10px;margin-top:20px;">
-                                <a href="#" aria-label="Facebook" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-facebook" aria-hidden="true">&#160;</i>
-                                </a>
-                                <a href="#" aria-label="LinkedIn" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-linkedin" aria-hidden="true">&#160;</i>
-                                </a>
-                                <a href="#" aria-label="Twitter" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-twitter" aria-hidden="true">&#160;</i>
-                                </a>
-                            </div>
+            /* Erreur */
+            .a-error {
+                display: none; padding: 12px 16px;
+                background: #FFF5F5; border: 1px solid #FFCDD2;
+                border-radius: 10px; color: #C62828;
+                font-size: 13px; margin-bottom: 20px;
+                align-items: center; gap: 8px;
+            }
+            .a-error.show { display: flex; }
+
+            /* Séparateur */
+            .a-divider {
+                display: flex; align-items: center; gap: 12px;
+                margin: 28px 0;
+            }
+            .a-divider::before, .a-divider::after {
+                content: ''; flex: 1; height: 1px; background: #E5E7EB;
+            }
+            .a-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
+
+            /* Bloc rejoindre */
+            .a-join-block {
+                background: linear-gradient(135deg, #EFF6FF, #F0F4FF);
+                border: 1px solid #BFDBFE;
+                border-radius: 16px; padding: 20px;
+            }
+            .a-join-block h3 {
+                font-size: 15px; font-weight: 700;
+                color: #1E40AF; margin-bottom: 6px;
+            }
+            .a-join-block p {
+                font-size: 13px; color: #6B7280;
+                margin-bottom: 14px; line-height: 1.6;
+            }
+            .a-btn-outline {
+                width: 100%; padding: 12px;
+                background: white; color: #1E40AF;
+                border: 2px solid #1E40AF; border-radius: 10px;
+                font-size: 14px; font-weight: 700;
+                font-family: 'Inter', sans-serif;
+                cursor: pointer; text-decoration: none;
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+                transition: background .15s;
+            }
+            .a-btn-outline:hover { background: #EFF6FF; color: #1E40AF; }
+
+            /* Footer form */
+            .a-form-footer {
+                text-align: center; margin-top: 24px;
+                font-size: 12px; color: #9CA3AF;
+            }
+            .a-form-footer a { color: #1E40AF; font-weight: 600; text-decoration: none; }
+            .a-form-footer a:hover { text-decoration: underline; }
+
+            /* Spinner */
+            .a-spinner {
+                width: 18px; height: 18px;
+                border: 2px solid rgba(255,255,255,.4);
+                border-top-color: white; border-radius: 50%;
+                animation: aSpin .7s linear infinite;
+                display: none;
+            }
+            @keyframes aSpin { to { transform: rotate(360deg); } }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .artisan-page { grid-template-columns: 1fr; }
+                .artisan-left { display: none; }
+                .artisan-right { padding: 40px 24px; }
+            }
+        </style>
+
+        <div class="artisan-page">
+
+            <!-- ── Panneau gauche ── -->
+            <div class="artisan-left">
+                <div class="artisan-logo">
+                    <div class="artisan-logo-icon">🔧</div>
+                    <span class="artisan-logo-text">Sinistre<span>Services</span></span>
+                </div>
+
+                <h1>Votre espace<br/><span>artisan certifie</span></h1>
+                <p>Gerez vos missions, vos devis et vos paiements depuis une seule interface. Disponible sur mobile et desktop.</p>
+
+                <div class="artisan-perks">
+                    <div class="artisan-perk">
+                        <div class="artisan-perk-icon">📱</div>
+                        <div class="artisan-perk-content">
+                            <h4>Application mobile dediee</h4>
+                            <p>Recevez vos missions en temps reel, gerez votre planning depuis votre telephone.</p>
                         </div>
-                        <div class="mn-footer__col">
-                            <h4>Interventions</h4>
-                            <ul>
-                                <li><a href="/nos-services#serrurerie"><i class="fa fa-lock" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Serrurerie</a></li>
-                                <li><a href="/nos-services#plomberie"><i class="fa fa-tint" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Plomberie</a></li>
-                                <li><a href="/nos-services#menuiserie"><i class="fa fa-home" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Menuiserie</a></li>
-                                <li><a href="/nos-services#vitrerie"><i class="fa fa-th-large" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Vitrerie</a></li>
-                                <li><a href="/nos-services#electricite"><i class="fa fa-bolt" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Electricite</a></li>
-                                <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true">&#160;</i>Urgence 24h/24</a></li>
-                            </ul>
+                    </div>
+                    <div class="artisan-perk">
+                        <div class="artisan-perk-icon">💰</div>
+                        <div class="artisan-perk-content">
+                            <h4>Paiement garanti sous 48h</h4>
+                            <p>Virement automatique apres validation. Zero impaye, zero relance.</p>
                         </div>
-                        <div class="mn-footer__col">
-                            <h4>Clients</h4>
-                            <ul>
-                                <li><a href="/demande-intervention">Particuliers</a></li>
-                                <li><a href="/demande-intervention">Entreprises</a></li>
-                                <li><a href="/assurances">Assurances</a></li>
-                                <li><a href="/assurances/api-access">API Assureurs</a></li>
-                                <li><a href="/intervenant/login">Espace Artisan</a></li>
-                                <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
-                            </ul>
+                    </div>
+                    <div class="artisan-perk">
+                        <div class="artisan-perk-icon">📍</div>
+                        <div class="artisan-perk-content">
+                            <h4>Missions dans votre zone</h4>
+                            <p>Definissez votre perimetre et recevez uniquement les missions proches de vous.</p>
                         </div>
-                        <div class="mn-footer__col">
-                            <h4>Contact</h4>
-                            <ul>
-                                <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>01 XX XX XX XX</a></li>
-                                <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>contact@sinistre-services.fr</a></li>
-                                <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Urgences 24h/24 7j/7</a></li>
-                                <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Nous contacter</a></li>
-                            </ul>
-                            <div style="margin-top:20px;">
-                                <a href="tel:+33100000000" class="mn-btn mn-btn--secondary mn-btn--sm" style="width:100%;justify-content:center;">
-                                    <i class="fa fa-phone" style="color:white;" aria-hidden="true">&#160;</i> Appel urgence
-                                </a>
-                            </div>
+                    </div>
+                    <div class="artisan-perk">
+                        <div class="artisan-perk-icon">⭐</div>
+                        <div class="artisan-perk-content">
+                            <h4>Badge artisan certifie</h4>
+                            <p>Visibilite aupres des assurances partenaires. Avis clients verifies.</p>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mn-footer__bottom">
-                <div class="mn-container">
-                    <p>&#169; <t t-esc="datetime.datetime.now().year"/> Sinistre Services. Tous droits reserves.</p>
-                    <nav>
-                        <a href="/page/mentions-legales">Mentions legales</a>
-                        <a href="/page/confidentialite">Confidentialite</a>
-                        <a href="/page/cgv">CGV</a>
-                    </nav>
+
+                <div class="artisan-stats">
+                    <div class="artisan-stat">
+                        <span class="artisan-stat-num">+1700</span>
+                        <span class="artisan-stat-label">Artisans</span>
+                    </div>
+                    <div class="artisan-stat">
+                        <span class="artisan-stat-num">48h</span>
+                        <span class="artisan-stat-label">Paiement</span>
+                    </div>
+                    <div class="artisan-stat">
+                        <span class="artisan-stat-num">15%</span>
+                        <span class="artisan-stat-label">Commission</span>
+                    </div>
                 </div>
             </div>
-        </footer>
-    </template>
+
+            <!-- ── Panneau droit ── -->
+            <div class="artisan-right">
+                <div class="artisan-form-wrap">
+
+                    <h2 class="artisan-form-title">Connexion</h2>
+                    <p class="artisan-form-sub">Acces reserve aux artisans du reseau Sinistre Services</p>
+
+                    <div id="aError" class="a-error">
+                        <span>⚠️</span>
+                        <span id="aErrorMsg">Identifiants incorrects. Verifiez votre email et mot de passe.</span>
+                    </div>
+
+                    <form id="artisanLoginForm">
+                        <div class="a-field">
+                            <label class="a-label">Email professionnel</label>
+                            <input type="email" id="aEmail" class="a-input"
+                                   placeholder="votre@email.fr"
+                                   autocomplete="email" required="required"/>
+                        </div>
+                        <div class="a-field">
+                            <label class="a-label">Mot de passe</label>
+                            <input type="password" id="aPassword" class="a-input"
+                                   placeholder="••••••••"
+                                   autocomplete="current-password" required="required"/>
+                        </div>
+                        <button type="submit" class="a-btn-primary" id="aSubmitBtn">
+                            <div class="a-spinner" id="aSpinner"></div>
+                            <span id="aSubmitText">&#128274; Acceder a mon espace</span>
+                        </button>
+                    </form>
+
+                    <div class="a-divider"><span>Pas encore dans le reseau ?</span></div>
+
+                    <div class="a-join-block">
+                        <h3>Rejoignez notre reseau d'artisans</h3>
+                        <p>Inscription gratuite. Verification du dossier sous 48h. Premieres missions immediatement apres validation.</p>
+                        <a href="/rejoindre-le-reseau" class="a-btn-outline">
+                            &#43; Devenir artisan partenaire
+                        </a>
+                    </div>
+
+                    <div class="a-form-footer">
+                        <a href="/">&#8592; Retour au site</a>
+                        &#160;·&#160;
+                        <a href="/contact">Aide &#38; support</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script><![CDATA[
+            document.getElementById('artisanLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var btn = document.getElementById('aSubmitBtn');
+                var spinner = document.getElementById('aSpinner');
+                var btnText = document.getElementById('aSubmitText');
+                var errorDiv = document.getElementById('aError');
+
+                errorDiv.classList.remove('show');
+                btn.disabled = true;
+                spinner.style.display = 'block';
+                btnText.textContent = 'Connexion...';
+
+                var email = document.getElementById('aEmail').value;
+                var password = document.getElementById('aPassword').value;
+                // Récupérer le nom de la base depuis Odoo
+                var db = '';
+                var metaDb = document.querySelector('meta[name="odoo-db"]');
+                if (metaDb) {
+                    db = metaDb.getAttribute('content');
+                } else {
+                    // Fallback : extraire depuis le hostname
+                    var host = window.location.hostname;
+                    // Format Odoo SH : nom-base.dev.odoo.com
+                    db = host.split('.')[0];
+                }
+
+                fetch('/web/session/authenticate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        id: 1,
+                        params: {
+                            db: db,
+                            login: email,
+                            password: password
+                        }
+                    })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.result && data.result.uid && data.result.uid > 0) {
+                        window.location.href = '/sinistre_services/static/pwa/index.html';
+                    } else {
+                        document.getElementById('aErrorMsg').textContent = 'Identifiants incorrects. Verifiez votre email et mot de passe.';
+                        errorDiv.classList.add('show');
+                        btn.disabled = false;
+                        spinner.style.display = 'none';
+                        btnText.textContent = 'Acceder a mon espace';
+                    }
+                })
+                .catch(function() {
+                    document.getElementById('aErrorMsg').textContent = 'Erreur de connexion. Veuillez reessayer.';
+                    errorDiv.classList.add('show');
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    btnText.textContent = 'Acceder a mon espace';
+                });
+            });
+        ]]></script>
+    </t>
+</template>
 
 </odoo>
