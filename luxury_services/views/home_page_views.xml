@@ -137,26 +137,48 @@
         ═══════════════════════════════════════════ -->
         <section style="position: relative; height: 580px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
 
-            <!-- Image de fond 
-            <img src="https://images.unsplash.com/photo-1469796466635-455ede028aca?w=1920&amp;q=85"
-                 alt="Yacht de luxe VIP"
-                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;"/> -->
-            <!-- Overlay dégradé par dessus la vidéo -->
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(26,26,46,0.55) 50%, rgba(0,0,0,0.65) 100%); z-index: 1;"/>
-
             <!-- Vidéo YouTube en fond -->
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden;">
                 <iframe
-                    src="https://www.youtube.com/embed/bF-01uyDXUc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=bF-01uyDXUc&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1"
+                    id="vip-hero-video"
+                    src="https://www.youtube.com/embed/bF-01uyDXUc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=bF-01uyDXUc&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1&amp;start=4&amp;enablejsapi=1"
                     style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 180%; height: 180%; border: none; pointer-events: none;"
                     allow="autoplay; encrypted-media"
                     allowfullscreen="0"
                     frameborder="0"/>
             </div>
+            <script>
+                // Boucle sur le segment 3s à2min28s
+                var tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                document.head.appendChild(tag);
 
-            <!-- Overlay dégradé -->
-            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(26,26,46,0.55) 50%, rgba(0,0,0,0.65) 100%);"/>
-
+                var player;
+                function onYouTubeIframeAPIReady() {
+                    player = new YT.Player('vip-hero-video', {
+                        events: {
+                            'onStateChange': function(event) {
+                                // Quand la vidéo joue, surveille le temps
+                                if (event.data === YT.PlayerState.PLAYING) {
+                                    setInterval(function() {
+                                        if (player.getCurrentTime() >= 148) {
+                                            
+                                            player.seekTo(4, true);
+                                        }
+                                    }, 1000);
+                                }
+                            }
+                        }
+                    });
+                }
+            </script>
+            
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                        background: linear-gradient(135deg,
+                            rgba(0,0,0,0.45) 0%,
+                            rgba(26,26,46,0.35) 50%,
+                            rgba(0,0,0,0.45) 100%);
+                        z-index: 1;"/>
             <!-- Contenu hero -->
             <div class="container" style="position: relative; text-align: center; animation: fadeInUp 1s ease both;">
                 <p style="text-transform: uppercase; letter-spacing: 6px; font-size: 0.75rem; color: #c9a84c; font-weight: 600; margin-bottom: 1.25rem;">
@@ -167,7 +189,7 @@
                     <span style="color: #c9a84c;">Maritime &amp; Aérien</span>
                 </h1>
                 <p style="color: rgba(255,255,255,0.85); font-size: clamp(1rem, 2vw, 1.2rem); max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.9;">
-                    Yachts d'exception, jets privés et conciergerie personnalisée —
+                    Yachts d'exception, jets privés et conciergerie personnalisée -
                     vivez des expériences uniques dans les destinations les plus
                     exclusives du monde.
                 </p>
