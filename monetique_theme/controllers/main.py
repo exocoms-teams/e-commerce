@@ -254,8 +254,8 @@ class Monetique(http.Controller):
                 _logger.warning(f"Rappel failed: {e}")
         return request.redirect('/?rappel=ok')
 
-    # ── ESPACE ARTISAN / PWA ─────────────────────────────────────────
+    # ── ESPACE ARTISAN ────────────────────────────────────────────────
     @http.route('/intervenant/login', type='http', auth='public', website=True, sitemap=False)
     def intervenant_login(self, **kw):
-        """Redirige le bouton Espace Artisan vers la PWA intervenant."""
-        return request.redirect('/sinistre_services/static/pwa/index.html')
+        """Page de connexion espace artisan avec theme Monetique bleu."""
+        return request.render('sinistre_services.page_intervenant_login', {})
