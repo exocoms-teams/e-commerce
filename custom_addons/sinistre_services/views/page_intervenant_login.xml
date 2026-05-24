@@ -363,7 +363,6 @@
                 var btnText = document.getElementById('aSubmitText');
                 var errorDiv = document.getElementById('aError');
 
-                // Reset erreur
                 errorDiv.classList.remove('show');
                 btn.disabled = true;
                 spinner.style.display = 'block';
@@ -371,32 +370,33 @@
 
                 var email = document.getElementById('aEmail').value;
                 var password = document.getElementById('aPassword').value;
+                var db = window.location.hostname.split('.')[0];
 
-                // Appel API Odoo auth
-                fetch('/web/dataset/call_kw', {
+                fetch('/web/session/authenticate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({
-                        jsonrpc: '2.0', method: 'call', id: 1,
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        id: 1,
                         params: {
-                            model: 'res.users',
-                            method: 'authenticate',
-                            args: [window.location.hostname, email, password, {}],
-                            kwargs: {}
+                            db: db,
+                            login: email,
+                            password: password
                         }
                     })
                 })
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
-                    if (data.result && data.result > 0) {
-                        // Connexion OK → rediriger vers la PWA
+                    if (data.result && data.result.uid && data.result.uid > 0) {
                         window.location.href = '/sinistre_services/static/pwa/index.html';
                     } else {
                         document.getElementById('aErrorMsg').textContent = 'Identifiants incorrects. Verifiez votre email et mot de passe.';
                         errorDiv.classList.add('show');
                         btn.disabled = false;
                         spinner.style.display = 'none';
-                        btnText.textContent = '\uD83D\uDD12 Acceder a mon espace';
+                        btnText.textContent = 'Acceder a mon espace';
                     }
                 })
                 .catch(function() {
@@ -404,7 +404,7 @@
                     errorDiv.classList.add('show');
                     btn.disabled = false;
                     spinner.style.display = 'none';
-                    btnText.textContent = '\uD83D\uDD12 Acceder a mon espace';
+                    btnText.textContent = 'Acceder a mon espace';
                 });
             });
         ]]></script>
