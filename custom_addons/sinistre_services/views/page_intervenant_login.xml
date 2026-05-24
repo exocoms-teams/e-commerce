@@ -370,7 +370,17 @@
 
                 var email = document.getElementById('aEmail').value;
                 var password = document.getElementById('aPassword').value;
-                var db = window.location.hostname.split('.')[0];
+                // Récupérer le nom de la base depuis Odoo
+                var db = '';
+                var metaDb = document.querySelector('meta[name="odoo-db"]');
+                if (metaDb) {
+                    db = metaDb.getAttribute('content');
+                } else {
+                    // Fallback : extraire depuis le hostname
+                    var host = window.location.hostname;
+                    // Format Odoo SH : nom-base.dev.odoo.com
+                    db = host.split('.')[0];
+                }
 
                 fetch('/web/session/authenticate', {
                     method: 'POST',
