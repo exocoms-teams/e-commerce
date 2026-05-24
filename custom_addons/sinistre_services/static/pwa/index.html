@@ -239,6 +239,21 @@
             border: 2px solid var(--primary); border-radius: 12px;
             font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
         }
+
+        /* ── Fix vues superposées ── */
+        #screen-app { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+        .view { display: none !important; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+        .view.active { display: flex !important; }
+        .view-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        .bottomnav { flex-shrink: 0; }
+        .topbar { flex-shrink: 0; }
+
+        /* ── Dashboard scroll ── */
+        #view-dashboard .view-scroll { padding-bottom: 0 !important; }
+
+        /* ── Fix superposition stats/profil ── */
+        #view-profile { background: var(--gray-50); }
+        #view-dashboard { background: var(--gray-50); }
     </style>
 </head>
 <body>
@@ -350,6 +365,12 @@
             <div id="view-dashboard" class="view active">
                 <div class="view-scroll" style="padding:0 0 80px;">
 
+                    <!-- Header bleu -->
+                    <div class="dash-header">
+                        <p class="dash-greeting">Bonjour 👋</p>
+                        <h2 class="dash-name" id="dashWelcome">Mes missions</h2>
+                    </div>
+
                     <!-- Stats flottantes -->
                     <div class="dash-stats">
                         <div class="dash-stat-card">
@@ -399,7 +420,7 @@
             </div>
 
             <!-- ── Vue Détail mission ── -->
-            <div id="view-mission" class="view" style="display:none">
+            <div id="view-mission" class="view">
                 <div class="view-scroll" id="missionDetailScroll">
                     <div class="mission-status-banner" id="missionBanner">
                         <span id="missionBannerIcon">⏳</span>
@@ -443,7 +464,7 @@
             </div>
 
             <!-- ── Vue Devis ── -->
-            <div id="view-devis" class="view" style="display:none">
+            <div id="view-devis" class="view">
                 <div class="view-scroll">
                     <div class="card">
                         <h3 class="section-title">Creer un devis</h3>
@@ -467,7 +488,7 @@
             </div>
 
             <!-- ── Vue Signature ── -->
-            <div id="view-signature" class="view" style="display:none">
+            <div id="view-signature" class="view">
                 <div class="view-scroll">
                     <div class="card">
                         <h3 class="section-title">Signature du client</h3>
@@ -488,7 +509,7 @@
             </div>
 
             <!-- ── Vue Profil ── -->
-            <div id="view-profile" class="view" style="display:none">
+            <div id="view-profile" class="view">
                 <div class="view-scroll" style="padding:0 0 80px;">
                     <div class="profile-header-block">
                         <div class="profile-avatar-circle" id="profileAvatar">?</div>
