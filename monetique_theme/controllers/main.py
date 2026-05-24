@@ -231,7 +231,7 @@ class Monetique(http.Controller):
             [('token_api', '=', token)], limit=1)
         if not mission:
             return request.render('sinistre_services.page_404', {
-                'message': "Dossier introuvable. Verifiez le lien reçu.",
+                'message': "Dossier introuvable. Verifiez le lien recu.",
             })
         return request.render('sinistre_services.page_suivi', {'mission': mission})
 
@@ -253,3 +253,9 @@ class Monetique(http.Controller):
             except Exception as e:
                 _logger.warning(f"Rappel failed: {e}")
         return request.redirect('/?rappel=ok')
+
+    # ── ESPACE ARTISAN / PWA ─────────────────────────────────────────
+    @http.route('/intervenant/login', type='http', auth='public', website=True, sitemap=False)
+    def intervenant_login(self, **kw):
+        """Redirige le bouton Espace Artisan vers la PWA intervenant."""
+        return request.redirect('/sinistre_services/static/pwa/index.html')
