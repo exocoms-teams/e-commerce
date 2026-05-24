@@ -3,6 +3,14 @@
 
     <template id="page_home" name="Sinistre Services — Accueil">
         <t t-call="website.layout">
+            <!-- Animations nécessaires (à ajouter dans le bloc style du layout ou en tête de page) -->
+            <style>
+                @keyframes heroFloat   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+                @keyframes heroBounce  { 0%,100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-5px) scale(1.04); } 60% { transform: translateY(2px) scale(.98); } }
+                @keyframes heroSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                @keyframes heroBlink   { 0%,100% { opacity: 1; } 40%,60% { opacity: 0; } }
+                @keyframes heroSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+            </style>
 
             <!-- ══════════════════════════════════════════
                  HERO
@@ -37,35 +45,45 @@
                         </div>
                         <!-- Formulaire demande rapide -->
                         <div class="mn-hero__visual" style="filter:none;">
-                            <div style="background:white;border-radius:20px;padding:32px;box-shadow:0 12px 48px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);">
-                                <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:4px;font-family:'Inter',sans-serif;">Demande rapide</h3>
-                                <p style="font-size:13px;color:#6B7280;margin-bottom:24px;">Reponse sous 15 minutes</p>
-                                <form method="POST" action="/demande-intervention">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <div style="margin-bottom:14px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Type d'intervention</label>
-                                        <select name="type_intervention" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#111827;background:white;box-sizing:border-box;font-family:'Inter',sans-serif;">
-                                            <option value="serrurerie">Serrurerie</option>
-                                            <option value="plomberie">Plomberie</option>
-                                            <option value="menuiserie_ext">Menuiserie</option>
-                                            <option value="vitrerie">Vitrerie</option>
-                                            <option value="electricite">Electricite</option>
-                                            <option value="autre">Autre</option>
-                                        </select>
-                                    </div>
-                                    <div style="margin-bottom:14px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Telephone</label>
-                                        <input type="tel" name="telephone" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
-                                    </div>
-                                    <div style="margin-bottom:20px;">
-                                        <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Code postal</label>
-                                        <input type="text" name="code_postal" placeholder="75001" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
-                                    </div>
-                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
-                                        Trouver un artisan
-                                    </button>
-                                    <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:10px;">Sans engagement · Devis gratuit</p>
-                                </form>
+                            <div class="mn-hero__visual" style="filter:none;display:flex;align-items:center;justify-content:center;position:relative;">
+                                <!-- Cercles décoratifs animés derrière l'image -->
+                                <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(198,40,40,.08) 0%,transparent 70%);animation:heroFloat 6s ease-in-out infinite;z-index:0;"/>
+                                <div style="position:absolute;width:320px;height:320px;border-radius:50%;border:2px dashed rgba(198,40,40,.15);animation:heroSpin 20s linear infinite;z-index:0;"/>
+                             
+                                <!-- Badge urgence animé -->
+                                <div style="position:absolute;top:10px;right:10px;z-index:2;background:#10B981;color:white;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,.35);animation:heroBounce 3s ease-in-out infinite;">
+                                    <span style="width:7px;height:7px;background:white;border-radius:50%;animation:heroBlink 1.5s step-start infinite;display:inline-block;"/>
+                                    Disponible 24h/24
+                                </div>
+                             
+                                <!-- Badge délai -->
+                                <div style="position:absolute;bottom:20px;left:10px;z-index:2;background:white;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);animation:heroSlideIn .8s ease .4s both;">
+                                    <div style="font-size:11px;color:#6B7280;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Délai moyen</div>
+                                    <div style="font-size:22px;font-weight:800;color:#C62828;line-height:1.2;">Moins de 2h</div>
+                                </div>
+                             
+                                <!-- Badge artisans -->
+                                <div style="position:absolute;bottom:20px;right:10px;z-index:2;background:#C62828;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(198,40,40,.3);animation:heroSlideIn .8s ease .6s both;">
+                                    <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Artisans</div>
+                                    <div style="font-size:22px;font-weight:800;color:white;line-height:1.2;">+1 700</div>
+                                </div>
+                             
+                                <!-- Image principale avec animation -->
+                                <img
+                                    src="monetique_theme/static/src/img/sinistre.jfif"
+                                    alt="Intervention sinistre"
+                                    style="
+                                        width: 100%;
+                                        max-width: 460px;
+                                        height: auto;
+                                        border-radius: 24px;
+                                        box-shadow: 0 24px 60px rgba(198,40,40,.2), 0 8px 24px rgba(0,0,0,.1);
+                                        position: relative;
+                                        z-index: 1;
+                                        animation: heroFloat 5s ease-in-out infinite;
+                                        border: 3px solid rgba(198,40,40,.1);
+                                    "
+                                />
                             </div>
                         </div>
                     </div>
