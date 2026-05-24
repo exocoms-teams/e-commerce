@@ -27,237 +27,217 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
+            --primary: #1E40AF;
+            --primary-dark: #1E3A8A;
+            --primary-light: #3B82F6;
+            --primary-pale: #EFF6FF;
             --red: #C62828;
-            --red-dark: #B71C1C;
-            --blue: #1E40AF;
+            --green: #10B981;
             --dark: #0F172A;
+            --gray-700: #374151;
             --gray-500: #6B7280;
             --gray-200: #E5E7EB;
             --gray-50: #F9FAFB;
         }
 
-        /* ── Splash rouge ── */
+        /* ── Splash bleu ── */
         .splash {
-            background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%) !important;
+            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%) !important;
         }
 
-        /* ── Login redesigné ── */
+        /* ── Login ── */
         #screen-login {
             background: var(--gray-50);
-            display: flex;
-            flex-direction: column;
-            min-height: 100dvh;
+            display: flex; flex-direction: column; min-height: 100dvh;
         }
-
         .login-header {
-            background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
-            padding: 52px 24px 72px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
+            background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+            padding: 52px 24px 72px; text-align: center;
+            position: relative; overflow: hidden; flex-shrink: 0;
         }
         .login-header::before {
-            content: '';
-            position: absolute; top: -60px; right: -60px;
+            content: ''; position: absolute; top: -60px; right: -60px;
             width: 220px; height: 220px;
             background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
             border-radius: 50%;
         }
         .login-logo-box {
             width: 68px; height: 68px;
-            background: rgba(255,255,255,.15);
-            border-radius: 20px;
+            background: rgba(255,255,255,.15); border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
             font-size: 34px; margin: 0 auto 16px;
-            border: 2px solid rgba(255,255,255,.2);
-            position: relative; z-index: 1;
+            border: 2px solid rgba(255,255,255,.2); position: relative; z-index: 1;
         }
         .login-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 28px; font-weight: 800;
-            color: white; letter-spacing: -.03em;
-            margin-bottom: 6px; position: relative; z-index: 1;
-        }
-        .login-subtitle {
-            font-size: 14px; color: rgba(255,255,255,.75);
+            font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 800;
+            color: white; letter-spacing: -.03em; margin-bottom: 6px;
             position: relative; z-index: 1;
         }
-
+        .login-subtitle { font-size: 14px; color: rgba(255,255,255,.75); position: relative; z-index: 1; }
         .login-card {
-            background: white;
-            border-radius: 28px 28px 0 0;
-            margin-top: -28px;
-            padding: 32px 24px 24px;
-            flex: 1; position: relative; z-index: 2;
-            box-shadow: 0 -4px 24px rgba(0,0,0,.08);
-            overflow-y: auto;
+            background: white; border-radius: 28px 28px 0 0; margin-top: -28px;
+            padding: 32px 24px 24px; flex: 1; position: relative; z-index: 2;
+            box-shadow: 0 -4px 24px rgba(0,0,0,.08); overflow-y: auto;
         }
-        .login-card h2 {
-            font-family: 'Inter', sans-serif;
-            font-size: 22px; font-weight: 800;
-            color: var(--dark); margin-bottom: 4px;
-        }
-        .login-card-desc {
-            font-size: 13px; color: var(--gray-500); margin-bottom: 28px;
-        }
-
-        /* Champs */
+        .login-card h2 { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .login-card-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 28px; }
         .lf-group { margin-bottom: 16px; }
-        .lf-label {
-            display: block; font-size: 11px; font-weight: 700;
-            color: #374151; margin-bottom: 7px;
-            text-transform: uppercase; letter-spacing: .6px;
-        }
+        .lf-label { display: block; font-size: 11px; font-weight: 700; color: var(--gray-700); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .6px; }
         .lf-input {
-            width: 100%; padding: 13px 16px;
-            border: 1.5px solid var(--gray-200); border-radius: 12px;
-            font-size: 15px; font-family: 'Inter', sans-serif;
+            width: 100%; padding: 13px 16px; border: 1.5px solid var(--gray-200);
+            border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif;
             color: var(--dark); background: var(--gray-50);
-            transition: border-color .2s, box-shadow .2s;
-            outline: none; box-sizing: border-box;
+            transition: border-color .2s, box-shadow .2s; outline: none; box-sizing: border-box;
         }
-        .lf-input:focus {
-            border-color: var(--red); background: white;
-            box-shadow: 0 0 0 3px rgba(198,40,40,.08);
-        }
-
-        /* Bouton connexion */
+        .lf-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(30,64,175,.08); }
         .btn-login {
             width: 100%; padding: 15px;
-            background: linear-gradient(135deg, #B71C1C, #C62828);
+            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
             color: white; border: none; border-radius: 12px;
-            font-size: 15px; font-weight: 700;
-            font-family: 'Inter', sans-serif; cursor: pointer;
-            box-shadow: 0 4px 16px rgba(198,40,40,.35);
-            transition: transform .15s, box-shadow .15s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: 4px;
+            font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
+            cursor: pointer; box-shadow: 0 4px 16px rgba(30,64,175,.35);
+            transition: transform .15s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;
         }
         .btn-login:active { transform: scale(.98); }
         .btn-login:disabled { opacity: .65; cursor: not-allowed; }
-
-        /* Erreur */
-        #loginError {
-            display: none; padding: 12px 16px;
-            background: #FFF5F5; border: 1px solid #FFCDD2;
-            border-radius: 10px; color: var(--red);
-            font-size: 13px; margin-bottom: 16px;
-        }
-
-        /* Séparateur */
-        .lf-divider {
-            display: flex; align-items: center; gap: 12px;
-            margin: 24px 0;
-        }
-        .lf-divider::before, .lf-divider::after {
-            content: ''; flex: 1; height: 1px; background: var(--gray-200);
-        }
+        #loginError { display: none; padding: 12px 16px; background: #FFF5F5; border: 1px solid #FFCDD2; border-radius: 10px; color: var(--red); font-size: 13px; margin-bottom: 16px; }
+        .lf-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+        .lf-divider::before, .lf-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
         .lf-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
-
-        /* Bloc rejoindre */
-        .join-block {
-            background: linear-gradient(135deg, #FFF5F5, white);
-            border: 1px solid rgba(198,40,40,.15);
-            border-radius: 16px; padding: 20px;
-        }
-        .join-block h3 {
-            font-family: 'Inter', sans-serif;
-            font-size: 15px; font-weight: 700;
-            color: var(--dark); margin-bottom: 6px;
-        }
-        .join-block p {
-            font-size: 13px; color: var(--gray-500);
-            margin-bottom: 14px; line-height: 1.6;
-        }
+        .join-block { background: linear-gradient(135deg, var(--primary-pale), white); border: 1px solid #BFDBFE; border-radius: 16px; padding: 20px; }
+        .join-block h3 { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+        .join-block p { font-size: 13px; color: var(--gray-500); margin-bottom: 14px; line-height: 1.6; }
         .join-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-        .join-perk {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 13px; color: #374151;
-        }
-        .join-perk-icon {
-            width: 28px; height: 28px;
-            background: rgba(198,40,40,.08); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; flex-shrink: 0;
-        }
-        .btn-join {
-            width: 100%; padding: 12px;
-            background: white; color: var(--red);
-            border: 2px solid var(--red); border-radius: 10px;
-            font-size: 14px; font-weight: 700;
-            font-family: 'Inter', sans-serif; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            text-decoration: none; transition: background .15s;
-        }
-        .btn-join:active { background: #FFF5F5; }
-
-        .login-back {
-            text-align: center; padding: 16px 0 4px;
-            font-size: 12px; color: #9CA3AF;
-        }
-        .login-back a { color: var(--red); font-weight: 600; text-decoration: none; }
-
-        /* Spinner */
-        .spin {
-            width: 18px; height: 18px;
-            border: 2px solid rgba(255,255,255,.4);
-            border-top-color: white; border-radius: 50%;
-            animation: spin .7s linear infinite; display: none;
-        }
+        .join-perk { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-700); }
+        .join-perk-icon { width: 28px; height: 28px; background: rgba(30,64,175,.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .btn-join { width: 100%; padding: 12px; background: white; color: var(--primary); border: 2px solid var(--primary); border-radius: 10px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .login-back { text-align: center; padding: 16px 0 4px; font-size: 12px; color: #9CA3AF; }
+        .login-back a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .spin { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── App topbar rouge ── */
-        .topbar {
-            background: linear-gradient(135deg, #B71C1C, #C62828) !important;
+        /* ── Topbar bleu ── */
+        .topbar { background: linear-gradient(135deg, #1E3A8A, #1E40AF) !important; }
+
+        /* ── Bottom nav actif bleu ── */
+        .bottomnav-item { color: var(--gray-500) !important; }
+        .bottomnav-item svg { stroke: var(--gray-500) !important; }
+        .bottomnav-item.active { color: var(--primary) !important; }
+        .bottomnav-item.active svg { stroke: var(--primary) !important; }
+        .bottomnav-item span { font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif; }
+
+        /* ── Filtres actifs bleu ── */
+        .filter-btn {
+            padding: 7px 16px; border-radius: 99px;
+            border: 1.5px solid var(--gray-200);
+            font-size: 13px; font-weight: 600;
+            background: white; color: var(--gray-700);
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            white-space: nowrap;
         }
+        .filter-btn.active { background: var(--primary) !important; color: white !important; border-color: var(--primary) !important; }
 
-        /* ── Bottom nav actif rouge ── */
-        .bottomnav-item.active { color: var(--red) !important; }
-        .bottomnav-item.active span { color: var(--red) !important; }
-
-        /* ── Filtres actifs rouge ── */
-        .filter-btn.active {
-            background: var(--red) !important;
-            color: white !important;
-            border-color: var(--red) !important;
-        }
-
-        /* ── Stat chips ── */
-        .stat-chip.urgent { background: rgba(198,40,40,.1) !important; }
+        /* ── Stats chips ── */
+        .stat-chip-num { font-family: 'Inter', sans-serif !important; }
         .stat-chip.urgent .stat-chip-num { color: var(--red) !important; }
+        .stat-chip.done .stat-chip-num { color: var(--green) !important; }
 
-        /* ── Profil header rouge ── */
-        .profile-header-block {
-            background: linear-gradient(135deg, #B71C1C, #C62828);
-            padding: 32px 24px 24px; text-align: center; color: white;
+        /* ── Dashboard bandeau ── */
+        .dash-header {
+            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
+            padding: 20px 20px 56px; position: relative; overflow: hidden;
         }
-        .profile-avatar-circle {
-            width: 72px; height: 72px; border-radius: 50%;
-            background: rgba(255,255,255,.2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; font-weight: 800; color: white;
-            margin: 0 auto 12px;
-            border: 3px solid rgba(255,255,255,.3);
+        .dash-header::before {
+            content: ''; position: absolute; top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(255,255,255,.07) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .dash-header::after {
+            content: ''; position: absolute; bottom: -20px; left: -20px;
+            width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .dash-greeting { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 2px; font-family: 'Inter', sans-serif; }
+        .dash-name { font-size: 22px; font-weight: 800; color: white; letter-spacing: -.02em; font-family: 'Inter', sans-serif; position: relative; z-index: 1; }
+
+        /* ── Stats cards flottantes ── */
+        .dash-stats {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px; margin: -32px 16px 0;
+            position: relative; z-index: 2; margin-bottom: 20px;
+        }
+        .dash-stat-card {
+            background: white; border-radius: 14px; padding: 16px;
+            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,.1);
+        }
+        .dash-stat-card.primary {
+            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
+            box-shadow: 0 4px 20px rgba(30,64,175,.3);
+        }
+        .dash-stat-num {
+            font-size: 28px; font-weight: 800; color: var(--primary);
+            display: block; line-height: 1; font-family: 'Inter', sans-serif;
+        }
+        .dash-stat-card.primary .dash-stat-num { color: white; }
+        .dash-stat-label {
+            font-size: 11px; color: var(--gray-500); margin-top: 4px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
             font-family: 'Inter', sans-serif;
         }
-        .profile-name-txt { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .dash-stat-card.primary .dash-stat-label { color: rgba(255,255,255,.7); }
+
+        /* ── Section titre ── */
+        .dash-section-title {
+            font-size: 16px; font-weight: 700; color: var(--dark);
+            font-family: 'Inter', sans-serif; margin-bottom: 12px;
+        }
+
+        /* ── Mission cards redesignées ── */
+        .mission-card {
+            background: white !important; border-radius: 14px !important;
+            border: 1px solid var(--gray-200) !important;
+            padding: 16px !important; margin-bottom: 10px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04) !important;
+            transition: box-shadow .2s, transform .15s !important;
+        }
+        .mission-card:active { transform: scale(.99) !important; box-shadow: 0 4px 16px rgba(0,0,0,.08) !important; }
+        .mission-card.tres_urgente { border-left: 4px solid var(--red) !important; }
+        .mission-card.urgente { border-left: 4px solid #F59E0B !important; }
+        .mission-ref { font-size: 12px; font-weight: 700; color: var(--primary); font-family: 'Inter', sans-serif; }
+        .mission-type { font-size: 15px; font-weight: 700; color: var(--dark); margin: 6px 0 4px; font-family: 'Inter', sans-serif; }
+        .mission-client, .mission-adresse { font-size: 13px; color: var(--gray-500); }
+
+        /* ── Profil ── */
+        .profile-header-block {
+            background: linear-gradient(135deg, #1E3A8A, #1E40AF);
+            padding: 32px 24px 28px; text-align: center; color: white;
+        }
+        .profile-avatar-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(255,255,255,.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: white;
+            margin: 0 auto 14px; border: 3px solid rgba(255,255,255,.3);
+            font-family: 'Inter', sans-serif; letter-spacing: -.02em;
+        }
+        .profile-name-txt { font-size: 22px; font-weight: 800; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
         .profile-role-txt { font-size: 13px; opacity: .75; }
         .profile-item-row {
-            display: flex; align-items: center; gap: 14px;
+            display: flex; align-items: center; gap: 16px;
             padding: 16px 20px; background: white;
             border-bottom: 1px solid var(--gray-200);
-            font-size: 14px; color: var(--dark);
+            font-size: 14px; color: var(--dark); font-family: 'Inter', sans-serif;
         }
         .profile-item-icon { font-size: 20px; width: 32px; text-align: center; }
         .profile-item-label { flex: 1; }
-        .profile-item-arrow { color: var(--gray-500); }
+        .profile-item-arrow { color: var(--gray-500); font-size: 18px; }
         .btn-deconnect {
             width: calc(100% - 32px); margin: 20px 16px;
-            padding: 14px; background: white; color: var(--red);
-            border: 2px solid var(--red); border-radius: 12px;
-            font-size: 15px; font-weight: 700;
-            font-family: 'Inter', sans-serif; cursor: pointer;
+            padding: 14px; background: white; color: var(--primary);
+            border: 2px solid var(--primary); border-radius: 12px;
+            font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
         }
     </style>
 </head>
@@ -370,32 +350,31 @@
             <div id="view-dashboard" class="view active">
                 <div class="view-scroll" style="padding:0 0 80px;">
 
-                    <!-- Bandeau bienvenue -->
-                    <div style="background:linear-gradient(135deg,#B71C1C,#C62828);padding:20px 20px 48px;position:relative;overflow:hidden;">
-                        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.06);border-radius:50%;"></div>
-                        <p style="font-size:13px;color:rgba(255,255,255,.7);margin-bottom:4px;">Bonjour 👋</p>
-                        <h2 style="font-size:22px;font-weight:800;color:white;letter-spacing:-.02em;" id="dashWelcome">Mes missions</h2>
+                    <!-- Header bleu -->
+                    <div class="dash-header">
+                        <p class="dash-greeting">Bonjour 👋</p>
+                        <h2 class="dash-name" id="dashWelcome">Mes missions</h2>
                     </div>
 
-                    <!-- Cartes stats en chevauchement -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:-28px 16px 0;position:relative;z-index:2;margin-bottom:20px;">
-                        <div style="background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">
-                            <div class="stat-chip-num" id="statNouveau" style="font-size:26px;font-weight:800;color:#1E40AF;display:block;line-height:1;">–</div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:4px;font-weight:500;">Nouvelles</div>
+                    <!-- Stats flottantes -->
+                    <div class="dash-stats">
+                        <div class="dash-stat-card">
+                            <span class="dash-stat-num" id="statNouveau">–</span>
+                            <div class="dash-stat-label">Nouvelles</div>
                         </div>
-                        <div style="background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(198,40,40,.3);">
-                            <div class="stat-chip-num" id="statUrgent" style="font-size:26px;font-weight:800;color:white;display:block;line-height:1;">–</div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:4px;font-weight:500;">Urgentes</div>
+                        <div class="dash-stat-card primary">
+                            <span class="dash-stat-num" id="statUrgent">–</span>
+                            <div class="dash-stat-label">Urgentes</div>
                         </div>
-                        <div style="background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);">
-                            <div class="stat-chip-num" id="statTermine" style="font-size:26px;font-weight:800;color:#10B981;display:block;line-height:1;">–</div>
-                            <div style="font-size:11px;color:#6B7280;margin-top:4px;font-weight:500;">Ce mois</div>
+                        <div class="dash-stat-card">
+                            <span class="dash-stat-num" style="color:#10B981;" id="statTermine">–</span>
+                            <div class="dash-stat-label">Ce mois</div>
                         </div>
                     </div>
 
                     <!-- Filtres -->
-                    <div style="padding:0 16px 12px;">
-                        <div class="filter-bar">
+                    <div style="padding:0 16px 14px;">
+                        <div class="filter-bar" style="gap:8px;">
                             <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all', this)">Toutes</button>
                             <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau', this)">Nouvelles</button>
                             <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours', this)">En cours</button>
@@ -409,15 +388,17 @@
                     </div>
 
                     <!-- Liste missions -->
-                    <div style="padding:0 16px;" id="missionList" class="mission-list">
-                        <div class="empty-state" id="emptyState" style="display:none">
-                            <div class="empty-icon">📋</div>
-                            <p>Aucune mission pour le moment</p>
-                        </div>
-                        <div class="skeleton-list" id="skeletonList">
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
-                            <div class="skeleton-card"></div>
+                    <div style="padding:0 16px;">
+                        <div id="missionList" class="mission-list">
+                            <div class="empty-state" id="emptyState" style="display:none">
+                                <div class="empty-icon">📋</div>
+                                <p>Aucune mission pour le moment</p>
+                            </div>
+                            <div class="skeleton-list" id="skeletonList">
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                                <div class="skeleton-card"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
