@@ -443,3 +443,7 @@ class LuxuryController(WebsiteSale):
             
             return request.render('website.homepage', {})
         return request.render('luxury_services.luxury_home_page', {})
+    
+    
+    
+    """ https://www.youtube.com/watch?v=bF-01uyDXUc"""
