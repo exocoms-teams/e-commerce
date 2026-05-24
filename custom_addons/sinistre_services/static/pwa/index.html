@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
     <meta name="apple-mobile-web-app-title" content="Sinistre Pro"/>
-    <meta name="theme-color" content="#0D47A1"/>
+    <meta name="theme-color" content="#C62828"/>
     <meta name="description" content="Application intervenant — Sinistre Services"/>
 
     <title>Sinistre Pro — Espace Intervenant</title>
@@ -16,18 +16,233 @@
     <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
 
-    <!-- Design system -->
+    <!-- Design system PWA existant -->
     <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
 
-    <!-- Firebase SDK (via CDN) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+
+    <!-- Override login avec thème Monétique rouge -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        /* ── Splash rouge ── */
+        .splash {
+            background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%) !important;
+        }
+        .splash-icon { font-size: 64px; }
+
+        /* ── Écran login redesigné ── */
+        #screen-login {
+            background: #F9FAFB;
+            display: flex;
+            flex-direction: column;
+            min-height: 100dvh;
+        }
+
+        /* Header rouge immersif */
+        .login-header-new {
+            background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
+            padding: 52px 24px 72px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .login-header-new::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .login-header-new::after {
+            content: '';
+            position: absolute; bottom: -50px; left: -40px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .login-logo-new {
+            width: 68px; height: 68px;
+            background: rgba(255,255,255,.15);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 34px;
+            margin: 0 auto 16px;
+            position: relative; z-index: 1;
+            border: 2px solid rgba(255,255,255,.2);
+            backdrop-filter: blur(10px);
+        }
+        .login-title-new {
+            font-family: 'Inter', sans-serif;
+            font-size: 28px; font-weight: 800;
+            color: white; letter-spacing: -.03em;
+            margin-bottom: 6px;
+            position: relative; z-index: 1;
+        }
+        .login-sub-new {
+            font-size: 14px; color: rgba(255,255,255,.75);
+            position: relative; z-index: 1;
+        }
+
+        /* Carte blanche arrondie */
+        .login-card-new {
+            background: white;
+            border-radius: 28px 28px 0 0;
+            margin-top: -28px;
+            padding: 32px 24px 24px;
+            flex: 1;
+            position: relative; z-index: 2;
+            box-shadow: 0 -4px 24px rgba(0,0,0,.08);
+            overflow-y: auto;
+        }
+        .login-card-new h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px; font-weight: 700;
+            color: #0F172A; margin-bottom: 4px;
+        }
+        .login-card-desc {
+            font-size: 13px; color: #6B7280; margin-bottom: 24px;
+        }
+
+        /* Champs redessinés */
+        .login-card-new .field-group { margin-bottom: 16px; }
+        .login-card-new .field-label {
+            display: block; font-size: 11px; font-weight: 700;
+            color: #374151; margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: .6px;
+        }
+        .login-card-new .field-input {
+            width: 100%; padding: 13px 16px;
+            border: 1.5px solid #E5E7EB; border-radius: 12px;
+            font-size: 15px; font-family: 'Inter', sans-serif;
+            color: #0F172A; background: #F9FAFB;
+            transition: border-color .2s, box-shadow .2s; outline: none;
+            box-sizing: border-box;
+        }
+        .login-card-new .field-input:focus {
+            border-color: #C62828; background: white;
+            box-shadow: 0 0 0 3px rgba(198,40,40,.08);
+        }
+
+        /* Bouton principal rouge */
+        .btn-login-primary {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, #B71C1C, #C62828);
+            color: white; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(198,40,40,.35);
+            transition: transform .15s, box-shadow .15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 4px;
+        }
+        .btn-login-primary:active { transform: scale(.98); box-shadow: 0 2px 8px rgba(198,40,40,.3); }
+        .btn-login-primary:disabled { opacity: .65; cursor: not-allowed; }
+
+        /* Séparateur */
+        .login-divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0;
+        }
+        .login-divider::before, .login-divider::after {
+            content: ''; flex: 1; height: 1px; background: #E5E7EB;
+        }
+        .login-divider span { font-size: 12px; color: #9CA3AF; font-weight: 500; white-space: nowrap; }
+
+        /* Bloc rejoindre le réseau */
+        .join-network-block {
+            background: linear-gradient(135deg, #FFF5F5, white);
+            border: 1px solid rgba(198,40,40,.15);
+            border-radius: 18px; padding: 20px;
+        }
+        .join-network-block h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px; font-weight: 700;
+            color: #0F172A; margin-bottom: 6px;
+        }
+        .join-network-block p {
+            font-size: 13px; color: #6B7280;
+            margin-bottom: 14px; line-height: 1.6;
+        }
+        .join-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .join-perk {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: #374151;
+        }
+        .join-perk-icon {
+            width: 28px; height: 28px;
+            background: rgba(198,40,40,.08); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .btn-join-network {
+            width: 100%; padding: 13px;
+            background: white; color: #C62828;
+            border: 2px solid #C62828; border-radius: 12px;
+            font-size: 14px; font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer; transition: background .15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-join-network:active { background: #FFF5F5; }
+
+        /* Alerte erreur */
+        .login-error-new {
+            display: none; padding: 12px 16px;
+            background: #FFF5F5; border: 1px solid #FFCDD2;
+            border-radius: 10px; color: #C62828;
+            font-size: 13px; margin-bottom: 16px;
+            align-items: center; gap: 8px;
+        }
+        .login-error-new.show { display: flex; }
+
+        /* Spinner */
+        .btn-spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-top-color: white; border-radius: 50%;
+            animation: btnSpin .7s linear infinite;
+            display: none; flex-shrink: 0;
+        }
+        @keyframes btnSpin { to { transform: rotate(360deg); } }
+
+        /* Lien retour site */
+        .login-back-link {
+            text-align: center; padding: 16px 0 8px;
+            font-size: 12px; color: #9CA3AF;
+        }
+        .login-back-link a { color: #C62828; font-weight: 600; text-decoration: none; }
+
+        /* ── Topbar rouge pour l'app ── */
+        .topbar {
+            background: linear-gradient(135deg, #B71C1C, #C62828) !important;
+        }
+
+        /* ── Bottom nav : icone active rouge ── */
+        .bottomnav-item.active { color: #C62828 !important; }
+        .bottomnav-item.active span { color: #C62828 !important; }
+
+        /* ── Filtres dashboard : actif rouge ── */
+        .filter-btn.active {
+            background: #C62828 !important;
+            color: white !important;
+            border-color: #C62828 !important;
+        }
+
+        /* ── Stats bar : urgentes rouge ── */
+        .stat-chip.urgent { background: rgba(198,40,40,.1) !important; }
+        .stat-chip.urgent .stat-chip-num { color: #C62828 !important; }
+    </style>
 </head>
 <body>
+
     <!-- Splash screen -->
     <div id="splash" class="splash">
         <div class="splash-inner">
-            <div class="splash-icon">⚡</div>
+            <div class="splash-icon">🔧</div>
             <h1 class="splash-title">Sinistre Pro</h1>
             <p class="splash-sub">Espace Intervenant</p>
             <div class="splash-loader"><div class="splash-bar"></div></div>
@@ -37,15 +252,31 @@
     <!-- App root -->
     <div id="app" style="display:none">
 
-        <!-- Login screen -->
+        <!-- ══ LOGIN ══ -->
         <div id="screen-login" class="screen" style="display:none">
-            <div class="login-wrap">
-                <div class="login-logo">⚡</div>
-                <h1 class="login-title">Sinistre Pro</h1>
-                <p class="login-sub">Connectez-vous à votre espace intervenant</p>
+
+            <!-- Header rouge -->
+            <div class="login-header-new">
+                <div class="login-logo-new">🔧</div>
+                <h1 class="login-title-new">Sinistre Pro</h1>
+                <p class="login-sub-new">Connectez-vous a votre espace intervenant</p>
+            </div>
+
+            <!-- Carte formulaire -->
+            <div class="login-card-new">
+                <h2>Bon retour !</h2>
+                <p class="login-card-desc">Entrez vos identifiants pour acceder a vos missions</p>
+
+                <!-- Erreur -->
+                <div id="loginError" class="login-error-new">
+                    <span>⚠️</span>
+                    <span id="loginErrorMsg">Identifiants incorrects</span>
+                </div>
+
+                <!-- Formulaire -->
                 <form id="loginForm" class="login-form">
                     <div class="field-group">
-                        <label class="field-label">Identifiant Odoo</label>
+                        <label class="field-label">Email</label>
                         <input type="email" id="loginEmail" class="field-input"
                                placeholder="votre@email.fr" autocomplete="email" required/>
                     </div>
@@ -54,18 +285,51 @@
                         <input type="password" id="loginPassword" class="field-input"
                                placeholder="••••••••" autocomplete="current-password" required/>
                     </div>
-                    <div id="loginError" class="alert alert-error" style="display:none"></div>
-                    <button type="submit" id="loginBtn" class="btn btn-primary btn-block">
-                        <span>Se connecter</span>
+                    <button type="submit" id="loginBtn" class="btn-login-primary">
+                        <div class="btn-spinner" id="loginSpinner"></div>
+                        <span id="loginBtnText">Se connecter</span>
                     </button>
                 </form>
+
+                <!-- Séparateur -->
+                <div class="login-divider"><span>Vous n'avez pas de compte ?</span></div>
+
+                <!-- Rejoindre le réseau -->
+                <div class="join-network-block">
+                    <h3>Rejoignez notre reseau d'artisans</h3>
+                    <p>Recevez des missions qualifiees, gerez votre planning et encaissez rapidement.</p>
+                    <div class="join-perks">
+                        <div class="join-perk">
+                            <div class="join-perk-icon">📱</div>
+                            <span>App mobile + missions en temps reel</span>
+                        </div>
+                        <div class="join-perk">
+                            <div class="join-perk-icon">💰</div>
+                            <span>Paiement garanti sous 48h, zero impaye</span>
+                        </div>
+                        <div class="join-perk">
+                            <div class="join-perk-icon">📍</div>
+                            <span>Missions uniquement dans votre zone</span>
+                        </div>
+                    </div>
+                    <button class="btn-join-network" onclick="window.location.href='/rejoindre-le-reseau'">
+                        ➕ Rejoindre le reseau artisan
+                    </button>
+                </div>
+
+                <!-- Retour site -->
+                <div class="login-back-link">
+                    <a href="/">← Retour au site</a>
+                    &nbsp;·&nbsp;
+                    <a href="/contact">Aide &amp; support</a>
+                </div>
             </div>
         </div>
 
-        <!-- Main app (authenticated) -->
+        <!-- ══ APP (après connexion) ══ -->
         <div id="screen-app" class="screen" style="display:none">
 
-            <!-- Top navigation bar -->
+            <!-- Top bar -->
             <header class="topbar">
                 <button class="topbar-back" id="backBtn" onclick="App.goBack()" style="display:none">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -91,13 +355,9 @@
                 </div>
             </header>
 
-            <!-- ═══ SCREENS ═══ -->
-
-            <!-- Dashboard / Liste missions -->
+            <!-- Vue Dashboard -->
             <div id="view-dashboard" class="view active">
                 <div class="view-scroll">
-
-                    <!-- Stats rapides -->
                     <div class="stats-bar" id="statsBar">
                         <div class="stat-chip">
                             <span class="stat-chip-num" id="statNouveau">–</span>
@@ -112,21 +372,15 @@
                             <span class="stat-chip-label">Ce mois</span>
                         </div>
                     </div>
-
-                    <!-- Filtres -->
                     <div class="filter-bar">
                         <button class="filter-btn active" data-filter="all" onclick="Dashboard.setFilter('all', this)">Toutes</button>
                         <button class="filter-btn" data-filter="nouveau" onclick="Dashboard.setFilter('nouveau', this)">Nouvelles</button>
                         <button class="filter-btn" data-filter="en_cours" onclick="Dashboard.setFilter('en_cours', this)">En cours</button>
-                        <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine', this)">Terminées</button>
+                        <button class="filter-btn" data-filter="termine" onclick="Dashboard.setFilter('termine', this)">Terminees</button>
                     </div>
-
-                    <!-- Pull-to-refresh -->
                     <div id="refreshZone" class="refresh-zone">
                         <div class="refresh-spinner" id="refreshSpinner"></div>
                     </div>
-
-                    <!-- Liste des missions -->
                     <div id="missionList" class="mission-list">
                         <div class="empty-state" id="emptyState" style="display:none">
                             <div class="empty-icon">📋</div>
@@ -138,48 +392,28 @@
                             <div class="skeleton-card"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Détail d'une mission -->
+            <!-- Vue Detail mission -->
             <div id="view-mission" class="view" style="display:none">
                 <div class="view-scroll" id="missionDetailScroll">
-
-                    <!-- Status badge -->
                     <div class="mission-status-banner" id="missionBanner">
                         <span id="missionBannerIcon">⏳</span>
                         <span id="missionBannerText">Nouveau</span>
                     </div>
-
-                    <!-- Infos client -->
                     <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">👤</span>
-                            <h3 class="card-title">Client</h3>
-                        </div>
+                        <div class="card-header"><span class="card-icon">👤</span><h3 class="card-title">Client</h3></div>
                         <div class="info-grid" id="clientInfo"></div>
                     </div>
-
-                    <!-- Infos intervention -->
                     <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">🔧</span>
-                            <h3 class="card-title">Intervention</h3>
-                        </div>
+                        <div class="card-header"><span class="card-icon">🔧</span><h3 class="card-title">Intervention</h3></div>
                         <div class="info-grid" id="interventionInfo"></div>
                     </div>
-
-                    <!-- Description sinistre -->
                     <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">📝</span>
-                            <h3 class="card-title">Description</h3>
-                        </div>
+                        <div class="card-header"><span class="card-icon">📝</span><h3 class="card-title">Description</h3></div>
                         <p class="description-text" id="descriptionText"></p>
                     </div>
-
-                    <!-- Photos -->
                     <div class="card">
                         <div class="card-header">
                             <span class="card-icon">📷</span>
@@ -188,16 +422,10 @@
                         </div>
                         <div class="photos-grid" id="photosGrid"></div>
                         <div class="photos-actions">
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('avant')" id="btnPhotoAvant">
-                                📸 Photo AVANT
-                            </button>
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('apres')" id="btnPhotoApres">
-                                📸 Photo APRÈS
-                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('avant')" id="btnPhotoAvant">📸 Photo AVANT</button>
+                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('apres')" id="btnPhotoApres">📸 Photo APRES</button>
                         </div>
                     </div>
-
-                    <!-- Devis -->
                     <div class="card" id="devisCard">
                         <div class="card-header">
                             <span class="card-icon">💶</span>
@@ -206,57 +434,36 @@
                         </div>
                         <div id="devisContent"></div>
                     </div>
-
-                    <!-- Actions principales -->
                     <div class="actions-block" id="missionActions"></div>
-
-                    <!-- Espace bas de page -->
-                    <div style="height: 24px;"></div>
+                    <div style="height:24px;"></div>
                 </div>
             </div>
 
-            <!-- Formulaire Devis -->
+            <!-- Vue Devis -->
             <div id="view-devis" class="view" style="display:none">
                 <div class="view-scroll">
                     <div class="card">
-                        <h3 class="section-title">Créer un devis</h3>
+                        <h3 class="section-title">Creer un devis</h3>
                         <div id="devisLignes" class="devis-lignes"></div>
-                        <button class="btn btn-outline btn-sm" onclick="DevisForm.addLigne()">
-                            + Ajouter une ligne
-                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button>
                     </div>
                     <div class="card devis-totaux">
-                        <div class="total-row">
-                            <span>Sous-total HT</span>
-                            <span id="totalHT">0,00 €</span>
-                        </div>
-                        <div class="total-row">
-                            <span>TVA (20%)</span>
-                            <span id="totalTVA">0,00 €</span>
-                        </div>
-                        <div class="total-row total-ttc">
-                            <span>Total TTC</span>
-                            <span id="totalTTC">0,00 €</span>
-                        </div>
+                        <div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div>
+                        <div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div>
+                        <div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div>
                     </div>
                     <div class="card">
                         <label class="field-label">Note pour le client</label>
-                        <textarea id="devisNote" class="field-input" rows="3"
-                                  placeholder="Informations complémentaires…"></textarea>
+                        <textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complementaires…"></textarea>
                     </div>
                     <div class="actions-block">
-                        <button class="btn btn-primary btn-block" onclick="DevisForm.save()">
-                            <span>💾 Enregistrer le devis</span>
-                        </button>
-                        <button class="btn btn-primary btn-block" id="btnEnvoyerDevis"
-                                style="background:var(--green)" onclick="DevisForm.envoyer()">
-                            <span>📤 Envoyer au client</span>
-                        </button>
+                        <button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button>
+                        <button class="btn btn-primary btn-block" id="btnEnvoyerDevis" style="background:var(--green)" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button>
                     </div>
                 </div>
             </div>
 
-            <!-- Écran signature client -->
+            <!-- Vue Signature -->
             <div id="view-signature" class="view" style="display:none">
                 <div class="view-scroll">
                     <div class="card">
@@ -264,28 +471,20 @@
                         <p class="field-sub">Le client signe pour accepter le devis</p>
                         <div class="signature-wrap">
                             <canvas id="signatureCanvas"></canvas>
-                            <div class="signature-placeholder" id="signPlaceholder">
-                                Faites signer ici ✍️
-                            </div>
+                            <div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div>
                         </div>
                         <div class="signature-actions">
-                            <button class="btn btn-outline btn-sm" onclick="Signature.clear()">
-                                🗑 Effacer
-                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button>
                         </div>
                     </div>
                     <div class="actions-block">
-                        <button class="btn btn-primary btn-block" onclick="Signature.confirm()">
-                            ✅ Confirmer l'acceptation
-                        </button>
-                        <button class="btn btn-danger btn-block" onclick="Signature.refuse()">
-                            ❌ Client refuse le devis
-                        </button>
+                        <button class="btn btn-primary btn-block" onclick="Signature.confirm()">✅ Confirmer l'acceptation</button>
+                        <button class="btn btn-danger btn-block" onclick="Signature.refuse()">❌ Client refuse le devis</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom navigation -->
+            <!-- Bottom nav -->
             <nav class="bottomnav">
                 <button class="bottomnav-item active" onclick="App.showView('dashboard')" id="nav-dashboard">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -303,18 +502,17 @@
                 </button>
             </nav>
 
-        </div><!-- /screen-app -->
+        </div>
+    </div>
 
-    </div><!-- /app -->
-
-    <!-- Toast notifications -->
+    <!-- Toast -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Camera input (hidden) -->
+    <!-- Camera inputs -->
     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
     <input type="file" id="galleryInput" accept="image/*" style="display:none"/>
 
-    <!-- Scripts -->
+    <!-- Scripts PWA existants -->
     <script src="/sinistre_services/static/pwa/src/services/config.js"></script>
     <script src="/sinistre_services/static/pwa/src/services/api.js"></script>
     <script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
@@ -327,5 +525,31 @@
     <script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
     <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
     <script src="/sinistre_services/static/pwa/app.js"></script>
+
+    <!-- Override login form avec le nouveau style -->
+    <script>
+        // Surcharge du submit login pour afficher spinner + erreur stylisée
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('loginForm');
+            if (!form) return;
+            var btn = document.getElementById('loginBtn');
+            var spinner = document.getElementById('loginSpinner');
+            var btnText = document.getElementById('loginBtnText');
+            var errorDiv = document.getElementById('loginError');
+            var errorMsg = document.getElementById('loginErrorMsg');
+
+            // Monkey-patch Auth.showLoginError si disponible
+            if (window.Auth) {
+                var origShowError = Auth.showLoginError;
+                Auth.showLoginError = function(msg) {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = msg || 'Identifiants incorrects';
+                        errorDiv.classList.add('show');
+                    }
+                    if (origShowError) origShowError.call(Auth, msg);
+                };
+            }
+        });
+    </script>
 </body>
 </html>
