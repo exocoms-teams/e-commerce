@@ -22,9 +22,10 @@
     'data/init_data.xml',
     'data/sequence_data.xml',
     'data/mission_type_data.xml',
-    'data/website_data.xml',
+    'data/website_data.xml',   
 
     # Website
+    'views/page_intervenant_login.xml',
     'views/website_pages.xml',
        
     # Back-office views
