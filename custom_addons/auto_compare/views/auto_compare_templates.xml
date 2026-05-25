@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="menu_auto_compare" model="website.menu">
+            <field name="name">Compare</field>
+            <field name="url">/cars/compare</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">49</field>
+        </record>
+    </data>
+
+    <template id="compare_page" name="Vehicle Compare">
+        <t t-call="website.layout">
+            <section class="py-5 auto-form-shell">
+                <div class="container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 mb-0">Comparer les vehicules</h1>
+                        <div class="d-flex gap-2">
+                            <a href="/cars" class="btn btn-outline-secondary">Ouvrir le catalogue</a>
+                            <a href="/cars/compare/clear" class="btn btn-outline-danger">Vider la comparaison</a>
+                        </div>
+                    </div>
+
+                    <t t-if="vehicles and len(vehicles) &gt; 1">
+                        <div class="table-responsive auto-table-panel">
+                            <table class="table table-bordered align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 190px;">Caracteristique</th>
+                                        <t t-foreach="vehicles" t-as="vehicle">
+                                            <th>
+                                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                                    <div>
+                                                        <div class="text-muted small" t-esc="vehicle.brand_id.name"/>
+                                                        <strong t-esc="vehicle.name"/>
+                                                    </div>
+                                                    <a t-att-href="'/cars/compare/remove/%s' % vehicle.id" class="btn btn-sm btn-outline-danger">Retirer</a>
+                                                </div>
+                                            </th>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Prix</td>
+                                        <t t-foreach="vehicles" t-as="vehicle">
+                                            <td>
+                                                <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <td>Availability</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="dict(vehicle.AVAILABILITY_SELECTION).get(vehicle.availability)"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Motorisation</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.motorization_id.name"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Autonomie (km)</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.range_km"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Puissance (kW)</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.power_kw"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Batterie (kWh)</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.battery_capacity"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Seats</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.seats"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Year</td>
+                                        <t t-foreach="vehicles" t-as="vehicle"><td t-esc="vehicle.year"/></t>
+                                    </tr>
+                                    <tr>
+                                        <td>Voir les details</td>
+                                        <t t-foreach="vehicles" t-as="vehicle">
+                                            <td>
+                                                <a t-att-href="vehicle.website_url" class="btn btn-sm btn-outline-dark">Ouvrir la fiche</a>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+
+                    <t t-if="not vehicles or len(vehicles) &lt; 2">
+                        <div class="alert alert-info mb-0">
+                            Selectionnez au moins deux vehicules pour activer la comparaison.
+                        </div>
+                    </t>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>

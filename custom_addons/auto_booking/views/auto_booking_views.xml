@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_auto_booking_tree" model="ir.ui.view">
+        <field name="name">auto.booking.tree</field>
+        <field name="model">auto.booking</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="requested_datetime"/>
+                <field name="assigned_user_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_booking_form" model="ir.ui.view">
+        <field name="name">auto.booking.form</field>
+        <field name="model">auto.booking</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Mark Done" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="slot_id"/>
+                            <field name="requested_datetime"/>
+                        </group>
+                        <group>
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="assigned_user_id"/>
+                            <field name="source"/>
+                        </group>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_auto_booking_search" model="ir.ui.view">
+        <field name="name">auto.booking.search</field>
+        <field name="model">auto.booking</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="assigned_user_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_advisor" string="Advisor" context="{'group_by': 'assigned_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_auto_booking" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+        <field name="res_model">auto.booking</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_auto_booking" name="Reservations" parent="auto_base.menu_auto_catalog" action="action_auto_booking" sequence="40"/>
+
+    <record id="view_auto_test_drive_tree" model="ir.ui.view">
+        <field name="name">auto.test.drive.tree</field>
+        <field name="model">auto.test.drive</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="requested_datetime"/>
+                <field name="location"/>
+                <field name="assigned_user_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_test_drive_form" model="ir.ui.view">
+        <field name="name">auto.test.drive.form</field>
+        <field name="model">auto.test.drive</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Mark Done" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="partner_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="slot_id"/>
+                            <field name="requested_datetime"/>
+                            <field name="location"/>
+                        </group>
+                        <group>
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="assigned_user_id"/>
+                        </group>
+                    </group>
+                    <field name="comment"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_auto_test_drive_search" model="ir.ui.view">
+        <field name="name">auto.test.drive.search</field>
+        <field name="model">auto.test.drive</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="assigned_user_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_advisor" string="Advisor" context="{'group_by': 'assigned_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_auto_test_drive" model="ir.actions.act_window">
+        <field name="name">Test Drive Requests</field>
+        <field name="res_model">auto.test.drive</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_auto_test_drive" name="Test Drives" parent="auto_base.menu_auto_catalog" action="action_auto_test_drive" sequence="50"/>
+
+    <record id="view_auto_appointment_slot_tree" model="ir.ui.view">
+        <field name="name">auto.appointment.slot.tree</field>
+        <field name="model">auto.appointment.slot</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="start_datetime"/>
+                <field name="end_datetime"/>
+                <field name="capacity"/>
+                <field name="occupied_count"/>
+                <field name="is_available"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_appointment_slot_form" model="ir.ui.view">
+        <field name="name">auto.appointment.slot.form</field>
+        <field name="model">auto.appointment.slot</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="start_datetime"/>
+                        <field name="end_datetime"/>
+                        <field name="capacity"/>
+                        <field name="occupied_count" readonly="1"/>
+                        <field name="is_available" readonly="1"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_auto_appointment_slot" model="ir.actions.act_window">
+        <field name="name">Appointment Slots</field>
+        <field name="res_model">auto.appointment.slot</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_auto_appointment_slot" name="Appointment Slots" parent="auto_base.menu_auto_configuration" action="action_auto_appointment_slot" sequence="50"/>
+</odoo>

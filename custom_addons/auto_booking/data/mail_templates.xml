@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_booking_received" model="mail.template">
+        <field name="name">Vehicle booking confirmation</field>
+        <field name="model_id" ref="model_auto_booking"/>
+        <field name="subject">Reservation request received: ${object.vehicle_id.display_name}</field>
+        <field name="email_from">${(user.email_formatted or 'noreply@example.com')|safe}</field>
+        <field name="email_to">${object.email|safe}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Hello ${object.partner_id.name},</p>
+                <p>Your reservation request has been received for <strong>${object.vehicle_id.display_name}</strong>.</p>
+                <p>Requested time: <strong>${object.requested_datetime}</strong></p>
+                <p>Reference: <strong>${object.name}</strong></p>
+            </div>
+        </field>
+    </record>
+
+    <record id="mail_template_test_drive_received" model="mail.template">
+        <field name="name">Test drive request confirmation</field>
+        <field name="model_id" ref="model_auto_test_drive"/>
+        <field name="subject">Test drive request received: ${object.vehicle_id.display_name}</field>
+        <field name="email_from">${(user.email_formatted or 'noreply@example.com')|safe}</field>
+        <field name="email_to">${object.email|safe}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Hello ${object.partner_id.name},</p>
+                <p>Your test drive request has been received for <strong>${object.vehicle_id.display_name}</strong>.</p>
+                <p>Requested time: <strong>${object.requested_datetime}</strong></p>
+                <p>Reference: <strong>${object.name}</strong></p>
+            </div>
+        </field>
+    </record>
+</odoo>

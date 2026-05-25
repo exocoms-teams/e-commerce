@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_auto_dashboard_snapshot_tree" model="ir.ui.view">
+        <field name="name">auto.dashboard.snapshot.tree</field>
+        <field name="model">auto.dashboard.snapshot</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="orders_count"/>
+                <field name="revenue_total"/>
+                <field name="quote_request_count"/>
+                <field name="booking_count"/>
+                <field name="test_drive_count"/>
+                <field name="published_vehicle_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_dashboard_snapshot_form" model="ir.ui.view">
+        <field name="name">auto.dashboard.snapshot.form</field>
+        <field name="model">auto.dashboard.snapshot</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_refresh" type="object" string="Refresh" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Sales KPI" col="4">
+                        <field name="orders_count" readonly="1"/>
+                        <field name="revenue_total" readonly="1"/>
+                        <field name="quote_request_count" readonly="1"/>
+                        <field name="crm_opportunity_count" readonly="1"/>
+                    </group>
+                    <group string="Engagement KPI" col="4">
+                        <field name="booking_count" readonly="1"/>
+                        <field name="test_drive_count" readonly="1"/>
+                        <field name="approved_review_count" readonly="1"/>
+                        <field name="published_vehicle_count" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="top_vehicle_id" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_auto_dashboard_snapshot" model="ir.actions.act_window">
+        <field name="name">Automotive Dashboard</field>
+        <field name="res_model">auto.dashboard.snapshot</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>Create snapshots to monitor sales, reservations, and customer engagement metrics.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_auto_dashboard" name="Dashboard" parent="auto_base.menu_auto_root" action="action_auto_dashboard_snapshot" sequence="20"/>
+</odoo>

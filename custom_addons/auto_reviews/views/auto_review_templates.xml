@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="vehicle_detail_review_form" inherit_id="auto_website.vehicle_detail_page" name="Vehicle Review Form Block">
+        <xpath expr="//div[hasclass('auto-review-list')]" position="after">
+            <div class="mt-4" t-if="request.env.user._is_public() == False">
+                <h3 class="h6">Laisser un avis</h3>
+                <form t-att-action="'/cars/%s/review' % vehicle.id" method="post" class="card auto-form-card p-3 border">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-2">
+                        <label class="form-label">Note</label>
+                        <select class="form-select" name="rating" required="required">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Tres bien</option>
+                            <option value="3">3 - Bien</option>
+                            <option value="2">2 - Moyen</option>
+                            <option value="1">1 - Faible</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Titre</label>
+                        <input class="form-control" type="text" name="title" required="required"/>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Commentaire</label>
+                        <textarea class="form-control" name="comment" rows="4" required="required"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline-dark">Envoyer pour moderation</button>
+                </form>
+            </div>
+            <div class="mt-3" t-if="request.env.user._is_public()">
+                <a class="btn btn-outline-secondary" href="/web/login">Connectez-vous pour laisser un avis</a>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="my_reviews_page" name="My Reviews">
+        <t t-call="website.layout">
+            <section class="py-5 auto-form-shell">
+                <div class="container">
+                    <h1 class="h3 mb-4">Mes avis</h1>
+                    <div class="table-responsive auto-table-panel">
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Vehicule</th>
+                                    <th>Note</th>
+                                    <th>Titre</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="reviews">
+                                    <t t-foreach="reviews" t-as="review">
+                                        <tr>
+                                            <td t-esc="review.vehicle_id.display_name"/>
+                                            <td t-esc="review.rating"/>
+                                            <td t-esc="review.title"/>
+                                            <td t-esc="dict(review.STATE_SELECTION).get(review.state)"/>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-if="not reviews">
+                                    <tr>
+                                        <td colspan="4">Aucun avis soumis pour le moment.</td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>

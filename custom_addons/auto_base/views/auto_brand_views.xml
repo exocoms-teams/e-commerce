@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_auto_brand_tree" model="ir.ui.view">
+        <field name="name">auto.brand.tree</field>
+        <field name="model">auto.brand</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="vehicle_count"/>
+                <field name="website_published"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_brand_form" model="ir.ui.view">
+        <field name="name">auto.brand.form</field>
+        <field name="model">auto.brand</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_vehicles" type="object" class="oe_stat_button" icon="fa-car">
+                            <field name="vehicle_count" widget="statinfo" string="Vehicles"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="website_published"/>
+                        </group>
+                        <group>
+                            <field name="logo" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Vehicles">
+                            <field name="vehicle_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="availability"/>
+                                    <field name="list_price"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_auto_brand_search" model="ir.ui.view">
+        <field name="name">auto.brand.search</field>
+        <field name="model">auto.brand</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="published" string="Published" domain="[('website_published', '=', True)]"/>
+                <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_auto_brand" model="ir.actions.act_window">
+        <field name="name">Brands</field>
+        <field name="res_model">auto.brand</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_auto_brand" name="Brands" parent="auto_base.menu_auto_catalog" action="action_auto_brand" sequence="10"/>
+</odoo>

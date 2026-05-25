@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="auto_quote_request_portal_rule" model="ir.rule">
+        <field name="name">Quote requests: portal own records only</field>
+        <field name="model_id" ref="model_auto_quote_request"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

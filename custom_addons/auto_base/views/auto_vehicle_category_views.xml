@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_auto_vehicle_category_tree" model="ir.ui.view">
+        <field name="name">auto.vehicle.category.tree</field>
+        <field name="model">auto.vehicle.category</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_auto_vehicle_category_form" model="ir.ui.view">
+        <field name="name">auto.vehicle.category.form</field>
+        <field name="model">auto.vehicle.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                        <field name="icon" widget="image" class="oe_avatar"/>
+                    </group>
+                    <field name="description"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_auto_vehicle_category" model="ir.actions.act_window">
+        <field name="name">Vehicle Categories</field>
+        <field name="res_model">auto.vehicle.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_auto_vehicle_category" name="Vehicle Categories" parent="auto_base.menu_auto_configuration" action="action_auto_vehicle_category" sequence="10"/>
+</odoo>

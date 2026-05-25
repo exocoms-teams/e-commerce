@@ -1,0 +1,679 @@
+:root {
+  --auto-ink: #101828;
+  --auto-subtle: #5e6a7a;
+  --auto-bg: #f3f5f9;
+  --auto-paper: #ffffff;
+  --auto-line: #d8deea;
+  --auto-primary: #1c5daa;
+  --auto-primary-2: #0e4f9e;
+  --auto-accent: #f16522;
+  --auto-dark: #101628;
+  --auto-chip: #edf1ff;
+  --auto-shadow: 0 12px 30px rgba(16, 22, 40, 0.11);
+}
+
+body {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: var(--auto-ink);
+  background: var(--auto-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter Tight", "Inter", "Segoe UI", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dde2ec;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(140deg, var(--auto-primary), var(--auto-accent));
+  border-radius: 999px;
+}
+
+.auto-section-title {
+  font-size: clamp(1.5rem, calc(1.1rem + 1.3vw), 2.2rem);
+  line-height: 1.2;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.auto-btn-primary {
+  background: linear-gradient(135deg, var(--auto-primary), var(--auto-primary-2));
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  padding-inline: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(47, 35, 255, 0.28);
+}
+
+.auto-btn-primary:hover,
+.auto-btn-primary:focus {
+  color: #fff;
+  background: linear-gradient(135deg, #164d8e, #0b417f);
+}
+
+.auto-btn-glass {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(3px);
+}
+
+.auto-btn-glass:hover,
+.auto-btn-glass:focus {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.auto-home-hero {
+  background: radial-gradient(circle at 20% 5%, rgba(47, 35, 255, 0.28), transparent 45%),
+    radial-gradient(circle at 88% 14%, rgba(66, 217, 255, 0.16), transparent 40%),
+    #0f1728;
+  color: #fff;
+  padding-bottom: 2rem;
+}
+
+.auto-hero-slide {
+  min-height: 76vh;
+  position: relative;
+}
+
+.auto-hero-slide-media {
+  position: absolute;
+  inset: 0;
+}
+
+.auto-hero-image,
+.auto-hero-slide-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auto-hero-slide-fallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Inter Tight", "Inter", "Segoe UI", sans-serif;
+  font-size: clamp(1.2rem, calc(1rem + 2vw), 2rem);
+  background: linear-gradient(135deg, #223e6b, #1f2a4f 50%, #4f2f85);
+}
+
+.auto-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(95deg, rgba(7, 12, 24, 0.8) 0%, rgba(7, 12, 24, 0.52) 40%, rgba(7, 12, 24, 0.2) 70%, rgba(7, 12, 24, 0.76) 100%),
+    linear-gradient(180deg, rgba(7, 12, 24, 0.08), rgba(7, 12, 24, 0.68));
+}
+
+.auto-hero-content {
+  position: relative;
+  z-index: 2;
+  min-height: 76vh;
+  display: flex;
+  align-items: center;
+}
+
+.auto-hero-content-box {
+  max-width: 760px;
+}
+
+.auto-hero-kicker {
+  display: inline-flex;
+  padding: 0.45rem 0.85rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  font-size: 0.83rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.auto-hero-branding {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.45rem;
+}
+
+.auto-hero-exocoms-logo {
+  width: 142px;
+  max-width: 38vw;
+  height: auto;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 0.55rem;
+  padding: 0.22rem 0.48rem;
+}
+
+.auto-hero-title {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, calc(1.1rem + 3.8vw), 4.2rem);
+  line-height: 1.04;
+  color: #f8fbff;
+}
+
+.auto-hero-subtitle {
+  font-size: clamp(1rem, calc(0.9rem + 0.6vw), 1.25rem);
+  color: rgba(244, 248, 255, 0.9);
+  max-width: 680px;
+}
+
+.auto-hero-mini-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.auto-hero-mini-specs span {
+  display: inline-flex;
+  gap: 0.2rem;
+  align-items: center;
+  padding: 0.42rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 40, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.86rem;
+}
+
+.auto-hero-indicators {
+  margin-bottom: 0.9rem;
+}
+
+.auto-hero-indicators [data-bs-target] {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+}
+
+.auto-hero-stats {
+  margin-top: -1.5rem;
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.auto-stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(47, 35, 255, 0.12);
+  border-radius: 0.95rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.auto-stat-value {
+  font-family: "Inter Tight", "Inter", "Segoe UI", sans-serif;
+  font-weight: 700;
+  font-size: 1.14rem;
+  color: var(--auto-dark);
+}
+
+.auto-stat-label {
+  color: var(--auto-subtle);
+  font-size: 0.85rem;
+}
+
+.auto-brand-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.4rem 0.1rem 1rem;
+}
+
+.auto-brand-band {
+  border-top: 1px solid #e4eaf5;
+  border-bottom: 1px solid #e4eaf5;
+}
+
+.auto-brand-marquee {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
+  padding: 0.55rem 0 0.25rem;
+}
+
+.auto-brand-track {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  width: max-content;
+  animation: auto-brand-marquee 34s linear infinite;
+}
+
+.auto-brand-marquee:hover .auto-brand-track {
+  animation-play-state: paused;
+}
+
+@keyframes auto-brand-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.auto-brand-chip {
+  flex: 0 0 178px;
+  border-radius: 1rem;
+  border: 1px solid var(--auto-line);
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  box-shadow: 0 6px 20px rgba(16, 22, 40, 0.05);
+  padding: 0.9rem 0.95rem;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.auto-brand-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--auto-shadow);
+}
+
+.auto-brand-chip-logo {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auto-brand-logo-wrap {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auto-brand-logo {
+  max-width: 100%;
+  max-height: 38px;
+  object-fit: contain;
+}
+
+.auto-brand-fallback {
+  font-family: "Inter Tight", "Inter", "Segoe UI", sans-serif;
+  color: #2a3444;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.auto-brand-chip-name {
+  margin-top: 0.42rem;
+  display: block;
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #2a3347;
+}
+
+.auto-solution-tabs {
+  background: #fff;
+  border: 1px solid var(--auto-line);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(16, 22, 40, 0.05);
+}
+
+.auto-tabs {
+  border-bottom: 1px solid var(--auto-line);
+  background: #f8fafe;
+}
+
+.auto-tabs .nav-link {
+  border: none;
+  border-right: 1px solid var(--auto-line);
+  color: #3b4251;
+  font-weight: 700;
+  border-radius: 0;
+  padding: 1rem 1.2rem;
+}
+
+.auto-tabs .nav-link.active {
+  background: #fff;
+  color: var(--auto-primary);
+  box-shadow: inset 0 -3px 0 var(--auto-primary);
+}
+
+.auto-tabs-content {
+  padding: 2rem;
+}
+
+.auto-featured-shell {
+  background:
+    radial-gradient(circle at 85% 18%, rgba(47, 35, 255, 0.08), transparent 36%),
+    radial-gradient(circle at 8% 80%, rgba(0, 148, 255, 0.05), transparent 45%),
+    #f2f5fb;
+}
+
+.auto-vehicle-card {
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid #d8deea;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(16, 22, 40, 0.07);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.auto-vehicle-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--auto-shadow);
+}
+
+.auto-vehicle-media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e9eff9;
+}
+
+.auto-vehicle-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auto-vehicle-media-placeholder {
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b6575;
+  background: linear-gradient(135deg, #dce4f3, #edf2fb);
+  text-align: center;
+  padding: 1rem;
+}
+
+.auto-vehicle-body {
+  padding: 1rem;
+}
+
+.auto-vehicle-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  color: #566275;
+  font-size: 0.88rem;
+}
+
+.auto-price {
+  font-family: "Inter Tight", "Inter", "Segoe UI", sans-serif;
+  font-size: 1.26rem;
+  font-weight: 700;
+  color: #111a31;
+}
+
+.auto-story-title {
+  max-width: 18ch;
+}
+
+.auto-story-text {
+  color: #3f4a5a;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  margin-bottom: 1.4rem;
+}
+
+.auto-story-visual {
+  min-height: 420px;
+  border-radius: 1rem;
+  background:
+    linear-gradient(160deg, rgba(111, 163, 216, 0.28), rgba(77, 132, 181, 0.2)),
+    linear-gradient(20deg, rgba(255, 255, 255, 0.88), rgba(245, 249, 255, 0.95));
+  position: relative;
+  border: 1px solid rgba(103, 118, 146, 0.25);
+}
+
+.auto-story-card {
+  position: absolute;
+  left: 1.6rem;
+  bottom: 1.6rem;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.9rem;
+  border-left: 4px solid var(--auto-primary);
+  padding: 1.1rem 1.2rem;
+  box-shadow: var(--auto-shadow);
+}
+
+.auto-story-exocoms-logo {
+  width: 140px;
+  height: auto;
+  border-radius: 0.45rem;
+  margin-bottom: 0.8rem;
+}
+
+.auto-exocoms-inline-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.auto-inline-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.42rem 0.78rem;
+  border-radius: 999px;
+  background: #edf3fb;
+  color: #24344f;
+  font-size: 0.88rem;
+}
+
+.auto-inline-link {
+  color: var(--auto-primary);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.auto-inline-link:hover,
+.auto-inline-link:focus {
+  color: #0f4a8e;
+}
+
+.auto-story-mini-image {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  width: 220px;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--auto-line);
+}
+
+.auto-story-mini-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auto-catalog-header {
+  background: #fff;
+  border-bottom: 1px solid #e2e7f1;
+}
+
+.auto-filter-bar {
+  border: 1px solid #d8deea;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 6px 16px rgba(16, 22, 40, 0.05);
+  position: sticky;
+  top: 10px;
+  z-index: 9;
+}
+
+.auto-detail-page {
+  background: var(--auto-bg);
+}
+
+.auto-detail-media {
+  border: 1px solid #d8deea;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.auto-detail-panel {
+  border: 1px solid #d8deea;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  background: #fff;
+  position: sticky;
+  top: 90px;
+  box-shadow: 0 6px 18px rgba(16, 22, 40, 0.07);
+}
+
+.auto-feature-list li {
+  padding: 0.2rem 0;
+}
+
+.auto-review-item {
+  border: 1px solid #e4e8ec;
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+  background: #fff;
+}
+
+.auto-favorite-btn {
+  color: var(--auto-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auto-brand-card {
+  border: 1px solid #d8deea;
+  border-radius: 0.85rem;
+  background: #fff;
+  padding: 1rem;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.auto-brand-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--auto-shadow);
+}
+
+.auto-form-shell {
+  background:
+    radial-gradient(circle at 85% 20%, rgba(47, 35, 255, 0.06), transparent 32%),
+    radial-gradient(circle at 8% 68%, rgba(0, 148, 255, 0.05), transparent 40%),
+    #f4f6fb;
+}
+
+.auto-form-card {
+  border-radius: 1rem;
+  border: 1px solid #d8deea;
+  box-shadow: 0 8px 24px rgba(16, 22, 40, 0.08);
+}
+
+.auto-form-card .form-control,
+.auto-form-card .form-select {
+  border-color: #cdd5e3;
+}
+
+.auto-form-card .form-control:focus,
+.auto-form-card .form-select:focus {
+  border-color: #7c72ff;
+  box-shadow: 0 0 0 0.2rem rgba(47, 35, 255, 0.12);
+}
+
+.auto-table-panel {
+  background: #fff;
+  border: 1px solid #d8deea;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(16, 22, 40, 0.08);
+}
+
+.auto-table-panel .table {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1199.98px) {
+  .auto-hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 991.98px) {
+  .auto-hero-slide,
+  .auto-hero-content {
+    min-height: 68vh;
+  }
+
+  .auto-detail-panel {
+    position: static;
+  }
+
+  .auto-filter-bar {
+    position: static;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .auto-hero-branding {
+    gap: 0.5rem;
+  }
+
+  .auto-hero-exocoms-logo {
+    width: 118px;
+  }
+
+  .auto-hero-content-box {
+    max-width: 100%;
+  }
+
+  .auto-hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .auto-tabs-content {
+    padding: 1.3rem;
+  }
+
+  .auto-story-visual {
+    min-height: 380px;
+  }
+
+  .auto-story-card {
+    position: static;
+    margin: 1rem;
+    max-width: none;
+  }
+
+  .auto-story-mini-image {
+    display: none;
+  }
+
+  .auto-brand-marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .auto-brand-track {
+    animation-duration: 26s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-brand-track {
+    animation: none;
+  }
+}

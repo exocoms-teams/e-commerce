@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_template_form_inherit_auto" model="ir.ui.view">
+        <field name="name">product.template.form.auto.vehicle</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Automotive">
+                    <group>
+                        <button name="action_open_auto_vehicles" type="object" string="Open Linked Vehicles" class="btn-primary"/>
+                        <field name="auto_vehicle_count" readonly="1"/>
+                    </group>
+                    <field name="auto_vehicle_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="brand_id"/>
+                            <field name="availability"/>
+                            <field name="year"/>
+                            <field name="list_price"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

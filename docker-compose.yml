@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    container_name: auto_db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  odoo:
+    image: odoo:18
+    container_name: auto_odoo
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./custom_addons:/mnt/extra-addons
+      - ./config/odoo.conf.example:/etc/odoo/odoo.conf
+      - odoo_data:/var/lib/odoo
+    command: ["odoo", "-c", "/etc/odoo/odoo.conf", "--dev=reload,qweb,xml"]
+
+volumes:
+  pgdata:
+  odoo_data:

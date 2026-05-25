@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_quote_request_received" model="mail.template">
+        <field name="name">Vehicle Quote Request Confirmation</field>
+        <field name="model_id" ref="model_auto_quote_request"/>
+        <field name="subject">We received your quote request: ${object.vehicle_id.display_name}</field>
+        <field name="email_from">${(user.email_formatted or 'noreply@example.com')|safe}</field>
+        <field name="email_to">${object.email|safe}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Hello ${object.partner_id.name},</p>
+                <p>Thank you for your interest in <strong>${object.vehicle_id.display_name}</strong>.</p>
+                <p>Your quote request reference is <strong>${object.name}</strong>. Our sales team will contact you soon.</p>
+                <p>Regards,<br/>Automotive Sales Team</p>
+            </div>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_auto" model="ir.module.category">
+        <field name="name">Automotive</field>
+        <field name="description">Automotive ecommerce custom roles</field>
+        <field name="sequence">32</field>
+    </record>
+
+    <record id="group_auto_admin" model="res.groups">
+        <field name="name">Automobile Administrator</field>
+        <field name="category_id" ref="auto_base.module_category_auto"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <record id="group_auto_sales_advisor" model="res.groups">
+        <field name="name">Automobile Sales Advisor</field>
+        <field name="category_id" ref="auto_base.module_category_auto"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_auto_content_manager" model="res.groups">
+        <field name="name">Automobile Content Manager</field>
+        <field name="category_id" ref="auto_base.module_category_auto"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>
