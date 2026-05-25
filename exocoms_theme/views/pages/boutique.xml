@@ -1,43 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Remplace header ET footer natifs + injecte CSS globaux -->
-    <template id="website_layout_custom"
-              inherit_id="website.layout"
-              name="Custom Header Footer">
-
-        <xpath expr="//head" position="inside">
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/layout.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/header.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/footer.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/categories.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/animations.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/products.css"/>
-            <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord.css"/>
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-        </xpath>
-
-        <xpath expr="//header[@id='top']" position="replace">
-            <t t-call="exocoms_theme.custom_header"/>
-        </xpath>
-
-        <xpath expr="//footer" position="replace">
-            <t t-call="exocoms_theme.custom_footer"/>
-        </xpath>
-
-    </template>
-
     <!-- Injecte la sidebar dans la page shop native -->
     <template id="boutique_sidebar"
               inherit_id="website_sale.products"
               name="Boutique Sidebar">
-
-        <xpath expr="//div[hasclass('o_wsale_products_main')]" position="before">
+        <link rel="stylesheet" href="/exocoms_theme/static/src/css/dashbord_boutique.css" />
+        <xpath expr="//div[@id='products_grid']" position="before">
             <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
         </xpath>
+    </template>
 
+    <!-- Injecte header/footer custom dans website.layout pour TOUTES les pages -->
+    <template id="website_layout_custom"
+              inherit_id="website.layout"
+              name="Custom Header Footer">
+        <xpath expr="//header[@id='top']" position="replace">
+            <t t-call="exocoms_theme.custom_header"/>
+        </xpath>
+        <xpath expr="//footer" position="replace">
+            <t t-call="exocoms_theme.custom_footer"/>
+        </xpath>
     </template>
 
 </odoo>
