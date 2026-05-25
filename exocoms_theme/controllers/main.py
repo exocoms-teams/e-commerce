@@ -24,3 +24,5 @@ class Exocoms(http.Controller):
     @http.route('/boutique', type='http', auth='public', website=True, sitemap=True)
     def boutique(self, **kw):
         return request.redirect('/shop')
+    
+    
