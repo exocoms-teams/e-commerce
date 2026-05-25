@@ -309,3 +309,39 @@
   max-height: calc(100vh - 100px) !important;
   overflow-y: auto !important;
 }
+/* =========================================================
+   CORRECTION LAYOUT GRILLE PRODUITS
+========================================================= */
+
+/* Supprime les styles flex parasites sur le conteneur Odoo */
+#products_grid_before,
+.o_wsale_products_page > .container,
+.o_wsale_products_page > .container-fluid {
+  display: revert !important;
+  flex-direction: revert !important;
+  align-items: revert !important;
+  gap: revert !important;
+  padding-top: revert !important;
+}
+
+/* La sidebar remplace l'aside natif — garde les classes col d'Odoo */
+.exo-dashboard-sidebar {
+  width: 100% !important;
+  min-width: unset !important;
+  max-width: 100% !important;
+}
+
+/* Grille produits — force la largeur maximale */
+#products_grid {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* Assure que la row Odoo garde son comportement flex natif */
+.o_wsale_products_main_row {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 16px !important;
+  align-items: flex-start !important;
+}
