@@ -4,19 +4,9 @@
     <template id="boutique_sidebar"
               inherit_id="website_sale.products"
               name="Boutique Sidebar">
-
-        <!-- Force la sidebar à toujours s'afficher -->
-        <xpath expr="//t[@t-set='hasLeftColumn']" position="attributes">
-            <attribute name="t-value">True</attribute>
+        <xpath expr="//aside[@id='products_grid_before']" position="replace">
+            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
         </xpath>
-
-        <!-- Remplace le contenu de la sidebar native par la nôtre -->
-        <xpath expr="//div[contains(@class,'o_wsale_products_grid_before_rail')]" position="replace">
-            <div class="o_wsale_products_grid_before_rail vh-100 overflow-y-scroll px-2">
-                <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
-            </div>
-        </xpath>
-
     </template>
 
     <template id="website_layout_custom"
