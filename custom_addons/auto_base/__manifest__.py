@@ -1,6 +1,6 @@
 {
     "name": "Auto Base",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Core automotive data models for Chinese car ecommerce",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
