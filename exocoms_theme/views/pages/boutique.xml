@@ -4,11 +4,20 @@
     <template id="boutique_sidebar"
               inherit_id="website_sale.products"
               name="Boutique Sidebar">
+
+        <!-- Force hasLeftColumn à True -->
+        <xpath expr="//t[@t-set='hasLeftColumn']" position="attributes">
+            <attribute name="t-value">True</attribute>
+        </xpath>
+
+        <!-- Remplace le contenu de la sidebar native -->
         <xpath expr="//aside[@id='products_grid_before']" position="replace">
-            <aside id="products_grid_before" class="col-lg-3 col-xl-3">
-            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
+            <aside id="products_grid_before"
+                   class="d-none d-lg-block position-sticky align-self-start col-lg-3 clearfix pt-2">
+                <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
             </aside>
         </xpath>
+
     </template>
 
     <template id="website_layout_custom"
