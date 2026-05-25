@@ -1,15 +1,26 @@
 /* =========================================================
-   SIDEBAR BOUTIQUE
+   SIDEBAR — correction layout Odoo 19
+   L'aside natif a la classe "col" Bootstrap sans largeur fixe
+   On doit la contraindre directement
 ========================================================= */
 
-/* Force la largeur de la colonne aside native d'Odoo */
-#products_grid_before {
-  width: 260px !important;
-  min-width: 260px !important;
-  max-width: 260px !important;
-  flex-shrink: 0 !important;
-  padding: 0 !important;
+aside#products_grid_before {
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  max-width: 280px !important;
+  min-width: 280px !important;
 }
+
+#products_grid {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+/* =========================================================
+   SIDEBAR STYLE
+========================================================= */
 
 .exo-dashboard-sidebar {
   width: 100% !important;
@@ -28,7 +39,6 @@
   scrollbar-color: #dce5ff transparent !important;
 }
 
-/* Titre Catégories */
 .exo-sidebar-title {
   background: linear-gradient(135deg, #0d4dff, #4d8aff) !important;
   border-radius: 8px !important;
@@ -43,7 +53,6 @@
   display: block !important;
 }
 
-/* Catégorie niveau 0 */
 .exo-cat0 {
   font-size: 10px !important;
   font-weight: 800 !important;
@@ -218,10 +227,11 @@
 
 /* RESPONSIVE */
 @media (max-width: 1100px) {
-  #products_grid_before {
+  aside#products_grid_before {
+    flex: 0 0 100% !important;
     width: 100% !important;
-    min-width: unset !important;
     max-width: 100% !important;
+    min-width: unset !important;
   }
   .exo-dashboard-sidebar {
     position: relative !important;

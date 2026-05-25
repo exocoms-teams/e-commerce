@@ -52,6 +52,7 @@
             'exocoms_theme/static/src/css/sections.css',
             'exocoms_theme/static/src/css/home_sections.css',
             'exocoms_theme/static/src/css/odoo-integration.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
         ],
