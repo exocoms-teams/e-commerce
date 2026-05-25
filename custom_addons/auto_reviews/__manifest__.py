@@ -1,6 +1,6 @@
 {
     "name": "Auto Reviews",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Customer reviews with moderation",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
