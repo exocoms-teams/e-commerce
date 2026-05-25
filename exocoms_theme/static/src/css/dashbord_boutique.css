@@ -2,7 +2,15 @@
    SIDEBAR BOUTIQUE
 ========================================================= */
 
-/* La sidebar s'intègre dans la colonne aside native d'Odoo */
+/* Force la largeur de la colonne aside native d'Odoo */
+#products_grid_before {
+  width: 260px !important;
+  min-width: 260px !important;
+  max-width: 260px !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+}
+
 .exo-dashboard-sidebar {
   width: 100% !important;
   background: #ffffff !important;
@@ -53,14 +61,8 @@
   margin-bottom: 2px;
 }
 
-/* =========================================================
-   NIVEAU 1
-========================================================= */
-
-.exo-l1-item {
-  display: flex;
-  flex-direction: column;
-}
+/* NIVEAU 1 */
+.exo-l1-item { display: flex; flex-direction: column; }
 
 .exo-l1-header {
   display: flex;
@@ -73,9 +75,7 @@
   transition: background 0.15s;
 }
 
-.exo-l1-header:hover {
-  background: #f0f4ff;
-}
+.exo-l1-header:hover { background: #f0f4ff; }
 
 .exo-l1-header a {
   color: #1a2340 !important;
@@ -87,9 +87,7 @@
   transition: color 0.15s;
 }
 
-.exo-l1-header:hover a {
-  color: #0d4dff !important;
-}
+.exo-l1-header:hover a { color: #0d4dff !important; }
 
 .exo-l1-chevron {
   font-size: 8px;
@@ -107,14 +105,8 @@
   margin: 0 0 4px 10px;
 }
 
-/* =========================================================
-   NIVEAU 2
-========================================================= */
-
-.exo-l2-item {
-  display: flex;
-  flex-direction: column;
-}
+/* NIVEAU 2 */
+.exo-l2-item { display: flex; flex-direction: column; }
 
 .exo-l2-header {
   display: flex;
@@ -127,9 +119,7 @@
   transition: background 0.15s;
 }
 
-.exo-l2-header:hover {
-  background: #f5f7ff;
-}
+.exo-l2-header:hover { background: #f5f7ff; }
 
 .exo-l2-header a {
   color: #2a3250 !important;
@@ -141,9 +131,7 @@
   transition: color 0.15s;
 }
 
-.exo-l2-header:hover a {
-  color: #0d4dff !important;
-}
+.exo-l2-header:hover a { color: #0d4dff !important; }
 
 .exo-l2-chevron {
   font-size: 7px;
@@ -161,14 +149,8 @@
   margin: 0 0 2px 6px;
 }
 
-/* =========================================================
-   NIVEAU 3
-========================================================= */
-
-.exo-l3-item {
-  display: flex;
-  flex-direction: column;
-}
+/* NIVEAU 3 */
+.exo-l3-item { display: flex; flex-direction: column; }
 
 .exo-l3-header {
   display: flex;
@@ -181,9 +163,7 @@
   transition: background 0.15s;
 }
 
-.exo-l3-header:hover {
-  background: #f8f9ff;
-}
+.exo-l3-header:hover { background: #f8f9ff; }
 
 .exo-l3-header a {
   color: #2a3250 !important;
@@ -195,9 +175,7 @@
   transition: color 0.15s;
 }
 
-.exo-l3-header:hover a {
-  color: #0d4dff !important;
-}
+.exo-l3-header:hover a { color: #0d4dff !important; }
 
 .exo-l3-chevron {
   font-size: 7px;
@@ -215,10 +193,7 @@
   margin: 0 0 2px 6px;
 }
 
-/* =========================================================
-   FEUILLES
-========================================================= */
-
+/* FEUILLES */
 .exo-leaf {
   display: block !important;
   padding: 3px 4px !important;
@@ -235,39 +210,19 @@
   background: #f0f4ff;
 }
 
-/* =========================================================
-   ÉLÉMENTS DÉSACTIVÉS
-========================================================= */
+/* DÉSACTIVÉS */
+.exo-l1-header-disabled { cursor: default !important; pointer-events: none !important; opacity: 0.45; }
+.exo-l2-header-disabled { cursor: default !important; pointer-events: none !important; opacity: 0.45; }
+.exo-disabled, .exo-leaf-disabled { color: #b0b8cc !important; cursor: default !important; pointer-events: none !important; }
+.exo-l1-header-disabled a, .exo-l2-header-disabled a { color: #b0b8cc !important; }
 
-.exo-l1-header-disabled {
-  cursor: default !important;
-  pointer-events: none !important;
-  opacity: 0.45;
-}
-
-.exo-l2-header-disabled {
-  cursor: default !important;
-  pointer-events: none !important;
-  opacity: 0.45;
-}
-
-.exo-disabled,
-.exo-leaf-disabled {
-  color: #b0b8cc !important;
-  cursor: default !important;
-  pointer-events: none !important;
-}
-
-.exo-l1-header-disabled a,
-.exo-l2-header-disabled a {
-  color: #b0b8cc !important;
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
+/* RESPONSIVE */
 @media (max-width: 1100px) {
+  #products_grid_before {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: 100% !important;
+  }
   .exo-dashboard-sidebar {
     position: relative !important;
     top: 0 !important;
