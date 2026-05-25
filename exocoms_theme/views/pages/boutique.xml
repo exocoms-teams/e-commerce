@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <template id="boutique_sidebar"
-        inherit_id="website_sale.products"
-        name="Boutique Sidebar">
-        <xpath expr="//div[@id='products_grid']" position="before">
-            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar" />
+              inherit_id="website_sale.products"
+              name="Boutique Sidebar">
+
+        <!-- Header custom -->
+        <xpath expr="//header[@id='top']" position="replace">
+            <t t-call="exocoms_theme.custom_header"/>
         </xpath>
+
+         <!-- Sidebar avant la grille produits -->
+        <xpath expr="//div[@id='products_grid']" position="before">
+            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
+        </xpath>
+
+
+        <!-- Footer custom -->
+        <xpath expr="//div[@id='wrapwrap']/footer" position="replace">
+            <t t-call="exocoms_theme.custom_footer"/>
+        </xpath>
+       
     </template>
+
 </odoo>
