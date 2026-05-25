@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Injecte la sidebar dans la page shop native -->
     <template id="boutique_sidebar"
-              inherit_id="website_sale.products"
-              name="Boutique Sidebar">
-        <xpath expr="//div[@id='products_grid']" position="before">
-            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
+        inherit_id="website_sale.products"
+        name="Boutique Sidebar">
+        <xpath expr="//div[@id='products_grid_before']" position="before">
+            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar" />
         </xpath>
     </template>
 
-    <!-- Injecte header/footer custom dans website.layout pour TOUTES les pages -->
     <template id="website_layout_custom"
-              inherit_id="website.layout"
-              name="Custom Header Footer">
+        inherit_id="website.layout"
+        name="Custom Header Footer">
         <xpath expr="//header[@id='top']" position="replace">
-            <t t-call="exocoms_theme.custom_header"/>
+            <t t-call="exocoms_theme.custom_header" />
         </xpath>
         <xpath expr="//footer" position="replace">
-            <t t-call="exocoms_theme.custom_footer"/>
+            <t t-call="exocoms_theme.custom_footer" />
         </xpath>
     </template>
 
