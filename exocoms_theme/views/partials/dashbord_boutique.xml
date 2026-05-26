@@ -435,9 +435,25 @@
                     </div>
                 </div>
             </div>
-
+            <!-- FILTRE PRIX -->
+            <div class="exo-price-filter">
+                <div class="exo-cat0" style="margin-top: 16px;">Prix</div>
+                <div class="exo-price-filter-body">
+                    <div class="exo-price-values">
+                        <span id="exo-price-min">0 €</span>
+                        <span id="exo-price-max">5 000 €</span>
+                    </div>
+                    <div class="exo-price-slider-wrap">
+                        <input type="range" id="exo-range-min" min="0" max="5000" value="0"
+                            step="10" class="exo-range" />
+                        <input type="range" id="exo-range-max" min="0" max="5000" value="5000"
+                            step="10" class="exo-range" />
+                    </div>
+                    <a href="#" id="exo-price-apply" class="exo-price-apply-btn">Appliquer</a>
+                </div>
+            </div>
         </aside>
-        
+
         <script><![CDATA[
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -525,9 +541,40 @@
                     }
                 });
             });
+            /* === FILTRE PRIX === */
+            var rangeMin = document.getElementById('exo-range-min');
+            var rangeMax = document.getElementById('exo-range-max');
+            var labelMin = document.getElementById('exo-price-min');
+            var labelMax = document.getElementById('exo-price-max');
+            var applyBtn = document.getElementById('exo-price-apply');
 
+            if (rangeMin && rangeMax) {
+                function updatePriceLabels() {
+                    var min = parseInt(rangeMin.value);
+                    var max = parseInt(rangeMax.value);
+                    labelMin.textContent = min.toLocaleString('fr-FR') + ' €';
+                    labelMax.textContent = max.toLocaleString('fr-FR') + ' €';
+                }
+                rangeMin.addEventListener('input', updatePriceLabels);
+                rangeMax.addEventListener('input', updatePriceLabels);
+
+                applyBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var min = Math.min(parseInt(rangeMin.value), parseInt(rangeMax.value));
+                    var max = Math.max(parseInt(rangeMin.value), parseInt(rangeMax.value));
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('min_price', min);
+                    url.searchParams.set('max_price', max);
+                    window.location.href = url.toString();
+                });
+
+                var params = new URLSearchParams(window.location.search);
+                if (params.get('min_price')) rangeMin.value = params.get('min_price');
+                if (params.get('max_price')) rangeMax.value = params.get('max_price');
+                updatePriceLabels();
+            }
         });
-        ]]>    </script>
+        ]]>        </script>
 
     </template>
 
