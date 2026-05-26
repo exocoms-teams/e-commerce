@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template
-        id="exo_portal_layout"
-        inherit_id="portal.frontend_layout">
+    <!--
+        PORTAL LAYOUT — applique le header/footer Exocoms sur les pages portail
+        (mon compte, mes commandes, etc.) en mode visiteur uniquement.
+        En mode éditeur, le header natif est conservé.
+    -->
+    <template id="exo_portal_layout"
+              inherit_id="portal.frontend_layout"
+              name="Portal Custom Header Footer">
 
-        <!-- SUPPRIME HEADER ODOO -->
+        <xpath expr="//header" position="replace">
+            <t t-if="not editable_mode">
+                <t t-call="exocoms_theme.custom_header"/>
+            </t>
+            <t t-else="">
+                <header id="top"/>
+            </t>
+        </xpath>
 
-        <xpath expr="//header" position="replace"/>
-
-        <!-- SUPPRIME FOOTER ODOO -->
-
-        <xpath expr="//footer" position="replace"/>
+        <xpath expr="//footer" position="replace">
+            <t t-if="not editable_mode">
+                <t t-call="exocoms_theme.custom_footer"/>
+            </t>
+        </xpath>
 
     </template>
 

@@ -20,6 +20,7 @@
         'views/partials/services_hero.xml',
         'views/partials/services_content.xml',
         'views/partials/mentions_legales_content.xml',
+        'views/partials/portal.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
