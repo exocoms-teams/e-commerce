@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!--
-        BOUTIQUE SIDEBAR — remplace l'aside natif du shop par la sidebar Exocoms.
-        position="replace" sur l'aside est safe : l'aside n'est pas un hook éditeur.
-    -->
     <template id="boutique_sidebar"
               inherit_id="website_sale.products"
               name="Boutique Sidebar">
@@ -21,6 +17,7 @@
             <t t-set="wsale_has_filters_btn_lg" t-value="False"/>
         </xpath>
 
+        <!-- Remplace la sidebar native par la sidebar Exocoms -->
         <xpath expr="//aside[@id='products_grid_before']" position="replace">
             <aside id="products_grid_before"
                    class="position-sticky align-self-start col-3 clearfix pt-2">
@@ -28,18 +25,16 @@
             </aside>
         </xpath>
 
+        <!-- Injecte le filtre prix natif Odoo dans la barre header
+             entre la recherche et le Sort By -->
+        <xpath expr="//div[@id='o_wsale_products_header']" position="inside">
+            <div class="exo-price-filter-wrapper">
+                <t t-call="website_sale.filter_products_price"/>
+            </div>
+        </xpath>
+
     </template>
 
-    <!--
-        HEADER / FOOTER CUSTOM — remplace le header et footer natifs Odoo.
-
-        En mode visiteur  → ton header/footer Exocoms s'affiche.
-        En mode éditeur   → le header/footer natif Odoo est conservé pour que
-                            l'éditeur website garde tous ses hooks d'édition.
-
-        La variable "editable_mode" est injectée par Odoo automatiquement
-        quand l'utilisateur clique sur "Edit" dans le backend website.
-    -->
     <template id="website_layout_custom"
               inherit_id="website.layout"
               name="Custom Header Footer">
@@ -49,7 +44,6 @@
                 <t t-call="exocoms_theme.custom_header"/>
             </t>
             <t t-else="">
-                <!-- Mode éditeur : on garde le header natif Odoo intact -->
                 <header id="top"/>
             </t>
         </xpath>
@@ -58,7 +52,6 @@
             <t t-if="not editable_mode">
                 <t t-call="exocoms_theme.custom_footer"/>
             </t>
-            <!-- Mode éditeur : footer natif supprimé proprement, pas de doublon -->
         </xpath>
 
     </template>
