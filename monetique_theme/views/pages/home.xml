@@ -1,118 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="page_home" name="monetiques.fr Accueil">
-        <t t-call="website.layout">
+<template id="homepage" name="monetiques.fr Homepage">
+  <t t-call="website.layout">
+    <div id="wrap">
 
-            <section class="mn-hero">
-                <div class="mn-container">
-                    <div class="mn-hero__inner">
-                        <div class="mn-hero__content">
-                            <div class="mn-hero__badge">
-                                <span class="mn-dot"></span>
-                                Certifie PCI DSS &#183; Partenaire Banque de France
-                            </div>
-                            <h1 class="mn-hero__title">
-                                Encaissez simplement, partout
-                                <span class="mn-hero__accent">et en toute securite</span>
-                            </h1>
-                            <p class="mn-hero__desc">Des solutions de paiement adaptees a votre activite : TPE, paiement mobile et e-commerce.</p>
-                            <div class="mn-hero__actions">
-                                <a href="/contact" class="mn-btn mn-btn--primary mn-btn--lg">Demander un audit gratuit</a>
-                                <a href="/shop" class="mn-btn mn-btn--outline mn-btn--lg">Voir nos produits</a>
-                            </div>
-                            <div class="mn-hero__trust">
-                                <span>&#10003; SLA 98.5% garanti</span>
-                                <span>&#10003; Support 7j/7</span>
-                                <span>&#10003; +3400 TPE actifs</span>
-                            </div>
-                        </div>
-                        <div class="mn-hero__visual">
-                            <img src="/monetique_theme/static/src/img/tpe_hero.png" alt="TPE Monetique" style="max-width:100%;height:auto;border-radius:16px;width:600px;"/>
-                        </div>
-                    </div>
+      <!-- HERO -->
+      <section class="mn-hero">
+        <div class="mn-container">
+          <div class="mn-hero__inner">
+            <div class="mn-hero__left">
+              <div class="mn-hero__badge mn-anim-left mn-anim-d1">
+                <span class="mn-hero__badge-dot"></span>
+                Certifié PCI DSS · Partenaire Banque de France
+              </div>
+              <h1 class="mn-hero__title mn-anim-left mn-anim-d2">
+                Encaissez simplement,
+                <span class="mn-hero__title-accent">partout.</span>
+              </h1>
+              <p class="mn-hero__desc mn-anim-left mn-anim-d3">
+                Des solutions de paiement adaptées à votre activité — TPE fixe, mobile, sans contact. Déployées en 48h, maintenues avec un SLA garanti.
+              </p>
+              <div class="mn-hero__actions mn-anim-left mn-anim-d4">
+                <a href="/audit" class="mn-btn mn-btn--primary mn-btn--lg">Demander un audit gratuit</a>
+                <a href="/shop" class="mn-btn mn-btn--outline mn-btn--lg">Voir nos produits</a>
+              </div>
+              <div class="mn-hero__trust mn-anim-up" style="animation-delay:.5s;opacity:0">
+                <span class="mn-hero__trust-item">SLA 98,5% garanti</span>
+                <span class="mn-hero__trust-item">Support 7j/7</span>
+                <span class="mn-hero__trust-item">+3 400 TPE actifs</span>
+                <span class="mn-hero__trust-item">Installation incluse</span>
+              </div>
+            </div>
+            <div class="mn-hero__right">
+              <div class="mn-hero__card">
+                <div class="mn-hero__card-label">Terminal recommandé</div>
+                <div class="mn-hero__card-img">
+                  <img src="/monetique_theme/static/src/img/tpe_move5000_4g.png" alt="Ingenico TETRA Move 5000"/>
                 </div>
-            </section>
-
-            <t t-call="monetique_theme.stats_section"/>
-
-            <section class="mn-section mn-products">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Nos produits</span>
-                        <h2>Nos solutions les plus demandees</h2>
-                        <p>Equipements certifies, prets a deployer. Livraison et installation incluses.</p>
-                    </div>
-                    <div class="mn-products__grid">
-                        <t t-set="products" t-value="website.sale_product_domain()"/>
-                        <t t-foreach="request.env['product.template'].search([], limit=8)" t-as="product">
-                            <a t-attf-href="/shop/#{product.id}" class="mn-product-card">
-                                <div class="mn-product-card__img">
-                                    <t t-if="product.image_512">
-                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="mn-product-card__no-img"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="26" rx="4" stroke="#94A3B8" stroke-width="2"/><path d="M6 18h36" stroke="#94A3B8" stroke-width="2"/><rect x="14" y="22" width="20" height="8" rx="2" fill="#94A3B8" opacity="0.3"/></svg></div>
-                                    </t>
-                                </div>
-                                <div class="mn-product-card__body">
-                                    <h3 t-esc="product.name"/>
-                                    <div class="mn-product-card__footer">
-                                        <span class="mn-product-card__price" t-esc="'%.2f € HT' % product.list_price"/>
-                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </t>
-                        
-                    </div>
-                    <div class="mn-section__footer">
-                        <a href="/shop" class="mn-btn mn-btn--outline">Voir tous nos produits &#8594;</a>
-                    </div>
+                <div class="mn-hero__card-title">Ingenico TETRA Move 5000</div>
+                <div class="mn-hero__card-ref">Réf. MOVE/5000 · Stock disponible</div>
+                <div class="mn-hero__card-specs">
+                  <div class="mn-hero__card-spec">
+                    <div class="mn-hero__card-spec-val">4G / WiFi</div>
+                    <div class="mn-hero__card-spec-lbl">Connectivité</div>
+                  </div>
+                  <div class="mn-hero__card-spec">
+                    <div class="mn-hero__card-spec-val">NFC + puce</div>
+                    <div class="mn-hero__card-spec-lbl">Paiement</div>
+                  </div>
+                  <div class="mn-hero__card-spec">
+                    <div class="mn-hero__card-spec-val">48h</div>
+                    <div class="mn-hero__card-spec-lbl">Livraison</div>
+                  </div>
+                  <div class="mn-hero__card-spec">
+                    <div class="mn-hero__card-spec-val">36 mois</div>
+                    <div class="mn-hero__card-spec-lbl">Garantie</div>
+                  </div>
                 </div>
-            </section>
-
-            <section class="mn-reviews mn-section">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Temoignages</span>
-                        <h2>Ce que disent nos clients</h2>
-                    </div>
-                    <div class="mn-grid mn-grid--3">
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Installation rapide, equipe tres reactive. 12 terminaux sans interruption depuis 2 ans.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">ML</div><div><strong>Marie L.</strong><span>Directrice - Restauration, Lyon</span></div></footer>
-                        </article>
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Support 7j/7 nous a depannes un dimanche en moins de 2h. Indispensable.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">TB</div><div><strong>Thomas B.</strong><span>Gerant - Supermarche, Paris</span></div></footer>
-                        </article>
-                        <article class="mn-review">
-                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                            <blockquote>Migration de 45 caisses sans interruption. Serieux et professionnel.</blockquote>
-                            <footer class="mn-review__author"><div class="mn-avatar">SM</div><div><strong>Sophie M.</strong><span>DSI - Franchise, Bordeaux</span></div></footer>
-                        </article>
-                    </div>
-                    <div class="mn-reviews__score"><div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><strong>4,8 / 5</strong> &#8212; 312 avis verifies</div>
+                <div class="mn-hero__card-badges">
+                  <span class="mn-badge">PCI DSS</span>
+                  <span class="mn-badge">NF525</span>
+                  <span class="mn-badge">ISO 27001</span>
+                  <span class="mn-badge">CB / Visa / MC</span>
                 </div>
-            </section>
-
-            <section class="mn-cta">
-                <div class="mn-container">
-                    <div class="mn-cta__inner">
-                        <h2>Votre infrastructure de paiement commence par une conversation.</h2>
-                        <p>Audit gratuit &#183; Devis sous 48h &#183; Sans engagement</p>
-                        <div class="mn-cta__actions">
-                            <a href="/contact" class="mn-btn mn-btn--white mn-btn--lg">Demander un audit gratuit</a>
-                            <a href="/shop" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white">Voir la boutique</a>
-                        </div>
-                    </div>
+              </div>
+              <div class="mn-hero__stats">
+                <div class="mn-hero__stat">
+                  <span class="mn-hero__stat-num">3 400+</span>
+                  <span class="mn-hero__stat-lbl">TPE actifs</span>
                 </div>
-            </section>
+                <div class="mn-hero__stat">
+                  <span class="mn-hero__stat-num">1 400+</span>
+                  <span class="mn-hero__stat-lbl">Clients</span>
+                </div>
+                <div class="mn-hero__stat">
+                  <span class="mn-hero__stat-num">98,5%</span>
+                  <span class="mn-hero__stat-lbl">SLA garanti</span>
+                </div>
+                <div class="mn-hero__stat">
+                  <span class="mn-hero__stat-num">20 ans</span>
+                  <span class="mn-hero__stat-lbl">Expérience</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        </t>
-    </template>
+      <!-- PRODUITS -->
+      <section class="mn-section">
+        <div class="mn-container">
+          <div class="mn-section__header">
+            <span class="mn-eyebrow">Nos produits</span>
+            <h2>Nos solutions les plus demandées</h2>
+            <p>Equipements certifiés, prêts à déployer. Livraison et installation incluses.</p>
+          </div>
+          <div class="mn-products__grid">
+            <div class="mn-product-card">
+              <div class="mn-product-card__img">
+                <img src="/monetique_theme/static/src/img/tpe_move5000_4g.png" alt="TPE Ingenico TETRA Desk 5000 Fixe"/>
+              </div>
+              <div class="mn-product-card__body">
+                <div class="mn-product-card__name">TPE Ingenico TETRA Desk 5000 Fixe</div>
+                <div class="mn-product-card__footer">
+                  <span class="mn-product-card__price">215,00<span class="mn-product-card__price-ht"> € HT</span></span>
+                  <a href="/shop" class="mn-btn mn-btn--primary mn-btn--sm">Voir</a>
+                </div>
+              </div>
+            </div>
+            <div class="mn-product-card">
+              <div class="mn-product-card__img">
+                <img src="/monetique_theme/static/src/img/tpe_move5000_4g.png" alt="TPE Ingenico TETRA Move 5000 Portable Wifi"/>
+              </div>
+              <div class="mn-product-card__body">
+                <div class="mn-product-card__name">TPE Ingenico TETRA Move 5000 Portable Wifi</div>
+                <div class="mn-product-card__footer">
+                  <span class="mn-product-card__price">380,00<span class="mn-product-card__price-ht"> € HT</span></span>
+                  <a href="/shop" class="mn-btn mn-btn--primary mn-btn--sm">Voir</a>
+                </div>
+              </div>
+            </div>
+            <div class="mn-product-card">
+              <div class="mn-product-card__img">
+                <img src="/monetique_theme/static/src/img/tpe_move5000_4g.png" alt="TPE Ingenico TETRA Move 5000 4G"/>
+              </div>
+              <div class="mn-product-card__body">
+                <div class="mn-product-card__name">TPE Ingenico TETRA Move 5000 Portable 4G Bluetooth Wifi</div>
+                <div class="mn-product-card__footer">
+                  <span class="mn-product-card__price">490,00<span class="mn-product-card__price-ht"> € HT</span></span>
+                  <a href="/shop" class="mn-btn mn-btn--primary mn-btn--sm">Voir</a>
+                </div>
+              </div>
+            </div>
+            <div class="mn-product-card">
+              <div class="mn-product-card__img">
+                <img src="/monetique_theme/static/src/img/tpe_move5000_4g.png" alt="Pinpad Ingenico TETRA Lane 3000"/>
+              </div>
+              <div class="mn-product-card__body">
+                <div class="mn-product-card__name">Pinpad Ingenico TETRA Lane 3000</div>
+                <div class="mn-product-card__footer">
+                  <span class="mn-product-card__price">590,00<span class="mn-product-card__price-ht"> € HT</span></span>
+                  <a href="/shop" class="mn-btn mn-btn--primary mn-btn--sm">Voir</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:36px">
+            <a href="/shop" class="mn-btn mn-btn--outline">Voir tous nos produits →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="mn-section mn-section--gray">
+        <div class="mn-container">
+          <div class="mn-section__header">
+            <span class="mn-eyebrow">Pourquoi nous choisir</span>
+            <h2>Une expertise métier depuis 20 ans</h2>
+            <p>Nous accompagnons commerçants, hôtels et grandes surfaces dans leur infrastructure de paiement.</p>
+          </div>
+          <div class="mn-features__grid">
+            <div class="mn-feature">
+              <div class="mn-feature__icon">🔒</div>
+              <h3>Sécurité PCI DSS</h3>
+              <p>Tous nos terminaux sont certifiés PCI DSS niveau 1. Vos transactions sont chiffrées de bout en bout.</p>
+            </div>
+            <div class="mn-feature">
+              <div class="mn-feature__icon">🚀</div>
+              <h3>Déploiement 48h</h3>
+              <p>Livraison express, installation et formation incluses. Opérationnel en moins de 48 heures.</p>
+            </div>
+            <div class="mn-feature">
+              <div class="mn-feature__icon">📞</div>
+              <h3>Support 7j/7</h3>
+              <p>Une équipe technique disponible 7 jours sur 7 pour vous accompagner en cas de besoin.</p>
+            </div>
+            <div class="mn-feature">
+              <div class="mn-feature__icon">⚙️</div>
+              <h3>Maintenance incluse</h3>
+              <p>Contrats de maintenance préventive et curative. SLA de 98,5% garanti contractuellement.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEMOIGNAGES -->
+      <section class="mn-section">
+        <div class="mn-container">
+          <div class="mn-section__header">
+            <span class="mn-eyebrow">Témoignages</span>
+            <h2>Ce que disent nos clients</h2>
+            <p>Plus de 1 400 entreprises nous font confiance pour leur infrastructure de paiement.</p>
+          </div>
+          <div class="mn-reviews__grid">
+            <div class="mn-review">
+              <div class="mn-review__stars">★★★★★</div>
+              <blockquote>Déployé 30 TPE en une semaine pour notre réseau de pharmacies. Zéro panne, zéro stress. Un partenaire de confiance.</blockquote>
+              <div class="mn-review__author">
+                <div class="mn-avatar">NK</div>
+                <div>
+                  <strong>Nadia K.</strong>
+                  <span>Responsable IT — Groupe Pharmavie, Lille</span>
+                </div>
+              </div>
+            </div>
+            <div class="mn-review">
+              <div class="mn-review__stars">★★★★★</div>
+              <blockquote>Notre hôtel utilise leurs terminaux depuis 3 saisons. La remontée des paiements en temps réel a changé notre gestion.</blockquote>
+              <div class="mn-review__author">
+                <div class="mn-avatar">AC</div>
+                <div>
+                  <strong>Alexandre C.</strong>
+                  <span>Directeur — Hôtel Le Belmont, Nice</span>
+                </div>
+              </div>
+            </div>
+            <div class="mn-review">
+              <div class="mn-review__stars">★★★★★</div>
+              <blockquote>J'avais des doutes au départ mais l'onboarding était impeccable. Mon équipe a été formée en 2h chrono.</blockquote>
+              <div class="mn-review__author">
+                <div class="mn-avatar">RL</div>
+                <div>
+                  <strong>Rachid L.</strong>
+                  <span>Gérant — Boulangerie Artisane, Toulouse</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mn-reviews__score">
+            <span class="mn-reviews__stars-lg">★★★★★</span>
+            4,9 / 5 — 487 avis vérifiés
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="mn-cta">
+        <div class="mn-container">
+          <div class="mn-cta__inner">
+            <h2>Votre infrastructure de paiement commence par une conversation.</h2>
+            <p>Audit gratuit · Devis sous 48h · Sans engagement</p>
+            <div class="mn-cta__actions">
+              <a href="/audit" class="mn-btn mn-btn--primary mn-btn--lg">Demander un audit gratuit</a>
+              <a href="/shop" class="mn-btn mn-btn--outline-white mn-btn--lg">Voir la boutique</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </t>
+</template>
 
 </odoo>
