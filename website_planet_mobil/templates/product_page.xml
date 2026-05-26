@@ -11,7 +11,7 @@
 
                         <div class="tsp-product-detail-img-wrap">
                             <img
-                                t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                                t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/product.template/' + str(product.id) + '/image_1920'"
                                 t-att-alt="product['name'] if isinstance(product, dict) else product.name"
                                 class="tsp-product-detail-img"
                                 onerror="this.parentElement.classList.add('tsp-img-placeholder')"
@@ -20,10 +20,10 @@
 
                         <div class="tsp-product-detail-info">
                             <t
-                                t-if="product['badge'] if isinstance(product, dict) else product.badge">
+                                t-if="product['badge'] if isinstance(product, dict) else product.website_ribbon_id.html">
                                 <span class="tsp-badge-new">
                                     <t
-                                        t-out="product['badge'] if isinstance(product, dict) else product.badge" />
+                                        t-out="product['badge'] if isinstance(product, dict) else product.website_ribbon_id.html" />
                                 </span>
                             </t>
 
@@ -34,7 +34,7 @@
 
                             <div class="tsp-stars tsp-stars-lg mb-3">
                                 <t t-set="prod_rating"
-                                    t-value="int(product['rating'] if isinstance(product, dict) else product.rating)" />
+                                    t-value="int(product['rating'] if isinstance(product, dict) else product.website_rating_count)" />
                                 <t t-foreach="range(5)" t-as="star_i">
                                     <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on" />
                                     <i t-else="" class="fa fa-star tsp-star-off" />
@@ -44,13 +44,13 @@
 
                             <p class="tsp-product-detail-desc">
                                 <t
-                                    t-out="product['description'] if isinstance(product, dict) else product.description" />
+                                    t-out="product['description'] if isinstance(product, dict) else product.description_sale" />
                             </p>
 
                             <div class="tsp-product-detail-footer">
                                 <span class="tsp-price tsp-price-lg">
                                     <t
-                                        t-out="product['price'] if isinstance(product, dict) else product.price" />
+                                        t-out="product['price'] if isinstance(product, dict) else product.list_price" />
                                     €
                             </span>
                                 <button class="tsp-wishlist-btn">

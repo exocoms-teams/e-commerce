@@ -108,8 +108,8 @@ class WebsitePlanetMobil(http.Controller):
 
     @http.route(['/', '/accueil'], type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
-        top_ventes = request.env['planet.product'].sudo().search([('is_top_vente', '=', True)], limit=4)
-        nouveautes = request.env['planet.product'].sudo().search([('is_nouveaute', '=', True)], limit=4)
+        top_ventes = request.env['product.template'].sudo().search([('x_is_top_vente', '=', True), ('is_published', '=', True)], limit=4)
+        nouveautes = request.env['product.template'].sudo().search([('x_is_nouveaute', '=', True), ('is_published', '=', True)], limit=4)
 
         if not top_ventes:
             top_ventes = [p for p in  FAKE_PRODUCTS.values() if p['is_top_vente']]
@@ -143,15 +143,15 @@ class WebsitePlanetMobil(http.Controller):
     def shop(self, **kwargs):
         category = kwargs.get('category')  #retourne none si pas de parametre
         
-        domain = []
+        domain = [('is_published', '=', True)]
         if category=='Nouveautes':
-            domain = [('is_nouveaute', '=', True)]
+            domain = [('x_is_nouveaute', '=', True)]
         elif category=='Promotions':
-            domain = [('is_promotion', '=', True)]
+            domain = [('x_is_promotion', '=', True)]
         elif category:
-            domain = [('category', '=', category)]
+            domain = [('website_categ_ids.name', '=', category)]
 
-        products = request.env['planet.product'].sudo().search(domain, limit=12)
+        products = request.env['product.template'].sudo().search(domain, limit=12)
 
         if not products:    #temporaire pour remplacer bd
             products = list(FAKE_PRODUCTS.values())
@@ -162,10 +162,10 @@ class WebsitePlanetMobil(http.Controller):
             elif category:
                 products = [p for p in FAKE_PRODUCTS.values() if p.get('category') == category]
 
-        brands = request.env['planet.product'].sudo().search([]).mapped('brand')
+        brands = request.env['product.template'].sudo().search([]).mapped('x_brand')
         brands = list(set(filter(None, brands)))
 
-        colors = request.env['planet.product'].sudo().search([]).mapped('color')
+        colors = request.env['product.template'].sudo().search([]).mapped('color')
         colors = list(set(filter(None, colors)))
         return request.render('website_planet_mobil.category_page', {
             'products': products, 
@@ -176,7 +176,7 @@ class WebsitePlanetMobil(http.Controller):
 
     @http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     def product(self, product_id, **kwargs):
-        product = request.env['planet.product'].sudo().search([('id', '=', product_id)], limit=1)
+        product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
 
         if not product:
             #return request.not_found()     pour linstant pas de base, creer produits fictifs
@@ -185,7 +185,7 @@ class WebsitePlanetMobil(http.Controller):
         if isinstance(product, dict):
             specs = product.get('specs', {})
         else:
-            specs = json.loads(product.specs) if product.specs else {}
+            specs = json.loads(product.x_specs) if product.x_specs else {}
 
         return request.render('website_planet_mobil.product_page', {
             'product': product,
