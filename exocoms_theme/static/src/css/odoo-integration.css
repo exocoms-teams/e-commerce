@@ -2,7 +2,8 @@
    INTÉGRATION ODOO/SHOP
    ======================================== */
 
-/* Masquer les éléments par défaut d'Odoo */
+/* Masquer la navbar et footer natifs Odoo
+   (remplacés par header/footer Exocoms) */
 .o_website_navbar {
     display: none !important;
 }
@@ -11,23 +12,80 @@
     display: none !important;
 }
 
+.o_footer_copyright {
+    display: none !important;
+}
+
 #wrap {
     margin: 0 !important;
     padding: 0 !important;
 }
 
+/* Masquer la sidebar catégories native et les attributs
+   (remplacés par dashboard_menu_boutiques_sidebar) */
 .o_wsale_products_categories,
-.o_wsale_products_searchbar_form,
 .o_wsale_products_attributes {
     display: none !important;
 }
 
-#products_grid_before {
-    display: none !important;
+/* NE PLUS masquer — on veut garder la recherche et le tri natifs */
+/* .o_wsale_products_searchbar_form { display: none !important; } */
+/* #products_grid_before { display: none !important; }           */
+
+/* ========================================
+   ALIGNEMENT RECHERCHE + SORT BY
+   Barre de recherche alignée à gauche de "Sort By"
+   ======================================== */
+
+#o_wsale_products_header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 8px 0 !important;
+    flex-wrap: wrap !important;
 }
 
-.o_footer_copyright {
-    display: none !important;
+.o_wsale_products_header_search_form_container {
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    max-width: 380px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.o_wsale_products_header_search_form_container form {
+    width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+}
+
+.o_wsale_products_header_search_form_container input {
+    border-radius: 8px !important;
+    border: 1px solid #dce5ff !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    flex: 1 !important;
+}
+
+.o_wsale_products_header_search_form_container button {
+    background: #0d4dff !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+
+/* Sort By reste aligné à droite */
+.o_wsale_products_sort {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
 }
 
 /* ========================================
@@ -292,6 +350,16 @@
    ======================================== */
 
 @media (max-width: 768px) {
+    #o_wsale_products_header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .o_wsale_products_header_search_form_container {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
     .o_website_sale_cart .table {
         font-size: 0.9rem !important;
     }
