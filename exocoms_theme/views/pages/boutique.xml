@@ -17,20 +17,11 @@
             <t t-set="wsale_has_filters_btn_lg" t-value="False"/>
         </xpath>
 
-        <!-- Remplace la sidebar native par la sidebar Exocoms -->
         <xpath expr="//aside[@id='products_grid_before']" position="replace">
             <aside id="products_grid_before"
                    class="position-sticky align-self-start col-3 clearfix pt-2">
                 <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
             </aside>
-        </xpath>
-
-        <!-- Injecte le filtre prix natif Odoo dans la barre header
-             entre la recherche et le Sort By -->
-        <xpath expr="//div[@id='o_wsale_products_header']" position="inside">
-            <div class="exo-price-filter-wrapper">
-                <t t-call="website_sale.filter_products_price"/>
-            </div>
         </xpath>
 
     </template>

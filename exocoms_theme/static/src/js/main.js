@@ -1,34 +1,22 @@
 (function () {
     'use strict';
 
-    // --- SÉLECTEURS ---
     const dropdowns = document.querySelectorAll('.exo-dropdown');
     const burger = document.querySelector('.exo-burger');
     const nav = document.querySelector('.exo-nav');
-    const header = document.querySelector('.exo-header');
 
-    // --- DROPDOWNS ---
     function initDropdowns() {
         if (!dropdowns.length) return;
         let timeout;
         dropdowns.forEach(dropdown => {
             const button = dropdown.querySelector('.exo-dropdown-btn');
             if (!button) return;
-            dropdown.addEventListener('mouseenter', () => {
-                clearTimeout(timeout);
-                dropdown.classList.add('active');
-            });
-            dropdown.addEventListener('mouseleave', () => {
-                timeout = setTimeout(() => dropdown.classList.remove('active'), 300);
-            });
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                dropdown.classList.toggle('active');
-            });
+            dropdown.addEventListener('mouseenter', () => { clearTimeout(timeout); dropdown.classList.add('active'); });
+            dropdown.addEventListener('mouseleave', () => { timeout = setTimeout(() => dropdown.classList.remove('active'), 300); });
+            button.addEventListener('click', (e) => { e.preventDefault(); dropdown.classList.toggle('active'); });
         });
     }
 
-    // --- BURGER MENU ---
     function initBurgerMenu() {
         if (!burger || !nav) return;
         burger.addEventListener('click', () => {
@@ -38,7 +26,6 @@
         });
     }
 
-    // --- SCROLL REVEAL ---
     function initScrollReveal() {
         if (!('IntersectionObserver' in window)) return;
         const targets = document.querySelectorAll('.mq-sol-card, .mq-hp-prod-card, [data-animate]');
@@ -53,7 +40,6 @@
                 }
             });
         }, { threshold: 0.1 });
-
         targets.forEach((el, i) => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(14px)';
@@ -62,43 +48,46 @@
         });
     }
 
-    // --- FILTRE PRIX — déplacement dans la barre header shop ---
     function initPriceFilter() {
         // On ne fait rien si on n'est pas sur une page shop
-        const shopHeader = document.getElementById('o_wsale_products_header');
+        const shopHeader = document.querySelector('.o_wsale_products_header_search_form_container');
         if (!shopHeader) return;
 
-        // Le filtre prix est rendu dans la sidebar par Odoo
-        // On le déplace dans le header entre la recherche et Sort By
+        // Le filtre prix est dans la sidebar native #products_grid_before
+        // On cherche dans TOUT le document
         const priceFilter = document.querySelector('.o_wsale_products_price_filter');
-        const sortBy = shopHeader.querySelector('.o_wsale_products_sort, [name="order"]')
-                    || shopHeader.lastElementChild;
-
         if (!priceFilter) return;
 
-        // Déplace le filtre dans le header avant le Sort By
-        shopHeader.insertBefore(priceFilter, sortBy);
+        // Conteneur cible = la div qui contient search + sort by
+        const headerRow = shopHeader.closest('div') || shopHeader.parentElement;
+        if (!headerRow) return;
 
-        // Ouvre l'accordion du filtre prix automatiquement
-        const collapseEl = priceFilter.querySelector('.accordion-collapse');
-        if (collapseEl) {
-            collapseEl.classList.add('show');
-            collapseEl.style.display = 'block';
+        // Déplace le filtre prix après la recherche, avant Sort By
+        const sortEl = headerRow.querySelector('.o_wsale_products_sort')
+                    || headerRow.querySelector('[name="order"]');
+
+        if (sortEl) {
+            headerRow.insertBefore(priceFilter, sortEl);
+        } else {
+            headerRow.appendChild(priceFilter);
         }
 
-        // Cache le titre "Price Range" — on garde juste le slider
+        // Ouvre l'accordion
+        const collapse = priceFilter.querySelector('.accordion-collapse');
+        if (collapse) {
+            collapse.classList.add('show');
+            collapse.style.display = 'block';
+        }
+
+        // Cache le titre "Price Range"
         const accordionHeader = priceFilter.querySelector('.accordion-header');
         if (accordionHeader) accordionHeader.style.display = 'none';
 
-        // Style inline pour l'alignement
         priceFilter.style.display = 'flex';
         priceFilter.style.alignItems = 'center';
-        priceFilter.style.gap = '8px';
-        priceFilter.style.minWidth = '200px';
-        priceFilter.style.flexShrink = '0';
+        priceFilter.style.minWidth = '180px';
     }
 
-    // --- INITIALISATION GÉNÉRALE ---
     function init() {
         initDropdowns();
         initBurgerMenu();
