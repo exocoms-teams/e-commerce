@@ -2,28 +2,18 @@
 <odoo>
 
     <!--
-        PORTAL LAYOUT — applique le header/footer Exocoms sur les pages portail
-        (mon compte, mes commandes, etc.) en mode visiteur uniquement.
-        En mode éditeur, le header natif est conservé.
+        PORTAL LAYOUT — applique le header/footer Exocoms sur les pages portail.
+        portal.frontend_layout hérite de website.layout, donc le header/footer
+        est déjà géré par website_layout_custom (boutique.xml).
+        On n'a pas besoin de les remplacer ici — ce fichier peut rester minimal.
     -->
     <template id="exo_portal_layout"
               inherit_id="portal.frontend_layout"
               name="Portal Custom Header Footer">
 
-        <xpath expr="//header" position="replace">
-            <t t-if="not editable_mode">
-                <t t-call="exocoms_theme.custom_header"/>
-            </t>
-            <t t-else="">
-                <header id="top"/>
-            </t>
-        </xpath>
-
-        <xpath expr="//footer" position="replace">
-            <t t-if="not editable_mode">
-                <t t-call="exocoms_theme.custom_footer"/>
-            </t>
-        </xpath>
+        <!-- Le header/footer est géré par website_layout_custom qui hérite
+             de website.layout, parent commun de portal.frontend_layout.
+             Aucune modification nécessaire ici. -->
 
     </template>
 
