@@ -17,9 +17,12 @@
             <t t-set="wsale_has_filters_btn_lg" t-value="False"/>
         </xpath>
 
-        <!-- CHANGE: inside au lieu de replace -->
-        <xpath expr="//aside[@id='products_grid_before']" position="inside">
-            <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
+        <!-- replace sur l'aside = OK, pas un hook éditeur -->
+        <xpath expr="//aside[@id='products_grid_before']" position="replace">
+            <aside id="products_grid_before"
+                   class="position-sticky align-self-start col-3 clearfix pt-2">
+                <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
+            </aside>
         </xpath>
 
     </template>
@@ -28,21 +31,17 @@
               inherit_id="website.layout"
               name="Custom Header Footer">
 
-        <!-- CHANGE: on ajoute la classe sans remplacer le header -->
+        <!-- inside au lieu de replace = l'éditeur garde ses hooks -->
         <xpath expr="//header[@id='top']" position="attributes">
             <attribute name="class" add="exo-header-wrapper" separator=" "/>
         </xpath>
-
-        <!-- Injecte le header custom DANS le header natif -->
         <xpath expr="//header[@id='top']" position="inside">
             <t t-call="exocoms_theme.custom_header"/>
         </xpath>
 
-        <!-- Ajoute classe footer sans remplacer -->
         <xpath expr="//footer" position="attributes">
             <attribute name="class" add="exo-footer-wrapper" separator=" "/>
         </xpath>
-
         <xpath expr="//footer" position="inside">
             <t t-call="exocoms_theme.custom_footer"/>
         </xpath>
