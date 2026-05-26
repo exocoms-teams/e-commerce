@@ -10,7 +10,6 @@
         'payment',              
     ],
     'data': [
-        'security/ir.model.access.csv',
         'views/templates.xml',
     ],
     'static_description_path': 'description',
