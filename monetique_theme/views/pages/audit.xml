@@ -1,109 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="page_audit" name="Demander un audit gratuit">
-        <t t-call="website.layout">
-            <section class="mn-page-hero">
-                <div class="mn-container">
-                    <span class="mn-eyebrow">Audit gratuit</span>
-                    <h1>Parlons de votre infrastructure</h1>
-                    <p>Devis personnalise sous 48h, sans engagement</p>
+<template id="audit_page" name="monetiques.fr Audit Gratuit">
+  <t t-call="website.layout">
+    <div id="wrap">
+
+      <section class="mn-page-hero">
+        <div class="mn-container">
+          <span class="eyebrow">Gratuit et sans engagement</span>
+          <h1>Demander un audit monétique</h1>
+          <p>Notre expert analyse votre situation et vous propose la solution la mieux adaptée à votre activité et votre volume.</p>
+        </div>
+      </section>
+
+      <div class="mn-container">
+        <div class="mn-audit-layout">
+
+          <div class="mn-form-card">
+            <h2>Vos informations</h2>
+            <form action="/audit/submit" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="mn-frow">
+                <div class="mn-fg">
+                  <label for="prenom">Prénom *</label>
+                  <input type="text" id="prenom" name="prenom" placeholder="Jean" required="1"/>
                 </div>
-            </section>
-            <section class="mn-section">
-                <div class="mn-container">
-                    <div class="mn-audit-grid">
-                        <div class="mn-audit-form">
-                            <form action="/audit/submit" method="post">
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                <div class="mn-form-group">
-                                    <label>Nom complet</label>
-                                    <input type="text" name="name" placeholder="Jean Dupont" required="1"/>
-                                </div>
-                                <div class="mn-form-row">
-                                    <div class="mn-form-group">
-                                        <label>Email</label>
-                                        <input type="email" name="email" placeholder="jean@societe.fr" required="1"/>
-                                    </div>
-                                    <div class="mn-form-group">
-                                        <label>Telephone</label>
-                                        <input type="tel" name="phone" placeholder="06 00 00 00 00"/>
-                                    </div>
-                                </div>
-                                <div class="mn-form-group">
-                                    <label>Type de commerce</label>
-                                    <select name="commerce_type">
-                                        <option value="">Selectionnez...</option>
-                                        <option value="restaurant">Restaurant / Cafe</option>
-                                        <option value="retail">Commerce de detail</option>
-                                        <option value="supermarche">Supermarche / Grande surface</option>
-                                        <option value="hotel">Hotel / Tourisme</option>
-                                        <option value="sante">Sante / Pharmacie</option>
-                                        <option value="autre">Autre</option>
-                                    </select>
-                                </div>
-                                <div class="mn-form-row">
-                                    <div class="mn-form-group">
-                                        <label>Nombre de caisses</label>
-                                        <select name="nb_caisses">
-                                            <option value="1-5">1 a 5</option>
-                                            <option value="6-20">6 a 20</option>
-                                            <option value="21-50">21 a 50</option>
-                                            <option value="50+">Plus de 50</option>
-                                        </select>
-                                    </div>
-                                    <div class="mn-form-group">
-                                        <label>Volume mensuel</label>
-                                        <select name="volume">
-                                            <option value="moins-50k">Moins de 50k euros</option>
-                                            <option value="50k-200k">50k - 200k euros</option>
-                                            <option value="200k-1m">200k - 1M euros</option>
-                                            <option value="plus-1m">Plus de 1M euros</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mn-form-group">
-                                    <label>TPE actuel (optionnel)</label>
-                                    <input type="text" name="tpe_actuel" placeholder="Ex: Ingenico iCT220..."/>
-                                </div>
-                                <div class="mn-form-group">
-                                    <label>Message (optionnel)</label>
-                                    <textarea name="message" rows="4" placeholder="Decrivez votre besoin..."></textarea>
-                                </div>
-                                <button type="submit" class="mn-btn mn-btn--primary mn-btn--lg" style="width:100%">Envoyer ma demande</button>
-                            </form>
-                        </div>
-                        <div class="mn-audit-info">
-                            <div class="mn-audit-card">
-                                <div class="mn-audit-card__icon">&#9203;</div>
-                                <h3>Reponse sous 48h</h3>
-                                <p>Un expert vous contacte rapidement.</p>
-                            </div>
-                            <div class="mn-audit-card">
-                                <div class="mn-audit-card__icon">&#9989;</div>
-                                <h3>Sans engagement</h3>
-                                <p>L audit est gratuit et ne vous oblige a rien.</p>
-                            </div>
-                            <div class="mn-audit-card">
-                                <div class="mn-audit-card__icon">&#128272;</div>
-                                <h3>Donnees securisees</h3>
-                                <p>Vos informations sont protegees.</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mn-fg">
+                  <label for="societe">Société</label>
+                  <input type="text" id="societe" name="societe" placeholder="Ma Société SAS"/>
                 </div>
-            </section>
-        </t>
-    </template>
-    <template id="page_audit_merci" name="Audit confirmation">
-        <t t-call="website.layout">
-            <section class="mn-section" style="text-align:center;padding:120px 0">
-                <div class="mn-container">
-                    <div style="font-size:64px;margin-bottom:24px">&#9989;</div>
-                    <h1 style="font-size:38px;font-weight:800;color:var(--mn-dark);margin-bottom:16px">Demande envoyee !</h1>
-                    <p style="font-size:18px;color:var(--mn-gray-500);margin-bottom:36px">Un expert vous contactera sous 48h.</p>
-                    <a href="/" class="mn-btn mn-btn--primary mn-btn--lg">Retour a l accueil</a>
+              </div>
+              <div class="mn-fg">
+                <label for="email">Email professionnel *</label>
+                <input type="email" id="email" name="email" placeholder="jean@masociete.fr" required="1"/>
+              </div>
+              <div class="mn-fg">
+                <label for="telephone">Téléphone</label>
+                <input type="tel" id="telephone" name="telephone" placeholder="+33 6 00 00 00 00"/>
+              </div>
+              <div class="mn-frow">
+                <div class="mn-fg">
+                  <label for="activite">Type d'activité</label>
+                  <select id="activite" name="activite">
+                    <option value="">Choisir...</option>
+                    <option value="commerce">Commerce de détail</option>
+                    <option value="restauration">Restauration / Hôtellerie</option>
+                    <option value="pharmacie">Pharmacie / Santé</option>
+                    <option value="services">Services</option>
+                    <option value="grande_surface">Grande surface</option>
+                    <option value="autre">Autre</option>
+                  </select>
                 </div>
-            </section>
-        </t>
-    </template>
+                <div class="mn-fg">
+                  <label for="nb_caisses">Nombre de caisses</label>
+                  <select id="nb_caisses" name="nb_caisses">
+                    <option value="">Choisir...</option>
+                    <option value="1">1 caisse</option>
+                    <option value="2-5">2 à 5 caisses</option>
+                    <option value="6-20">6 à 20 caisses</option>
+                    <option value="20+">Plus de 20 caisses</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mn-fg">
+                <label for="tpe_actuel">TPE actuel (si renouvellement)</label>
+                <input type="text" id="tpe_actuel" name="tpe_actuel" placeholder="Ex: Ingenico iCT220, Verifone VX520..."/>
+              </div>
+              <div class="mn-fg">
+                <label for="volume">Volume mensuel estimé</label>
+                <select id="volume" name="volume">
+                  <option value="">Choisir...</option>
+                  <option value="moins_5k">Moins de 5 000 €</option>
+                  <option value="5k_20k">5 000 € – 20 000 €</option>
+                  <option value="20k_100k">20 000 € – 100 000 €</option>
+                  <option value="100k+">Plus de 100 000 €</option>
+                </select>
+              </div>
+              <div class="mn-fg">
+                <label for="message">Votre besoin (optionnel)</label>
+                <textarea id="message" name="message" rows="4" placeholder="Décrivez votre projet, vos contraintes, vos questions..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-red btn-lg" style="width:100%;justify-content:center">
+                Envoyer ma demande d'audit →
+              </button>
+            </form>
+          </div>
+
+          <div class="mn-audit-side">
+            <div class="mn-acard">
+              <div class="mn-acard__ico">⚡</div>
+              <h3>Réponse sous 4h</h3>
+              <p>Notre équipe vous contacte dans la journée pour un premier échange téléphonique.</p>
+            </div>
+            <div class="mn-acard">
+              <div class="mn-acard__ico">🎯</div>
+              <h3>Audit personnalisé</h3>
+              <p>Analyse de votre activité, de vos volumes et de vos contraintes techniques pour vous proposer la solution optimale.</p>
+            </div>
+            <div class="mn-acard">
+              <div class="mn-acard__ico">📋</div>
+              <h3>Devis détaillé</h3>
+              <p>Un devis clair et complet incluant matériel, installation, formation et maintenance.</p>
+            </div>
+            <div class="mn-assure">
+              ✓ Sans engagement · Totalement gratuit
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </t>
+</template>
 </odoo>
