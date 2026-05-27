@@ -154,26 +154,20 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         if not colors:
             colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
  
-        # ── Y a-t-il des vrais produits publiés ?
-        has_real_products = bool(request.env['product.template'].sudo().search(
-            [('is_published', '=', True)], limit=1
-        ))
+        # Vrais produits
+        domain = [('is_published', '=', True)]
+        if category == 'Nouveautes':
+            domain.append(('x_is_nouveaute', '=', True))
+        elif category == 'Promotions':
+            domain.append(('x_is_promotion', '=', True))
+        elif category:
+            domain.append(('website_categ_ids.name', '=', category))
  
-        if has_real_products:
-            # ── CAS RÉEL : super().shop() prépare tout le contexte natif
-            # (previewed_attribute_values, pricelist, panier, etc.)
-            response = super().shop(**kwargs)
-            response.qcontext.update({
-                'category': category,
-                'brands': brands,
-                'colors': colors,
-                'use_fake': False,
-            })
-            response.template = 'website_planet_mobil.category_page'
-            return response
+        products = request.env['product.template'].sudo().search(domain, limit=20)
  
-        else:
-            # ── CAS FAKE : base vide, on construit le contexte manuellement
+        # Fallback FAKE si base vide
+        use_fake = not bool(products)
+        if use_fake:
             fake = list(FAKE_PRODUCTS.values())
             if category == 'Nouveautes':
                 fake = [p for p in fake if p['is_nouveaute']]
@@ -181,6 +175,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 fake = [p for p in fake if p.get('is_promotion')]
             elif category:
                 fake = [p for p in fake if p.get('category') == category]
+            products = fake
  
         return request.render('website_planet_mobil.category_page', {
             'products': products,
