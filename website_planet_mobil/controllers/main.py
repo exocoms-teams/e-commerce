@@ -139,7 +139,7 @@ class WebsitePlanetMobil(http.Controller):
     def contact(self, **kwargs):
         return request.render('website_planet_mobil.contact_page', {})
 
-    @http.route('/shop', type='http', auth='public', website=True)
+    @http.route('/catalogue', type='http', auth='public', website=True)
     def shop(self, **kwargs):
         category = kwargs.get('category')  #retourne none si pas de parametre
         
