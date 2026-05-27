@@ -172,6 +172,7 @@ class WebsitePlanetMobil(http.Controller):
             'category': category,
             'brands' : brands,
             'colors': colors,
+            'previewed_attribute_values': [],
         })
 
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
