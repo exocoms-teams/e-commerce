@@ -32,11 +32,11 @@
             <field name="user_ids" eval="[(4, ref('user_pierre'))]"/>
         </record>
 
-        <!-- Assigner le groupe vendeur a David et Pierre -->
-        <record id="group_vendor_assign" model="res.groups">
-            <field name="id" ref="marketplace_module.group_marketplace_vendor"/>
-            <field name="user_ids" eval="[(4, ref('user_david')), (4, ref('user_pierre'))]"/>
-        </record>
+        <!-- Assigner groupe vendeur via fonction Python -->
+        <function model="res.groups" name="write">
+            <value eval="[ref('marketplace_module.group_marketplace_vendor')]"/>
+            <value eval="{'user_ids': [(4, ref('user_david')), (4, ref('user_pierre'))]}"/>
+        </function>
 
     </data>
 </odoo>
