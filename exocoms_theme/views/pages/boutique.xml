@@ -26,6 +26,45 @@
 
     </template>
 
+    <!--
+        SEO BOUTIQUE — via website.layout pour injecter dans le <head>
+        uniquement sur les pages /shop
+    -->
+    <template id="boutique_seo"
+              inherit_id="website.layout"
+              name="Boutique SEO Head">
+
+        <xpath expr="//head" position="inside">
+            <t t-if="request.httprequest.path.startswith('/shop')">
+                <meta name="description" content="Achetez vos terminaux de paiement TPE INGENICO, SUNMI, PAX, caisses enregistreuses tactiles, imprimantes tickets et accessoires monétiques. Livraison France et Europe."/>
+                <meta name="keywords" content="acheter TPE, terminal paiement en ligne, caisse enregistreuse SUNMI, TPE INGENICO, TPE PAX, imprimante ticket, accessoires monétique"/>
+                <meta name="robots" content="index, follow"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:title" content="Boutique Exocoms — TPE, Caisses &amp; Monétique"/>
+                <meta property="og:description" content="Achetez vos TPE INGENICO, SUNMI, PAX et caisses enregistreuses tactiles en ligne."/>
+                <meta property="og:image" content="/exocoms_theme/static/src/img/EXOCOMS.png"/>
+                <script type="application/ld+json">
+                {
+                    "@context": "https://schema.org",
+                    "@type": "Store",
+                    "name": "Boutique Exocoms Group",
+                    "description": "Vente en ligne de terminaux de paiement TPE, caisses enregistreuses et accessoires monétiques.",
+                    "url": "https://www.exocoms.fr/shop",
+                    "currenciesAccepted": "EUR",
+                    "priceRange": "€€",
+                    "areaServed": "FR",
+                    "seller": {
+                        "@type": "Organization",
+                        "name": "Exocoms Group",
+                        "telephone": "+33-01-84-79-37-55"
+                    }
+                }
+                </script>
+            </t>
+        </xpath>
+
+    </template>
+
     <template id="website_layout_custom"
               inherit_id="website.layout"
               name="Custom Header Footer">
