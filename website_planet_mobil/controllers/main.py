@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 import json
 
 FAKE_PRODUCTS = {
@@ -104,7 +105,7 @@ FAKE_PRODUCTS = {
     }},
 }
 
-class WebsitePlanetMobil(http.Controller):
+class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     @http.route(['/', '/accueil'], type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
@@ -139,9 +140,10 @@ class WebsitePlanetMobil(http.Controller):
     def contact(self, **kwargs):
         return request.render('website_planet_mobil.contact_page', {})
 
+    
+
     @http.route('/catalogue', type='http', auth='public', website=True)
-    def shop(self, **kwargs):
-        category = kwargs.get('category')  #retourne none si pas de parametre
+    def catalogue(self, category=None, **kwargs):
         
         domain = [('is_published', '=', True)]
         if category=='Nouveautes':
@@ -153,26 +155,35 @@ class WebsitePlanetMobil(http.Controller):
 
         products = request.env['product.template'].sudo().search(domain, limit=12)
 
-        if not products:    #temporaire pour remplacer bd
-            products = list(FAKE_PRODUCTS.values())
+        # ── Fallback FAKE si base vide
+        use_fake = not bool(products)
+        if use_fake:
+            fake = list(FAKE_PRODUCTS.values())
             if category == 'Nouveautes':
-                products = [p for p in FAKE_PRODUCTS.values() if p['is_nouveaute']]
+                fake = [p for p in fake if p['is_nouveaute']]
             elif category == 'Promotions':
-                products = [p for p in FAKE_PRODUCTS.values() if p.get('is_promotion')]
+                fake = [p for p in fake if p.get('is_promotion')]
             elif category:
-                products = [p for p in FAKE_PRODUCTS.values() if p.get('category') == category]
-
-        brands = request.env['product.template'].sudo().search([]).mapped('x_brand')
-        brands = list(set(filter(None, brands)))
-
-        colors = request.env['product.template'].sudo().search([]).mapped('color')
-        colors = list(set(filter(None, colors)))
+                fake = [p for p in fake if p.get('category') == category]
+            products = fake
+ 
+        # ── Marques & couleurs pour les filtres sidebar
+        all_products = request.env['product.template'].sudo().search([])
+        brands = sorted(set(filter(None, all_products.mapped('x_brand'))))
+        colors = sorted(set(filter(None, all_products.mapped('color'))))
+ 
+        # Fallback si base vide
+        if not brands:
+            brands = sorted(set(p.get('x_brand', '') for p in FAKE_PRODUCTS.values() if p.get('x_brand')))
+        if not colors:
+            colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
+ 
         return request.render('website_planet_mobil.category_page', {
-            'products': products, 
+            'products': products,
             'category': category,
-            'brands' : brands,
+            'brands': brands,
             'colors': colors,
-            'previewed_attribute_values': [],
+            'use_fake': use_fake,
         })
 
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)

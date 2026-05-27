@@ -5,7 +5,7 @@
     <template id="category_page" name="TechShop Pro - Catalogue">
         <t t-call="website_planet_mobil.layout">
             <div id="wrap" class="oe_structure">
-                <div id="oe_structure_category_top" class="oe_structure oe_empty"/>
+                <div id="oe_structure_category_top" class="oe_structure oe_empty" />
                 <section class="tsp-section">
                     <div class="tsp-section-header">
                         <h2 class="tsp-section-title">
@@ -18,7 +18,7 @@
                         </h2>
                     </div>
 
-                    <div id="oe_structure_filter_bar" class="oe_structure oe_empty"/>
+                    <div id="oe_structure_filter_bar" class="oe_structure oe_empty" />
                     <div class="tsp-filter-bar">
                         <div class="tsp-filter-group">
                             <label>Prix</label>
@@ -305,13 +305,64 @@
                             <i class="fa fa-filter" /> Filtrer </button>
                     </div>
 
-                    <div id="oe_structure_product_grid" class="oe_structure oe_empty"/>
+                    <div id="oe_structure_product_grid" class="oe_structure oe_empty" />
                     <div class="tsp-products-grid">
-                        <t t-foreach="products" t-as="product">
-                            <t t-call="website_sale.products_item"/>
+                        <t t-if="not use_fake">
+                            <t t-foreach="products" t-as="product">
+                                <t t-call="website_sale.products_item" />
+                            </t>
+                        </t>
+
+                        <t t-if="use_fake">
+                            <t t-foreach="products" t-as="product">
+                                <a t-attf-href="/shop/product/{{ product['id'] }}"
+                                    class="tsp-card-link">
+                                    <div class="tsp-card">
+                                        <div class="tsp-card-img-wrap">
+                                            <t t-if="product['badge']">
+                                                <span class="tsp-badge-new">
+                                                    <t t-out="product['badge']" />
+                                                </span>
+                                            </t>
+                                            <img t-att-src="product['image_url']"
+                                                t-att-alt="product['name']"
+                                                class="tsp-card-img" />
+                                            <button class="tsp-wishlist-btn">
+                                                <i class="fa fa-heart-o" />
+                                            </button>
+                                        </div>
+                                        <div class="tsp-card-body">
+                                            <div class="tsp-stars">
+                                                <t t-set="prod_rating"
+                                                    t-value="int(product['rating'])" />
+                                                <t t-foreach="range(5)" t-as="star_i">
+                                                    <i t-if="star_i &lt; prod_rating"
+                                                        class="fa fa-star tsp-star-on" />
+                                                    <i t-else="" class="fa fa-star tsp-star-off" />
+                                                </t>
+                                                <span class="tsp-stars-count">(<t
+                                                        t-out="prod_rating" />)</span>
+                                            </div>
+                                            <h3 class="tsp-card-name">
+                                                <t t-out="product['name']" />
+                                            </h3>
+                                            <p class="tsp-card-desc">
+                                                <t t-out="product['description']" />
+                                            </p>
+                                            <div class="tsp-card-footer">
+                                                <span class="tsp-price"><t t-out="product['price']" />
+                                                    €</span>
+                                                <button class="tsp-btn tsp-btn-add"
+                                                    onclick="event.stopPropagation();">
+                                                    <i class="fa fa-shopping-cart" /> Ajouter </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </t>
                         </t>
                     </div>
-                    <div id="oe_structure_category_bottom" class="oe_structure oe_empty"/>
+                    <div id="oe_structure_category_bottom" class="oe_structure oe_empty" />
                 </section>
             </div>
         </t>
