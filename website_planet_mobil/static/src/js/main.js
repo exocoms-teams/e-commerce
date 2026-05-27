@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
    
-    document.querySelectorAll('.tsp-btn-add').forEach(function(btn) {
+    document.querySelectorAll('button.tsp-btn-add').forEach(function(btn) {
         btn.addEventListener('click', function() {
             var original = this.innerHTML;
             this.innerHTML = '<i class="fa fa-check"></i> Ajouté !';
