@@ -145,19 +145,35 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
     @http.route('/catalogue', type='http', auth='public', website=True)
     def catalogue(self, category=None, **kwargs):
         
-        domain = [('is_published', '=', True)]
-        if category=='Nouveautes':
-            domain = [('x_is_nouveaute', '=', True)]
-        elif category=='Promotions':
-            domain = [('x_is_promotion', '=', True)]
-        elif category:
-            domain = [('website_categ_ids.name', '=', category)]
-
-        products = request.env['product.template'].sudo().search(domain, limit=12)
-
-        # ── Fallback FAKE si base vide
-        use_fake = not bool(products)
-        if use_fake:
+         # ── Marques et couleurs pour la sidebar
+        all_products = request.env['product.template'].sudo().search([])
+        brands = sorted(set(filter(None, all_products.mapped('x_brand'))))
+        colors = sorted(set(filter(None, all_products.mapped('color'))))
+        if not brands:
+            brands = ['Apple', 'Samsung', 'Sony', 'LG', 'Google', 'OnePlus']
+        if not colors:
+            colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
+ 
+        # ── Y a-t-il des vrais produits publiés ?
+        has_real_products = bool(request.env['product.template'].sudo().search(
+            [('is_published', '=', True)], limit=1
+        ))
+ 
+        if has_real_products:
+            # ── CAS RÉEL : super().shop() prépare tout le contexte natif
+            # (previewed_attribute_values, pricelist, panier, etc.)
+            response = super().shop(**kwargs)
+            response.qcontext.update({
+                'category': category,
+                'brands': brands,
+                'colors': colors,
+                'use_fake': False,
+            })
+            response.template = 'website_planet_mobil.category_page'
+            return response
+ 
+        else:
+            # ── CAS FAKE : base vide, on construit le contexte manuellement
             fake = list(FAKE_PRODUCTS.values())
             if category == 'Nouveautes':
                 fake = [p for p in fake if p['is_nouveaute']]
@@ -165,18 +181,6 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 fake = [p for p in fake if p.get('is_promotion')]
             elif category:
                 fake = [p for p in fake if p.get('category') == category]
-            products = fake
- 
-        # ── Marques & couleurs pour les filtres sidebar
-        all_products = request.env['product.template'].sudo().search([])
-        brands = sorted(set(filter(None, all_products.mapped('x_brand'))))
-        colors = sorted(set(filter(None, all_products.mapped('color'))))
- 
-        # Fallback si base vide
-        if not brands:
-            brands = sorted(set(p.get('x_brand', '') for p in FAKE_PRODUCTS.values() if p.get('x_brand')))
-        if not colors:
-            colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
  
         return request.render('website_planet_mobil.category_page', {
             'products': products,
