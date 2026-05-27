@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record id="vendor_demo_david" model="marketplace.vendor">
+    <data noupdate="0">
+
+        <!-- Utilisateur David -->
+        <record id="user_david" model="res.users">
+            <field name="name">David Vendeur</field>
+            <field name="login">david@test.com</field>
+            <field name="password">david1234</field>
+            <field name="groups_id" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
+        </record>
+
+        <!-- Vendeur David -->
+        <record id="vendor_david" model="marketplace.vendor">
             <field name="name">David</field>
             <field name="email">david@test.com</field>
-            <field name="phone">0600000000</field>
+            <field name="phone">0600000001</field>
+            <field name="user_ids" eval="[(4, ref('user_david'))]"/>
         </record>
+
+        <!-- Utilisateur Pierre -->
+        <record id="user_pierre" model="res.users">
+            <field name="name">Pierre Vendeur</field>
+            <field name="login">pierre@test.com</field>
+            <field name="password">pierre1234</field>
+            <field name="groups_id" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
+        </record>
+
+        <!-- Vendeur Pierre -->
+        <record id="vendor_pierre" model="marketplace.vendor">
+            <field name="name">Pierre</field>
+            <field name="email">pierre@test.com</field>
+            <field name="phone">0600000002</field>
+            <field name="user_ids" eval="[(4, ref('user_pierre'))]"/>
+        </record>
+
     </data>
 </odoo>
