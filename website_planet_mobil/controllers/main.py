@@ -174,21 +174,21 @@ class WebsitePlanetMobil(http.Controller):
             'colors': colors,
         })
 
-    @http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
-    def product(self, product_id, **kwargs):
-        product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
+    #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
+    #def product(self, product_id, **kwargs):
+    #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
 
-        if not product:
+    #    if not product:
             #return request.not_found()     pour linstant pas de base, creer produits fictifs
-            product =  FAKE_PRODUCTS.get(product_id, FAKE_PRODUCTS[1])
+    #        product =  FAKE_PRODUCTS.get(product_id, FAKE_PRODUCTS[1])
 
-        if isinstance(product, dict):
-            specs = product.get('specs', {})
-        else:
-            specs = json.loads(product.x_specs) if product.x_specs else {}
+    #    if isinstance(product, dict):
+    #        specs = product.get('specs', {})
+    #    else:
+    #        specs = json.loads(product.x_specs) if product.x_specs else {}
 
-        return request.render('website_planet_mobil.product_page', {
-            'product': product,
-            'specs': specs,
-        })
+    #    return request.render('website_planet_mobil.product_page', {
+    #        'product': product,
+    #        'specs': specs,
+    #    })
 
