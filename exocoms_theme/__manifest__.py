@@ -26,6 +26,7 @@
         'views/templates/features.xml',
         'views/templates/layout.xml',
         'views/templates/services_features.xml',
+        'data/seo_data.xml',
     ],
     'assets': {
         'web.assets_frontend': [
