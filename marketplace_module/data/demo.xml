@@ -7,7 +7,6 @@
             <field name="name">David Vendeur</field>
             <field name="login">david@test.com</field>
             <field name="password">david1234</field>
-            <field name="groups_id" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
         </record>
 
         <!-- Vendeur David -->
@@ -23,7 +22,6 @@
             <field name="name">Pierre Vendeur</field>
             <field name="login">pierre@test.com</field>
             <field name="password">pierre1234</field>
-            <field name="groups_id" eval="[(4, ref('marketplace_module.group_marketplace_vendor'))]"/>
         </record>
 
         <!-- Vendeur Pierre -->
@@ -32,6 +30,12 @@
             <field name="email">pierre@test.com</field>
             <field name="phone">0600000002</field>
             <field name="user_ids" eval="[(4, ref('user_pierre'))]"/>
+        </record>
+
+        <!-- Assigner le groupe vendeur a David et Pierre -->
+        <record id="group_vendor_assign" model="res.groups">
+            <field name="id" ref="marketplace_module.group_marketplace_vendor"/>
+            <field name="user_ids" eval="[(4, ref('user_david')), (4, ref('user_pierre'))]"/>
         </record>
 
     </data>
