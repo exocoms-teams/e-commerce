@@ -168,7 +168,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         elif category == 'Promotions':
             domain.append(('x_is_promotion', '=', True))
         elif category:
-            domain.append(('website_categ_ids.name', '=', category))
+            domain.append(('public_categ_ids.name', '=', category))
  
         products = request.env['product.template'].sudo().search(domain, limit=20)
  
