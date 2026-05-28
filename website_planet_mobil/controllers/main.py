@@ -109,18 +109,25 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     @http.route(['/', '/accueil'], type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
-        top_ventes = request.env['product.template'].sudo().search([('x_is_top_vente', '=', True), ('is_published', '=', True)], limit=4)
-        nouveautes = request.env['product.template'].sudo().search([('x_is_nouveaute', '=', True), ('is_published', '=', True)], limit=4)
 
-        if not top_ventes:
-            top_ventes = [p for p in  FAKE_PRODUCTS.values() if p['is_top_vente']]
+        use_fake = not bool(request.env['product.template'].sudo().search(
+            [('is_published', '=', True)], limit=1
+        ))
 
-        if not nouveautes:
+        if use_fake:
+            top_ventes = [p for p in FAKE_PRODUCTS.values() if p['is_top_vente']]
             nouveautes = [p for p in FAKE_PRODUCTS.values() if p['is_nouveaute']]
+        else:
+            top_ventes = request.env['product.template'].sudo().search(
+                [('x_is_top_vente', '=', True), ('is_published', '=', True)], limit=4)
+            nouveautes = request.env['product.template'].sudo().search(
+                [('x_is_nouveaute', '=', True), ('is_published', '=', True)], limit=4)
+
 
         return request.render('website_planet_mobil.homepage', {
             'top_ventes': top_ventes,
             'nouveautes': nouveautes,
+            'use_fake' : use_fake,
         })
 
 
