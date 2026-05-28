@@ -173,7 +173,10 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         products = request.env['product.template'].sudo().search(domain, limit=20)
  
         # Fallback FAKE si base vide
-        use_fake = not bool(products)
+        use_fake = not bool(request.env['product.template'].sudo().search(
+            [('is_published', '=', True)], limit=1
+        ))
+
         if use_fake:
             fake = list(FAKE_PRODUCTS.values())
             if category == 'Nouveautes':
