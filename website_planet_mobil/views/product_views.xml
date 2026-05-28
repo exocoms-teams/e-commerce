@@ -1,78 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_planet_product_form" model="ir.ui.view">
-        <field name="name">planet.product.form</field>
-        <field name="model">planet.product</field>
+        <field name="name">planet.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
-            <form string="Produit">
-                <sheet> 
-                    <field name="image" widget="image" class="oe_avatar"/>
-                    <div class="oe_title">
-                        <field name="name" placeholder="Nom du produit"/>
-                    </div>
-                    <group>
-                        <group string="Informations générales">
-                            <field name="category"/>
-                            <field name="brand"/>
-                            <field name="price"/>
-                            <field name="rating"/>
-                            <field name="ean"/>
-                            <field name="color"/>
-                        </group>
-                        <group string="Statut">
-                            <field name="is_top_vente"/>
-                            <field name="is_nouveaute"/>
-                            <field name="is_promotion"/>
-                            <field name="active"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Description">
-                            <field name="description"/>
-                        </page>
-                        <page string="Caractéristiques">
-                            <field name="specs"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="Planet Mobil">
+                    <field name="x_brand"/>
+                    <field name="x_is_top_vente"/>
+                    <field name="x_is_nouveaute"/>
+                    <field name="x_is_promotion"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Caractéristiques" name="planet_specs">
+                    <field name="x_specs" 
+                           placeholder="Ex: Processeur: Apple A17 Pro&#10;Mémoire: 256 GB&#10;Écran: 6.7 pouces"/>
+                </page>
+            </xpath>
+
         </field>
     </record>
-
-    <record id="view_planet_product_tree" model="ir.ui.view">
-        <field name="name">planet.product.tree</field>
-        <field name="model">planet.product</field>
-        <field name="arch" type="xml">
-            <list string="Produits">
-                <field name="name"/>
-                <field name="category"/>
-                <field name="brand"/>
-                <field name="price"/>
-                <field name="rating"/>
-                <field name="ean"/>
-                <field name="color"/>
-                <field name="is_top_vente"/>
-                <field name="is_nouveaute"/>
-                <field name="is_promotion"/>
-                <field name="active"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="action_planet_product" model="ir.actions.act_window">
-        <field name="name">Produits</field>
-        <field name="res_model">planet.product</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <menuitem
-        id="menu_planet_mobil"
-        name="Planet Mobil"
-        sequence="10"/>
-
-    <menuitem 
-        id="menu_planet_product"
-        name="Produits"
-        parent="menu_planet_mobil"
-        action="action_planet_product"/>
 </odoo>
