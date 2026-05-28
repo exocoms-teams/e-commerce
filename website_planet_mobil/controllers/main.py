@@ -149,10 +149,10 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     
 
-    @http.route('/catalogue', type='http', auth='public', website=True)
+    @http.route('/catalogue', type='http', auth='public', website=True, sitemap=True)
     def catalogue(self, category=None, **kwargs):
-        
-         # ── Marques et couleurs pour la sidebar
+
+        # Marques & couleurs
         all_products = request.env['product.template'].sudo().search([])
         brands = sorted(set(filter(None, all_products.mapped('x_brand'))))
         colors = sorted(set(filter(None, all_products.mapped('color'))))
@@ -160,8 +160,8 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             brands = ['Apple', 'Samsung', 'Sony', 'LG', 'Google', 'OnePlus']
         if not colors:
             colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
- 
-        # Vrais produits
+
+        # Domain
         domain = [('is_published', '=', True)]
         if category == 'Nouveautes':
             domain.append(('x_is_nouveaute', '=', True))
@@ -169,10 +169,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             domain.append(('x_is_promotion', '=', True))
         elif category:
             domain.append(('public_categ_ids.name', '=', category))
- 
-        products = request.env['product.template'].sudo().search(domain, limit=20)
- 
-        # Fallback FAKE si base vide
+
         use_fake = not bool(request.env['product.template'].sudo().search(
             [('is_published', '=', True)], limit=1
         ))
@@ -186,15 +183,26 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             elif category:
                 fake = [p for p in fake if p.get('category') == category]
             products = fake
- 
+            products_with_price = []
+        else:
+            products = request.env['product.template'].sudo().search(domain, limit=20)
+            pricelist = request.website.get_current_pricelist()
+            products_with_price = []
+            for product in products:
+                promo_price = pricelist._get_product_price(product, 1.0)
+                products_with_price.append({
+                    'product': product,
+                    'list_price': product.list_price,
+                    'promo_price': promo_price if promo_price != product.list_price else None,
+                })
+
         return request.render('website_planet_mobil.category_page', {
-            'products': products,
+            'products': products if use_fake else products_with_price,
             'category': category,
             'brands': brands,
             'colors': colors,
             'use_fake': use_fake,
         })
-
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
