@@ -1,237 +1,355 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+    <data>
 
-    <template id="category_page" name="Planet Mobil - Catalogue">
-        <t t-call="website_planet_mobil.layout">
-            <div id="wrap" class="oe_structure">
-                <div id="oe_structure_category_top" class="oe_structure oe_empty"/>
-                <section class="tsp-section">
-                    <div class="tsp-section-header">
-                        <h2 class="tsp-section-title">
-                            <t t-if="category"><t t-out="category"/></t>
-                            <t t-else="">Tous les produits</t>
-                        </h2>
-                    </div>
-
-                    <div id="oe_structure_filter_bar" class="oe_structure oe_empty"/>
-                    <div class="tsp-filter-bar">
-                        <div class="tsp-filter-group">
-                            <label>Prix</label>
-                            <div class="tsp-filter-price">
-                                <input type="number" placeholder="Min" class="tsp-filter-input"/>
-                                <span>-</span>
-                                <input type="number" placeholder="Max" class="tsp-filter-input"/>
-                            </div>
+        <template id="category_page" name="Planet Mobil - Catalogue">
+            <t t-call="website_planet_mobil.layout">
+                <div id="wrap" class="oe_structure">
+                    <div id="oe_structure_category_top" class="oe_structure oe_empty" />
+                    <section class="tsp-section">
+                        <div class="tsp-section-header">
+                            <h2 class="tsp-section-title">
+                                <t t-if="category">
+                                    <t t-out="category" />
+                                </t>
+                                <t t-else="">Tous les produits</t>
+                            </h2>
                         </div>
 
-                        <div class="tsp-filter-group">
-                            <label>Marque</label>
-                            <div class="tsp-custom-select" data-filter="marque">
-                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                <ul class="tsp-custom-options">
-                                    <li data-value="">Toutes</li>
-                                    <t t-foreach="brands" t-as="brand">
-                                        <li t-att-data-value="brand">
-                                            <input type="checkbox" t-att-id="'marque-' + brand"/>
-                                            <label t-att-for="'marque-' + brand"><t t-out="brand"/></label>
+                        <div id="oe_structure_filter_bar" class="oe_structure oe_empty" />
+                        <div class="tsp-filter-bar">
+                            <div class="tsp-filter-group">
+                                <label>Prix</label>
+                                <div class="tsp-filter-price">
+                                    <input type="number" placeholder="Min" class="tsp-filter-input" />
+                                    <span>-</span>
+                                    <input type="number" placeholder="Max" class="tsp-filter-input" />
+                                </div>
+                            </div>
+
+                            <div class="tsp-filter-group">
+                                <label>Marque</label>
+                                <div class="tsp-custom-select" data-filter="marque">
+                                    <div class="tsp-custom-selected">Toutes <i
+                                            class="fa fa-chevron-down" /></div>
+                                    <ul class="tsp-custom-options">
+                                        <li data-value="">Toutes</li>
+                                        <t t-foreach="brands" t-as="brand">
+                                            <li t-att-data-value="brand">
+                                                <input type="checkbox" t-att-id="'marque-' + brand" />
+                                                <label t-att-for="'marque-' + brand">
+                                                    <t t-out="brand" />
+                                                </label>
+                                            </li>
+                                        </t>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="tsp-filter-group">
+                                <label>Note</label>
+                                <div class="tsp-custom-select" data-filter="note">
+                                    <div class="tsp-custom-selected">Toutes <i
+                                            class="fa fa-chevron-down" /></div>
+                                    <ul class="tsp-custom-options">
+                                        <li data-value="5">
+                                            <input type="checkbox" id="note-5" />
+                                            <label for="note-5">⭐⭐⭐⭐⭐</label>
                                         </li>
-                                    </t>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="tsp-filter-group">
-                            <label>Note</label>
-                            <div class="tsp-custom-select" data-filter="note">
-                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                <ul class="tsp-custom-options">
-                                    <li data-value="5"><input type="checkbox" id="note-5"/><label for="note-5">⭐⭐⭐⭐⭐</label></li>
-                                    <li data-value="4"><input type="checkbox" id="note-4"/><label for="note-4">⭐⭐⭐⭐ et +</label></li>
-                                    <li data-value="3"><input type="checkbox" id="note-3"/><label for="note-3">⭐⭐⭐ et +</label></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="tsp-filter-group">
-                            <label>Couleur</label>
-                            <div class="tsp-custom-select" data-filter="couleur">
-                                <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                <ul class="tsp-custom-options">
-                                    <li data-value="">Toutes</li>
-                                    <t t-foreach="colors" t-as="color">
-                                        <li t-att-data-value="color">
-                                            <input type="checkbox" t-att-id="'couleur-' + color"/>
-                                            <label t-att-for="'couleur-' + color"><t t-out="color"/></label>
+                                        <li data-value="4">
+                                            <input type="checkbox" id="note-4" />
+                                            <label for="note-4">⭐⭐⭐⭐ et +</label>
                                         </li>
-                                    </t>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <t t-if="category == 'Smartphones'">
-                            <div class="tsp-filter-group">
-                                <label>Système</label>
-                                <div class="tsp-custom-select" data-filter="systeme">
-                                    <div class="tsp-custom-selected">Tous <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="ios"><input type="checkbox" id="systeme-ios"/><label for="systeme-ios">iOS</label></li>
-                                        <li data-value="android"><input type="checkbox" id="systeme-android"/><label for="systeme-android">Android</label></li>
+                                        <li data-value="3">
+                                            <input type="checkbox" id="note-3" />
+                                            <label for="note-3">⭐⭐⭐ et +</label>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
+
                             <div class="tsp-filter-group">
-                                <label>Stockage</label>
-                                <div class="tsp-custom-select" data-filter="stockage">
-                                    <div class="tsp-custom-selected">Tous <i class="fa fa-chevron-down"/></div>
+                                <label>Couleur</label>
+                                <div class="tsp-custom-select" data-filter="couleur">
+                                    <div class="tsp-custom-selected">Toutes <i
+                                            class="fa fa-chevron-down" /></div>
                                     <ul class="tsp-custom-options">
-                                        <li data-value="64"><input type="checkbox" id="stockage-64"/><label for="stockage-64">64 GB</label></li>
-                                        <li data-value="128"><input type="checkbox" id="stockage-128"/><label for="stockage-128">128 GB</label></li>
-                                        <li data-value="256"><input type="checkbox" id="stockage-256"/><label for="stockage-256">256 GB</label></li>
-                                        <li data-value="512"><input type="checkbox" id="stockage-512"/><label for="stockage-512">512 GB</label></li>
+                                        <li data-value="">Toutes</li>
+                                        <t t-foreach="colors" t-as="color">
+                                            <li t-att-data-value="color">
+                                                <input type="checkbox" t-att-id="'couleur-' + color" />
+                                                <label t-att-for="'couleur-' + color">
+                                                    <t t-out="color" />
+                                                </label>
+                                            </li>
+                                        </t>
                                     </ul>
                                 </div>
                             </div>
-                            <div class="tsp-filter-group">
-                                <label>Taille écran</label>
-                                <div class="tsp-custom-select" data-filter="taille">
-                                    <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="5"><input type="checkbox" id="taille-5"/><label for="taille-5">5"</label></li>
-                                        <li data-value="6"><input type="checkbox" id="taille-6"/><label for="taille-6">6"</label></li>
-                                        <li data-value="6.5"><input type="checkbox" id="taille-6.5"/><label for="taille-6.5">6.5"</label></li>
-                                        <li data-value="7"><input type="checkbox" id="taille-7"/><label for="taille-7">7"</label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </t>
 
-                        <t t-if="category == 'Montres'">
-                            <div class="tsp-filter-group">
-                                <label>Compatibilité</label>
-                                <div class="tsp-custom-select" data-filter="compatibilite">
-                                    <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="ios"><input type="checkbox" id="compat-ios"/><label for="compat-ios">iOS</label></li>
-                                        <li data-value="android"><input type="checkbox" id="compat-android"/><label for="compat-android">Android</label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </t>
-
-                        <t t-if="category == 'Televisions'">
-                            <div class="tsp-filter-group">
-                                <label>Taille</label>
-                                <div class="tsp-custom-select" data-filter="taille">
-                                    <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="43"><input type="checkbox" id="taille-43"/><label for="taille-43">43"</label></li>
-                                        <li data-value="55"><input type="checkbox" id="taille-55"/><label for="taille-55">55"</label></li>
-                                        <li data-value="65"><input type="checkbox" id="taille-65"/><label for="taille-65">65"</label></li>
-                                        <li data-value="75"><input type="checkbox" id="taille-75"/><label for="taille-75">75"</label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="tsp-filter-group">
-                                <label>Résolution</label>
-                                <div class="tsp-custom-select" data-filter="resolution">
-                                    <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="4k"><input type="checkbox" id="resolution-4k"/><label for="resolution-4k">4K</label></li>
-                                        <li data-value="8k"><input type="checkbox" id="resolution-8k"/><label for="resolution-8k">8K</label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </t>
-
-                        <t t-if="category == 'Accessoires'">
-                            <div class="tsp-filter-group">
-                                <label>Compatibilité</label>
-                                <div class="tsp-custom-select" data-filter="compatibilite">
-                                    <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down"/></div>
-                                    <ul class="tsp-custom-options">
-                                        <li data-value="iphone"><input type="checkbox" id="compat-iphone"/><label for="compat-iphone">iPhone</label></li>
-                                        <li data-value="samsung"><input type="checkbox" id="compat-samsung"/><label for="compat-samsung">Samsung</label></li>
-                                        <li data-value="universel"><input type="checkbox" id="compat-universel"/><label for="compat-universel">Universel</label></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </t>
-
-                        <button class="tsp-filter-btn"><i class="fa fa-filter"/> Filtrer</button>
-                    </div>
-
-                    <div id="oe_structure_product_grid" class="oe_structure oe_empty"/>
-                    <div class="tsp-products-grid">
-
-                        <!-- CAS 1 : vrais produits Odoo (records ORM) -->
-                        <t t-if="not use_fake">
-                            <t t-foreach="products" t-as="product">
-                                <a t-att-href="product.website_url" class="tsp-card-link">
-                                    <div class="tsp-card">
-                                        <div class="tsp-card-img-wrap">
-                                            <img t-attf-src="/web/image/product.template/#{product.id}/image_512"
-                                                 t-att-alt="product.name"
-                                                 class="tsp-card-img"/>
-                                        </div>
-                                        <div class="tsp-card-body">
-                                            <h3 class="tsp-card-name"><t t-out="product.name"/></h3>
-                                            <p class="tsp-card-desc"><t t-out="product.description_sale"/></p>
-                                            <div class="tsp-card-footer">
-                                                <span class="tsp-price"><t t-out="product.list_price"/> €</span>
-                                                <a t-att-href="product.website_url" class="tsp-btn tsp-btn-add">
-                                                    <i class="fa fa-shopping-cart"/> Voir
-                                                </a>
-                                            </div>
-                                        </div>
+                            <t t-if="category == 'Smartphones'">
+                                <div class="tsp-filter-group">
+                                    <label>Système</label>
+                                    <div class="tsp-custom-select" data-filter="systeme">
+                                        <div class="tsp-custom-selected">Tous <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="ios">
+                                                <input type="checkbox" id="systeme-ios" />
+                                                <label for="systeme-ios">iOS</label>
+                                            </li>
+                                            <li data-value="android">
+                                                <input type="checkbox" id="systeme-android" />
+                                                <label for="systeme-android">Android</label>
+                                            </li>
+                                        </ul>
                                     </div>
-                                </a>
+                                </div>
+                                <div class="tsp-filter-group">
+                                    <label>Stockage</label>
+                                    <div class="tsp-custom-select" data-filter="stockage">
+                                        <div class="tsp-custom-selected">Tous <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="64">
+                                                <input type="checkbox" id="stockage-64" />
+                                                <label for="stockage-64">64 GB</label>
+                                            </li>
+                                            <li data-value="128">
+                                                <input type="checkbox" id="stockage-128" />
+                                                <label for="stockage-128">128 GB</label>
+                                            </li>
+                                            <li data-value="256">
+                                                <input type="checkbox" id="stockage-256" />
+                                                <label for="stockage-256">256 GB</label>
+                                            </li>
+                                            <li data-value="512">
+                                                <input type="checkbox" id="stockage-512" />
+                                                <label for="stockage-512">512 GB</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="tsp-filter-group">
+                                    <label>Taille écran</label>
+                                    <div class="tsp-custom-select" data-filter="taille">
+                                        <div class="tsp-custom-selected">Toutes <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="5">
+                                                <input type="checkbox" id="taille-5" />
+                                                <label for="taille-5">5"</label>
+                                            </li>
+                                            <li data-value="6">
+                                                <input type="checkbox" id="taille-6" />
+                                                <label for="taille-6">6"</label>
+                                            </li>
+                                            <li data-value="6.5">
+                                                <input type="checkbox" id="taille-6.5" />
+                                                <label for="taille-6.5">6.5"</label>
+                                            </li>
+                                            <li data-value="7">
+                                                <input type="checkbox" id="taille-7" />
+                                                <label for="taille-7">7"</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </t>
-                        </t>
 
-                        <!-- CAS 2 : FAKE products (base vide) -->
-                        <t t-if="use_fake">
-                            <t t-foreach="products" t-as="product">
-                                <a t-attf-href="/shop/product/{{ product['id'] }}" class="tsp-card-link">
-                                    <div class="tsp-card">
-                                        <div class="tsp-card-img-wrap">
-                                            <t t-if="product['badge']">
-                                                <span class="tsp-badge-new"><t t-out="product['badge']"/></span>
-                                            </t>
-                                            <img t-att-src="product['image_url']"
-                                                 t-att-alt="product['name']"
-                                                 class="tsp-card-img"/>
-                                            <button class="tsp-wishlist-btn"><i class="fa fa-heart-o"/></button>
-                                        </div>
-                                        <div class="tsp-card-body">
-                                            <div class="tsp-stars">
-                                                <t t-set="prod_rating" t-value="int(product['rating'])"/>
-                                                <t t-foreach="range(5)" t-as="star_i">
-                                                    <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
-                                                    <i t-else="" class="fa fa-star tsp-star-off"/>
-                                                </t>
-                                                <span class="tsp-stars-count">(<t t-out="prod_rating"/>)</span>
+                            <t t-if="category == 'Montres'">
+                                <div class="tsp-filter-group">
+                                    <label>Compatibilité</label>
+                                    <div class="tsp-custom-select" data-filter="compatibilite">
+                                        <div class="tsp-custom-selected">Toutes <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="ios">
+                                                <input type="checkbox" id="compat-ios" />
+                                                <label for="compat-ios">iOS</label>
+                                            </li>
+                                            <li data-value="android">
+                                                <input type="checkbox" id="compat-android" />
+                                                <label for="compat-android">Android</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-if="category == 'Televisions'">
+                                <div class="tsp-filter-group">
+                                    <label>Taille</label>
+                                    <div class="tsp-custom-select" data-filter="taille">
+                                        <div class="tsp-custom-selected">Toutes <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="43">
+                                                <input type="checkbox" id="taille-43" />
+                                                <label for="taille-43">43"</label>
+                                            </li>
+                                            <li data-value="55">
+                                                <input type="checkbox" id="taille-55" />
+                                                <label for="taille-55">55"</label>
+                                            </li>
+                                            <li data-value="65">
+                                                <input type="checkbox" id="taille-65" />
+                                                <label for="taille-65">65"</label>
+                                            </li>
+                                            <li data-value="75">
+                                                <input type="checkbox" id="taille-75" />
+                                                <label for="taille-75">75"</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="tsp-filter-group">
+                                    <label>Résolution</label>
+                                    <div class="tsp-custom-select" data-filter="resolution">
+                                        <div class="tsp-custom-selected">Toutes <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="4k">
+                                                <input type="checkbox" id="resolution-4k" />
+                                                <label for="resolution-4k">4K</label>
+                                            </li>
+                                            <li data-value="8k">
+                                                <input type="checkbox" id="resolution-8k" />
+                                                <label for="resolution-8k">8K</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-if="category == 'Accessoires'">
+                                <div class="tsp-filter-group">
+                                    <label>Compatibilité</label>
+                                    <div class="tsp-custom-select" data-filter="compatibilite">
+                                        <div class="tsp-custom-selected">Toutes <i
+                                                class="fa fa-chevron-down" /></div>
+                                        <ul class="tsp-custom-options">
+                                            <li data-value="iphone">
+                                                <input type="checkbox" id="compat-iphone" />
+                                                <label for="compat-iphone">iPhone</label>
+                                            </li>
+                                            <li data-value="samsung">
+                                                <input type="checkbox" id="compat-samsung" />
+                                                <label for="compat-samsung">Samsung</label>
+                                            </li>
+                                            <li data-value="universel">
+                                                <input type="checkbox" id="compat-universel" />
+                                                <label for="compat-universel">Universel</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <button class="tsp-filter-btn"><i class="fa fa-filter" /> Filtrer</button>
+                        </div>
+
+                        <div id="oe_structure_product_grid" class="oe_structure oe_empty" />
+                        <div class="tsp-products-grid">
+
+                            <!-- CAS 1 : vrais produits Odoo (records ORM) -->
+                            <t t-if="not use_fake">
+                                <t t-foreach="products" t-as="product">
+                                    <a t-att-href="product.website_url" class="tsp-card-link">
+                                        <div class="tsp-card">
+                                            <div class="tsp-card-img-wrap">
+                                                <img
+                                                    t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                                                    t-att-alt="product.name"
+                                                    class="tsp-card-img" />
                                             </div>
-                                            <h3 class="tsp-card-name"><t t-out="product['name']"/></h3>
-                                            <p class="tsp-card-desc"><t t-out="product['description']"/></p>
-                                            <div class="tsp-card-footer">
-                                                <span class="tsp-price"><t t-out="product['price']"/> €</span>
-                                                <button class="tsp-btn tsp-btn-add" onclick="event.stopPropagation();">
-                                                    <i class="fa fa-shopping-cart"/> Ajouter
+                                            <div class="tsp-card-body">
+                                                <h3 class="tsp-card-name">
+                                                    <t t-out="product.name" />
+                                                </h3>
+                                                <p class="tsp-card-desc">
+                                                    <t t-out="product.description_sale" />
+                                                </p>
+                                                <div class="tsp-card-footer">
+                                                    <div class="tsp-prices">
+                                                        <t
+                                                            t-if="product.price != product.list_price">
+                                                            <span class="tsp-price-promo"><t
+                                                                    t-out="product.price" /> €</span>
+                                                            <span class="tsp-price-barre"><t
+                                                                    t-out="product.list_price" /> €</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="tsp-price"><t
+                                                                    t-out="product.list_price" /> €</span>
+                                                        </t>
+                                                    </div>
+                                                    <a t-att-href="product.website_url"
+                                                        class="tsp-btn tsp-btn-add">
+                                                        <i class="fa fa-shopping-cart" /> Voir </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+
+                            <!-- CAS 2 : FAKE products (base vide) -->
+                            <t t-if="use_fake">
+                                <t t-foreach="products" t-as="product">
+                                    <a t-attf-href="/shop/product/{{ product['id'] }}"
+                                        class="tsp-card-link">
+                                        <div class="tsp-card">
+                                            <div class="tsp-card-img-wrap">
+                                                <t t-if="product['badge']">
+                                                    <span class="tsp-badge-new">
+                                                        <t t-out="product['badge']" />
+                                                    </span>
+                                                </t>
+                                                <img t-att-src="product['image_url']"
+                                                    t-att-alt="product['name']"
+                                                    class="tsp-card-img" />
+                                                <button class="tsp-wishlist-btn">
+                                                    <i class="fa fa-heart-o" />
                                                 </button>
                                             </div>
+                                            <div class="tsp-card-body">
+                                                <div class="tsp-stars">
+                                                    <t t-set="prod_rating"
+                                                        t-value="int(product['rating'])" />
+                                                    <t t-foreach="range(5)" t-as="star_i">
+                                                        <i t-if="star_i &lt; prod_rating"
+                                                            class="fa fa-star tsp-star-on" />
+                                                        <i t-else="" class="fa fa-star tsp-star-off" />
+                                                    </t>
+                                                    <span class="tsp-stars-count">(<t
+                                                            t-out="prod_rating" />)</span>
+                                                </div>
+                                                <h3 class="tsp-card-name">
+                                                    <t t-out="product['name']" />
+                                                </h3>
+                                                <p class="tsp-card-desc">
+                                                    <t t-out="product['description']" />
+                                                </p>
+                                                <div class="tsp-card-footer">
+                                                    <span class="tsp-price"><t
+                                                            t-out="product['price']" /> €</span>
+                                                    <button class="tsp-btn tsp-btn-add"
+                                                        onclick="event.stopPropagation();">
+                                                        <i class="fa fa-shopping-cart" /> Ajouter </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                </t>
                             </t>
-                        </t>
 
-                    </div>
-                    <div id="oe_structure_category_bottom" class="oe_structure oe_empty"/>
-                </section>
-            </div>
-        </t>
-    </template>
+                        </div>
+                        <div id="oe_structure_category_bottom" class="oe_structure oe_empty" />
+                    </section>
+                </div>
+            </t>
+        </template>
 
-</data>
+    </data>
 </odoo>
