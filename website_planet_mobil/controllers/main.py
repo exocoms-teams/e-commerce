@@ -107,9 +107,27 @@ FAKE_PRODUCTS = {
 
 class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
+    def _get_products_with_price(self, products):
+        """Calcule le prix promo pour chaque produit."""
+        pricelist = request.env['product.pricelist'].sudo().search(
+            [('website_id', '=', request.website.id)], limit=1
+        ) or request.env['product.pricelist'].sudo().search([], limit=1)
+        
+        result = []
+        for product in products:
+            if pricelist:
+                promo_price = pricelist._get_product_price(product, 1.0)
+            else:
+                promo_price = product.list_price
+            result.append({
+                'product': product,
+                'list_price': product.list_price,
+                'promo_price': promo_price if promo_price != product.list_price else None,
+            })
+        return result
+
     @http.route(['/', '/accueil'], type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
-
         use_fake = not bool(request.env['product.template'].sudo().search(
             [('is_published', '=', True)], limit=1
         ))
@@ -118,41 +136,21 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             top_ventes = [p for p in FAKE_PRODUCTS.values() if p['is_top_vente']]
             nouveautes = [p for p in FAKE_PRODUCTS.values() if p['is_nouveaute']]
         else:
-            top_ventes = request.env['product.template'].sudo().search(
+            tv = request.env['product.template'].sudo().search(
                 [('x_is_top_vente', '=', True), ('is_published', '=', True)], limit=4)
-            nouveautes = request.env['product.template'].sudo().search(
+            nv = request.env['product.template'].sudo().search(
                 [('x_is_nouveaute', '=', True), ('is_published', '=', True)], limit=4)
-
+            top_ventes = self._get_products_with_price(tv)
+            nouveautes = self._get_products_with_price(nv)
 
         return request.render('website_planet_mobil.homepage', {
             'top_ventes': top_ventes,
             'nouveautes': nouveautes,
-            'use_fake' : use_fake,
+            'use_fake': use_fake,
         })
-
-
-    @http.route('/avis', type='http', auth='public', website=True)
-    def avis(self, **kwargs):
-        avis_list = [
-            {'initiales': 'ML', 'nom': 'Marie L.', 'date': '12 janvier 2026', 'note': 5, 'titre': 'Livraison ultra rapide !', 'commentaire': "Commande passÃ©e le soir, reÃ§ue le lendemain matin. Le produit est exactement comme dÃ©crit, je suis vraiment ravie de mon achat. Je recommande sans hÃ©siter !", 'produit': 'iPhone 15 Pro Max'},
-            {'initiales': 'TK', 'nom': 'Thomas K.', 'date': '5 fÃ©vrier 2026', 'note': 5, 'titre': 'Excellent rapport qualitÃ©/prix', 'commentaire': "La montre est magnifique, les fonctionnalitÃ©s sont top. Le service client a Ã©tÃ© trÃ¨s rÃ©actif quand j'ai eu une question. TrÃ¨s bonne expÃ©rience d'achat.", 'produit': 'Apple Watch Series 9'},
-            {'initiales': 'SB', 'nom': 'Sophie B.', 'date': '18 fÃ©vrier 2026', 'note': 4, 'titre': 'TrÃ¨s satisfaite de mon casque', 'commentaire': "La rÃ©duction de bruit est impressionnante, idÃ©al pour travailler en open space. Juste dommage que la livraison ait pris 2 jours de plus que prÃ©vu.", 'produit': 'Sony WH-1000XM5'},
-            {'initiales': 'AD', 'nom': 'Alexandre D.', 'date': '2 mars 2026', 'note': 5, 'titre': 'Le meilleur smartphone Android', 'commentaire': "Photos Ã©poustouflantes, fluiditÃ© parfaite, autonomie excellente. Le S Pen est un vrai plus pour la productivitÃ©. Un achat que je ne regrette pas du tout !", 'produit': 'Samsung Galaxy S21 Ultra'},
-            {'initiales': 'CM', 'nom': 'Clara M.', 'date': '15 mars 2026', 'note': 5, 'titre': 'TV incroyable pour le gaming', 'commentaire': "L'image OLED est Ã  couper le souffle, les noirs sont parfaits. Le mode gaming 120Hz fait vraiment la diffÃ©rence. Installation rapide et livraison soignÃ©e.", 'produit': 'LG OLED C3 55"'},
-            {'initiales': 'JP', 'nom': 'Jean-Pierre V.', 'date': '28 mars 2026', 'note': 4, 'titre': 'Bon produit, site agrÃ©able', 'commentaire': "Le site est trÃ¨s bien conÃ§u, la navigation est intuitive. Le Pixel 8 Pro est excellent, l'IA intÃ©grÃ©e est vraiment utile au quotidien. Je reviendrai acheter !", 'produit': 'Google Pixel 8 Pro'},
-        ]
-        return request.render('website_planet_mobil.avis_page', {'avis_list': avis_list})
-
-    @http.route('/contact', type='http', auth='public', website=True)
-    def contact(self, **kwargs):
-        return request.render('website_planet_mobil.contact_page', {})
-
-    
 
     @http.route('/catalogue', type='http', auth='public', website=True, sitemap=True)
     def catalogue(self, category=None, **kwargs):
-
-        # Marques & couleurs
         all_products = request.env['product.template'].sudo().search([])
         brands = sorted(set(filter(None, all_products.mapped('x_brand'))))
         colors = sorted(set(filter(None, all_products.mapped('color'))))
@@ -161,7 +159,6 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         if not colors:
             colors = ['Noir', 'Blanc', 'Bleu', 'Rouge', 'Rose', 'Or']
 
-        # Domain
         domain = [('is_published', '=', True)]
         if category == 'Nouveautes':
             domain.append(('x_is_nouveaute', '=', True))
@@ -183,26 +180,34 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             elif category:
                 fake = [p for p in fake if p.get('category') == category]
             products = fake
-            products_with_price = []
         else:
-            products = request.env['product.template'].sudo().search(domain, limit=20)
-            pricelist = request.website.get_current_pricelist()
-            products_with_price = []
-            for product in products:
-                promo_price = pricelist._get_product_price(product, 1.0)
-                products_with_price.append({
-                    'product': product,
-                    'list_price': product.list_price,
-                    'promo_price': promo_price if promo_price != product.list_price else None,
-                })
+            raw_products = request.env['product.template'].sudo().search(domain, limit=20)
+            products = self._get_products_with_price(raw_products)
 
         return request.render('website_planet_mobil.category_page', {
-            'products': products if use_fake else products_with_price,
+            'products': products,
             'category': category,
             'brands': brands,
             'colors': colors,
             'use_fake': use_fake,
         })
+    @http.route('/avis', type='http', auth='public', website=True)
+    def avis(self, **kwargs):
+        avis_list = [
+            {'initiales': 'ML', 'nom': 'Marie L.', 'date': '12 janvier 2026', 'note': 5, 'titre': 'Livraison ultra rapide !', 'commentaire': "Commande passÃ©e le soir, reÃ§ue le lendemain matin. Le produit est exactement comme dÃ©crit, je suis vraiment ravie de mon achat. Je recommande sans hÃ©siter !", 'produit': 'iPhone 15 Pro Max'},
+            {'initiales': 'TK', 'nom': 'Thomas K.', 'date': '5 fÃ©vrier 2026', 'note': 5, 'titre': 'Excellent rapport qualitÃ©/prix', 'commentaire': "La montre est magnifique, les fonctionnalitÃ©s sont top. Le service client a Ã©tÃ© trÃ¨s rÃ©actif quand j'ai eu une question. TrÃ¨s bonne expÃ©rience d'achat.", 'produit': 'Apple Watch Series 9'},
+            {'initiales': 'SB', 'nom': 'Sophie B.', 'date': '18 fÃ©vrier 2026', 'note': 4, 'titre': 'TrÃ¨s satisfaite de mon casque', 'commentaire': "La rÃ©duction de bruit est impressionnante, idÃ©al pour travailler en open space. Juste dommage que la livraison ait pris 2 jours de plus que prÃ©vu.", 'produit': 'Sony WH-1000XM5'},
+            {'initiales': 'AD', 'nom': 'Alexandre D.', 'date': '2 mars 2026', 'note': 5, 'titre': 'Le meilleur smartphone Android', 'commentaire': "Photos Ã©poustouflantes, fluiditÃ© parfaite, autonomie excellente. Le S Pen est un vrai plus pour la productivitÃ©. Un achat que je ne regrette pas du tout !", 'produit': 'Samsung Galaxy S21 Ultra'},
+            {'initiales': 'CM', 'nom': 'Clara M.', 'date': '15 mars 2026', 'note': 5, 'titre': 'TV incroyable pour le gaming', 'commentaire': "L'image OLED est Ã  couper le souffle, les noirs sont parfaits. Le mode gaming 120Hz fait vraiment la diffÃ©rence. Installation rapide et livraison soignÃ©e.", 'produit': 'LG OLED C3 55"'},
+            {'initiales': 'JP', 'nom': 'Jean-Pierre V.', 'date': '28 mars 2026', 'note': 4, 'titre': 'Bon produit, site agrÃ©able', 'commentaire': "Le site est trÃ¨s bien conÃ§u, la navigation est intuitive. Le Pixel 8 Pro est excellent, l'IA intÃ©grÃ©e est vraiment utile au quotidien. Je reviendrai acheter !", 'produit': 'Google Pixel 8 Pro'},
+        ]
+        return request.render('website_planet_mobil.avis_page', {'avis_list': avis_list})
+
+    @http.route('/contact', type='http', auth='public', website=True)
+    def contact(self, **kwargs):
+        return request.render('website_planet_mobil.contact_page', {})
+
+    
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
