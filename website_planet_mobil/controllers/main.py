@@ -108,21 +108,22 @@ FAKE_PRODUCTS = {
 class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     def _get_products_with_price(self, products):
-        """Calcule le prix promo pour chaque produit."""
-        pricelist = request.env['product.pricelist'].sudo().search(
-            [('website_id', '=', request.website.id)], limit=1
-        ) or request.env['product.pricelist'].sudo().search([], limit=1)
-        
         result = []
         for product in products:
-            if pricelist:
-                promo_price = pricelist._get_product_price(product, 1.0)
+            list_price = product.list_price
+            # Cherche une règle de remise sur ce produit dans n'importe quelle pricelist
+            rule = request.env['product.pricelist.item'].sudo().search([
+                ('product_tmpl_id', '=', product.id),
+                ('compute_price', '=', 'discount'),
+            ], limit=1)
+            if rule:
+                promo_price = list_price * (1 - rule.percent_price / 100)
             else:
-                promo_price = product.list_price
+                promo_price = None
             result.append({
                 'product': product,
-                'list_price': product.list_price,
-                'promo_price': promo_price if promo_price != product.list_price else None,
+                'list_price': list_price,
+                'promo_price': promo_price,
             })
         return result
 
