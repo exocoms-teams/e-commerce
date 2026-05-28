@@ -14,7 +14,7 @@
         'views/pages/audit.xml',
     ],
     'assets': {
-        'web.assets_frontend': [
+        'website.assets_frontend': [
             'monetique_theme/static/src/css/main.css',
         ],
     },
