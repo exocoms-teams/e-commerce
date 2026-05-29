@@ -26,16 +26,21 @@ def post_init_hook(env):
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
         })
 
-    # === LANGUE FRANÇAISE ===
+    # === LANGUES — Français + Anglais ===
     lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
     if not lang_fr:
         env['res.lang']._activate_lang('fr_FR')
         lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
 
+    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
     if website and lang_fr:
+        langs = [(4, lang_fr.id)]
+        if lang_en:
+            langs.append((4, lang_en.id))
         website.write({
             'default_lang_id': lang_fr.id,
-            'language_ids': [(4, lang_fr.id)],
+            'language_ids': langs,
         })
 
     # Charger les traductions françaises
@@ -78,10 +83,16 @@ def post_init_hook(env):
 </data>
 """})
 
-    # === DÉCONNEXION (id=619) ===
-    logout_view = env['ir.ui.view'].browse(619)
-    if logout_view.exists():
-        logout_view.write({'arch': """
+    # === DÉCONNEXION — via héritage de portal.user_dropdown ===
+    existing = env['ir.ui.view'].search([
+        ('name', '=', 'Exocoms Logout FR')
+    ], limit=1)
+    if not existing:
+        env['ir.ui.view'].create({
+            'name': 'Exocoms Logout FR',
+            'type': 'qweb',
+            'inherit_id': env.ref('portal.user_dropdown').id,
+            'arch': """
 <data>
     <xpath expr="//a[@id='o_logout']" position="replace">
         <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
@@ -89,7 +100,8 @@ def post_init_hook(env):
         </a>
     </xpath>
 </data>
-"""})
+""",
+        })
 
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
