@@ -128,15 +128,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 jsonrpc: '2.0',
                 method: 'call',
                 params: {
-                    model: 'product.attribute.value',
+                    model: 'product.template.attribute.value',
                     method: 'search_read',
                     args: [[['attribute_id', '=', attributeId]]],
-                    kwargs: { fields: ['id', 'name'] }
+                    kwargs: { fields: ['id', 'name'], limit: 100 }
                 }
             })
         });
         const data = await res.json();
-        return data.result || [];
+        // Dédoublonne par nom
+        const seen = new Set();
+        return (data.result || []).filter(v => {
+            if (seen.has(v.name)) return false;
+            seen.add(v.name);
+            return true;
+        });
     }
 
     // Peuple un dropdown dynamiquement
