@@ -297,7 +297,10 @@ header#top li.o_no_autohide_item:has(a.o_nav_link_btn) {
 /* Cache Contact Us */
 header#top li:has(a.btn_cta) { display: none !important; }
 
-/* Transforme le li Sign in en icône ronde bleue */
+/* Cache téléphone — ciblage par href tel: */
+header#top li:has(a[href^="tel:"]) { display: none !important; }
+
+/* Icône profil quand déconnecté — o_nav_link_btn transformé */
 header#top li.o_no_autohide_item {
     display: flex !important;
     align-items: center !important;
@@ -314,13 +317,16 @@ header#top li.o_no_autohide_item a.o_nav_link_btn {
     justify-content: center !important;
     color: white !important;
     padding: 0 !important;
-    font-size: 0 !important;
-    text-indent: -9999px !important;
+    overflow: hidden !important;
 }
 
-header#top li.o_no_autohide_item a.o_nav_link_btn::before {
+header#top li.o_no_autohide_item a.o_nav_link_btn span {
+    display: none !important;
+}
+
+header#top li.o_no_autohide_item a.o_nav_link_btn::after {
     content: '\f007' !important;
     font-family: 'FontAwesome' !important;
     font-size: 14px !important;
-    text-indent: 0 !important;
+    color: white !important;
 }
