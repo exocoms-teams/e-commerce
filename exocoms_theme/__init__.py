@@ -37,12 +37,12 @@ def post_init_hook(env):
         if menu.exists():
             menu.write({'name': name, 'url': url})
 
-    # Désactiver les menus indésirables
-    menus_to_hide = [9, 10, 11, 12, 13]  # Solutions, Terminaux, Tarifs, À propos, Contact
-    for menu_id in menus_to_hide:
+    # Supprimer les menus indésirables
+    menus_to_delete = [9, 10, 11, 12, 13]
+    for menu_id in menus_to_delete:
         menu = env['website.menu'].browse(menu_id)
         if menu.exists():
-            menu.write({'active': False})
+            menu.unlink()
 
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
