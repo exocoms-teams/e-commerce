@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="email_template_reservation_confirmed" model="mail.template">
+        <field name="name">Confirmation Réservation Voyage</field>
+        <field name="model_id" ref="travel_agency.model_travel_reservation"/>
+        <field name="subject">Confirmation de votre réservation - {{ object.name }}</field>
+        <field name="email_to">{{ object.client_email }}</field>
+        <field name="body_html"><![CDATA[
+            <p>Bonjour {{ object.client_name }},</p>
+            <p>Votre réservation <strong>{{ object.name }}</strong> est confirmée!</p>
+            <table>
+                <tr><td>Voyage:</td><td>{{ object.product_id.name }}</td></tr>
+                <tr><td>Départ:</td><td>{{ object.date_depart }}</td></tr>
+                <tr><td>Retour:</td><td>{{ object.date_retour }}</td></tr>
+                <tr><td>Voyageurs:</td><td>{{ object.nb_voyageurs }}</td></tr>
+                <tr><td>Prix total:</td><td>{{ object.prix_total }} €</td></tr>
+            </table>
+            <p>Merci de votre confiance!</p>
+            <p>L'équipe Exocoms</p>
+        ]]></field>
+    </record>
+</odoo>

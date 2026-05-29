@@ -59,6 +59,12 @@ class TravelReservation(models.Model):
     def action_confirm(self):
         for rec in self:
             rec.state = 'confirmed'
+            template = self.env.ref(
+                'travel_agency.email_template_reservation_confirmed',
+                raise_if_not_found=False
+            )
+            if template:
+                template.send_mail(rec.id, force_send=True)
 
     def action_cancel(self):
         for rec in self:

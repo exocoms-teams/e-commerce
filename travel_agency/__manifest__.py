@@ -12,6 +12,7 @@
         'views/payment_provider_views.xml',
         'report/reservation_report.xml',
         'payment_module/views/payment_transaction_views.xml',
+        'data/email_template.xml',
     ],
     'installable': True,
     'application': True,

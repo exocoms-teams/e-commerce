@@ -45,3 +45,9 @@ travel_agency/
     └── views/
         └── payment_transaction_views.xml  
 ```         
+
+
+📧 Email de confirmation au client?
+``` bash
+
+```
