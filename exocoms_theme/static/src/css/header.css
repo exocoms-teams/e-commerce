@@ -138,12 +138,18 @@ header#top .my_wish_quantity {
 }
 
 /* Wishlist — toujours visible même vide */
-header#top .o_wsale_my_wish {
-    display: flex !important;
-}
+header#top .o_wsale_my_wish { display: flex !important; }
 
 /* =========================================================
-   PROFIL — icône ronde
+   ELEMENTS CACHÉS — téléphone, langue, Contact Us
+========================================================= */
+
+header#top li:has(a[href^="tel:"]) { display: none !important; }
+header#top .o_header_language_selector { display: none !important; }
+header#top li:has(a.btn_cta) { display: none !important; }
+
+/* =========================================================
+   PROFIL CONNECTÉ — dropdown avec icône ronde
 ========================================================= */
 
 header#top li.dropdown.o_no_autohide_item {
@@ -155,46 +161,77 @@ header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle {
     width: 36px !important;
     height: 36px !important;
     border-radius: 50% !important;
-    background: #f5f7fb !important;
-    border: 1px solid #e0e5f0 !important;
+    background: #0d4dff !important;
+    border: 1px solid #0d4dff !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    color: #1a2240 !important;
+    color: white !important;
     padding: 0 !important;
     transition: all 0.2s ease !important;
-    position: relative !important;
 }
 
-/* Cache le texte "Mitchell Admin" */
 header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle span { display: none !important; }
 header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::after { display: none !important; }
 
-/* Icône profil via pseudo-element */
 header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::before {
     content: '\f007' !important;
     font-family: 'FontAwesome' !important;
     font-size: 14px !important;
+    color: white !important;
 }
 
 header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle:hover {
-    background: #0d4dff !important;
-    border-color: #0d4dff !important;
-    color: white !important;
+    background: #0a3ad4 !important;
+    border-color: #0a3ad4 !important;
     box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
     transform: scale(1.08) !important;
 }
 
 /* =========================================================
-   ELEMENTS CACHÉS
-   - Téléphone (data-oe-id="1067")
-   - Bouton Contact Us (data-oe-id="1029")
-   - Sélecteur de langue
+   PROFIL DÉCONNECTÉ — icône ronde bleue → login
 ========================================================= */
 
-header#top li:has(div[data-oe-id="1067"]) { display: none !important; }
-header#top li:has(div[data-oe-id="1029"]) { display: none !important; }
-header#top .o_header_language_selector { display: none !important; }
+header#top li.o_no_autohide_item:not(.dropdown) {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #0d4dff !important;
+    border: 1px solid #0d4dff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn::before {
+    content: '\f007' !important;
+    font-family: 'FontAwesome' !important;
+    font-size: 14px !important;
+    color: white !important;
+    line-height: 1 !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn:hover {
+    background: #0a3ad4 !important;
+    border-color: #0a3ad4 !important;
+    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+    transform: scale(1.08) !important;
+}
+
+/* Dropdown icônes couleur Exocoms */
+header#top .dropdown-menu.js_usermenu .dropdown-item i {
+    color: #0d4dff !important;
+}
 
 /* =========================================================
    NAVBAR MOBILE
@@ -250,10 +287,6 @@ header#top .o_header_mobile_buttons_wrap .o_wsale_my_wish a {
     padding: 0 !important;
 }
 
-/* Cache téléphone et Contact Us mobile */
-header#top .o_navbar_mobile li:has(div[data-oe-id="1067"]) { display: none !important; }
-header#top .o_navbar_mobile li:has(div[data-oe-id="1029"]) { display: none !important; }
-
 header#top .o_navbar_mobile { border-left: 1px solid #e8ecf8 !important; }
 
 header#top .o_navbar_mobile .nav-link {
@@ -268,6 +301,10 @@ header#top .o_navbar_mobile .nav-link.active {
     background: rgba(13, 77, 255, 0.06) !important;
 }
 
+/* Cache téléphone et Contact Us mobile */
+header#top .o_navbar_mobile li:has(a[href^="tel:"]) { display: none !important; }
+header#top .o_navbar_mobile li:has(a.btn_cta) { display: none !important; }
+
 /* =========================================================
    RESPONSIVE
 ========================================================= */
@@ -278,55 +315,4 @@ header#top .o_navbar_mobile .nav-link.active {
         padding: 0 12px !important;
     }
     header#top .o_header_mobile .navbar-brand.logo img { height: 26px !important; }
-}
-/* Icônes dropdown profil — couleur Exocoms */
-header#top .dropdown-menu.js_usermenu .dropdown-item i {
-    color: #0d4dff !important;
-}
-/* Icône profil non connecté — grise comme les autres */
-header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle {
-    background: #f5f7fb !important;
-    border: 1px solid #e0e5f0 !important;
-    color: #1a2240 !important;
-}
-/* Cache Sign in texte et Contact Us quand déconnecté */
-header#top li.o_no_autohide_item:has(a.o_nav_link_btn) {
-    display: none !important;
-}
-
-/* Cache Contact Us */
-header#top li:has(a.btn_cta) { display: none !important; }
-
-/* Cache téléphone — ciblage par href tel: */
-header#top li:has(a[href^="tel:"]) { display: none !important; }
-
-/* Icône profil quand déconnecté — o_nav_link_btn transformé */
-header#top li.o_no_autohide_item {
-    display: flex !important;
-    align-items: center !important;
-}
-
-header#top li.o_no_autohide_item a.o_nav_link_btn {
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 50% !important;
-    background: #0d4dff !important;
-    border: 1px solid #0d4dff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: white !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-header#top li.o_no_autohide_item a.o_nav_link_btn span {
-    display: none !important;
-}
-
-header#top li.o_no_autohide_item a.o_nav_link_btn::after {
-    content: '\f007' !important;
-    font-family: 'FontAwesome' !important;
-    font-size: 14px !important;
-    color: white !important;
 }
