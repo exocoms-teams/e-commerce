@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.tsp-custom-options input[type="checkbox"]:checked').forEach(cb => {
             const li = cb.closest('li');
             const val = li?.getAttribute('data-value');
-            if (val && val.includes('-')) attribs.push(val);
+            if (val) attribs.push(val);
         });
         return attribs;
     }
