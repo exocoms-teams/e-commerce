@@ -12,6 +12,5 @@
     'data': [
         'views/templates.xml',
     ],
-    'static_description_path': 'description',
     'installable': True,
 }
