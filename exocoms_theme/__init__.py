@@ -66,9 +66,7 @@ def post_init_hook(env):
         menu = env['website.menu'].browse(menu_id)
         if not menu.exists():
             continue
-        # Nom FR par défaut
         menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
-        # Traduction EN
         if lang_en:
             menu.with_context(lang='en_US').write({'name': name_en})
 
@@ -80,6 +78,7 @@ def post_init_hook(env):
             menu.unlink()
 
     # === PROFIL DROPDOWN — Mon compte (id=637) ===
+    # "My Account" est traduit automatiquement par Odoo via les fichiers .po
     account_view = env['ir.ui.view'].browse(637)
     if account_view.exists():
         account_view.write({'arch': """
@@ -87,17 +86,28 @@ def post_init_hook(env):
     <xpath expr="//*[@id='o_logout_divider']" position="before">
         <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
             <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
-            <t t-esc="_('My Account')"/>
+            My Account
         </a>
     </xpath>
 </data>
 """})
 
     # === DÉCONNEXION — via héritage de portal.user_dropdown ===
+    # "Logout" est traduit automatiquement par Odoo via les fichiers .po
     existing = env['ir.ui.view'].search([
         ('name', '=', 'Exocoms Logout FR')
     ], limit=1)
-    if not existing:
+    if existing:
+        existing.write({'arch': """
+<data>
+    <xpath expr="//a[@id='o_logout']" position="replace">
+        <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
+            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> Logout
+        </a>
+    </xpath>
+</data>
+"""})
+    else:
         env['ir.ui.view'].create({
             'name': 'Exocoms Logout FR',
             'type': 'qweb',
@@ -106,8 +116,7 @@ def post_init_hook(env):
 <data>
     <xpath expr="//a[@id='o_logout']" position="replace">
         <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/>
-            <t t-esc="_('Logout')"/>
+            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> Logout
         </a>
     </xpath>
 </data>
