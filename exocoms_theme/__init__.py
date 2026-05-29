@@ -78,6 +78,19 @@ def post_init_hook(env):
 </data>
 """})
 
+    # === DÉCONNEXION (id=619) ===
+    logout_view = env['ir.ui.view'].browse(619)
+    if logout_view.exists():
+        logout_view.write({'arch': """
+<data>
+    <xpath expr="//a[@id='o_logout']" position="replace">
+        <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
+            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> D&#233;connexion
+        </a>
+    </xpath>
+</data>
+"""})
+
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
     if footer_view.exists():
