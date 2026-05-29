@@ -3,11 +3,7 @@
     'version': '1.0',
     'category': 'Website',
     'depends': [
-        'website',
-        'sale_management',
-        'calendar',
-        'crm',
-        'payment',              
+        'website',             
     ],
     'data': [
         'views/templates.xml',
