@@ -26,6 +26,27 @@ def post_init_hook(env):
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
         })
 
+    # === LANGUE FRANÇAISE ===
+    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+    if not lang_fr:
+        env['res.lang']._activate_lang('fr_FR')
+        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+
+    if website and lang_fr:
+        website.write({
+            'default_lang_id': lang_fr.id,
+            'language_ids': [(4, lang_fr.id)],
+        })
+
+    # Charger les traductions françaises
+    try:
+        env['ir.translation'].load_module_terms(
+            ['web', 'website', 'website_sale', 'portal'],
+            ['fr_FR']
+        )
+    except Exception:
+        pass
+
     # === MENUS — noms français + URLs correctes ===
     menus_update = {
         5: ('Accueil', '/'),
@@ -47,15 +68,15 @@ def post_init_hook(env):
     # === PROFIL DROPDOWN — Mon compte (id=637) ===
     account_view = env['ir.ui.view'].browse(637)
     if account_view.exists():
-       account_view.write({'arch': """
-        <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
-            <xpath expr="//*[@id='o_logout_divider']" position="before">
-                <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
-                    <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i> Mon compte
-                </a>
-            </xpath>
-        </data>
-        """})
+        account_view.write({'arch': """
+<data name="Link to frontend portal" inherit_id="portal.user_dropdown">
+    <xpath expr="//*[@id='o_logout_divider']" position="before">
+        <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
+            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i> Mon compte
+        </a>
+    </xpath>
+</data>
+"""})
 
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
