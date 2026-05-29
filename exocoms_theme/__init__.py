@@ -58,36 +58,19 @@ def post_init_hook(env):
 
     # === MENUS — FR par défaut + traduction EN ===
     menus_update = {
-        5: ('Accueil', '/',         'Home'),
-        7: ('Boutique', '/shop',    'Shop'),
+        5: ('Accueil', '/',              'Home'),
+        7: ('Boutique', '/shop',         'Shop'),
         6: ('Nos services', '/services', 'Our Services'),
     }
     for menu_id, (name_fr, url, name_en) in menus_update.items():
         menu = env['website.menu'].browse(menu_id)
         if not menu.exists():
             continue
-
         # Nom FR par défaut
         menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
-
         # Traduction EN
         if lang_en:
-            translation = env['ir.translation'].search([
-                ('name', '=', 'website.menu,name'),
-                ('res_id', '=', menu.id),
-                ('lang', '=', 'en_US'),
-            ], limit=1)
-            if translation:
-                translation.write({'value': name_en, 'state': 'translated'})
-            else:
-                env['ir.translation'].create({
-                    'type': 'model',
-                    'name': 'website.menu,name',
-                    'lang': 'en_US',
-                    'res_id': menu.id,
-                    'value': name_en,
-                    'state': 'translated',
-                })
+            menu.with_context(lang='en_US').write({'name': name_en})
 
     # Supprimer les menus indésirables
     menus_to_delete = [9, 10, 11, 12, 13]
