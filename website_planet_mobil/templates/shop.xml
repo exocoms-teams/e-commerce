@@ -1,49 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+    <data>
 
-    <template id="shop_layout" name="Planet Mobil - Shop"
-              inherit_id="website_sale.products">
+        <template id="shop_layout" name="Planet Mobil - Shop"
+            inherit_id="website_sale.products">
 
-        <!-- Supprime la sidebar native -->
-        <xpath expr="//aside[@id='products_grid_before']" position="replace"/>
+            <!-- Supprime la sidebar native -->
+            <xpath expr="//aside[@id='products_grid_before']" position="replace" />
 
-        <!-- Injecte notre sidebar avant la grille produits -->
-        <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
-            <nav class="tsp-sidebar">
-                <ul class="tsp-nav">
-                    <li class="tsp-nav-item">
-                        <a href="/accueil"><i class="fa fa-bars"/> Accueil</a>
-                    </li>
-                    <li class="tsp-nav-item">
-                        <a href="/shop?x_is_promotion=1"><i class="fa fa-star-o"/> Promotions</a>
-                    </li>
-                    <li class="tsp-nav-item">
-                        <a href="/shop?x_is_nouveaute=1"><i class="fa fa-star-o"/> Nouveautes</a>
-                    </li>
-                    <li class="tsp-nav-item tsp-nav-dropdown">
-                        <a href="/shop">
-                            <i class="fa fa-th-large"/> Tous les produits
-                            <i class="fa fa-chevron-down tsp-chevron"/>
-                        </a>
-                        <ul class="tsp-submenu">
-                                <li><a href="/shop/category/smartphones-1"><i class="fa fa-mobile"/> Smartphones</a></li>
-                                <li><a href="/shop/category/montres-2"><i class="fa fa-clock-o"/> Montres connectees</a></li>
-                                <li><a href="/shop/category/accessoires-3"><i class="fa fa-shield"/> Coques et Accessoires</a></li>
-                                <li><a href="/shop/category/tv-4"><i class="fa fa-television"/> TV et Audio</a></li>
-                        </ul>
-                    </li>
-                    <li class="tsp-nav-item">
-                        <a href="/avis"><i class="fa fa-star-o"/> Avis</a>
-                    </li>
-                    <li class="tsp-nav-item">
-                        <a href="/contact"><i class="fa fa-phone"/> Contact</a>
-                    </li>
-                </ul>
-            </nav>
-        </xpath>
+            <!-- Injecte notre sidebar avant la grille produits -->
+            <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
+                <nav class="tsp-sidebar">
+                    <ul class="tsp-nav">
+                        <li class="tsp-nav-item">
+                            <a href="/accueil"><i class="fa fa-bars" /> Accueil</a>
+                        </li>
+                        <li class="tsp-nav-item">
+                            <a href="/shop?x_is_promotion=1"><i class="fa fa-star-o" /> Promotions</a>
+                        </li>
+                        <li class="tsp-nav-item">
+                            <a href="/shop?x_is_nouveaute=1"><i class="fa fa-star-o" /> Nouveautes</a>
+                        </li>
+                        <li class="tsp-nav-item tsp-nav-dropdown">
+                            <a href="/shop">
+                                <i class="fa fa-th-large" /> Tous les produits <i
+                                    class="fa fa-chevron-down tsp-chevron" />
+                            </a>
+                            <ul class="tsp-submenu">
+                                <li>
+                                    <a href="/shop/category/smartphones-1"><i class="fa fa-mobile" />
+                                        Smartphones</a>
+                                </li>
+                                <li>
+                                    <a href="/shop/category/montres-2"><i class="fa fa-clock-o" />
+                                        Montres connectees</a>
+                                </li>
+                                <li>
+                                    <a href="/shop/category/accessoires-3"><i class="fa fa-shield" />
+                                        Coques et Accessoires</a>
+                                </li>
+                                <li>
+                                    <a href="/shop/category/tv-4"><i class="fa fa-television" /> TV
+                                        et Audio</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="tsp-nav-item">
+                            <a href="/avis"><i class="fa fa-star-o" /> Avis</a>
+                        </li>
+                        <li class="tsp-nav-item">
+                            <a href="/contact"><i class="fa fa-phone" /> Contact</a>
+                        </li>
+                    </ul>
+                </nav>
+            
 
-    </template>
+            <!-- Injecte la barre de filtres avant la grille produits -->
+                <div class="tsp-filter-bar">
+                    <div class="tsp-filter-group">
+                        <label>Prix</label>
+                        <div class="tsp-filter-price">
+                            <input type="number" placeholder="Min" class="tsp-filter-input"
+                                id="filter-price-min" />
+                            <span>-</span>
+                            <input type="number" placeholder="Max" class="tsp-filter-input"
+                                id="filter-price-max" />
+                        </div>
+                    </div>
 
-</data>
+                    <div class="tsp-filter-group">
+                        <label>Marque</label>
+                        <div class="tsp-custom-select" data-filter="marque">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down" /></div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="">Toutes</li>
+                                <li data-value="Apple">
+                                    <input type="checkbox" id="marque-apple" />
+                                    <label for="marque-apple">Apple</label>
+                                </li>
+                                <li data-value="Samsung">
+                                    <input type="checkbox" id="marque-samsung" />
+                                    <label for="marque-samsung">Samsung</label>
+                                </li>
+                                <li data-value="Sony">
+                                    <input type="checkbox" id="marque-sony" />
+                                    <label for="marque-sony">Sony</label>
+                                </li>
+                                <li data-value="LG">
+                                    <input type="checkbox" id="marque-lg" />
+                                    <label for="marque-lg">LG</label>
+                                </li>
+                                <li data-value="Google">
+                                    <input type="checkbox" id="marque-google" />
+                                    <label for="marque-google">Google</label>
+                                </li>
+                                <li data-value="OnePlus">
+                                    <input type="checkbox" id="marque-oneplus" />
+                                    <label for="marque-oneplus">OnePlus</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tsp-filter-group">
+                        <label>Note</label>
+                        <div class="tsp-custom-select" data-filter="note">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down" /></div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="5">
+                                    <input type="checkbox" id="note-5" />
+                                    <label for="note-5">⭐⭐⭐⭐⭐</label>
+                                </li>
+                                <li data-value="4">
+                                    <input type="checkbox" id="note-4" />
+                                    <label for="note-4">⭐⭐⭐⭐ et +</label>
+                                </li>
+                                <li data-value="3">
+                                    <input type="checkbox" id="note-3" />
+                                    <label for="note-3">⭐⭐⭐ et +</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tsp-filter-group">
+                        <label>Couleur</label>
+                        <div class="tsp-custom-select" data-filter="couleur">
+                            <div class="tsp-custom-selected">Toutes <i class="fa fa-chevron-down" /></div>
+                            <ul class="tsp-custom-options">
+                                <li data-value="">Toutes</li>
+                                <li data-value="Noir">
+                                    <input type="checkbox" id="couleur-noir" />
+                                    <label for="couleur-noir">Noir</label>
+                                </li>
+                                <li data-value="Blanc">
+                                    <input type="checkbox" id="couleur-blanc" />
+                                    <label for="couleur-blanc">Blanc</label>
+                                </li>
+                                <li data-value="Bleu">
+                                    <input type="checkbox" id="couleur-bleu" />
+                                    <label for="couleur-bleu">Bleu</label>
+                                </li>
+                                <li data-value="Rouge">
+                                    <input type="checkbox" id="couleur-rouge" />
+                                    <label for="couleur-rouge">Rouge</label>
+                                </li>
+                                <li data-value="Rose">
+                                    <input type="checkbox" id="couleur-rose" />
+                                    <label for="couleur-rose">Rose</label>
+                                </li>
+                                <li data-value="Or">
+                                    <input type="checkbox" id="couleur-or" />
+                                    <label for="couleur-or">Or</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button class="tsp-filter-btn" id="tsp-apply-filters">
+                        <i class="fa fa-filter" /> Filtrer </button>
+                </div>
+            </xpath>
+
+        </template>
+
+    </data>
 </odoo>
