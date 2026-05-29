@@ -1,9 +1,7 @@
 /* =========================================================
    HEADER NATIF ODOO — DESIGN EXOCOMS
-   Structure basée sur le HTML natif récupéré
 ========================================================= */
 
-/* Structure principale */
 header#top {
     background: white !important;
     border-bottom: 1px solid #e8ecf8 !important;
@@ -11,7 +9,7 @@ header#top {
 }
 
 /* =========================================================
-   NAVBAR DESKTOP (d-lg-block)
+   NAVBAR DESKTOP
 ========================================================= */
 
 header#top .navbar.d-lg-block {
@@ -41,18 +39,11 @@ header#top .navbar-brand.logo {
     flex-shrink: 0 !important;
     transition: transform 0.2s ease !important;
 }
-
-header#top .navbar-brand.logo:hover {
-    transform: scale(1.04) !important;
-}
-
-header#top .navbar-brand.logo img {
-    height: 34px !important;
-    width: auto !important;
-}
+header#top .navbar-brand.logo:hover { transform: scale(1.04) !important; }
+header#top .navbar-brand.logo img { height: 34px !important; width: auto !important; }
 
 /* =========================================================
-   NAV LINKS — centrés
+   NAV LINKS
 ========================================================= */
 
 header#top #top_menu.navbar-nav {
@@ -101,7 +92,7 @@ header#top #top_menu .nav-item .nav-link.active::after {
 }
 
 /* =========================================================
-   ICONES DROITE — panier, wishlist, search, langue, login
+   ICONES — panier, wishlist, search
 ========================================================= */
 
 header#top .navbar-nav.align-items-center {
@@ -109,7 +100,6 @@ header#top .navbar-nav.align-items-center {
     padding: 0 !important;
 }
 
-/* Style commun boutons icônes */
 header#top .o_wsale_my_cart a,
 header#top .o_wsale_my_wish a,
 header#top a[data-bs-target="#o_search_modal"] {
@@ -139,57 +129,75 @@ header#top a[data-bs-target="#o_search_modal"]:hover {
 
 header#top .o_wsale_my_cart a i,
 header#top .o_wsale_my_wish a i,
-header#top a[data-bs-target="#o_search_modal"] i {
-    color: inherit !important;
-}
+header#top a[data-bs-target="#o_search_modal"] i { color: inherit !important; }
 
-/* Badge panier/wishlist */
 header#top .my_cart_quantity,
 header#top .my_wish_quantity {
     background: #0d4dff !important;
     font-size: 10px !important;
 }
 
-/* Sélecteur de langue */
-header#top .o_header_language_selector .dropdown-toggle {
-    color: #1a2240 !important;
-    font-size: 13px !important;
-    font-weight: 500 !important;
-    padding: 4px 8px !important;
-    border-radius: 8px !important;
-    background: #f5f7fb !important;
-    border: 1px solid #e0e5f0 !important;
-    transition: all 0.2s ease !important;
-}
-
-header#top .o_header_language_selector .dropdown-toggle:hover {
-    background: rgba(13, 77, 255, 0.06) !important;
-    color: #0d4dff !important;
-    border-color: #0d4dff !important;
-}
-
-/* Bouton Se connecter */
-header#top .o_nav_link_btn {
-    background: #0d4dff !important;
-    color: white !important;
-    border-color: #0d4dff !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    padding: 6px 14px !important;
-    transition: all 0.2s ease !important;
-    white-space: nowrap !important;
-}
-
-header#top .o_nav_link_btn:hover {
-    background: #0a3ad4 !important;
-    border-color: #0a3ad4 !important;
-    color: white !important;
-    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+/* Wishlist — toujours visible même vide */
+header#top .o_wsale_my_wish {
+    display: flex !important;
 }
 
 /* =========================================================
-   NAVBAR MOBILE (d-lg-none)
+   PROFIL — icône ronde
+========================================================= */
+
+header#top li.dropdown.o_no_autohide_item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #1a2240 !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+}
+
+/* Cache le texte "Mitchell Admin" */
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle span { display: none !important; }
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::after { display: none !important; }
+
+/* Icône profil via pseudo-element */
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::before {
+    content: '\f007' !important;
+    font-family: 'FontAwesome' !important;
+    font-size: 14px !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle:hover {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+    transform: scale(1.08) !important;
+}
+
+/* =========================================================
+   ELEMENTS CACHÉS
+   - Téléphone (data-oe-id="1067")
+   - Bouton Contact Us (data-oe-id="1029")
+   - Sélecteur de langue
+========================================================= */
+
+header#top li:has(div[data-oe-id="1067"]) { display: none !important; }
+header#top li:has(div[data-oe-id="1029"]) { display: none !important; }
+header#top .o_header_language_selector { display: none !important; }
+
+/* =========================================================
+   NAVBAR MOBILE
 ========================================================= */
 
 header#top .o_header_mobile.d-lg-none {
@@ -206,12 +214,8 @@ header#top .o_header_mobile .o_main_nav.container {
     align-items: center !important;
 }
 
-header#top .o_header_mobile .navbar-brand.logo img {
-    height: 30px !important;
-    width: auto !important;
-}
+header#top .o_header_mobile .navbar-brand.logo img { height: 30px !important; width: auto !important; }
 
-/* Bouton burger mobile */
 header#top .o_header_mobile button[data-bs-toggle="offcanvas"] {
     width: 36px !important;
     height: 36px !important;
@@ -232,7 +236,6 @@ header#top .o_header_mobile button[data-bs-toggle="offcanvas"]:hover {
     color: white !important;
 }
 
-/* Icônes mobile panier/wishlist */
 header#top .o_header_mobile_buttons_wrap .o_wsale_my_cart a,
 header#top .o_header_mobile_buttons_wrap .o_wsale_my_wish a {
     width: 36px !important;
@@ -247,10 +250,11 @@ header#top .o_header_mobile_buttons_wrap .o_wsale_my_wish a {
     padding: 0 !important;
 }
 
-/* Menu offcanvas mobile */
-header#top .o_navbar_mobile {
-    border-left: 1px solid #e8ecf8 !important;
-}
+/* Cache téléphone et Contact Us mobile */
+header#top .o_navbar_mobile li:has(div[data-oe-id="1067"]) { display: none !important; }
+header#top .o_navbar_mobile li:has(div[data-oe-id="1029"]) { display: none !important; }
+
+header#top .o_navbar_mobile { border-left: 1px solid #e8ecf8 !important; }
 
 header#top .o_navbar_mobile .nav-link {
     color: #1a2240 !important;
@@ -273,21 +277,5 @@ header#top .o_navbar_mobile .nav-link.active {
         height: 50px !important;
         padding: 0 12px !important;
     }
-
-    header#top .o_header_mobile .navbar-brand.logo img {
-        height: 26px !important;
-    }
+    header#top .o_header_mobile .navbar-brand.logo img { height: 26px !important; }
 }
-/* Cache téléphone, admin et bouton Contact Us */
-header#top .o_header_language_selector { display: none !important; }
-header#top a.o_nav_link_btn { display: none !important; }
-header#top .o_extra_menu_items { display: none !important; }
-header#top li:has(a[href*="tel:"]) { display: none !important; }
-/* Cache éléments non voulus */
-header#top .o_nav_link_btn { display: none !important; }
-header#top .o_header_language_selector { display: none !important; }
-header#top li.o_no_autohide_item { display: none !important; }
-
-/* Cache "Mitchell Admin" dropdown */
-header#top .o_user_menu { display: none !important; }
-header#top li:has(.o_user_menu) { display: none !important; }
