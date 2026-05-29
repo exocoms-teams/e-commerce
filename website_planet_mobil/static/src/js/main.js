@@ -128,21 +128,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 jsonrpc: '2.0',
                 method: 'call',
                 params: {
-                    model: 'product.template.attribute.value',
+                    model: 'product.attribute.value',
                     method: 'search_read',
                     args: [[['attribute_id', '=', attributeId]]],
-                    kwargs: { fields: ['id', 'name'], limit: 100 }
+                    kwargs: { fields: ['id', 'name'] }
                 }
             })
         });
         const data = await res.json();
-        // Dédoublonne par nom
-        const seen = new Set();
-        return (data.result || []).filter(v => {
-            if (seen.has(v.name)) return false;
-            seen.add(v.name);
-            return true;
-        });
+        return data.result || [];
     }
 
     // Peuple un dropdown dynamiquement
@@ -156,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         values.forEach(val => {
             const li = document.createElement('li');
-            li.setAttribute('data-value', `${val.id}`);
+            li.setAttribute('data-value', `${attrId}-${val.id}`);
             li.innerHTML = `
                 <input type="checkbox" id="${filterName}-${val.id}"/>
                 <label for="${filterName}-${val.id}">${val.name}</label>
@@ -224,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Attributs (marque + couleur)
             getCheckedAttribs().forEach(attrib => {
-                params.append('attrib', attrib);
+                params.append('attribute_values', attrib);
             });
 
             // Garde la catégorie courante
