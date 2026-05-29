@@ -43,12 +43,16 @@ def post_init_hook(env):
             'language_ids': langs,
         })
 
-    # Charger les traductions françaises
+    # Charger les traductions françaises officielles Odoo
     try:
-        env['ir.translation'].load_module_terms(
-            ['web', 'website', 'website_sale', 'portal'],
-            ['fr_FR']
-        )
+        mods = env['ir.module.module'].search([
+            ('name', 'in', [
+                'base', 'web', 'website', 'website_sale',
+                'portal', 'auth_signup', 'mail', 'sale'
+            ]),
+            ('state', '=', 'installed')
+        ])
+        mods._update_translations('fr_FR')
     except Exception:
         pass
 
