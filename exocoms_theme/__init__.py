@@ -14,7 +14,6 @@ def post_init_hook(env):
             'email': 'contact@exocoms.fr',
             'phone': '+33 (0)1 84 79 37 55',
             'country_id': env.ref('base.fr').id,
-            'lang': 'fr_FR',
         })
 
     # === SITE WEB + RÉSEAUX SOCIAUX ===
