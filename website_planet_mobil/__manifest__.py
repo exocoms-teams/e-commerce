@@ -16,6 +16,7 @@
         'templates/contact_page.xml',
         'templates/category_page.xml',
         'templates/product_page.xml',
+        'templates/shop.xml',
         'data/product_categories.xml',
     ],
     'assets': {

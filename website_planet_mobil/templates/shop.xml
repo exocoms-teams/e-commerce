@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <template id="shop_layout" name="Planet Mobil - Shop"
+              inherit_id="website_sale.products"
+              primary="True">
+
+        <!-- Remplace la sidebar native par la nôtre -->
+        <xpath expr="//div[hasclass('o_wsale_products_main_col')]" position="before">
+            <nav class="tsp-sidebar">
+                <ul class="tsp-nav">
+                    <li class="tsp-nav-item">
+                        <a href="/accueil"><i class="fa fa-bars"/> Accueil</a>
+                    </li>
+                    <li class="tsp-nav-item">
+                        <a href="/shop?x_is_promotion=1"><i class="fa fa-star-o"/> Promotions</a>
+                    </li>
+                    <li class="tsp-nav-item">
+                        <a href="/shop?x_is_nouveaute=1"><i class="fa fa-star-o"/> Nouveautes</a>
+                    </li>
+                    <li class="tsp-nav-item tsp-nav-dropdown">
+                        <a href="/shop">
+                            <i class="fa fa-th-large"/> Tous les produits
+                            <i class="fa fa-chevron-down tsp-chevron"/>
+                        </a>
+                        <ul class="tsp-submenu">
+                            <li><a href="/shop?category=Smartphones"><i class="fa fa-mobile"/> Smartphones</a></li>
+                            <li><a href="/shop?category=Montres"><i class="fa fa-clock-o"/> Montres connectees</a></li>
+                            <li><a href="/shop?category=Accessoires"><i class="fa fa-shield"/> Coques et Accessoires</a></li>
+                            <li><a href="/shop?category=TV"><i class="fa fa-television"/> TV et Audio</a></li>
+                        </ul>
+                    </li>
+                    <li class="tsp-nav-item">
+                        <a href="/avis"><i class="fa fa-star-o"/> Avis</a>
+                    </li>
+                    <li class="tsp-nav-item">
+                        <a href="/contact"><i class="fa fa-phone"/> Contact</a>
+                    </li>
+                </ul>
+            </nav>
+        </xpath>
+
+        <!-- Supprime la sidebar native de filtres -->
+        <xpath expr="//div[hasclass('o_wsale_products_aside')]" position="replace"/>
+
+    </template>
+
+</data>
+</odoo>
