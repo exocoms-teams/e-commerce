@@ -44,6 +44,19 @@ def post_init_hook(env):
         if menu.exists():
             menu.unlink()
 
+    # === PROFIL DROPDOWN — Mon compte (id=637) ===
+    account_view = env['ir.ui.view'].browse(637)
+    if account_view.exists():
+        account_view.write({'arch': """
+<data>
+    <xpath expr="//a[contains(@href, '/my/home')]" position="replace">
+        <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
+            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i> Mon compte
+        </a>
+    </xpath>
+</data>
+"""})
+
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
     if footer_view.exists():
