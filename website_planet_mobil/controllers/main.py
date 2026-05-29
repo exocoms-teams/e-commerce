@@ -117,7 +117,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 ('compute_price', '=', 'discount'),
             ], limit=1)
             if rule:
-                promo_price = list_price * (1 - rule.percent_price / 100)
+                promo_price = list_price * (1 - rule.price_discount / 100)
             else:
                 promo_price = None
             result.append({
