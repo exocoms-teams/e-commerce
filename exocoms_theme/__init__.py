@@ -78,7 +78,7 @@ def post_init_hook(env):
             menu.unlink()
 
     # === PROFIL DROPDOWN — Mon compte (id=637) ===
-    # "My Account" est traduit automatiquement par Odoo via les fichiers .po
+    # Odoo traduit "My Account" automatiquement via ses fichiers .po
     account_view = env['ir.ui.view'].browse(637)
     if account_view.exists():
         account_view.write({'arch': """
@@ -92,36 +92,12 @@ def post_init_hook(env):
 </data>
 """})
 
-    # === DÉCONNEXION — via héritage de portal.user_dropdown ===
-    # "Logout" est traduit automatiquement par Odoo via les fichiers .po
+    # === DÉCONNEXION — supprimer la vue custom, Odoo gère nativement FR/EN ===
     existing = env['ir.ui.view'].search([
         ('name', '=', 'Exocoms Logout FR')
     ], limit=1)
     if existing:
-        existing.write({'arch': """
-<data>
-    <xpath expr="//a[@id='o_logout']" position="replace">
-        <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> Logout
-        </a>
-    </xpath>
-</data>
-"""})
-    else:
-        env['ir.ui.view'].create({
-            'name': 'Exocoms Logout FR',
-            'type': 'qweb',
-            'inherit_id': env.ref('portal.user_dropdown').id,
-            'arch': """
-<data>
-    <xpath expr="//a[@id='o_logout']" position="replace">
-        <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> Logout
-        </a>
-    </xpath>
-</data>
-""",
-        })
+        existing.unlink()
 
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
