@@ -133,4 +133,128 @@ document.addEventListener('DOMContentLoaded', function () {
             productsRow.parentNode.insertBefore(filterBar, productsRow);
         }
     });
+
+    /**
+     * FONCTIONNEMENT DE LA BARRE DE FILTRE *******************
+     */
+    document.addEventListener('DOMContentLoaded', function(){
+
+        if (!window.location.pathname.startsWith('/shop')) return;
+
+        //fonction qui récupere l'id d'un attribut par son nom
+            async function getAttributeId(name) {
+            const res = await fetch('/web/dataset/call_kw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        model: 'product.attribute',
+                        method: 'search_read',
+                        args: [[['name', '=', name]]],
+                        kwargs: { fields: ['id', 'name'] }
+                    }
+                })
+            });
+            const data = await res.json();
+            return data.result?.[0]?.id || null;
+        }
+
+        //fonction qui récupere valeurs d'un attributs
+        async function getAttributeValues(attributeId) {
+            const res = await fetch('/web/dataset/call_kw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        model: 'product.attribute.value',
+                        method: 'search_read',
+                        args: [[['attribute_id', '=', attributeId]]],
+                        kwargs: { fields: ['id', 'name'] }
+                    }
+                })
+            });
+            const data = await res.json();
+            return data.result || [];
+        }
+
+        //peupler les dropdown
+        function populateDropdown(filterName, values, attrId) {
+            const ul = document.querySelector(
+                `.tsp-custom-select[data-filter="${filterName}"] .tsp-custom-options`
+            );
+            if (!ul) return;
+
+            ul.querySelectorAll('li:not([data-value=""])').forEach(li => li.remove());
+
+            values.forEach(val => {
+                const li = document.createElement('li');
+                li.setAttribute('data-value', `${attrId}-${val.id}`);
+                li.innerHTML = `
+                    <input type="checkbox" id="${filterName}-${val.id}"/>
+                    <label for="${filterName}-${val.id}">${val.name}</label>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        //fonction qui init dropdowns
+        async function initFilters() {
+            const [brandId, colorId] = await Promise.all([
+                getAttributeId('Brand'),
+                getAttributeId('Color')
+            ]);
+
+            if (!brandId || !colorId) return;
+
+            const [brands, colors] = await Promise.all([
+                getAttributeValues(brandId),
+                getAttributeValues(colorId)
+            ]);
+
+            populateDropdown('marque', brands, brandId);
+            populateDropdown('couleur', colors, colorId);
+            //rajoute d'autre filtres
+        }
+
+        // récupère les attribs cochés
+        function getCheckedAttribs() {
+            const attribs = [];
+            document.querySelectorAll('.tsp-custom-options input[type="checkbox"]:checked').forEach(cb => {
+                const li = cb.closest('li');
+                const val = li?.getAttribute('data-value');
+                if (val && val.includes('-')) attribs.push(val);
+            });
+            return attribs;
+        }
+
+        //Bouton Filtrer
+        const filterBtn = document.getElementById('tsp-apply-filters');
+        if (filterBtn) {
+            filterBtn.addEventListener('click', function () {
+                const params = new URLSearchParams();
+
+                const minPrice = document.getElementById('filter-price-min')?.value;
+                const maxPrice = document.getElementById('filter-price-max')?.value;
+                if (minPrice) params.set('min_price', minPrice);
+                if (maxPrice) params.set('max_price', maxPrice);
+
+                getCheckedAttribs().forEach(attrib => {
+                    params.append('attrib', attrib);
+                });
+
+                const currentParams = new URLSearchParams(window.location.search);
+                if (currentParams.get('category')) {
+                    params.set('category', currentParams.get('category'));
+                }
+
+                window.location.href = '/shop?' + params.toString();
+            });
+        }
+
+        initFilters();
+    })
 });
