@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         values.forEach(val => {
             const li = document.createElement('li');
-            li.setAttribute('data-value', `${attrId}-${val.id}`);
+            li.setAttribute('data-value', `${val.id}`);
             li.innerHTML = `
                 <input type="checkbox" id="${filterName}-${val.id}"/>
                 <label for="${filterName}-${val.id}">${val.name}</label>
