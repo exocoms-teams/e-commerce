@@ -122,4 +122,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         window.location.href = '/shop?' + params.toString();
     })
+
+    //pour que filtre reste en scrolant la page /shop
+    document.addEventListener('DOMContentLoaded', function() {
+    const filterBar = document.querySelector('.tsp-filter-bar');
+    const productsRow = document.querySelector('.o_wsale_products_main_row');
+    
+    if (filterBar && productsRow) {
+        // Insère la barre de filtres avant la grille dans le même conteneur
+        productsRow.parentNode.insertBefore(filterBar, productsRow);
+    }
+});
 });
