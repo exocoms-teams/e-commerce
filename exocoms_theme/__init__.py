@@ -14,6 +14,7 @@ def post_init_hook(env):
             'email': 'contact@exocoms.fr',
             'phone': '+33 (0)1 84 79 37 55',
             'country_id': env.ref('base.fr').id,
+            'lang': 'fr_FR',
         })
 
     # === SITE WEB + RÉSEAUX SOCIAUX ===
@@ -56,16 +57,38 @@ def post_init_hook(env):
     except Exception:
         pass
 
-    # === MENUS — noms français + URLs correctes ===
+    # === MENUS — FR par défaut + traduction EN ===
     menus_update = {
-        5: ('Accueil', '/'),
-        7: ('Boutique', '/shop'),
-        6: ('Nos services', '/services'),
+        5: ('Accueil', '/',         'Home'),
+        7: ('Boutique', '/shop',    'Shop'),
+        6: ('Nos services', '/services', 'Our Services'),
     }
-    for menu_id, (name, url) in menus_update.items():
+    for menu_id, (name_fr, url, name_en) in menus_update.items():
         menu = env['website.menu'].browse(menu_id)
-        if menu.exists():
-            menu.write({'name': name, 'url': url})
+        if not menu.exists():
+            continue
+
+        # Nom FR par défaut
+        menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
+
+        # Traduction EN
+        if lang_en:
+            translation = env['ir.translation'].search([
+                ('name', '=', 'website.menu,name'),
+                ('res_id', '=', menu.id),
+                ('lang', '=', 'en_US'),
+            ], limit=1)
+            if translation:
+                translation.write({'value': name_en, 'state': 'translated'})
+            else:
+                env['ir.translation'].create({
+                    'type': 'model',
+                    'name': 'website.menu,name',
+                    'lang': 'en_US',
+                    'res_id': menu.id,
+                    'value': name_en,
+                    'state': 'translated',
+                })
 
     # Supprimer les menus indésirables
     menus_to_delete = [9, 10, 11, 12, 13]
@@ -81,7 +104,8 @@ def post_init_hook(env):
 <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
     <xpath expr="//*[@id='o_logout_divider']" position="before">
         <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i> Mon compte
+            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
+            <t t-esc="_('My Account')"/>
         </a>
     </xpath>
 </data>
@@ -100,7 +124,8 @@ def post_init_hook(env):
 <data>
     <xpath expr="//a[@id='o_logout']" position="replace">
         <a href="/web/session/logout?redirect=/" role="menuitem" id="o_logout" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/> D&#233;connexion
+            <i class="fa fa-fw fa-sign-out me-1 small text-primary-emphasis"/>
+            <t t-esc="_('Logout')"/>
         </a>
     </xpath>
 </data>

@@ -141,14 +141,14 @@ header#top .my_wish_quantity {
 header#top .o_wsale_my_wish { display: flex !important; }
 
 /* =========================================================
-   ELEMENTS CACHÉS — téléphone, langue, Contact Us
+   ELEMENTS CACHÉS — téléphone, Contact Us
+   ⚠️ Le sélecteur de langue est gardé visible (voir section dédiée)
 ========================================================= */
 
 header#top li:has(a[href^="tel:"]) { display: none !important; }
 header#top li:has(div[data-oe-id="1067"]) { display: none !important; }
 header#top li:has(a.btn_cta) { display: none !important; }
 header#top li:has(div[data-oe-id="1029"]) { display: none !important; }
-header#top .o_header_language_selector { display: none !important; }
 
 /* =========================================================
    PROFIL CONNECTÉ — icône ronde grise avec dropdown
@@ -195,7 +195,9 @@ header#top .dropdown-menu.js_usermenu .dropdown-item i {
 }
 
 /* =========================================================
-   DÉCONNECTÉ — bouton Connexion bleu
+   DÉCONNECTÉ — bouton Connexion
+   ⚠️ On laisse Odoo afficher le texte natif (traduit auto FR/EN)
+   On ne touche PAS au contenu via ::after
 ========================================================= */
 
 header#top li.o_no_autohide_item:not(.dropdown) {
@@ -307,18 +309,9 @@ header#top .o_navbar_mobile li:has(div[data-oe-id="1029"]) { display: none !impo
     }
     header#top .o_header_mobile .navbar-brand.logo img { height: 26px !important; }
 }
-/* Texte bouton connexion en français via CSS */
-header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn::after {
-    content: 'Connexion' !important;
-    font-size: 13px !important;
-}
 
-header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn {
-    font-size: 0 !important;
-}
 /* =========================================================
    SÉLECTEUR DE LANGUE — visible et stylisé
-   Remplace : header#top .o_header_language_selector { display: none !important; }
 ========================================================= */
 
 header#top .o_header_language_selector {
