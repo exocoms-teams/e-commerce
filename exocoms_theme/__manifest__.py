@@ -59,6 +59,7 @@
             'exocoms_theme/static/src/js/main.js',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
 }
