@@ -2,12 +2,9 @@
 from . import controllers
 from . import models
 
-# -*- coding: utf-8 -*-
-from . import controllers
-from . import models
 
 def post_init_hook(env):
-    """Initialise le footer et les données Exocoms Group"""
+    """Initialise les données Exocoms Group"""
 
     # === COMPANY ===
     company = env['res.company'].search([], limit=1)
@@ -19,7 +16,7 @@ def post_init_hook(env):
             'country_id': env.ref('base.fr').id,
         })
 
-    # === RÉSEAUX SOCIAUX ===
+    # === SITE WEB + RÉSEAUX SOCIAUX ===
     website = env['website'].search([], limit=1)
     if website:
         website.write({
@@ -28,6 +25,24 @@ def post_init_hook(env):
             'social_twitter': 'https://twitter.com/exocoms',
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
         })
+
+    # === MENUS — noms français + URLs correctes ===
+    menus_update = {
+        5: ('Accueil', '/'),
+        7: ('Boutique', '/shop'),
+        6: ('Nos services', '/services'),
+    }
+    for menu_id, (name, url) in menus_update.items():
+        menu = env['website.menu'].browse(menu_id)
+        if menu.exists():
+            menu.write({'name': name, 'url': url})
+
+    # Désactiver les menus indésirables
+    menus_to_hide = [9, 10, 11, 12, 13]  # Solutions, Terminaux, Tarifs, À propos, Contact
+    for menu_id in menus_to_hide:
+        menu = env['website.menu'].browse(menu_id)
+        if menu.exists():
+            menu.write({'active': False})
 
     # === FOOTER CONTENT (id=996) ===
     footer_view = env['ir.ui.view'].browse(996)
@@ -43,18 +58,18 @@ def post_init_hook(env):
                         <div class="col-lg-2 pt24 pb24">
                             <h5>Liens utiles</h5>
                             <ul class="list-unstyled">
-                                <li><a href="/">Page d'accueil</a></li>
+                                <li><a href="/">Page d&#39;accueil</a></li>
                                 <li><a href="/services">Nos services</a></li>
-                                <li><a href="/mentions-legales">Mentions légales</a></li>
+                                <li><a href="/mentions-legales">Mentions l&#233;gales</a></li>
                             </ul>
                         </div>
                         <div class="col-lg-5 pt24 pb24">
-                            <h5>À propos de nous</h5>
-                            <p>Nous sommes une équipe de passionnés dont le but est d'améliorer la vie de chacun grâce à des produits disruptifs. Nous commercialisons d'excellents produits pour résoudre vos problèmes commerciaux. Nos produits sont conçus pour les petites et moyennes entreprises ainsi que les franchises désireuses d'optimiser leurs performances.</p>
+                            <h5>&#192; propos de nous</h5>
+                            <p>Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
                         </div>
                         <div class="col-lg-4 offset-lg-1 pt24 pb24">
                             <h5>Contact</h5>
-                            <p>Une question, un projet ou besoin d'un accompagnement ?</p>
+                            <p>Une question, un projet ou besoin d&#39;un accompagnement ?</p>
                             <ul class="list-unstyled">
                                 <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contactez-nous</a></li>
                                 <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
@@ -94,7 +109,7 @@ def post_init_hook(env):
 <data>
     <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
         <span class="o_footer_copyright_name me-2 small">
-            Copyright © 2026 Exocoms Group. Tous droits réservés.
+            Copyright &#169; 2026 Exocoms Group. Tous droits r&#233;serv&#233;s.
         </span>
     </xpath>
 </data>
