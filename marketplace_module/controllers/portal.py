@@ -73,7 +73,7 @@ class VendorPortal(http.Controller):
 
     # ── Route 2 : Liste complete des produits ─────────────────────────────
     @http.route(
-        '/vendor/products',
+        '/vendor/products', 
         type='http',
         auth='user',
         website=True,
