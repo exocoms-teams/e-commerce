@@ -104,40 +104,33 @@ window.App = (() => {
 
     /* ── Navigation entre vues ── */
     function showView(viewId, title = '') {
-        // Masquer la vue courante
-        const current = document.getElementById(`view-${_currentView}`);
-        if (current) current.style.display = 'none';
+        // Desktop: use class-based view switching
+        document.querySelectorAll('.view-page').forEach(v => v.classList.remove('active'));
+        const target = document.getElementById('view-' + viewId);
+        if (target) target.classList.add('active');
 
-        // Empiler la navigation (sauf si retour au dashboard)
-        if (_currentView !== viewId) {
-            _history.push(_currentView);
-        }
+        // Mobile legacy fallback
+        const current = document.getElementById('view-' + _currentView);
+        if (current && current.classList.contains('view')) { current.style.display = 'none'; }
+        if (_currentView !== viewId) { _history.push(_currentView); }
         _currentView = viewId;
 
-        // Afficher la nouvelle vue
-        const target = document.getElementById(`view-${viewId}`);
-        if (target) {
-            target.style.display  = 'flex';
-            target.style.flexDirection = 'column';
-            // Remonter en haut
-            const scroll = target.querySelector('.view-scroll');
-            if (scroll) scroll.scrollTop = 0;
-        }
-
-        // Titre
-        if (title) document.getElementById('topbarTitle').textContent = title;
-
-        // Bouton retour
-        const backBtn = document.getElementById('backBtn');
-        backBtn.style.display = (_history.length > 0 && viewId !== 'dashboard') ? 'flex' : 'none';
-
-        // Bottom nav active
-        document.querySelectorAll('.bottomnav-item').forEach(btn => btn.classList.remove('active'));
-        const activeNav = document.getElementById(`nav-${viewId}`);
+        // Sidebar nav active
+        document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+        const activeNav = document.getElementById('nav-' + viewId);
         if (activeNav) activeNav.classList.add('active');
-        else if (viewId === 'dashboard') {
-            document.getElementById('nav-dashboard').classList.add('active');
-        }
+
+        // Optional elements
+        const titleEl = document.getElementById('topbarTitle');
+        if (title && titleEl) titleEl.textContent = title;
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) backBtn.style.display = (_history.length > 0 && viewId !== 'dashboard') ? 'flex' : 'none';
+
+        // Load data
+        if (viewId === 'dashboard') Dashboard.init();
+        if (viewId === 'missions') Dashboard.loadMissions();
+        if (viewId === 'interventions') Dashboard.loadInterventions();
+        if (viewId === 'carte') Dashboard.initCarte();
     }
 
     function goBack() {
