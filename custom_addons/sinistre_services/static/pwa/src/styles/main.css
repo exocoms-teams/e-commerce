@@ -466,16 +466,18 @@ html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var
 .carte-map-wrap {
     position: relative;
     border-radius: var(--r);
-    overflow: hidden;
     box-shadow: var(--shadow-md);
     height: 560px;
+    /* PAS de overflow:hidden — empêche Google Maps de rendre les tuiles */
 }
 .google-map-container {
-    width: 100%;
-    height: 560px;
+    width: 100% !important;
+    height: 560px !important;
     background: #e8f0f7;
-    display: block;
+    display: block !important;
 }
+/* S'assurer que les divs internes de Google Maps ont bien une hauteur */
+#googleMap > div { height: 100% !important; }
 
 /* Panneau info mission */
 .carte-info-panel {
