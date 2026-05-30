@@ -9,11 +9,11 @@ window.gm_authFailure = function() {
 };
 
 window.CarteMap = (() => {
-    let _map = null;          // instance google.maps.Map
-    let _mapEl = null;        // élément gmp-map
+    let _map = null;
+    let _mapEl = null;
     let _userMarker = null;
     let _markers = [];
-    let _directionsRenderer = null;
+    let _polyline = null;
     let _trafficLayer = null;
     let _userPos = null;
     let _missions = [];
@@ -112,12 +112,12 @@ window.CarteMap = (() => {
         _map = map;
         console.log('[CarteMap] ✓ Carte initialisée');
 
-        _directionsRenderer = new google.maps.DirectionsRenderer({
-            suppressMarkers: true,
-            polylineOptions: { strokeColor: '#1E40AF', strokeWeight: 5, strokeOpacity: 0.8 },
-        });
-        _directionsRenderer.setMap(_map);
+        // DirectionsRenderer migré vers Routes API (tracé polyligne manuel)
         _trafficLayer = new google.maps.TrafficLayer();
+        _polyline = new google.maps.Polyline({
+            strokeColor: '#1E40AF', strokeWeight: 5, strokeOpacity: 0.8,
+        });
+        _polyline.setMap(_map);
         _map.addListener('click', closeInfoPanel);
 
         setTimeout(function() {
@@ -150,15 +150,18 @@ window.CarteMap = (() => {
         _setGPS('GPS actif · Précision ' + acc + 'm', true);
 
         if (!_userMarker) {
-            _userMarker = new google.maps.Marker({
+            var userDot = document.createElement('div');
+            userDot.style.cssText = 'width:20px;height:20px;border-radius:50%;background:#1E40AF;border:3px solid white;box-shadow:0 2px 8px rgba(30,64,175,.5);';
+            _userMarker = new google.maps.marker.AdvancedMarkerElement({
                 position: _userPos, map: _map,
-                icon: { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#1E40AF', fillOpacity: 1, strokeColor: 'white', strokeWeight: 3 },
-                title: 'Ma position', zIndex: 1000,
+                title: 'Ma position',
+                content: userDot,
+                zIndex: 1000,
             });
             _map.setCenter(_userPos);
             _map.setZoom(14);
         } else {
-            _userMarker.setPosition(_userPos);
+            _userMarker.position = _userPos;
         }
 
         // Géocodage inverse
@@ -250,13 +253,15 @@ window.CarteMap = (() => {
                 var urgent = mission.urgence === 'urgente' || mission.urgence === 'tres_urgente';
                 console.log('[CarteMap] ✓ Marqueur:', mission.reference, '@', addr);
 
-                var marker = new google.maps.Marker({
+                // AdvancedMarkerElement (nouvelle API)
+                var pinEl = document.createElement('div');
+                pinEl.style.cssText = 'width:32px;height:40px;cursor:pointer;';
+                pinEl.innerHTML = _iconSvg(color, urgent);
+                var marker = new google.maps.marker.AdvancedMarkerElement({
                     position: pos, map: _map,
-                    icon: _icon(color, urgent),
                     title: mission.description_sinistre || mission.reference,
-                    animation: urgent ? google.maps.Animation.BOUNCE : null,
+                    content: pinEl,
                 });
-                if (urgent) setTimeout(function(){ marker.setAnimation(null); }, 3000);
                 marker.addListener('click', function(){ _select(mission, pos); });
                 _markers.push({ marker: marker, mission: mission, pos: pos });
 
@@ -297,43 +302,85 @@ window.CarteMap = (() => {
         _map.setZoom(15);
 
         if (_userPos) {
-            new google.maps.DistanceMatrixService().getDistanceMatrix({
-                origins: [_userPos],
-                destinations: [{ lat: pos.lat(), lng: pos.lng() }],
-                travelMode: google.maps.TravelMode.DRIVING,
-                drivingOptions: { departureTime: new Date(), trafficModel: 'bestguess' },
-            }, function(resp, st) {
-                if (st === 'OK') {
-                    var el = resp.rows[0].elements[0];
-                    if (el.status === 'OK') {
-                        _set('carteInfoDuree', el.duration_in_traffic ? el.duration_in_traffic.text : el.duration.text);
-                        _set('carteInfoDist',  el.distance.text);
+            // Chercher dans les distances déjà calculées
+            var mm = _markers.find(function(m){ return m.mission === mission; });
+            if (mm && mm.distTxt) {
+                _set('carteInfoDuree', mm.durTxt || '—');
+                _set('carteInfoDist',  mm.distTxt);
+            } else {
+                // Calculer via Routes API
+                var key = CONFIG.GOOGLE_MAPS_KEY;
+                fetch('https://routes.googleapis.com/distancematrix/v2:computeRouteMatrix', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': key,
+                        'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status',
+                    },
+                    body: JSON.stringify({
+                        origins: [{ waypoint: { location: { latLng: { latitude: _userPos.lat, longitude: _userPos.lng } } } }],
+                        destinations: [{ waypoint: { location: { latLng: { latitude: pos.lat(), longitude: pos.lng() } } } }],
+                        travelMode: 'DRIVE',
+                        routingPreference: 'TRAFFIC_AWARE',
+                    }),
+                }).then(function(r){ return r.json(); }).then(function(rows){
+                    if (Array.isArray(rows) && rows[0] && rows[0].status === 'OK') {
+                        _set('carteInfoDuree', _fmtDur(rows[0].duration));
+                        _set('carteInfoDist',  _fmtDist(rows[0].distanceMeters));
                     }
-                }
-            });
+                }).catch(function(){});
+            }
         }
     }
 
-    function _updateDistances() {
+    async function _updateDistances() {
         if (!_userPos || !_markers.length) return;
-        var dests = _markers.map(function(m) { return { lat: m.pos.lat(), lng: m.pos.lng() }; });
-        new google.maps.DistanceMatrixService().getDistanceMatrix({
-            origins: [_userPos], destinations: dests,
-            travelMode: google.maps.TravelMode.DRIVING,
-            drivingOptions: { departureTime: new Date(), trafficModel: 'bestguess' },
-        }, function(resp, st) {
-            if (st !== 'OK') return;
-            (resp.rows[0].elements || []).forEach(function(el, i) {
-                if (el.status === 'OK' && _markers[i]) {
-                    _markers[i].dist    = el.distance.value;
-                    _markers[i].distTxt = el.distance.text;
-                    _markers[i].durTxt  = el.duration_in_traffic ? el.duration_in_traffic.text : el.duration.text;
+        // Routes API (nouvelle) — computeRouteMatrix
+        var key = CONFIG.GOOGLE_MAPS_KEY;
+        var body = {
+            origins: [{ waypoint: { location: { latLng: { latitude: _userPos.lat, longitude: _userPos.lng } } } }],
+            destinations: _markers.map(function(m) { return { waypoint: { location: { latLng: { latitude: m.pos.lat(), longitude: m.pos.lng() } } } }; }),
+            travelMode: 'DRIVE',
+            routingPreference: 'TRAFFIC_AWARE',
+        };
+        try {
+            var resp = await fetch('https://routes.googleapis.com/distancematrix/v2:computeRouteMatrix', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Key': key,
+                    'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status',
+                },
+                body: JSON.stringify(body),
+            });
+            var rows = await resp.json();
+            if (!Array.isArray(rows)) return;
+            rows.forEach(function(row) {
+                var i = row.destinationIndex;
+                if (_markers[i] && row.status === 'OK') {
+                    _markers[i].dist    = row.distanceMeters || 0;
+                    _markers[i].distTxt = _fmtDist(row.distanceMeters);
+                    _markers[i].durTxt  = _fmtDur(row.duration);
                 }
             });
             _markers.sort(function(a, b){ return (a.dist||9e9) - (b.dist||9e9); });
             _updateNext();
             _updateProches();
-        });
+        } catch(e) {
+            console.warn('[CarteMap] Routes API:', e.message);
+        }
+    }
+
+    function _fmtDist(m) {
+        if (!m) return '—';
+        return m >= 1000 ? (m/1000).toFixed(1) + ' km' : m + ' m';
+    }
+    function _fmtDur(d) {
+        if (!d) return '—';
+        var sec = parseInt(d.replace('s','')) || 0;
+        if (sec < 60) return sec + ' sec';
+        var min = Math.round(sec / 60);
+        return min >= 60 ? Math.floor(min/60) + 'h' + (min%60 ? (min%60) + 'min' : '') : min + ' min';
     }
 
     function _updateLegend() {
@@ -378,17 +425,42 @@ window.CarteMap = (() => {
 
     /* ══ ACTIONS ════════════════════════════════════════════════════ */
 
+    async function _traceRoute(origin, destAddr) {
+        var key = CONFIG.GOOGLE_MAPS_KEY;
+        try {
+            var resp = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Key': key,
+                    'X-Goog-FieldMask': 'routes.polyline.encodedPolyline',
+                },
+                body: JSON.stringify({
+                    origin:      { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
+                    destination: { address: destAddr },
+                    travelMode:  'DRIVE',
+                    routingPreference: 'TRAFFIC_AWARE',
+                }),
+            });
+            var data = await resp.json();
+            var encoded = data.routes && data.routes[0] && data.routes[0].polyline && data.routes[0].polyline.encodedPolyline;
+            if (encoded && google.maps.geometry) {
+                var path = google.maps.geometry.encoding.decodePath(encoded);
+                _polyline.setPath(path);
+                // Ajuster la vue
+                var bounds = new google.maps.LatLngBounds();
+                path.forEach(function(p) { bounds.extend(p); });
+                _map.fitBounds(bounds, { padding: 60 });
+            }
+        } catch(e) { console.warn('[CarteMap] _traceRoute:', e); }
+    }
+
     function launchRoute() {
         if (!_selected) return;
         var addr = (_selected.adresse_intervention || _selected.adresse || '') + ', France';
-        if (_userPos && _map) {
-            new google.maps.DirectionsService().route({
-                origin: _userPos, destination: addr,
-                travelMode: google.maps.TravelMode.DRIVING,
-                drivingOptions: { departureTime: new Date(), trafficModel: 'bestguess' },
-            }, function(res, st) {
-                if (st === 'OK' && _directionsRenderer) _directionsRenderer.setDirections(res);
-            });
+        // Tracer l'itinéraire via Routes API (nouvelle)
+        if (_userPos && _map && _polyline) {
+            _traceRoute(_userPos, addr);
         }
         var orig = _userPos ? _userPos.lat + ',' + _userPos.lng : '';
         window.open('https://www.google.com/maps/dir/' + orig + '/' + encodeURIComponent(addr), '_blank');
@@ -413,13 +485,12 @@ window.CarteMap = (() => {
 
     function _set(id, txt) { var el=document.getElementById(id); if(el) el.textContent=txt; }
 
-    function _icon(color, urgent) {
-        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">'
+    function _iconSvg(color, urgent) {
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 36 44">'
             + '<circle cx="18" cy="18" r="16" fill="'+color+'" stroke="white" stroke-width="2.5"/>'
             + '<circle cx="18" cy="18" r="6" fill="white"/>'
             + (urgent?'<circle cx="27" cy="7" r="7" fill="#EF4444" stroke="white" stroke-width="2"/><text x="27" y="11" text-anchor="middle" fill="white" font-size="9" font-weight="bold">!</text>':'')
             + '<line x1="18" y1="34" x2="18" y2="44" stroke="'+color+'" stroke-width="3"/></svg>';
-        return { url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg), scaledSize:new google.maps.Size(36,44), anchor:new google.maps.Point(18,44) };
     }
 
     function _styles() {
