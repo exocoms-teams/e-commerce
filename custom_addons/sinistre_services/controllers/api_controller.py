@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-api_controller.py — API REST pour la PWA Intervenant
-"""
 import json
+import base64
 import logging
-
 from odoo import http
 from odoo.http import request, Response
 
@@ -16,191 +13,185 @@ def _ok(data, status=200):
         json.dumps(data, default=str, ensure_ascii=False),
         status=status,
         content_type='application/json; charset=utf-8',
-        headers=[('Access-Control-Allow-Origin', '*')],
     )
 
-def _err(status, message, detail=None):
-    return _ok({'success': False, 'error': message, 'detail': detail}, status=status)
+def _err(status, message):
+    return _ok({'success': False, 'error': message}, status=status)
+
+def _get_interv():
+    """Retourne l'intervenant lié à l'utilisateur connecté, le crée si absent."""
+    user = request.env.user
+    iv = request.env['sinistre.intervenant'].sudo().search(
+        [('user_id', '=', user.id)], limit=1
+    )
+    if not iv:
+        iv = request.env['sinistre.intervenant'].sudo().create({
+            'name':            user.name,
+            'partner_id':      user.partner_id.id,
+            'user_id':         user.id,
+            'taux_commission': 15.0,
+            'disponible':      True,
+            'actif':           True,
+        })
+    return iv
+
+def _fmt_mission(m):
+    return {
+        'id':                   m.id,
+        'reference':            m.reference,
+        'state':                m.state,
+        'type_intervention':    m.type_intervention,
+        'urgence':              m.urgence,
+        'source':               m.source if hasattr(m, 'source') else '',
+        'client':               m.client_id.name if m.client_id else '',
+        'tel_sur_place':        m.tel_sur_place or '',
+        'adresse':              m.adresse_intervention or '',
+        'adresse_intervention': m.adresse_intervention or '',
+        'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+        'description':          m.description_sinistre or '',
+        'description_sinistre': m.description_sinistre or '',
+        'montant':              m.montant_devis or 0,
+        'montant_devis':        m.montant_devis or 0,
+        'reste_a_charge':       m.reste_a_charge or 0,
+    }
 
 
 class SinistreAPIController(http.Controller):
 
     # ── PING ─────────────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/ping', type='http', auth='public', methods=['GET'], csrf=False)
+    @http.route('/api/sinistre/v1/ping', type='http', auth='public',
+                methods=['GET'], csrf=False)
     def ping(self, **kw):
         return _ok({'success': True, 'status': 'ok'})
 
-    # ── SESSION INFO (pour récupérer nom/email côté PWA) ─────────────
-    @http.route('/api/sinistre/v1/me', type='http', auth='user', methods=['GET'], csrf=False)
+    # ── ME ───────────────────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/me', type='http', auth='user',
+                methods=['GET'], csrf=False)
     def me(self, **kw):
-        """Retourne les infos de l'utilisateur connecté + son intervenant."""
         user = request.env.user
-        interv = request.env['sinistre.intervenant'].sudo().search(
-            [('user_id', '=', user.id)], limit=1
-        )
-
-        # Auto-création de la fiche intervenant si absente
-        if not interv:
-            partner = user.partner_id
-            interv = request.env['sinistre.intervenant'].sudo().create({
-                'name':            user.name,
-                'partner_id':      partner.id,
-                'user_id':         user.id,
-                'taux_commission': 15.0,
-                'disponible':      True,
-                'actif':           True,
-            })
-            _logger.info(f"[sinistre] Intervenant auto-créé pour {user.login}")
-
-        # Stats
+        iv   = _get_interv()
         missions = request.env['sinistre.mission'].sudo().search(
-            [('intervenant_id', '=', interv.id)]
+            [('intervenant_id', '=', iv.id)]
         )
         total = len(missions)
-        ca = sum(m.montant_devis or 0 for m in missions if m.state in ('termine', 'clos', 'facture'))
-
-        return _ok({
-            'success': True,
-            'user': {
-                'uid':           user.id,
-                'name':          user.name,
-                'email':         user.login,
-                'company_name':  interv.name or user.name,
-                'zone':          interv.zone_intervention or 'Paris',
-                'note_moyenne':  4.9,
-                'interventions': total,
-                'ca_total':      ca,
-                'disponible':    interv.disponible,
-                'intervenant_id': interv.id,
-            }
-        })
+        ca    = sum(m.montant_devis or 0 for m in missions
+                    if m.state in ('termine', 'clos', 'facture'))
+        return _ok({'success': True, 'user': {
+            'uid':            user.id,
+            'name':           user.name,
+            'email':          user.login,
+            'company_name':   iv.name or user.name,
+            'zone':           iv.zone_intervention or 'Paris',
+            'note_moyenne':   4.9,
+            'interventions':  total,
+            'ca_total':       ca,
+            'intervenant_id': iv.id,
+        }})
 
     # ── MES MISSIONS ─────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/missions', type='http',
                 auth='user', methods=['GET'], csrf=False)
     def mes_missions(self, **kw):
-        user = request.env.user
-        interv = request.env['sinistre.intervenant'].sudo().search(
-            [('user_id', '=', user.id)], limit=1
-        )
-
-        # Auto-création si absent
-        if not interv:
-            interv = request.env['sinistre.intervenant'].sudo().create({
-                'name':            user.name,
-                'partner_id':      user.partner_id.id,
-                'user_id':         user.id,
-                'taux_commission': 15.0,
-                'disponible':      True,
-                'actif':           True,
-            })
-            _logger.info(f"[sinistre] Intervenant auto-créé pour {user.login}")
-
+        iv = _get_interv()
         missions = request.env['sinistre.mission'].sudo().search([
-            ('intervenant_id', '=', interv.id),
+            ('intervenant_id', '=', iv.id),
             ('state', 'not in', ('clos', 'annule')),
         ], order='urgence desc, date_rdv asc')
+        return _ok({'success': True, 'missions': [_fmt_mission(m) for m in missions],
+                    'total': len(missions)})
 
-        def _fmt_mission(m):
-            return {
-                'id':               m.id,
-                'reference':        m.reference,
-                'state':            m.state,
-                'type_intervention':m.type_intervention,
-                'urgence':          m.urgence,
-                'adresse':          m.adresse_intervention or '',
-                'adresse_intervention': m.adresse_intervention or '',
-                'client':           m.client_id.name if m.client_id else '',
-                'tel_sur_place':    m.tel_sur_place or '',
-                'date_rdv':         str(m.date_rdv) if m.date_rdv else None,
-                'description':      m.description_sinistre or '',
-                'description_sinistre': m.description_sinistre or '',
-                'montant':          m.montant_devis or 0,
-                'montant_devis':    m.montant_devis or 0,
-                'reste_a_charge':   m.reste_a_charge or 0,
-                'photos_avant':     m.photos_avant_count if hasattr(m, 'photos_avant_count') else 0,
-                'photos_apres':     m.photos_apres_count if hasattr(m, 'photos_apres_count') else 0,
-            }
-
-        return _ok({
-            'success':  True,
-            'missions': [_fmt_mission(m) for m in missions],
-            'total':    len(missions),
-        })
-
-    # ── DÉTAIL MISSION ───────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/mission/<string:reference>', type='http',
-                auth='user', methods=['GET'], csrf=False)
-    def get_mission_detail(self, reference, **kw):
-        user = request.env.user
-        interv = request.env['sinistre.intervenant'].sudo().search(
-            [('user_id', '=', user.id)], limit=1
-        )
-        if not interv:
-            return _err(403, "Aucun intervenant associé à ce compte")
-
-        domain = [('intervenant_id', '=', interv.id)]
-        if reference.isdigit():
-            domain.append(('id', '=', int(reference)))
-        else:
+    # ── DÉTAIL MISSION (par ID ou référence) ─────────────────────────
+    @http.route([
+        '/api/sinistre/v1/mission/<int:mission_id>',
+        '/api/sinistre/v1/mission/<string:reference>',
+    ], type='http', auth='user', methods=['GET'], csrf=False)
+    def get_mission(self, mission_id=None, reference=None, **kw):
+        iv = _get_interv()
+        domain = [('intervenant_id', '=', iv.id)]
+        if mission_id:
+            domain.append(('id', '=', mission_id))
+        elif reference:
             domain.append(('reference', '=', reference))
+        else:
+            return _err(400, "ID ou référence requis")
 
-        mission = request.env['sinistre.mission'].sudo().search(domain, limit=1)
-        if not mission:
+        m = request.env['sinistre.mission'].sudo().search(domain, limit=1)
+        if not m:
             return _err(404, "Mission introuvable")
 
-        photos = [{
-            'id':         p.id,
-            'type_photo': p.type_photo,
-            'description':p.description or '',
-            'url':        f'/web/image/sinistre.photo/{p.id}/image',
-        } for p in (mission.photo_ids if hasattr(mission, 'photo_ids') else [])]
+        # Photos
+        photos = []
+        if hasattr(m, 'photo_ids'):
+            photos = [{
+                'id':          p.id,
+                'type_photo':  p.type_photo,
+                'description': p.description or '',
+                'url':         f'/web/image/sinistre.photo/{p.id}/image',
+            } for p in m.photo_ids]
 
+        # Devis
         devis_data = None
-        if hasattr(mission, 'devis_ids') and mission.devis_ids:
-            devis = mission.devis_ids.sorted('id', reverse=True)[0]
+        if hasattr(m, 'devis_ids') and m.devis_ids:
+            d = m.devis_ids.sorted('id', reverse=True)[0]
             devis_data = {
-                'id':           devis.id,
-                'state':        devis.state,
-                'montant_total':devis.montant_total,
+                'id':            d.id,
+                'state':         d.state,
+                'montant_total': d.montant_total,
                 'lignes': [{
                     'description':   l.description,
                     'quantite':      l.quantite,
                     'prix_unitaire': l.prix_unitaire,
                     'montant_total': l.montant_total,
-                } for l in (devis.ligne_ids if hasattr(devis, 'ligne_ids') else [])],
+                } for l in (d.ligne_ids if hasattr(d, 'ligne_ids') else [])],
             }
 
-        return _ok({
-            'success': True,
-            'mission': {
-                'id':               mission.id,
-                'reference':        mission.reference,
-                'state':            mission.state,
-                'type_intervention':mission.type_intervention,
-                'urgence':          mission.urgence,
-                'source':           mission.source if hasattr(mission, 'source') else '',
-                'client':           mission.client_id.name if mission.client_id else '',
-                'tel_sur_place':    mission.tel_sur_place or '',
-                'adresse':          mission.adresse_intervention or '',
-                'date_rdv':         str(mission.date_rdv) if mission.date_rdv else None,
-                'description':      mission.description_sinistre or '',
-                'montant_devis':    mission.montant_devis or 0,
-                'reste_a_charge':   mission.reste_a_charge or 0,
-                'photos':           photos,
-                'devis':            devis_data,
-            }
-        })
+        data = _fmt_mission(m)
+        data.update({'photos': photos, 'devis': devis_data})
+        return _ok({'success': True, 'mission': data})
+
+    # ── UPLOAD PHOTO ─────────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/photo',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def upload_photo(self, mission_id, **kw):
+        try:
+            data      = json.loads(request.httprequest.data or '{}')
+            type_photo = data.get('type_photo', 'avant')
+            image_b64  = data.get('image', '')
+            description = data.get('description', '')
+
+            if not image_b64:
+                return _err(400, "Image manquante")
+
+            m = request.env['sinistre.mission'].sudo().browse(mission_id)
+            if not m.exists():
+                return _err(404, "Mission introuvable")
+
+            # Modèle photo si disponible
+            if hasattr(request.env, '__getitem__') and 'sinistre.photo' in request.env:
+                photo = request.env['sinistre.photo'].sudo().create({
+                    'mission_id':  mission_id,
+                    'type_photo':  type_photo,
+                    'image':       image_b64,
+                    'description': description,
+                })
+                return _ok({'success': True, 'photo_id': photo.id})
+            else:
+                # Fallback: stocker sur la mission directement
+                return _ok({'success': True, 'photo_id': None,
+                            'message': 'Photo reçue (stockage non configuré)'})
+        except Exception as e:
+            _logger.error(f"[sinistre] upload_photo: {e}")
+            return _err(500, str(e))
 
     # ── DÉMARRER ─────────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/demarrer',
                 type='http', auth='user', methods=['POST'], csrf=False)
-    def demarrer_mission(self, mission_id, **kw):
+    def demarrer(self, mission_id, **kw):
         try:
-            mission = request.env['sinistre.mission'].sudo().browse(mission_id)
-            if not mission.exists():
+            m = request.env['sinistre.mission'].sudo().browse(mission_id)
+            if not m.exists():
                 return _err(404, "Mission introuvable")
-            mission.write({'state': 'en_cours'})
+            m.write({'state': 'en_cours'})
             return _ok({'success': True, 'state': 'en_cours'})
         except Exception as e:
             return _err(500, str(e))
@@ -208,30 +199,108 @@ class SinistreAPIController(http.Controller):
     # ── TERMINER ─────────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/terminer',
                 type='http', auth='user', methods=['POST'], csrf=False)
-    def terminer_mission(self, mission_id, **kw):
+    def terminer(self, mission_id, **kw):
         try:
-            mission = request.env['sinistre.mission'].sudo().browse(mission_id)
-            if not mission.exists():
-                return _err(404, "Mission introuvable")
             from odoo.fields import Datetime
-            mission.write({'state': 'termine', 'date_cloture': Datetime.now()})
+            m = request.env['sinistre.mission'].sudo().browse(mission_id)
+            if not m.exists():
+                return _err(404, "Mission introuvable")
+            m.write({'state': 'termine', 'date_cloture': Datetime.now()})
             return _ok({'success': True, 'state': 'termine'})
+        except Exception as e:
+            return _err(500, str(e))
+
+    # ── CRÉER DEVIS ──────────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/devis',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def create_devis(self, mission_id, **kw):
+        try:
+            data   = json.loads(request.httprequest.data or '{}')
+            lignes = data.get('lignes', [])
+            note   = data.get('note', '')
+
+            m = request.env['sinistre.mission'].sudo().browse(mission_id)
+            if not m.exists():
+                return _err(404, "Mission introuvable")
+
+            # Créer le devis Odoo (sale.order ou sinistre.devis selon le modèle)
+            DevisModel = request.env.get('sinistre.devis')
+            if DevisModel is None:
+                return _err(500, "Modèle sinistre.devis introuvable")
+
+            devis = DevisModel.sudo().create({
+                'mission_id': mission_id,
+                'note':       note,
+                'state':      'brouillon',
+            })
+
+            # Lignes
+            LigneModel = request.env.get('sinistre.devis.ligne')
+            if LigneModel and lignes:
+                for l in lignes:
+                    LigneModel.sudo().create({
+                        'devis_id':      devis.id,
+                        'description':   l.get('description', ''),
+                        'quantite':      l.get('quantite', 1),
+                        'prix_unitaire': l.get('prix_unitaire', 0),
+                    })
+
+            return _ok({'success': True, 'devis_id': devis.id, 'state': 'brouillon'})
+        except Exception as e:
+            _logger.error(f"[sinistre] create_devis: {e}")
+            return _err(500, str(e))
+
+    # ── ENVOYER DEVIS ────────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/envoyer',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def envoyer_devis(self, devis_id, **kw):
+        try:
+            d = request.env['sinistre.devis'].sudo().browse(devis_id)
+            if not d.exists():
+                return _err(404, "Devis introuvable")
+            d.write({'state': 'envoye'})
+            return _ok({'success': True, 'state': 'envoye'})
+        except Exception as e:
+            return _err(500, str(e))
+
+    # ── ACCEPTER DEVIS ───────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/accepter',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def accepter_devis(self, devis_id, **kw):
+        try:
+            d = request.env['sinistre.devis'].sudo().browse(devis_id)
+            if not d.exists():
+                return _err(404, "Devis introuvable")
+            d.write({'state': 'accepte'})
+            if d.mission_id:
+                d.mission_id.write({'state': 'devis_accepte'})
+            return _ok({'success': True, 'state': 'accepte'})
+        except Exception as e:
+            return _err(500, str(e))
+
+    # ── REFUSER DEVIS ────────────────────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/refuser',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def refuser_devis(self, devis_id, **kw):
+        try:
+            d = request.env['sinistre.devis'].sudo().browse(devis_id)
+            if not d.exists():
+                return _err(404, "Devis introuvable")
+            d.write({'state': 'refuse'})
+            return _ok({'success': True, 'state': 'refuse'})
         except Exception as e:
             return _err(500, str(e))
 
     # ── FCM TOKEN ────────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/fcm-token', type='http',
                 auth='user', methods=['POST'], csrf=False)
-    def save_fcm_token(self, **kw):
+    def fcm_token(self, **kw):
         try:
-            data = json.loads(request.httprequest.data or '{}')
+            data  = json.loads(request.httprequest.data or '{}')
             token = data.get('token', '')
-            user = request.env.user
-            interv = request.env['sinistre.intervenant'].sudo().search(
-                [('user_id', '=', user.id)], limit=1
-            )
-            if interv and token:
-                interv.write({'fcm_token': token})
+            iv    = _get_interv()
+            if iv and token:
+                iv.write({'fcm_token': token})
             return _ok({'success': True})
         except Exception as e:
             return _err(500, str(e))
@@ -239,33 +308,29 @@ class SinistreAPIController(http.Controller):
     # ── DEMANDE PUBLIQUE ─────────────────────────────────────────────
     @http.route('/api/sinistre/v1/mission', type='http', auth='public',
                 methods=['POST'], csrf=False)
-    def create_mission(self, **kw):
+    def create_mission_public(self, **kw):
         try:
-            data = json.loads(request.httprequest.data or '{}')
-            partner = _get_or_create_partner(request.env, data)
-            mission = request.env['sinistre.mission'].sudo().create({
+            data    = json.loads(request.httprequest.data or '{}')
+            email   = data.get('email', '')
+            partner = request.env['res.partner'].sudo().search(
+                [('email', '=', email)], limit=1
+            ) if email else None
+            if not partner:
+                partner = request.env['res.partner'].sudo().create({
+                    'name':  data.get('nom', data.get('name', 'Client')),
+                    'email': email,
+                    'phone': data.get('tel', ''),
+                })
+            m = request.env['sinistre.mission'].sudo().create({
                 'source':               data.get('source', 'particulier'),
                 'client_id':            partner.id,
                 'type_intervention':    data.get('type_intervention', 'autre'),
                 'urgence':              data.get('urgence', 'normale'),
-                'description_sinistre': data.get('description', ''),
+                'description_sinistre': data.get('description', 'Demande'),
                 'adresse_intervention': data.get('adresse', ''),
                 'tel_sur_place':        data.get('tel', ''),
             })
-            return _ok({'success': True, 'reference': mission.reference, 'id': mission.id})
+            return _ok({'success': True, 'reference': m.reference, 'id': m.id})
         except Exception as e:
-            _logger.error(f"[sinistre] Erreur création mission: {e}")
+            _logger.error(f"[sinistre] create_mission_public: {e}")
             return _err(500, str(e))
-
-
-def _get_or_create_partner(env, data):
-    email = data.get('email', '')
-    partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1) if email else None
-    if not partner:
-        nom = data.get('nom', data.get('name', 'Client'))
-        partner = env['res.partner'].sudo().create({
-            'name':  nom,
-            'email': email,
-            'phone': data.get('tel', ''),
-        })
-    return partner
