@@ -76,6 +76,10 @@ window.CarteMap = (() => {
     function _initMap() {
         const container = document.getElementById('googleMap');
         if (!container) return;
+        // Forcer la hauteur si elle est 0 (parent pas encore rendu)
+        if (container.offsetHeight === 0) {
+            container.style.height = '560px';
+        }
 
         // Centre par défaut : Paris
         const defaultCenter = { lat: 48.8566, lng: 2.3522 };
@@ -111,6 +115,12 @@ window.CarteMap = (() => {
 
         // Fermer info panel si clic sur la carte
         _map.addListener('click', () => closeInfoPanel());
+
+        // Forcer le resize après 300ms pour s'assurer que la carte remplit le div
+        setTimeout(() => {
+            google.maps.event.trigger(_map, 'resize');
+            _map.setCenter({ lat: 48.8566, lng: 2.3522 });
+        }, 300);
     }
 
     /* ═══════ GPS ═══════════════════════════════════════════════════ */
