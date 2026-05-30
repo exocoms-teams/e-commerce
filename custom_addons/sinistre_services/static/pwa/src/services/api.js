@@ -55,6 +55,11 @@ window.API = (() => {
         put:    (path, body, opts) => request('PUT', path, body, opts),
         patch:  (path, body, opts) => request('PATCH', path, body, opts),
 
+        /* ── Me (session + intervenant info) ── */
+        async getMe() {
+            return this.get('/me');
+        },
+
         /* ── Missions ── */
         async getMissions() {
             return this.get('/intervenant/missions');
@@ -117,7 +122,7 @@ window.API = (() => {
                     jsonrpc: '2.0',
                     method: 'call',
                     params: {
-                        db: 'exocoms-e-commerce-sinistres-32284788',   // ← à adapter
+                        db: window.location.hostname.split('.')[0] || 'sinistre',   // auto-détecté
                         login: email,
                         password: password,
                     },
