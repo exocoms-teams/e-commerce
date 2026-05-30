@@ -1,183 +1,214 @@
 /**
- * app.js — Orchestrateur principal de la PWA
- * Gère : démarrage, routing, navigation, Service Worker
+ * app.js — Orchestrateur principal de la PWA ArtisanPro
  */
 
 window.App = (() => {
-    let _history     = [];          // pile de navigation
+    let _history     = [];
     let _currentView = 'dashboard';
 
     /* ── Démarrage ── */
     async function init() {
-    await _registerSW();
-    await _sleep(1400);
+        await _registerSW();
+        await _sleep(1400);
 
-    // 1. Vérifier session localStorage existante
-    const user = Auth.loadFromStorage();
-    if (user) {
-        const valid = await Auth.verify().catch(() => false);
-        if (valid) { showApp(); return; }
+        // 1. Session localStorage existante ?
+        const cached = Auth.loadFromStorage();
+        if (cached) {
+            const valid = await Auth.verify().catch(() => false);
+            if (valid) {
+                await _enrichUserFromAPI();
+                showApp();
+                return;
+            }
+        }
+
+        // 2. Session Odoo cookie ?
+        try {
+            const resp = await fetch('/web/session/get_session_info', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} })
+            });
+            const data = await resp.json();
+            if (data.result && data.result.uid > 0) {
+                const u = {
+                    uid:   data.result.uid,
+                    name:  data.result.name,
+                    email: data.result.username,
+                    lang:  data.result.lang,
+                };
+                localStorage.setItem('ss_user', JSON.stringify(u));
+                Auth.loadFromStorage();
+                // Enrichir avec les données intervenant
+                await _enrichUserFromAPI();
+                showApp();
+                return;
+            }
+        } catch(e) {}
+
+        showLogin();
     }
 
-    // 2. Vérifier session Odoo cookie (venant de /intervenant/login)
-    try {
-        const resp = await fetch('/web/session/get_session_info', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} })
-        });
-        const data = await resp.json();
-        if (data.result && data.result.uid > 0) {
-            // Session Odoo valide — sauvegarder et afficher l'app
-            const u = {
-                uid:   data.result.uid,
-                name:  data.result.name,
-                email: data.result.username,
-                lang:  data.result.lang,
-            };
-            localStorage.setItem('ss_user', JSON.stringify(u));
-            Auth.loadFromStorage();
-            showApp();
-            return;
+    /* ── Enrichir l'utilisateur depuis /api/sinistre/v1/me ── */
+    async function _enrichUserFromAPI() {
+        try {
+            const resp = await fetch('/api/sinistre/v1/me', {
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (data.success && data.user) {
+                const u = data.user;
+                // Fusionner avec le stockage existant
+                const existing = JSON.parse(localStorage.getItem('ss_user') || '{}');
+                const merged = {
+                    ...existing,
+                    uid:           u.uid,
+                    name:          u.name,
+                    email:         u.email,
+                    company_name:  u.company_name,
+                    zone:          u.zone,
+                    note_moyenne:  u.note_moyenne,
+                    interventions: u.interventions,
+                    ca_total:      u.ca_total,
+                    intervenant_id: u.intervenant_id,
+                };
+                localStorage.setItem('ss_user', JSON.stringify(merged));
+                Auth.loadFromStorage();
+            }
+        } catch(e) {
+            console.warn('[App] enrichUser failed:', e);
         }
-    } catch(e) {}
-
-    // 3. Aucune session → afficher login
-    showLogin();
-}
+    }
 
     async function _registerSW() {
         if (!('serviceWorker' in navigator)) return;
         try {
-            const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, { scope: '/sinistre_services/static/pwa/' });
+            const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, {
+                scope: '/sinistre_services/static/pwa/'
+            });
             console.log('[SW] Enregistré:', reg.scope);
-
-            // Écouter les messages du SW
             navigator.serviceWorker.addEventListener('message', (e) => {
                 if (e.data?.type === 'OPEN_MISSION') {
                     MissionDetail.open(e.data.missionId);
                 }
             });
         } catch (err) {
-            console.warn('[SW] Erreur enregistrement:', err);
+            console.warn('[SW] Erreur:', err);
         }
     }
-    
+
     function showLogin() {
         _hideSplash();
-        // Rediriger vers la page login Odoo au lieu d'afficher l'écran PWA
         window.location.href = '/intervenant/login';
     }
 
     function showApp() {
         _hideSplash();
-        document.getElementById('screen-login').style.display = 'none';
-        document.getElementById('screen-app').style.display   = 'flex';
+        const sl = document.getElementById('screen-login');
+        const sa = document.getElementById('screen-app');
+        if (sl) sl.style.display = 'none';
+        if (sa) sa.style.display = 'flex';
         FCM.autoInit();
-        Dashboard.init();
+        _updateUIFromUser();
+        showView('dashboard', document.getElementById('nav-dashboard'));
+    }
 
-        // Deep link : ouvrir une mission depuis push
-        const urlParams = new URLSearchParams(window.location.search);
-        const missionId = urlParams.get('mission');
-        if (missionId) {
-            MissionDetail.open(missionId);
-        }
+    /* ── Mettre à jour l'UI avec les données utilisateur ── */
+    function _updateUIFromUser() {
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        if (!user || !user.name) return;
 
-        // Rejouer queue offline si en ligne
-        if (Offline.isOnline()) Offline.processQueue();
+        const name     = user.name || '';
+        const parts    = name.split(' ');
+        const first    = parts[0] || '';
+        const initials = parts.map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+        const company  = user.company_name || name;
 
-        // Nom dashboard
-        const u = Auth.getUser();
-        if (u && u.name) {
-            const el = document.getElementById('dashWelcome');
-            if (el) el.textContent = 'Bonjour, ' + u.name.split(' ')[0] + ' !';
-        }
+        // Greeting dashboard
+        const dg = document.getElementById('dashGreeting');
+        if (dg) dg.textContent = `Bonjour ${first} 👋`;
+
+        // Sidebar
+        const sa = document.getElementById('sidebarAvatar');
+        const sn = document.getElementById('sidebarName');
+        const sc = document.getElementById('sidebarCompany');
+        if (sa) sa.textContent = initials || '?';
+        if (sn) sn.textContent = name;
+        if (sc) sc.textContent = company;
+
+        // Stats dashboard depuis les données user
+        const sN = document.getElementById('statNote');
+        const sI = document.getElementById('statInterventions');
+        if (sN && user.note_moyenne) sN.textContent = user.note_moyenne.toFixed(1);
+        if (sI && user.interventions) sI.textContent = user.interventions;
+
+        // Profile page
+        const pa = document.getElementById('profileAvatarLg');
+        const pn = document.getElementById('profileNameLg');
+        const pc = document.getElementById('profileCompanyLg');
+        const pe = document.getElementById('profileEmail');
+        const pt = document.getElementById('profileTel');
+        if (pa) pa.textContent = initials || '?';
+        if (pn) pn.textContent = name;
+        if (pc) pc.textContent = company;
+        if (pe) pe.value = user.email || '';
+        if (pt && user.phone) pt.value = user.phone;
     }
 
     function _hideSplash() {
         const splash = document.getElementById('splash');
+        if (!splash) return;
         splash.classList.add('hidden');
         setTimeout(() => { splash.style.display = 'none'; }, 400);
-        document.getElementById('app').style.display = 'flex';
+        const appEl = document.getElementById('app');
+        if (appEl) appEl.style.display = 'flex';
     }
 
-    /* ── Navigation entre vues ── */
-    function showView(viewId, title = '') {
-        // Desktop: use class-based view switching
+    /* ── Navigation ── */
+    function showView(viewId, navEl) {
+        // Masquer toutes les vues
         document.querySelectorAll('.view-page').forEach(v => v.classList.remove('active'));
         const target = document.getElementById('view-' + viewId);
         if (target) target.classList.add('active');
 
-        // Mobile legacy fallback
-        const current = document.getElementById('view-' + _currentView);
-        if (current && current.classList.contains('view')) { current.style.display = 'none'; }
-        if (_currentView !== viewId) { _history.push(_currentView); }
+        // Sidebar nav
+        document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+        if (navEl && navEl.classList) navEl.classList.add('active');
+
+        _history.push(_currentView);
         _currentView = viewId;
 
-        // Sidebar nav active
-        document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-        const activeNav = document.getElementById('nav-' + viewId);
-        if (activeNav) activeNav.classList.add('active');
-
-        // Optional elements
-        const titleEl = document.getElementById('topbarTitle');
-        if (title && titleEl) titleEl.textContent = title;
-        const backBtn = document.getElementById('backBtn');
-        if (backBtn) backBtn.style.display = (_history.length > 0 && viewId !== 'dashboard') ? 'flex' : 'none';
-
-        // Load data
-        if (viewId === 'dashboard') Dashboard.init();
-        if (viewId === 'missions') Dashboard.loadMissions();
-        if (viewId === 'interventions') Dashboard.loadInterventions();
-        if (viewId === 'carte') Dashboard.initCarte();
+        // Charger les données de la vue
+        if (viewId === 'dashboard')      Dashboard.init();
+        if (viewId === 'missions')       Dashboard.loadMissions();
+        if (viewId === 'interventions')  Dashboard.loadInterventions();
+        if (viewId === 'carte')          Dashboard.initCarte();
     }
 
     function goBack() {
-        if (!_history.length) return;
-        const prev = _history.pop();
-        _currentView = 'dashboard'; // pour éviter double push
-        showView(prev);
-        if (prev === 'dashboard') {
-            document.getElementById('topbarTitle').textContent = 'Mes Missions';
-        }
+        const prev = _history.pop() || 'dashboard';
+        _currentView = 'dashboard';
+        showView(prev, document.getElementById('nav-' + prev));
     }
 
-    /* ── Utilitaires ── */
     function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-    /* ── Gestionnaire install PWA ── */
-    let _deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        _deferredPrompt = e;
-        // On pourrait afficher un bouton "Installer l'app" ici
-    });
-
-    /* ── Back button Android ── */
-    window.addEventListener('popstate', () => {
-        if (_history.length) goBack();
-    });
-
-    /* ── Visibility change (rafraîchir si retour en premier plan) ── */
+    /* ── Visibilité ── */
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && Auth.isLoggedIn() && _currentView === 'dashboard') {
             Dashboard.refresh();
         }
     });
 
-    /* ── Start ── */
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 
-    return {
-        showLogin,
-        showApp,
-        showView,
-        goBack,
-        get currentView() { return _currentView; },
-    };
+    return { showLogin, showApp, showView, goBack, get currentView() { return _currentView; } };
 })();
