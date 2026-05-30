@@ -178,49 +178,62 @@ window.Dashboard = (() => {
     let _dashMarkers = [];
 
     function _initDashMap() {
-        // Lire la zone de l'utilisateur
+        // Ne pas initialiser si la vue dashboard n'est pas active
+        var view = document.getElementById('view-dashboard');
+        if (!view || !view.classList.contains('active')) return;
+
+        if (!window.google || !window.google.maps) {
+            setTimeout(_initDashMap, 400);
+            return;
+        }
+        var el = document.getElementById('dashGoogleMap');
+        if (!el || _dashMap) return;
+
         var user = {};
         try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
         var zone = (user.zone || 'Paris').trim();
-        
-        _renderDashMapEmbed(zone);
-    }
 
-    function _renderDashMapEmbed(zone) {
-        var el = document.getElementById('dashGoogleMap');
-        if (!el) return;
-        var key = CONFIG.GOOGLE_MAPS_KEY;
-
-        // Mettre à jour le badge zone
+        // Mettre à jour le badge
         var badge = document.getElementById('dashZoneBadge');
         if (badge) badge.textContent = 'Zone : ' + zone;
 
-        // Construire les marqueurs pour l'embed
-        var ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        var missions = _missions.filter(function(m) { return ACTIVE.includes(m.state); });
+        // Créer la carte avec mapId pour AdvancedMarker
+        _dashMap = new google.maps.Map(el, {
+            center: { lat: 48.8566, lng: 2.3522 },
+            zoom: 13,
+            mapId: 'DEMO_MAP_ID',
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            zoomControl: true,
+            gestureHandling: 'cooperative',
+            styles: [
+                {featureType:'poi',stylers:[{visibility:'off'}]},
+                {featureType:'transit',elementType:'labels.icon',stylers:[{visibility:'off'}]},
+                {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
+                {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#e8e8e8'}]},
+                {featureType:'water',elementType:'geometry',stylers:[{color:'#93C5FD'}]},
+                {featureType:'landscape',elementType:'geometry',stylers:[{color:'#f0f4f8'}]},
+            ],
+        });
 
-        if (missions.length > 0) {
-            // Utiliser la première mission comme centre + markers
-            var firstAddr = (missions[0].adresse_intervention || missions[0].adresse || zone) + ', France';
-            var markersParam = missions.slice(0, 5).map(function(m) {
-                return encodeURIComponent((m.adresse_intervention || m.adresse || zone) + ', France');
-            }).join('|');
+        // Géocoder la zone pour centrer
+        new google.maps.Geocoder().geocode(
+            { address: zone + ', France' },
+            function(res, st) {
+                if (st === 'OK' && res[0]) {
+                    _dashMap.setCenter(res[0].geometry.location);
+                }
+            }
+        );
 
-            // Maps Embed avec markers
-            var src = 'https://www.google.com/maps/embed/v1/search'
-                + '?key=' + key
-                + '&q=' + encodeURIComponent(zone + ', France')
-                + '&zoom=13';
+        // Placer les marqueurs
+        _placeDashMarkers();
+    }
 
-            el.innerHTML = '<iframe src="' + src + '" width="100%" height="340" style="border:0;display:block" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-        } else {
-            // Pas de mission — juste la zone
-            var src = 'https://www.google.com/maps/embed/v1/place'
-                + '?key=' + key
-                + '&q=' + encodeURIComponent(zone + ', France')
-                + '&zoom=13';
-            el.innerHTML = '<iframe src="' + src + '" width="100%" height="340" style="border:0;display:block" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-        }
+    function _renderDashMapEmbed(zone) {
+        // Alias pour compatibilité — appelle _initDashMap
+        _initDashMap();
     }
 
 
@@ -238,13 +251,59 @@ window.Dashboard = (() => {
     }
 
     function _placeDashMarkers() {
-        // Rafraîchir l'embed quand les missions sont chargées
-        var user = {};
-        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        _renderDashMapEmbed(user.zone || 'Paris');
+        if (!_dashMap || !window.google || !window.google.maps) return;
+
+        // Supprimer anciens marqueurs
+        _dashMarkers.forEach(function(m) { try { m.map = null; } catch(e) {} });
+        _dashMarkers = [];
+
+        var COLORS = { serrurerie:'#14B8A6', plomberie:'#3B82F6', electricite:'#F59E0B', vitrerie:'#10B981', menuiserie_int:'#8B5CF6', menuiserie_ext:'#8B5CF6', autre:'#6B7280' };
+        var ACTIVE  = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        var missions = _missions.filter(function(m) { return ACTIVE.includes(m.state); });
+        if (!missions.length) return;
+
+        var geocoder = new google.maps.Geocoder();
+        var bounds   = new google.maps.LatLngBounds();
+        var done     = 0;
+
+        missions.slice(0, 6).forEach(function(mission) {
+            var addr = mission.adresse_intervention || mission.adresse;
+            if (!addr) { done++; return; }
+            geocoder.geocode({ address: addr + ', France' }, function(res, st) {
+                done++;
+                if (st !== 'OK' || !res[0] || !_dashMap) return;
+                var pos   = res[0].geometry.location;
+                var color = COLORS[mission.type_intervention] || '#6B7280';
+                var urgent = mission.urgence === 'urgente' || mission.urgence === 'tres_urgente';
+
+                var pin = document.createElement('div');
+                pin.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 36 44">'
+                    + '<circle cx="18" cy="18" r="16" fill="'+color+'" stroke="white" stroke-width="2.5"/>'
+                    + '<circle cx="18" cy="18" r="6" fill="white"/>'
+                    + (urgent ? '<circle cx="27" cy="7" r="7" fill="#EF4444" stroke="white" stroke-width="2"/>' : '')
+                    + '<line x1="18" y1="34" x2="18" y2="44" stroke="'+color+'" stroke-width="3"/></svg>';
+                pin.style.cursor = 'pointer';
+
+                var marker = new google.maps.marker.AdvancedMarkerElement({
+                    position: pos, map: _dashMap,
+                    title: mission.description_sinistre || mission.reference,
+                    content: pin,
+                });
+                marker.addListener('gmp-click', function() { _showDashPopup(mission); });
+                _dashMarkers.push(marker);
+                bounds.extend(pos);
+
+                if (done >= missions.slice(0,6).length && !bounds.isEmpty()) {
+                    _dashMap.fitBounds(bounds, { padding: 40 });
+                    google.maps.event.addListenerOnce(_dashMap, 'bounds_changed', function() {
+                        if (_dashMap.getZoom() > 14) _dashMap.setZoom(14);
+                    });
+                }
+            });
+        });
     }
 
-    function _showDashPopup(mission, pos) {
+    function _showDashPopup(mission) {
         var popup = document.getElementById('mapPopup');
         if (!popup) return;
         popup.style.display = 'block';
