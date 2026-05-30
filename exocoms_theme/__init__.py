@@ -52,7 +52,18 @@ def post_init_hook(env):
     if public_partner and lang_fr:
         public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
 
-    env['ir.config_parameter'].sudo().set_param('web.base.lang', 'fr_FR')
+    # Paramètres système — langue par défaut + désactiver détection navigateur
+    params = env['ir.config_parameter'].sudo()
+    params.set_param('web.base.lang', 'fr_FR')
+    params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
+    params.set_param('website.lang_redirect_from_browser', False)
+
+    # Désactiver la redirection automatique selon langue navigateur
+    try:
+        if website:
+            website.sudo().write({'user_lang_redirect': False})
+    except Exception:
+        pass
 
     # Charger les traductions françaises officielles Odoo
     try:
