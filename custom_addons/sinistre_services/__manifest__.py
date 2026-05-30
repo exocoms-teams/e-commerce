@@ -7,7 +7,8 @@
     'author': 'exocoms',
     'website': '',
     'license': 'LGPL-3',
-    'post_init_hook': 'post_install_hook',
+    'post_init_hook':    'post_install_hook',
+    'post_migrate_hook': 'post_install_hook',
     'uninstall_hook': 'uninstall_hook',
     'depends': [
     'base', 'mail', 'account', 'sale', 'hr',
