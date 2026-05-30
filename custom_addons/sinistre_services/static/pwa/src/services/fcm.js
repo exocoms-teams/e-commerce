@@ -66,7 +66,7 @@ window.FCM = (() => {
                 }
 
                 // Marquer qu'il y a une nouvelle notif
-                document.getElementById('notifDot').style.display = 'block';
+                const nd = document.getElementById('notifDot'); if (nd) nd.style.display = 'block';
             });
         },
 
@@ -84,7 +84,7 @@ window.FCM = (() => {
                 }
             } else if (Notification.permission === 'default') {
                 // Montrer le bouton notification
-                document.getElementById('notifDot').style.display = 'block';
+                const nd = document.getElementById('notifDot'); if (nd) nd.style.display = 'block';
             }
         },
 
