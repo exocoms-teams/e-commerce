@@ -8,39 +8,6 @@ window.MissionDetail = (() => {
     let _missionId = null;
     let _isLoading = false;
 
-    /* ── Données demo pour fallback offline ── */
-    const DEMO_MISSIONS = {
-        1: { id: 1, reference: 'M-2026-0481', state: 'assigne', urgence: 'urgente',
-             type_intervention: 'serrurerie', client: 'Mme Laurent', tel_sur_place: '+33 6 11 22 33 44',
-             source: 'assurance', adresse: '12 rue de la République, Paris 11e',
-             description: 'Cliente bloquée à l\'extérieur, porte 3 points classique. Clé cassée dans la serrure.',
-             date_rdv: new Date(Date.now() + 2*3600000).toISOString(),
-             montant_devis: null, reste_a_charge: null, photos: [], devis: null },
-        2: { id: 2, reference: 'M-2026-0479', state: 'en_cours', urgence: 'normale',
-             type_intervention: 'plomberie', client: 'M. Dubois', tel_sur_place: '+33 6 55 44 33 22',
-             source: 'particulier', adresse: '45 av. Parmentier, Paris 11e',
-             description: 'Joint siphon à remplacer, fuite active sous évier cuisine.',
-             date_rdv: new Date(Date.now() + 4*3600000).toISOString(),
-             montant_devis: 145, reste_a_charge: 0, photos: [], devis: null },
-        3: { id: 3, reference: 'M-2026-0476', state: 'rdv_planifie', urgence: 'normale',
-             type_intervention: 'electricite', client: 'SCI Belleville', tel_sur_place: '+33 1 40 00 11 22',
-             source: 'entreprise', adresse: '8 rue des Pyrénées, Paris 20e',
-             description: 'Remplacement tableau électrique 2 rangées. Mise aux normes NF C 15-100.',
-             date_rdv: new Date(Date.now() + 86400000).toISOString(),
-             montant_devis: 620, reste_a_charge: 120, photos: [], devis: null },
-        4: { id: 4, reference: 'M-2026-0470', state: 'rdv_planifie', urgence: 'normale',
-             type_intervention: 'chauffage', client: 'M. Karam', tel_sur_place: '+33 6 77 88 99 00',
-             source: 'assurance', adresse: '23 bd Voltaire, Paris 11e',
-             description: 'Plus d\'eau chaude, code erreur E01. Chaudière Saunier Duval Thema F25E.',
-             date_rdv: new Date(Date.now() + 90000000).toISOString(),
-             montant_devis: 220, reste_a_charge: 0, photos: [], devis: null },
-        5: { id: 5, reference: 'M-2026-0468', state: 'en_cours', urgence: 'normale',
-             type_intervention: 'vitrerie', client: 'Mme Petit', tel_sur_place: '+33 6 22 33 44 55',
-             source: 'assurance', adresse: '7 rue Oberkampf, Paris 11e',
-             description: 'Double vitrage 80×120 cm. Vitre brisée suite à tentative d\'effraction.',
-             date_rdv: new Date(Date.now() + 5400000).toISOString(),
-             montant_devis: 310, reste_a_charge: 60, photos: [], devis: null },
-    };
 
     /* ── Ouvrir une mission ── */
     async function open(idOrRef) {
@@ -62,17 +29,10 @@ window.MissionDetail = (() => {
             const data = await API.getMission(_missionId);
             _mission = data.mission || data;
         } catch (err) {
-            // Fallback: chercher dans les données demo
-            const demo = DEMO_MISSIONS[_missionId] || Object.values(DEMO_MISSIONS).find(m => m.reference === _missionId);
-            if (demo) {
-                _mission = demo;
-                Toast.show('Mode hors ligne — données en cache', 'warning');
-            } else {
-                Toast.show('Mission introuvable', 'error');
-                App.goBack();
-                _isLoading = false;
-                return;
-            }
+            Toast.show('Impossible de charger la mission', 'error');
+            App.goBack();
+            _isLoading = false;
+            return;
         } finally {
             _isLoading = false;
         }
