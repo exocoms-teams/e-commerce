@@ -13,7 +13,6 @@ window.CarteMap = (() => {
     let _mapEl = null;
     let _userMarker = null;
     let _markers = [];
-    let _polyline = null;
     let _trafficLayer = null;
     let _userPos = null;
     let _missions = [];
@@ -112,12 +111,7 @@ window.CarteMap = (() => {
         _map = map;
         console.log('[CarteMap] ✓ Carte initialisée');
 
-        // DirectionsRenderer migré vers Routes API (tracé polyligne manuel)
         _trafficLayer = new google.maps.TrafficLayer();
-        _polyline = new google.maps.Polyline({
-            strokeColor: '#1E40AF', strokeWeight: 5, strokeOpacity: 0.8,
-        });
-        _polyline.setMap(_map);
         _map.addListener('click', closeInfoPanel);
 
         setTimeout(function() {
@@ -262,7 +256,7 @@ window.CarteMap = (() => {
                     title: mission.description_sinistre || mission.reference,
                     content: pinEl,
                 });
-                marker.addListener('click', function(){ _select(mission, pos); });
+                marker.addListener('gmp-click', function(){ _select(mission, pos); });
                 _markers.push({ marker: marker, mission: mission, pos: pos });
 
                 if (pending === 0) {
@@ -409,28 +403,18 @@ window.CarteMap = (() => {
     /* ══ ACTIONS ════════════════════════════════════════════════════ */
 
     function _traceRoute(origin, destAddr) {
-        // DirectionsService SDK JS (pas de CORS — appel natif Google Maps)
-        new google.maps.DirectionsService().route({
-            origin: new google.maps.LatLng(origin.lat, origin.lng),
-            destination: destAddr,
-            travelMode: google.maps.TravelMode.DRIVING,
-        }, function(res, st) {
-            if (st === 'OK' && res.routes[0] && _polyline) {
-                var path = res.routes[0].overview_path;
-                _polyline.setPath(path);
-                var bounds = new google.maps.LatLngBounds();
-                path.forEach(function(p) { bounds.extend(p); });
-                _map.fitBounds(bounds, { padding: 60 });
-            }
-        });
+        var orig = origin ? origin.lat + ',' + origin.lng : '';
+        window.open('https://www.google.com/maps/dir/' + orig + '/' + encodeURIComponent(destAddr), '_blank');
     }
 
     function launchRoute() {
         if (!_selected) return;
         var addr = (_selected.adresse_intervention || _selected.adresse || '') + ', France';
         // Tracer l'itinéraire via Routes API (nouvelle)
-        if (_userPos && _map && _polyline) {
+        if (_userPos) {
             _traceRoute(_userPos, addr);
+        } else {
+            _traceRoute(null, addr);
         }
         var orig = _userPos ? _userPos.lat + ',' + _userPos.lng : '';
         window.open('https://www.google.com/maps/dir/' + orig + '/' + encodeURIComponent(addr), '_blank');
