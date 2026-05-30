@@ -89,20 +89,27 @@ window.App = (() => {
                 const existing = JSON.parse(localStorage.getItem('ss_user') || '{}');
                 const merged = {
                     ...existing,
-                    uid:           u.uid,
-                    name:          u.name,
-                    email:         u.email,
-                    company_name:  u.company_name,
-                    zone:          u.zone,
-                    note_moyenne:  u.note_moyenne,
-                    interventions: u.interventions,
-                    ca_total:      u.ca_total,
-                    intervenant_id: u.intervenant_id,
+                    uid:              u.uid,
+                    name:             u.name,
+                    email:            u.email,
+                    phone:            u.phone            || '',
+                    company_name:     u.company_name     || u.name,
+                    zone:             u.zone             || '',
+                    note_moyenne:     u.note_moyenne     || 0,
+                    interventions:    u.interventions    || 0,
+                    ca_total:         u.ca_total         || 0,
+                    ca_mois:          u.ca_mois          || 0,
+                    specialites:      u.specialites      || [],
+                    specialites_types:u.specialites_types|| [],
+                    membre_depuis:    u.membre_depuis    || '',
+                    certifications:   u.certifications   || [],
+                    intervenant_id:   u.intervenant_id,
                 };
                 localStorage.setItem('ss_user', JSON.stringify(merged));
                 Auth.loadFromStorage();
-                // Mettre à jour les certifications si présentes
-                if (u.certifications) _updateCertifications(u.certifications);
+                // Rafraîchir l'UI immédiatement avec les nouvelles données
+                _updateUIFromUser();
+                if (merged.certifications.length) _updateCertifications(merged.certifications);
             }
         } catch(e) {
             console.warn('[App] enrichUser failed:', e);
