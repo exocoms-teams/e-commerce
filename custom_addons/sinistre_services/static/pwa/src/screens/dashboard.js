@@ -80,99 +80,91 @@ window.Dashboard = (() => {
         try {
             const data = await API.getMissions();
             _missions = data.missions || [];
+            localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
         } catch(err) {
             const cached = localStorage.getItem('ss_missions_cache');
-            if (cached) _missions = JSON.parse(cached);
+            if (cached) {
+                try { _missions = JSON.parse(cached); } catch(e) {}
+            }
+            console.warn('[Dashboard] API unavailable, using cache');
         }
 
         _updateDashStats();
         _renderToday();
         _renderCarteNext();
-        localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
     }
 
     function _updateDashStats() {
-        const actives = _missions.filter(m =>
-            ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)
-        ).length;
+        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        const actives = _missions.filter(m => ACTIVE_STATES.includes(m.state)).length;
 
-        const now = new Date();
-        const thisMonth = now.getMonth();
-        const caMonth = _missions
-            .filter(m => (m.state === 'termine' || m.state === 'clos') && m.date_cloture && new Date(m.date_cloture).getMonth() === thisMonth)
-            .reduce((acc, m) => acc + (m.montant || 0), 0);
-
-        const totalInterv = _missions.filter(m => m.state === 'termine' || m.state === 'clos').length;
+        // CA depuis les données utilisateur stockées
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        const caMonth = user.ca_total || 2095;
+        const totalInterv = user.interventions || 487;
 
         var sA = document.getElementById('statActives');
         var sC = document.getElementById('statCA');
         var sN = document.getElementById('statNote');
         var sI = document.getElementById('statInterventions');
-        if (sA) sA.textContent = actives || '5';
-        if (sC) sC.textContent = (caMonth ? caMonth.toLocaleString('fr-FR') + ' €' : '2 095 €');
-        if (sN) sN.textContent = '4.9';
-        if (sI) sI.textContent = totalInterv || '487';
+        if (sA) sA.textContent = actives || _missions.length || '—';
+        if (sC) sC.textContent = caMonth.toLocaleString('fr-FR') + ' €';
+        if (sN) sN.textContent = (user.note_moyenne || 4.9).toFixed(1);
+        if (sI) sI.textContent = totalInterv;
 
         // Interventions page stats
         var sIT = document.getElementById('statIntervTotal');
         var sIC = document.getElementById('statIntervCA');
         var sIM = document.getElementById('statIntervMoyen');
-        if (sIT) sIT.textContent = totalInterv || '6';
-        if (sIC) sIC.textContent = caMonth ? caMonth.toLocaleString('fr-FR') + ' €' : '2 095 €';
-        if (sIM) sIM.textContent = '349 €';
-
-        // Carte next
-        _renderCarteNext();
+        if (sIT) sIT.textContent = totalInterv;
+        if (sIC) sIC.textContent = caMonth.toLocaleString('fr-FR') + ' €';
+        if (sIM) sIM.textContent = totalInterv ? Math.round(caMonth / totalInterv) + ' €' : '349 €';
     }
 
     function _renderToday() {
         const container = document.getElementById('todayList');
         if (!container) return;
 
-        // Filtrer missions du jour
-        const today = new Date().toDateString();
-        let todayMissions = _missions.filter(m => m.date_rdv && new Date(m.date_rdv).toDateString() === today);
+        // Missions actives (tri par urgence puis date)
+        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        let items = _missions.filter(m => ACTIVE_STATES.includes(m.state));
 
-        // Si aucune depuis API, utiliser les mock pins pour la démo
-        if (!todayMissions.length) {
-            const demoItems = MAP_PINS.slice(0, 4);
-            container.innerHTML = demoItems.map(p => `
-                <div class="today-item">
+        // Fallback demo si API vide
+        if (!items.length) {
+            items = MAP_PINS.map(p => ({
+                id: null, type_intervention: p.type, urgence: p.urgence || 'normale',
+                state: 'assigne', description_sinistre: p.title,
+                adresse: p.addr, montant: parseInt(p.price), date_rdv: new Date().toISOString(),
+            }));
+        }
+
+        container.innerHTML = items.slice(0, 5).map(m => {
+            const addr = (m.adresse_intervention || m.adresse || '');
+            const city = addr.includes(',') ? addr.split(',').slice(-1)[0].trim() : addr.split(' · ').slice(-1)[0];
+            const title = m.description_sinistre || m.title || '—';
+            const price = m.montant || m.montant_devis || 0;
+            const stateBadge = (m.urgence === 'urgente' || m.urgence === 'tres_urgente')
+                ? _urgenceBadge(m.urgence)
+                : _stateBadge(m.state);
+            return `
+                <div class="today-item" ${m.id ? `onclick="MissionDetail.open(${m.id})"` : ''}>
                     <div class="today-item-top">
-                        ${_metierBadge(p.type)}
-                        ${p.urgence ? _urgenceBadge(p.urgence) : _stateBadge(p.urgence === null ? 'en_cours' : 'nouveau')}
+                        ${_metierBadge(m.type_intervention)}
+                        ${stateBadge}
                     </div>
-                    <div class="today-item-title">${p.title}</div>
-                    <div class="today-item-addr">${p.addr.split(' · ')[1] || p.addr}</div>
+                    <div class="today-item-title">${title}</div>
+                    <div class="today-item-addr">${city}</div>
                     <div class="today-item-foot">
                         <span class="today-item-time">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            Aujourd'hui
+                            ${_fmtDateTime(m.date_rdv)}
                         </span>
-                        <span class="today-item-price">${p.price}</span>
+                        <span class="today-item-price">${price ? price.toLocaleString('fr-FR') + ' €' : '—'}</span>
                     </div>
                 </div>
-            `).join('');
-            return;
-        }
-
-        container.innerHTML = todayMissions.map(m => `
-            <div class="today-item" onclick="MissionDetail && MissionDetail.open(${m.id || JSON.stringify(m.reference)})">
-                <div class="today-item-top">
-                    ${_metierBadge(m.type_intervention)}
-                    ${_urgenceBadge(m.urgence)}
-                </div>
-                <div class="today-item-title">${m.description_sinistre || m.title || '—'}</div>
-                <div class="today-item-addr">${(m.adresse_intervention || m.adresse || '').split(',')[0]}</div>
-                <div class="today-item-foot">
-                    <span class="today-item-time">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        ${_fmtDateTime(m.date_rdv)}
-                    </span>
-                    <span class="today-item-price">${m.montant ? m.montant + ' €' : '—'}</span>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     /* ═══════════════════════════════════════════
@@ -184,20 +176,21 @@ window.Dashboard = (() => {
 
         container.innerHTML = '<div class="skeleton-card-h"></div><div class="skeleton-card-h"></div>';
 
-        setTimeout(() => {
-            // Filtrer les missions actives depuis le cache ou API
-            let missions = _missions.filter(m =>
-                ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)
-            );
-
-            // Si aucune depuis API, data demo
+        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        
+        // Try fresh API call
+        API.getMissions().then(data => {
+            _missions = data.missions || [];
+            localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
+        }).catch(() => {
+            // use cached
+        }).finally(() => {
+            let missions = _missions.filter(m => ACTIVE_STATES.includes(m.state));
             if (!missions.length) missions = _getDemoMissions();
-
             var sub = document.getElementById('missionsSubtitle');
             if (sub) sub.textContent = missions.length + ' mission(s) active(s)';
-
             _renderMissions(missions);
-        }, 400);
+        });
     }
 
     function _getDemoMissions() {
@@ -253,17 +246,17 @@ window.Dashboard = (() => {
                     ${_metierBadge(m.type_intervention)}
                     ${_urgenceBadge(m.urgence)}
                     <span class="mc-ref">Réf. ${m.reference}</span>
-                    <span class="mc-price">${m.montant ? m.montant + ' €' : '—'}</span>
+                    <span class="mc-price">${(m.montant || m.montant_devis) ? (m.montant || m.montant_devis).toLocaleString('fr-FR') + ' €' : '—'}</span>
                     <div style="text-align:right">
                         <div style="font-size:11px;color:#9CA3AF">Client : ${m.client||'—'}</div>
                     </div>
                 </div>
-                <div class="mc-title">${m.description_sinistre || '—'}</div>
+                <div class="mc-title">${m.description_sinistre || m.description || '—'}</div>
                 <div class="mc-desc">${m.desc_detail || ''}</div>
                 <div class="mc-meta">
                     <span class="mc-meta-item">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
-                        ${m.adresse_intervention || '—'}${m.dist ? ' · ' + m.dist : ''}
+                        ${m.adresse_intervention || m.adresse || '—'}${m.dist ? ' · ' + m.dist : ''}
                     </span>
                     <span class="mc-meta-item">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
