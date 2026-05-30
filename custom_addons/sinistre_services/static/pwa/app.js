@@ -283,7 +283,14 @@ window.App = (() => {
         if (viewId === 'profile')         { _updateUIFromUser(); }
         if (viewId === 'missions')       Dashboard.loadMissions();
         if (viewId === 'interventions')  Dashboard.loadInterventions();
-        if (viewId === 'carte')          { if(window.CarteMap) CarteMap.init(); }
+        if (viewId === 'carte') {
+            // Attendre que la vue soit visible (requestAnimationFrame garantit le rendu)
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    if (window.CarteMap) CarteMap.init();
+                });
+            });
+        }
     }
 
     function goBack() {
