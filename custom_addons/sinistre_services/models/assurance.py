@@ -234,3 +234,23 @@ class SinistreCommission(models.Model):
             if vals.get('name', '/') == '/':
                 vals['name'] = self.env['ir.sequence'].next_by_code('sinistre.commission') or '/'
         return super().create(vals_list)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# CERTIFICATION INTERVENANT
+# ═══════════════════════════════════════════════════════════════════════
+
+class SinistreCertification(models.Model):
+    _name        = 'sinistre.certification'
+    _description = 'Certification / Document Intervenant'
+    _order       = 'sequence, id'
+
+    intervenant_id = fields.Many2one('sinistre.intervenant', required=True, ondelete='cascade')
+    name           = fields.Char(string='Libellé', required=True)
+    date_validite  = fields.Date(string='Valide jusqu\'au')
+    sequence       = fields.Integer(default=10)
+
+    def _date_label(self):
+        if not self.date_validite:
+            return 'À jour'
+        return f"Valide jusqu'en {self.date_validite.strftime('%Y')}"
