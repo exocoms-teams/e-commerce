@@ -283,7 +283,7 @@ window.App = (() => {
         if (viewId === 'profile')         { _updateUIFromUser(); }
         if (viewId === 'missions')       Dashboard.loadMissions();
         if (viewId === 'interventions')  Dashboard.loadInterventions();
-        if (viewId === 'carte')          Dashboard.initCarte();
+        if (viewId === 'carte')          { if(window.CarteMap) CarteMap.init(); }
     }
 
     function goBack() {
