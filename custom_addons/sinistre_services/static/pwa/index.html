@@ -357,7 +357,7 @@
                 <div class="carte-layout">
                     <!-- Carte Google Maps -->
                     <div class="carte-map-wrap">
-                        <div id="googleMap" style="width:100%;height:560px;"></div>
+                        <gmp-map id="googleMap" center="48.8566,2.3522" zoom="13" map-id="DEMO_MAP_ID" style="width:100%;height:560px;display:block;"></gmp-map>
                         <!-- Panneau info mission sélectionnée -->
                         <div id="carteInfoPanel" class="carte-info-panel" style="display:none">
                             <button class="carte-info-close" onclick="CarteMap.closeInfoPanel()">✕</button>
@@ -593,15 +593,17 @@
 <script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
 <script>
-window.initGoogleMaps = function() {
-    console.log('[Maps] callback OK');
-    if (window.CarteMap) CarteMap.onGoogleMapsReady();
-};
+// Google Maps — méthode officielle avec defer + onload
 (function() {
     var key = CONFIG.GOOGLE_MAPS_KEY;
     if (!key || key === '__GOOGLE_MAPS_API_KEY__') return;
     var s = document.createElement('script');
-    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=places,geometry&callback=initGoogleMaps';
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=maps,marker,places,geometry&v=weekly';
+    s.defer = true;
+    s.onload = function() {
+        console.log('[Maps] ✓ chargé');
+        if (window.CarteMap) CarteMap.onGoogleMapsReady();
+    };
     document.head.appendChild(s);
 })();
 </script>
