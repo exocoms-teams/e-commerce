@@ -14,6 +14,13 @@
     <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
+    <!-- Google Maps (remplacer __GOOGLE_MAPS_API_KEY__ par votre clé) -->
+    <script>
+    function initGoogleMaps() {
+        if (window.CarteMap) CarteMap.onGoogleMapsReady();
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__&libraries=places,geometry&callback=initGoogleMaps&loading=async" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 </head>
@@ -337,96 +344,99 @@
 
             <!-- ── Vue Carte temps réel ── -->
             <div id="view-carte" class="view-page">
-                <div class="page-header">
+                <div class="carte-header">
                     <div>
                         <h1 class="page-title">Carte temps réel</h1>
-                        <p class="page-subtitle">Suivez et gérez vos missions sur le terrain</p>
+                        <p class="page-subtitle" id="carteSubtitle">Chargement de votre position…</p>
+                    </div>
+                    <div class="carte-header-actions">
+                        <button class="carte-btn-action" onclick="CarteMap.centerOnUser()" title="Ma position">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>
+                            Ma position
+                        </button>
+                        <button class="carte-btn-action" onclick="CarteMap.toggleTraffic()" id="btnTraffic" title="Trafic">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="7" r="2" fill="#EF4444" stroke="none"/><circle cx="12" cy="13" r="2" fill="#F59E0B" stroke="none"/><circle cx="12" cy="19" r="2" fill="#10B981" stroke="none"/></svg>
+                            Trafic
+                        </button>
                     </div>
                 </div>
-                <div class="carte-grid">
-                    <div class="carte-map-full">
-                        <div class="map-container" style="height:480px">
-                            <div class="map-placeholder" style="height:480px">
-                                <div class="map-zone-badge">Zone : Paris 11e · 5 km</div>
-                                <div class="map-inner" style="height:480px">
-                                    <svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                                        <rect width="780" height="480" fill="#e8f0f7"/>
-                                        <line x1="0" y1="160" x2="780" y2="160" stroke="#fff" stroke-width="20"/>
-                                        <line x1="0" y1="320" x2="780" y2="320" stroke="#fff" stroke-width="20"/>
-                                        <line x1="195" y1="0" x2="195" y2="480" stroke="#fff" stroke-width="16"/>
-                                        <line x1="390" y1="0" x2="390" y2="480" stroke="#fff" stroke-width="16"/>
-                                        <line x1="585" y1="0" x2="585" y2="480" stroke="#fff" stroke-width="16"/>
-                                        <path d="M0,380 Q195,355 390,375 Q585,395 780,368" stroke="#93C5FD" stroke-width="36" fill="none"/>
-                                        <rect x="20" y="180" width="150" height="120" rx="8" fill="#BBF7D0" opacity="0.7"/>
-                                        <rect x="510" y="398" width="140" height="72" rx="8" fill="#BBF7D0" opacity="0.7"/>
-                                        <g transform="translate(310,135)" style="cursor:pointer" onclick="Dashboard.showMapPin(0)">
-                                            <circle cx="0" cy="-14" r="16" fill="#14B8A6"/>
-                                            <circle cx="0" cy="-14" r="6" fill="white"/>
-                                            <circle cx="5" cy="-26" r="6" fill="#EF4444"/>
-                                            <path d="M0,2 L0,18" stroke="#14B8A6" stroke-width="2.5"/>
-                                        </g>
-                                        <g transform="translate(460,175)" style="cursor:pointer" onclick="Dashboard.showMapPin(1)">
-                                            <circle cx="0" cy="-14" r="16" fill="#3B82F6"/>
-                                            <circle cx="0" cy="-14" r="6" fill="white"/>
-                                            <path d="M0,2 L0,18" stroke="#3B82F6" stroke-width="2.5"/>
-                                        </g>
-                                        <g transform="translate(370,244)" style="cursor:pointer" onclick="Dashboard.showMapPin(2)">
-                                            <circle cx="0" cy="-14" r="16" fill="#EF4444"/>
-                                            <circle cx="0" cy="-14" r="6" fill="white"/>
-                                            <path d="M0,2 L0,18" stroke="#EF4444" stroke-width="2.5"/>
-                                        </g>
-                                        <g transform="translate(640,135)" style="cursor:pointer" onclick="Dashboard.showMapPin(3)">
-                                            <circle cx="0" cy="-14" r="16" fill="#F59E0B"/>
-                                            <circle cx="0" cy="-14" r="6" fill="white"/>
-                                            <path d="M0,2 L0,18" stroke="#F59E0B" stroke-width="2.5"/>
-                                        </g>
-                                        <g transform="translate(285,330)" style="cursor:pointer" onclick="Dashboard.showMapPin(4)">
-                                            <circle cx="0" cy="-14" r="16" fill="#10B981"/>
-                                            <circle cx="0" cy="-14" r="6" fill="white"/>
-                                            <path d="M0,2 L0,18" stroke="#10B981" stroke-width="2.5"/>
-                                        </g>
-                                    </svg>
+
+                <div class="carte-layout">
+                    <!-- Carte Google Maps -->
+                    <div class="carte-map-wrap">
+                        <div id="googleMap" class="google-map-container"></div>
+                        <!-- Panneau info mission sélectionnée -->
+                        <div id="carteInfoPanel" class="carte-info-panel" style="display:none">
+                            <button class="carte-info-close" onclick="CarteMap.closeInfoPanel()">✕</button>
+                            <div class="carte-info-badges" id="carteInfoBadges"></div>
+                            <div class="carte-info-title" id="carteInfoTitle"></div>
+                            <div class="carte-info-addr" id="carteInfoAddr"></div>
+                            <div class="carte-info-trajet" id="carteInfoTrajet">
+                                <div class="trajet-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <span id="carteInfoDuree">Calcul…</span>
                                 </div>
-                                <div class="map-popup" id="carteMapPopup" style="display:none">
-                                    <div class="map-popup-badges" id="cartePopupBadges"></div>
-                                    <div class="map-popup-title" id="cartePopupTitle"></div>
-                                    <div class="map-popup-addr" id="cartePopupAddr"></div>
-                                    <div class="map-popup-price" id="cartePopupPrice"></div>
-                                    <div class="map-popup-actions">
-                                        <button class="btn-accept">Accepter</button>
-                                        <button class="btn-itinerary">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                            Itinéraire
-                                        </button>
-                                    </div>
+                                <div class="trajet-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                                    <span id="carteInfoDist">—</span>
                                 </div>
+                                <div class="trajet-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <span id="carteInfoMontant" style="font-weight:700;color:#1E40AF">—</span>
+                                </div>
+                            </div>
+                            <div class="carte-info-actions">
+                                <button class="carte-btn-primary" id="carteInfoItineraire" onclick="CarteMap.launchRoute()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                    Itinéraire
+                                </button>
+                                <button class="carte-btn-secondary" onclick="CarteMap.callClient()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.86C1.6 3.82 2.4 3 3.44 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.78-.78a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 18z"/></svg>
+                                    Appeler
+                                </button>
+                                <button class="carte-btn-secondary" onclick="CarteMap.openMission()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                                    Détail
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="carte-sidebar">
-                        <div class="carte-legend-card">
-                            <div class="carte-legend-title">LÉGENDE</div>
-                            <div class="carte-legend-items">
-                                <div class="legend-item"><span class="legend-dot" style="background:#14B8A6"></span>Serrurerie<span class="legend-count">1</span></div>
-                                <div class="legend-item"><span class="legend-dot" style="background:#3B82F6"></span>Plomberie<span class="legend-count">1</span></div>
-                                <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>Électricité<span class="legend-count">1</span></div>
-                                <div class="legend-item"><span class="legend-dot" style="background:#EF4444"></span>Chauffage<span class="legend-count">1</span></div>
-                                <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span>Vitrerie<span class="legend-count">1</span></div>
+
+                    <!-- Sidebar -->
+                    <div class="carte-sidebar-new">
+                        <!-- GPS Status -->
+                        <div class="carte-widget">
+                            <div class="carte-widget-title">POSITION ACTUELLE</div>
+                            <div class="carte-gps-city" id="carteCityName">—</div>
+                            <div class="carte-gps-addr" id="carteAddrName">Localisation en cours…</div>
+                            <div class="carte-gps-row">
+                                <span class="gps-dot" id="gpsDot"></span>
+                                <span id="gpsStatus">En attente GPS…</span>
+                            </div>
+                            <div class="carte-gps-coords" id="gpsCoords"></div>
+                        </div>
+
+                        <!-- Prochaine mission -->
+                        <div class="carte-widget" id="carteNextWidget">
+                            <div class="carte-widget-title">PROCHAINE MISSION</div>
+                            <div id="carteNextContent">
+                                <div style="color:#9CA3AF;font-size:13px">Aucune mission active</div>
                             </div>
                         </div>
-                        <div class="carte-position-card">
-                            <div class="carte-legend-title">POSITION ACTUELLE</div>
-                            <div class="carte-position-city">Paris 11e</div>
-                            <div class="carte-position-addr">12 rue Oberkampf</div>
-                            <div class="carte-gps-status"><span class="gps-dot"></span>GPS actif · Précision 5m</div>
+
+                        <!-- Légende dynamique -->
+                        <div class="carte-widget">
+                            <div class="carte-widget-title">MISSIONS SUR LA CARTE</div>
+                            <div id="carteLegend" class="carte-legend-items">
+                                <div style="color:#9CA3AF;font-size:12px">Chargement…</div>
+                            </div>
                         </div>
-                        <div class="carte-next-card">
-                            <div class="carte-legend-title">PROCHAINE MISSION</div>
-                            <div class="carte-next-title" id="carteNextTitle">—</div>
-                            <div class="carte-next-addr" id="carteNextAddr">—</div>
-                            <div class="carte-next-footer">
-                                <span class="carte-next-dist" id="carteNextDist">—</span>
-                                <span class="carte-next-price" id="carteNextPrice">—</span>
+
+                        <!-- Liste missions proches -->
+                        <div class="carte-widget">
+                            <div class="carte-widget-title">MISSIONS PROCHES</div>
+                            <div id="carteMissionsProches" class="carte-missions-list">
+                                <div style="color:#9CA3AF;font-size:12px">Chargement…</div>
                             </div>
                         </div>
                     </div>
@@ -586,6 +596,7 @@
 <script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
+<script src="/sinistre_services/static/pwa/src/screens/carte.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
 <script src="/sinistre_services/static/pwa/app.js"></script>
