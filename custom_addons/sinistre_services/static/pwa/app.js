@@ -284,35 +284,9 @@ window.App = (() => {
         if (viewId === 'missions')       Dashboard.loadMissions();
         if (viewId === 'interventions')  Dashboard.loadInterventions();
         if (viewId === 'carte') {
-            // Attendre que la vue soit visible (requestAnimationFrame garantit le rendu)
             requestAnimationFrame(function() {
                 requestAnimationFrame(function() {
                     if (window.CarteMap) CarteMap.init();
                 });
             });
         }
-    }
-
-    function goBack() {
-        const prev = _history.pop() || 'dashboard';
-        _currentView = 'dashboard';
-        showView(prev, document.getElementById('nav-' + prev));
-    }
-
-    function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-    /* ── Visibilité ── */
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden && Auth.isLoggedIn() && _currentView === 'dashboard') {
-            Dashboard.refresh();
-        }
-    });
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    return { showLogin, showApp, showView, goBack, get currentView() { return _currentView; } };
-})();
