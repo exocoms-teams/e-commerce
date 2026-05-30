@@ -150,9 +150,11 @@ class SinistreAPIController(http.Controller):
         return _ok({'success': True, 'mission': data})
 
     # ── UPLOAD PHOTO ─────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/photo',
+    @http.route('/api/sinistre/v1/intervenant/mission/<string:mission_id>/photo',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def upload_photo(self, mission_id, **kw):
+        try: mission_id = int(mission_id)
+        except: return _err(400, "ID invalide")
         try:
             data      = json.loads(request.httprequest.data or '{}')
             type_photo = data.get('type_photo', 'avant')
@@ -184,9 +186,11 @@ class SinistreAPIController(http.Controller):
             return _err(500, str(e))
 
     # ── DÉMARRER ─────────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/demarrer',
+    @http.route('/api/sinistre/v1/intervenant/mission/<string:mission_id>/demarrer',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def demarrer(self, mission_id, **kw):
+        try: mission_id = int(mission_id)
+        except: return _err(400, "ID invalide")
         try:
             m = request.env['sinistre.mission'].sudo().browse(mission_id)
             if not m.exists():
@@ -197,9 +201,11 @@ class SinistreAPIController(http.Controller):
             return _err(500, str(e))
 
     # ── TERMINER ─────────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/terminer',
+    @http.route('/api/sinistre/v1/intervenant/mission/<string:mission_id>/terminer',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def terminer(self, mission_id, **kw):
+        try: mission_id = int(mission_id)
+        except: return _err(400, "ID invalide")
         try:
             from odoo.fields import Datetime
             m = request.env['sinistre.mission'].sudo().browse(mission_id)
@@ -211,50 +217,55 @@ class SinistreAPIController(http.Controller):
             return _err(500, str(e))
 
     # ── CRÉER DEVIS ──────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/devis',
+    @http.route('/api/sinistre/v1/intervenant/mission/<string:mission_id>/devis',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def create_devis(self, mission_id, **kw):
         try:
-            data   = json.loads(request.httprequest.data or '{}')
-            lignes = data.get('lignes', [])
-            note   = data.get('note', '')
+            try: mission_id = int(mission_id)
+            except: return _err(400, "ID invalide")
+
+            data       = json.loads(request.httprequest.data or '{}')
+            lignes     = data.get('ligne_ids', data.get('lignes', []))
+            note       = data.get('note_client', data.get('note', ''))
+            tva        = data.get('tva', 20.0)
 
             m = request.env['sinistre.mission'].sudo().browse(mission_id)
             if not m.exists():
                 return _err(404, "Mission introuvable")
 
-            # Créer le devis Odoo (sale.order ou sinistre.devis selon le modèle)
-            DevisModel = request.env.get('sinistre.devis')
-            if DevisModel is None:
-                return _err(500, "Modèle sinistre.devis introuvable")
-
-            devis = DevisModel.sudo().create({
+            devis = request.env['sinistre.devis'].sudo().create({
                 'mission_id': mission_id,
-                'note':       note,
-                'state':      'brouillon',
+                'note_client': note,
+                'tva':         tva,
+                'state':       'brouillon',
             })
 
-            # Lignes
-            LigneModel = request.env.get('sinistre.devis.ligne')
-            if LigneModel and lignes:
-                for l in lignes:
-                    LigneModel.sudo().create({
-                        'devis_id':      devis.id,
-                        'description':   l.get('description', ''),
-                        'quantite':      l.get('quantite', 1),
-                        'prix_unitaire': l.get('prix_unitaire', 0),
-                    })
+            for l in lignes:
+                request.env['sinistre.devis.ligne'].sudo().create({
+                    'devis_id':      devis.id,
+                    'description':   l.get('description', ''),
+                    'quantite':      float(l.get('quantite', 1)),
+                    'prix_unitaire': float(l.get('prix_unitaire', 0)),
+                })
 
-            return _ok({'success': True, 'devis_id': devis.id, 'state': 'brouillon'})
+            return _ok({
+                'success':  True,
+                'devis_id': devis.id,
+                'state':    'brouillon',
+                'montant_ht':    devis.montant_ht,
+                'montant_total': devis.montant_total,
+            })
         except Exception as e:
             _logger.error(f"[sinistre] create_devis: {e}")
             return _err(500, str(e))
 
     # ── ENVOYER DEVIS ────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/envoyer',
+    @http.route('/api/sinistre/v1/intervenant/devis/<string:devis_id>/envoyer',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def envoyer_devis(self, devis_id, **kw):
         try:
+            try: devis_id = int(devis_id)
+            except: return _err(400, "ID invalide")
             d = request.env['sinistre.devis'].sudo().browse(devis_id)
             if not d.exists():
                 return _err(404, "Devis introuvable")
@@ -264,10 +275,12 @@ class SinistreAPIController(http.Controller):
             return _err(500, str(e))
 
     # ── ACCEPTER DEVIS ───────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/accepter',
+    @http.route('/api/sinistre/v1/intervenant/devis/<string:devis_id>/accepter',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def accepter_devis(self, devis_id, **kw):
         try:
+            try: devis_id = int(devis_id)
+            except: return _err(400, "ID invalide")
             d = request.env['sinistre.devis'].sudo().browse(devis_id)
             if not d.exists():
                 return _err(404, "Devis introuvable")
@@ -279,10 +292,12 @@ class SinistreAPIController(http.Controller):
             return _err(500, str(e))
 
     # ── REFUSER DEVIS ────────────────────────────────────────────────
-    @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/refuser',
+    @http.route('/api/sinistre/v1/intervenant/devis/<string:devis_id>/refuser',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def refuser_devis(self, devis_id, **kw):
         try:
+            try: devis_id = int(devis_id)
+            except: return _err(400, "ID invalide")
             d = request.env['sinistre.devis'].sudo().browse(devis_id)
             if not d.exists():
                 return _err(404, "Devis introuvable")
