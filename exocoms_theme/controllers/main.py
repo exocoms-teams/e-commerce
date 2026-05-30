@@ -7,11 +7,17 @@ class Exocoms(http.Controller):
 
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kw):
-        # Première visite sans cookie de langue → forcer FR
         frontend_lang = request.httprequest.cookies.get('frontend_lang')
-        if not frontend_lang:
+        # Forcer FR si pas de cookie OU si cookie est en anglais
+        if not frontend_lang or frontend_lang == 'en_US':
+            request.session['frontend_lang'] = 'fr_FR'
             response = request.redirect('/fr/', code=302)
-            response.set_cookie('frontend_lang', 'fr_FR', max_age=365 * 24 * 3600)
+            response.set_cookie(
+                'frontend_lang',
+                'fr_FR',
+                max_age=365 * 24 * 3600,
+                path='/'
+            )
             return response
         return request.render('exocoms_theme.home', {})
 
