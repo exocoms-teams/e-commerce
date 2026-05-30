@@ -14,13 +14,6 @@
     <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
     <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
-    <!-- Google Maps (remplacer __GOOGLE_MAPS_API_KEY__ par votre clé) -->
-    <script>
-    function initGoogleMaps() {
-        if (window.CarteMap) CarteMap.onGoogleMapsReady();
-    }
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__&libraries=places,geometry&callback=initGoogleMaps&loading=async" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 </head>
@@ -588,6 +581,27 @@
 
 <!-- Scripts -->
 <script src="/sinistre_services/static/pwa/src/services/config.js"></script>
+<script>
+// Charger Google Maps dynamiquement avec la clé depuis config.js
+(function() {
+    function initGoogleMaps() {
+        if (window.CarteMap) CarteMap.onGoogleMapsReady();
+    }
+    window.initGoogleMaps = initGoogleMaps;
+    var key = (window.CONFIG && CONFIG.GOOGLE_MAPS_KEY && CONFIG.GOOGLE_MAPS_KEY !== '__GOOGLE_MAPS_API_KEY__')
+        ? CONFIG.GOOGLE_MAPS_KEY : null;
+    if (key) {
+        var s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=places,geometry&callback=initGoogleMaps&loading=async';
+        s.async = true; s.defer = true;
+        document.head.appendChild(s);
+    } else {
+        // Pas de clé configurée — afficher message dans la carte
+        window.initGoogleMaps = function() {};
+        console.warn('[CarteMap] Clé Google Maps non configurée dans config.js');
+    }
+})();
+</script>
 <script src="/sinistre_services/static/pwa/src/services/api.js"></script>
 <script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
 <script src="/sinistre_services/static/pwa/src/services/fcm.js"></script>
