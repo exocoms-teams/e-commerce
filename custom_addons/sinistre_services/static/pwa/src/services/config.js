@@ -11,7 +11,7 @@ window.CONFIG = {
     /* ── Google Maps ──────────────────────────────────────────────── */
     // Remplacer par votre clé API Google Maps
     // APIs à activer : Maps JavaScript API, Directions API, Distance Matrix API, Geocoding API
-    GOOGLE_MAPS_KEY: '__GOOGLE_MAPS_API_KEY__',
+    GOOGLE_MAPS_KEY: 'AIzaSyBNZMVTjyHNMh3YyePuk_HN7KSzLfzYLZk',
 
     /* ── Firebase ─────────────────────────────────────────────────── */
     FIREBASE: {
