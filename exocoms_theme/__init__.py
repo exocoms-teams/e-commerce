@@ -52,13 +52,11 @@ def post_init_hook(env):
     if public_partner and lang_fr:
         public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
 
-    # Paramètres système — langue par défaut + désactiver détection navigateur
     params = env['ir.config_parameter'].sudo()
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
     params.set_param('website.lang_redirect_from_browser', False)
 
-    # Désactiver la redirection automatique selon langue navigateur
     try:
         if website:
             website.sudo().write({'user_lang_redirect': False})
@@ -133,22 +131,22 @@ def post_init_hook(env):
                     <div class="row">
 
                         <t t-if="request.env.lang == 'fr_FR'">
+                            <div class="col-lg-5 pt24 pb24">
+                                <h5>&#192; propos de nous</h5>
+                                <p style="font-size: 14px;">Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
+                            </div>
                             <div class="col-lg-2 pt24 pb24">
                                 <h5>Liens utiles</h5>
-                                <ul class="list-unstyled">
+                                <ul class="list-unstyled" style="font-size: 14px;">
                                     <li><a href="/">Page d&#39;accueil</a></li>
                                     <li><a href="/services">Nos services</a></li>
                                     <li><a href="/mentions-legales">Mentions l&#233;gales</a></li>
                                 </ul>
                             </div>
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5>&#192; propos de nous</h5>
-                                <p>Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
-                            </div>
                             <div class="col-lg-4 offset-lg-1 pt24 pb24">
                                 <h5>Contact</h5>
-                                <p>Une question, un projet ou besoin d&#39;un accompagnement ?</p>
-                                <ul class="list-unstyled">
+                                <p style="font-size: 14px;">Une question, un projet ou besoin d&#39;un accompagnement ?</p>
+                                <ul class="list-unstyled" style="font-size: 14px;">
                                     <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contactez-nous</a></li>
                                     <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
                                     <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
@@ -163,22 +161,22 @@ def post_init_hook(env):
                         </t>
 
                         <t t-else="">
+                            <div class="col-lg-5 pt24 pb24">
+                                <h5>About us</h5>
+                                <p style="font-size: 14px;">We are a team of passionate people whose goal is to improve everyone&#39;s life through disruptive products. We market excellent products to solve your business problems. Our products are designed for small and medium businesses as well as franchises looking to optimize their performance.</p>
+                            </div>
                             <div class="col-lg-2 pt24 pb24">
                                 <h5>Useful links</h5>
-                                <ul class="list-unstyled">
+                                <ul class="list-unstyled" style="font-size: 14px;">
                                     <li><a href="/">Home</a></li>
                                     <li><a href="/services">Our services</a></li>
                                     <li><a href="/mentions-legales">Legal notice</a></li>
                                 </ul>
                             </div>
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5>About us</h5>
-                                <p>We are a team of passionate people whose goal is to improve everyone&#39;s life through disruptive products. We market excellent products to solve your business problems. Our products are designed for small and medium businesses as well as franchises looking to optimize their performance.</p>
-                            </div>
                             <div class="col-lg-4 offset-lg-1 pt24 pb24">
                                 <h5>Contact</h5>
-                                <p>A question, a project or need support?</p>
-                                <ul class="list-unstyled">
+                                <p style="font-size: 14px;">A question, a project or need support?</p>
+                                <ul class="list-unstyled" style="font-size: 14px;">
                                     <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contact us</a></li>
                                     <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
                                     <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
