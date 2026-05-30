@@ -3,6 +3,18 @@
  * Géolocalisation live, marqueurs missions, itinéraires, trafic
  */
 
+// Handler d'erreur Google Maps global
+window.gm_authFailure = function() {
+    console.error('[CarteMap] Erreur authentification Google Maps — vérifiez la clé API');
+    var el = document.getElementById('googleMap');
+    if (el) el.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;background:#FEF2F2;color:#991B1B;padding:20px;text-align:center">'
+        + '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+        + '<div style="font-size:15px;font-weight:700">Clé API invalide</div>'
+        + '<div style="font-size:13px">Vérifiez les restrictions de domaine<br>et les APIs activées sur Google Cloud</div>'
+        + '<div style="font-size:11px;background:#FEE2E2;padding:8px 14px;border-radius:8px;margin-top:4px">Maps JavaScript API · Directions API<br>Distance Matrix API · Geocoding API</div>'
+        + '</div>';
+};
+
 window.CarteMap = (() => {
     let _map            = null;
     let _userMarker     = null;
@@ -41,9 +53,11 @@ window.CarteMap = (() => {
 
     function onGoogleMapsReady() {
         _googleReady = true;
-        // Si la carte est déjà visible, l'initialiser
-        if (document.getElementById('view-carte')?.classList.contains('active')) {
-            _initMap();
+        console.log('[CarteMap] Google Maps prêt ✓');
+        // Si la vue carte est active, initialiser immédiatement
+        const carteView = document.getElementById('view-carte');
+        if (carteView && carteView.classList.contains('active')) {
+            setTimeout(_initMap, 100);
         }
     }
 
@@ -75,10 +89,20 @@ window.CarteMap = (() => {
 
     function _initMap() {
         const container = document.getElementById('googleMap');
-        if (!container) return;
-        // Forcer la hauteur si elle est 0 (parent pas encore rendu)
-        if (container.offsetHeight === 0) {
-            container.style.height = '560px';
+        if (!container) { console.error('[CarteMap] #googleMap introuvable'); return; }
+        
+        // Forcer la hauteur
+        container.style.height = '560px';
+        container.style.minHeight = '560px';
+        container.style.width = '100%';
+        container.style.display = 'block';
+        
+        console.log('[CarteMap] Init carte — container:', container.offsetWidth + 'x' + container.offsetHeight);
+        
+        if (!window.google || !window.google.maps) {
+            console.error('[CarteMap] google.maps non disponible');
+            _showMapError('Google Maps non chargé — vérifiez la clé API');
+            return;
         }
 
         // Centre par défaut : Paris
