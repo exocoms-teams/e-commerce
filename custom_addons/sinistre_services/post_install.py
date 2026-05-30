@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*--
 """
 post_install.py — Crée automatiquement :
   - Droits admin
