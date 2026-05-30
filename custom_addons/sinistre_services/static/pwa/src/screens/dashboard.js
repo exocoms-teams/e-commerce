@@ -12,14 +12,8 @@ window.Dashboard = (() => {
     let _searchQuery = '';
     let _currentMapPin = null;
 
-    // Données mock pour la carte / aujourd'hui (remplacées par l'API)
-    const MAP_PINS = [
-        { type: 'serrurerie', urgence: 'urgente', title: 'Ouverture porte claquée', addr: '12 rue de la République · Paris 11e', price: '180 €', dist: '1,2 km' },
-        { type: 'plomberie',  urgence: null,       title: 'Fuite sous évier cuisine',  addr: '45 av. Parmentier · Paris 11e',      price: '145 €', dist: '2,4 km' },
-        { type: 'plomberie',  urgence: null,       title: 'Dépannage chaudière gaz',   addr: '23 bd Voltaire · Paris 11e',         price: '220 €', dist: '1,9 km' },
-        { type: 'electricite',urgence: null,       title: 'Mise aux normes tableau',   addr: '8 rue des Pyrénées · Paris 20e',     price: '620 €', dist: '3,8 km' },
-        { type: 'vitrerie',   urgence: null,       title: 'Remplacement vitre cassée', addr: '7 rue Oberkampf · Paris 11e',        price: '310 €', dist: '0,9 km' },
-    ];
+    // Pins de carte — alimentés par les missions réelles
+    const MAP_PINS = [];
 
     /* ── Badge helpers ── */
     function _metierBadge(type) {
@@ -132,13 +126,15 @@ window.Dashboard = (() => {
         const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
         let items = _missions.filter(m => ACTIVE_STATES.includes(m.state));
 
-        // Fallback demo si API vide
+        // Aucune mission
         if (!items.length) {
-            items = MAP_PINS.map(p => ({
-                id: null, type_intervention: p.type, urgence: p.urgence || 'normale',
-                state: 'assigne', description_sinistre: p.title,
-                adresse: p.addr, montant: parseInt(p.price), date_rdv: new Date().toISOString(),
-            }));
+            container.innerHTML = `
+                <div class="empty-missions">
+                    <div class="empty-missions-icon">📋</div>
+                    <div class="empty-missions-title">Aucune mission en cours</div>
+                    <div class="empty-missions-sub">Vos prochaines missions apparaîtront ici</div>
+                </div>`;
+            return;
         }
 
         container.innerHTML = items.slice(0, 5).map(m => {
@@ -187,38 +183,13 @@ window.Dashboard = (() => {
         }).catch(() => {
             // use cached
         }).finally(() => {
-            let missions = _missions.filter(m => ACTIVE_STATES.includes(m.state));
-            if (!missions.length) missions = _getDemoMissions();
+            const missions = _missions.filter(m => ACTIVE_STATES.includes(m.state));
             var sub = document.getElementById('missionsSubtitle');
             if (sub) sub.textContent = missions.length + ' mission(s) active(s)';
             _renderMissions(missions);
         });
     }
 
-    function _getDemoMissions() {
-        return [
-            { id: 1, reference: 'M-2026-0481', type_intervention: 'serrurerie', urgence: 'urgente', state: 'assigne',
-              description_sinistre: 'Ouverture porte claquée', desc_detail: 'Cliente bloquée à l\'extérieur, porte 3 points classique.',
-              adresse_intervention: '12 rue de la République, Paris 11e', dist: '1,2 km', date_rdv: new Date(Date.now() + 2*3600000).toISOString(),
-              montant: 180, client: 'Mme Laurent' },
-            { id: 2, reference: 'M-2026-0479', type_intervention: 'plomberie', urgence: 'normale', state: 'en_cours',
-              description_sinistre: 'Fuite sous évier cuisine', desc_detail: 'Joint siphon à remplacer, fuite active.',
-              adresse_intervention: '45 av. Parmentier, Paris 11e', dist: '2,4 km', date_rdv: new Date(Date.now() + 4*3600000).toISOString(),
-              montant: 145, client: 'M. Dubois' },
-            { id: 3, reference: 'M-2026-0476', type_intervention: 'electricite', urgence: 'normale', state: 'rdv_planifie',
-              description_sinistre: 'Mise aux normes tableau', desc_detail: 'Remplacement tableau électrique 2 rangées.',
-              adresse_intervention: '8 rue des Pyrénées, Paris 20e', dist: '3,8 km', date_rdv: new Date(Date.now() + 86400000).toISOString(),
-              montant: 620, client: 'SCI Belleville' },
-            { id: 4, reference: 'M-2026-0470', type_intervention: 'chauffage', urgence: 'normale', state: 'rdv_planifie',
-              description_sinistre: 'Dépannage chaudière gaz', desc_detail: 'Plus d\'eau chaude, code erreur E01.',
-              adresse_intervention: '23 bd Voltaire, Paris 11e', dist: '1,9 km', date_rdv: new Date(Date.now() + 90000000).toISOString(),
-              montant: 220, client: 'M. Karam' },
-            { id: 5, reference: 'M-2026-0468', type_intervention: 'vitrerie', urgence: 'normale', state: 'en_cours',
-              description_sinistre: 'Remplacement vitre cassée', desc_detail: 'Double vitrage 80×120 cm.',
-              adresse_intervention: '7 rue Oberkampf, Paris 11e', dist: '0,9 km', date_rdv: new Date(Date.now() + 5400000).toISOString(),
-              montant: 310, client: 'Mme Petit' },
-        ];
-    }
 
     function _renderMissions(missions) {
         let filtered = missions.filter(m => {
@@ -238,7 +209,13 @@ window.Dashboard = (() => {
         if (!container) return;
 
         if (!filtered.length) {
-            container.innerHTML = '<div style="text-align:center;padding:60px;color:#9CA3AF;font-size:14px">Aucune mission trouvée</div>';
+            const isFiltered = _metierFilter !== 'all' || _statusFilter !== 'all' || _searchQuery;
+            container.innerHTML = `
+                <div class="empty-state-full">
+                    <div class="empty-state-icon">${isFiltered ? '🔍' : '📋'}</div>
+                    <div class="empty-state-title">${isFiltered ? 'Aucun résultat' : 'Aucune mission en cours'}</div>
+                    <div class="empty-state-sub">${isFiltered ? 'Modifiez vos filtres pour voir plus de missions' : 'Vous n\'avez pas encore de missions assignées'}</div>
+                </div>`;
             return;
         }
 
@@ -302,7 +279,7 @@ window.Dashboard = (() => {
                 addr: m.adresse_intervention, montant: m.montant,
             }));
 
-        _interventions = apiTerminees.length ? apiTerminees : demo;
+        _interventions = apiTerminees;
         _renderInterventions();
 
         // Update stats
@@ -325,7 +302,14 @@ window.Dashboard = (() => {
             : _interventions.filter(i => i.type === _intervFilter);
 
         if (!list.length) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Aucune intervention</td></tr>';
+            tbody.innerHTML = `
+                <tr><td colspan="7">
+                    <div class="empty-state-full" style="padding:60px 0">
+                        <div class="empty-state-icon">✅</div>
+                        <div class="empty-state-title">Aucune intervention terminée</div>
+                        <div class="empty-state-sub">Vos interventions réalisées apparaîtront ici</div>
+                    </div>
+                </td></tr>`;
             return;
         }
 
@@ -356,15 +340,24 @@ window.Dashboard = (() => {
     }
 
     function _renderCarteNext() {
-        const first = MAP_PINS[0];
+        // Prendre la première mission active
+        const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        const first = _missions.find(m => ACTIVE.includes(m.state));
         var ct = document.getElementById('carteNextTitle');
         var ca = document.getElementById('carteNextAddr');
         var cd = document.getElementById('carteNextDist');
         var cp = document.getElementById('carteNextPrice');
-        if (ct) ct.textContent = first.title;
-        if (ca) ca.textContent = first.addr;
-        if (cd) cd.textContent = first.dist;
-        if (cp) cp.textContent = first.price;
+        if (!first) {
+            if (ct) ct.textContent = 'Aucune mission';
+            if (ca) ca.textContent = '—';
+            if (cd) cd.textContent = '—';
+            if (cp) cp.textContent = '—';
+            return;
+        }
+        if (ct) ct.textContent = first.description_sinistre || first.description || '—';
+        if (ca) ca.textContent = first.adresse_intervention || first.adresse || '—';
+        if (cd) cd.textContent = '—';
+        if (cp) cp.textContent = first.montant ? first.montant + ' €' : '—';
     }
 
     function showMapPin(idx) {
@@ -406,14 +399,14 @@ window.Dashboard = (() => {
         _metierFilter = val;
         document.querySelectorAll('#metierFilters .tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        _renderMissions(_getDemoMissions());
+        _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
 
     function setStatusFilter(val, btn) {
         _statusFilter = val;
         document.querySelectorAll('#statusFilters .tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        _renderMissions(_getDemoMissions());
+        _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
 
     function setIntervFilter(val, btn) {
@@ -425,7 +418,7 @@ window.Dashboard = (() => {
 
     function filterMissions() {
         _searchQuery = (document.getElementById('missionsSearch') || {}).value || '';
-        _renderMissions(_getDemoMissions());
+        _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
 
     /* ── API publique ── */
