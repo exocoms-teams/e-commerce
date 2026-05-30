@@ -664,29 +664,8 @@ document.addEventListener('DOMContentLoaded', function() {
         App.showApp = function() { origShowApp(); setTimeout(updateProfile, 300); };
     }
 
-    // Override showView for desktop sidebar nav
-    if (window.App) {
-        App.showView = function(viewId, navEl) {
-            // Hide all views
-            document.querySelectorAll('.view-page').forEach(function(v) { v.classList.remove('active'); });
-            var target = document.getElementById('view-' + viewId);
-            if (target) target.classList.add('active');
-
-            // Update sidebar nav
-            document.querySelectorAll('.sidebar-item').forEach(function(b) { b.classList.remove('active'); });
-            if (navEl && navEl.classList) navEl.classList.add('active');
-
-            // Load data for view
-            if (viewId === 'dashboard') Dashboard.init();
-            if (viewId === 'missions') Dashboard.loadMissions();
-            if (viewId === 'interventions') Dashboard.loadInterventions();
-            if (viewId === 'carte') Dashboard.initCarte();
-        };
-
-        App.goBack = function() {
-            App.showView('dashboard', document.getElementById('nav-dashboard'));
-        };
-    }
+    // Plus besoin d'écraser App.showView — app.js gère déjà tout correctement
+    // (CarteMap.init, Dashboard.init, etc.)
 
     var lf = document.getElementById('loginForm');
     if (lf) {
