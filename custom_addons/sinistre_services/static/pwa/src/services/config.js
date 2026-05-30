@@ -53,12 +53,19 @@ window.CONFIG = {
     },
 
     TYPE_LABELS: {
-        serrurerie:    '🔐 Serrurerie',
-        plomberie:     '🔧 Plomberie',
-        menuiserie_int:'🚪 Menuiserie Int.',
-        menuiserie_ext:'🚪 Menuiserie Ext.',
-        vitrerie:      '🪟 Vitrerie',
-        electricite:   '⚡ Électricité',
-        autre:         '🔨 Autre',
+        serrurerie:     '🔐 Serrurerie',
+        plomberie:      '🔧 Plomberie',
+        menuiserie_int: '🚪 Menuiserie Int.',
+        menuiserie_ext: '🚪 Menuiserie Ext.',
+        vitrerie:       '🪟 Vitrerie',
+        electricite:    '⚡ Électricité',
+        autre:          '🔨 Autre',
+        // Alias UI uniquement (non stockés en base)
+        chauffage:      '🔧 Plomberie/Chauffage',
     },
 };
+
+    /* ── Google Maps ─────────────────────────────────────────────────── */
+    // Remplacer par votre clé API Google Maps
+    // Activer : Maps JavaScript API, Directions API, Places API, Geocoding API
+    GOOGLE_MAPS_KEY: '__GOOGLE_MAPS_API_KEY__',
