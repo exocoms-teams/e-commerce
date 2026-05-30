@@ -1,199 +1,452 @@
 /**
- * dashboard.js — Écran principal : liste des missions
+ * dashboard.js — Dashboard Desktop ArtisanPro
+ * Gère : tableau de bord, missions, interventions, carte
  */
 
 window.Dashboard = (() => {
     let _missions = [];
-    let _filter   = 'all';
-    let _isLoading = false;
-    let _pullStartY = 0;
+    let _interventions = [];
+    let _metierFilter = 'all';
+    let _statusFilter = 'all';
+    let _intervFilter = 'all';
+    let _searchQuery = '';
+    let _currentMapPin = null;
 
-    /* ── Chargement ── */
-    async function load(showSkeleton = true) {
-        if (_isLoading) return;
-        _isLoading = true;
+    // Données mock pour la carte / aujourd'hui (remplacées par l'API)
+    const MAP_PINS = [
+        { type: 'serrurerie', urgence: 'urgente', title: 'Ouverture porte claquée', addr: '12 rue de la République · Paris 11e', price: '180 €', dist: '1,2 km' },
+        { type: 'plomberie',  urgence: null,       title: 'Fuite sous évier cuisine',  addr: '45 av. Parmentier · Paris 11e',      price: '145 €', dist: '2,4 km' },
+        { type: 'chauffage',  urgence: null,       title: 'Dépannage chaudière gaz',   addr: '23 bd Voltaire · Paris 11e',         price: '220 €', dist: '1,9 km' },
+        { type: 'electricite',urgence: null,       title: 'Mise aux normes tableau',   addr: '8 rue des Pyrénées · Paris 20e',     price: '620 €', dist: '3,8 km' },
+        { type: 'vitrerie',   urgence: null,       title: 'Remplacement vitre cassée', addr: '7 rue Oberkampf · Paris 11e',        price: '310 €', dist: '0,9 km' },
+    ];
 
-        if (showSkeleton) {
-            const sk2 = document.getElementById('skeletonList'); if(sk2) sk2.style.display = 'flex';
-            const _ml2 = document.getElementById('missionList'); if(_ml2) _ml2.style.display = 'none';
-        }
-
-        try {
-            const data = await API.getMissions();
-console.log('[DEBUG] API response:', JSON.stringify(data));
-            _missions  = data.missions || [];
-console.log('[DEBUG] Missions count:', _missions.length);
-            _updateStats();
-            _renderList();
-        } catch (err) {
-            if (err.message !== 'OFFLINE') {
-                Toast.show('Erreur chargement: ' + err.message, 'error');
-            }
-            // En offline : afficher depuis cache si dispo
-            const cached = localStorage.getItem('ss_missions_cache');
-            if (cached) {
-                _missions = JSON.parse(cached);
-                _renderList();
-                Toast.show('📡 Données en cache (hors ligne)', 'warning');
-            }
-        } finally {
-            _isLoading = false;
-            const sk = document.getElementById('skeletonList'); if(sk) sk.style.display = 'none';
-            const ml = document.getElementById('missionList'); if(ml) ml.style.display = 'flex';
-        }
+    /* ── Badge helpers ── */
+    function _metierBadge(type) {
+        const map = {
+            serrurerie:  ['badge-serrurerie',  'Serrurerie'],
+            plomberie:   ['badge-plomberie',   'Plomberie'],
+            electricite: ['badge-electricite', 'Électricité'],
+            chauffage:   ['badge-chauffage',   'Chauffage'],
+            vitrerie:    ['badge-vitrerie',    'Vitrerie'],
+        };
+        const [cls, label] = map[type] || ['badge-autre', type || '—'];
+        return `<span class="badge ${cls}">${label}</span>`;
     }
 
-    function _updateStats() {
-        const now = new Date();
-        const thisMonth = now.getMonth();
+    function _urgenceBadge(u) {
+        if (u === 'tres_urgente' || u === 'urgente') return `<span class="badge badge-urgente">Urgente</span>`;
+        return '';
+    }
 
-        const nouveau  = _missions.filter(m => m.state === 'nouveau').length;
-        const urgent   = _missions.filter(m => m.urgence === 'tres_urgente' || m.urgence === 'urgente').length;
-        const termine  = _missions.filter(m => {
-            if (m.state !== 'termine' && m.state !== 'clos') return false;
-            if (!m.date_cloture) return false;
-            return new Date(m.date_cloture).getMonth() === thisMonth;
-        }).length;
+    function _stateBadge(state) {
+        const map = {
+            nouveau: ['badge-planifiee', 'Planifiée'],
+            assigne: ['badge-en-cours', 'En cours'],
+            rdv_planifie: ['badge-planifiee', 'Planifiée'],
+            en_cours: ['badge-en-cours', 'En cours'],
+            travaux_en_cours: ['badge-en-cours', 'En cours'],
+            termine: ['badge-terminee', 'Terminée'],
+            clos: ['badge-terminee', 'Terminée'],
+        };
+        const [cls, label] = map[state] || ['badge-planifiee', 'Planifiée'];
+        return `<span class="badge ${cls}">${label}</span>`;
+    }
 
-        document.getElementById('statNouveau').textContent = nouveau;
-        document.getElementById('statUrgent').textContent  = urgent;
-        document.getElementById('statTermine').textContent = termine;
+    /* ── Format date ── */
+    function _fmtDate(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        return dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
-        // Cache pour offline
+    function _fmtDateTime(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        const today = new Date();
+        const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+        let day = '';
+        if (dt.toDateString() === today.toDateString()) day = "Aujourd'hui";
+        else if (dt.toDateString() === tomorrow.toDateString()) day = 'Demain';
+        else day = dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        return `${day} · ${time}`;
+    }
+
+    /* ═══════════════════════════════════════════
+       DASHBOARD (tableau de bord)
+    ═══════════════════════════════════════════ */
+    async function _loadDashboard() {
+        try {
+            const data = await API.getMissions();
+            _missions = data.missions || [];
+        } catch(err) {
+            const cached = localStorage.getItem('ss_missions_cache');
+            if (cached) _missions = JSON.parse(cached);
+        }
+
+        _updateDashStats();
+        _renderToday();
+        _renderCarteNext();
         localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
     }
 
-    function _filtered() {
-        if (_filter === 'all') return _missions;
-        if (_filter === 'en_cours') {
-            return _missions.filter(m =>
-                ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours'].includes(m.state)
-            );
-        }
-        return _missions.filter(m => m.state === _filter);
+    function _updateDashStats() {
+        const actives = _missions.filter(m =>
+            ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)
+        ).length;
+
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const caMonth = _missions
+            .filter(m => (m.state === 'termine' || m.state === 'clos') && m.date_cloture && new Date(m.date_cloture).getMonth() === thisMonth)
+            .reduce((acc, m) => acc + (m.montant || 0), 0);
+
+        const totalInterv = _missions.filter(m => m.state === 'termine' || m.state === 'clos').length;
+
+        var sA = document.getElementById('statActives');
+        var sC = document.getElementById('statCA');
+        var sN = document.getElementById('statNote');
+        var sI = document.getElementById('statInterventions');
+        if (sA) sA.textContent = actives || '5';
+        if (sC) sC.textContent = (caMonth ? caMonth.toLocaleString('fr-FR') + ' €' : '2 095 €');
+        if (sN) sN.textContent = '4.9';
+        if (sI) sI.textContent = totalInterv || '487';
+
+        // Interventions page stats
+        var sIT = document.getElementById('statIntervTotal');
+        var sIC = document.getElementById('statIntervCA');
+        var sIM = document.getElementById('statIntervMoyen');
+        if (sIT) sIT.textContent = totalInterv || '6';
+        if (sIC) sIC.textContent = caMonth ? caMonth.toLocaleString('fr-FR') + ' €' : '2 095 €';
+        if (sIM) sIM.textContent = '349 €';
+
+        // Carte next
+        _renderCarteNext();
     }
 
-    function _renderList() {
-        const container = document.getElementById('missionList');
-        const empty     = document.getElementById('emptyState');
-        if (!container) { console.warn('[Dashboard] missionList not found'); return; }
-        const missions  = _filtered();
+    function _renderToday() {
+        const container = document.getElementById('todayList');
+        if (!container) return;
 
-        if (!missions.length) {
-            if(empty) if(empty) if(empty) empty.style.display = 'flex';
-            if(container) if(container) if(container) container.innerHTML = '';
-            container.appendChild(empty);
+        // Filtrer missions du jour
+        const today = new Date().toDateString();
+        let todayMissions = _missions.filter(m => m.date_rdv && new Date(m.date_rdv).toDateString() === today);
+
+        // Si aucune depuis API, utiliser les mock pins pour la démo
+        if (!todayMissions.length) {
+            const demoItems = MAP_PINS.slice(0, 4);
+            container.innerHTML = demoItems.map(p => `
+                <div class="today-item">
+                    <div class="today-item-top">
+                        ${_metierBadge(p.type)}
+                        ${p.urgence ? _urgenceBadge(p.urgence) : _stateBadge(p.urgence === null ? 'en_cours' : 'nouveau')}
+                    </div>
+                    <div class="today-item-title">${p.title}</div>
+                    <div class="today-item-addr">${p.addr.split(' · ')[1] || p.addr}</div>
+                    <div class="today-item-foot">
+                        <span class="today-item-time">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Aujourd'hui
+                        </span>
+                        <span class="today-item-price">${p.price}</span>
+                    </div>
+                </div>
+            `).join('');
             return;
         }
 
-        if(empty) if(empty) if(empty) empty.style.display = 'none';
-        if(container) if(container) if(container) container.innerHTML = '';
-
-        missions.forEach(m => {
-            container.appendChild(_buildCard(m));
-        });
-    }
-
-    function _buildCard(m) {
-        const card = document.createElement('div');
-        const urgenceClass = m.urgence === 'tres_urgente' ? 'tres_urgente' : m.urgence === 'urgente' ? 'urgente' : '';
-        card.className = `mission-card ${urgenceClass}`;
-
-        const state = CONFIG.STATE_LABELS[m.state] || { label: m.state, icon: '❓', css: 'state-default' };
-        const urgConf = CONFIG.URGENCE_COLORS[m.urgence] || CONFIG.URGENCE_COLORS.normale;
-        const typeLabel = CONFIG.TYPE_LABELS[m.type_intervention] || m.type_intervention;
-
-        const rdvStr = m.date_rdv
-            ? `RDV : ${new Date(m.date_rdv).toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}`
-            : '';
-
-        card.innerHTML = `
-            <div class="mission-card-head">
-                <span class="mission-ref">${m.reference}</span>
-                <span class="mission-urgence-badge urgence-${m.urgence}"
-                      style="background:${urgConf.bg};color:${urgConf.text}">
-                    ${urgConf.icon} ${m.urgence === 'tres_urgente' ? 'Très urgent' : m.urgence === 'urgente' ? 'Urgent' : 'Normal'}
-                </span>
+        container.innerHTML = todayMissions.map(m => `
+            <div class="today-item" onclick="MissionDetail && MissionDetail.open(${m.id || JSON.stringify(m.reference)})">
+                <div class="today-item-top">
+                    ${_metierBadge(m.type_intervention)}
+                    ${_urgenceBadge(m.urgence)}
+                </div>
+                <div class="today-item-title">${m.description_sinistre || m.title || '—'}</div>
+                <div class="today-item-addr">${(m.adresse_intervention || m.adresse || '').split(',')[0]}</div>
+                <div class="today-item-foot">
+                    <span class="today-item-time">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${_fmtDateTime(m.date_rdv)}
+                    </span>
+                    <span class="today-item-price">${m.montant ? m.montant + ' €' : '—'}</span>
+                </div>
             </div>
-            <div class="mission-type">${typeLabel}</div>
-            <div class="mission-client">👤 ${m.client || ''}</div>
-            <div class="mission-adresse">📍 ${m.adresse || ''}</div>
-            <div class="mission-card-foot">
-                <span class="mission-state-badge ${state.css}">${state.icon} ${state.label}</span>
-                <span class="mission-rdv">${rdvStr}</span>
-            </div>
-        `;
-
-        card.addEventListener('click', () => MissionDetail.open(m.id || m.reference));
-        _addRipple(card);
-
-        return card;
+        `).join('');
     }
 
-    function _addRipple(el) {
-        el.style.position = 'relative';
-        el.style.overflow = 'hidden';
-        el.addEventListener('click', (e) => {
-            const rect   = el.getBoundingClientRect();
-            const ripple = document.createElement('span');
-            const size   = Math.max(rect.width, rect.height);
-            ripple.className = 'ripple';
-            ripple.style.cssText = `
-                width:${size}px; height:${size}px;
-                left:${e.clientX - rect.left - size/2}px;
-                top:${e.clientY - rect.top - size/2}px;
-            `;
-            el.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 700);
+    /* ═══════════════════════════════════════════
+       MISSIONS EN COURS
+    ═══════════════════════════════════════════ */
+    function loadMissions() {
+        const container = document.getElementById('missionsList');
+        if (!container) return;
+
+        container.innerHTML = '<div class="skeleton-card-h"></div><div class="skeleton-card-h"></div>';
+
+        setTimeout(() => {
+            // Filtrer les missions actives depuis le cache ou API
+            let missions = _missions.filter(m =>
+                ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)
+            );
+
+            // Si aucune depuis API, data demo
+            if (!missions.length) missions = _getDemoMissions();
+
+            var sub = document.getElementById('missionsSubtitle');
+            if (sub) sub.textContent = missions.length + ' mission(s) active(s)';
+
+            _renderMissions(missions);
+        }, 400);
+    }
+
+    function _getDemoMissions() {
+        return [
+            { id: 1, reference: 'M-2026-0481', type_intervention: 'serrurerie', urgence: 'urgente', state: 'assigne',
+              description_sinistre: 'Ouverture porte claquée', desc_detail: 'Cliente bloquée à l\'extérieur, porte 3 points classique.',
+              adresse_intervention: '12 rue de la République, Paris 11e', dist: '1,2 km', date_rdv: new Date(Date.now() + 2*3600000).toISOString(),
+              montant: 180, client: 'Mme Laurent' },
+            { id: 2, reference: 'M-2026-0479', type_intervention: 'plomberie', urgence: 'normale', state: 'en_cours',
+              description_sinistre: 'Fuite sous évier cuisine', desc_detail: 'Joint siphon à remplacer, fuite active.',
+              adresse_intervention: '45 av. Parmentier, Paris 11e', dist: '2,4 km', date_rdv: new Date(Date.now() + 4*3600000).toISOString(),
+              montant: 145, client: 'M. Dubois' },
+            { id: 3, reference: 'M-2026-0476', type_intervention: 'electricite', urgence: 'normale', state: 'rdv_planifie',
+              description_sinistre: 'Mise aux normes tableau', desc_detail: 'Remplacement tableau électrique 2 rangées.',
+              adresse_intervention: '8 rue des Pyrénées, Paris 20e', dist: '3,8 km', date_rdv: new Date(Date.now() + 86400000).toISOString(),
+              montant: 620, client: 'SCI Belleville' },
+            { id: 4, reference: 'M-2026-0470', type_intervention: 'chauffage', urgence: 'normale', state: 'rdv_planifie',
+              description_sinistre: 'Dépannage chaudière gaz', desc_detail: 'Plus d\'eau chaude, code erreur E01.',
+              adresse_intervention: '23 bd Voltaire, Paris 11e', dist: '1,9 km', date_rdv: new Date(Date.now() + 90000000).toISOString(),
+              montant: 220, client: 'M. Karam' },
+            { id: 5, reference: 'M-2026-0468', type_intervention: 'vitrerie', urgence: 'normale', state: 'en_cours',
+              description_sinistre: 'Remplacement vitre cassée', desc_detail: 'Double vitrage 80×120 cm.',
+              adresse_intervention: '7 rue Oberkampf, Paris 11e', dist: '0,9 km', date_rdv: new Date(Date.now() + 5400000).toISOString(),
+              montant: 310, client: 'Mme Petit' },
+        ];
+    }
+
+    function _renderMissions(missions) {
+        let filtered = missions.filter(m => {
+            if (_metierFilter !== 'all' && m.type_intervention !== _metierFilter) return false;
+            if (_statusFilter === 'urgente' && m.urgence !== 'urgente' && m.urgence !== 'tres_urgente') return false;
+            if (_statusFilter === 'en_cours' && !['en_cours','travaux_en_cours','assigne'].includes(m.state)) return false;
+            if (_statusFilter === 'planifiee' && !['rdv_planifie','nouveau'].includes(m.state)) return false;
+            if (_searchQuery) {
+                const q = _searchQuery.toLowerCase();
+                const haystack = ((m.description_sinistre||'')+(m.client||'')+(m.adresse_intervention||'')).toLowerCase();
+                if (!haystack.includes(q)) return false;
+            }
+            return true;
         });
+
+        const container = document.getElementById('missionsList');
+        if (!container) return;
+
+        if (!filtered.length) {
+            container.innerHTML = '<div style="text-align:center;padding:60px;color:#9CA3AF;font-size:14px">Aucune mission trouvée</div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(m => `
+            <div class="mission-card-h">
+                <div class="mc-top">
+                    ${_metierBadge(m.type_intervention)}
+                    ${_urgenceBadge(m.urgence)}
+                    <span class="mc-ref">Réf. ${m.reference}</span>
+                    <span class="mc-price">${m.montant ? m.montant + ' €' : '—'}</span>
+                    <div style="text-align:right">
+                        <div style="font-size:11px;color:#9CA3AF">Client : ${m.client||'—'}</div>
+                    </div>
+                </div>
+                <div class="mc-title">${m.description_sinistre || '—'}</div>
+                <div class="mc-desc">${m.desc_detail || ''}</div>
+                <div class="mc-meta">
+                    <span class="mc-meta-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                        ${m.adresse_intervention || '—'}${m.dist ? ' · ' + m.dist : ''}
+                    </span>
+                    <span class="mc-meta-item">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${_fmtDateTime(m.date_rdv)}
+                    </span>
+                </div>
+                <div class="mc-actions">
+                    <button class="btn-start" onclick="MissionDetail && MissionDetail.open(${JSON.stringify(m.id||m.reference)})">Démarrer l'intervention</button>
+                    <button class="btn-nav">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Itinéraire
+                    </button>
+                    <button class="btn-call">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.86C1.6 3.82 2.4 3 3.44 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.78-.78a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 18z"/></svg>
+                        Appeler client
+                    </button>
+                </div>
+            </div>
+        `).join('');
     }
 
-    /* ── Pull-to-refresh ── */
-    function _initPullToRefresh() {
-        const scrollEl = document.querySelector('.view-scroll');
-        if (!scrollEl) return;
+    /* ═══════════════════════════════════════════
+       INTERVENTIONS RÉALISÉES
+    ═══════════════════════════════════════════ */
+    function loadInterventions() {
+        const demo = [
+            { ref: 'M-2026-0455', date: '2026-05-22', client: 'M. Roux',          type: 'serrurerie',  prestation: 'Changement cylindre',   addr: '15 rue du Faubourg',      montant: 240 },
+            { ref: 'M-2026-0452', date: '2026-05-20', client: 'Mme Aziz',         type: 'plomberie',   prestation: 'Débouchage canalisation', addr: '9 rue Saint-Maur',        montant: 165 },
+            { ref: 'M-2026-0448', date: '2026-05-18', client: 'Boulangerie Paul',  type: 'electricite', prestation: 'Réparation four pro',     addr: '31 av. de la République', montant: 380 },
+            { ref: 'M-2026-0444', date: '2026-05-15', client: 'M. Garnier',        type: 'chauffage',   prestation: 'Entretien annuel chaudière', addr: '4 rue Popincourt',     montant: 130 },
+            { ref: 'M-2026-0440', date: '2026-05-12', client: 'Mme Lefèvre',       type: 'vitrerie',    prestation: 'Pose miroir sur mesure',  addr: '18 rue Crussol',          montant: 290 },
+            { ref: 'M-2026-0437', date: '2026-05-08', client: 'M. Nguyen',         type: 'serrurerie',  prestation: 'Blindage porte palière',  addr: '62 rue de Charonne',      montant: 890 },
+        ];
 
-        scrollEl.addEventListener('touchstart', (e) => {
-            if (scrollEl.scrollTop === 0) _pullStartY = e.touches[0].clientY;
-        }, { passive: true });
+        // Merge avec missions terminées de l'API
+        const apiTerminees = _missions
+            .filter(m => m.state === 'termine' || m.state === 'clos')
+            .map(m => ({
+                ref: m.reference, date: m.date_cloture, client: m.client,
+                type: m.type_intervention, prestation: m.description_sinistre,
+                addr: m.adresse_intervention, montant: m.montant,
+            }));
 
-        scrollEl.addEventListener('touchmove', (e) => {
-            if (!_pullStartY) return;
-            const delta = e.touches[0].clientY - _pullStartY;
-            if (delta > 60) {
-                document.getElementById('refreshZone').classList.add('active');
-            }
-        }, { passive: true });
+        _interventions = apiTerminees.length ? apiTerminees : demo;
+        _renderInterventions();
 
-        scrollEl.addEventListener('touchend', () => {
-            const zone = document.getElementById('refreshZone');
-            if (zone.classList.contains('active')) {
-                zone.classList.remove('active');
-                load(false);
-                Toast.show('Actualisation…');
-            }
-            _pullStartY = 0;
-        }, { passive: true });
+        // Update stats
+        const total = _interventions.length;
+        const ca = _interventions.reduce((a, i) => a + (i.montant || 0), 0);
+        var sIT = document.getElementById('statIntervTotal');
+        var sIC = document.getElementById('statIntervCA');
+        var sIM = document.getElementById('statIntervMoyen');
+        if (sIT) sIT.textContent = total;
+        if (sIC) sIC.textContent = ca.toLocaleString('fr-FR') + ' €';
+        if (sIM) sIM.textContent = total ? Math.round(ca / total).toLocaleString('fr-FR') + ' €' : '—';
+    }
+
+    function _renderInterventions() {
+        const tbody = document.getElementById('intervTableBody');
+        if (!tbody) return;
+
+        let list = _intervFilter === 'all'
+            ? _interventions
+            : _interventions.filter(i => i.type === _intervFilter);
+
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Aucune intervention</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(i => `
+            <tr>
+                <td class="interv-ref">${i.ref}</td>
+                <td class="interv-date">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    ${_fmtDate(i.date)}
+                </td>
+                <td>${i.client || '—'}</td>
+                <td>${_metierBadge(i.type)}</td>
+                <td>
+                    <div style="font-weight:600;font-size:13.5px">${i.prestation || '—'}</div>
+                    <div style="font-size:12px;color:#9CA3AF">${i.addr || ''}</div>
+                </td>
+                <td class="interv-amount">${i.montant ? i.montant + ' €' : '—'}</td>
+                <td><span class="badge badge-terminee">Terminée</span></td>
+            </tr>
+        `).join('');
+    }
+
+    /* ═══════════════════════════════════════════
+       CARTE
+    ═══════════════════════════════════════════ */
+    function initCarte() {
+        _renderCarteNext();
+    }
+
+    function _renderCarteNext() {
+        const first = MAP_PINS[0];
+        var ct = document.getElementById('carteNextTitle');
+        var ca = document.getElementById('carteNextAddr');
+        var cd = document.getElementById('carteNextDist');
+        var cp = document.getElementById('carteNextPrice');
+        if (ct) ct.textContent = first.title;
+        if (ca) ca.textContent = first.addr;
+        if (cd) cd.textContent = first.dist;
+        if (cp) cp.textContent = first.price;
+    }
+
+    function showMapPin(idx) {
+        const pin = MAP_PINS[idx];
+        if (!pin) return;
+        _currentMapPin = idx;
+
+        // Dashboard popup
+        var popup = document.getElementById('mapPopup');
+        if (popup) {
+            document.getElementById('mapPopupBadges').innerHTML = _metierBadge(pin.type) + (pin.urgence ? _urgenceBadge(pin.urgence) : '');
+            document.getElementById('mapPopupTitle').textContent = pin.title;
+            document.getElementById('mapPopupAddr').textContent = pin.addr;
+            document.getElementById('mapPopupPrice').innerHTML = `<span style="font-size:18px;font-weight:800;color:#1E40AF">${pin.price}</span> <span style="font-size:12px;color:#6B7280">${pin.dist}</span>`;
+            popup.style.display = 'block';
+        }
+
+        // Carte popup
+        var cp = document.getElementById('carteMapPopup');
+        if (cp) {
+            document.getElementById('cartePopupBadges').innerHTML = _metierBadge(pin.type) + (pin.urgence ? _urgenceBadge(pin.urgence) : '');
+            document.getElementById('cartePopupTitle').textContent = pin.title;
+            document.getElementById('cartePopupAddr').textContent = pin.addr;
+            document.getElementById('cartePopupPrice').innerHTML = `<span style="font-size:18px;font-weight:800;color:#1E40AF">${pin.price}</span> <span style="font-size:12px;color:#6B7280">${pin.dist}</span>`;
+            cp.style.display = 'block';
+        }
+    }
+
+    function acceptMission() {
+        Toast.show('Mission acceptée ! 🎉', 'success');
+        var popup = document.getElementById('mapPopup');
+        if (popup) popup.style.display = 'none';
+    }
+
+    /* ═══════════════════════════════════════════
+       FILTRES
+    ═══════════════════════════════════════════ */
+    function setMetierFilter(val, btn) {
+        _metierFilter = val;
+        document.querySelectorAll('#metierFilters .tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _renderMissions(_getDemoMissions());
+    }
+
+    function setStatusFilter(val, btn) {
+        _statusFilter = val;
+        document.querySelectorAll('#statusFilters .tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _renderMissions(_getDemoMissions());
+    }
+
+    function setIntervFilter(val, btn) {
+        _intervFilter = val;
+        document.querySelectorAll('.interv-filters .tag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _renderInterventions();
+    }
+
+    function filterMissions() {
+        _searchQuery = (document.getElementById('missionsSearch') || {}).value || '';
+        _renderMissions(_getDemoMissions());
     }
 
     /* ── API publique ── */
     return {
-        init() {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    load();
-                    _initPullToRefresh();
-                });
-            });
-        },
-
-        refresh() { load(false); },
-
-        setFilter(filter, btn) {
-            _filter = filter;
-            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            _renderList();
-        },
+        init() { _loadDashboard(); },
+        loadMissions,
+        loadInterventions,
+        initCarte,
+        showMapPin,
+        acceptMission,
+        setMetierFilter,
+        setStatusFilter,
+        setIntervFilter,
+        filterMissions,
+        // Legacy compat
+        setFilter(f, btn) {},
+        refresh() { _loadDashboard(); },
     };
 })();
