@@ -66,6 +66,7 @@ window.API = (() => {
         },
 
         async getMission(id) {
+            // id peut être un entier (route /mission/<int>) ou une référence string
             return this.get(`/mission/${id}`);
         },
 
@@ -100,9 +101,9 @@ window.API = (() => {
         /* ── Photos ── */
         async uploadPhoto(missionId, type, base64Data, description = '') {
             return this.post(`/intervenant/mission/${missionId}/photo`, {
-                type_photo: type,   // 'avant' | 'apres'
-                image: base64Data,  // base64 sans data:url prefix
-                description,
+                type_photo:  type,
+                image:       base64Data,
+                description: description || '',
             });
         },
 
