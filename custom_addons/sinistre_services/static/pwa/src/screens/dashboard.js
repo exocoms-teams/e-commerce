@@ -94,28 +94,30 @@ window.Dashboard = (() => {
         const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
         const actives = _missions.filter(m => ACTIVE_STATES.includes(m.state)).length;
 
-        // CA depuis les données utilisateur stockées
+        // Données réelles depuis le localStorage (remplies par /api/sinistre/v1/me)
         let user = {};
         try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        const caMonth = user.ca_total || 2095;
-        const totalInterv = user.interventions || 487;
+        const nbInterv = user.interventions !== undefined ? user.interventions : 0;
+        const caMonth  = user.ca_mois       !== undefined ? user.ca_mois       : 0;
+        const caTotal  = user.ca_total      !== undefined ? user.ca_total      : 0;
+        const note     = nbInterv > 0 ? (user.note_moyenne || 0) : 0;
 
         var sA = document.getElementById('statActives');
         var sC = document.getElementById('statCA');
         var sN = document.getElementById('statNote');
         var sI = document.getElementById('statInterventions');
-        if (sA) sA.textContent = actives || _missions.length || '—';
+        if (sA) sA.textContent = actives || '0';
         if (sC) sC.textContent = caMonth.toLocaleString('fr-FR') + ' €';
-        if (sN) sN.textContent = (user.note_moyenne || 4.9).toFixed(1);
-        if (sI) sI.textContent = totalInterv;
+        if (sN) sN.textContent = nbInterv > 0 ? note.toFixed(1) : '0';
+        if (sI) sI.textContent = nbInterv;
 
         // Interventions page stats
         var sIT = document.getElementById('statIntervTotal');
         var sIC = document.getElementById('statIntervCA');
         var sIM = document.getElementById('statIntervMoyen');
-        if (sIT) sIT.textContent = totalInterv;
-        if (sIC) sIC.textContent = caMonth.toLocaleString('fr-FR') + ' €';
-        if (sIM) sIM.textContent = totalInterv ? Math.round(caMonth / totalInterv) + ' €' : '349 €';
+        if (sIT) sIT.textContent = nbInterv;
+        if (sIC) sIC.textContent = caTotal.toLocaleString('fr-FR') + ' €';
+        if (sIM) sIM.textContent = nbInterv ? Math.round(caTotal / nbInterv).toLocaleString('fr-FR') + ' €' : '0 €';
     }
 
     function _renderToday() {
