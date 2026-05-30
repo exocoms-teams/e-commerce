@@ -41,27 +41,29 @@ window.CarteMap = (() => {
     }
 
     function init() {
-        console.log('[CarteMap] init() ready=' + _ready + ' map=' + !!_map);
+        console.log('[CarteMap] init() ready=' + _ready + ' map=' + !!_map + ' mapEl=' + !!document.getElementById('googleMap'));
 
         if (!_ready) {
-            // Attendre Google Maps
+            console.log('[CarteMap] Google Maps pas encore prêt, attente...');
             var n = 0;
             var t = setInterval(function() {
                 n++;
+                console.log('[CarteMap] retry ' + n + ' ready=' + _ready);
                 if (_ready) { clearInterval(t); _doInit(); }
-                if (n > 30) clearInterval(t);
+                if (n > 30) { clearInterval(t); console.error('[CarteMap] Timeout — Google Maps jamais prêt'); }
             }, 300);
             return;
         }
 
         if (_map) {
-            // Déjà initialisé — resize
+            console.log('[CarteMap] Carte déjà init — resize + reload missions');
             google.maps.event.trigger(_map, 'resize');
             if (_userPos) _map.setCenter(_userPos);
             _loadMissions();
             return;
         }
 
+        console.log('[CarteMap] Appel _doInit()');
         _doInit();
     }
 
