@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*--
+# -*- coding: utf-8 -*-
 """
 post_install.py — Crée automatiquement :
   - Droits admin
@@ -177,9 +177,9 @@ def _create_demo_missions(env, interv):
         {
             'source':               'assurance',
             'client_id':            clients['M. Karam'].id,
-            'type_intervention':    'chauffage',
+            'type_intervention':    'plomberie',
             'urgence':              'normale',
-            'description_sinistre': 'Dépannage chaudière gaz — code erreur E01',
+            'description_sinistre': 'Depannage chaudiere gaz — code erreur E01',
             'adresse_intervention': '23 bd Voltaire, Paris 11e',
             'tel_sur_place':        '+33 6 77 88 99 00',
             'intervenant_id':       interv.id,
