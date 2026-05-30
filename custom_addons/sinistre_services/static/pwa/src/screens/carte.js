@@ -189,11 +189,36 @@ window.CarteMap = (() => {
 
     async function _loadMissions() {
         const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        
         try {
             var data = await API.getMissions();
             _missions = (data.missions || []).filter(function(m) { return ACTIVE.includes(m.state); });
+            console.log('[CarteMap] Missions API:', data.missions ? data.missions.length : 0, '→ actives:', _missions.length);
+            // Mettre en cache
+            if (data.missions && data.missions.length) {
+                localStorage.setItem('ss_missions_cache', JSON.stringify(data.missions));
+            }
         } catch(e) {
-            try { _missions = JSON.parse(localStorage.getItem('ss_missions_cache') || '[]').filter(function(m){ return ACTIVE.includes(m.state); }); } catch(e2){}
+            console.warn('[CarteMap] API missions échouée:', e.message);
+            try {
+                var cached = JSON.parse(localStorage.getItem('ss_missions_cache') || '[]');
+                _missions = cached.filter(function(m){ return ACTIVE.includes(m.state); });
+                console.log('[CarteMap] Cache:', cached.length, '→ actives:', _missions.length);
+            } catch(e2) { _missions = []; }
+        }
+
+        // Debug : afficher les adresses
+        _missions.forEach(function(m, i) {
+            var addr = m.adresse_intervention || m.adresse || '(sans adresse)';
+            console.log('[CarteMap] Mission ' + i + ': ' + (m.description_sinistre || m.reference) + ' @ ' + addr);
+        });
+
+        if (!_missions.length) {
+            console.warn('[CarteMap] Aucune mission active à afficher');
+            _updateLegend();
+            _updateNext();
+            _updateProches();
+            return;
         }
 
         // Supprimer anciens marqueurs
@@ -201,14 +226,27 @@ window.CarteMap = (() => {
         _markers = [];
 
         var geocoder = new google.maps.Geocoder();
+        var pending = _missions.length;
+
         _missions.forEach(function(mission) {
             var addr = mission.adresse_intervention || mission.adresse;
-            if (!addr) return;
+            if (!addr) {
+                console.warn('[CarteMap] Mission sans adresse:', mission.reference);
+                pending--;
+                if (pending === 0) { _updateLegend(); _updateNext(); _updateProches(); }
+                return;
+            }
             geocoder.geocode({ address: addr + ', France' }, function(res, st) {
-                if (st !== 'OK' || !res[0]) return;
+                pending--;
+                if (st !== 'OK' || !res[0]) {
+                    console.warn('[CarteMap] Géocodage échoué pour:', addr, '→', st);
+                    if (pending === 0) { _updateLegend(); _updateNext(); _updateProches(); }
+                    return;
+                }
                 var pos    = res[0].geometry.location;
                 var color  = COLORS[mission.type_intervention] || '#6B7280';
                 var urgent = mission.urgence === 'urgente' || mission.urgence === 'tres_urgente';
+                console.log('[CarteMap] ✓ Marqueur:', mission.reference, '@', addr);
 
                 var marker = new google.maps.Marker({
                     position: pos, map: _map,
@@ -219,9 +257,13 @@ window.CarteMap = (() => {
                 if (urgent) setTimeout(function(){ marker.setAnimation(null); }, 3000);
                 marker.addListener('click', function(){ _select(mission, pos); });
                 _markers.push({ marker: marker, mission: mission, pos: pos });
-                _updateLegend();
-                _updateNext();
-                _updateProches();
+
+                if (pending === 0) {
+                    _updateLegend();
+                    _updateNext();
+                    _updateProches();
+                    if (_userPos) _updateDistances();
+                }
             });
         });
 
