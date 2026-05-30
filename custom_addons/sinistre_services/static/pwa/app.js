@@ -220,9 +220,9 @@ window.App = (() => {
 
     function _hideSplash() {
         const splash = document.getElementById('splash');
-        splash.classList.add('hidden');
-        setTimeout(() => { splash.style.display = 'none'; }, 400);
-        document.getElementById('app').style.display = 'flex';
+        if (splash) { splash.classList.add('hidden'); setTimeout(() => { splash.style.display = 'none'; }, 400); }
+        const app = document.getElementById('app');
+        if (app) app.style.display = 'flex';
     }
 
     /* ── Navigation entre vues ── */
@@ -245,11 +245,12 @@ window.App = (() => {
         if (viewId === 'missions')      Dashboard.loadMissions();
         if (viewId === 'interventions') Dashboard.loadInterventions();
         if (viewId === 'carte') {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    if (window.CarteMap) CarteMap.init();
-                });
-            });
+            // setTimeout 300ms pour laisser le DOM se mettre à jour
+            setTimeout(function() {
+                console.log('[App] Appel CarteMap.init()');
+                if (window.CarteMap) CarteMap.init();
+                else console.error('[App] CarteMap non défini !');
+            }, 300);
         }
     }
 
