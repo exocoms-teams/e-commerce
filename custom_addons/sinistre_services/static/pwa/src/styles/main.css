@@ -434,3 +434,114 @@ html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var
 .empty-state-icon { font-size: 40px; margin-bottom: 14px; }
 .empty-state-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 .empty-state-sub { font-size: 13px; color: var(--text-mid); }
+
+/* ══════════════════════════════════════════════════════════════════
+   CARTE TEMPS RÉEL — Google Maps
+══════════════════════════════════════════════════════════════════ */
+
+/* Header carte */
+.carte-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 28px 36px 16px; background: var(--bg);
+}
+.carte-header-actions { display: flex; gap: 8px; }
+.carte-btn-action {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: white;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--text); transition: all .15s;
+}
+.carte-btn-action:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Layout carte */
+.carte-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 0;
+    height: calc(100dvh - 130px);
+    padding: 0 36px 24px;
+}
+
+/* Conteneur carte Google */
+.carte-map-wrap { position: relative; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-md); }
+.google-map-container { width: 100%; height: 100%; background: #e8f0f7; }
+
+/* Panneau info mission */
+.carte-info-panel {
+    position: absolute; bottom: 20px; left: 20px; z-index: 10;
+    background: white; border-radius: 16px; padding: 18px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.18); width: 300px;
+    animation: slideUp .2s ease;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+.carte-info-close {
+    position: absolute; top: 12px; right: 12px;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: none; background: var(--bg); cursor: pointer;
+    font-size: 12px; color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+}
+.carte-info-badges { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.carte-info-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.carte-info-addr { font-size: 12px; color: var(--text-mid); margin-bottom: 12px; }
+.carte-info-trajet {
+    display: flex; gap: 14px; padding: 10px; border-radius: 8px;
+    background: var(--bg); margin-bottom: 12px;
+}
+.trajet-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-mid); }
+.carte-info-actions { display: flex; gap: 8px; }
+.carte-btn-primary {
+    flex: 1.5; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px; border-radius: 8px; border: none;
+    background: var(--sidebar-bg); color: white;
+    font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.carte-btn-primary:hover { opacity: .85; }
+.carte-btn-secondary {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: white;
+    font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.carte-btn-secondary:hover { border-color: var(--text-mid); }
+
+/* Sidebar carte */
+.carte-sidebar-new {
+    display: flex; flex-direction: column; gap: 12px;
+    padding-left: 16px; overflow-y: auto;
+}
+.carte-widget {
+    background: white; border-radius: var(--r); padding: 16px;
+    box-shadow: var(--shadow);
+}
+.carte-widget-title {
+    font-size: 10px; font-weight: 700; color: var(--text-mid);
+    letter-spacing: .1em; margin-bottom: 10px;
+}
+.carte-gps-city { font-size: 20px; font-weight: 800; color: var(--text); }
+.carte-gps-addr { font-size: 13px; color: var(--text-mid); margin: 2px 0 8px; }
+.carte-gps-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-mid); }
+.carte-gps-coords { font-size: 10px; color: var(--text-light); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+/* Widget position — fond sombre */
+.carte-widget:has(#carteCityName) { background: var(--sidebar-bg); }
+.carte-widget:has(#carteCityName) .carte-widget-title { color: rgba(255,255,255,.4); }
+.carte-widget:has(#carteCityName) .carte-gps-city { color: white; }
+.carte-widget:has(#carteCityName) .carte-gps-addr { color: rgba(255,255,255,.55); }
+.carte-widget:has(#carteCityName) .carte-gps-row { color: rgba(255,255,255,.55); }
+.carte-widget:has(#carteCityName) .carte-gps-coords { color: rgba(255,255,255,.3); }
+
+/* Liste missions proches */
+.carte-missions-list { display: flex; flex-direction: column; gap: 8px; }
+.carte-mission-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: 8px; cursor: pointer;
+    transition: background .12s;
+}
+.carte-mission-item:hover { background: var(--bg); }
+.carte-mission-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.carte-mission-info { flex: 1; min-width: 0; }
+.carte-mission-title { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.carte-mission-meta { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+.carte-mission-price { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; }
