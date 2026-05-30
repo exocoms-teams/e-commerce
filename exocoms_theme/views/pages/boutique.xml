@@ -5,12 +5,10 @@
               inherit_id="website_sale.products"
               name="Boutique Sidebar">
 
-        <!-- Forcer la colonne gauche visible -->
         <xpath expr="//t[@t-set='hasLeftColumn']" position="replace">
             <t t-set="hasLeftColumn" t-value="True"/>
         </xpath>
 
-        <!-- Désactiver le bouton filtres mobile -->
         <xpath expr="//t[@t-set='wsale_has_filters_btn']" position="replace">
             <t t-set="wsale_has_filters_btn" t-value="False"/>
         </xpath>
@@ -19,17 +17,11 @@
             <t t-set="wsale_has_filters_btn_lg" t-value="False"/>
         </xpath>
 
-        <!-- Remplacer la sidebar native par la sidebar Exocoms -->
         <xpath expr="//aside[@id='products_grid_before']" position="replace">
             <aside id="products_grid_before"
-                   class="d-none d-lg-block position-sticky align-self-start col-3 clearfix pt-2">
+                   class="position-sticky align-self-start col-3 clearfix pt-2">
                 <t t-call="exocoms_theme.dashboard_menu_boutiques_sidebar"/>
             </aside>
-        </xpath>
-
-        <!-- Cacher le filmstrip natif Odoo (Desks, Furnitures, etc.) -->
-        <xpath expr="//div[@id='o_wsale_categories_filmstrip']" position="replace">
-            <div/>
         </xpath>
 
     </template>
