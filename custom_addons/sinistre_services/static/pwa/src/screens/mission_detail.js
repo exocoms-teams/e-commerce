@@ -44,7 +44,8 @@ window.MissionDetail = (() => {
 
     /* ── Ouvrir une mission ── */
     async function open(idOrRef) {
-        _missionId = idOrRef;
+        // Convertir en entier si possible pour matcher la route /mission/<int>
+        _missionId = (typeof idOrRef === 'string' && /^\d+$/.test(idOrRef)) ? parseInt(idOrRef) : idOrRef;
         App.showView('mission');
         await _load();
     }
