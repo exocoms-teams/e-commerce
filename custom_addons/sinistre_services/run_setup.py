@@ -186,3 +186,66 @@ try:
     run(env)
 except NameError:
     print("Ce script doit être exécuté via : odoo-bin shell -d VOTRE_DB --no-http < run_setup.py")
+
+# ── Mise à jour Thomas Moreau ──────────────────────────────────────────
+def update_thomas(env):
+    """Met à jour la fiche de Thomas Moreau avec toutes les données."""
+    LOGIN = 'thomas.moreau@artisanpro.fr'
+    user  = env['res.users'].search([('login', '=', LOGIN)], limit=1)
+    if not user:
+        print("❌ Thomas Moreau introuvable")
+        return
+
+    # Partenaire
+    partner = user.partner_id
+    partner.write({
+        'name':   'Thomas Moreau',
+        'phone':  '+33 6 12 34 56 78',
+        'street': '12 rue Oberkampf',
+        'city':   'Paris',
+        'zip':    '75011',
+    })
+
+    # Fiche intervenant
+    iv = env['sinistre.intervenant'].search([('user_id', '=', user.id)], limit=1)
+    if not iv:
+        print("❌ Fiche intervenant introuvable")
+        return
+
+    iv.write({
+        'name':              'Moreau Multiservices',
+        'zone_intervention': 'Paris 75011',
+        'taux_commission':   15.0,
+        'disponible':        True,
+        'actif':             True,
+    })
+
+    # Spécialités
+    specs = []
+    for nom, type_iv in [
+        ('Serrurerie',  'serrurerie'),
+        ('Plomberie',   'plomberie'),
+        ('Électricité', 'electricite'),
+    ]:
+        s = env['sinistre.specialite'].search([('name', '=', nom)], limit=1)
+        if not s:
+            s = env['sinistre.specialite'].create({'name': nom, 'type_intervention': type_iv})
+        specs.append(s.id)
+    iv.write({'specialites': [(6, 0, specs)]})
+
+    # Certifications
+    env['sinistre.certification'].search([('intervenant_id', '=', iv.id)]).unlink()
+    from datetime import date
+    for nom, annee in [
+        ('Assurance RC Pro',    2027),
+        ('Qualibat Plomberie',  2026),
+        ('Kbis vérifié',        None),
+    ]:
+        env['sinistre.certification'].create({
+            'intervenant_id': iv.id,
+            'name':           nom,
+            'date_validite':  date(annee, 12, 31) if annee else False,
+        })
+
+    env.cr.commit()
+    print(f"✅ Thomas Moreau mis à jour — entreprise: {iv.name}, spécialités: {[s.name for s in iv.specialites]}")
