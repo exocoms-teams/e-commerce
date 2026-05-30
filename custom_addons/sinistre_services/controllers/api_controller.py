@@ -70,22 +70,59 @@ class SinistreAPIController(http.Controller):
     def me(self, **kw):
         user = request.env.user
         iv   = _get_interv()
-        missions = request.env['sinistre.mission'].sudo().search(
-            [('intervenant_id', '=', iv.id)]
+
+        # Missions réalisées (terminées)
+        terminees = request.env['sinistre.mission'].sudo().search([
+            ('intervenant_id', '=', iv.id),
+            ('state', 'in', ('termine', 'clos', 'facture')),
+        ])
+        nb_terminees = len(terminees)
+        ca_total = sum(m.montant_devis or 0 for m in terminees)
+
+        # CA du mois en cours
+        from datetime import datetime
+        now = datetime.now()
+        ca_mois = sum(
+            m.montant_devis or 0 for m in terminees
+            if m.date_cloture and m.date_cloture.month == now.month
+            and m.date_cloture.year == now.year
         )
-        total = len(missions)
-        ca    = sum(m.montant_devis or 0 for m in missions
-                    if m.state in ('termine', 'clos', 'facture'))
+
+        # Note moyenne (0 si aucune intervention)
+        note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
+        note = min(note, 5.0) if note else 0
+
+        # Spécialités
+        specialites = [s.name for s in iv.specialites] if iv.specialites else []
+
+        # Date création du user (membre depuis)
+        membre_depuis = user.create_date.strftime('%B %Y') if user.create_date else ''
+        # Capitaliser et traduire en français
+        mois_fr = {
+            'January':'Janvier','February':'Février','March':'Mars','April':'Avril',
+            'May':'Mai','June':'Juin','July':'Juillet','August':'Août',
+            'September':'Septembre','October':'Octobre','November':'Novembre','December':'Décembre'
+        }
+        for en, fr in mois_fr.items():
+            membre_depuis = membre_depuis.replace(en, fr)
+
+        # Téléphone depuis le partenaire
+        phone = user.partner_id.phone or user.partner_id.mobile or ''
+
         return _ok({'success': True, 'user': {
-            'uid':            user.id,
-            'name':           user.name,
-            'email':          user.login,
-            'company_name':   iv.name or user.name,
-            'zone':           iv.zone_intervention or 'Paris',
-            'note_moyenne':   4.9,
-            'interventions':  total,
-            'ca_total':       ca,
-            'intervenant_id': iv.id,
+            'uid':             user.id,
+            'name':            user.name,
+            'email':           user.login,
+            'phone':           phone,
+            'company_name':    iv.name or user.name,
+            'zone':            iv.zone_intervention or '',
+            'note_moyenne':    note,
+            'interventions':   nb_terminees,
+            'ca_total':        ca_total,
+            'ca_mois':         ca_mois,
+            'specialites':     specialites,
+            'membre_depuis':   membre_depuis,
+            'intervenant_id':  iv.id,
         }})
 
     # ── MES MISSIONS ─────────────────────────────────────────────────
