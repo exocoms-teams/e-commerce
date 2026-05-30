@@ -121,12 +121,12 @@ window.DevisForm = (() => {
             const note = document.getElementById('devisNote')?.value.trim() || '';
             return {
                 ligne_ids: _lignes.map(l => ({
-                    description:   l.description,
-                    quantite:      l.quantite,
-                    prix_unitaire: l.prix_unitaire,
+                    description:   l.description.trim(),
+                    quantite:      parseFloat(l.quantite) || 1,
+                    prix_unitaire: parseFloat(l.prix_unitaire) || 0,
                 })),
                 note_client: note,
-                tva: 20,
+                tva: 20.0,
             };
         },
 
@@ -143,7 +143,12 @@ window.DevisForm = (() => {
                 if (result && !result.queued) {
                     _devisId = result.devis_id || result.id;
                     Toast.show('💾 Devis enregistré', 'success');
-                    document.getElementById('btnEnvoyerDevis').style.display = 'flex';
+                    const btnEnv = document.getElementById('btnEnvoyerDevis');
+                    if (btnEnv) btnEnv.style.display = 'flex';
+                    // Retourner sur la mission pour voir le devis
+                    setTimeout(() => {
+                        if (window.MissionDetail) MissionDetail.reload();
+                    }, 500);
                 }
             } catch (err) {
                 Toast.show('Erreur: ' + err.message, 'error');
