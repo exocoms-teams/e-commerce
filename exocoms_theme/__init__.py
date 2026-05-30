@@ -43,6 +43,17 @@ def post_init_hook(env):
             'language_ids': langs,
         })
 
+    # === FORCER FR PAR DÉFAUT SUR TOUTES LES PAGES ===
+    public_user = env.ref('base.public_user', raise_if_not_found=False)
+    if public_user and lang_fr:
+        public_user.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
+    public_partner = env.ref('base.public_partner', raise_if_not_found=False)
+    if public_partner and lang_fr:
+        public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
+    env['ir.config_parameter'].sudo().set_param('web.base.lang', 'fr_FR')
+
     # Charger les traductions françaises officielles Odoo
     try:
         mods = env['ir.module.module'].search([
@@ -78,7 +89,6 @@ def post_init_hook(env):
             menu.unlink()
 
     # === PROFIL DROPDOWN — Mon compte (id=637) ===
-    # Odoo traduit "My Account" automatiquement via ses fichiers .po
     account_view = env['ir.ui.view'].browse(637)
     if account_view.exists():
         account_view.write({'arch': """
@@ -110,45 +120,67 @@ def post_init_hook(env):
             <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-2 pt24 pb24">
-                            <h5>Liens utiles</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="/">Page d&#39;accueil</a></li>
-                                <li><a href="/services">Nos services</a></li>
-                                <li><a href="/mentions-legales">Mentions l&#233;gales</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-5 pt24 pb24">
-                            <h5>&#192; propos de nous</h5>
-                            <p>Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
-                        </div>
-                        <div class="col-lg-4 offset-lg-1 pt24 pb24">
-                            <h5>Contact</h5>
-                            <p>Une question, un projet ou besoin d&#39;un accompagnement ?</p>
-                            <ul class="list-unstyled">
-                                <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contactez-nous</a></li>
-                                <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
-                                <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
-                            </ul>
-                            <div class="s_social_media text-start o_not_editable"
-                                 data-snippet="s_social_media" data-name="Social Media">
-                                <a href="/website/social/facebook" class="s_social_media_facebook"
-                                   target="_blank" aria-label="Facebook">
-                                    <i class="fa fa-facebook rounded-circle shadow-sm"></i>
-                                </a>
-                                <a href="/website/social/twitter" class="s_social_media_twitter"
-                                   target="_blank" aria-label="X">
-                                    <i class="fa fa-twitter rounded-circle shadow-sm"></i>
-                                </a>
-                                <a href="/website/social/linkedin" class="s_social_media_linkedin"
-                                   target="_blank" aria-label="LinkedIn">
-                                    <i class="fa fa-linkedin rounded-circle shadow-sm"></i>
-                                </a>
-                                <a href="/" aria-label="Accueil">
-                                    <i class="fa fa-home rounded-circle shadow-sm"></i>
-                                </a>
+
+                        <t t-if="request.env.lang == 'fr_FR'">
+                            <div class="col-lg-2 pt24 pb24">
+                                <h5>Liens utiles</h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="/">Page d&#39;accueil</a></li>
+                                    <li><a href="/services">Nos services</a></li>
+                                    <li><a href="/mentions-legales">Mentions l&#233;gales</a></li>
+                                </ul>
                             </div>
-                        </div>
+                            <div class="col-lg-5 pt24 pb24">
+                                <h5>&#192; propos de nous</h5>
+                                <p>Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
+                            </div>
+                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                                <h5>Contact</h5>
+                                <p>Une question, un projet ou besoin d&#39;un accompagnement ?</p>
+                                <ul class="list-unstyled">
+                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contactez-nous</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                </ul>
+                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
+                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
+                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
+                                    <a href="/" aria-label="Accueil"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <div class="col-lg-2 pt24 pb24">
+                                <h5>Useful links</h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/services">Our services</a></li>
+                                    <li><a href="/mentions-legales">Legal notice</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-5 pt24 pb24">
+                                <h5>About us</h5>
+                                <p>We are a team of passionate people whose goal is to improve everyone&#39;s life through disruptive products. We market excellent products to solve your business problems. Our products are designed for small and medium businesses as well as franchises looking to optimize their performance.</p>
+                            </div>
+                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                                <h5>Contact</h5>
+                                <p>A question, a project or need support?</p>
+                                <ul class="list-unstyled">
+                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contact us</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                </ul>
+                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
+                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
+                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
+                                    <a href="/" aria-label="Home"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                                </div>
+                            </div>
+                        </t>
+
                     </div>
                 </div>
             </section>
@@ -164,7 +196,12 @@ def post_init_hook(env):
 <data>
     <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
         <span class="o_footer_copyright_name me-2 small">
-            Copyright &#169; 2026 Exocoms Group. Tous droits r&#233;serv&#233;s.
+            <t t-if="request.env.lang == 'fr_FR'">
+                Copyright &#169; 2026 Exocoms Group. Tous droits r&#233;serv&#233;s.
+            </t>
+            <t t-else="">
+                Copyright &#169; 2026 Exocoms Group. All rights reserved.
+            </t>
         </span>
     </xpath>
 </data>
