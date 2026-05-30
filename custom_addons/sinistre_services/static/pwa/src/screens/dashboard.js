@@ -16,7 +16,7 @@ window.Dashboard = (() => {
     const MAP_PINS = [
         { type: 'serrurerie', urgence: 'urgente', title: 'Ouverture porte claquée', addr: '12 rue de la République · Paris 11e', price: '180 €', dist: '1,2 km' },
         { type: 'plomberie',  urgence: null,       title: 'Fuite sous évier cuisine',  addr: '45 av. Parmentier · Paris 11e',      price: '145 €', dist: '2,4 km' },
-        { type: 'chauffage',  urgence: null,       title: 'Dépannage chaudière gaz',   addr: '23 bd Voltaire · Paris 11e',         price: '220 €', dist: '1,9 km' },
+        { type: 'plomberie',  urgence: null,       title: 'Dépannage chaudière gaz',   addr: '23 bd Voltaire · Paris 11e',         price: '220 €', dist: '1,9 km' },
         { type: 'electricite',urgence: null,       title: 'Mise aux normes tableau',   addr: '8 rue des Pyrénées · Paris 20e',     price: '620 €', dist: '3,8 km' },
         { type: 'vitrerie',   urgence: null,       title: 'Remplacement vitre cassée', addr: '7 rue Oberkampf · Paris 11e',        price: '310 €', dist: '0,9 km' },
     ];
@@ -24,11 +24,13 @@ window.Dashboard = (() => {
     /* ── Badge helpers ── */
     function _metierBadge(type) {
         const map = {
-            serrurerie:  ['badge-serrurerie',  'Serrurerie'],
-            plomberie:   ['badge-plomberie',   'Plomberie'],
-            electricite: ['badge-electricite', 'Électricité'],
-            chauffage:   ['badge-chauffage',   'Chauffage'],
-            vitrerie:    ['badge-vitrerie',    'Vitrerie'],
+            serrurerie:     ['badge-serrurerie',  'Serrurerie'],
+            plomberie:      ['badge-plomberie',   'Plomberie'],
+            electricite:    ['badge-electricite', 'Électricité'],
+            vitrerie:       ['badge-vitrerie',    'Vitrerie'],
+            menuiserie_int: ['badge-autre',       'Menuiserie Int.'],
+            menuiserie_ext: ['badge-autre',       'Menuiserie Ext.'],
+            autre:          ['badge-autre',       'Autre'],
         };
         const [cls, label] = map[type] || ['badge-autre', type || '—'];
         return `<span class="badge ${cls}">${label}</span>`;
@@ -286,7 +288,7 @@ window.Dashboard = (() => {
             { ref: 'M-2026-0455', date: '2026-05-22', client: 'M. Roux',          type: 'serrurerie',  prestation: 'Changement cylindre',   addr: '15 rue du Faubourg',      montant: 240 },
             { ref: 'M-2026-0452', date: '2026-05-20', client: 'Mme Aziz',         type: 'plomberie',   prestation: 'Débouchage canalisation', addr: '9 rue Saint-Maur',        montant: 165 },
             { ref: 'M-2026-0448', date: '2026-05-18', client: 'Boulangerie Paul',  type: 'electricite', prestation: 'Réparation four pro',     addr: '31 av. de la République', montant: 380 },
-            { ref: 'M-2026-0444', date: '2026-05-15', client: 'M. Garnier',        type: 'chauffage',   prestation: 'Entretien annuel chaudière', addr: '4 rue Popincourt',     montant: 130 },
+            { ref: 'M-2026-0444', date: '2026-05-15', client: 'M. Garnier',        type: 'plomberie',   prestation: 'Entretien annuel chaudière', addr: '4 rue Popincourt',     montant: 130 },
             { ref: 'M-2026-0440', date: '2026-05-12', client: 'Mme Lefèvre',       type: 'vitrerie',    prestation: 'Pose miroir sur mesure',  addr: '18 rue Crussol',          montant: 290 },
             { ref: 'M-2026-0437', date: '2026-05-08', client: 'M. Nguyen',         type: 'serrurerie',  prestation: 'Blindage porte palière',  addr: '62 rue de Charonne',      montant: 890 },
         ];
