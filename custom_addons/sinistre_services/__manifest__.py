@@ -49,6 +49,7 @@
     ],
 },
     'installable': True,
+    'test': ['tests/test_sinistre.py'],
     'application': True,
     'auto_install': False,
 }
