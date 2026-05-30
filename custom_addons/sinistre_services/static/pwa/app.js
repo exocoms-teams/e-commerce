@@ -50,6 +50,30 @@ window.App = (() => {
         showLogin();
     }
 
+    /* ── Mettre à jour les certifications ── */
+    function _updateCertifications(certifs) {
+        const list = document.getElementById('certifList');
+        if (!list) return;
+        if (!certifs || !certifs.length) {
+            list.innerHTML = '<p style="color:#9CA3AF;font-size:13px;padding:8px 0">Aucune certification renseignée</p>';
+            return;
+        }
+        const icons = [
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>',
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+        ];
+        list.innerHTML = certifs.map((cert, i) => `
+            <div class="certif-item">
+                ${icons[i % icons.length]}
+                <div>
+                    <div class="certif-name">${cert.name}</div>
+                    ${cert.date ? `<div class="certif-date">${cert.date}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
     /* ── Enrichir l'utilisateur depuis /api/sinistre/v1/me ── */
     async function _enrichUserFromAPI() {
         try {
@@ -77,6 +101,8 @@ window.App = (() => {
                 };
                 localStorage.setItem('ss_user', JSON.stringify(merged));
                 Auth.loadFromStorage();
+                // Mettre à jour les certifications si présentes
+                if (u.certifications) _updateCertifications(u.certifications);
             }
         } catch(e) {
             console.warn('[App] enrichUser failed:', e);
@@ -175,15 +201,45 @@ window.App = (() => {
         if (pi) pi.textContent = nbInterv;
         if (ps) ps.textContent = user.membre_depuis || '—';
 
-        // Spécialités sur la page profil
+        // Spécialités — tags résumé + checkboxes métiers
         const ptags = document.getElementById('profileMetiersTags');
-        if (ptags && user.specialites && user.specialites.length) {
-            ptags.innerHTML = user.specialites
-                .map(s => `<span class="metier-tag">${s}</span>`)
-                .join('');
-        } else if (ptags) {
-            ptags.innerHTML = '<span style="color:#9CA3AF;font-size:12px">Aucune spécialité renseignée</span>';
+        const specs  = user.specialites || [];
+        const sTypes = user.specialites_types || [];
+
+        if (ptags) {
+            if (specs.length) {
+                ptags.innerHTML = specs.map(s => `<span class="metier-tag">${s}</span>`).join('');
+            } else {
+                ptags.innerHTML = '<span style="color:#9CA3AF;font-size:12px">Aucune spécialité renseignée</span>';
+            }
         }
+
+        // Cocher les checkboxes métiers selon les spécialités
+        document.querySelectorAll('.metier-check').forEach(label => {
+            const cb   = label.querySelector('input[type="checkbox"]');
+            const text = label.textContent.trim().toLowerCase();
+            // Mapper le texte affiché avec le type_intervention
+            const map = {
+                'serrurerie': ['serrurerie'],
+                'plomberie':  ['plomberie'],
+                'électricité':['electricite'],
+                'electricite':['electricite'],
+                'menuiserie': ['menuiserie_int','menuiserie_ext'],
+                'vitrerie':   ['vitrerie'],
+                'autre':      ['autre'],
+            };
+            const matched = Object.keys(map).some(k =>
+                text.includes(k) && (
+                    sTypes.some(t => map[k].includes(t)) ||
+                    specs.some(s => s.toLowerCase().includes(k))
+                )
+            );
+            if (cb) cb.checked = matched;
+            label.classList.toggle('active', matched);
+        });
+
+        // Membre depuis
+        if (ps) ps.textContent = user.membre_depuis || '—';
 
         // Rating badge profil (0/5 si aucune intervention)
         const ratingBadge = document.querySelector('.profile-rating');
@@ -217,6 +273,7 @@ window.App = (() => {
 
         // Charger les données de la vue
         if (viewId === 'dashboard')      Dashboard.init();
+        if (viewId === 'profile')         { _updateUIFromUser(); }
         if (viewId === 'missions')       Dashboard.loadMissions();
         if (viewId === 'interventions')  Dashboard.loadInterventions();
         if (viewId === 'carte')          Dashboard.initCarte();
