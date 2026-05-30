@@ -49,13 +49,25 @@ window.CarteMap = (() => {
 
     function init() {
         if (!_googleReady) {
-            // Google Maps pas encore chargé — afficher message d'attente
             _showMapError('Chargement de Google Maps…');
+            // Réessayer dans 500ms si Google Maps n'est pas encore prêt
+            setTimeout(() => { if (_googleReady && !_map) _initMap(); }, 500);
+            setTimeout(() => { if (_googleReady && !_map) _initMap(); }, 1500);
             return;
         }
         if (_map) {
-            // Déjà initialisée — juste recentrer et recharger missions
-            _loadMissions();
+            // Déjà initialisée — invalider la taille (le div peut avoir changé)
+            setTimeout(() => {
+                google.maps.event.trigger(_map, 'resize');
+                if (_userPos) _map.setCenter(_userPos);
+                _loadMissions();
+            }, 100);
+            return;
+        }
+        // Attendre que le conteneur soit rendu (height > 0)
+        const container = document.getElementById('googleMap');
+        if (!container || container.offsetHeight === 0) {
+            setTimeout(() => _initMap(), 200);
             return;
         }
         _initMap();
