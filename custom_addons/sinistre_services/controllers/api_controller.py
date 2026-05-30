@@ -92,37 +92,64 @@ class SinistreAPIController(http.Controller):
         note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
         note = min(note, 5.0) if note else 0
 
-        # Spécialités
-        specialites = [s.name for s in iv.specialites] if iv.specialites else []
+        # Certifications
+        certifications = []
+        try:
+            for cert in (iv.certification_ids or []):
+                date_label = ''
+                if cert.date_validite:
+                    date_label = f"Valide jusqu'en {cert.date_validite.strftime('%Y')}"
+                else:
+                    date_label = 'À jour'
+                certifications.append({'name': cert.name, 'date': date_label})
+        except Exception:
+            certifications = []
 
-        # Date création du user (membre depuis)
-        membre_depuis = user.create_date.strftime('%B %Y') if user.create_date else ''
-        # Capitaliser et traduire en français
-        mois_fr = {
-            'January':'Janvier','February':'Février','March':'Mars','April':'Avril',
-            'May':'Mai','June':'Juin','July':'Juillet','August':'Août',
-            'September':'Septembre','October':'Octobre','November':'Novembre','December':'Décembre'
-        }
-        for en, fr in mois_fr.items():
-            membre_depuis = membre_depuis.replace(en, fr)
+        # Spécialités avec leur type_intervention
+        specialites      = []
+        specialites_types = []
+        for s in (iv.specialites or []):
+            specialites.append(s.name)
+            if hasattr(s, 'type_intervention') and s.type_intervention:
+                specialites_types.append(s.type_intervention)
+
+        # Date création du user (membre depuis) — robuste
+        membre_depuis = ''
+        try:
+            cd = user.create_date
+            if cd:
+                mois_fr = {
+                    1:'Janvier',2:'Février',3:'Mars',4:'Avril',5:'Mai',6:'Juin',
+                    7:'Juillet',8:'Août',9:'Septembre',10:'Octobre',11:'Novembre',12:'Décembre'
+                }
+                membre_depuis = f"{mois_fr.get(cd.month, '')} {cd.year}"
+        except Exception:
+            membre_depuis = ''
 
         # Téléphone depuis le partenaire
-        phone = user.partner_id.phone or user.partner_id.mobile or ''
+        partner = user.partner_id
+        phone   = partner.phone or partner.mobile or ''
+
+        # Entreprise = nom de la fiche intervenant ou nom du partenaire société
+        entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
 
         return _ok({'success': True, 'user': {
-            'uid':             user.id,
-            'name':            user.name,
-            'email':           user.login,
-            'phone':           phone,
-            'company_name':    iv.name or user.name,
-            'zone':            iv.zone_intervention or '',
-            'note_moyenne':    note,
-            'interventions':   nb_terminees,
-            'ca_total':        ca_total,
-            'ca_mois':         ca_mois,
-            'specialites':     specialites,
-            'membre_depuis':   membre_depuis,
-            'intervenant_id':  iv.id,
+            'uid':              user.id,
+            'name':             user.name,
+            'email':            user.login,
+            'phone':            phone,
+            'company_name':     entreprise,
+            'zone':             iv.zone_intervention or '',
+            'note_moyenne':     note,
+            'interventions':    nb_terminees,
+            'ca_total':         ca_total,
+            'ca_mois':          ca_mois,
+            'specialites':      specialites,
+            'specialites_types': specialites_types,
+            'membre_depuis':    membre_depuis,
+            'intervenant_id':   iv.id,
+            'create_date':      str(user.create_date) if user.create_date else '',
+            'certifications':   certifications,
         }})
 
     # ── MES MISSIONS ─────────────────────────────────────────────────
