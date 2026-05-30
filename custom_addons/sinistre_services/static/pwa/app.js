@@ -140,23 +140,56 @@ window.App = (() => {
         if (sn) sn.textContent = name;
         if (sc) sc.textContent = company;
 
-        // Stats dashboard depuis les données user
-        const sN = document.getElementById('statNote');
-        const sI = document.getElementById('statInterventions');
-        if (sN && user.note_moyenne) sN.textContent = user.note_moyenne.toFixed(1);
-        if (sI && user.interventions) sI.textContent = user.interventions;
+        // Stats dashboard
+        const sN  = document.getElementById('statNote');
+        const sI  = document.getElementById('statInterventions');
+        const sCA = document.getElementById('statCA');
+        const nbInterv = user.interventions || 0;
+        const note = nbInterv > 0 ? (user.note_moyenne || 0) : 0;
+        const caMois = user.ca_mois || 0;
+        if (sN)  sN.textContent  = nbInterv > 0 ? note.toFixed(1) : '0';
+        if (sI)  sI.textContent  = nbInterv;
+        if (sCA) sCA.textContent = caMois.toLocaleString('fr-FR') + ' €';
 
-        // Profile page
+        // ── Page profil ──
         const pa = document.getElementById('profileAvatarLg');
         const pn = document.getElementById('profileNameLg');
         const pc = document.getElementById('profileCompanyLg');
         const pe = document.getElementById('profileEmail');
         const pt = document.getElementById('profileTel');
-        if (pa) pa.textContent = initials || '?';
-        if (pn) pn.textContent = name;
-        if (pc) pc.textContent = company;
-        if (pe) pe.value = user.email || '';
-        if (pt && user.phone) pt.value = user.phone;
+        const pz = document.getElementById('profileZone');
+        const pe2 = document.getElementById('profileEntreprise');
+        if (pa)  pa.textContent = initials || '?';
+        if (pn)  pn.textContent = name;
+        if (pc)  pc.textContent = company;
+        if (pe)  pe.value       = user.email || '';
+        if (pt)  pt.value       = user.phone || '';
+        if (pz)  pz.value       = user.zone  || '';
+        if (pe2) pe2.value      = company;
+
+        // Note et interventions sur la page profil
+        const pr  = document.getElementById('profileRating');
+        const pi  = document.getElementById('profileInterv');
+        const ps  = document.getElementById('profileSince');
+        if (pr) pr.textContent = nbInterv > 0 ? note.toFixed(1) : '0';
+        if (pi) pi.textContent = nbInterv;
+        if (ps) ps.textContent = user.membre_depuis || '—';
+
+        // Spécialités sur la page profil
+        const ptags = document.getElementById('profileMetiersTags');
+        if (ptags && user.specialites && user.specialites.length) {
+            ptags.innerHTML = user.specialites
+                .map(s => `<span class="metier-tag">${s}</span>`)
+                .join('');
+        } else if (ptags) {
+            ptags.innerHTML = '<span style="color:#9CA3AF;font-size:12px">Aucune spécialité renseignée</span>';
+        }
+
+        // Rating badge profil (0/5 si aucune intervention)
+        const ratingBadge = document.querySelector('.profile-rating');
+        if (ratingBadge) {
+            ratingBadge.innerHTML = `<span>⭐</span> <span id="profileRating">${nbInterv > 0 ? note.toFixed(1) : '0'}</span> / 5`;
+        }
     }
 
     function _hideSplash() {
