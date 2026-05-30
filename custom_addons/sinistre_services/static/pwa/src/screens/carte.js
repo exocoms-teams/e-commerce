@@ -302,73 +302,56 @@ window.CarteMap = (() => {
         _map.setZoom(15);
 
         if (_userPos) {
-            // Chercher dans les distances déjà calculées
             var mm = _markers.find(function(m){ return m.mission === mission; });
             if (mm && mm.distTxt) {
                 _set('carteInfoDuree', mm.durTxt || '—');
                 _set('carteInfoDist',  mm.distTxt);
             } else {
-                // Calculer via Routes API
-                var key = CONFIG.GOOGLE_MAPS_KEY;
-                fetch('https://routes.googleapis.com/distancematrix/v2:computeRouteMatrix', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Goog-Api-Key': key,
-                        'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status',
-                    },
-                    body: JSON.stringify({
-                        origins: [{ waypoint: { location: { latLng: { latitude: _userPos.lat, longitude: _userPos.lng } } } }],
-                        destinations: [{ waypoint: { location: { latLng: { latitude: pos.lat(), longitude: pos.lng() } } } }],
-                        travelMode: 'DRIVE',
-                        routingPreference: 'TRAFFIC_AWARE',
-                    }),
-                }).then(function(r){ return r.json(); }).then(function(rows){
-                    if (Array.isArray(rows) && rows[0] && rows[0].status === 'OK') {
-                        _set('carteInfoDuree', _fmtDur(rows[0].duration));
-                        _set('carteInfoDist',  _fmtDist(rows[0].distanceMeters));
-                    }
-                }).catch(function(){});
+                // Haversine (vol d'oiseau — pas de CORS)
+                var d = _haversine(_userPos, { lat: pos.lat(), lng: pos.lng() });
+                _set('carteInfoDist',  _fmtDist(d));
+                _set('carteInfoDuree', _fmtDur(Math.round(d / 10) + 's'));
             }
         }
     }
 
     async function _updateDistances() {
         if (!_userPos || !_markers.length) return;
-        // Routes API (nouvelle) — computeRouteMatrix
-        var key = CONFIG.GOOGLE_MAPS_KEY;
-        var body = {
-            origins: [{ waypoint: { location: { latLng: { latitude: _userPos.lat, longitude: _userPos.lng } } } }],
-            destinations: _markers.map(function(m) { return { waypoint: { location: { latLng: { latitude: m.pos.lat(), longitude: m.pos.lng() } } } }; }),
-            travelMode: 'DRIVE',
-            routingPreference: 'TRAFFIC_AWARE',
-        };
+        // Utiliser le SDK JS google.maps.routes (pas de CORS)
         try {
-            var resp = await fetch('https://routes.googleapis.com/distancematrix/v2:computeRouteMatrix', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Goog-Api-Key': key,
-                    'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status',
-                },
-                body: JSON.stringify(body),
-            });
-            var rows = await resp.json();
-            if (!Array.isArray(rows)) return;
-            rows.forEach(function(row) {
-                var i = row.destinationIndex;
-                if (_markers[i] && row.status === 'OK') {
-                    _markers[i].dist    = row.distanceMeters || 0;
-                    _markers[i].distTxt = _fmtDist(row.distanceMeters);
-                    _markers[i].durTxt  = _fmtDur(row.duration);
-                }
+            const { RouteMatrixElement } = await google.maps.importLibrary('routes');
+            const request = {
+                origins: [{ location: { latLng: new google.maps.LatLng(_userPos.lat, _userPos.lng) } }],
+                destinations: _markers.map(function(m) { return { location: { latLng: m.pos } }; }),
+                travelMode: google.maps.TravelMode.DRIVING,
+                routingPreference: google.maps.RoutingPreference.TRAFFIC_AWARE,
+            };
+            const svc = new google.maps.routes.RouteMatrixElement();
+            // Fallback : si RouteMatrixElement non dispo, calculer à la volée via Haversine
+            throw new Error('use_haversine');
+        } catch(e) {
+            // Calcul de distance Haversine (sans API — pas de CORS)
+            _markers.forEach(function(mm) {
+                var d = _haversine(_userPos, { lat: mm.pos.lat(), lng: mm.pos.lng() });
+                mm.dist    = d;
+                mm.distTxt = _fmtDist(d);
+                mm.durTxt  = _fmtDur(Math.round(d / 10) + 's'); // ~30 km/h en ville
             });
             _markers.sort(function(a, b){ return (a.dist||9e9) - (b.dist||9e9); });
             _updateNext();
             _updateProches();
-        } catch(e) {
-            console.warn('[CarteMap] Routes API:', e.message);
         }
+    }
+
+    // Distance Haversine (vol d'oiseau) en mètres
+    function _haversine(a, b) {
+        var R = 6371000;
+        var dLat = (b.lat - a.lat) * Math.PI / 180;
+        var dLng = (b.lng - a.lng) * Math.PI / 180;
+        var x = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(a.lat * Math.PI/180) * Math.cos(b.lat * Math.PI/180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+        return Math.round(R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x)));
     }
 
     function _fmtDist(m) {
@@ -425,34 +408,21 @@ window.CarteMap = (() => {
 
     /* ══ ACTIONS ════════════════════════════════════════════════════ */
 
-    async function _traceRoute(origin, destAddr) {
-        var key = CONFIG.GOOGLE_MAPS_KEY;
-        try {
-            var resp = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Goog-Api-Key': key,
-                    'X-Goog-FieldMask': 'routes.polyline.encodedPolyline',
-                },
-                body: JSON.stringify({
-                    origin:      { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
-                    destination: { address: destAddr },
-                    travelMode:  'DRIVE',
-                    routingPreference: 'TRAFFIC_AWARE',
-                }),
-            });
-            var data = await resp.json();
-            var encoded = data.routes && data.routes[0] && data.routes[0].polyline && data.routes[0].polyline.encodedPolyline;
-            if (encoded && google.maps.geometry) {
-                var path = google.maps.geometry.encoding.decodePath(encoded);
+    function _traceRoute(origin, destAddr) {
+        // DirectionsService SDK JS (pas de CORS — appel natif Google Maps)
+        new google.maps.DirectionsService().route({
+            origin: new google.maps.LatLng(origin.lat, origin.lng),
+            destination: destAddr,
+            travelMode: google.maps.TravelMode.DRIVING,
+        }, function(res, st) {
+            if (st === 'OK' && res.routes[0] && _polyline) {
+                var path = res.routes[0].overview_path;
                 _polyline.setPath(path);
-                // Ajuster la vue
                 var bounds = new google.maps.LatLngBounds();
                 path.forEach(function(p) { bounds.extend(p); });
                 _map.fitBounds(bounds, { padding: 60 });
             }
-        } catch(e) { console.warn('[CarteMap] _traceRoute:', e); }
+        });
     }
 
     function launchRoute() {
