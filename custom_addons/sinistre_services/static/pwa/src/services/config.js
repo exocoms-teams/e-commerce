@@ -6,7 +6,7 @@
 window.CONFIG = {
 
     /* ── Odoo SH ─────────────────────────────────────────────────── */
-    ODOO_BASE_URL: 'https://exocoms-e-commerce-sinistres-32284788.dev.odoo.com',   // ← à adapter
+    ODOO_BASE_URL: '',   // URL relative — le serveur Odoo sert lui-même la PWA
     API_BASE: '/api/sinistre/v1',
 
     /* ── Firebase ─────────────────────────────────────────────────── */
