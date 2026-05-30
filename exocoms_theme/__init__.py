@@ -35,12 +35,11 @@ def post_init_hook(env):
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     if website and lang_fr:
-        langs = [(4, lang_fr.id)]
-        if lang_en:
-            langs.append((4, lang_en.id))
+        # Vider d'abord, puis reconstruire FR en premier
+        website.write({'language_ids': [(5, 0, 0)]})
         website.write({
             'default_lang_id': lang_fr.id,
-            'language_ids': langs,
+            'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
         })
 
     # === FORCER FR PAR DÉFAUT SUR TOUTES LES PAGES ===
@@ -138,18 +137,18 @@ def post_init_hook(env):
                             <div class="col-lg-2 pt24 pb24">
                                 <h5>Liens utiles</h5>
                                 <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><a href="/">Page d&#39;accueil</a></li>
-                                    <li><a href="/services">Nos services</a></li>
-                                    <li><a href="/mentions-legales">Mentions l&#233;gales</a></li>
+                                    <li><a href="/" style="font-size: 14px;">Page d&#39;accueil</a></li>
+                                    <li><a href="/services" style="font-size: 14px;">Nos services</a></li>
+                                    <li><a href="/mentions-legales" style="font-size: 14px;">Mentions l&#233;gales</a></li>
                                 </ul>
                             </div>
                             <div class="col-lg-4 offset-lg-1 pt24 pb24">
                                 <h5>Contact</h5>
                                 <p style="font-size: 14px;">Une question, un projet ou besoin d&#39;un accompagnement ?</p>
                                 <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contactez-nous</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contactez-nous</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
                                 </ul>
                                 <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
                                     <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
@@ -168,18 +167,18 @@ def post_init_hook(env):
                             <div class="col-lg-2 pt24 pb24">
                                 <h5>Useful links</h5>
                                 <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/services">Our services</a></li>
-                                    <li><a href="/mentions-legales">Legal notice</a></li>
+                                    <li><a href="/" style="font-size: 14px;">Home</a></li>
+                                    <li><a href="/services" style="font-size: 14px;">Our services</a></li>
+                                    <li><a href="/mentions-legales" style="font-size: 14px;">Legal notice</a></li>
                                 </ul>
                             </div>
                             <div class="col-lg-4 offset-lg-1 pt24 pb24">
                                 <h5>Contact</h5>
                                 <p style="font-size: 14px;">A question, a project or need support?</p>
                                 <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus">Contact us</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contact us</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
                                 </ul>
                                 <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
                                     <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
