@@ -43,7 +43,8 @@ class SinistreIntervenant(models.Model):
     )
 
     # ── Stats ─────────────────────────────────────────────────────
-    mission_ids = fields.One2many('sinistre.mission', 'intervenant_id', string='Missions')
+    mission_ids       = fields.One2many('sinistre.mission', 'intervenant_id', string='Missions')
+    certification_ids = fields.One2many('sinistre.certification', 'intervenant_id', string='Certifications')
     mission_count = fields.Integer(compute='_compute_stats', string='Nb Missions')
     ca_total = fields.Monetary(
         string='CA Total', compute='_compute_stats', currency_field='currency_id',
