@@ -116,6 +116,33 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
+    # === DESIGN BOUTIQUE — Chips par défaut ===
+    try:
+        grid_views = env['ir.ui.view'].search([
+            ('key', 'like', 'website_sale.products'),
+            ('type', '=', 'qweb'),
+        ])
+        for grid_view in grid_views:
+            try:
+                arch = grid_view.arch
+                if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
+                    # Essayer plusieurs points d'insertion
+                    if 'o_wsale_products_opt_layout_catalog' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_opt_layout_catalog',
+                            'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                        )
+                    elif 'o_wsale_products_grid_table grid' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_grid_table grid',
+                            'o_wsale_products_grid_table grid o_wsale_products_opt_design_chips'
+                        )
+                    grid_view.write({'arch': arch})
+            except Exception:
+                pass
+    except Exception:
+        pass
+    
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
@@ -158,9 +185,9 @@ def post_init_hook(env):
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
 
     # === INFORMATIQUE & RÉSEAUX ===
-    mat_info = get_or_create('Matériel & Informatique Générale', informatique, seq=1)
-    reseaux = get_or_create('Réseaux & Infrastructure', informatique, seq=2)
-    commu = get_or_create('Communication & Vidéo', informatique, seq=3)
+    get_or_create('Matériel & Informatique Générale', informatique, seq=1)
+    get_or_create('Réseaux & Infrastructure', informatique, seq=2)
+    get_or_create('Communication & Vidéo', informatique, seq=3)
 
     # === MONÉTIQUE — niveau 1 ===
     monetique = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)], limit=1)
@@ -168,7 +195,7 @@ def post_init_hook(env):
         monetique = cat.create({'name': 'Monetique', 'parent_id': monetique_root.id, 'sequence': 1})
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
-    distrib = get_or_create('Distributeur automatique', monetique_root, seq=4)
+    get_or_create('Distributeur automatique', monetique_root, seq=4)
     monnaie = get_or_create('Monnaie & Chèque', monetique_root, seq=5)
     crypto = get_or_create('Crypto', monetique_root, seq=6)
     accessoires = get_or_create('Accessoires', monetique_root, seq=7)
@@ -281,85 +308,104 @@ def post_init_hook(env):
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
 
-    # === FOOTER CONTENT — via xmlid natif Odoo ===
+    # === FOOTER CONTENT — compatible toutes versions Odoo ===
+    footer_content = """
+        <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
+            <div class="container">
+                <div class="row">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="col-lg-5 pt24 pb24">
+                            <h5>&#192; propos de nous</h5>
+                            <p style="font-size: 14px;">Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
+                        </div>
+                        <div class="col-lg-2 pt24 pb24">
+                            <h5>Liens utiles</h5>
+                            <ul class="list-unstyled" style="font-size: 14px;">
+                                <li><a href="/" style="font-size: 14px;">Page d&#39;accueil</a></li>
+                                <li><a href="/services" style="font-size: 14px;">Nos services</a></li>
+                                <li><a href="/mentions-legales" style="font-size: 14px;">Mentions l&#233;gales</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                            <h5>Contact</h5>
+                            <p style="font-size: 14px;">Une question, un projet ou besoin d&#39;un accompagnement ?</p>
+                            <ul class="list-unstyled" style="font-size: 14px;">
+                                <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contactez-nous</a></li>
+                                <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
+                                <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
+                            </ul>
+                            <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                                <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
+                                <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
+                                <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
+                                <a href="/" aria-label="Accueil"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-lg-5 pt24 pb24">
+                            <h5>About us</h5>
+                            <p style="font-size: 14px;">We are a team of passionate people whose goal is to improve everyone&#39;s life through disruptive products. We market excellent products to solve your business problems. Our products are designed for small and medium businesses as well as franchises looking to optimize their performance.</p>
+                        </div>
+                        <div class="col-lg-2 pt24 pb24">
+                            <h5>Useful links</h5>
+                            <ul class="list-unstyled" style="font-size: 14px;">
+                                <li><a href="/" style="font-size: 14px;">Home</a></li>
+                                <li><a href="/services" style="font-size: 14px;">Our services</a></li>
+                                <li><a href="/mentions-legales" style="font-size: 14px;">Legal notice</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                            <h5>Contact</h5>
+                            <p style="font-size: 14px;">A question, a project or need support?</p>
+                            <ul class="list-unstyled" style="font-size: 14px;">
+                                <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contact us</a></li>
+                                <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
+                                <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
+                            </ul>
+                            <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
+                                <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
+                                <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
+                                <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
+                                <a href="/" aria-label="Home"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </section>"""
+
     try:
         footer_view = env.ref('website.footer_default')
     except Exception:
         footer_view = None
+
     if footer_view:
-        footer_view.write({'arch': """
+        try:
+            footer_view.write({'arch': """
 <data>
     <xpath expr="//div[@id='footer']" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo border text-break"
              style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
-            <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
-                <div class="container">
-                    <div class="row">
-                        <t t-if="request.env.lang == 'fr_FR'">
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5>&#192; propos de nous</h5>
-                                <p style="font-size: 14px;">Nous sommes une &#233;quipe de passionn&#233;s dont le but est d&#39;am&#233;liorer la vie de chacun gr&#226;ce &#224; des produits disruptifs. Nous commercialisons d&#39;excellents produits pour r&#233;soudre vos probl&#232;mes commerciaux. Nos produits sont con&#231;us pour les petites et moyennes entreprises ainsi que les franchises d&#233;sireuses d&#39;optimiser leurs performances.</p>
-                            </div>
-                            <div class="col-lg-2 pt24 pb24">
-                                <h5>Liens utiles</h5>
-                                <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><a href="/" style="font-size: 14px;">Page d&#39;accueil</a></li>
-                                    <li><a href="/services" style="font-size: 14px;">Nos services</a></li>
-                                    <li><a href="/mentions-legales" style="font-size: 14px;">Mentions l&#233;gales</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
-                                <h5>Contact</h5>
-                                <p style="font-size: 14px;">Une question, un projet ou besoin d&#39;un accompagnement ?</p>
-                                <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contactez-nous</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
-                                </ul>
-                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
-                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
-                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
-                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
-                                    <a href="/" aria-label="Accueil"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
-                                </div>
-                            </div>
-                        </t>
-                        <t t-else="">
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5>About us</h5>
-                                <p style="font-size: 14px;">We are a team of passionate people whose goal is to improve everyone&#39;s life through disruptive products. We market excellent products to solve your business problems. Our products are designed for small and medium businesses as well as franchises looking to optimize their performance.</p>
-                            </div>
-                            <div class="col-lg-2 pt24 pb24">
-                                <h5>Useful links</h5>
-                                <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><a href="/" style="font-size: 14px;">Home</a></li>
-                                    <li><a href="/services" style="font-size: 14px;">Our services</a></li>
-                                    <li><a href="/mentions-legales" style="font-size: 14px;">Legal notice</a></li>
-                                </ul>
-                            </div>
-                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
-                                <h5>Contact</h5>
-                                <p style="font-size: 14px;">A question, a project or need support?</p>
-                                <ul class="list-unstyled" style="font-size: 14px;">
-                                    <li><i class="fa fa-comment fa-fw me-2"></i><a href="/contactus" style="font-size: 14px;">Contact us</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"></i><a href="mailto:contact@exocoms.fr" style="font-size: 14px;">contact@exocoms.fr</a></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"></i><a href="tel:+33184793755" style="font-size: 14px;">+33 (0)1 84 79 37 55</a></li>
-                                </ul>
-                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media">
-                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
-                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
-                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
-                                    <a href="/" aria-label="Home"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
-                                </div>
-                            </div>
-                        </t>
-                    </div>
-                </div>
-            </section>
+""" + footer_content + """
         </div>
     </xpath>
 </data>
 """})
+        except Exception:
+            try:
+                footer_view.write({'arch': """
+<data>
+    <xpath expr="//div[hasclass('oe_structure_solo')]" position="replace">
+        <div id="footer" class="oe_structure oe_structure_solo border text-break"
+             style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
+""" + footer_content + """
+        </div>
+    </xpath>
+</data>
+"""})
+            except Exception:
+                pass
 
     # === COPYRIGHT — via xmlid natif Odoo ===
     try:
@@ -367,7 +413,8 @@ def post_init_hook(env):
     except Exception:
         copyright_view = None
     if copyright_view:
-        copyright_view.write({'arch': """
+        try:
+            copyright_view.write({'arch': """
 <data>
     <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
         <span class="o_footer_copyright_name me-2 small">
@@ -381,3 +428,5 @@ def post_init_hook(env):
     </xpath>
 </data>
 """})
+        except Exception:
+            pass

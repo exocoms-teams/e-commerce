@@ -21,15 +21,98 @@ aside#products_grid_before {
 }
 
 /* =========================================================
+   FILMSTRIP — aligné à gauche
+========================================================= */
+
+.o_wsale_filmstrip_container {
+    justify-content: flex-start !important;
+}
+
+#o_wsale_categories_filmstrip {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding: 8px 0 !important;
+    justify-content: flex-start !important;
+}
+
+#o_wsale_categories_filmstrip .o_wsale_filmstrip_wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+#o_wsale_categories_filmstrip ul.o_wsale_filmstrip {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+}
+
+#o_wsale_categories_filmstrip li {
+    flex-shrink: 0 !important;
+}
+
+#o_wsale_categories_filmstrip .o_wsale_filmstrip_item {
+    white-space: nowrap !important;
+    min-width: max-content !important;
+}
+
+#o_wsale_categories_filmstrip .o_wsale_filmstrip_item span {
+    white-space: nowrap !important;
+}
+
+/* =========================================================
+   SEARCH à gauche, SORT BY à droite
+========================================================= */
+
+#o_wsale_products_header .products_header.btn-toolbar,
+.products_header.btn-toolbar.flex-nowrap {
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 8px 0 !important;
+    width: 100% !important;
+}
+
+#o_wsale_products_header .o_wsale_products_header_search_form_container,
+.products_header .o_wsale_products_header_search_form_container {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    max-width: 400px !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    order: 1 !important;
+}
+
+#o_wsale_products_header .o_sortby_dropdown,
+.products_header .o_sortby_dropdown {
+    order: 2 !important;
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* =========================================================
    SIDEBAR STYLE
 ========================================================= */
 
 .exo-dashboard-sidebar {
   width: 100% !important;
-  background: transparent !important;  /* supprime le fond blanc */
-  border-radius: 0 !important;          /* supprime les coins arrondis */
-  border: none !important;              /* supprime la bordure */
-  box-shadow: none !important;          /* supprime l'ombre */
+  background: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
   padding: 8px 14px !important;
   color: #08152d !important;
   position: sticky !important;
@@ -139,110 +222,77 @@ aside#products_grid_before {
     max-height: none !important;
   }
 }
-/* Force l'affichage de la barre de recherche native */
-.o_wsale_products_header_search_form_container {
-  display: block !important;
-}
 
-.products_header {
-  display: flex !important;
-}
-/* Affiche le header avec recherche et tri */
-#o_wsale_products_header {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-.products_header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
-  padding: 8px 0 !important;
-}
-
-.o_wsale_products_header_search_form_container {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
 /* =========================================================
    FILTRE PRIX SIDEBAR
 ========================================================= */
 
-.exo-price-filter {
-    padding: 0 4px;
-    margin-top: 8px;
-}
-
-.exo-price-filter-body {
-    padding: 10px 0 8px;
-}
-
+.exo-price-filter { padding: 0 4px; margin-top: 8px; }
+.exo-price-filter-body { padding: 10px 0 8px; }
 .exo-price-values {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a2340;
-    margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+    font-size: 12px; font-weight: 600; color: #1a2340; margin-bottom: 8px;
 }
-
-.exo-price-slider-wrap {
-    position: relative;
-    height: 20px;
-    margin-bottom: 12px;
-}
-
+.exo-price-slider-wrap { position: relative; height: 20px; margin-bottom: 12px; }
 .exo-range {
-    position: absolute;
-    width: 100%;
-    height: 4px;
-    background: transparent;
-    appearance: none;
-    -webkit-appearance: none;
-    pointer-events: none;
-    top: 50%;
-    transform: translateY(-50%);
+    position: absolute; width: 100%; height: 4px;
+    background: transparent; appearance: none; -webkit-appearance: none;
+    pointer-events: none; top: 50%; transform: translateY(-50%);
 }
-
 .exo-range::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #0d4dff;
-    border: 2px solid #fff;
+    appearance: none; -webkit-appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #0d4dff; border: 2px solid #fff;
     box-shadow: 0 1px 4px rgba(13,77,255,0.3);
-    pointer-events: all;
-    cursor: pointer;
+    pointer-events: all; cursor: pointer;
 }
-
 .exo-range::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #0d4dff;
-    border: 2px solid #fff;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #0d4dff; border: 2px solid #fff;
     box-shadow: 0 1px 4px rgba(13,77,255,0.3);
-    pointer-events: all;
-    cursor: pointer;
+    pointer-events: all; cursor: pointer;
 }
-
 .exo-price-apply-btn {
-    display: block;
-    text-align: center;
+    display: block; text-align: center;
     background: linear-gradient(135deg, #0d4dff, #4d8aff);
-    color: #fff !important;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 7px 0;
-    border-radius: 8px;
-    text-decoration: none !important;
-    transition: opacity 0.15s;
+    color: #fff !important; font-size: 12px; font-weight: 700;
+    padding: 7px 0; border-radius: 8px;
+    text-decoration: none !important; transition: opacity 0.15s;
+}
+.exo-price-apply-btn:hover { opacity: 0.88; }
+.o_wsale_filmstrip_wrapper {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
 }
 
-.exo-price-apply-btn:hover {
-    opacity: 0.88;
+.o_wsale_filmstrip_wrapper ul.o_wsale_filmstrip {
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+#o_wsale_products_header {
+    align-items: flex-start !important;
+}
+#o_wsale_products_header #o_wsale_categories_filmstrip {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    align-self: flex-start !important;
+    width: 100% !important;
+}
+
+#o_wsale_products_header .o_wsale_filmstrip_wrapper {
+    width: 100% !important;
+    justify-content: flex-start !important;
+}
+
+#o_wsale_products_header ul.o_wsale_filmstrip {
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+}
+
+#o_wsale_products_header {
+    align-items: flex-start !important;
+    width: 100% !important;
 }
