@@ -127,6 +127,13 @@ def post_init_hook(env):
     except Exception:
         pass
 
+    # === TROUVER LE BON XMLID CHIPS — TEMPORAIRE ===
+    import logging
+    _logger = logging.getLogger(__name__)
+    chip_views = env['ir.ui.view'].search([('key', 'ilike', 'chip')])
+    for v in chip_views:
+        _logger.info('CHIPS VIEW: key=%s, name=%s, active=%s', v.key, v.name, v.active)
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
