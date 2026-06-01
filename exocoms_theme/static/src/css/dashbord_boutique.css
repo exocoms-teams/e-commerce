@@ -21,7 +21,7 @@ aside#products_grid_before {
 }
 
 /* =========================================================
-   FILMSTRIP — horizontal en haut
+   FILMSTRIP — aligné à gauche, horizontal
 ========================================================= */
 
 #o_wsale_categories_filmstrip {
@@ -30,40 +30,60 @@ aside#products_grid_before {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     padding: 8px 0 !important;
+    justify-content: flex-start !important;
 }
 
 #o_wsale_categories_filmstrip .o_wsale_filmstrip_wrapper {
     display: flex !important;
     flex-direction: row !important;
+    justify-content: flex-start !important;
     width: 100% !important;
+    overflow-x: auto !important;
 }
 
 #o_wsale_categories_filmstrip ul.o_wsale_filmstrip {
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     gap: 8px !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    margin: 0 !important;
+}
+
+#o_wsale_categories_filmstrip li {
+    flex-shrink: 0 !important;
+}
+
+#o_wsale_categories_filmstrip .o_wsale_filmstrip_item {
+    white-space: nowrap !important;
+    min-width: max-content !important;
+}
+
+#o_wsale_categories_filmstrip .o_wsale_filmstrip_item span {
+    white-space: nowrap !important;
 }
 
 /* =========================================================
-   SEARCH + SORT — séparés sur deux lignes
+   SEARCH à gauche, SORT BY à droite, même ligne
 ========================================================= */
 
 #o_wsale_products_header .products_header.btn-toolbar,
 .products_header.btn-toolbar.flex-nowrap {
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     flex-direction: row !important;
     align-items: center !important;
+    justify-content: space-between !important;
     gap: 8px !important;
     padding: 8px 0 !important;
 }
 
 #o_wsale_products_header .o_wsale_products_header_search_form_container,
 .products_header .o_wsale_products_header_search_form_container {
-    width: 100% !important;
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-    margin-right: 0 !important;
-    margin-bottom: 8px !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+    max-width: 400px !important;
+    margin-right: auto !important;
+    margin-bottom: 0 !important;
     order: 1 !important;
 }
 
@@ -71,6 +91,7 @@ aside#products_grid_before {
 .products_header .o_sortby_dropdown {
     order: 2 !important;
     margin-left: auto !important;
+    flex-shrink: 0 !important;
 }
 
 /* =========================================================
@@ -197,86 +218,36 @@ aside#products_grid_before {
    FILTRE PRIX SIDEBAR
 ========================================================= */
 
-.exo-price-filter {
-    padding: 0 4px;
-    margin-top: 8px;
-}
-.exo-price-filter-body {
-    padding: 10px 0 8px;
-}
+.exo-price-filter { padding: 0 4px; margin-top: 8px; }
+.exo-price-filter-body { padding: 10px 0 8px; }
 .exo-price-values {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a2340;
-    margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+    font-size: 12px; font-weight: 600; color: #1a2340; margin-bottom: 8px;
 }
-.exo-price-slider-wrap {
-    position: relative;
-    height: 20px;
-    margin-bottom: 12px;
-}
+.exo-price-slider-wrap { position: relative; height: 20px; margin-bottom: 12px; }
 .exo-range {
-    position: absolute;
-    width: 100%;
-    height: 4px;
-    background: transparent;
-    appearance: none;
-    -webkit-appearance: none;
-    pointer-events: none;
-    top: 50%;
-    transform: translateY(-50%);
+    position: absolute; width: 100%; height: 4px;
+    background: transparent; appearance: none; -webkit-appearance: none;
+    pointer-events: none; top: 50%; transform: translateY(-50%);
 }
 .exo-range::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #0d4dff;
-    border: 2px solid #fff;
+    appearance: none; -webkit-appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #0d4dff; border: 2px solid #fff;
     box-shadow: 0 1px 4px rgba(13,77,255,0.3);
-    pointer-events: all;
-    cursor: pointer;
+    pointer-events: all; cursor: pointer;
 }
 .exo-range::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #0d4dff;
-    border: 2px solid #fff;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #0d4dff; border: 2px solid #fff;
     box-shadow: 0 1px 4px rgba(13,77,255,0.3);
-    pointer-events: all;
-    cursor: pointer;
+    pointer-events: all; cursor: pointer;
 }
 .exo-price-apply-btn {
-    display: block;
-    text-align: center;
+    display: block; text-align: center;
     background: linear-gradient(135deg, #0d4dff, #4d8aff);
-    color: #fff !important;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 7px 0;
-    border-radius: 8px;
-    text-decoration: none !important;
-    transition: opacity 0.15s;
+    color: #fff !important; font-size: 12px; font-weight: 700;
+    padding: 7px 0; border-radius: 8px;
+    text-decoration: none !important; transition: opacity 0.15s;
 }
-.exo-price-apply-btn:hover {
-    opacity: 0.88;
-}
-#o_wsale_categories_filmstrip .o_wsale_filmstrip_item span {
-    white-space: nowrap !important;
-}
-
-#o_wsale_categories_filmstrip li {
-    flex-shrink: 0 !important;
-}
-#o_wsale_categories_filmstrip .o_wsale_filmstrip_item {
-    white-space: nowrap !important;
-    min-width: max-content !important;
-}
-
-#o_wsale_categories_filmstrip .o_wsale_filmstrip_item span {
-    white-space: nowrap !important;
-}
+.exo-price-apply-btn:hover { opacity: 0.88; }
