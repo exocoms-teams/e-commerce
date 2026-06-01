@@ -7,15 +7,12 @@
     'depends': ['base', 'product', 'sale'],
     'data': [
         'security/ir.model.access.csv',
-        'views/travel_reservation_views.xml',
+        'data/email_template.xml',
         'views/travel_product_views.xml',
+        'views/travel_reservation_views.xml',
         'views/payment_provider_views.xml',
         'report/reservation_report.xml',
-        'payment_module/views/payment_transaction_views.xml',
-        'data/email_template.xml',
     ],
     'installable': True,
     'application': True,
 }
-
-#AMIRA
