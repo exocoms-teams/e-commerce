@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================
+         PAGE 1 : Liste des voyages
+         URL : /travels
+         ======================================== -->
+    <template id="travel_list_page" name="Liste des voyages">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+
+                <!-- Titre de la page -->
+                <h1 class="mb-4">
+                    <i class="fa fa-plane me-2"/>
+                    Nos Voyages
+                </h1>
+
+                <!-- Grille des voyages -->
+                <div class="row">
+
+                    <!-- Boucle sur chaque voyage -->
+                    <t t-foreach="products" t-as="product">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+
+                                <!-- Image du voyage -->
+                                <t t-if="product.image_1920">
+                                    <img t-attf-src="/web/image/product.template/#{product.id}/image_1920"
+                                        class="card-img-top"
+                                        style="height:200px; object-fit:cover;"/>
+                                </t>
+
+                                <div class="card-body">
+                                    <!-- Nom du voyage -->
+                                    <h5 class="card-title">
+                                        <t t-esc="product.name"/>
+                                    </h5>
+                                    <!-- Prix par personne -->
+                                    <p class="text-muted">
+                                        <i class="fa fa-tag me-1"/>
+                                        <strong>
+                                            <t t-esc="product.prix_par_personne"/> € / personne
+                                        </strong>
+                                    </p>
+                                </div>
+
+                                <div class="card-footer">
+                                    <!-- Bouton réserver -->
+                                    <a t-attf-href="/travels/book/#{product.id}"
+                                        class="btn btn-primary w-100">
+                                        <i class="fa fa-calendar me-2"/>
+                                        Réserver
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Si aucun voyage disponible -->
+                    <t t-if="not products">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Aucun voyage disponible pour le moment.
+                            </div>
+                        </div>
+                    </t>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ========================================
+         PAGE 2 : Formulaire de réservation
+         URL : /travels/book/<id>
+         ======================================== -->
+    <template id="travel_booking_page" name="Formulaire de réservation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <h1 class="mb-4">
+                            <i class="fa fa-calendar me-2"/>
+                            Réserver — <t t-esc="product.name"/>
+                        </h1>
+
+                        <!-- Message d'erreur si dates invalides -->
+                        <div t-if="error" class="alert alert-danger">
+                            <t t-esc="error"/>
+                        </div>
+
+                        <!-- Infos du voyage -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <t t-if="product.image_1920">
+                                            <img t-attf-src="/web/image/product.template/#{product.id}/image_1920"
+                                                class="img-fluid rounded"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h4><t t-esc="product.name"/></h4>
+                                        <p>
+                                            <strong>Prix par personne :</strong>
+                                            <t t-esc="product.prix_par_personne"/> €
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulaire -->
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="/travels/book/submit" method="POST">
+
+                                    <!-- Sécurité obligatoire Odoo -->
+                                    <input type="hidden" name="csrf_token"
+                                        t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="product_id"
+                                        t-att-value="product.id"/>
+
+                                    <!-- Infos client -->
+                                    <h5 class="mb-3">Vos informations</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Nom complet *</strong></label>
+                                            <input type="text" name="client_name"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Email *</strong></label>
+                                            <input type="email" name="client_email"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Téléphone</strong></label>
+                                            <input type="tel" name="client_phone"
+                                                class="form-control"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Pays</strong></label>
+                                            <input type="text" name="client_country"
+                                                class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dates -->
+                                    <h5 class="mb-3 mt-4">Dates du voyage</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de départ *</strong></label>
+                                            <input type="date" name="date_depart"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de retour *</strong></label>
+                                            <input type="date" name="date_retour"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Voyageurs -->
+                                    <h5 class="mb-3 mt-4">Voyageurs</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Adultes *</strong></label>
+                                            <input type="number" name="nb_adultes"
+                                                class="form-control" value="1" min="1" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Enfants</strong></label>
+                                            <input type="number" name="nb_enfants"
+                                                class="form-control" value="0" min="0"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
+                                        <textarea name="notes" class="form-control" rows="3"/>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-check me-2"/>
+                                            Confirmer la réservation
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ========================================
+         PAGE 3 : Confirmation
+         Affichée après soumission du formulaire
+         ======================================== -->
+    <template id="travel_confirm_page" name="Confirmation réservation">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+
+                        <!-- Icône succès -->
+                        <i class="fa fa-check-circle fa-5x text-success mb-4"/>
+                        <h1>Réservation enregistrée !</h1>
+
+                        <p class="lead">
+                            Merci <strong><t t-esc="reservation.client_name"/></strong> !
+                            Votre demande a bien été enregistrée.
+                            Nous vous contacterons à l'adresse
+                            <strong><t t-esc="reservation.client_email"/></strong>.
+                        </p>
+
+                        <!-- Récapitulatif -->
+                        <div class="card mt-4 text-start">
+                            <div class="card-body">
+                                <p><strong>Référence :</strong> <t t-esc="reservation.name"/></p>
+                                <p><strong>Voyage :</strong> <t t-esc="reservation.product_id.name"/></p>
+                                <p><strong>Départ :</strong> <t t-esc="reservation.date_depart"/></p>
+                                <p><strong>Retour :</strong> <t t-esc="reservation.date_retour"/></p>
+                                <p><strong>Voyageurs :</strong> <t t-esc="reservation.nb_voyageurs"/></p>
+                                <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
+                            </div>
+                        </div>
+
+                        <a href="/travels" class="btn btn-primary mt-4">
+                            Voir d'autres voyages
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
