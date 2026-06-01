@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template PDF -->
+    <template id="report_travel_reservation_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Travel Reservation - <span t-field="doc.name"/></h2>
+                        <hr/>
+                        <div class="row mt16">
+                            <div class="col-6">
+                                <h4>Client Information</h4>
+                                <p><strong>Name:</strong> <span t-field="doc.client_name"/></p>
+                                <p><strong>Email:</strong> <span t-field="doc.client_email"/></p>
+                                <p><strong>Phone:</strong> <span t-field="doc.client_phone"/></p>
+                                <p><strong>Country:</strong> <span t-field="doc.client_country"/></p>
+                            </div>
+                            <div class="col-6">
+                                <h4>Travel Information</h4>
+                                <p><strong>Package:</strong> <span t-field="doc.product_id"/></p>
+                                <p><strong>Departure:</strong> <span t-field="doc.date_depart"/></p>
+                                <p><strong>Return:</strong> <span t-field="doc.date_retour"/></p>
+                                <p><strong>Duration:</strong> <span t-field="doc.nb_jours"/> days</p>
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row mt16">
+                            <div class="col-6">
+                                <h4>Travelers</h4>
+                                <p><strong>Adults:</strong> <span t-field="doc.nb_adultes"/></p>
+                                <p><strong>Children:</strong> <span t-field="doc.nb_enfants"/></p>
+                                <p><strong>Total:</strong> <span t-field="doc.nb_voyageurs"/></p>
+                            </div>
+                            <div class="col-6">
+                                <h4>Payment</h4>
+                                <p><strong>Total Price:</strong> <span t-field="doc.prix_total"/> €</p>
+                                <p><strong>Provider:</strong> <span t-field="doc.payment_provider_id"/></p>
+                                <p><strong>Commission:</strong> <span t-field="doc.commission_amount"/> €</p>
+                            </div>
+                        </div>
+                        <hr/>
+                        <t t-if="doc.notes">
+                            <h4>Notes</h4>
+                            <p><span t-field="doc.notes"/></p>
+                        </t>
+                        <div class="row mt32">
+                            <div class="col-6 text-center">
+                                <p>Status: <strong><span t-field="doc.state"/></strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Action PDF -->
+    <record id="action_report_travel_reservation" model="ir.actions.report">
+        <field name="name">Travel Reservation</field>
+        <field name="model">travel.reservation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">travel_agency.report_travel_reservation_document</field>
+        <field name="report_file">travel_agency.report_travel_reservation_document</field>
+        <field name="binding_model_id" ref="model_travel_reservation"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
