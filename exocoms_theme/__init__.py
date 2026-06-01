@@ -116,6 +116,171 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
+    # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
+    cat = env['product.public.category']
+
+    # Archiver les catégories de démo
+    demo_names = [
+        'Desks', 'Furnitures', 'Boxes', 'Drawers',
+        'Cabinets', 'Bins', 'Lamps', 'All',
+        'Indoor', 'Outdoor', 'Multimedia',
+    ]
+    cats_demo = cat.search([('name', 'in', demo_names)])
+    if cats_demo:
+        cats_demo.write({'active': False})
+
+    def get_or_create(name, parent=None, seq=10):
+        domain = [('name', '=', name)]
+        if parent:
+            domain.append(('parent_id', '=', parent.id))
+        else:
+            domain.append(('parent_id', '=', False))
+        c = cat.search(domain, limit=1)
+        if not c:
+            vals = {'name': name, 'sequence': seq}
+            if parent:
+                vals['parent_id'] = parent.id
+            c = cat.create(vals)
+        return c
+
+    # === RACINES — filmstrip ===
+    informatique = get_or_create('Informatique & Réseaux', seq=1)
+    monetique_root = get_or_create('Monétique', seq=2)
+    telecom = get_or_create('Télécom', seq=3)
+
+    # Mettre Monetique et Point de vente sous Monétique
+    monetique_sub = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', False)], limit=1)
+    if monetique_sub:
+        monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
+
+    pdv = cat.search([('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)], limit=1)
+    if pdv:
+        pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
+
+    # === INFORMATIQUE & RÉSEAUX ===
+    mat_info = get_or_create('Matériel & Informatique Générale', informatique, seq=1)
+    reseaux = get_or_create('Réseaux & Infrastructure', informatique, seq=2)
+    commu = get_or_create('Communication & Vidéo', informatique, seq=3)
+
+    # === MONÉTIQUE — niveau 1 ===
+    monetique = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)], limit=1)
+    if not monetique:
+        monetique = cat.create({'name': 'Monetique', 'parent_id': monetique_root.id, 'sequence': 1})
+
+    caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
+    distrib = get_or_create('Distributeur automatique', monetique_root, seq=4)
+    monnaie = get_or_create('Monnaie & Chèque', monetique_root, seq=5)
+    crypto = get_or_create('Crypto', monetique_root, seq=6)
+    accessoires = get_or_create('Accessoires', monetique_root, seq=7)
+    consommables = get_or_create('Consommables', monetique_root, seq=8)
+    services = get_or_create('Services', monetique_root, seq=9)
+
+    # === MONETIQUE — sous-catégories ===
+    tpe_fixe = get_or_create('TPE Fixe', monetique, seq=1)
+    get_or_create('INGENICO', tpe_fixe)
+    get_or_create('PAX', tpe_fixe)
+
+    tpe_portable = get_or_create('TPE Portable', monetique, seq=2)
+    get_or_create('INGENICO', tpe_portable)
+    get_or_create('PAX', tpe_portable)
+    get_or_create('UROVO', tpe_portable)
+    get_or_create('SUNMI', tpe_portable)
+
+    tpe_mobile = get_or_create('TPE Mobile', monetique, seq=3)
+    get_or_create('INGENICO', tpe_mobile)
+    get_or_create('PAX', tpe_mobile)
+    get_or_create('UROVO', tpe_mobile)
+
+    tpe_sante = get_or_create('TPE Santé', monetique, seq=4)
+    get_or_create('INGENICO', tpe_sante)
+    get_or_create('PAX', tpe_sante)
+
+    pin_pad = get_or_create('PIN Pad', monetique, seq=5)
+    get_or_create('INGENICO', pin_pad)
+    get_or_create('PAX', pin_pad)
+
+    logiciels_tpe = get_or_create('Logiciels TPE', monetique, seq=6)
+    get_or_create('Ingenico', logiciels_tpe)
+    get_or_create('Verifone', logiciels_tpe)
+    get_or_create('Pax', logiciels_tpe)
+
+    passerelles = get_or_create('Passerelles', monetique, seq=7)
+    get_or_create('Passerelle IP', passerelles)
+    get_or_create('Passerelle 3G/4G', passerelles)
+
+    # === CAISSE ENREGISTREUSE ===
+    caisse_tactile = get_or_create('Caisse Tactile', caisse, seq=1)
+    sunmi_cat = get_or_create('SUNMI', caisse_tactile)
+    get_or_create('Sunmi D3 80mm', sunmi_cat)
+    get_or_create('SUNMI D3 PRO', sunmi_cat)
+    get_or_create('SUNMI D3 MINI', sunmi_cat)
+    get_or_create('SUNMI T3', sunmi_cat)
+    get_or_create('PAX', caisse_tactile)
+
+    imprimante = get_or_create('Imprimante', caisse, seq=2)
+    get_or_create('Imprimante Ticket', imprimante)
+    get_or_create('Imprimante Etiquette', imprimante)
+
+    get_or_create('Kiosques', caisse, seq=3)
+    logiciels_caisse = get_or_create('Logiciels', caisse, seq=4)
+    get_or_create('Cybersécurité', logiciels_caisse)
+    get_or_create('Accessoires', caisse, seq=5)
+    get_or_create('Consommables', caisse, seq=6)
+    get_or_create('Services', caisse, seq=7)
+
+    # === MONNAIE & CHÈQUE ===
+    get_or_create('Scanner de Chèque', monnaie)
+    get_or_create('Lecteur de Chèque', monnaie)
+    detecteurs = get_or_create('Détecteurs et Compteuses', monnaie)
+    get_or_create('Compteuse de Pièces', detecteurs)
+    get_or_create('Compteuse de Billets', detecteurs)
+    get_or_create('Détecteurs', detecteurs)
+
+    # === CRYPTO ===
+    get_or_create('ATM', crypto)
+    get_or_create('Logiciel ATM', crypto)
+    get_or_create('Formation ATM', crypto)
+
+    # === ACCESSOIRES ===
+    get_or_create('Batteries TPE', accessoires)
+    chargeurs = get_or_create('Chargeurs & Alimentations', accessoires)
+    get_or_create('INGENICO', chargeurs)
+    get_or_create('PAX', chargeurs)
+    cables = get_or_create('Cables', accessoires)
+    get_or_create('INGENICO', cables)
+    get_or_create('VERIFONE', cables)
+    get_or_create('Housses & protections', accessoires)
+    get_or_create('Pièces détachées', accessoires)
+
+    # === CONSOMMABLES ===
+    get_or_create('Monetique', consommables)
+    get_or_create('Pitney Bowes', consommables)
+    get_or_create('Panini', consommables)
+    get_or_create("DOC'UP", consommables)
+    get_or_create('Autres', consommables)
+
+    # === SERVICES ===
+    get_or_create('Monetique', services)
+    get_or_create('Caisse Enregistreuse', services)
+    get_or_create('Pièces Détachées', services)
+
+    # === TÉLÉCOM ===
+    equip = get_or_create('Équipements Électriques', telecom)
+    get_or_create('Onduleurs & électricité', equip)
+    get_or_create('Câbles', equip)
+    get_or_create('Accessoires', equip)
+
+    solutions_pro = get_or_create('Solutions Professionnelles Spécifiques', telecom)
+    get_or_create('Points de ventes', solutions_pro)
+    get_or_create('Domotique', solutions_pro)
+    get_or_create('PLV / Marketing', solutions_pro)
+
+    solutions_tel = get_or_create('Solutions Télécom', telecom)
+    get_or_create("Centre d'appel", solutions_tel)
+    get_or_create('Visioconférence', solutions_tel)
+    get_or_create('Collaboration', solutions_tel)
+    get_or_create('Communication unifiée', solutions_tel)
+
     # === FOOTER CONTENT — via xmlid natif Odoo ===
     try:
         footer_view = env.ref('website.footer_default')
@@ -130,7 +295,6 @@ def post_init_hook(env):
             <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
                 <div class="container">
                     <div class="row">
-
                         <t t-if="request.env.lang == 'fr_FR'">
                             <div class="col-lg-5 pt24 pb24">
                                 <h5>&#192; propos de nous</h5>
@@ -160,7 +324,6 @@ def post_init_hook(env):
                                 </div>
                             </div>
                         </t>
-
                         <t t-else="">
                             <div class="col-lg-5 pt24 pb24">
                                 <h5>About us</h5>
@@ -190,7 +353,6 @@ def post_init_hook(env):
                                 </div>
                             </div>
                         </t>
-
                     </div>
                 </div>
             </section>
