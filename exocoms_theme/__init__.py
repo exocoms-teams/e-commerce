@@ -116,24 +116,6 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
-    # === DESIGN BOUTIQUE — Chips par défaut ===
-    try:
-        chips_view = env.ref(
-            'website_sale.o_wsale_products_opt_design_chips',
-            raise_if_not_found=False
-        )
-        if chips_view:
-            chips_view.write({'active': True})
-    except Exception:
-        pass
-
-    # === TROUVER LE BON XMLID CHIPS — TEMPORAIRE ===
-    import logging
-    _logger = logging.getLogger(__name__)
-    chip_views = env['ir.ui.view'].search([('key', 'ilike', 'chip')])
-    for v in chip_views:
-        _logger.info('CHIPS VIEW: key=%s, name=%s, active=%s', v.key, v.name, v.active)
-
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
