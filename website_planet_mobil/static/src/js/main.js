@@ -289,7 +289,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 params.set('category', currentParams.get('category'));
             }
 
-            window.location.href = '/shop?' + params.toString();
+            //garde path de category si on est sur /shop/category/...
+            const pathMatch = window.location.pathname.match(/\/shop\/category\/([^\/]+)/);
+            const redirect = pathMatch
+                ? '/shop/category/' + pathMatch[1] + '?' + params.toString()
+                : '/shop?' + params.toString();
+
+            window.location.href = redirect;
         });
     }
 
