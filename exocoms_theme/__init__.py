@@ -116,6 +116,17 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
+    # === DESIGN BOUTIQUE — Chips par défaut ===
+    try:
+        chips_view = env.ref(
+            'website_sale.o_wsale_products_opt_design_chips',
+            raise_if_not_found=False
+        )
+        if chips_view:
+            chips_view.write({'active': True})
+    except Exception:
+        pass
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
@@ -354,7 +365,6 @@ def post_init_hook(env):
         footer_view = None
 
     if footer_view:
-        # Essayer avec //div[@id='footer'] d'abord
         try:
             footer_view.write({'arch': """
 <data>
@@ -367,7 +377,6 @@ def post_init_hook(env):
 </data>
 """})
         except Exception:
-            # Sinon essayer avec //div[hasclass('oe_structure_solo')]
             try:
                 footer_view.write({'arch': """
 <data>
