@@ -35,7 +35,6 @@ def post_init_hook(env):
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     if website and lang_fr:
-        # Vider d'abord, puis reconstruire FR en premier
         website.write({'language_ids': [(5, 0, 0)]})
         website.write({
             'default_lang_id': lang_fr.id,
@@ -96,7 +95,7 @@ def post_init_hook(env):
         if menu.exists():
             menu.unlink()
 
-    # === PROFIL DROPDOWN — Mon compte (id=637) ===
+    # === PROFIL DROPDOWN — Mon compte ===
     account_view = env['ir.ui.view'].browse(637)
     if account_view.exists():
         account_view.write({'arch': """
@@ -117,9 +116,12 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
-    # === FOOTER CONTENT (id=996) ===
-    footer_view = env['ir.ui.view'].browse(996)
-    if footer_view.exists():
+    # === FOOTER CONTENT — via xmlid natif Odoo ===
+    try:
+        footer_view = env.ref('website.footer_default')
+    except Exception:
+        footer_view = None
+    if footer_view:
         footer_view.write({'arch': """
 <data>
     <xpath expr="//div[@id='footer']" position="replace">
@@ -197,9 +199,12 @@ def post_init_hook(env):
 </data>
 """})
 
-    # === COPYRIGHT (id=1012) ===
-    copyright_view = env['ir.ui.view'].browse(1012)
-    if copyright_view.exists():
+    # === COPYRIGHT — via xmlid natif Odoo ===
+    try:
+        copyright_view = env.ref('website.footer_copyright')
+    except Exception:
+        copyright_view = None
+    if copyright_view:
         copyright_view.write({'arch': """
 <data>
     <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
