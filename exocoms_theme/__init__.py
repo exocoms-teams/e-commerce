@@ -177,13 +177,6 @@ def post_init_hook(env):
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
 
-    # Archiver toutes les racines sauf les 3 nôtres
-    nos_cats_ids = [informatique.id, monetique_root.id, telecom.id]
-    all_root = cat.search([('parent_id', '=', False), ('active', '=', True)])
-    for c in all_root:
-        if c.id not in nos_cats_ids:
-            c.write({'active': False})
-
     # === INFORMATIQUE & RÉSEAUX ===
     get_or_create('Matériel & Informatique Générale', informatique, seq=1)
     get_or_create('Réseaux & Infrastructure', informatique, seq=2)
