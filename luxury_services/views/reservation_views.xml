@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_luxury_reservation" model="ir.sequence">
+        <field name="name">Luxury Reservation</field>
+        <field name="code">luxury.reservation</field>
+        <field name="prefix">LUX/</field>
+        <field name="padding">5</field>
+    </record>
+
+    <!-- Template email confirmation -->
+    <record id="email_template_reservation_confirmed" model="mail.template">
+        <field name="name">Réservation Confirmée - Luxury Services</field>
+        <field name="model_id" ref="luxury_services.model_luxury_reservation"/>
+        <field name="subject">Votre réservation {{object.name}} est confirmée !</field>
+        <field name="email_to">{{object.client_email}}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background-color: #714b67; padding: 20px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">Réservation Confirmée</h1>
+                </div>
+                <div style="padding: 30px; background-color: #f9f9f9;">
+                    <p>Bonjour <strong>{{object.client_name}}</strong>,</p>
+                    <p>Votre réservation a été confirmée. Voici le récapitulatif :</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background-color: #714b67; color: white;">
+                            <td style="padding: 10px;"><strong>Référence</strong></td>
+                            <td style="padding: 10px;">{{object.name}}</td>
+                        </tr>
+                        <tr style="background-color: #f2f2f2;">
+                            <td style="padding: 10px;"><strong>Produit</strong></td>
+                            <td style="padding: 10px;">{{object.product_id.name}}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><strong>Date de début</strong></td>
+                            <td style="padding: 10px;">{{object.date_debut}}</td>
+                        </tr>
+                        <tr style="background-color: #f2f2f2;">
+                            <td style="padding: 10px;"><strong>Date de fin</strong></td>
+                            <td style="padding: 10px;">{{object.date_fin}}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><strong>Durée</strong></td>
+                            <td style="padding: 10px;">{{object.nb_jours}} jours</td>
+                        </tr>
+                        <tr style="background-color: #f2f2f2;">
+                            <td style="padding: 10px;"><strong>Prix total</strong></td>
+                            <td style="padding: 10px;"><strong>{{object.prix_total}} €</strong></td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{{object.get_payment_url()}}"
+                           style="background-color: #714b67; color: white; padding: 15px 30px;
+                                  text-decoration: none; border-radius: 5px; font-size: 16px;">
+                            Procéder au paiement des frais de réservation
+                        </a>
+                    </div>
+
+                    <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+                    <p>Cordialement,<br/><strong>L'équipe Luxury Services</strong></p>
+                </div>
+            </div>
+        ]]></field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="view_luxury_reservation_list" model="ir.ui.view">
+        <field name="name">luxury.reservation.list</field>
+        <field name="model">luxury.reservation</field>
+        <field name="arch" type="xml">
+            <list string="Réservations"
+                  decoration-warning="state == 'en_attente'"
+                  decoration-success="state == 'confirmed'"
+                  decoration-danger="state == 'cancelled'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="client_name"/>
+                <field name="client_email"/>
+                <field name="client_phone"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="nb_jours"/>
+                <field name="prix_total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue formulaire -->
+    <record id="view_luxury_reservation_form" model="ir.ui.view">
+        <field name="name">luxury.reservation.form</field>
+        <field name="model">luxury.reservation</field>
+        <field name="arch" type="xml">
+            <form string="Réservation">
+                <header>
+                    <button name="action_confirm"
+                            string="Confirmer et envoyer email"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'en_attente'"/>
+                    <button name="action_cancel"
+                            string="Annuler"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state == 'cancelled'"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="en_attente,confirmed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group string="Informations client">
+                        <group>
+                            <field name="client_name"/>
+                            <field name="client_email"/>
+                            <field name="client_phone"/>
+                        </group>
+                    </group>
+                    <group string="Adresse">
+                        <group>
+                            <field name="client_adresse"/>
+                            <field name="client_code_postal"/>
+                            <field name="client_pays"/>
+                        </group>
+                    </group>
+                    <group string="Détails réservation">
+                        <group>
+                            <field name="product_id"/>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="destination_ids" widget="many2many"/>
+                        </group>
+                        <group>
+                            <field name="nb_jours"/>
+                            <field name="prix_total"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_luxury_reservation" model="ir.actions.act_window">
+        <field name="name">Réservations</field>
+        <field name="res_model">luxury.reservation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_luxury_root"
+              name="Luxury Services"
+              sequence="10"/>
+
+    <menuitem id="menu_luxury_reservation"
+              name="Réservations"
+              parent="menu_luxury_root"
+              action="action_luxury_reservation"/>
+
+</odoo>
