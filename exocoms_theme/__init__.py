@@ -126,16 +126,23 @@ def post_init_hook(env):
             try:
                 arch = grid_view.arch
                 if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
-                    arch = arch.replace(
-                        'o_wsale_products_opt_layout_catalog',
-                        'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
-                    )
+                    # Essayer plusieurs points d'insertion
+                    if 'o_wsale_products_opt_layout_catalog' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_opt_layout_catalog',
+                            'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                        )
+                    elif 'o_wsale_products_grid_table grid' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_grid_table grid',
+                            'o_wsale_products_grid_table grid o_wsale_products_opt_design_chips'
+                        )
                     grid_view.write({'arch': arch})
             except Exception:
                 pass
     except Exception:
         pass
-
+    
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
