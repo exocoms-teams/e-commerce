@@ -95,8 +95,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ══════════════════════════════════════════
-    // FILTRES /shop — uniquement sur cette page
+    // FILTRES /shop 
     // ══════════════════════════════════════════
+
+    const CATEGORY_FILTERS = {
+        'smartphones-1' : ['Systeme', 'Stockage', 'Taille'],
+        'montres-2' : ['Compatibilite'],
+        'accessoires-3' : ['Compatibilite'],
+        'tv-4' : ['Taille', 'Resolution'],
+    };
+    
     if (!window.location.pathname.startsWith('/shop')) return;
 
     // Récupère l'ID d'un attribut par son nom
@@ -175,6 +183,57 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    //Injecte filtre dynamique selon categorie
+    async function injectCategoryFilters(){
+        const path = window.location.pathname;
+        const match = path.match(/\/shop\/category\/([^\/]+)/);
+        if (!match) return;
+
+        const slug = match[1];
+        const attrNames = CATEGORY_FILTERS[slug];
+        if(!attrNames) return;
+
+        const container = document.getElementById('tsp-category-filters');
+        if(!container) return;
+
+        for(const name of attrNames){
+            const attrId = await getAttributeId(name);
+            if (!attrId) continue;
+
+            const values = await getAttributeValues(attrId);
+            if (!values.length) continue;
+
+            //creer filtre group
+            const group = document.createElement('div');
+            group.className = 'tsp-filter-group';
+            group.innerHTML = `
+                <label>${name}</label>
+                <div class="tsp-custom-select" data-filter="${name.toLowerCase()}">
+                    <div class="tsp-custom-selected">Tous<i class="fa fa-chevron-down"></i></div>
+                    <ul class="tsp-custom-options">
+                        <li data-value="">Tous</li>
+                    </ul>
+                </div>
+            `;
+            container.appendChild(group);
+
+            //peuple valeurs
+            populateDropdown(name.toLowerCase(), values, attrId);
+
+            //branche fonctionnement de l ouverture/fermeture du dropdown
+            const select = group.querySelector('.tsp-custom-select');
+            const selected = group.querySelector('.tsp-custom-selected');
+            const options = group.querySelector('.tsp-custom-options');
+            selected.addEventListener('click', function(e){
+                e.stopPropagation();
+                document.querySelectorAll('.tsp-custom-select').forEach(s => {
+                    if (s !== select) s.classList.remove('open');
+                });
+                select.classList.toggle('open');
+            });
+            options.addEventListener('click', e => e.stopPropagation());
+        }
+    }
 
     // Init dropdowns marque + couleur
     async function initFilters() {
@@ -182,15 +241,18 @@ document.addEventListener('DOMContentLoaded', function () {
             getAttributeId('Brand'),
             getAttributeId('Color')
         ]);
-        if (!brandId || !colorId) return;
 
-        const [brands, colors] = await Promise.all([
-            getAttributeValues(brandId),
-            getAttributeValues(colorId)
-        ]);
+        if (brandId) {
+            const brands = await getAttributeValues(brandId);
+            populateDropdown('marque', brands, brandId);
+        }
 
-        populateDropdown('marque', brands, brandId);
-        populateDropdown('couleur', colors, colorId);
+        if (colorId) {
+            const colors = await getAttributeValues(colorId);
+            populateDropdown('couleur', colors, colorId);
+        }
+
+        await injectCategoryFilters();
     }
 
     // Récupère les attribs cochés (format "attrId-valueId")
