@@ -116,6 +116,26 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
+    # === DESIGN BOUTIQUE — Chips par défaut ===
+    try:
+        grid_views = env['ir.ui.view'].search([
+            ('key', 'like', 'website_sale.products'),
+            ('type', '=', 'qweb'),
+        ])
+        for grid_view in grid_views:
+            try:
+                arch = grid_view.arch
+                if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
+                    arch = arch.replace(
+                        'o_wsale_products_opt_layout_catalog',
+                        'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                    )
+                    grid_view.write({'arch': arch})
+            except Exception:
+                pass
+    except Exception:
+        pass
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
@@ -156,6 +176,13 @@ def post_init_hook(env):
     pdv = cat.search([('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)], limit=1)
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
+
+    # Archiver toutes les racines sauf les 3 nôtres
+    nos_cats_ids = [informatique.id, monetique_root.id, telecom.id]
+    all_root = cat.search([('parent_id', '=', False), ('active', '=', True)])
+    for c in all_root:
+        if c.id not in nos_cats_ids:
+            c.write({'active': False})
 
     # === INFORMATIQUE & RÉSEAUX ===
     get_or_create('Matériel & Informatique Générale', informatique, seq=1)
