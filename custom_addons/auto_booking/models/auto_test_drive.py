@@ -14,7 +14,7 @@ class AutoTestDrive(models.Model):
         ("done", "Terminé"),
     ]
 
-    name = fields.Char(default="New", readonly=True, copy=False)
+    name = fields.Char(default="Nouveau", readonly=True, copy=False)
     partner_id = fields.Many2one("res.partner", required=True, tracking=True)
     vehicle_id = fields.Many2one("auto.vehicle", required=True, tracking=True)
     requested_datetime = fields.Datetime(required=True, tracking=True)
@@ -30,8 +30,8 @@ class AutoTestDrive(models.Model):
     def create(self, vals_list):
         seq = self.env["ir.sequence"]
         for vals in vals_list:
-            if vals.get("name", "New") == "New":
-                vals["name"] = seq.next_by_code("auto.test.drive") or "New"
+            if vals.get("name", "Nouveau") in ("New", "Nouveau"):
+                vals["name"] = seq.next_by_code("auto.test.drive") or "Nouveau"
         records = super().create(vals_list)
         template = self.env.ref("auto_booking.mail_template_test_drive_received", raise_if_not_found=False)
         for test_drive in records:

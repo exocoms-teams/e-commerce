@@ -11,7 +11,7 @@ class AutoSpecification(models.Model):
         ("dimensions", "Dimensions"),
         ("energy", "Énergie"),
         ("safety", "Sécurité"),
-        ("comfort", "Comfort"),
+        ("comfort", "Confort"),
         ("other", "Autre"),
     ]
 

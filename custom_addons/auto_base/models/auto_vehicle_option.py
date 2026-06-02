@@ -27,6 +27,6 @@ class AutoVehicleOption(models.Model):
         (
             "auto_vehicle_option_name_uniq",
             "unique(name)",
-            "Option name must be unique.",
+            "Le nom de l'option doit être unique.",
         )
     ]

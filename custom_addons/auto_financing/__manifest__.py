@@ -1,7 +1,7 @@
 {
-    "name": "Auto Financing",
-    "version": "1.0.1",
-    "summary": "Vehicle financing requests (phase 2)",
+    "name": "Automobile - Financement",
+    "version": "1.0.2",
+    "summary": "Demandes de financement véhicule",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

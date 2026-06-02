@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class AutoAppointmentSlot(models.Model):
     _name = "auto.appointment.slot"
-    _description = "Appointment Slot"
+    _description = "Créneau de rendez-vous"
     _order = "start_datetime"
 
     name = fields.Char(compute="_compute_name", store=True)
@@ -21,12 +21,12 @@ class AutoAppointmentSlot(models.Model):
     def _compute_name(self):
         for slot in self:
             if slot.start_datetime and slot.end_datetime:
-                slot.name = _("%s to %s") % (
+                slot.name = _("%s à %s") % (
                     fields.Datetime.to_string(slot.start_datetime),
                     fields.Datetime.to_string(slot.end_datetime),
                 )
             else:
-                slot.name = _("New Slot")
+                slot.name = _("Nouveau créneau")
 
     @api.depends("booking_ids.state", "test_drive_ids.state", "capacity")
     def _compute_occupied_count(self):
@@ -40,6 +40,6 @@ class AutoAppointmentSlot(models.Model):
     def _check_slot(self):
         for slot in self:
             if slot.end_datetime <= slot.start_datetime:
-                raise ValidationError(_("End datetime must be greater than start datetime."))
+                raise ValidationError(_("La date de fin doit être supérieure à la date de début."))
             if slot.capacity < 1:
-                raise ValidationError(_("Capacity must be at least 1."))
+                raise ValidationError(_("La capacité doit être au moins égale à 1."))

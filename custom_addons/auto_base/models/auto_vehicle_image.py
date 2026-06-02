@@ -3,7 +3,7 @@ from odoo import fields, models
 
 class AutoVehicleImage(models.Model):
     _name = "auto.vehicle.image"
-    _description = "Vehicle Gallery Image"
+    _description = "Image de galerie véhicule"
     _order = "sequence, id"
 
     vehicle_id = fields.Many2one("auto.vehicle", required=True, ondelete="cascade")

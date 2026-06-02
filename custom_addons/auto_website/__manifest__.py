@@ -1,7 +1,7 @@
 {
-    "name": "Auto Website",
-    "version": "1.0.4",
-    "summary": "Public website pages for automotive ecommerce",
+    "name": "Automobile - Site web",
+    "version": "1.0.5",
+    "summary": "Pages publiques du site automobile",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

@@ -1,7 +1,7 @@
 {
-    "name": "Auto Base",
-    "version": "1.0.5",
-    "summary": "Core automotive data models for Chinese car ecommerce",
+    "name": "Automobile - Base",
+    "version": "1.0.6",
+    "summary": "Modèles de données automobiles pour l'e-commerce de voitures chinoises",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

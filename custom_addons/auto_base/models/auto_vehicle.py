@@ -56,7 +56,7 @@ class AutoVehicle(models.Model):
         "option_id",
         string="Options",
     )
-    image_ids = fields.One2many("auto.vehicle.image", "vehicle_id", string="Gallery")
+    image_ids = fields.One2many("auto.vehicle.image", "vehicle_id", string="Galerie")
     specification_ids = fields.One2many(
         "auto.specification", "vehicle_id", string="Spécifications"
     )
@@ -87,7 +87,7 @@ class AutoVehicle(models.Model):
         (
             "auto_vehicle_product_uniq",
             "unique(product_template_id)",
-            "Each product can only be linked to one vehicle.",
+            "Chaque produit ne peut être lié qu'à un seul véhicule.",
         )
     ]
 
@@ -114,7 +114,7 @@ class AutoVehicle(models.Model):
         for vehicle in self:
             if vehicle.year and (vehicle.year < 1990 or vehicle.year > current_year):
                 raise ValidationError(
-                    _("Vehicle year must be between 1990 and next year.")
+                    _("L'année du véhicule doit être comprise entre 1990 et l'année prochaine.")
                 )
 
     def action_set_available(self):

@@ -5,10 +5,10 @@ from odoo import api, fields, models
 
 class AutoDashboardSnapshot(models.Model):
     _name = "auto.dashboard.snapshot"
-    _description = "Automotive Dashboard Snapshot"
+    _description = "Instantané du tableau de bord automobile"
     _order = "create_date desc"
 
-    name = fields.Char(default="Dashboard Snapshot", required=True)
+    name = fields.Char(default="Instantané du tableau de bord", required=True)
     date_from = fields.Date(default=lambda self: date.today().replace(day=1))
     date_to = fields.Date(default=lambda self: date.today())
 

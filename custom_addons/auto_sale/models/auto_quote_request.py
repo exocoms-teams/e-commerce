@@ -15,7 +15,7 @@ class AutoQuoteRequest(models.Model):
         ("lost", "Perdue"),
     ]
 
-    name = fields.Char(default="New", readonly=True, copy=False)
+    name = fields.Char(default="Nouveau", readonly=True, copy=False)
     partner_id = fields.Many2one("res.partner", required=True, tracking=True)
     vehicle_id = fields.Many2one("auto.vehicle", required=True, tracking=True)
     email = fields.Char(required=True)
@@ -38,8 +38,8 @@ class AutoQuoteRequest(models.Model):
     def create(self, vals_list):
         seq = self.env["ir.sequence"]
         for vals in vals_list:
-            if vals.get("name", "New") == "New":
-                vals["name"] = seq.next_by_code("auto.quote.request") or "New"
+            if vals.get("name", "Nouveau") in ("New", "Nouveau"):
+                vals["name"] = seq.next_by_code("auto.quote.request") or "Nouveau"
         requests = super().create(vals_list)
         template = self.env.ref("auto_sale.mail_template_quote_request_received", raise_if_not_found=False)
         for quote in requests:
@@ -66,7 +66,7 @@ class AutoQuoteRequest(models.Model):
                 continue
             lead = crm_lead_model.create(
                 {
-                    "name": _("Quote request: %s") % quote.vehicle_id.display_name,
+                    "name": _("Demande de devis: %s") % quote.vehicle_id.display_name,
                     "partner_id": quote.partner_id.id,
                     "email_from": quote.email,
                     "phone": quote.phone,

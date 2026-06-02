@@ -1,7 +1,7 @@
 {
-    "name": "Auto Sale",
-    "version": "1.0.2",
-    "summary": "Automotive sales adaptation, quote requests, vehicle order bridge",
+    "name": "Automobile - Ventes",
+    "version": "1.0.3",
+    "summary": "Demandes de devis et adaptation commerciale automobile",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

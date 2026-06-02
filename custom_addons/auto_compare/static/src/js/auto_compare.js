@@ -6,8 +6,8 @@ publicWidget.registry.AutoCompareButtons = publicWidget.Widget.extend({
     selector: "[data-auto-compare-link]",
     start() {
         this.el.addEventListener("click", (ev) => {
-            const label = this.el.dataset.autoCompareLabel || "vehicle";
-            this.el.textContent = `Added ${label}`;
+            const label = this.el.dataset.autoCompareLabel || "véhicule";
+            this.el.textContent = `Ajouté: ${label}`;
         });
         return this._super(...arguments);
     },

@@ -60,7 +60,7 @@ class AutoBookingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_booking.booking_form_page",
-                    {"vehicle": vehicle, "slots": slots, "error": "Name and email are required.", "post": post},
+                    {"vehicle": vehicle, "slots": slots, "error": "Le nom et l'email sont obligatoires.", "post": post},
                 )
 
             slot = False
@@ -75,7 +75,7 @@ class AutoBookingController(http.Controller):
                     {
                         "vehicle": vehicle,
                         "slots": slots,
-                        "error": "Select a slot or provide a requested datetime.",
+                        "error": "Sélectionnez un créneau ou indiquez une date souhaitée.",
                         "post": post,
                     },
                 )
@@ -131,7 +131,7 @@ class AutoBookingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_booking.test_drive_form_page",
-                    {"vehicle": vehicle, "slots": slots, "error": "Name and email are required.", "post": post},
+                    {"vehicle": vehicle, "slots": slots, "error": "Le nom et l'email sont obligatoires.", "post": post},
                 )
 
             slot = False
@@ -146,7 +146,7 @@ class AutoBookingController(http.Controller):
                     {
                         "vehicle": vehicle,
                         "slots": slots,
-                        "error": "Select a slot or provide a requested datetime.",
+                        "error": "Sélectionnez un créneau ou indiquez une date souhaitée.",
                         "post": post,
                     },
                 )
@@ -158,7 +158,7 @@ class AutoBookingController(http.Controller):
                     "vehicle_id": vehicle.id,
                     "requested_datetime": requested_datetime,
                     "slot_id": slot.id if slot else False,
-                    "location": post.get("location") or "Main showroom",
+                    "location": post.get("location") or "Showroom principal",
                     "email": email,
                     "phone": phone,
                     "comment": post.get("comment"),

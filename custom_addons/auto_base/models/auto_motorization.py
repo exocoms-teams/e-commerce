@@ -3,7 +3,7 @@ from odoo import fields, models
 
 class AutoMotorization(models.Model):
     _name = "auto.motorization"
-    _description = "Vehicle Motorization"
+    _description = "Motorisation de véhicule"
     _order = "sequence, name"
 
     name = fields.Char(required=True, translate=True)
@@ -17,6 +17,6 @@ class AutoMotorization(models.Model):
         (
             "auto_motorization_name_uniq",
             "unique(name)",
-            "Motorization name must be unique.",
+            "Le nom de la motorisation doit être unique.",
         ),
     ]

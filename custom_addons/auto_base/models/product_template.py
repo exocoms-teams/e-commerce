@@ -5,7 +5,7 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     auto_vehicle_ids = fields.One2many(
-        "auto.vehicle", "product_template_id", string="Linked Vehicles"
+        "auto.vehicle", "product_template_id", string="Véhicules liés"
     )
     auto_vehicle_count = fields.Integer(compute="_compute_auto_vehicle_count")
 
@@ -17,7 +17,7 @@ class ProductTemplate(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": "Vehicle",
+            "name": "Véhicule",
             "res_model": "auto.vehicle",
             "view_mode": "list,form",
             "domain": [("product_template_id", "=", self.id)],

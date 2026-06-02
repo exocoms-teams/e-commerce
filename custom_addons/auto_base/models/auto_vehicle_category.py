@@ -3,7 +3,7 @@ from odoo import fields, models
 
 class AutoVehicleCategory(models.Model):
     _name = "auto.vehicle.category"
-    _description = "Vehicle Category"
+    _description = "Catégorie de véhicule"
     _order = "sequence, name"
 
     name = fields.Char(required=True, translate=True)
@@ -17,6 +17,6 @@ class AutoVehicleCategory(models.Model):
         (
             "auto_vehicle_category_name_uniq",
             "unique(name)",
-            "Category name must be unique.",
+            "Le nom de la catégorie doit être unique.",
         )
     ]

@@ -1,7 +1,7 @@
 {
-    "name": "Auto Compare",
-    "version": "1.0.1",
-    "summary": "Vehicle comparison feature",
+    "name": "Automobile - Comparateur",
+    "version": "1.0.2",
+    "summary": "Comparaison de véhicules",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

@@ -1,7 +1,7 @@
 {
-    "name": "Auto Reviews",
-    "version": "1.0.2",
-    "summary": "Customer reviews with moderation",
+    "name": "Automobile - Avis",
+    "version": "1.0.3",
+    "summary": "Avis clients avec modération",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

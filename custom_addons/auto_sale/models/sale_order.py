@@ -15,7 +15,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    auto_vehicle_id = fields.Many2one("auto.vehicle", string="Vehicle")
+    auto_vehicle_id = fields.Many2one("auto.vehicle", string="Véhicule")
 
     @api.onchange("product_template_id")
     def _onchange_product_template_id_auto_vehicle(self):

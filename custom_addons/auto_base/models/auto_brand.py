@@ -3,7 +3,7 @@ from odoo import fields, models
 
 class AutoBrand(models.Model):
     _name = "auto.brand"
-    _description = "Automotive Brand"
+    _description = "Marque automobile"
     _order = "sequence, name"
 
     name = fields.Char(required=True, translate=True)
@@ -13,11 +13,11 @@ class AutoBrand(models.Model):
     website_published = fields.Boolean(default=True)
     logo = fields.Image(max_width=1024, max_height=1024)
     description = fields.Html(translate=True)
-    vehicle_ids = fields.One2many("auto.vehicle", "brand_id", string="Vehicles")
+    vehicle_ids = fields.One2many("auto.vehicle", "brand_id", string="Véhicules")
     vehicle_count = fields.Integer(compute="_compute_vehicle_count")
 
     _sql_constraints = [
-        ("auto_brand_name_uniq", "unique(name)", "Brand name must be unique."),
+        ("auto_brand_name_uniq", "unique(name)", "Le nom de la marque doit être unique."),
     ]
 
     def _compute_vehicle_count(self):
@@ -32,7 +32,7 @@ class AutoBrand(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": "Vehicles",
+            "name": "Véhicules",
             "res_model": "auto.vehicle",
             "view_mode": "list,form",
             "domain": [("brand_id", "=", self.id)],

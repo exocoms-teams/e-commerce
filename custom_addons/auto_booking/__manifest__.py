@@ -1,7 +1,7 @@
 {
-    "name": "Auto Booking",
-    "version": "1.0.2",
-    "summary": "Vehicle reservations and test-drive workflow",
+    "name": "Automobile - Réservations",
+    "version": "1.0.3",
+    "summary": "Réservations de véhicules et demandes d'essai",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

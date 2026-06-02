@@ -1,7 +1,7 @@
 {
-    "name": "Auto Dashboard",
-    "version": "1.0.0",
-    "summary": "Automotive business KPIs",
+    "name": "Automobile - Tableau de bord",
+    "version": "1.0.1",
+    "summary": "Indicateurs commerciaux automobiles",
     "category": "Reporting",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",

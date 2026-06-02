@@ -30,7 +30,7 @@ class AutoFinancingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_financing.financing_form_page",
-                    {"vehicle": vehicle, "post": post, "error": "Name and email are required."},
+                    {"vehicle": vehicle, "post": post, "error": "Le nom et l'email sont obligatoires."},
                 )
 
             partner = request.env.user.partner_id

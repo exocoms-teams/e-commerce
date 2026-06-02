@@ -30,7 +30,7 @@ class AutoReview(models.Model):
         (
             "auto_review_unique_partner_vehicle",
             "unique(partner_id, vehicle_id)",
-            "A customer can only submit one review per vehicle.",
+            "Un client ne peut déposer qu'un seul avis par véhicule.",
         )
     ]
 

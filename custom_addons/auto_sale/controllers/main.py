@@ -33,7 +33,7 @@ class AutoSaleController(http.Controller):
                     "auto_sale.quote_form_page",
                     {
                         "vehicle": vehicle,
-                        "error": "Name and email are required.",
+                        "error": "Le nom et l'email sont obligatoires.",
                         "post": post,
                     },
                 )

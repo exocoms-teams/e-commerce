@@ -3,7 +3,7 @@ from odoo import fields, models
 
 class AutoVehicleColor(models.Model):
     _name = "auto.vehicle.color"
-    _description = "Vehicle Color"
+    _description = "Couleur de véhicule"
     _order = "sequence, name"
 
     name = fields.Char(required=True, translate=True)
@@ -15,6 +15,6 @@ class AutoVehicleColor(models.Model):
         (
             "auto_vehicle_color_name_uniq",
             "unique(name)",
-            "Color name must be unique.",
+            "Le nom de la couleur doit être unique.",
         )
     ]
