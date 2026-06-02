@@ -12,57 +12,41 @@
                 </div>
 
                 <div id="oe_structure_avis_stats" class="oe_structure oe_empty" />
-                <div class="avis-stats">
-                    <div class="avis-stat-main">
-                        <div class="note">4.6</div>
-                        <div class="stars-big">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star-half-o" />
-                        </div>
-                        <p>Basé sur 248 avis vérifiés</p>
-                    </div>
-                    <div class="avis-stat-bars">
-                        <div class="avis-bar-row">
-                            <span>5 ⭐</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:72%" />
+                <t t-if="stats">
+                    <div class="avis-stats">
+                        <div class="avis-stat-main">
+                            <div class="note">
+                                <t t-out="stats['avg']" />
                             </div>
-                            <span>72%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>4 ⭐</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:18%" />
+                            <div class="stars-big">
+                                <t t-foreach="range(int(stats['avg']))" t-as="s">
+                                    <i class="fa fa-star" />
+                                </t>
+                                <t t-if="stats['avg'] % 1 >= 0.5">
+                                    <i class="fa fa-star-half-o" />
+                                </t>
                             </div>
-                            <span>18%</span>
+                            <p>Basé sur <t t-out="stats['total']" /> avis vérifiés</p>
                         </div>
-                        <div class="avis-bar-row">
-                            <span>3 ⭐</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:6%" />
-                            </div>
-                            <span>6%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>2 ⭐</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:3%" />
-                            </div>
-                            <span>3%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>1 ⭐</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:1%" />
-                            </div>
-                            <span>1%</span>
+                        <div class="avis-stat-bars">
+                            <t t-foreach="[5,4,3,2,1]" t-as="star">
+                                <div class="avis-bar-row">
+                                    <span><t t-out="star" /> ⭐</span>
+                                    <div class="avis-bar-bg">
+                                        <div class="avis-bar-fill"
+                                            t-att-style="'width:' + str(stats['dist'][star]) + '%'" />
+                                    </div>
+                                    <span><t t-out="stats['dist'][star]" />%</span>
+                                </div>
+                            </t>
                         </div>
                     </div>
-                </div>
-
+                </t>
+                <t t-else="">
+                    <div class="avis-stats" style="text-align:center; padding:32px;">
+                        <p style="color:var(--muted)">Aucun avis pour le moment.</p>
+                    </div>
+                </t>
                 <div id="oe_structure_avis_grid" class="oe_structure oe_empty" />
                 <div class="avis-grid">
                     <t t-foreach="avis_list" t-as="avis">

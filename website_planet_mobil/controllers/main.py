@@ -175,10 +175,27 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         })
     @http.route('/avis', type='http', auth='public', website=True)
     def avis(self, **kwargs):
-        reviews = request.env['planet.review'].sudo().search([('is_published', '=', True)]);
+        reviews = request.env['planet.review'].sudo().search([
+            ('is_published', '=', True)
+        ])
+        
+        total = len(reviews)
+        if total > 0:
+            avg = sum(r.rating for r in reviews) / total
+            dist = {i: 0 for i in range(1, 6)}
+            for r in reviews:
+                dist[r.rating] += 1
+            stats = {
+                'total': total,
+                'avg': round(avg, 1),
+                'dist': {i: round(dist[i] / total * 100) for i in range(1, 6)}
+            }
+        else:
+            stats = None
 
         return request.render('website_planet_mobil.avis_page', {
             'avis_list': reviews,
+            'stats': stats,
         })
 
     @http.route('/avis/submit', type='http', auth='public', website=True, methods=['POST'])
