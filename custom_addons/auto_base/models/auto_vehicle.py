@@ -6,15 +6,15 @@ from odoo.exceptions import ValidationError
 
 class AutoVehicle(models.Model):
     _name = "auto.vehicle"
-    _description = "Automotive Vehicle"
+    _description = "Véhicule automobile"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "featured desc, id desc"
 
     AVAILABILITY_SELECTION = [
-        ("available", "Available"),
-        ("reserved", "Reserved"),
-        ("sold", "Sold"),
-        ("coming_soon", "Coming soon"),
+        ("available", "Disponible"),
+        ("reserved", "Réservé"),
+        ("sold", "Vendu"),
+        ("coming_soon", "Bientôt disponible"),
     ]
 
     name = fields.Char(required=True, tracking=True, translate=True)
@@ -47,7 +47,7 @@ class AutoVehicle(models.Model):
         "auto_vehicle_color_rel",
         "vehicle_id",
         "color_id",
-        string="Available Colors",
+        string="Couleurs disponibles",
     )
     option_ids = fields.Many2many(
         "auto.vehicle.option",
@@ -58,7 +58,7 @@ class AutoVehicle(models.Model):
     )
     image_ids = fields.One2many("auto.vehicle.image", "vehicle_id", string="Gallery")
     specification_ids = fields.One2many(
-        "auto.specification", "vehicle_id", string="Specifications"
+        "auto.specification", "vehicle_id", string="Spécifications"
     )
 
     currency_id = fields.Many2one(
@@ -79,7 +79,7 @@ class AutoVehicle(models.Model):
         "auto_vehicle_favorite_rel",
         "vehicle_id",
         "partner_id",
-        string="Favorite Partners",
+        string="Partenaires favoris",
     )
     favorite_count = fields.Integer(compute="_compute_favorite_count")
 
@@ -133,7 +133,7 @@ class AutoVehicle(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": "Product",
+            "name": "Produit",
             "res_model": "product.template",
             "view_mode": "form",
             "res_id": self.product_template_id.id,

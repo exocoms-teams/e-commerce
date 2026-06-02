@@ -1,6 +1,6 @@
 {
     "name": "Auto Financing",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Vehicle financing requests (phase 2)",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",

@@ -22,8 +22,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="state == 'approved'"/>
-                    <button name="action_reject" type="object" string="Reject" invisible="state == 'rejected'"/>
+                    <button name="action_approve" type="object" string="Approuver" class="btn-primary" invisible="state == 'approved'"/>
+                    <button name="action_reject" type="object" string="Rejeter" invisible="state == 'rejected'"/>
                     <field name="state" widget="statusbar" statusbar_visible="pending,approved,rejected"/>
                 </header>
                 <sheet>
@@ -54,21 +54,21 @@
                 <field name="partner_id"/>
                 <field name="vehicle_id"/>
                 <field name="state"/>
-                <filter name="pending" string="Pending" domain="[('state', '=', 'pending')]"/>
-                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="pending" string="En attente" domain="[('state', '=', 'pending')]"/>
+                <filter name="approved" string="Approuvé" domain="[('state', '=', 'approved')]"/>
                 <group>
-                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
-                    <filter name="group_by_vehicle" string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
+                    <filter name="group_by_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_vehicle" string="Véhicule" context="{'group_by': 'vehicle_id'}"/>
                 </group>
             </search>
         </field>
     </record>
 
     <record id="action_auto_review" model="ir.actions.act_window">
-        <field name="name">Reviews</field>
+        <field name="name">Avis</field>
         <field name="res_model">auto.review</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_auto_review" name="Reviews" parent="auto_base.menu_auto_catalog" action="action_auto_review" sequence="60"/>
+    <menuitem id="menu_auto_review" name="Avis" parent="auto_base.menu_auto_catalog" action="action_auto_review" sequence="60"/>
 </odoo>

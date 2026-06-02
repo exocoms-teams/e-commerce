@@ -3,15 +3,15 @@ from odoo import api, fields, models
 
 class AutoBooking(models.Model):
     _name = "auto.booking"
-    _description = "Vehicle Reservation"
+    _description = "Réservation de véhicule"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "requested_datetime desc, id desc"
 
     STATE_SELECTION = [
-        ("draft", "Draft"),
-        ("confirmed", "Confirmed"),
-        ("cancelled", "Cancelled"),
-        ("done", "Done"),
+        ("draft", "Brouillon"),
+        ("confirmed", "Confirmée"),
+        ("cancelled", "Annulée"),
+        ("done", "Terminée"),
     ]
 
     name = fields.Char(default="New", readonly=True, copy=False)
@@ -22,11 +22,11 @@ class AutoBooking(models.Model):
     email = fields.Char(required=True)
     phone = fields.Char()
     source = fields.Selection(
-        [("website", "Website"), ("phone", "Phone"), ("showroom", "Showroom")],
+        [("website", "Site web"), ("phone", "Téléphone"), ("showroom", "Showroom")],
         default="website",
     )
     note = fields.Text()
-    assigned_user_id = fields.Many2one("res.users", string="Assigned Advisor", tracking=True)
+    assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné", tracking=True)
     state = fields.Selection(STATE_SELECTION, default="draft", tracking=True)
 
     @api.model_create_multi

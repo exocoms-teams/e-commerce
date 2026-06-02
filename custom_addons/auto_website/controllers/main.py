@@ -92,9 +92,9 @@ class AutoWebsiteController(http.Controller):
             "sort_key": kwargs.get("sort", "newest"),
             "availability_values": [
                 ("available", "Disponible"),
-                ("reserved", "Reserve"),
+                ("reserved", "Réservé"),
                 ("sold", "Vendu"),
-                ("coming_soon", "Bientot disponible"),
+                ("coming_soon", "Bientôt disponible"),
             ],
         }
         return request.render("auto_website.catalog_page", values)

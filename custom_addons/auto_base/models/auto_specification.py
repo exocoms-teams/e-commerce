@@ -3,16 +3,16 @@ from odoo import fields, models
 
 class AutoSpecification(models.Model):
     _name = "auto.specification"
-    _description = "Vehicle Specification"
+    _description = "Spécification du véhicule"
     _order = "sequence, id"
 
     SECTION_SELECTION = [
         ("performance", "Performance"),
         ("dimensions", "Dimensions"),
-        ("energy", "Energy"),
-        ("safety", "Safety"),
+        ("energy", "Énergie"),
+        ("safety", "Sécurité"),
         ("comfort", "Comfort"),
-        ("other", "Other"),
+        ("other", "Autre"),
     ]
 
     vehicle_id = fields.Many2one("auto.vehicle", required=True, ondelete="cascade")

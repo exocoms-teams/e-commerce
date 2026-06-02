@@ -7,7 +7,7 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h1 class="h3 mb-3">Demande de financement</h1>
-                            <p class="text-muted">Vehicule: <strong t-esc="vehicle.display_name"/></p>
+                            <p class="text-muted">Véhicule: <strong t-esc="vehicle.display_name"/></p>
                             <div t-if="error" class="alert alert-danger" t-esc="error"/>
                             <form method="post" t-att-action="'/cars/%s/financing' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -21,15 +21,15 @@
                                         <input class="form-control" type="email" name="email" required="required" t-att-value="post.get('email', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Telephone</label>
+                                        <label class="form-label">Téléphone</label>
                                         <input class="form-control" type="text" name="phone" t-att-value="post.get('phone', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Montant souhaite</label>
+                                        <label class="form-label">Montant souhaité</label>
                                         <input class="form-control" type="number" min="0" step="0.01" name="requested_amount" required="required" t-att-value="post.get('requested_amount', '')"/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Duree (mois)</label>
+                                        <label class="form-label">Durée (mois)</label>
                                         <input class="form-control" type="number" min="6" step="1" name="duration_months" required="required" t-att-value="post.get('duration_months', '36')"/>
                                     </div>
                                     <div class="col-md-4">
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
                                     <button class="btn auto-btn-primary" type="submit">Envoyer la demande</button>
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vehicule</a>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
                                 </div>
                             </form>
                         </div>
@@ -64,10 +64,10 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
-                                <h1 class="h3">Demande de financement envoyee</h1>
-                                <p class="mb-2">Vehicule: <strong t-esc="vehicle.display_name"/></p>
+                                <h1 class="h3">Demande de financement envoyée</h1>
+                                <p class="mb-2">Véhicule: <strong t-esc="vehicle.display_name"/></p>
                                 <p t-if="request_obj">Demande ID: <strong t-esc="request_obj.id"/></p>
-                                <p class="text-muted">Un conseiller financement vous contacte apres pre-analyse de votre dossier.</p>
+                                <p class="text-muted">Un conseiller financement vous contacte après pré-analyse de votre dossier.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/financing-requests" class="btn auto-btn-primary">Mes demandes</a>
                                     <a href="/cars" class="btn btn-outline-secondary">Continuer le catalogue</a>
@@ -89,9 +89,9 @@
                         <table class="table table-bordered align-middle">
                             <thead>
                                 <tr>
-                                    <th>Vehicule</th>
+                                    <th>Véhicule</th>
                                     <th>Montant</th>
-                                    <th>Duree</th>
+                                    <th>Durée</th>
                                     <th>Statut</th>
                                 </tr>
                             </thead>

@@ -1,6 +1,6 @@
 {
     "name": "Auto Booking",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "summary": "Vehicle reservations and test-drive workflow",
     "category": "Website",
     "author": "Ecommerce Voitures Team",

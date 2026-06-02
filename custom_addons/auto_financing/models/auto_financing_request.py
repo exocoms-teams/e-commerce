@@ -3,15 +3,15 @@ from odoo import fields, models
 
 class AutoFinancingRequest(models.Model):
     _name = "auto.financing.request"
-    _description = "Vehicle Financing Request"
+    _description = "Demande de financement véhicule"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
     STATE_SELECTION = [
-        ("new", "New"),
-        ("under_review", "Under review"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
+        ("new", "Nouvelle"),
+        ("under_review", "En étude"),
+        ("approved", "Approuvée"),
+        ("rejected", "Rejetée"),
     ]
 
     partner_id = fields.Many2one("res.partner", required=True, tracking=True)
@@ -24,7 +24,7 @@ class AutoFinancingRequest(models.Model):
     down_payment = fields.Monetary(currency_field="currency_id")
     note = fields.Text()
     state = fields.Selection(STATE_SELECTION, default="new", tracking=True)
-    assigned_user_id = fields.Many2one("res.users", string="Assigned Advisor")
+    assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné")
 
     company_id = fields.Many2one("res.company", default=lambda self: self.env.company)
     currency_id = fields.Many2one("res.currency", related="company_id.currency_id", readonly=True)

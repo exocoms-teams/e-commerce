@@ -3,16 +3,16 @@ from odoo import _, api, fields, models
 
 class AutoQuoteRequest(models.Model):
     _name = "auto.quote.request"
-    _description = "Vehicle Quote Request"
+    _description = "Demande de devis véhicule"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
     STATE_SELECTION = [
-        ("new", "New"),
-        ("qualified", "Qualified"),
-        ("quoted", "Quoted"),
-        ("won", "Won"),
-        ("lost", "Lost"),
+        ("new", "Nouvelle"),
+        ("qualified", "Qualifiée"),
+        ("quoted", "Devis envoyé"),
+        ("won", "Gagnée"),
+        ("lost", "Perdue"),
     ]
 
     name = fields.Char(default="New", readonly=True, copy=False)
@@ -23,14 +23,14 @@ class AutoQuoteRequest(models.Model):
     budget = fields.Monetary(currency_field="currency_id")
     message = fields.Text()
     preferred_contact = fields.Selection(
-        [("email", "Email"), ("phone", "Phone"), ("whatsapp", "WhatsApp")],
+        [("email", "Email"), ("phone", "Téléphone"), ("whatsapp", "WhatsApp")],
         default="email",
     )
     source = fields.Char(default="website")
     state = fields.Selection(STATE_SELECTION, default="new", tracking=True)
     lead_id = fields.Many2one("crm.lead", readonly=True)
     sale_order_id = fields.Many2one("sale.order", readonly=True)
-    assigned_user_id = fields.Many2one("res.users", string="Assigned Advisor", tracking=True)
+    assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné", tracking=True)
     company_id = fields.Many2one("res.company", default=lambda self: self.env.company)
     currency_id = fields.Many2one("res.currency", related="company_id.currency_id", readonly=True)
 

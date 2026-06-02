@@ -1,6 +1,6 @@
 {
     "name": "Auto Sale",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "summary": "Automotive sales adaptation, quote requests, vehicle order bridge",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",

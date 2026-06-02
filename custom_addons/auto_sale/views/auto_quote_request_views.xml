@@ -23,19 +23,19 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_set_qualified" type="object" string="Set Qualified" invisible="state != 'new'"/>
-                    <button name="action_set_quoted" type="object" string="Set Quoted" invisible="state not in ('new','qualified')"/>
-                    <button name="action_set_won" type="object" string="Set Won" class="btn-primary" invisible="state == 'won'"/>
-                    <button name="action_set_lost" type="object" string="Set Lost" invisible="state == 'lost'"/>
+                    <button name="action_set_qualified" type="object" string="Qualifier" invisible="state != 'new'"/>
+                    <button name="action_set_quoted" type="object" string="Marquer devis envoyé" invisible="state not in ('new','qualified')"/>
+                    <button name="action_set_won" type="object" string="Marquer gagné" class="btn-primary" invisible="state == 'won'"/>
+                    <button name="action_set_lost" type="object" string="Marquer perdu" invisible="state == 'lost'"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,qualified,quoted,won,lost"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_create_lead" type="object" class="oe_stat_button" icon="fa-briefcase">
-                            <span>Create CRM Lead</span>
+                            <span>Créer une opportunité CRM</span>
                         </button>
                         <button name="action_create_sale_order" type="object" class="oe_stat_button" icon="fa-file-text-o">
-                            <span>Create Sale Order</span>
+                            <span>Créer un bon de commande</span>
                         </button>
                     </div>
                     <group>
@@ -76,22 +76,22 @@
                 <field name="partner_id"/>
                 <field name="vehicle_id"/>
                 <field name="assigned_user_id"/>
-                <filter name="new" string="New" domain="[('state', '=', 'new')]"/>
-                <filter name="qualified" string="Qualified" domain="[('state', '=', 'qualified')]"/>
-                <filter name="quoted" string="Quoted" domain="[('state', '=', 'quoted')]"/>
+                <filter name="new" string="Nouvelle" domain="[('state', '=', 'new')]"/>
+                <filter name="qualified" string="Qualifiée" domain="[('state', '=', 'qualified')]"/>
+                <filter name="quoted" string="Devis envoyé" domain="[('state', '=', 'quoted')]"/>
                 <group>
-                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
-                    <filter name="group_by_advisor" string="Advisor" context="{'group_by': 'assigned_user_id'}"/>
+                    <filter name="group_by_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_advisor" string="Conseiller" context="{'group_by': 'assigned_user_id'}"/>
                 </group>
             </search>
         </field>
     </record>
 
     <record id="action_auto_quote_request" model="ir.actions.act_window">
-        <field name="name">Quote Requests</field>
+        <field name="name">Demandes de devis</field>
         <field name="res_model">auto.quote.request</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_auto_quote_request" name="Quote Requests" parent="auto_base.menu_auto_catalog" action="action_auto_quote_request" sequence="30"/>
+    <menuitem id="menu_auto_quote_request" name="Demandes de devis" parent="auto_base.menu_auto_catalog" action="action_auto_quote_request" sequence="30"/>
 </odoo>

@@ -24,16 +24,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_set_available" type="object" string="Set Available" class="btn-primary" invisible="availability == 'available'"/>
-                    <button name="action_set_reserved" type="object" string="Set Reserved" invisible="availability == 'reserved'"/>
-                    <button name="action_set_sold" type="object" string="Set Sold" invisible="availability == 'sold'"/>
-                    <button name="action_set_coming_soon" type="object" string="Set Coming Soon" invisible="availability == 'coming_soon'"/>
+                    <button name="action_set_available" type="object" string="Marquer disponible" class="btn-primary" invisible="availability == 'available'"/>
+                    <button name="action_set_reserved" type="object" string="Marquer réservé" invisible="availability == 'reserved'"/>
+                    <button name="action_set_sold" type="object" string="Marquer vendu" invisible="availability == 'sold'"/>
+                    <button name="action_set_coming_soon" type="object" string="Marquer bientôt disponible" invisible="availability == 'coming_soon'"/>
                     <field name="availability" widget="statusbar" statusbar_visible="available,reserved,sold,coming_soon"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_product" type="object" class="oe_stat_button" icon="fa-shopping-cart">
-                            <span>Product</span>
+                            <span>Produit</span>
                         </button>
                     </div>
                     <group>
@@ -58,7 +58,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Highlights">
+                        <page string="Résumé">
                             <group>
                                 <group>
                                     <field name="short_description"/>
@@ -76,13 +76,13 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Colors &amp; Options">
+                        <page string="Couleurs et options">
                             <group>
                                 <field name="color_ids" widget="many2many_tags"/>
                                 <field name="option_ids" widget="many2many_tags"/>
                             </group>
                         </page>
-                        <page string="Gallery">
+                        <page string="Galerie">
                             <field name="image_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -93,7 +93,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Specifications">
+                        <page string="Spécifications">
                             <field name="specification_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -129,24 +129,24 @@
                 <field name="category_id"/>
                 <field name="motorization_id"/>
                 <field name="availability"/>
-                <filter name="available" string="Available" domain="[('availability', '=', 'available')]"/>
-                <filter name="featured" string="Featured" domain="[('featured', '=', True)]"/>
-                <filter name="published" string="Published" domain="[('website_published', '=', True)]"/>
+                <filter name="available" string="Disponible" domain="[('availability', '=', 'available')]"/>
+                <filter name="featured" string="Mis en avant" domain="[('featured', '=', True)]"/>
+                <filter name="published" string="Publié" domain="[('website_published', '=', True)]"/>
                 <group>
-                    <filter name="group_by_brand" string="Brand" context="{'group_by': 'brand_id'}"/>
-                    <filter name="group_by_category" string="Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="group_by_brand" string="Marque" context="{'group_by': 'brand_id'}"/>
+                    <filter name="group_by_category" string="Catégorie" context="{'group_by': 'category_id'}"/>
                     <filter name="group_by_motorization" string="Motorization" context="{'group_by': 'motorization_id'}"/>
-                    <filter name="group_by_availability" string="Availability" context="{'group_by': 'availability'}"/>
+                    <filter name="group_by_availability" string="Disponibilité" context="{'group_by': 'availability'}"/>
                 </group>
             </search>
         </field>
     </record>
 
     <record id="action_auto_vehicle" model="ir.actions.act_window">
-        <field name="name">Vehicles</field>
+        <field name="name">Véhicules</field>
         <field name="res_model">auto.vehicle</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_auto_vehicle" name="Vehicles" parent="auto_base.menu_auto_catalog" action="action_auto_vehicle" sequence="20"/>
+    <menuitem id="menu_auto_vehicle" name="Véhicules" parent="auto_base.menu_auto_catalog" action="action_auto_vehicle" sequence="20"/>
 </odoo>

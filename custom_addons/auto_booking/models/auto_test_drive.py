@@ -3,15 +3,15 @@ from odoo import api, fields, models
 
 class AutoTestDrive(models.Model):
     _name = "auto.test.drive"
-    _description = "Vehicle Test Drive"
+    _description = "Essai de véhicule"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "requested_datetime desc, id desc"
 
     STATE_SELECTION = [
-        ("draft", "Draft"),
-        ("confirmed", "Confirmed"),
-        ("cancelled", "Cancelled"),
-        ("done", "Done"),
+        ("draft", "Brouillon"),
+        ("confirmed", "Confirmé"),
+        ("cancelled", "Annulé"),
+        ("done", "Terminé"),
     ]
 
     name = fields.Char(default="New", readonly=True, copy=False)
@@ -19,11 +19,11 @@ class AutoTestDrive(models.Model):
     vehicle_id = fields.Many2one("auto.vehicle", required=True, tracking=True)
     requested_datetime = fields.Datetime(required=True, tracking=True)
     slot_id = fields.Many2one("auto.appointment.slot", tracking=True)
-    location = fields.Char(default="Main showroom")
+    location = fields.Char(default="Showroom principal")
     email = fields.Char(required=True)
     phone = fields.Char()
     comment = fields.Text()
-    assigned_user_id = fields.Many2one("res.users", string="Assigned Advisor", tracking=True)
+    assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné", tracking=True)
     state = fields.Selection(STATE_SELECTION, default="draft", tracking=True)
 
     @api.model_create_multi

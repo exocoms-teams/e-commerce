@@ -3,18 +3,18 @@ from odoo import fields, models
 
 class AutoVehicleOption(models.Model):
     _name = "auto.vehicle.option"
-    _description = "Vehicle Option"
+    _description = "Option du véhicule"
     _order = "sequence, name"
 
     name = fields.Char(required=True, translate=True)
     option_type = fields.Selection(
         [
-            ("safety", "Safety"),
+            ("safety", "Sécurité"),
             ("comfort", "Comfort"),
-            ("multimedia", "Multimedia"),
-            ("driving", "Driving Assistance"),
-            ("charging", "Charging"),
-            ("other", "Other"),
+            ("multimedia", "Multimédia"),
+            ("driving", "Aide à la conduite"),
+            ("charging", "Recharge"),
+            ("other", "Autre"),
         ],
         default="other",
         required=True,

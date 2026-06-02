@@ -3,14 +3,14 @@ from odoo import api, fields, models
 
 class AutoReview(models.Model):
     _name = "auto.review"
-    _description = "Vehicle Customer Review"
+    _description = "Avis client véhicule"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
     STATE_SELECTION = [
-        ("pending", "Pending"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
+        ("pending", "En attente"),
+        ("approved", "Approuvé"),
+        ("rejected", "Rejeté"),
     ]
 
     partner_id = fields.Many2one("res.partner", required=True, tracking=True)

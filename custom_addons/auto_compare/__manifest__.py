@@ -1,6 +1,6 @@
 {
     "name": "Auto Compare",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Vehicle comparison feature",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
