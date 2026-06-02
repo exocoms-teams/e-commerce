@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+        <!--Vue liste-->
+        <record id="planet_review_list_view" model="ir.ui.view">
+            <field name="name">planet.review.list</field>
+            <field name="model">planet.review</field>
+            <field name="arch" type="xml">
+                <list string="Avis clients">
+                    <field name="name" />
+                    <field name="rating" />
+                    <field name="product" />
+                    <field name="date" />
+                    <field name="is_published" />
+                    <field name="comment" />
+                </list>
+            </field>
+        </record>
+
+        <!--Vue
+        formulaire-->
+        <record id="planet_review_form_view" model="ir.ui.view">
+            <field name="name">planet.review.form</field>
+            <field name="model">planet.review</field>
+            <field name="arch" type="xml">
+                <form string="Avis client">
+                    <sheet>
+                        <group>
+                            <field name="name" />
+                            <field name="rating" />
+                            <field name="product" />
+                            <field name="date" />
+                            <field name="is_published" />
+                        </group>
+                        <group>
+                            <field name="comment" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--Action
+        (ouvre ce model dans ces vues)-->
+        <record id="planet_review_action" model="ir.actions.act_window">
+            <field name="name">Avis clients</field>
+            <field name="res_model">planet.review</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!--Menu-->
+        <menuitem id="planet_review_menu_root"
+            name="Planet Mobil"
+            sequence="100" />
+        <menuitem id="planet_review_menu"
+            name="Avis clients"
+            parent="planet_review_menu_root"
+            action="planet_review_action" />
+
+    </data>
+</odoo>
