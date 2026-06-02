@@ -233,6 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             options.addEventListener('click', e => e.stopPropagation());
         }
+        const btn = document.getElementById('tsp-apply-filters');
+        if (btn) container.appendChild(btn);
     }
 
     // Init dropdowns marque + couleur
