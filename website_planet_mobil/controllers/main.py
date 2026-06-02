@@ -192,10 +192,10 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 'name': name,
                 'rating': rating,
                 'comment': comment,
-                'product' : product,
+                'product': product,
                 'is_published': False,
             })
-        return request.redirect('/avis?submitted=1')
+        return request.make_response('ok')
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):

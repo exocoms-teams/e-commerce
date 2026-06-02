@@ -301,23 +301,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Message confirmation avis soumis
-    if (window.location.pathname === '/avis' &&
-        new URLSearchParams(window.location.search).get('submitted') === '1') {
-        const form = document.querySelector('.avis-form-wrap');
-        if (form) {
-            form.style.transition = 'all 0.5s ease';
-            form.style.overflow = 'hidden';
-            form.style.height = form.offsetHeight + 'px';
+    // ── Formulaire avis en AJAX
+    const avisForm = document.querySelector('.avis-form-wrap form');
+    if (avisForm) {
+        avisForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(avisForm);
+
+            await fetch('/avis/submit', {
+                method: 'POST',
+                body: formData,
+            });
+
+            // Animation rétrécissement
+            const wrap = document.querySelector('.avis-form-wrap');
+            wrap.style.transition = 'all 0.5s ease';
+            wrap.style.overflow = 'hidden';
+            wrap.style.height = wrap.offsetHeight + 'px';
 
             setTimeout(() => {
-                form.style.height = '0';
-                form.style.padding = '0';
-                form.style.opacity = '0';
+                wrap.style.height = '0';
+                wrap.style.padding = '0';
+                wrap.style.opacity = '0';
             }, 100);
 
             setTimeout(() => {
-                form.innerHTML = `
+                wrap.innerHTML = `
                 <div style="text-align:center; padding: 40px 20px;">
                     <i class="fa fa-check-circle" style="font-size:3rem; color:var(--blue); margin-bottom:16px; display:block"></i>
                     <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
@@ -327,11 +337,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     </a>
                 </div>
             `;
-                form.style.height = '';
-                form.style.padding = '';
-                form.style.opacity = '1';
+                wrap.style.height = '';
+                wrap.style.padding = '36px';
+                wrap.style.opacity = '1';
             }, 600);
-        }
+        });
     }
 
     initFilters();
