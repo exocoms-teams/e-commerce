@@ -247,7 +247,7 @@
                                     <h3 class="h5 mb-2">Une expertise tech au service de votre mobilité</h3>
                                     <p class="mb-3">"EXOCOMS accompagne les entreprises avec des services fiables, innovants et adaptés à chaque besoin."</p>
                                     <div class="small text-muted mb-2">Source: exocoms.fr</div>
-                                    <a class="auto-inline-link" href="https://www.facebook.com/profile.php?id=61582991085037" target="_blank" rel="noopener noreferrer">Facebook officiel</a>
+                                    <a class="auto-inline-link" href="/contactus">Contacter EXOCOMS</a>
                                 </div>
                                 <div class="auto-story-mini-image" t-if="latest_vehicles and latest_vehicles[0].main_image">
                                     <img t-att-src="image_data_uri(latest_vehicles[0].main_image)" t-att-alt="latest_vehicles[0].display_name"/>
@@ -645,5 +645,159 @@
                 </div>
             </section>
         </t>
+    </template>
+
+    <template id="contactus_exocoms" inherit_id="website.contactus" name="Contact EXOCOMS Group">
+        <xpath expr="//t[@t-set='contactus_form_values']" position="replace">
+            <t t-set="contactus_form_values" t-value="{
+                'email_to': 'contact@exocoms.fr',
+                'name': request.params.get('name', ''),
+                'phone': request.params.get('phone', ''),
+                'email_from': request.params.get('email_from', ''),
+                'company': request.params.get('company', ''),
+                'subject': request.params.get('subject', ''),
+            }"/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure">
+                <section class="auto-contact-hero py-5">
+                    <div class="container">
+                        <div class="row align-items-center g-4">
+                            <div class="col-lg-7">
+                                <div class="auto-hero-branding mb-3">
+                                    <img src="/auto_website/static/src/img/exocoms-logo.png" alt="EXOCOMS Group" class="auto-hero-exocoms-logo"/>
+                                    <span class="auto-hero-kicker">Contact</span>
+                                </div>
+                                <h1 class="auto-section-title mb-3">Contact EXOCOMS Group</h1>
+                                <p class="lead mb-0">
+                                    Une question sur le catalogue automobile, un devis ou un accompagnement digital ?
+                                    L'équipe EXOCOMS vous répondra dans les meilleurs délais.
+                                </p>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="auto-contact-card">
+                                    <h2 class="h4 mb-3">EXOCOMS Group</h2>
+                                    <ul class="list-unstyled mb-0">
+                                        <li>
+                                            <i class="fa fa-map-marker fa-fw me-2"/>
+                                            <span class="o_force_ltr">58 rue de Monceau<br/>75008 Paris</span>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-phone fa-fw me-2"/>
+                                            <a class="o_force_ltr" href="tel:+33184793755">+33 (0)1 84 79 37 55</a>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-envelope fa-fw me-2"/>
+                                            <a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="py-5 bg-white">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 mx-auto">
+                                <section class="s_website_form" data-vcss="001" data-snippet="s_website_form">
+                                    <form id="contactus_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required auto-contact-form" data-mark="*" data-model_name="mail.mail" data-success-mode="redirect" data-success-page="/contactus-thank-you" data-pre-fill="true">
+                                        <div class="s_website_form_rows row s_col_no_bgcolor">
+                                            <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
+                                                <label class="s_website_form_label" for="contact1">
+                                                    <span class="s_website_form_label_content">Nom</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <input id="contact1" type="text" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
+                                            </div>
+                                            <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                <label class="s_website_form_label" for="contact2">
+                                                    <span class="s_website_form_label_content">Téléphone</span>
+                                                </label>
+                                                <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                            </div>
+                                            <div class="mb-3 col-lg-6 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
+                                                <label class="s_website_form_label" for="contact3">
+                                                    <span class="s_website_form_label_content">Email</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <input id="contact3" type="email" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
+                                            </div>
+                                            <div class="mb-3 col-lg-6 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                <label class="s_website_form_label" for="contact4">
+                                                    <span class="s_website_form_label_content">Société</span>
+                                                </label>
+                                                <input id="contact4" type="text" class="form-control s_website_form_input" name="company" data-fill-with="commercial_company_name"/>
+                                            </div>
+                                            <div class="mb-3 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="char" data-name="Field">
+                                                <label class="s_website_form_label" for="contact5">
+                                                    <span class="s_website_form_label_content">Sujet</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <input id="contact5" type="text" class="form-control s_website_form_input" name="subject" required=""/>
+                                            </div>
+                                            <div class="mb-3 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="text" data-name="Field">
+                                                <label class="s_website_form_label" for="contact6">
+                                                    <span class="s_website_form_label_content">Message</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <textarea id="contact6" class="form-control s_website_form_input" name="description" required="" rows="8"></textarea>
+                                            </div>
+                                            <div class="mb-3 col-12 s_website_form_field s_website_form_dnone">
+                                                <input id="contact7" type="hidden" class="form-control s_website_form_input" name="email_to"/>
+                                            </div>
+                                            <div class="mb-0 py-2 col-12 s_website_form_submit text-end" data-name="Submit Button">
+                                                <a href="#" role="button" class="btn auto-btn-primary s_website_form_send">Envoyer</a>
+                                                <span id="s_website_form_result"></span>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="footer_exocoms" inherit_id="website.footer_custom" name="Footer EXOCOMS sans réseaux sociaux" active="True">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo auto-footer" t-ignore="true" t-if="not no_footer">
+                <section class="pt40 pb24">
+                    <div class="container">
+                        <div class="row g-4">
+                            <div class="col-lg-3">
+                                <img src="/auto_website/static/src/img/exocoms-logo.png" alt="EXOCOMS Group" class="auto-footer-logo"/>
+                                <p class="auto-footer-text mt-3 mb-0">Marketplace automobile portée par EXOCOMS Group.</p>
+                            </div>
+                            <div class="col-lg-3">
+                                <h5 class="mb-3">Liens utiles</h5>
+                                <ul class="list-unstyled auto-footer-links">
+                                    <li><a href="/cars/home">Accueil</a></li>
+                                    <li><a href="/cars">Catalogue</a></li>
+                                    <li><a href="/brands">Marques</a></li>
+                                    <li><a href="/contactus">Contact</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-3">
+                                <h5 class="mb-3">À propos</h5>
+                                <p class="auto-footer-text">
+                                    EXOCOMS accompagne les entreprises avec des solutions digitales fiables, modernes et adaptées à leurs enjeux.
+                                </p>
+                            </div>
+                            <div class="col-lg-3">
+                                <h5 class="mb-3">Contact</h5>
+                                <ul class="list-unstyled auto-footer-contact">
+                                    <li><i class="fa fa-map-marker fa-fw me-2"/><span>58 rue de Monceau<br/>75008 Paris</span></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
     </template>
 </odoo>
