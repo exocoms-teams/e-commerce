@@ -186,11 +186,13 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         name = kwargs.get('name', '').strip()
         rating = int(kwargs.get('rating', 5))
         comment = kwargs.get('comment', '').strip()
+        product = kwargs.get('product', '').strip()
         if name and comment:
             request.env['planet.review'].sudo().create({
                 'name': name,
                 'rating': rating,
                 'comment': comment,
+                'product' : product,
                 'is_published': False,
             })
         return request.redirect('/avis?submitted=1')
