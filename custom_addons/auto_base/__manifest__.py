@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Base",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "summary": "Modèles de données automobiles pour l'e-commerce de voitures chinoises",
     "category": "Website",
     "author": "Ecommerce Voitures Team",

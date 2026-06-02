@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Site web",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "summary": "Pages publiques du site automobile",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
