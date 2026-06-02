@@ -6,7 +6,10 @@
     'license': 'LGPL-3',
     'category': 'Website',
     'depends': [
-        'website', 'website_sale'
+        'website', 
+        'website_sale',
+        'luxury_services',
+        'monetique_theme',
     ],
     'data': [
         'data/website_data.xml',
