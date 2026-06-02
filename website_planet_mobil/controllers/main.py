@@ -175,15 +175,25 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         })
     @http.route('/avis', type='http', auth='public', website=True)
     def avis(self, **kwargs):
-        avis_list = [
-            {'initiales': 'ML', 'nom': 'Marie L.', 'date': '12 janvier 2026', 'note': 5, 'titre': 'Livraison ultra rapide !', 'commentaire': "Commande passÃ©e le soir, reÃ§ue le lendemain matin. Le produit est exactement comme dÃ©crit, je suis vraiment ravie de mon achat. Je recommande sans hÃ©siter !", 'produit': 'iPhone 15 Pro Max'},
-            {'initiales': 'TK', 'nom': 'Thomas K.', 'date': '5 fÃ©vrier 2026', 'note': 5, 'titre': 'Excellent rapport qualitÃ©/prix', 'commentaire': "La montre est magnifique, les fonctionnalitÃ©s sont top. Le service client a Ã©tÃ© trÃ¨s rÃ©actif quand j'ai eu une question. TrÃ¨s bonne expÃ©rience d'achat.", 'produit': 'Apple Watch Series 9'},
-            {'initiales': 'SB', 'nom': 'Sophie B.', 'date': '18 fÃ©vrier 2026', 'note': 4, 'titre': 'TrÃ¨s satisfaite de mon casque', 'commentaire': "La rÃ©duction de bruit est impressionnante, idÃ©al pour travailler en open space. Juste dommage que la livraison ait pris 2 jours de plus que prÃ©vu.", 'produit': 'Sony WH-1000XM5'},
-            {'initiales': 'AD', 'nom': 'Alexandre D.', 'date': '2 mars 2026', 'note': 5, 'titre': 'Le meilleur smartphone Android', 'commentaire': "Photos Ã©poustouflantes, fluiditÃ© parfaite, autonomie excellente. Le S Pen est un vrai plus pour la productivitÃ©. Un achat que je ne regrette pas du tout !", 'produit': 'Samsung Galaxy S21 Ultra'},
-            {'initiales': 'CM', 'nom': 'Clara M.', 'date': '15 mars 2026', 'note': 5, 'titre': 'TV incroyable pour le gaming', 'commentaire': "L'image OLED est Ã  couper le souffle, les noirs sont parfaits. Le mode gaming 120Hz fait vraiment la diffÃ©rence. Installation rapide et livraison soignÃ©e.", 'produit': 'LG OLED C3 55"'},
-            {'initiales': 'JP', 'nom': 'Jean-Pierre V.', 'date': '28 mars 2026', 'note': 4, 'titre': 'Bon produit, site agrÃ©able', 'commentaire': "Le site est trÃ¨s bien conÃ§u, la navigation est intuitive. Le Pixel 8 Pro est excellent, l'IA intÃ©grÃ©e est vraiment utile au quotidien. Je reviendrai acheter !", 'produit': 'Google Pixel 8 Pro'},
-        ]
-        return request.render('website_planet_mobil.avis_page', {'avis_list': avis_list})
+        reviews = request.env['planet.review'].sudo().search([('is_published', '=', True)]);
+
+        return request.render('website_planet_mobil.avis_page', {
+            'avis_list': reviews,
+        })
+
+    @http.route('/avis/submit', type='http', auth='public', website=True, methods=['POST'])
+    def avis_submit(self, **kwargs):
+        name = kwargs.get('name', '').strip()
+        rating = int(kwargs.get('rating', 5))
+        comment = kwargs.get('comment', '').strip()
+        if name and comment:
+            request.env['planet.review'].sudo().create({
+                'name': name,
+                'rating': rating,
+                'comment': comment,
+                'is_published': False,
+            })
+        return request.redirect('/avis?submitted=1')
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
