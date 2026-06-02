@@ -94,6 +94,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ── Formulaire avis en AJAX
+    const avisForm = document.querySelector('.avis-form-wrap form');
+    if (avisForm) {
+        avisForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(avisForm);
+
+            await fetch('/avis/submit', {
+                method: 'POST',
+                body: formData,
+            });
+
+            // Animation rétrécissement
+            const wrap = document.querySelector('.avis-form-wrap');
+            wrap.style.transition = 'all 0.5s ease';
+            wrap.style.overflow = 'hidden';
+            wrap.style.height = wrap.offsetHeight + 'px';
+
+            setTimeout(() => {
+                wrap.style.height = '0';
+                wrap.style.padding = '0';
+                wrap.style.opacity = '0';
+            }, 100);
+
+            setTimeout(() => {
+                wrap.innerHTML = `
+                <div style="text-align:center; padding: 40px 20px;">
+                    <i class="fa fa-check-circle" style="font-size:3rem; color:var(--blue); margin-bottom:16px; display:block"></i>
+                    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
+                    <p style="color:var(--muted); font-size:0.95rem;">Votre avis a bien été reçu. Il sera publié après validation par notre équipe.</p>
+                    <a href="/avis" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
+                        Retour aux avis
+                    </a>
+                </div>
+            `;
+                wrap.style.height = '';
+                wrap.style.padding = '36px';
+                wrap.style.opacity = '1';
+            }, 600);
+        });
+    }
+
     // ══════════════════════════════════════════
     // FILTRES /shop 
     // ══════════════════════════════════════════
@@ -301,48 +344,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Formulaire avis en AJAX
-    const avisForm = document.querySelector('.avis-form-wrap form');
-    if (avisForm) {
-        avisForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(avisForm);
-
-            await fetch('/avis/submit', {
-                method: 'POST',
-                body: formData,
-            });
-
-            // Animation rétrécissement
-            const wrap = document.querySelector('.avis-form-wrap');
-            wrap.style.transition = 'all 0.5s ease';
-            wrap.style.overflow = 'hidden';
-            wrap.style.height = wrap.offsetHeight + 'px';
-
-            setTimeout(() => {
-                wrap.style.height = '0';
-                wrap.style.padding = '0';
-                wrap.style.opacity = '0';
-            }, 100);
-
-            setTimeout(() => {
-                wrap.innerHTML = `
-                <div style="text-align:center; padding: 40px 20px;">
-                    <i class="fa fa-check-circle" style="font-size:3rem; color:var(--blue); margin-bottom:16px; display:block"></i>
-                    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
-                    <p style="color:var(--muted); font-size:0.95rem;">Votre avis a bien été reçu. Il sera publié après validation par notre équipe.</p>
-                    <a href="/avis" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
-                        Retour aux avis
-                    </a>
-                </div>
-            `;
-                wrap.style.height = '';
-                wrap.style.padding = '36px';
-                wrap.style.opacity = '1';
-            }, 600);
-        });
-    }
 
     initFilters();
 });
