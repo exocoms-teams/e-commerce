@@ -32,192 +32,81 @@
                     </div>
                 </section>
 
-                <!-- AVIS (statique pour l'instant) -->
+                <!-- AVIS dynamique avec carrousel -->
                 <div id="oe_structure_homepage_avis" class="oe_structure oe_empty" />
-                <div class="avis-hero">
-                    <h1>Avis de nos clients</h1>
-                    <p>Ce que pensent nos clients de Planet Mobil</p>
-                </div>
-                <div class="avis-stats">
-                    <div class="avis-stat-main">
-                        <div class="note">4.6</div>
-                        <div class="stars-big">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star-half-o" />
+                <section class="hp-avis-section">
+                    <div class="hp-avis-header">
+                        <div class="hp-avis-title-block">
+                            <h2>Avis de nos clients</h2>
+                            <t t-if="stats">
+                                <div class="hp-avis-note">
+                                    <span class="hp-note-big">
+                                        <t t-out="stats['avg']" />
+                                    </span>
+                                    <div>
+                                        <div class="hp-stars">
+                                            <t t-foreach="range(int(stats['avg']))" t-as="s">
+                                                <i class="fa fa-star" />
+                                            </t>
+                                            <t t-if="stats['avg'] % 1 >= 0.5">
+                                                <i class="fa fa-star-half-o" />
+                                            </t>
+                                        </div>
+                                        <span class="hp-avis-count">Basé sur <t
+                                                t-out="stats['total']" /> avis</span>
+                                    </div>
+                                </div>
+                            </t>
                         </div>
-                        <p>Base sur 248 avis verifies</p>
+                        <a href="/avis" class="hp-avis-voir-tout">Tout voir <i
+                                class="fa fa-arrow-right" /></a>
                     </div>
-                    <div class="avis-stat-bars">
-                        <div class="avis-bar-row">
-                            <span>5 etoiles</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:72%" />
-                            </div>
-                            <span>72%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>4 etoiles</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:18%" />
-                            </div>
-                            <span>18%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>3 etoiles</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:6%" />
-                            </div>
-                            <span>6%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>2 etoiles</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:3%" />
-                            </div>
-                            <span>3%</span>
-                        </div>
-                        <div class="avis-bar-row">
-                            <span>1 etoile</span>
-                            <div class="avis-bar-bg">
-                                <div class="avis-bar-fill" style="width:1%" />
-                            </div>
-                            <span>1%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="avis-grid">
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">ML</div>
-                            <div class="avis-author-info">
-                                <h4>Marie L.</h4>
-                                <span>12 janvier 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                        </div>
-                        <p class="avis-card-title">Livraison ultra rapide !</p>
-                        <p class="avis-card-text">Commande passee le soir, recue le lendemain matin.
-                            Produit exactement comme decrit.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> iPhone 15 Pro Max</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">TK</div>
-                            <div class="avis-author-info">
-                                <h4>Thomas K.</h4>
-                                <span>5 fevrier 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                        </div>
-                        <p class="avis-card-title">Excellent rapport qualite/prix</p>
-                        <p class="avis-card-text">La montre est magnifique, les fonctionnalites sont
-                            top. Tres bonne experience.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> Apple Watch Series 9</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">SB</div>
-                            <div class="avis-author-info">
-                                <h4>Sophie B.</h4>
-                                <span>18 fevrier 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star-o" style="color:#d1d5db" />
-                        </div>
-                        <p class="avis-card-title">Tres satisfaite de mon casque</p>
-                        <p class="avis-card-text">La reduction de bruit est impressionnante, ideal
-                            pour travailler.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> Sony WH-1000XM5</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">AD</div>
-                            <div class="avis-author-info">
-                                <h4>Alexandre D.</h4>
-                                <span>2 mars 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                        </div>
-                        <p class="avis-card-title">Le meilleur smartphone Android</p>
-                        <p class="avis-card-text">Photos epoustouflantes, fluidite parfaite,
-                            autonomie excellente.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> Samsung Galaxy S21
-                            Ultra</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">CM</div>
-                            <div class="avis-author-info">
-                                <h4>Clara M.</h4>
-                                <span>15 mars 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                        </div>
-                        <p class="avis-card-title">TV incroyable pour le gaming</p>
-                        <p class="avis-card-text">L'image OLED est a couper le souffle. Le mode
-                            gaming 120Hz fait la difference.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> LG OLED C3 55</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                    <div class="avis-card">
-                        <div class="avis-card-header">
-                            <div class="avis-avatar">JP</div>
-                            <div class="avis-author-info">
-                                <h4>Jean-Pierre V.</h4>
-                                <span>28 mars 2026</span>
-                            </div>
-                        </div>
-                        <div class="avis-card-stars">
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star" />
-                            <i class="fa fa-star-half-o" />
-                        </div>
-                        <p class="avis-card-title">Bon produit, site agreable</p>
-                        <p class="avis-card-text">Le site est tres bien concu. Le Pixel 8 Pro est
-                            excellent, l'IA integree est utile.</p>
-                        <div class="avis-card-product"><i class="fa fa-tag" /> Google Pixel 8 Pro</div>
-                        <div class="avis-verified"><i class="fa fa-check-circle" /> Achat verifie</div>
-                    </div>
-                </div>
 
+                    <div class="hp-avis-carousel-wrap">
+                        <div class="hp-avis-carousel" id="hp-avis-carousel">
+                            <t t-foreach="reviews" t-as="avis">
+                                <div class="avis-card">
+                                    <div class="avis-card-header">
+                                        <div class="avis-avatar">
+                                            <t t-out="avis.name[0].upper()" />
+                                        </div>
+                                        <div class="avis-author-info">
+                                            <h4>
+                                                <t t-out="avis.name" />
+                                            </h4>
+                                            <span>
+                                                <t t-out="avis.date" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="avis-card-stars">
+                                        <t t-foreach="range(avis.rating)" t-as="s">
+                                            <i class="fa fa-star" />
+                                        </t>
+                                        <t t-foreach="range(5 - avis.rating)" t-as="s">
+                                            <i class="fa fa-star-o" style="color:#d1d5db" />
+                                        </t>
+                                    </div>
+                                    <p class="avis-card-text">
+                                        <t t-out="avis.comment" />
+                                    </p>
+                                    <t t-if="avis.product">
+                                        <div class="avis-card-product">
+                                            <i class="fa fa-tag" />
+                                            <t t-out="avis.product" />
+                                        </div>
+                                    </t>
+                                    <div class="avis-verified"><i class="fa fa-check-circle" />
+                                        Achat vérifié</div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:24px;">
+                        <a href="/avis#avis-form" class="tsp-btn-hero">Écrire un avis</a>
+                    </div>
+                </section>
                 <!-- CONTACT supprimé → bloc natif Odoo via Website Builder -->
                 <div id="oe_structure_homepage_contact" class="oe_structure oe_empty" />
 

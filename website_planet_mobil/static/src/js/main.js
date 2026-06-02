@@ -94,7 +94,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ── Formulaire avis en AJAX
+    // ══════════════════════════════════════════
+    // CARROUSEL avis homepage 
+    // ══════════════════════════════════════════
+    const carousel = document.getElementById('hp-avis-carousel');
+    if (carousel) {
+        const wrap = carousel.closest('.hp-avis-carousel-wrap');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        wrap.addEventListener('mousedown', (e) => {
+            isDown = true;
+            wrap.classList.add('dragging');
+            startX = e.pageX - carousel.offsetLeft;
+            scrollLeft = carousel.scrollLeft;
+        });
+
+        wrap.addEventListener('mouseleave', () => {
+            isDown = false;
+            wrap.classList.remove('dragging');
+        });
+
+        wrap.addEventListener('mouseup', () => {
+            isDown = false;
+            wrap.classList.remove('dragging');
+        });
+
+        wrap.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - carousel.offsetLeft;
+            const walk = (x - startX) * 2;
+            carousel.scrollLeft = scrollLeft - walk;
+        });
+    }
+
+
+    // ══════════════════════════════════════════
+    // FORMULAIRE AVIS en ajax
+    // ══════════════════════════════════════════
     const avisForm = document.querySelector('.avis-form-wrap form');
     if (avisForm) {
         avisForm.addEventListener('submit', async function (e) {

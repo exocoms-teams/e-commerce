@@ -129,7 +129,33 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     @http.route(['/', '/accueil'], type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
-        return request.render('website_planet_mobil.homepage', {})
+        reviews = request.env['planet.review'].sudo().search([
+            ('is_published', '=', True)
+        ], limit=6)
+
+        total = request.env['planet.review'].sudo().search_count([
+            ('is_published', '=', True)
+        ])
+        all_reviews = request.env['planet.review'].sudo().search([
+            ('is_published', '=', True)
+        ])
+        if total > 0:
+            avg = sum(r.rating for r in all_reviews) / total
+            dist = {i: 0 for i in range(1, 6)}
+            for r in all_reviews:
+                dist[r.rating] += 1
+            stats = {
+                'total': total,
+                'avg': round(avg, 1),
+                'dist': {i: round(dist[i] / total * 100) for i in range(1, 6)}
+            }
+        else:
+            stats = None
+
+        return request.render('website_planet_mobil.homepage', {
+            'reviews': reviews,
+            'stats': stats,
+        })
 
     @http.route('/catalogue', type='http', auth='public', website=True, sitemap=True)
     def catalogue(self, category=None, **kwargs):
