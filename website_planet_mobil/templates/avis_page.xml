@@ -40,6 +40,10 @@
                                 </div>
                             </t>
                         </div>
+                        <div class="avis-stats-link">
+                            <a href="#avis-form">
+                                <i class="fa fa-pencil" /> Écrire un avis </a>
+                        </div>
                     </div>
                 </t>
                 <t t-else="">
@@ -47,6 +51,7 @@
                         <p style="color:var(--muted)">Aucun avis pour le moment.</p>
                     </div>
                 </t>
+
                 <div id="oe_structure_avis_grid" class="oe_structure oe_empty" />
                 <div class="avis-grid">
                     <t t-foreach="avis_list" t-as="avis">
@@ -87,7 +92,7 @@
                     </t>
                 </div>
 
-                <div class="avis-form-wrap">
+                <div class="avis-form-wrap" id="avis-form">
                     <h2>Laisser un avis</h2>
                     <form action="/avis/submit" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
