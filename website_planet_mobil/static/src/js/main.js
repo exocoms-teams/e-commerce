@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <i class="fa fa-check-circle" style="font-size:3rem; color:#16a34a; margin-bottom:16px; display:block"></i>
                     <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
                     <p style="color:var(--muted); font-size:0.95rem;">Votre avis a bien été reçu. Il sera publié après validation par notre équipe.</p>
-                    <a href="/avis" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
+                    <a href="/accueil" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
                         Retour à l'accueil
                     </a>
                 </div>
