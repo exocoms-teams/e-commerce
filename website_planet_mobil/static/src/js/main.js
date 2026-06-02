@@ -99,12 +99,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // ══════════════════════════════════════════
 
     const CATEGORY_FILTERS = {
-        'smartphones-1' : ['Systeme', 'Stockage', 'Taille'],
-        'montres-2' : ['Compatibilite'],
-        'accessoires-3' : ['Compatibilite'],
-        'tv-4' : ['Taille', 'Resolution'],
+        'smartphones-1': ['Systeme', 'Stockage', 'Taille'],
+        'montres-2': ['Compatibilite'],
+        'accessoires-3': ['Compatibilite'],
+        'tv-4': ['Taille', 'Resolution'],
     };
-    
+
     if (!window.location.pathname.startsWith('/shop')) return;
 
     // Récupère l'ID d'un attribut par son nom
@@ -184,19 +184,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     //Injecte filtre dynamique selon categorie
-    async function injectCategoryFilters(){
+    async function injectCategoryFilters() {
         const path = window.location.pathname;
         const match = path.match(/\/shop\/category\/([^\/]+)/);
         if (!match) return;
 
         const slug = match[1];
         const attrNames = CATEGORY_FILTERS[slug];
-        if(!attrNames) return;
+        if (!attrNames) return;
 
         const container = document.getElementById('tsp-category-filters');
-        if(!container) return;
+        if (!container) return;
 
-        for(const name of attrNames){
+        for (const name of attrNames) {
             const attrId = await getAttributeId(name);
             if (!attrId) continue;
 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const select = group.querySelector('.tsp-custom-select');
             const selected = group.querySelector('.tsp-custom-selected');
             const options = group.querySelector('.tsp-custom-options');
-            selected.addEventListener('click', function(e){
+            selected.addEventListener('click', function (e) {
                 e.stopPropagation();
                 document.querySelectorAll('.tsp-custom-select').forEach(s => {
                     if (s !== select) s.classList.remove('open');
@@ -299,6 +299,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
             window.location.href = redirect;
         });
+    }
+
+    // ── Message confirmation avis soumis
+    if (window.location.pathname === '/avis' &&
+        new URLSearchParams(window.location.search).get('submitted') === '1') {
+        const form = document.querySelector('.avis-form-wrap');
+        if (form) {
+            form.style.transition = 'all 0.5s ease';
+            form.style.overflow = 'hidden';
+            form.style.height = form.offsetHeight + 'px';
+
+            setTimeout(() => {
+                form.style.height = '0';
+                form.style.padding = '0';
+                form.style.opacity = '0';
+            }, 100);
+
+            setTimeout(() => {
+                form.innerHTML = `
+                <div style="text-align:center; padding: 40px 20px;">
+                    <i class="fa fa-check-circle" style="font-size:3rem; color:var(--blue); margin-bottom:16px; display:block"></i>
+                    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
+                    <p style="color:var(--muted); font-size:0.95rem;">Votre avis a bien été reçu. Il sera publié après validation par notre équipe.</p>
+                    <a href="/avis" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
+                        Retour aux avis
+                    </a>
+                </div>
+            `;
+                form.style.height = '';
+                form.style.padding = '';
+                form.style.opacity = '1';
+            }, 600);
+        }
     }
 
     initFilters();
