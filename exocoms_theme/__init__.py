@@ -430,23 +430,3 @@ def post_init_hook(env):
 """})
         except Exception:
             pass
-# === DÉSACTIVER FOOTERS ET HEADERS DES AUTRES MODULES ===
-    try:
-        other_views = env['ir.ui.view'].search([
-            ('type', '=', 'qweb'),
-            ('active', '=', True),
-        ])
-        for v in other_views:
-            if v.key and v.key not in [
-                'website.footer_default',
-                'website.footer_copyright',
-                'website.layout',
-            ]:
-                if any(word in (v.key or '') for word in ['footer', 'header']):
-                    if 'exocoms' not in (v.key or '').lower():
-                        try:
-                            v.write({'active': False})
-                        except Exception:
-                            pass
-    except Exception:
-        pass
