@@ -169,3 +169,119 @@ class MonetiqueWebsite(Website):
                 'error_msg': 'Une erreur est survenue lors du traitement du paiement',
                 'form_data': post,
             })
+
+    @http.route('/reserver', type='http', auth='public', website=True)
+    def booking_page(self, **kwargs):
+        services = [
+            ('consultation', 'Consultation'),
+            ('training', 'Formation'),
+            ('support', 'Support Technique'),
+            ('demo', 'Démonstration'),
+        ]
+        return request.render('monetique_theme.page_reserver', {
+            'year': datetime.datetime.now().year,
+            'services': services,
+            'error': False,
+            'success': False,
+        })
+
+    @http.route('/reserver/traiter', type='http', auth='public', website=True,
+                 methods=['POST'], csrf=True)
+    def process_booking(self, **post):
+        try:
+            first_name = post.get('first_name', '').strip()
+            last_name = post.get('last_name', '').strip()
+            email = post.get('email', '').strip()
+            phone = post.get('phone', '').strip()
+            date_start_str = post.get('date_start', '').strip()
+            service = post.get('service', '').strip()
+            duration = post.get('duration', '1').strip()
+            description = post.get('description', '').strip()
+            is_online = post.get('is_online', 'on') == 'on'
+            location = post.get('location', '').strip() if not is_online else ''
+            meeting_link = post.get('meeting_link', '').strip() if is_online else ''
+
+            if not (first_name and last_name and email and phone and date_start_str and service):
+                return request.render('monetique_theme.page_reserver', {
+                    'year': datetime.datetime.now().year,
+                    'error': True,
+                    'error_msg': 'Tous les champs obligatoires doivent être remplis',
+                    'form_data': post,
+                })
+
+            if '@' not in email:
+                return request.render('monetique_theme.page_reserver', {
+                    'year': datetime.datetime.now().year,
+                    'error': True,
+                    'error_msg': 'Email invalide',
+                    'form_data': post,
+                })
+
+            try:
+                date_start = datetime.datetime.strptime(date_start_str, '%Y-%m-%dT%H:%M')
+            except:
+                return request.render('monetique_theme.page_reserver', {
+                    'year': datetime.datetime.now().year,
+                    'error': True,
+                    'error_msg': 'Format de date invalide',
+                    'form_data': post,
+                })
+
+            booking_vals = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'phone': phone,
+                'date_start': date_start,
+                'service': service,
+                'duration': float(duration),
+                'description': description,
+                'is_online': is_online,
+                'location': location,
+                'meeting_link': meeting_link,
+                'status': 'draft',
+            }
+
+            booking_record = request.env['booking.reservation'].sudo().create(booking_vals)
+
+            mail_vals = {
+                'subject': '[monetiques.fr] Confirmation de réservation',
+                'body_html': """
+                    <p>Bonjour <strong>%s %s</strong>,</p>
+                    <p>Votre réservation a été reçue avec succès.</p>
+                    <p><strong>Détails de votre réservation:</strong></p>
+                    <ul>
+                        <li>Numéro de réservation: <strong>%s</strong></li>
+                        <li>Service: <strong>%s</strong></li>
+                        <li>Date: <strong>%s</strong></li>
+                        <li>Durée: <strong>%s heures</strong></li>
+                        <li>Type: <strong>%s</strong></li>
+                    </ul>
+                    <p>Nous vous enverrons un email de confirmation final avant votre rendez-vous.</p>
+                    <p>Cordialement,<br/>L'équipe Monetiques</p>
+                """ % (
+                    first_name, last_name, booking_record.name,
+                    dict([('consultation', 'Consultation'), ('training', 'Formation'),
+                          ('support', 'Support Technique'), ('demo', 'Démonstration')]).get(service, service),
+                    date_start.strftime('%d/%m/%Y à %H:%M'),
+                    duration,
+                    'En ligne' if is_online else 'Sur site'
+                ),
+                'email_from': request.website.email or 'contact@monetiques.fr',
+                'email_to': email,
+            }
+            request.env['mail.mail'].sudo().create(mail_vals).send()
+
+            return request.render('monetique_theme.page_reserver_success', {
+                'year': datetime.datetime.now().year,
+                'booking_id': booking_record.name,
+                'booking_date': date_start.strftime('%d/%m/%Y à %H:%M'),
+            })
+
+        except Exception as e:
+            return request.render('monetique_theme.page_reserver', {
+                'year': datetime.datetime.now().year,
+                'error': True,
+                'error_msg': 'Une erreur est survenue lors du traitement de la réservation',
+                'form_data': post,
+            })
