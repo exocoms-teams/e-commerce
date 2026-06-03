@@ -245,8 +245,8 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         return request.render('website_planet_mobil.contact_page', {})
 
 
-    def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
-        domain = super()._get_search_domain(search, category, attrib_values, search_in_description)
+    def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
+        domain = super()._get_shop_domain(search, category, attribute_value_dict, search_in_description)
         if request.params.get('x_is_promotion'):
             domain += [('x_is_promotion', '=', True)]
         return domain
