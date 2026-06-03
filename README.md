@@ -1,8 +1,10 @@
 # EXOCOMS Voitures - Marketplace automobile Odoo
 
-Plateforme e-commerce automobile développée pour **EXOCOMS Group** avec Odoo 18.
+Plateforme e-commerce automobile développée pour **EXOCOMS Group** avec **Odoo 19**.
 
 Le projet permet de présenter, administrer et commercialiser un catalogue de voitures chinoises avec des prix, photos, caractéristiques, disponibilités et parcours clients complets.
+
+> **Version supportée : Odoo 19 uniquement.**
 
 ## Sommaire
 
@@ -54,7 +56,7 @@ Le **mot de passe maître** du gestionnaire de bases de données n'est pas le mo
 ### Parcours exact pour accéder à l'administration
 
 1. Ouvrir Odoo :
-   - local : `http://localhost:8069/web/login`
+   - local : `http://localhost:8079/web/login`
    - Odoo.sh : utiliser le bouton **Connect** du build concerné
 2. Se connecter avec le **compte administrateur Odoo**.
 3. Ouvrir le sélecteur d'applications Odoo.
@@ -305,12 +307,15 @@ custom_addons/
   auto_compare/
   auto_dashboard/
 config/
+  odoo19.local.conf
 docs/
 tools/
-docker-compose.yml
+docker-compose.odoo19.local.yml
 ```
 
 ## Installation locale avec Docker
+
+Le lancement local Odoo 19 utilise les fichiers `docker-compose.odoo19.local.yml` et `config/odoo19.local.conf`. Ces fichiers de configuration locale doivent être adaptés au poste de travail et ne doivent contenir aucun secret destiné à être partagé.
 
 ### Prérequis
 
@@ -324,19 +329,19 @@ docker-compose.yml
 Depuis la racine du projet :
 
 ```powershell
-docker compose up -d
+docker compose -f docker-compose.odoo19.local.yml up -d
 ```
 
 Vérifier les conteneurs :
 
 ```powershell
-docker compose ps
+docker compose -f docker-compose.odoo19.local.yml ps
 ```
 
 Odoo est disponible sur :
 
 ```text
-http://localhost:8069
+http://localhost:8079
 ```
 
 ### Créer la base locale
@@ -347,7 +352,7 @@ Valeurs recommandées :
 
 | Champ | Valeur recommandée |
 | --- | --- |
-| Database Name | `ecommerce_voitures_dev` |
+| Database Name | `ecommerce_voitures_19` |
 | Email | Adresse du futur compte administrateur |
 | Password | Mot de passe sécurisé du compte administrateur |
 | Language | Français |
@@ -359,12 +364,12 @@ Conserver le mot de passe maître choisi. Il sera demandé pour les opérations 
 ### Arrêter ou redémarrer les services
 
 ```powershell
-docker compose stop
-docker compose restart odoo
-docker compose down
+docker compose -f docker-compose.odoo19.local.yml stop
+docker compose -f docker-compose.odoo19.local.yml restart odoo19
+docker compose -f docker-compose.odoo19.local.yml down
 ```
 
-`docker compose down` arrête les conteneurs mais conserve les volumes de données tant que l'option `-v` n'est pas utilisée.
+`docker compose -f docker-compose.odoo19.local.yml down` arrête les conteneurs mais conserve les données PostgreSQL et le filestore tant que leurs répertoires ne sont pas supprimés.
 
 ## Installation et mise à jour des modules
 
@@ -394,25 +399,25 @@ Les dépendances Odoo standard, comme Vente, Site Web, eCommerce, CRM, Portail e
 Après une modification de code, de vues XML, de données ou de traductions :
 
 ```powershell
-docker exec auto_odoo odoo `
+docker compose -f docker-compose.odoo19.local.yml run --rm odoo19 odoo `
   -c /etc/odoo/odoo.conf `
-  -d ecommerce_voitures_dev `
+  -d ecommerce_voitures_19 `
   -u auto_base,auto_website,auto_sale,auto_booking,auto_financing,auto_reviews,auto_compare,auto_dashboard `
   --stop-after-init
 
-docker compose restart odoo
+docker compose -f docker-compose.odoo19.local.yml restart odoo19
 ```
 
 ### Consulter les logs locaux
 
 ```powershell
-docker logs --tail 500 auto_odoo
+docker logs --tail 500 auto19_odoo
 ```
 
 Pour rechercher les erreurs importantes :
 
 ```powershell
-docker logs --tail 1000 auto_odoo 2>&1 |
+docker logs --tail 1000 auto19_odoo 2>&1 |
   Select-String -Pattern "ERROR|CRITICAL|Traceback|ParseError|RPC_ERROR"
 ```
 
@@ -436,8 +441,8 @@ Lorsque la branche `Voitures` est connectée au projet Odoo.sh et configurée av
 
 La documentation officielle Odoo.sh décrit les builds et leurs statuts :
 
-- [Odoo.sh - Builds](https://www.odoo.com/documentation/18.0/administration/odoo_sh/getting_started/builds.html)
-- [Odoo.sh - Branches](https://www.odoo.com/documentation/18.0/administration/odoo_sh/getting_started/branches.html)
+- [Odoo.sh - Builds](https://www.odoo.com/documentation/19.0/administration/odoo_sh/getting_started/builds.html)
+- [Odoo.sh - Branches](https://www.odoo.com/documentation/19.0/administration/odoo_sh/getting_started/branches.html)
 
 ### Publier les changements
 
@@ -494,12 +499,14 @@ GitHub contient le code, les modules, les données déclaratives XML, les traduc
 
 ### En local
 
-Docker conserve PostgreSQL et le filestore dans les volumes :
+La configuration locale Odoo 19 conserve PostgreSQL et le filestore dans des répertoires persistants. Dans la configuration actuelle, ils se trouvent sous :
 
 ```text
-pgdata
-odoo_data
+D:\DockerData\ecommercevoitures19\pgdata
+D:\DockerData\ecommercevoitures19\odoo_data
 ```
+
+Adapter ces chemins dans `docker-compose.odoo19.local.yml` si le poste utilise un autre disque ou un autre système d'exploitation.
 
 ### Sur Odoo.sh
 
@@ -509,7 +516,7 @@ Pour récupérer des données existantes, utiliser les fonctions de sauvegarde e
 
 La documentation officielle Odoo.sh explique les bases et sauvegardes :
 
-- [Odoo.sh - Databases](https://www.odoo.com/documentation/18.0/administration/odoo_sh/getting_started/settings.html)
+- [Odoo.sh - Databases](https://www.odoo.com/documentation/19.0/administration/odoo_sh/getting_started/settings.html)
 
 Toujours effectuer une sauvegarde avant une mise à jour importante de modules ou de données.
 
@@ -532,14 +539,14 @@ python tools\generate_odoo_translations.py
 Puis recharger les traductions :
 
 ```powershell
-docker exec auto_odoo odoo `
+docker compose -f docker-compose.odoo19.local.yml run --rm odoo19 odoo `
   -c /etc/odoo/odoo.conf `
-  -d ecommerce_voitures_dev `
+  -d ecommerce_voitures_19 `
   -u auto_base,auto_website,auto_booking,auto_sale,auto_financing,auto_reviews,auto_compare `
   --i18n-overwrite `
   --stop-after-init
 
-docker compose restart odoo
+docker compose -f docker-compose.odoo19.local.yml restart odoo19
 ```
 
 Les traductions concernent le site client. Le back-office administrateur reste principalement en français.
@@ -599,15 +606,15 @@ Solution :
 
 1. Démarrer Docker Desktop.
 2. Attendre que le moteur Docker soit prêt.
-3. Relancer `docker compose up -d`.
+3. Relancer `docker compose -f docker-compose.odoo19.local.yml up -d`.
 
-### `ERR_CONNECTION_REFUSED` sur `localhost:8069`
+### `ERR_CONNECTION_REFUSED` sur `localhost:8079`
 
 Vérifier :
 
 ```powershell
-docker compose ps
-docker logs --tail 200 auto_odoo
+docker compose -f docker-compose.odoo19.local.yml ps
+docker logs --tail 200 auto19_odoo
 ```
 
 ### Les changements ne sont pas visibles dans Odoo
