@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Page de réservation -->
+        <template id="page_reserver" name="Booking Page" inherit_id="website.base_layout">
+            <xpath expr="//body" position="inside">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="card shadow">
+                                <div class="card-body p-5">
+                                    <h1 class="mb-4 text-center">Réserver un Service</h1>
+                                    <p class="text-center text-muted mb-4">Remplissez le formulaire ci-dessous pour réserver un créneau avec notre équipe.</p>
+
+                                    <!-- Message d'erreur -->
+                                    <t t-if="error">
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <strong>Erreur:</strong> <t t-esc="error_msg or 'Une erreur est survenue'"/>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </t>
+
+                                    <form method="POST" action="/reserver/traiter" id="booking_form" class="needs-validation">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <!-- Informations personnelles -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="first_name" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                                       t-att-value="form_data.get('first_name', '')" required/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="last_name" class="form-label">Nom <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                                       t-att-value="form_data.get('last_name', '')" required/>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="email" name="email" 
+                                                       t-att-value="form_data.get('email', '')" required/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="phone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                                       t-att-value="form_data.get('phone', '')" required/>
+                                            </div>
+                                        </div>
+
+                                        <!-- Service et détails -->
+                                        <h5 class="mt-4 mb-3">Détails de la Réservation</h5>
+
+                                        <div class="mb-3">
+                                            <label for="service" class="form-label">Type de Service <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="service" name="service" required>
+                                                <option value="">-- Sélectionnez un service --</option>
+                                                <t t-foreach="services" t-as="svc">
+                                                    <option t-att-value="svc[0]" t-att-selected="form_data.get('service') == svc[0]">
+                                                        <t t-esc="svc[1]"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="date_start" class="form-label">Date et Heure <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="date_start" name="date_start" 
+                                                       t-att-value="form_data.get('date_start', '')" required/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="duration" class="form-label">Durée (heures)</label>
+                                                <input type="number" class="form-control" id="duration" name="duration" 
+                                                       value="1" step="0.5" min="0.5" t-att-value="form_data.get('duration', '1')"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Type de Rendez-vous</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" id="is_online_yes" name="is_online" 
+                                                       value="on" t-att-checked="form_data.get('is_online') != 'off'" onchange="toggleLocation()"/>
+                                                <label class="form-check-label" for="is_online_yes">
+                                                    <i class="fa fa-video"></i> En ligne
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" id="is_online_no" name="is_online" 
+                                                       value="off" t-att-checked="form_data.get('is_online') == 'off'" onchange="toggleLocation()"/>
+                                                <label class="form-check-label" for="is_online_no">
+                                                    <i class="fa fa-map-marker"></i> Sur site
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div id="location_field" class="mb-3" style="display: none;">
+                                            <label for="location" class="form-label">Adresse du Rendez-vous</label>
+                                            <input type="text" class="form-control" id="location" name="location" 
+                                                   t-att-value="form_data.get('location', '')"/>
+                                        </div>
+
+                                        <div id="meeting_link_field" class="mb-3">
+                                            <label for="meeting_link" class="form-label">Lien de Réunion (Zoom/Teams)</label>
+                                            <input type="url" class="form-control" id="meeting_link" name="meeting_link" 
+                                                   placeholder="https://zoom.us/..." t-att-value="form_data.get('meeting_link', '')"/>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Notes Additionnelles</label>
+                                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                                      placeholder="Décrivez votre besoin ou vos questions..."><t t-esc="form_data.get('description', '')"/></textarea>
+                                        </div>
+
+                                        <!-- Conditions d'utilisation -->
+                                        <div class="mb-4 form-check">
+                                            <input type="checkbox" class="form-check-input" id="terms" required>
+                                            <label class="form-check-label" for="terms">
+                                                J'accepte les <a href="#" target="_blank">conditions d'utilisation</a> et la <a href="#" target="_blank">politique de confidentialité</a>
+                                            </label>
+                                        </div>
+
+                                        <!-- Boutons d'action -->
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fa fa-calendar"></i> Réserver Maintenant
+                                            </button>
+                                            <a href="/" class="btn btn-secondary btn-lg">Annuler</a>
+                                        </div>
+                                    </form>
+
+                                    <!-- Information utile -->
+                                    <div class="alert alert-info mt-4">
+                                        <i class="fa fa-info-circle"></i> 
+                                        <strong>À savoir:</strong> Vous recevrez un email de confirmation. Notre équipe vous contactera si des ajustements sont nécessaires.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleLocation() {
+                        const isOnline = document.getElementById('is_online_yes').checked;
+                        document.getElementById('location_field').style.display = isOnline ? 'none' : 'block';
+                        document.getElementById('meeting_link_field').style.display = isOnline ? 'block' : 'none';
+                    }
+                    // Initialize on page load
+                    document.addEventListener('DOMContentLoaded', toggleLocation);
+                </script>
+            </xpath>
+        </template>
+
+        <!-- Page de succès de réservation -->
+        <template id="page_reserver_success" name="Booking Success Page" inherit_id="website.base_layout">
+            <xpath expr="//body" position="inside">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto text-center">
+                            <div class="card shadow">
+                                <div class="card-body p-5">
+                                    <div class="mb-4">
+                                        <i class="fa fa-check-circle" style="font-size: 60px; color: #28a745;"></i>
+                                    </div>
+
+                                    <h1 class="mb-3">Réservation Confirmée!</h1>
+
+                                    <p class="lead text-muted mb-4">
+                                        Votre réservation a été enregistrée avec succès.
+                                    </p>
+
+                                    <div class="alert alert-light border">
+                                        <p><strong>Numéro de Réservation:</strong></p>
+                                        <p class="h5" t-esc="booking_id"></p>
+                                        <p class="mt-3"><strong>Date et Heure:</strong></p>
+                                        <p class="h6" t-esc="booking_date"></p>
+                                    </div>
+
+                                    <p class="text-muted mb-4">
+                                        Un email de confirmation a été envoyé à votre adresse email. 
+                                        Notre équipe vous contactera pour confirmer votre rendez-vous.
+                                    </p>
+
+                                    <div class="d-grid gap-2">
+                                        <a href="/" class="btn btn-primary btn-lg">Retourner à l'Accueil</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>
