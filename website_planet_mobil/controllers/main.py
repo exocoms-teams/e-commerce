@@ -2,6 +2,7 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+from odoo.osv.expression import AND
 import json
 
 FAKE_PRODUCTS = {
@@ -248,13 +249,13 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         domain = super()._get_shop_domain(search, category, attribute_value_dict, search_in_description)
         if request.params.get('x_is_promotion'):
-            domain &= Domain('x_is_promotion', '=', True)
+            domain = AND([domain, [('x_is_promotion', '=', True)]])
         return domain
 
     @http.route(['/shop', '/shop/page/<int:page>'], type='http', auth='public', website=True, sitemap=False)
     def shop(self, page=0, **kwargs):
         return super().shop(page=page, **kwargs)
-        
+
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
