@@ -7,3 +7,4 @@ from . import auto_vehicle_image
 from . import auto_specification
 from . import auto_vehicle
 from . import product_template
+from . import res_users

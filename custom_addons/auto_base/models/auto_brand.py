@@ -16,9 +16,19 @@ class AutoBrand(models.Model):
     vehicle_ids = fields.One2many("auto.vehicle", "brand_id", string="Véhicules")
     vehicle_count = fields.Integer(compute="_compute_vehicle_count")
 
-    _sql_constraints = [
-        ("auto_brand_name_uniq", "unique(name)", "Le nom de la marque doit être unique."),
-    ]
+    if hasattr(models, "Constraint"):
+        _name_uniq = models.Constraint(
+            "unique(name)",
+            "Le nom de la marque doit être unique.",
+        )
+    else:
+        _sql_constraints = [
+            (
+                "auto_brand_name_uniq",
+                "unique(name)",
+                "Le nom de la marque doit être unique.",
+            ),
+        ]
 
     def _compute_vehicle_count(self):
         data = self.env["auto.vehicle"].read_group(

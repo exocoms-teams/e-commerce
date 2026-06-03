@@ -89,13 +89,19 @@ class AutoVehicle(models.Model):
     )
     favorite_count = fields.Integer(string="Favoris", compute="_compute_favorite_count")
 
-    _sql_constraints = [
-        (
-            "auto_vehicle_product_uniq",
+    if hasattr(models, "Constraint"):
+        _product_uniq = models.Constraint(
             "unique(product_template_id)",
             "Chaque produit ne peut être lié qu'à un seul véhicule.",
         )
-    ]
+    else:
+        _sql_constraints = [
+            (
+                "auto_vehicle_product_uniq",
+                "unique(product_template_id)",
+                "Chaque produit ne peut être lié qu'à un seul véhicule.",
+            )
+        ]
 
     @api.depends("availability")
     @api.depends_context("lang")

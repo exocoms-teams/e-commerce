@@ -27,13 +27,19 @@ class AutoReview(models.Model):
     approved_by = fields.Many2one("res.users", readonly=True)
     approved_date = fields.Datetime(readonly=True)
 
-    _sql_constraints = [
-        (
-            "auto_review_unique_partner_vehicle",
+    if hasattr(models, "Constraint"):
+        _unique_partner_vehicle = models.Constraint(
             "unique(partner_id, vehicle_id)",
             "Un client ne peut déposer qu'un seul avis par véhicule.",
         )
-    ]
+    else:
+        _sql_constraints = [
+            (
+                "auto_review_unique_partner_vehicle",
+                "unique(partner_id, vehicle_id)",
+                "Un client ne peut déposer qu'un seul avis par véhicule.",
+            )
+        ]
 
     @api.depends("state")
     @api.depends_context("lang")
