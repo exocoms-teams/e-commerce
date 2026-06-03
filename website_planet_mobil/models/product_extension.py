@@ -19,3 +19,9 @@ class ProductTemplate(models.Model):
     def _compute_is_promotion(self):
         for product in self:
             product.x_is_promotion = bool(product.pricelist_rule_ids)
+
+    def _search_get_detail(self, website, order, options):
+        result = super()._search_get_detail(website, order, options)
+        if options.get('x_is_promotion'):
+            result['base_domain'].append([('x_is_promotion', '=', True)])
+        return result

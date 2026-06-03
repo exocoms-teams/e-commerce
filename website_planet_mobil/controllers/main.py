@@ -247,19 +247,15 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         return request.render('website_planet_mobil.contact_page', {})
 
 
-    def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
-        domain = super()._get_shop_domain(search, category, attribute_value_dict, search_in_description)
-        print("=== _get_shop_domain appelé ===")
-        print("x_is_promotion:", request.params.get('x_is_promotion'))
+    def _get_search_options(self, category=None, attribute_value_dict=None, tags=None, min_price=0.0, max_price=0.0, conversion_rate=1, **post):
+        options = super()._get_search_options(category=category, attribute_value_dict=attribute_value_dict, tags=tags, min_price=min_price, max_price=max_price, conversion_rate=conversion_rate, **post)
         if request.params.get('x_is_promotion'):
-            domain &= Domain('x_is_promotion', '=', True)
-            print("=== FILTRE PROMOTION APPLIQUÉ ===")
-        return domain
+            options['x_is_promotion'] = True
+        return options
 
     @http.route(['/shop', '/shop/page/<int:page>'], type='http', auth='public', website=True, sitemap=False)
     def shop(self, page=0, category=None, search='', min_price=0.0, max_price=0.0, tags='', **kwargs):
         return super().shop(page=page, category=category, search=search, min_price=min_price, max_price=max_price, tags=tags, **kwargs)
-
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
