@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action rapport bordereau -->
+    <record id="action_report_bordereau_mandats" model="ir.actions.report">
+        <field name="name">Bordereau de Mandats</field>
+        <field name="model">bordereau.mandat</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mandat_administratif.report_bordereau_mandats_doc</field>
+        <field name="report_file">mandat_administratif.report_bordereau_mandats_doc</field>
+        <field name="binding_model_id" ref="model_bordereau_mandat"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- Template QWeb bordereau -->
+    <template id="report_bordereau_mandats_doc">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- En-tête -->
+                        <div class="row mb-4">
+                            <div class="col-8">
+                                <h3>BORDEREAU DE MANDATS DE PAIEMENT</h3>
+                                <p class="text-muted">Exercice <span t-field="o.exercice_budgetaire"/></p>
+                            </div>
+                            <div class="col-4 text-end">
+                                <h4>N° <span t-field="o.name"/></h4>
+                                <p>Date : <span t-field="o.date_bordereau" t-options='{"format": "dd/MM/yyyy"}'/></p>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong>Ordonnateur :</strong> <span t-field="o.ordonnateur_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Comptable public :</strong> <span t-field="o.comptable_id.name"/>
+                            </div>
+                        </div>
+
+                        <!-- Tableau des mandats -->
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>N° Mandat</th>
+                                    <th>Date</th>
+                                    <th>Créancier</th>
+                                    <th>Objet</th>
+                                    <th>Imputation</th>
+                                    <th class="text-end">Montant HT</th>
+                                    <th class="text-end">TVA</th>
+                                    <th class="text-end">Net à payer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.mandat_ids" t-as="m">
+                                    <tr>
+                                        <td><span t-field="m.name"/></td>
+                                        <td><span t-field="m.date_mandat" t-options='{"format": "dd/MM/yyyy"}'/></td>
+                                        <td><span t-field="m.creancier_id.name"/></td>
+                                        <td><span t-field="m.reference_objet"/></td>
+                                        <td><span t-field="m.imputation_budgetaire"/></td>
+                                        <td class="text-end">
+                                            <span t-field="m.montant_ht"
+                                                  t-options='{"widget": "monetary", "display_currency": m.currency_id}'/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="m.montant_tva"
+                                                  t-options='{"widget": "monetary", "display_currency": m.currency_id}'/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="m.montant_net_payer"
+                                                  t-options='{"widget": "monetary", "display_currency": m.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot class="table-secondary fw-bold">
+                                <tr>
+                                    <td colspan="5">
+                                        TOTAL — <span t-field="o.nombre_mandats"/> mandat(s)
+                                    </td>
+                                    <td class="text-end" colspan="2">Total TTC inclus</td>
+                                    <td class="text-end">
+                                        <span t-field="o.montant_total"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <div class="border p-3" style="min-height: 100px;">
+                                    <strong>L'Ordonnateur</strong><br/>
+                                    <small>Signature et cachet</small>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="border p-3" style="min-height: 100px;">
+                                    <strong>Le Comptable Public</strong><br/>
+                                    <small>Pris en charge le :</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
