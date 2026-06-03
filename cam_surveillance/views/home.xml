@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="cam_home" name="Cam Surveillance Accueil">
-        <t t-call="website.layout">
-            <div id="wrap">
-                <section class="cam-hero">
-                    <div class="cam-hero-content">
-                        <h1 class="cam-hero-title">
-                            La sécurité intelligente
-                            <span>pour votre entreprise</span>
-                        </h1>
-                        <p class="cam-hero-subtitle">
-                            Caméras réseau AXIS · Support 24/7 · Garantie 5 ans
-                        </p>
-                        <a href="/shop" class="cam-btn-primary">Voir nos produits →</a>
+    <record id="cam_home_page" model="website.page">
+        <field name="name">Accueil Cam Surveillance</field>
+        <field name="url">/</field>
+        <field name="website_id" ref="cam_surveillance_website"/>
+        <field name="is_published">True</field>
+        <field name="view_id" ref="cam_home_view"/>
+    </record>
+
+    <record id="cam_home_view" model="ir.ui.view">
+        <field name="name">cam.home</field>
+        <field name="type">qweb</field>
+        <field name="key">cam_surveillance.cam_home</field>
+        <field name="arch" type="xml">
+            <t t-name="cam_surveillance.cam_home">
+                <t t-call="website.layout">
+                    <div id="wrap">
+                        <section class="cam-hero">
+                            <div class="cam-hero-content">
+                                <h1>La sécurité intelligente
+                                    <span>pour votre entreprise</span>
+                                </h1>
+                                <p>Caméras réseau AXIS · Support 24/7 · Garantie 5 ans</p>
+                                <a href="/shop" class="cam-btn-primary">Voir nos produits →</a>
+                            </div>
+                        </section>
                     </div>
-                </section>
-            </div>
-        </t>
-    </template>
+                </t>
+            </t>
+        </field>
+    </record>
 </odoo>
