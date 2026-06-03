@@ -89,19 +89,10 @@ class AutoVehicle(models.Model):
     )
     favorite_count = fields.Integer(string="Favoris", compute="_compute_favorite_count")
 
-    if hasattr(models, "Constraint"):
-        _product_uniq = models.Constraint(
-            "unique(product_template_id)",
-            "Chaque produit ne peut être lié qu'à un seul véhicule.",
-        )
-    else:
-        _sql_constraints = [
-            (
-                "auto_vehicle_product_uniq",
-                "unique(product_template_id)",
-                "Chaque produit ne peut être lié qu'à un seul véhicule.",
-            )
-        ]
+    _product_uniq = models.Constraint(
+        "unique(product_template_id)",
+        "Chaque produit ne peut être lié qu'à un seul véhicule.",
+    )
 
     @api.depends("availability")
     @api.depends_context("lang")
@@ -174,8 +165,13 @@ class AutoVehicle(models.Model):
         return result
 
     def _sync_product_template_from_vehicle(self):
-        language_codes = self.env["res.lang"].with_context(active_test=False).search(
-            [("code", "in", ["fr_FR", "en_GB", "ar_001"])]
+        # Odoo rejects an inactive language in env.lang. During a fresh install,
+        # auto_base is loaded before auto_website activates the public languages.
+        language_codes = self.env["res.lang"].sudo().search(
+            [
+                ("active", "=", True),
+                ("code", "in", ["fr_FR", "en_GB", "ar_001"]),
+            ]
         ).mapped("code")
         for vehicle in self.filtered("product_template_id"):
             values = {

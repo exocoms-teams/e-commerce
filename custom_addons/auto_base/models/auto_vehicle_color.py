@@ -11,16 +11,7 @@ class AutoVehicleColor(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
-    if hasattr(models, "Constraint"):
-        _name_uniq = models.Constraint(
-            "unique(name)",
-            "Le nom de la couleur doit être unique.",
-        )
-    else:
-        _sql_constraints = [
-            (
-                "auto_vehicle_color_name_uniq",
-                "unique(name)",
-                "Le nom de la couleur doit être unique.",
-            )
-        ]
+    _name_uniq = models.Constraint(
+        "unique(name)",
+        "Le nom de la couleur doit être unique.",
+    )

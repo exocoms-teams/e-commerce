@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Odoo 19 still ships a few frontend templates with deprecated t-esc directives. -->
+    <template id="odoo19_web_layout_t_out" inherit_id="web.layout">
+        <xpath expr="//title" position="replace">
+            <title t-out="title or 'Odoo'"/>
+        </xpath>
+        <xpath expr="//script[@id='web.layout.odooscript']/t[1]" position="replace">
+            <t t-out="request.csrf_token(None)"/>
+        </xpath>
+        <xpath expr="//script[@id='web.layout.odooscript']/t[2]" position="replace">
+            <t t-out="debug"/>
+        </xpath>
+    </template>
+
+    <template id="odoo19_portal_language_selector_t_out" inherit_id="portal.language_selector">
+        <xpath expr="//button/span[@t-if='not no_text']" position="replace">
+            <span t-if="not no_text" t-attf-class="#{_txt_class}" t-out="active_lang.name.split('/').pop()"/>
+        </xpath>
+        <xpath expr="//button/span[@t-elif='codes']" position="replace">
+            <span t-elif="codes" class="align-middle" t-out="active_lang.url_code.split('_').pop(0).upper()"/>
+        </xpath>
+        <xpath expr="//a/span[@t-if='not no_text']" position="replace">
+            <span t-if="not no_text" t-out="lg.name.split('/').pop()" t-attf-class="#{_txt_class}"/>
+        </xpath>
+        <xpath expr="//a/span[@t-elif='codes']" position="replace">
+            <span t-elif="codes" t-out="lg.url_code.split('_').pop(0).upper()" t-attf-class="align-middle #{_txt_class}"/>
+        </xpath>
+    </template>
+
+    <template id="odoo19_portal_user_dropdown_t_out" inherit_id="portal.user_dropdown">
+        <xpath expr="//span[@t-if='_user_name']" position="replace">
+            <span t-if="_user_name" t-attf-class="#{_user_name_class}" t-out="user_id.name[:23] + '...' if user_id.name and len(user_id.name) &gt; 25 else user_id.name"/>
+        </xpath>
+    </template>
+
+    <template id="odoo19_banner_categories_t_out" inherit_id="website.s_banner_categories">
+        <xpath expr="//a[@t-att-href='cta_btn_href']/t" position="replace">
+            <t t-out="cta_btn_text">Buy Now</t>
+        </xpath>
+    </template>
+</odoo>

@@ -23,16 +23,7 @@ class AutoVehicleOption(models.Model):
     active = fields.Boolean(default=True)
     description = fields.Text(translate=True)
 
-    if hasattr(models, "Constraint"):
-        _name_uniq = models.Constraint(
-            "unique(name)",
-            "Le nom de l'option doit être unique.",
-        )
-    else:
-        _sql_constraints = [
-            (
-                "auto_vehicle_option_name_uniq",
-                "unique(name)",
-                "Le nom de l'option doit être unique.",
-            )
-        ]
+    _name_uniq = models.Constraint(
+        "unique(name)",
+        "Le nom de l'option doit être unique.",
+    )
