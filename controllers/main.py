@@ -40,7 +40,7 @@ class MonetiqueWebsite(Website):
         })
 
     @http.route('/contact/send', type='http', auth='public', website=True,
-                methods=['POST'], csrf=True)
+                 methods=['POST'], csrf=True)
     def contact_send(self, **post):
         name = post.get('name', '').strip()
         email = post.get('email', '').strip()
@@ -72,7 +72,7 @@ class MonetiqueWebsite(Website):
         })
 
     @http.route('/rappel', type='http', auth='public', website=True,
-                methods=['POST'], csrf=True)
+                 methods=['POST'], csrf=True)
     def rappel(self, **post):
         phone = post.get('phone', '').strip()
         name = post.get('name', '').strip()
@@ -85,3 +85,87 @@ class MonetiqueWebsite(Website):
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         return request.redirect('/?rappel=ok')
+
+    @http.route('/paiement', type='http', auth='public', website=True)
+    def payment_page(self, **kwargs):
+        return request.render('monetique_theme.page_paiement', {
+            'year': datetime.datetime.now().year,
+            'error': False,
+            'success': False,
+        })
+
+    @http.route('/paiement/traiter', type='http', auth='public', website=True,
+                 methods=['POST'], csrf=True)
+    def process_payment(self, **post):
+        try:
+            first_name = post.get('first_name', '').strip()
+            last_name = post.get('last_name', '').strip()
+            email = post.get('email', '').strip()
+            phone = post.get('phone', '').strip()
+            amount = post.get('amount', '0').strip()
+            card_number = post.get('card_number', '').strip()
+            card_expiry = post.get('card_expiry', '').strip()
+            card_cvv = post.get('card_cvv', '').strip()
+            address = post.get('address', '').strip()
+            city = post.get('city', '').strip()
+            zip_code = post.get('zip_code', '').strip()
+
+            if not (first_name and last_name and email and amount and card_number and card_expiry and card_cvv):
+                return request.render('monetique_theme.page_paiement', {
+                    'year': datetime.datetime.now().year,
+                    'error': True,
+                    'error_msg': 'Tous les champs obligatoires doivent être remplis',
+                    'form_data': post,
+                })
+
+            if '@' not in email:
+                return request.render('monetique_theme.page_paiement', {
+                    'year': datetime.datetime.now().year,
+                    'error': True,
+                    'error_msg': 'Email invalide',
+                    'form_data': post,
+                })
+
+            payment_vals = {
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'phone': phone,
+                'amount': float(amount),
+                'address': address,
+                'city': city,
+                'zip_code': zip_code,
+                'payment_date': datetime.datetime.now(),
+                'status': 'pending',
+                'card_last_4': card_number[-4:],
+            }
+
+            payment_record = request.env['payment.transaction'].sudo().create(payment_vals)
+
+            mail_vals = {
+                'subject': '[monetiques.fr] Confirmation de paiement',
+                'body_html': """
+                    <p>Bonjour <strong>%s %s</strong>,</p>
+                    <p>Votre paiement de <strong>%.2f €</strong> a été reçu.</p>
+                    <p>Référence de transaction: <strong>%s</strong></p>
+                    <p>Nous vous remercions de votre confiance.</p>
+                    <p>Cordialement,<br/>L'équipe Monetiques</p>
+                """ % (first_name, last_name, float(amount), payment_record.id),
+                'email_from': request.website.email or 'contact@monetiques.fr',
+                'email_to': email,
+            }
+            request.env['mail.mail'].sudo().create(mail_vals).send()
+
+            return request.render('monetique_theme.page_paiement_success', {
+                'year': datetime.datetime.now().year,
+                'transaction_id': payment_record.id,
+                'amount': float(amount),
+            })
+
+        except Exception as e:
+            return request.render('monetique_theme.page_paiement', {
+                'year': datetime.datetime.now().year,
+                'error': True,
+                'error_msg': 'Une erreur est survenue lors du traitement du paiement',
+                'form_data': post,
+            })

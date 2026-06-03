@@ -11,11 +11,14 @@
     'depends': ['website', 'website_sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
+        'security/payment_transaction_access.csv',
         'views/layout_templates.xml',
         'views/homepage_templates.xml',
         'views/pages_templates.xml',
         'views/shop_templates.xml',
+        'views/payment_templates.xml',
         'data/website_data.xml',
+        'data/payment_menu.xml',
     ],
     'assets': {
         'web.assets_frontend': [
