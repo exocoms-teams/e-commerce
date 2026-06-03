@@ -1,23 +1,25 @@
+# -*- coding: utf-8 -*-
 {
-    'name': 'monetiques.fr — Infrastructure de Paiement',
-    'version': '19.0.1.0.1',
+    'name': 'Monetique Theme',
+    'version': '19.0.1.0.0',
     'category': 'Website',
-    'author': 'monetiques.fr',
-    'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
+    'summary': 'Site vitrine professionnel pour services monétiques',
+    'description': 'Thème personnalisé pour e-monétique : TPE, paiement, solutions pro',
+    'author': 'Exocoms',
+    'depends': ['website', 'web'],
     'data': [
         'security/ir.model.access.csv',
-        'data/products.xml',
-        'views/templates/layout.xml',
-        'views/templates/components.xml',
-        'views/pages/home.xml',
-        'views/pages/audit.xml',
+        'views/layout.xml',
+        'views/home.xml',
     ],
     'assets': {
-        'website.assets_frontend': [
-            'monetique_theme/static/src/css/main.css',
+        'web.assets_frontend': [
+            'monetique_theme/static/src/css/style.css',
+            'monetique_theme/static/src/js/main.js',
         ],
     },
     'installable': True,
     'application': False,
+    'auto_install': False,
+    'license': 'LGPL-3',
 }
