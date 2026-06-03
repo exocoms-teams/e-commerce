@@ -9,8 +9,8 @@
     'depends': ['website', 'website_sale'],
     'data': [
         'data/website_data.xml',
-        'views/templates/layout.xml',
-        'views/pages/home.xml',
+        'views/layout.xml',
+        'views/home.xml',
     ],
     'assets': {
         'web.assets_frontend': [
