@@ -257,8 +257,8 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         return domain
 
     @http.route(['/shop', '/shop/page/<int:page>'], type='http', auth='public', website=True, sitemap=False)
-    def shop(self, page=0, **kwargs):
-        return super().shop(page=page, **kwargs)
+    def shop(self, page=0, category=None, search='', min_price=0.0, max_price=0.0, tags='', **kwargs):
+        return super().shop(page=page, category=category, search=search, min_price=min_price, max_price=max_price, tags=tags, **kwargs)
 
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
