@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Monetique Theme',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Website',
     'summary': 'Site vitrine professionnel pour services monétiques',
-    'description': 'Thème personnalisé pour e-monétique : TPE, paiement, solutions pro',
     'author': 'Exocoms',
     'depends': ['website', 'web'],
     'data': [
