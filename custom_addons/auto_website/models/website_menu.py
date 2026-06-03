@@ -8,6 +8,30 @@ class WebsiteMenu(models.Model):
     _inherit = "website.menu"
 
     @api.model
+    def _auto_website_remove_obsolete_qweb_overrides(self):
+        override_names = [
+            "odoo19_web_layout_t_out",
+            "odoo19_portal_language_selector_t_out",
+            "odoo19_portal_user_dropdown_t_out",
+            "odoo19_banner_categories_t_out",
+        ]
+        external_ids = self.env["ir.model.data"].sudo().search(
+            [
+                ("module", "=", "auto_website"),
+                ("name", "in", override_names),
+            ]
+        )
+        view_ids = [
+            external_id.res_id
+            for external_id in external_ids
+            if external_id.model == "ir.ui.view" and external_id.res_id
+        ]
+        if view_ids:
+            self.env["ir.ui.view"].sudo().browse(view_ids).exists().unlink()
+        external_ids.exists().unlink()
+        return True
+
+    @api.model
     def _auto_website_page_title(self, key):
         titles = {
             "contact": self.env._("Contacter EXOCOMS"),
