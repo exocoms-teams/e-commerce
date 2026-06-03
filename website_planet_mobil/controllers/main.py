@@ -249,8 +249,11 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         domain = super()._get_shop_domain(search, category, attribute_value_dict, search_in_description)
+        print("=== _get_shop_domain appelé ===")
+        print("x_is_promotion:", request.params.get('x_is_promotion'))
         if request.params.get('x_is_promotion'):
             domain &= Domain('x_is_promotion', '=', True)
+            print("=== FILTRE PROMOTION APPLIQUÉ ===")
         return domain
 
     @http.route(['/shop', '/shop/page/<int:page>'], type='http', auth='public', website=True, sitemap=False)
