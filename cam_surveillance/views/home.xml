@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="cam_home_page" model="website.page">
-        <field name="name">Accueil Cam Surveillance</field>
-        <field name="url">/</field>
-        <field name="website_id" ref="cam_surveillance_website"/>
-        <field name="is_published">True</field>
-        <field name="view_id" ref="cam_home_view"/>
-    </record>
 
+    <!-- 1. D'ABORD la vue -->
     <record id="cam_home_view" model="ir.ui.view">
         <field name="name">cam.home</field>
         <field name="type">qweb</field>
@@ -18,10 +12,10 @@
                     <div id="wrap">
                         <section class="cam-hero">
                             <div class="cam-hero-content">
-                                <h1>La sécurité intelligente
+                                <h1 class="cam-hero-title">La sécurité intelligente
                                     <span>pour votre entreprise</span>
                                 </h1>
-                                <p>Caméras réseau AXIS · Support 24/7 · Garantie 5 ans</p>
+                                <p class="cam-hero-subtitle">Caméras réseau AXIS · Support 24/7 · Garantie 5 ans</p>
                                 <a href="/shop" class="cam-btn-primary">Voir nos produits →</a>
                             </div>
                         </section>
@@ -30,4 +24,14 @@
             </t>
         </field>
     </record>
+
+    <!-- 2. ENSUITE la page qui utilise la vue -->
+    <record id="cam_home_page" model="website.page">
+        <field name="name">Accueil Cam Surveillance</field>
+        <field name="url">/</field>
+        <field name="website_id" ref="cam_surveillance_website"/>
+        <field name="is_published">True</field>
+        <field name="view_id" ref="cam_home_view"/>
+    </record>
+
 </odoo>
