@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- 1. D'ABORD la vue -->
+    <!-- La vue de la page d'accueil -->
     <record id="cam_home_view" model="ir.ui.view">
         <field name="name">cam.home</field>
         <field name="type">qweb</field>
@@ -10,28 +10,41 @@
             <t t-name="cam_surveillance.cam_home">
                 <t t-call="website.layout">
                     <div id="wrap">
+
+                        <!-- HERO -->
                         <section class="cam-hero">
                             <div class="cam-hero-content">
-                                <h1 class="cam-hero-title">La sécurité intelligente
+                                <div class="cam-hero-badge">
+                                    Revendeur certifié AXIS · Vidéosurveillance professionnelle
+                                </div>
+                                <h1 class="cam-hero-title">
+                                    La sécurité intelligente
                                     <span>pour votre entreprise</span>
                                 </h1>
-                                <p class="cam-hero-subtitle">Caméras réseau AXIS · Support 24/7 · Garantie 5 ans</p>
-                                <a href="/shop" class="cam-btn-primary">Voir nos produits →</a>
+                                <p class="cam-hero-subtitle">
+                                    Caméras réseau, contrôle d'accès et solutions de vidéosurveillance.
+                                    Livraison rapide et support technique gratuit.
+                                </p>
+                                <div class="cam-hero-buttons">
+                                    <a href="/shop" class="cam-btn-primary">Voir nos produits</a>
+                                    <a href="/contact" class="cam-btn-secondary">Demander un audit gratuit</a>
+                                </div>
                             </div>
                         </section>
+
                     </div>
                 </t>
             </t>
         </field>
     </record>
 
-    <!-- 2. ENSUITE la page qui utilise la vue -->
+    <!-- La page liée à TON site -->
     <record id="cam_home_page" model="website.page">
-        <field name="name">Accueil Cam Surveillance</field>
-        <field name="url">/</field>
+        <field name="name">Accueil</field>
+        <field name="url">/cam-home</field>
         <field name="website_id" ref="cam_surveillance_website"/>
-        <field name="is_published">True</field>
         <field name="view_id" ref="cam_home_view"/>
+        <field name="is_published">True</field>
     </record>
 
 </odoo>
