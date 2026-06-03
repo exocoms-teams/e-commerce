@@ -103,7 +103,7 @@
                     <t t-if="hero_vehicles and len(hero_vehicles) &gt; 1">
                         <div class="carousel-indicators auto-hero-indicators">
                             <t t-foreach="hero_vehicles" t-as="hero_vehicle">
-                                <button type="button" data-bs-target="#autoHeroCarousel" t-attf-data-bs-slide-to="#{hero_vehicle_index}" t-attf-class="#{'active' if hero_vehicle_index == 0 else ''}" t-att-aria-current="hero_vehicle_index == 0 and 'true' or None" t-att-aria-label="'Diapositive %s' % (hero_vehicle_index + 1)"/>
+                                <button type="button" data-bs-target="#autoHeroCarousel" t-attf-data-bs-slide-to="#{hero_vehicle_index}" t-attf-class="#{'active' if hero_vehicle_index == 0 else ''}" t-att-aria-current="hero_vehicle_index == 0 and 'true' or None" t-att-aria-label="carousel_indicator_label"/>
                             </t>
                         </div>
                     </t>
@@ -378,7 +378,7 @@
                             <a t-att-href="vehicle.website_url" class="text-decoration-none text-dark" t-esc="vehicle.display_name"/>
                         </h3>
                     </div>
-                    <span class="badge text-bg-secondary" t-esc="dict(vehicle.AVAILABILITY_SELECTION).get(vehicle.availability)"/>
+                    <span class="badge text-bg-secondary" t-esc="vehicle.availability_label"/>
                 </div>
                 <div class="auto-vehicle-meta mt-2">
                     <span><strong t-esc="vehicle.year"/></span>
@@ -436,7 +436,7 @@
                                         <p class="mb-1 text-muted" t-esc="vehicle.brand_id.name"/>
                                         <h1 class="h3 mb-2" t-esc="vehicle.display_name"/>
                                     </div>
-                                    <span class="badge text-bg-secondary" t-esc="dict(vehicle.AVAILABILITY_SELECTION).get(vehicle.availability)"/>
+                                    <span class="badge text-bg-secondary" t-esc="vehicle.availability_label"/>
                                 </div>
 
                                 <div class="auto-price mb-2">
@@ -496,7 +496,7 @@
                                         <t t-if="vehicle.specification_ids">
                                             <t t-foreach="vehicle.specification_ids.sorted(key=lambda l: (l.sequence, l.id))" t-as="spec">
                                                 <tr>
-                                                    <td t-esc="dict(spec.SECTION_SELECTION).get(spec.section)"/>
+                                                    <td t-esc="spec.section_label"/>
                                                     <td t-esc="spec.name"/>
                                                     <td><span t-esc="spec.value"/><span t-if="spec.unit"> <t t-esc="spec.unit"/></span></td>
                                                 </tr>
@@ -761,6 +761,21 @@
         </xpath>
     </template>
 
+    <template id="header_text_element_without_fake_phone" inherit_id="website.header_text_element" name="Header sans telephone fictif">
+        <xpath expr="//a[starts-with(@href, 'tel:')]" position="replace"/>
+        <xpath expr="//t[@t-elif=&quot;_txt_elt_content == 'phone_mail'&quot;]" position="replace">
+            <t t-elif="_txt_elt_content == 'phone_mail'"/>
+        </xpath>
+    </template>
+
+    <template id="template_header_default_without_text_element" inherit_id="website.template_header_default" name="Header desktop sans texte fictif">
+        <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace"/>
+    </template>
+
+    <template id="template_header_mobile_without_text_element" inherit_id="website.template_header_mobile" name="Header mobile sans texte fictif">
+        <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace"/>
+    </template>
+
     <template id="footer_exocoms" inherit_id="website.footer_custom" name="Footer EXOCOMS sans réseaux sociaux" active="True">
         <xpath expr="//div[@id='footer']" position="replace">
             <div id="footer" class="oe_structure oe_structure_solo auto-footer" t-ignore="true" t-if="not no_footer">
@@ -795,8 +810,24 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="auto-footer-languages mt-4 pt-3">
+                            <span>Langues</span>
+                            <a href="/fr/cars/home" hreflang="fr" t-translation="off">Français</a>
+                            <a href="/en/cars/home" hreflang="en" t-translation="off">English</a>
+                            <a href="/ar/cars/home" hreflang="ar" dir="rtl" t-translation="off">العربي</a>
+                        </div>
                     </div>
                 </section>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="footer_copyright_exocoms" inherit_id="website.layout" name="Copyright EXOCOMS Group">
+        <xpath expr="//footer//div[hasclass('o_footer_copyright')]" position="replace">
+            <div t-if="not no_copyright" class="o_footer_copyright auto-footer-copyright o_colored_level o_cc" data-name="Copyright">
+                <div class="container py-3">
+                    <p class="mb-0 text-center">Copyright &#169; 2026 - EXOCOMS Group</p>
+                </div>
             </div>
         </xpath>
     </template>

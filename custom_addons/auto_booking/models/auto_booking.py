@@ -28,6 +28,14 @@ class AutoBooking(models.Model):
     note = fields.Text()
     assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné", tracking=True)
     state = fields.Selection(STATE_SELECTION, default="draft", tracking=True)
+    state_label = fields.Char(compute="_compute_state_label")
+
+    @api.depends("state")
+    @api.depends_context("lang")
+    def _compute_state_label(self):
+        labels = dict(self._fields["state"]._description_selection(self.env))
+        for booking in self:
+            booking.state_label = labels.get(booking.state)
 
     @api.model_create_multi
     def create(self, vals_list):

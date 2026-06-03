@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Base",
-    "version": "1.0.7",
+    "version": "1.1.0",
     "summary": "Modèles de données automobiles pour l'e-commerce de voitures chinoises",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
@@ -17,7 +17,8 @@
         "views/auto_vehicle_option_views.xml",
         "views/auto_vehicle_views.xml",
         "views/product_template_views.xml",
-        "demo/demo_data.xml"
+        "demo/demo_data.xml",
+        "data/catalog_expansion.xml"
     ],
     "application": True,
     "installable": True

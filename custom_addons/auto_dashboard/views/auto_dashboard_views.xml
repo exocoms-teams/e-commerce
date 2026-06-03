@@ -1,58 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_auto_dashboard_snapshot_tree" model="ir.ui.view">
-        <field name="name">auto.dashboard.snapshot.tree</field>
+        <field name="name">auto.dashboard.snapshot.list</field>
         <field name="model">auto.dashboard.snapshot</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
+                <field name="vehicle_count"/>
+                <field name="published_vehicle_count"/>
                 <field name="orders_count"/>
                 <field name="revenue_total"/>
                 <field name="quote_request_count"/>
                 <field name="booking_count"/>
                 <field name="test_drive_count"/>
-                <field name="published_vehicle_count"/>
             </list>
         </field>
     </record>
 
     <record id="view_auto_dashboard_snapshot_form" model="ir.ui.view">
-        <field name="name">auto.dashboard.snapshot.form</field>
+        <field name="name">auto.dashboard.snapshot.admin.form</field>
         <field name="model">auto.dashboard.snapshot</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" duplicate="0" delete="0" class="auto-admin-dashboard-form">
                 <header>
                     <button name="action_refresh" type="object" string="Actualiser" class="btn-primary"/>
+                    <button name="action_new_vehicle" type="object" string="Nouvelle voiture"/>
+                    <button name="action_new_brand" type="object" string="Nouvelle marque"/>
+                    <button name="action_open_website_catalog" type="object" string="Voir le site"/>
                 </header>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
-                        </group>
-                        <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="currency_id" readonly="1"/>
-                        </group>
-                    </group>
-                    <group string="Indicateurs de vente" col="4">
-                        <field name="orders_count" readonly="1"/>
-                        <field name="revenue_total" readonly="1"/>
-                        <field name="quote_request_count" readonly="1"/>
-                        <field name="crm_opportunity_count" readonly="1"/>
-                    </group>
-                    <group string="Indicateurs d'engagement" col="4">
-                        <field name="booking_count" readonly="1"/>
-                        <field name="test_drive_count" readonly="1"/>
-                        <field name="approved_review_count" readonly="1"/>
-                        <field name="published_vehicle_count" readonly="1"/>
-                    </group>
-                    <group>
-                        <field name="top_vehicle_id" readonly="1"/>
-                    </group>
+                <sheet class="auto-admin-dashboard">
+                    <field name="currency_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+
+                    <div class="auto-admin-hero">
+                        <div>
+                            <span class="auto-admin-kicker">Administration EXOCOMS</span>
+                            <h1>Tableau de bord automobile</h1>
+                            <p>
+                                Pilotez le catalogue, les marques, les demandes clients et les contenus de votre marketplace automobile.
+                            </p>
+                        </div>
+                        <div class="auto-admin-period">
+                            <span class="o_form_label">Periode d'analyse</span>
+                            <div class="auto-admin-period-fields">
+                                <field name="date_from" nolabel="1"/>
+                                <span>au</span>
+                                <field name="date_to" nolabel="1"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="auto-admin-actions">
+                        <button name="action_new_vehicle" type="object" class="btn btn-primary">
+                            <i class="fa fa-plus me-1"/> Ajouter une voiture
+                        </button>
+                        <button name="action_open_vehicles" type="object" class="btn btn-light">
+                            <i class="fa fa-car me-1"/> Gerer les voitures
+                        </button>
+                        <button name="action_open_brands" type="object" class="btn btn-light">
+                            <i class="fa fa-tags me-1"/> Gerer les marques
+                        </button>
+                        <button name="action_open_website_catalog" type="object" class="btn btn-outline-light">
+                            <i class="fa fa-external-link me-1"/> Catalogue public
+                        </button>
+                    </div>
+
+                    <div class="auto-admin-section">
+                        <div class="auto-admin-section-head">
+                            <div>
+                                <h2>Catalogue</h2>
+                                <p>CRUD complet pour les voitures, marques, categories, motorisations et options.</p>
+                            </div>
+                        </div>
+                        <div class="auto-admin-kpi-grid">
+                            <button name="action_open_vehicles" type="object" class="auto-admin-kpi auto-kpi-blue">
+                                <span>Voitures actives</span>
+                                <strong><field name="vehicle_count" nolabel="1"/></strong>
+                                <small>Catalogue administrable</small>
+                            </button>
+                            <button name="action_open_available_vehicles" type="object" class="auto-admin-kpi auto-kpi-green">
+                                <span>Disponibles</span>
+                                <strong><field name="available_vehicle_count" nolabel="1"/></strong>
+                                <small>Pretes a vendre</small>
+                            </button>
+                            <button name="action_open_vehicles" type="object" class="auto-admin-kpi auto-kpi-amber">
+                                <span>Reservees</span>
+                                <strong><field name="reserved_vehicle_count" nolabel="1"/></strong>
+                                <small>Suivi commercial</small>
+                            </button>
+                            <button name="action_open_unpublished_vehicles" type="object" class="auto-admin-kpi auto-kpi-red">
+                                <span>Non publiees</span>
+                                <strong><field name="unpublished_vehicle_count" nolabel="1"/></strong>
+                                <small>A verifier avant mise en ligne</small>
+                            </button>
+                            <button name="action_open_brands" type="object" class="auto-admin-kpi auto-kpi-dark">
+                                <span>Marques</span>
+                                <strong><field name="brand_count" nolabel="1"/></strong>
+                                <small>Logos et descriptions</small>
+                            </button>
+                            <button name="action_open_vehicles" type="object" class="auto-admin-kpi auto-kpi-purple">
+                                <span>Stock total</span>
+                                <strong><field name="stock_total_qty" nolabel="1"/></strong>
+                                <small>Unites declarees</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="auto-admin-columns">
+                        <div class="auto-admin-panel">
+                            <h2>Demandes clients</h2>
+                            <p>Traitez les leads, reservations, essais et financements.</p>
+                            <div class="auto-admin-list-actions">
+                                <button name="action_open_quote_requests" type="object">
+                                    <span>Demandes de devis</span>
+                                    <strong><field name="quote_request_count" nolabel="1"/></strong>
+                                    <small><field name="new_quote_request_count" nolabel="1"/> nouvelles</small>
+                                </button>
+                                <button name="action_open_bookings" type="object">
+                                    <span>Reservations</span>
+                                    <strong><field name="booking_count" nolabel="1"/></strong>
+                                    <small>Sur la periode</small>
+                                </button>
+                                <button name="action_open_test_drives" type="object">
+                                    <span>Essais</span>
+                                    <strong><field name="test_drive_count" nolabel="1"/></strong>
+                                    <small>Rendez-vous clients</small>
+                                </button>
+                                <button name="action_open_financing_requests" type="object">
+                                    <span>Financements</span>
+                                    <strong><field name="financing_request_count" nolabel="1"/></strong>
+                                    <small><field name="pending_financing_request_count" nolabel="1"/> a suivre</small>
+                                </button>
+                                <button name="action_open_reviews" type="object">
+                                    <span>Avis clients</span>
+                                    <strong><field name="pending_review_count" nolabel="1"/></strong>
+                                    <small>En attente de moderation</small>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="auto-admin-panel auto-admin-panel-sales">
+                            <h2>Performance</h2>
+                            <p>Indicateurs commerciaux calcules sur la periode selectionnee.</p>
+                            <div class="auto-admin-sales-grid">
+                                <div>
+                                    <span>Commandes confirmees</span>
+                                    <strong><field name="orders_count" nolabel="1"/></strong>
+                                </div>
+                                <div>
+                                    <span>Chiffre d'affaires</span>
+                                    <strong><field name="revenue_total" widget="monetary" options="{'currency_field': 'currency_id'}" nolabel="1"/></strong>
+                                </div>
+                                <div>
+                                    <span>Opportunites CRM</span>
+                                    <strong><field name="crm_opportunity_count" nolabel="1"/></strong>
+                                </div>
+                                <div>
+                                    <span>Voiture la plus vendue</span>
+                                    <strong><field name="top_vehicle_id" nolabel="1"/></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="auto-admin-section">
+                        <div class="auto-admin-section-head">
+                            <div>
+                                <h2>Configuration rapide</h2>
+                                <p>Elements de reference utilises par le catalogue et les fiches voitures.</p>
+                            </div>
+                        </div>
+                        <div class="auto-admin-config-grid">
+                            <button name="action_open_categories" type="object">
+                                <i class="fa fa-folder-open"/>
+                                <span>Categories</span>
+                                <strong><field name="category_count" nolabel="1"/></strong>
+                            </button>
+                            <button name="action_open_motorizations" type="object">
+                                <i class="fa fa-bolt"/>
+                                <span>Motorisations</span>
+                                <strong><field name="motorization_count" nolabel="1"/></strong>
+                            </button>
+                            <button name="action_open_options" type="object">
+                                <i class="fa fa-sliders"/>
+                                <span>Options</span>
+                                <strong><field name="option_count" nolabel="1"/></strong>
+                            </button>
+                        </div>
+                    </div>
                 </sheet>
             </form>
         </field>
@@ -61,11 +198,15 @@
     <record id="action_auto_dashboard_snapshot" model="ir.actions.act_window">
         <field name="name">Tableau de bord automobile</field>
         <field name="res_model">auto.dashboard.snapshot</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_auto_dashboard_snapshot_form"/>
+        <field name="res_id" ref="auto_dashboard.dashboard_snapshot_main"/>
+        <field name="target">current</field>
         <field name="help" type="html">
-            <p>Créez des instantanés pour suivre les ventes, les réservations et les indicateurs d'engagement client.</p>
+            <p>Tableau de bord d'administration du catalogue automobile EXOCOMS.</p>
         </field>
     </record>
 
-    <menuitem id="menu_auto_dashboard" name="Tableau de bord" parent="auto_base.menu_auto_root" action="action_auto_dashboard_snapshot" sequence="20"/>
+    <menuitem id="menu_auto_dashboard" name="Tableau de bord" parent="auto_base.menu_auto_root" action="action_auto_dashboard_snapshot" sequence="1" groups="auto_base.group_auto_admin"/>
+    <menuitem id="menu_auto_dashboard_in_dashboards" name="Automobile EXOCOMS" parent="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" action="action_auto_dashboard_snapshot" sequence="5" groups="auto_base.group_auto_admin"/>
 </odoo>

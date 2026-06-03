@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -30,7 +30,11 @@ class AutoFinancingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_financing.financing_form_page",
-                    {"vehicle": vehicle, "post": post, "error": "Le nom et l'email sont obligatoires."},
+                    {
+                        "vehicle": vehicle,
+                        "post": post,
+                        "error": _("Le nom et l'email sont obligatoires."),
+                    },
                 )
 
             partner = request.env.user.partner_id

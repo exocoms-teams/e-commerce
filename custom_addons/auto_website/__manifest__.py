@@ -1,14 +1,14 @@
 {
     "name": "Automobile - Site web",
-    "version": "1.0.7",
+    "version": "1.0.10",
     "summary": "Pages publiques du site automobile",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
     "license": "LGPL-3",
     "depends": ["website", "website_sale", "portal", "auto_base"],
     "data": [
-        "data/website_menu_cleanup.xml",
-        "views/auto_website_templates.xml"
+        "views/auto_website_templates.xml",
+        "data/website_menu_cleanup.xml"
     ],
     "assets": {
         "web.assets_frontend": [

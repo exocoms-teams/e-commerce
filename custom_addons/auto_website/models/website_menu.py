@@ -1,8 +1,75 @@
+import base64
+
 from odoo import api, models
+from odoo.tools import file_open
 
 
 class WebsiteMenu(models.Model):
     _inherit = "website.menu"
+
+    @api.model
+    def _auto_website_configure_languages(self):
+        language_specs = [
+            {
+                "code": "fr_FR",
+                "name": "Français",
+                "url_code": "fr",
+                "direction": "ltr",
+            },
+            {
+                "code": "en_GB",
+                "name": "English",
+                "url_code": "en",
+                "direction": "ltr",
+            },
+            {
+                "code": "ar_001",
+                "name": "العربي",
+                "url_code": "ar",
+                "direction": "rtl",
+            },
+        ]
+        Lang = self.env["res.lang"].sudo().with_context(active_test=False)
+        languages = self.env["res.lang"].sudo()
+        default_lang = self.env["res.lang"].sudo()
+
+        for spec in language_specs:
+            if "url_code" in Lang._fields:
+                conflicting_langs = Lang.search(
+                    [
+                        ("url_code", "=", spec["url_code"]),
+                        ("code", "!=", spec["code"]),
+                    ]
+                )
+                for conflicting_lang in conflicting_langs:
+                    conflicting_lang.write(
+                        {"url_code": conflicting_lang.code.lower().replace("_", "-")}
+                    )
+            lang = Lang.search([("code", "=", spec["code"])], limit=1)
+            if not lang:
+                lang = Lang._create_lang(spec["code"], spec["name"])
+            values = {
+                "name": spec["name"],
+                "active": True,
+            }
+            if "url_code" in Lang._fields:
+                values["url_code"] = spec["url_code"]
+            if "direction" in Lang._fields:
+                values["direction"] = spec["direction"]
+            lang.write(values)
+            languages |= lang
+            if spec["code"] == "fr_FR":
+                default_lang = lang
+
+        websites = self.env["website"].sudo().search([])
+        for website in websites:
+            values = {
+                "language_ids": [(6, 0, languages.ids)],
+            }
+            if default_lang:
+                values["default_lang_id"] = default_lang.id
+            website.write(values)
+        return True
 
     @api.model
     def _auto_website_remove_default_navigation(self):
@@ -23,20 +90,74 @@ class WebsiteMenu(models.Model):
             "/brands": "Marques",
             "/my/favorites": "Favoris",
             "/cars/compare": "Comparateur",
+            "/contactus": "Contact",
         }
-        languages = self.env["res.lang"].sudo().search([("active", "=", True)]).mapped("code")
         for url, label in menu_labels.items():
             menus = self.sudo().search([("url", "=", url)])
             for menu in menus:
                 menu.sudo().write({"name": label})
-                for lang in languages:
-                    menu.with_context(lang=lang).sudo().write({"name": label})
 
-        websites = self.env["website"].sudo().search([("name", "in", ["My Website", "Mon site web"])])
+        websites = self.env["website"].sudo().search(
+            [("name", "in", ["My Website", "Mon site web", "EXOCOMS Voitures"])]
+        )
         for website in websites:
             website.sudo().write({"name": "EXOCOMS Voitures"})
-            for lang in languages:
-                website.with_context(lang=lang).sudo().write({"name": "EXOCOMS Voitures"})
+        return True
+
+    @api.model
+    def _auto_website_update_company_contact(self):
+        france = self.env.ref("base.fr", raise_if_not_found=False)
+        company_values = {
+            "name": "EXOCOMS Group",
+            "phone": "+33 (0)1 84 79 37 55",
+            "email": "contact@exocoms.fr",
+            "street": "58 rue de Monceau",
+            "zip": "75008",
+            "city": "Paris",
+            "website": "https://www.exocoms.fr/",
+        }
+        if france:
+            company_values["country_id"] = france.id
+
+        websites = self.env["website"].sudo().search(
+            [("name", "in", ["My Website", "Mon site web", "EXOCOMS Voitures"])]
+        )
+        if not websites:
+            websites = self.env["website"].sudo().search([], limit=1)
+
+        companies = websites.mapped("company_id")
+        if not companies:
+            companies = self.env.company
+        companies.sudo().write(company_values)
+        return True
+
+    @api.model
+    def _auto_website_update_branding(self):
+        with file_open("auto_website/static/src/img/exocoms-logo.png", "rb") as logo_file:
+            logo = base64.b64encode(logo_file.read())
+
+        websites = self.env["website"].sudo().search(
+            [("name", "in", ["My Website", "Mon site web", "EXOCOMS Voitures"])]
+        )
+        if not websites:
+            websites = self.env["website"].sudo().search([], limit=1)
+        websites.sudo().write({"logo": logo})
+        return True
+
+    @api.model
+    def _auto_website_replace_default_header_phone(self):
+        replacements = {
+            "tel:+1 555-555-5556": "tel:+33184793755",
+            "+1 555-555-5556": "+33 (0)1 84 79 37 55",
+        }
+        views = self.env["ir.ui.view"].sudo().search([("arch_db", "ilike", "+1 555-555-5556")])
+        for view in views:
+            arch = view.arch_db or ""
+            updated_arch = arch
+            for old_value, new_value in replacements.items():
+                updated_arch = updated_arch.replace(old_value, new_value)
+            if updated_arch != arch:
+                view.sudo().write({"arch_db": updated_arch})
         return True
 
     @api.model
@@ -46,8 +167,6 @@ class WebsiteMenu(models.Model):
             "Coordonnées EXOCOMS Group : 58 rue de Monceau, 75008 Paris, "
             "+33 (0)1 84 79 37 55, contact@exocoms.fr."
         )
-        languages = self.env["res.lang"].sudo().search([("active", "=", True)]).mapped("code")
-
         pages = self.env["website.page"].sudo().search([("url", "=", "/contactus")])
         values = {"name": label}
         if "website_meta_title" in self.env["website.page"]._fields:
@@ -56,12 +175,8 @@ class WebsiteMenu(models.Model):
             values["website_meta_description"] = meta_description
         for page in pages:
             page.sudo().write(values)
-            for lang in languages:
-                page.with_context(lang=lang).sudo().write(values)
 
         contact_view = self.env.ref("website.contactus", raise_if_not_found=False)
         if contact_view:
             contact_view.sudo().write({"name": "Contact EXOCOMS Group"})
-            for lang in languages:
-                contact_view.with_context(lang=lang).sudo().write({"name": "Contact EXOCOMS Group"})
         return True

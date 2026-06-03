@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Lieu</label>
-                                        <input class="form-control" type="text" name="location" t-att-value="post.get('location', 'Showroom principal')"/>
+                                        <input class="form-control" type="text" name="location" t-att-value="post.get('location', default_location)"/>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Choisir un créneau disponible</label>
@@ -180,7 +180,7 @@
                                             <td t-esc="booking.name"/>
                                             <td t-esc="booking.vehicle_id.display_name"/>
                                             <td t-esc="booking.requested_datetime"/>
-                                            <td t-esc="dict(booking.STATE_SELECTION).get(booking.state)"/>
+                                            <td t-esc="booking.state_label"/>
                                         </tr>
                                     </t>
                                 </t>
@@ -221,7 +221,7 @@
                                             <td t-esc="test_drive.vehicle_id.display_name"/>
                                             <td t-esc="test_drive.requested_datetime"/>
                                             <td t-esc="test_drive.location"/>
-                                            <td t-esc="dict(test_drive.STATE_SELECTION).get(test_drive.state)"/>
+                                            <td t-esc="test_drive.state_label"/>
                                         </tr>
                                     </t>
                                 </t>

@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -90,12 +90,9 @@ class AutoWebsiteController(http.Controller):
             "pager": pager,
             "query": kwargs,
             "sort_key": kwargs.get("sort", "newest"),
-            "availability_values": [
-                ("available", "Disponible"),
-                ("reserved", "Réservé"),
-                ("sold", "Vendu"),
-                ("coming_soon", "Bientôt disponible"),
-            ],
+            "availability_values": vehicle_model._fields["availability"]._description_selection(
+                request.env
+            ),
         }
         return request.render("auto_website.catalog_page", values)
 
@@ -177,6 +174,7 @@ class AutoWebsiteController(http.Controller):
                 "vehicle_total": vehicle_model.search_count(public_domain),
                 "available_count": available_count,
                 "starting_vehicle": starting_vehicle,
+                "carousel_indicator_label": _("Indicateur du carrousel"),
             },
         )
 

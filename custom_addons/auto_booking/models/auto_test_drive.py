@@ -25,6 +25,14 @@ class AutoTestDrive(models.Model):
     comment = fields.Text()
     assigned_user_id = fields.Many2one("res.users", string="Conseiller assigné", tracking=True)
     state = fields.Selection(STATE_SELECTION, default="draft", tracking=True)
+    state_label = fields.Char(compute="_compute_state_label")
+
+    @api.depends("state")
+    @api.depends_context("lang")
+    def _compute_state_label(self):
+        labels = dict(self._fields["state"]._description_selection(self.env))
+        for test_drive in self:
+            test_drive.state_label = labels.get(test_drive.state)
 
     @api.model_create_multi
     def create(self, vals_list):

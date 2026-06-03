@@ -23,6 +23,7 @@ class AutoReview(models.Model):
         default="5",
     )
     state = fields.Selection(STATE_SELECTION, default="pending", tracking=True)
+    state_label = fields.Char(compute="_compute_state_label")
     approved_by = fields.Many2one("res.users", readonly=True)
     approved_date = fields.Datetime(readonly=True)
 
@@ -33,6 +34,13 @@ class AutoReview(models.Model):
             "Un client ne peut déposer qu'un seul avis par véhicule.",
         )
     ]
+
+    @api.depends("state")
+    @api.depends_context("lang")
+    def _compute_state_label(self):
+        labels = dict(self._fields["state"]._description_selection(self.env))
+        for review in self:
+            review.state_label = labels.get(review.state)
 
     def action_approve(self):
         self.write(

@@ -1,4 +1,4 @@
-from odoo import fields, http
+from odoo import _, fields, http
 from odoo.http import request
 
 
@@ -60,7 +60,12 @@ class AutoBookingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_booking.booking_form_page",
-                    {"vehicle": vehicle, "slots": slots, "error": "Le nom et l'email sont obligatoires.", "post": post},
+                    {
+                        "vehicle": vehicle,
+                        "slots": slots,
+                        "error": _("Le nom et l'email sont obligatoires."),
+                        "post": post,
+                    },
                 )
 
             slot = False
@@ -75,7 +80,7 @@ class AutoBookingController(http.Controller):
                     {
                         "vehicle": vehicle,
                         "slots": slots,
-                        "error": "Sélectionnez un créneau ou indiquez une date souhaitée.",
+                        "error": _("Sélectionnez un créneau ou indiquez une date souhaitée."),
                         "post": post,
                     },
                 )
@@ -95,7 +100,10 @@ class AutoBookingController(http.Controller):
             )
             return request.redirect(f"/cars/{vehicle.id}/book/thanks?booking_id={booking.id}")
 
-        return request.render("auto_booking.booking_form_page", {"vehicle": vehicle, "slots": slots, "post": {}})
+        return request.render(
+            "auto_booking.booking_form_page",
+            {"vehicle": vehicle, "slots": slots, "post": {}},
+        )
 
     @http.route(["/cars/<int:vehicle_id>/book/thanks"], type="http", auth="public", website=True)
     def reserve_vehicle_thanks(self, vehicle_id, booking_id=None, **kwargs):
@@ -131,7 +139,13 @@ class AutoBookingController(http.Controller):
             if not name or not email:
                 return request.render(
                     "auto_booking.test_drive_form_page",
-                    {"vehicle": vehicle, "slots": slots, "error": "Le nom et l'email sont obligatoires.", "post": post},
+                    {
+                        "vehicle": vehicle,
+                        "slots": slots,
+                        "error": _("Le nom et l'email sont obligatoires."),
+                        "post": post,
+                        "default_location": _("Showroom principal"),
+                    },
                 )
 
             slot = False
@@ -146,8 +160,9 @@ class AutoBookingController(http.Controller):
                     {
                         "vehicle": vehicle,
                         "slots": slots,
-                        "error": "Sélectionnez un créneau ou indiquez une date souhaitée.",
+                        "error": _("Sélectionnez un créneau ou indiquez une date souhaitée."),
                         "post": post,
+                        "default_location": _("Showroom principal"),
                     },
                 )
 
@@ -158,7 +173,7 @@ class AutoBookingController(http.Controller):
                     "vehicle_id": vehicle.id,
                     "requested_datetime": requested_datetime,
                     "slot_id": slot.id if slot else False,
-                    "location": post.get("location") or "Showroom principal",
+                    "location": post.get("location") or _("Showroom principal"),
                     "email": email,
                     "phone": phone,
                     "comment": post.get("comment"),
@@ -167,7 +182,13 @@ class AutoBookingController(http.Controller):
             return request.redirect(f"/cars/{vehicle.id}/test-drive/thanks?test_drive_id={test_drive.id}")
 
         return request.render(
-            "auto_booking.test_drive_form_page", {"vehicle": vehicle, "slots": slots, "post": {}}
+            "auto_booking.test_drive_form_page",
+            {
+                "vehicle": vehicle,
+                "slots": slots,
+                "post": {},
+                "default_location": _("Showroom principal"),
+            },
         )
 
     @http.route(

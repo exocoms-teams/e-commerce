@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_auto_brand_kanban" model="ir.ui.view">
+        <field name="name">auto.brand.kanban</field>
+        <field name="model">auto.brand</field>
+        <field name="arch" type="xml">
+            <kanban class="auto-brand-kanban" sample="1">
+                <field name="logo"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="vehicle_count"/>
+                <field name="website_published"/>
+                <templates>
+                    <t t-name="card">
+                        <main class="auto-brand-kanban-card">
+                            <div class="auto-brand-kanban-logo">
+                                <field name="logo" widget="image" alt="Logo marque" options="{'img_class': 'auto-brand-kanban-img'}"/>
+                            </div>
+                            <div class="auto-brand-kanban-body">
+                                <strong class="auto-brand-kanban-title"><field name="name"/></strong>
+                                <div class="text-muted small" t-if="record.code.raw_value"><field name="code"/></div>
+                                <div class="d-flex gap-2 mt-2">
+                                    <span class="badge text-bg-light border"><field name="vehicle_count"/> vehicules</span>
+                                    <span class="badge text-bg-primary" t-if="record.website_published.raw_value">Publiee</span>
+                                    <span class="badge text-bg-secondary" t-if="!record.website_published.raw_value">Non publiee</span>
+                                </div>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record id="view_auto_brand_tree" model="ir.ui.view">
         <field name="name">auto.brand.tree</field>
         <field name="model">auto.brand</field>
@@ -74,7 +106,7 @@
     <record id="action_auto_brand" model="ir.actions.act_window">
         <field name="name">Marques</field>
         <field name="res_model">auto.brand</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
     </record>
 
     <menuitem id="menu_auto_brand" name="Marques" parent="auto_base.menu_auto_catalog" action="action_auto_brand" sequence="10"/>

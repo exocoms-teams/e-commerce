@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -33,7 +33,7 @@ class AutoSaleController(http.Controller):
                     "auto_sale.quote_form_page",
                     {
                         "vehicle": vehicle,
-                        "error": "Le nom et l'email sont obligatoires.",
+                        "error": _("Le nom et l'email sont obligatoires."),
                         "post": post,
                     },
                 )
