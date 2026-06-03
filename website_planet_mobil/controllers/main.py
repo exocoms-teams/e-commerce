@@ -244,12 +244,16 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
     def contact(self, **kwargs):
         return request.render('website_planet_mobil.contact_page', {})
 
+
+    def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
+        domain = super()._get_search_domain(search, category, attrib_values, search_in_description)
+        if request.params.get('x_is_promotion'):
+            domain += [('x_is_promotion', '=', True)]
+        return domain
+
     @http.route(['/shop', '/shop/page/<int:page>'], type='http', auth='public', website=True, sitemap=False)
     def shop(self, page=0, **kwargs):
-        if kwargs.get('x_is_promotion'):
-            kwargs['domain'] = [('x_is_promotion', '=', True)]
         return super().shop(page=page, **kwargs)
-    
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
