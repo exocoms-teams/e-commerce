@@ -32,6 +32,7 @@ class AutoSaleController(http.Controller):
                 return request.render(
                     "auto_sale.quote_form_page",
                     {
+                        "additional_title": _("Devis automobile"),
                         "vehicle": vehicle,
                         "error": _("Le nom et l'email sont obligatoires."),
                         "post": post,
@@ -68,7 +69,14 @@ class AutoSaleController(http.Controller):
             quote_request.action_create_lead()
             return request.redirect(f"/cars/{vehicle.id}/quote/thanks?request_id={quote_request.id}")
 
-        return request.render("auto_sale.quote_form_page", {"vehicle": vehicle, "post": {}})
+        return request.render(
+            "auto_sale.quote_form_page",
+            {
+                "additional_title": _("Devis automobile"),
+                "vehicle": vehicle,
+                "post": {},
+            },
+        )
 
     @http.route(
         ["/cars/<int:vehicle_id>/quote/thanks"],
@@ -85,5 +93,9 @@ class AutoSaleController(http.Controller):
             quote_request = request.env["auto.quote.request"].sudo().browse(int(request_id))
         return request.render(
             "auto_sale.quote_thanks_page",
-            {"vehicle": vehicle, "quote_request": quote_request},
+            {
+                "additional_title": _("Confirmation du devis"),
+                "vehicle": vehicle,
+                "quote_request": quote_request,
+            },
         )

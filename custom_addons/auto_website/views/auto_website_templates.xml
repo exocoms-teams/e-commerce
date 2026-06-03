@@ -41,7 +41,7 @@
                                     <div class="auto-hero-slide-media">
                                         <img t-if="hero_vehicle.main_image" t-att-src="image_data_uri(hero_vehicle.main_image)" t-att-alt="hero_vehicle.display_name" class="auto-hero-image"/>
                                         <div t-if="not hero_vehicle.main_image" class="auto-hero-slide-fallback">
-                                            <span t-esc="hero_vehicle.display_name"/>
+                                            <span t-out="hero_vehicle.display_name"/>
                                         </div>
                                         <div class="auto-hero-overlay"/>
                                     </div>
@@ -53,7 +53,7 @@
                                             </div>
                                             <h1 class="auto-hero-title">Trouvez la voiture de vos rêves.</h1>
                                             <p class="auto-hero-subtitle">
-                                                <strong t-esc="hero_vehicle.display_name"/> à partir de
+                                                <strong t-out="hero_vehicle.display_name"/> à partir de
                                                 <span t-field="hero_vehicle.list_price" t-options='{"widget": "monetary", "display_currency": hero_vehicle.currency_id}'/>.
                                                 L'excellence automobile asiatique, accompagnée par EXOCOMS.
                                             </p>
@@ -62,10 +62,10 @@
                                                 <a class="btn auto-btn-glass btn-lg" t-att-href="hero_vehicle.website_url">Voir ce modèle</a>
                                             </div>
                                             <div class="auto-hero-mini-specs mt-4">
-                                                <span t-if="hero_vehicle.range_km"><strong t-esc="hero_vehicle.range_km"/> km d'autonomie</span>
-                                                <span t-if="hero_vehicle.power_kw"><strong t-esc="hero_vehicle.power_kw"/> kW</span>
-                                                <span t-if="hero_vehicle.battery_capacity"><strong t-esc="hero_vehicle.battery_capacity"/> kWh</span>
-                                                <span t-if="hero_vehicle.motorization_id" t-esc="hero_vehicle.motorization_id.name"/>
+                                                <span t-if="hero_vehicle.range_km"><strong t-out="hero_vehicle.range_km"/> km d'autonomie</span>
+                                                <span t-if="hero_vehicle.power_kw"><strong t-out="hero_vehicle.power_kw"/> kW</span>
+                                                <span t-if="hero_vehicle.battery_capacity"><strong t-out="hero_vehicle.battery_capacity"/> kWh</span>
+                                                <span t-if="hero_vehicle.motorization_id" t-out="hero_vehicle.motorization_id.name"/>
                                             </div>
                                         </div>
                                     </div>
@@ -112,15 +112,15 @@
                 <div class="container">
                     <div class="auto-hero-stats">
                         <div class="auto-stat-card">
-                            <span class="auto-stat-value" t-esc="vehicle_total"/>
+                            <span class="auto-stat-value" t-out="vehicle_total"/>
                             <span class="auto-stat-label">Véhicules publiés</span>
                         </div>
                         <div class="auto-stat-card">
-                            <span class="auto-stat-value" t-esc="available_count"/>
+                            <span class="auto-stat-value" t-out="available_count"/>
                             <span class="auto-stat-label">Disponibles immédiatement</span>
                         </div>
                         <div class="auto-stat-card">
-                            <span class="auto-stat-value" t-esc="len(brands)"/>
+                            <span class="auto-stat-value" t-out="len(brands)"/>
                             <span class="auto-stat-label">Marques partenaires</span>
                         </div>
                         <div class="auto-stat-card" t-if="starting_vehicle">
@@ -149,18 +149,18 @@
                             <a t-att-href="'/brands/%s' % brand.id" class="auto-brand-chip text-decoration-none" t-att-title="brand.name">
                                 <div class="auto-brand-chip-logo">
                                     <img t-if="brand.logo" t-att-src="image_data_uri(brand.logo)" t-att-alt="brand.name" class="auto-brand-logo"/>
-                                    <span t-if="not brand.logo" class="auto-brand-fallback" t-esc="brand.name"/>
+                                    <span t-if="not brand.logo" class="auto-brand-fallback" t-out="brand.name"/>
                                 </div>
-                                <span class="auto-brand-chip-name" t-esc="brand.name"/>
+                                <span class="auto-brand-chip-name" t-out="brand.name"/>
                             </a>
                         </t>
                         <t t-foreach="brands" t-as="brand_clone">
                             <a t-att-href="'/brands/%s' % brand_clone.id" class="auto-brand-chip text-decoration-none" t-att-title="brand_clone.name">
                                 <div class="auto-brand-chip-logo">
                                     <img t-if="brand_clone.logo" t-att-src="image_data_uri(brand_clone.logo)" t-att-alt="brand_clone.name" class="auto-brand-logo"/>
-                                    <span t-if="not brand_clone.logo" class="auto-brand-fallback" t-esc="brand_clone.name"/>
+                                    <span t-if="not brand_clone.logo" class="auto-brand-fallback" t-out="brand_clone.name"/>
                                 </div>
-                                <span class="auto-brand-chip-name" t-esc="brand_clone.name"/>
+                                <span class="auto-brand-chip-name" t-out="brand_clone.name"/>
                             </a>
                         </t>
                     </div>
@@ -173,7 +173,7 @@
                         <ul class="nav nav-tabs auto-tabs" role="tablist">
                             <t t-foreach="categories" t-as="category">
                                 <li class="nav-item" role="presentation" t-if="category_index &lt; 4">
-                                    <button t-attf-class="nav-link #{'active' if category_index == 0 else ''}" data-bs-toggle="tab" t-att-data-bs-target="'#auto_cat_%s' % category.id" type="button" role="tab" t-esc="category.name"/>
+                                    <button t-attf-class="nav-link #{'active' if category_index == 0 else ''}" data-bs-toggle="tab" t-att-data-bs-target="'#auto_cat_%s' % category.id" type="button" role="tab" t-out="category.name"/>
                                 </li>
                             </t>
                         </ul>
@@ -181,14 +181,14 @@
                             <t t-foreach="categories" t-as="category">
                                 <t t-if="category_index &lt; 4">
                                     <div t-attf-class="tab-pane fade #{'show active' if category_index == 0 else ''}" t-att-id="'auto_cat_%s' % category.id" role="tabpanel">
-                                        <h3 class="h4 mb-3"><t t-esc="category.name"/>: trouvez le modèle adapté</h3>
+                                        <h3 class="h4 mb-3"><t t-out="category.name"/>: trouvez le modèle adapté</h3>
                                         <p class="text-muted mb-4">
-                                            Sélection de véhicules <t t-esc="category.name.lower()"/> avec équipements connectés, garanties constructeur
-                                            et accompagnement complet: devis, essai, réservation et financement.
+                                            Sélection de véhicules <t t-out="category.name"/> avec équipements connectés, garanties constructeur
+                                            et accompagnement complet : devis, essai, réservation et financement.
                                         </p>
                                         <div class="d-flex flex-wrap align-items-center gap-3">
                                             <span class="badge rounded-pill text-bg-light border px-3 py-2">
-                                                <strong t-esc="category_count_map.get(category.id, 0)"/> modèles publiés
+                                                <strong t-out="category_count_map.get(category.id, 0)"/> modèles publiés
                                             </span>
                                             <a class="btn auto-btn-primary" t-att-href="'/cars?category=%s' % category.id">Explorer la catégorie</a>
                                         </div>
@@ -235,9 +235,9 @@
                             </div>
                             <div class="auto-exocoms-inline-contact">
                                 <div class="auto-inline-item">EXOCOMS Group</div>
-                                <div class="auto-inline-item">58 rue de Monceau - 75008 Paris</div>
-                                <a class="auto-inline-item auto-inline-link" href="tel:+33184793755">+33 (0)1 84 79 37 55</a>
-                                <a class="auto-inline-item auto-inline-link" href="mailto:contact@exocoms.fr">contact@exocoms.fr</a>
+                                <div class="auto-inline-item o_force_ltr">58 rue de Monceau - 75008 Paris</div>
+                                <a class="auto-inline-item auto-inline-link o_force_ltr" href="tel:+33184793755">+33 (0)1 84 79 37 55</a>
+                                <a class="auto-inline-item auto-inline-link o_force_ltr" href="mailto:contact@exocoms.fr">contact@exocoms.fr</a>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -285,7 +285,7 @@
                                 <select class="form-select" name="brand">
                                     <option value="">Marque</option>
                                     <t t-foreach="brands" t-as="brand">
-                                        <option t-att-value="brand.id" t-att-selected="str(brand.id) == query.get('brand', '') and 'selected' or None"><t t-esc="brand.name"/></option>
+                                        <option t-att-value="brand.id" t-att-selected="str(brand.id) == query.get('brand', '') and 'selected' or None"><t t-out="brand.name"/></option>
                                     </t>
                                 </select>
                             </div>
@@ -293,7 +293,7 @@
                                 <select class="form-select" name="category">
                                     <option value="">Catégorie</option>
                                     <t t-foreach="categories" t-as="category">
-                                        <option t-att-value="category.id" t-att-selected="str(category.id) == query.get('category', '') and 'selected' or None"><t t-esc="category.name"/></option>
+                                        <option t-att-value="category.id" t-att-selected="str(category.id) == query.get('category', '') and 'selected' or None"><t t-out="category.name"/></option>
                                     </t>
                                 </select>
                             </div>
@@ -301,7 +301,7 @@
                                 <select class="form-select" name="motorization">
                                     <option value="">Motorisation</option>
                                     <t t-foreach="motorizations" t-as="motorization">
-                                        <option t-att-value="motorization.id" t-att-selected="str(motorization.id) == query.get('motorization', '') and 'selected' or None"><t t-esc="motorization.name"/></option>
+                                        <option t-att-value="motorization.id" t-att-selected="str(motorization.id) == query.get('motorization', '') and 'selected' or None"><t t-out="motorization.name"/></option>
                                     </t>
                                 </select>
                             </div>
@@ -309,7 +309,7 @@
                                 <select class="form-select" name="availability">
                                     <option value="">Disponibilité</option>
                                     <t t-foreach="availability_values" t-as="availability_val">
-                                        <option t-att-value="availability_val[0]" t-att-selected="availability_val[0] == query.get('availability', '') and 'selected' or None"><t t-esc="availability_val[1]"/></option>
+                                        <option t-att-value="availability_val[0]" t-att-selected="availability_val[0] == query.get('availability', '') and 'selected' or None"><t t-out="availability_val[1]"/></option>
                                     </t>
                                 </select>
                             </div>
@@ -373,24 +373,24 @@
             <div class="auto-vehicle-body">
                 <div class="d-flex justify-content-between align-items-start gap-2">
                     <div>
-                        <div class="text-muted small" t-esc="vehicle.brand_id.name"/>
+                        <div class="text-muted small" t-out="vehicle.brand_id.name"/>
                         <h3 class="h5 mb-1">
-                            <a t-att-href="vehicle.website_url" class="text-decoration-none text-dark" t-esc="vehicle.display_name"/>
+                            <a t-att-href="vehicle.website_url" class="text-decoration-none text-dark" t-out="vehicle.display_name"/>
                         </h3>
                     </div>
-                    <span class="badge text-bg-secondary" t-esc="vehicle.availability_label"/>
+                    <span class="badge text-bg-secondary" t-out="vehicle.availability_label"/>
                 </div>
                 <div class="auto-vehicle-meta mt-2">
-                    <span><strong t-esc="vehicle.year"/></span>
-                    <span t-if="vehicle.range_km"><strong t-esc="vehicle.range_km"/> km</span>
-                    <span t-if="vehicle.motorization_id" t-esc="vehicle.motorization_id.name"/>
+                    <span><strong t-out="vehicle.year"/></span>
+                    <span t-if="vehicle.range_km"><strong t-out="vehicle.range_km"/> km</span>
+                    <span t-if="vehicle.motorization_id" t-out="vehicle.motorization_id.name"/>
                 </div>
                 <div class="mt-3 mb-3 auto-price">
                     <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
                 </div>
                 <div class="d-grid gap-2">
                     <a t-att-href="vehicle.website_url" class="btn btn-outline-dark">Voir les détails</a>
-                    <form t-if="vehicle.availability == 'available'" action="/shop/cart/update" method="post">
+                    <form t-if="vehicle.availability == 'available'" action="/cars/cart/add" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="hidden" name="product_id" t-att-value="vehicle.product_template_id.product_variant_id.id"/>
                         <input type="hidden" name="add_qty" value="1"/>
@@ -404,13 +404,14 @@
 
     <template id="vehicle_detail_page" name="Détail du véhicule">
         <t t-call="website.layout">
+            <t t-set="additional_title" t-value="vehicle.display_name"/>
             <section class="py-4 auto-detail-page">
                 <div class="container">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-3">
                             <li class="breadcrumb-item"><a href="/cars">Catalogue</a></li>
-                            <li class="breadcrumb-item"><a t-att-href="'/brands/%s' % vehicle.brand_id.id"><t t-esc="vehicle.brand_id.name"/></a></li>
-                            <li class="breadcrumb-item active" aria-current="page"><t t-esc="vehicle.name"/></li>
+                            <li class="breadcrumb-item"><a t-att-href="'/brands/%s' % vehicle.brand_id.id"><t t-out="vehicle.brand_id.name"/></a></li>
+                            <li class="breadcrumb-item active" aria-current="page"><t t-out="vehicle.name"/></li>
                         </ol>
                     </nav>
 
@@ -433,27 +434,27 @@
                             <div class="auto-detail-panel">
                                 <div class="d-flex justify-content-between align-items-start gap-2">
                                     <div>
-                                        <p class="mb-1 text-muted" t-esc="vehicle.brand_id.name"/>
-                                        <h1 class="h3 mb-2" t-esc="vehicle.display_name"/>
+                                        <p class="mb-1 text-muted" t-out="vehicle.brand_id.name"/>
+                                        <h1 class="h3 mb-2" t-out="vehicle.display_name"/>
                                     </div>
-                                    <span class="badge text-bg-secondary" t-esc="vehicle.availability_label"/>
+                                    <span class="badge text-bg-secondary" t-out="vehicle.availability_label"/>
                                 </div>
 
                                 <div class="auto-price mb-2">
                                     <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
                                 </div>
-                                <p class="text-muted" t-esc="vehicle.short_description"/>
+                                <p class="text-muted" t-out="vehicle.short_description"/>
 
                                 <ul class="list-unstyled auto-feature-list mb-4">
-                                    <li t-if="vehicle.motorization_id"><strong>Motorisation:</strong> <span t-esc="vehicle.motorization_id.name"/></li>
-                                    <li t-if="vehicle.range_km"><strong>Autonomie:</strong> <span t-esc="vehicle.range_km"/> km</li>
-                                    <li t-if="vehicle.power_kw"><strong>Puissance:</strong> <span t-esc="vehicle.power_kw"/> kW</li>
-                                    <li t-if="vehicle.battery_capacity"><strong>Batterie:</strong> <span t-esc="vehicle.battery_capacity"/> kWh</li>
-                                    <li><strong>Année modèle:</strong> <span t-esc="vehicle.year"/></li>
+                                    <li t-if="vehicle.motorization_id"><strong>Motorisation:</strong> <span t-out="vehicle.motorization_id.name"/></li>
+                                    <li t-if="vehicle.range_km"><strong>Autonomie:</strong> <span t-out="vehicle.range_km"/> km</li>
+                                    <li t-if="vehicle.power_kw"><strong>Puissance:</strong> <span t-out="vehicle.power_kw"/> kW</li>
+                                    <li t-if="vehicle.battery_capacity"><strong>Batterie:</strong> <span t-out="vehicle.battery_capacity"/> kWh</li>
+                                    <li><strong>Année modèle:</strong> <span t-out="vehicle.year"/></li>
                                 </ul>
 
                                 <div class="d-grid gap-2">
-                                    <form t-if="vehicle.availability == 'available'" action="/shop/cart/update" method="post">
+                                    <form t-if="vehicle.availability == 'available'" action="/cars/cart/add" method="post">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <input type="hidden" name="product_id" t-att-value="vehicle.product_template_id.product_variant_id.id"/>
                                         <input type="hidden" name="add_qty" value="1"/>
@@ -496,9 +497,9 @@
                                         <t t-if="vehicle.specification_ids">
                                             <t t-foreach="vehicle.specification_ids.sorted(key=lambda l: (l.sequence, l.id))" t-as="spec">
                                                 <tr>
-                                                    <td t-esc="spec.section_label"/>
-                                                    <td t-esc="spec.name"/>
-                                                    <td><span t-esc="spec.value"/><span t-if="spec.unit"> <t t-esc="spec.unit"/></span></td>
+                                                    <td t-out="spec.section_label"/>
+                                                    <td t-out="spec.name"/>
+                                                    <td><span t-out="spec.value"/><span t-if="spec.unit"> <t t-out="spec.unit"/></span></td>
                                                 </tr>
                                             </t>
                                         </t>
@@ -517,7 +518,7 @@
                             <h2 class="h5">Options</h2>
                             <div class="d-flex flex-wrap gap-2 mb-4">
                                 <t t-foreach="vehicle.option_ids" t-as="option">
-                                    <span class="badge text-bg-light border" t-esc="option.name"/>
+                                    <span class="badge text-bg-light border" t-out="option.name"/>
                                 </t>
                             </div>
 
@@ -527,10 +528,10 @@
                                     <t t-foreach="reviews" t-as="review">
                                         <article class="auto-review-item mb-3">
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <strong t-esc="review.title or review.partner_id.name"/>
-                                                <small><t t-esc="review.rating"/>/5</small>
+                                                <strong t-out="review.title or review.partner_id.name"/>
+                                                <small><t t-out="review.rating"/>/5</small>
                                             </div>
-                                            <p class="mb-0" t-esc="review.comment"/>
+                                            <p class="mb-0" t-out="review.comment"/>
                                         </article>
                                     </t>
                                 </t>
@@ -569,9 +570,9 @@
                                 <a t-att-href="'/brands/%s' % brand.id" class="auto-brand-card d-block text-decoration-none">
                                     <div class="auto-brand-logo-wrap">
                                         <img t-if="brand.logo" t-att-src="image_data_uri(brand.logo)" t-att-alt="brand.name" class="auto-brand-logo"/>
-                                        <span t-if="not brand.logo" class="auto-brand-fallback" t-esc="brand.name"/>
+                                        <span t-if="not brand.logo" class="auto-brand-fallback" t-out="brand.name"/>
                                     </div>
-                                    <div class="mt-2 fw-semibold text-dark" t-esc="brand.name"/>
+                                    <div class="mt-2 fw-semibold text-dark" t-out="brand.name"/>
                                 </a>
                             </div>
                         </t>
@@ -583,6 +584,7 @@
 
     <template id="brand_detail_page" name="Détail de la marque">
         <t t-call="website.layout">
+            <t t-set="additional_title" t-value="brand.name"/>
             <section class="py-5">
                 <div class="container">
                     <div class="row g-4 align-items-start">
@@ -590,7 +592,7 @@
                             <img t-if="brand.logo" t-att-src="image_data_uri(brand.logo)" t-att-alt="brand.name" class="img-fluid rounded border"/>
                         </div>
                         <div class="col-md-9">
-                            <h1 class="h2 mb-2" t-esc="brand.name"/>
+                            <h1 class="h2 mb-2" t-out="brand.name"/>
                             <div t-if="brand.description" t-raw="brand.description"/>
                             <a href="/cars" class="btn btn-outline-secondary mt-3">Retour catalogue</a>
                         </div>
@@ -648,6 +650,9 @@
     </template>
 
     <template id="contactus_exocoms" inherit_id="website.contactus" name="Contact EXOCOMS Group">
+        <xpath expr="//t[@t-call='website.layout']/*[1]" position="before">
+            <t t-set="additional_title" t-value="request.env['website.menu']._auto_website_page_title('contact')"/>
+        </xpath>
         <xpath expr="//t[@t-set='contactus_form_values']" position="replace">
             <t t-set="contactus_form_values" t-value="{
                 'email_to': 'contact@exocoms.fr',
@@ -770,10 +775,45 @@
 
     <template id="template_header_default_without_text_element" inherit_id="website.template_header_default" name="Header desktop sans texte fictif">
         <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace"/>
+        <xpath expr="//t[@t-call='website.placeholder_header_call_to_action']" position="replace"/>
     </template>
 
     <template id="template_header_mobile_without_text_element" inherit_id="website.template_header_mobile" name="Header mobile sans texte fictif">
         <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace"/>
+        <xpath expr="//t[@t-call='website.header_call_to_action_large']" position="replace"/>
+        <xpath expr="//button[@data-bs-target='#top_menu_collapse_mobile']" position="attributes">
+            <attribute name="aria-label">Ouvrir le menu de navigation</attribute>
+        </xpath>
+    </template>
+
+    <template id="header_brand_accessible_label" inherit_id="website.option_header_brand_logo" name="Libellé accessible du logo EXOCOMS">
+        <xpath expr="//span[@t-field='website.logo']" position="attributes">
+            <attribute name="t-att-aria-label">website.name</attribute>
+        </xpath>
+    </template>
+
+    <template id="cart_exocoms" inherit_id="website_sale.cart" name="Panier automobile EXOCOMS">
+        <xpath expr="//t[@t-call='website_sale.checkout_layout']/t[1]" position="before">
+            <t t-set="additional_title" t-value="request.env['website.menu']._auto_website_page_title('cart')"/>
+        </xpath>
+    </template>
+
+    <template id="cart_lines_exocoms" inherit_id="website_sale.cart_lines" name="Panier vide automobile EXOCOMS">
+        <xpath expr="//div[@t-if='not website_sale_order or not website_sale_order.website_order_line']" position="replace">
+            <div t-if="not website_sale_order or not website_sale_order.website_order_line" class="js_cart_lines text-center py-5">
+                <i class="fa fa-shopping-cart fa-4x text-muted mb-3" aria-hidden="true"/>
+                <h5 class="mb-3">Votre panier est vide !</h5>
+                <p class="mb-0">
+                    <a href="/cars" class="btn btn-primary">Catalogue</a>
+                </p>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="cart_line_description_exocoms" inherit_id="website_sale.cart_line_description_following_lines" name="Description traduite du vehicule dans le panier">
+        <xpath expr="//t[@t-set='description_lines']" position="attributes">
+            <attribute name="t-value">line.product_id.description_sale.splitlines() if line.product_template_id.auto_vehicle_ids and line.product_id.description_sale else line.get_description_following_lines()</attribute>
+        </xpath>
     </template>
 
     <template id="footer_exocoms" inherit_id="website.footer_custom" name="Footer EXOCOMS sans réseaux sociaux" active="True">
@@ -804,17 +844,17 @@
                             <div class="col-lg-3">
                                 <h5 class="mb-3">Contact</h5>
                                 <ul class="list-unstyled auto-footer-contact">
-                                    <li><i class="fa fa-map-marker fa-fw me-2"/><span>58 rue de Monceau<br/>75008 Paris</span></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
+                                    <li><i class="fa fa-map-marker fa-fw me-2"/><span class="o_force_ltr">58 rue de Monceau<br/>75008 Paris</span></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"/><a class="o_force_ltr" href="tel:+33184793755">+33 (0)1 84 79 37 55</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"/><a class="o_force_ltr" href="mailto:contact@exocoms.fr">contact@exocoms.fr</a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="auto-footer-languages mt-4 pt-3">
                             <span>Langues</span>
-                            <a href="/fr/cars/home" hreflang="fr" t-translation="off">Français</a>
-                            <a href="/en/cars/home" hreflang="en" t-translation="off">English</a>
-                            <a href="/ar/cars/home" hreflang="ar" dir="rtl" t-translation="off">العربي</a>
+                            <a href="/website/lang/fr_FR?r=/cars/home" hreflang="fr" t-translation="off">Français</a>
+                            <a href="/website/lang/en_GB?r=/cars/home" hreflang="en" t-translation="off">English</a>
+                            <a href="/website/lang/ar_001?r=/cars/home" hreflang="ar" dir="rtl" t-translation="off">العربي</a>
                         </div>
                     </div>
                 </section>

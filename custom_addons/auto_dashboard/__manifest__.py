@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Tableau de bord",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "summary": "Indicateurs commerciaux automobiles",
     "category": "Reporting",
     "author": "Ecommerce Voitures Team",

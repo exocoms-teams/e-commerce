@@ -7,8 +7,8 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h1 class="h3 mb-3">Réserver ce véhicule</h1>
-                            <p class="text-muted">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/book' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <div class="row g-3">
@@ -29,7 +29,7 @@
                                         <select class="form-select" name="slot_id">
                                             <option value="">Aucun créneau sélectionné</option>
                                             <t t-foreach="slots" t-as="slot">
-                                                <option t-att-value="slot.id"><t t-esc="slot.name"/></option>
+                                                <option t-att-value="slot.id"><t t-out="slot.name"/></option>
                                             </t>
                                         </select>
                                     </div>
@@ -39,7 +39,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Note complémentaire</label>
-                                        <textarea name="note" class="form-control" rows="4"><t t-esc="post.get('note', '')"/></textarea>
+                                        <textarea name="note" class="form-control" rows="4"><t t-out="post.get('note', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
@@ -62,8 +62,8 @@
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
                                 <h1 class="h3">Réservation envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                                <p t-if="booking">Référence: <strong t-esc="booking.name"/></p>
+                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="booking">Référence: <strong t-out="booking.name"/></p>
                                 <p class="text-muted">Notre équipe valide le créneau et vous contacte rapidement.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/bookings" class="btn auto-btn-primary">Mes réservations</a>
@@ -84,8 +84,8 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h1 class="h3 mb-3">Demander un essai</h1>
-                            <p class="text-muted">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/test-drive' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <div class="row g-3">
@@ -110,7 +110,7 @@
                                         <select class="form-select" name="slot_id">
                                             <option value="">Aucun créneau sélectionné</option>
                                             <t t-foreach="slots" t-as="slot">
-                                                <option t-att-value="slot.id"><t t-esc="slot.name"/></option>
+                                                <option t-att-value="slot.id"><t t-out="slot.name"/></option>
                                             </t>
                                         </select>
                                     </div>
@@ -120,7 +120,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Commentaire</label>
-                                        <textarea name="comment" class="form-control" rows="4"><t t-esc="post.get('comment', '')"/></textarea>
+                                        <textarea name="comment" class="form-control" rows="4"><t t-out="post.get('comment', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
@@ -143,8 +143,8 @@
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
                                 <h1 class="h3">Demande d'essai envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                                <p t-if="test_drive">Référence: <strong t-esc="test_drive.name"/></p>
+                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="test_drive">Référence: <strong t-out="test_drive.name"/></p>
                                 <p class="text-muted">Notre équipe confirme rapidement la date, le lieu et le conseiller.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/test-drives" class="btn auto-btn-primary">Mes essais</a>
@@ -177,10 +177,10 @@
                                 <t t-if="bookings">
                                     <t t-foreach="bookings" t-as="booking">
                                         <tr>
-                                            <td t-esc="booking.name"/>
-                                            <td t-esc="booking.vehicle_id.display_name"/>
-                                            <td t-esc="booking.requested_datetime"/>
-                                            <td t-esc="booking.state_label"/>
+                                            <td t-out="booking.name"/>
+                                            <td t-out="booking.vehicle_id.display_name"/>
+                                            <td t-out="booking.requested_datetime"/>
+                                            <td t-out="booking.state_label"/>
                                         </tr>
                                     </t>
                                 </t>
@@ -217,11 +217,11 @@
                                 <t t-if="test_drives">
                                     <t t-foreach="test_drives" t-as="test_drive">
                                         <tr>
-                                            <td t-esc="test_drive.name"/>
-                                            <td t-esc="test_drive.vehicle_id.display_name"/>
-                                            <td t-esc="test_drive.requested_datetime"/>
-                                            <td t-esc="test_drive.location"/>
-                                            <td t-esc="test_drive.state_label"/>
+                                            <td t-out="test_drive.name"/>
+                                            <td t-out="test_drive.vehicle_id.display_name"/>
+                                            <td t-out="test_drive.requested_datetime"/>
+                                            <td t-out="test_drive.location"/>
+                                            <td t-out="test_drive.state_label"/>
                                         </tr>
                                     </t>
                                 </t>

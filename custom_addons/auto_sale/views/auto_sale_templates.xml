@@ -7,8 +7,8 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h1 class="h3 mb-3">Demander un devis</h1>
-                            <p class="text-muted">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/quote' % vehicle.id" class="card auto-form-card p-4 shadow-sm border-0">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <div class="row g-3">
@@ -38,7 +38,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Message</label>
-                                        <textarea name="message" class="form-control" rows="4" placeholder="Précisez votre délai et la configuration souhaitée."><t t-esc="post.get('message', '')"/></textarea>
+                                        <textarea name="message" class="form-control" rows="4" placeholder="Précisez votre délai et la configuration souhaitée."><t t-out="post.get('message', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
@@ -61,8 +61,8 @@
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
                                 <h1 class="h3">Merci, votre demande a bien été envoyée.</h1>
-                                <p class="mb-2">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                                <p t-if="quote_request">Référence: <strong t-esc="quote_request.name"/></p>
+                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="quote_request">Référence: <strong t-out="quote_request.name"/></p>
                                 <p class="text-muted">Un conseiller vous contacte rapidement avec disponibilité, options et proposition commerciale.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>

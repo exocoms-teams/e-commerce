@@ -5,7 +5,7 @@ from odoo import api, fields, models
 
 class AutoDashboardSnapshot(models.Model):
     _name = "auto.dashboard.snapshot"
-    _description = "Instantane du tableau de bord automobile"
+    _description = "Instantané du tableau de bord automobile"
     _order = "create_date desc"
 
     name = fields.Char(default="Pilotage automobile EXOCOMS", required=True)
@@ -124,13 +124,22 @@ class AutoDashboardSnapshot(models.Model):
                 ("order_id.state", "in", ["sale", "done"]),
                 ("auto_vehicle_id", "!=", False),
             ]
-            top = sale_line_model.read_group(
-                line_domain,
-                ["auto_vehicle_id", "product_uom_qty:sum"],
-                ["auto_vehicle_id"],
-                limit=1,
-                orderby="product_uom_qty desc",
-            )
+            if hasattr(sale_line_model, "formatted_read_group"):
+                top = sale_line_model.formatted_read_group(
+                    line_domain,
+                    ["auto_vehicle_id"],
+                    ["product_uom_qty:sum"],
+                    limit=1,
+                    order="product_uom_qty:sum desc",
+                )
+            else:
+                top = sale_line_model.read_group(
+                    line_domain,
+                    ["auto_vehicle_id", "product_uom_qty:sum"],
+                    ["auto_vehicle_id"],
+                    limit=1,
+                    orderby="product_uom_qty desc",
+                )
             snapshot.top_vehicle_id = top[0]["auto_vehicle_id"][0] if top and top[0]["auto_vehicle_id"] else False
 
     def action_refresh(self):
@@ -156,7 +165,7 @@ class AutoDashboardSnapshot(models.Model):
     def action_new_vehicle(self):
         return {
             "type": "ir.actions.act_window",
-            "name": "Nouveau vehicule",
+            "name": "Nouveau véhicule",
             "res_model": "auto.vehicle",
             "view_mode": "form",
             "target": "current",
@@ -178,12 +187,12 @@ class AutoDashboardSnapshot(models.Model):
         }
 
     def action_open_vehicles(self):
-        return self._open_action("auto_base.action_auto_vehicle", "Vehicules", "auto.vehicle")
+        return self._open_action("auto_base.action_auto_vehicle", "Véhicules", "auto.vehicle")
 
     def action_open_available_vehicles(self):
         return self._open_action(
             "auto_base.action_auto_vehicle",
-            "Vehicules disponibles",
+            "Véhicules disponibles",
             "auto.vehicle",
             domain=[("availability", "=", "available"), ("active", "=", True)],
         )
@@ -191,7 +200,7 @@ class AutoDashboardSnapshot(models.Model):
     def action_open_unpublished_vehicles(self):
         return self._open_action(
             "auto_base.action_auto_vehicle",
-            "Vehicules non publies",
+            "Véhicules non publiés",
             "auto.vehicle",
             domain=[("website_published", "=", False), ("active", "=", True)],
         )
@@ -202,7 +211,7 @@ class AutoDashboardSnapshot(models.Model):
     def action_open_categories(self):
         return self._open_action(
             "auto_base.action_auto_vehicle_category",
-            "Categories de vehicules",
+            "Catégories de véhicules",
             "auto.vehicle.category",
             view_mode="list,form",
         )
@@ -218,7 +227,7 @@ class AutoDashboardSnapshot(models.Model):
     def action_open_options(self):
         return self._open_action(
             "auto_base.action_auto_vehicle_option",
-            "Options de vehicules",
+            "Options de véhicules",
             "auto.vehicle.option",
             view_mode="list,form",
         )
@@ -234,7 +243,7 @@ class AutoDashboardSnapshot(models.Model):
     def action_open_bookings(self):
         return self._open_action(
             "auto_booking.action_auto_booking",
-            "Reservations",
+            "Réservations",
             "auto.booking",
             view_mode="list,form",
         )

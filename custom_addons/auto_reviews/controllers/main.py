@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -60,4 +60,7 @@ class AutoReviewController(http.Controller):
         reviews = request.env["auto.review"].sudo().search(
             [("partner_id", "=", request.env.user.partner_id.id)], order="id desc"
         )
-        return request.render("auto_reviews.my_reviews_page", {"reviews": reviews})
+        return request.render(
+            "auto_reviews.my_reviews_page",
+            {"additional_title": _("Avis client"), "reviews": reviews},
+        )

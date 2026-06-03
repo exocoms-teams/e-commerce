@@ -31,10 +31,17 @@ class AutoBrand(models.Model):
         ]
 
     def _compute_vehicle_count(self):
-        data = self.env["auto.vehicle"].read_group(
-            [("brand_id", "in", self.ids)], ["brand_id"], ["brand_id"]
-        )
-        mapped = {row["brand_id"][0]: row["brand_id_count"] for row in data}
+        vehicle_model = self.env["auto.vehicle"]
+        domain = [("brand_id", "in", self.ids)]
+        if hasattr(vehicle_model, "formatted_read_group"):
+            data = vehicle_model.formatted_read_group(domain, ["brand_id"], ["__count"])
+        else:
+            data = vehicle_model.read_group(domain, ["brand_id"], ["brand_id"])
+        mapped = {
+            row["brand_id"][0]: row.get("__count", row.get("brand_id_count", 0))
+            for row in data
+            if row.get("brand_id")
+        }
         for brand in self:
             brand.vehicle_count = mapped.get(brand.id, 0)
 

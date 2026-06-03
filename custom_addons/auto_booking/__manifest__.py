@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Réservations",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "summary": "Réservations de véhicules et demandes d'essai",
     "category": "Website",
     "author": "Ecommerce Voitures Team",

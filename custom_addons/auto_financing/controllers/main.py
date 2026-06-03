@@ -31,6 +31,7 @@ class AutoFinancingController(http.Controller):
                 return request.render(
                     "auto_financing.financing_form_page",
                     {
+                        "additional_title": _("Financement automobile"),
                         "vehicle": vehicle,
                         "post": post,
                         "error": _("Le nom et l'email sont obligatoires."),
@@ -60,7 +61,14 @@ class AutoFinancingController(http.Controller):
             )
             return request.redirect(f"/cars/{vehicle.id}/financing/thanks?request_id={req.id}")
 
-        return request.render("auto_financing.financing_form_page", {"vehicle": vehicle, "post": {}})
+        return request.render(
+            "auto_financing.financing_form_page",
+            {
+                "additional_title": _("Financement automobile"),
+                "vehicle": vehicle,
+                "post": {},
+            },
+        )
 
     @http.route(["/cars/<int:vehicle_id>/financing/thanks"], type="http", auth="public", website=True)
     def financing_thanks(self, vehicle_id, request_id=None, **kwargs):
@@ -68,11 +76,21 @@ class AutoFinancingController(http.Controller):
         if not vehicle:
             return request.not_found()
         req = request.env["auto.financing.request"].sudo().browse(int(request_id)) if request_id else False
-        return request.render("auto_financing.financing_thanks_page", {"vehicle": vehicle, "request_obj": req})
+        return request.render(
+            "auto_financing.financing_thanks_page",
+            {
+                "additional_title": _("Confirmation du financement"),
+                "vehicle": vehicle,
+                "request_obj": req,
+            },
+        )
 
     @http.route("/my/financing-requests", type="http", auth="user", website=True)
     def my_financing_requests(self, **kwargs):
         records = request.env["auto.financing.request"].sudo().search(
             [("partner_id", "=", request.env.user.partner_id.id)], order="id desc"
         )
-        return request.render("auto_financing.my_financing_requests_page", {"records": records})
+        return request.render(
+            "auto_financing.my_financing_requests_page",
+            {"additional_title": _("Demandes de financement"), "records": records},
+        )

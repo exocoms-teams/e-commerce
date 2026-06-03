@@ -8,6 +8,14 @@ class WebsiteMenu(models.Model):
     _inherit = "website.menu"
 
     @api.model
+    def _auto_website_page_title(self, key):
+        titles = {
+            "contact": self.env._("Contacter EXOCOMS"),
+            "cart": self.env._("Panier automobile"),
+        }
+        return titles.get(key, "")
+
+    @api.model
     def _auto_website_configure_languages(self):
         language_specs = [
             {
@@ -69,6 +77,17 @@ class WebsiteMenu(models.Model):
             if default_lang:
                 values["default_lang_id"] = default_lang.id
             website.write(values)
+
+        # Activating a language alone does not load translations for modules
+        # that were already installed before this website module.
+        installer_values = {
+            "lang_ids": [(6, 0, languages.ids)],
+            "overwrite": True,
+        }
+        language_installer = self.env["base.language.install"].sudo()
+        if "website_ids" in language_installer._fields:
+            installer_values["website_ids"] = [(6, 0, websites.ids)]
+        language_installer.create(installer_values).lang_install()
         return True
 
     @api.model
@@ -85,23 +104,59 @@ class WebsiteMenu(models.Model):
     @api.model
     def _auto_website_normalize_navigation(self):
         menu_labels = {
-            "/cars/home": "Accueil",
-            "/cars": "Catalogue",
-            "/brands": "Marques",
-            "/my/favorites": "Favoris",
-            "/cars/compare": "Comparateur",
-            "/contactus": "Contact",
+            "/cars/home": {
+                "fr_FR": "Accueil",
+                "en_GB": "Home",
+                "ar_001": "الرئيسية",
+            },
+            "/cars": {
+                "fr_FR": "Catalogue",
+                "en_GB": "Catalog",
+                "ar_001": "الكتالوج",
+            },
+            "/brands": {
+                "fr_FR": "Marques",
+                "en_GB": "Brands",
+                "ar_001": "العلامات التجارية",
+            },
+            "/my/favorites": {
+                "fr_FR": "Favoris",
+                "en_GB": "Favorites",
+                "ar_001": "المفضلة",
+            },
+            "/cars/compare": {
+                "fr_FR": "Comparateur",
+                "en_GB": "Compare",
+                "ar_001": "مقارنة",
+            },
+            "/contactus": {
+                "fr_FR": "Contact",
+                "en_GB": "Contact",
+                "ar_001": "اتصل بنا",
+            },
         }
-        for url, label in menu_labels.items():
+        for url, labels in menu_labels.items():
             menus = self.sudo().search([("url", "=", url)])
-            for menu in menus:
-                menu.sudo().write({"name": label})
+            menus.write({"name": labels["fr_FR"]})
+            for lang_code, label in labels.items():
+                menus.with_context(lang=lang_code).write({"name": label})
 
         websites = self.env["website"].sudo().search(
             [("name", "in", ["My Website", "Mon site web", "EXOCOMS Voitures"])]
         )
         for website in websites:
             website.sudo().write({"name": "EXOCOMS Voitures"})
+        return True
+
+    @api.model
+    def _auto_website_set_homepage(self):
+        websites = self.env["website"].sudo().search(
+            [("name", "in", ["My Website", "Mon site web", "EXOCOMS Voitures"])]
+        )
+        if not websites:
+            websites = self.env["website"].sudo().search([])
+        if "homepage_url" in self.env["website"]._fields:
+            websites.write({"homepage_url": "/cars/home"})
         return True
 
     @api.model
@@ -162,19 +217,43 @@ class WebsiteMenu(models.Model):
 
     @api.model
     def _auto_website_update_contact_page(self):
-        label = "Contact"
-        meta_description = (
-            "Coordonnées EXOCOMS Group : 58 rue de Monceau, 75008 Paris, "
-            "+33 (0)1 84 79 37 55, contact@exocoms.fr."
-        )
         pages = self.env["website.page"].sudo().search([("url", "=", "/contactus")])
-        values = {"name": label}
-        if "website_meta_title" in self.env["website.page"]._fields:
-            values["website_meta_title"] = "Contact EXOCOMS Group"
-        if "website_meta_description" in self.env["website.page"]._fields:
-            values["website_meta_description"] = meta_description
+        translations = {
+            "fr_FR": {
+                "name": "Contact",
+                "website_meta_title": "Contact EXOCOMS Group",
+                "website_meta_description": (
+                    "Coordonnées EXOCOMS Group : 58 rue de Monceau, 75008 Paris, "
+                    "+33 (0)1 84 79 37 55, contact@exocoms.fr."
+                ),
+            },
+            "en_GB": {
+                "name": "Contact",
+                "website_meta_title": "Contact EXOCOMS Group",
+                "website_meta_description": (
+                    "EXOCOMS Group contact details: 58 rue de Monceau, 75008 Paris, "
+                    "+33 (0)1 84 79 37 55, contact@exocoms.fr."
+                ),
+            },
+            "ar_001": {
+                "name": "اتصل بنا",
+                "website_meta_title": "التواصل مع مجموعة EXOCOMS",
+                "website_meta_description": (
+                    "بيانات التواصل مع مجموعة EXOCOMS: 58 rue de Monceau، 75008 Paris، "
+                    "+33 (0)1 84 79 37 55، contact@exocoms.fr."
+                ),
+            },
+        }
+        available_fields = self.env["website.page"]._fields
         for page in pages:
-            page.sudo().write(values)
+            page.write({"name": translations["fr_FR"]["name"]})
+            for lang_code, translated_values in translations.items():
+                values = {
+                    field_name: value
+                    for field_name, value in translated_values.items()
+                    if field_name in available_fields
+                }
+                page.with_context(lang=lang_code).write(values)
 
         contact_view = self.env.ref("website.contactus", raise_if_not_found=False)
         if contact_view:

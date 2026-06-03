@@ -174,17 +174,32 @@ class AutoVehicle(models.Model):
         return result
 
     def _sync_product_template_from_vehicle(self):
+        language_codes = self.env["res.lang"].with_context(active_test=False).search(
+            [("code", "in", ["fr_FR", "en_GB", "ar_001"])]
+        ).mapped("code")
         for vehicle in self.filtered("product_template_id"):
             values = {
                 "name": vehicle._get_product_display_name(),
                 "sale_ok": True,
                 "purchase_ok": False,
             }
-            if "website_published" in vehicle.product_template_id._fields:
+            if "is_published" in vehicle.product_template_id._fields:
+                values["is_published"] = vehicle.website_published
+            elif "website_published" in vehicle.product_template_id._fields:
                 values["website_published"] = vehicle.website_published
             if vehicle.short_description:
                 values["description_sale"] = vehicle.short_description
             vehicle.product_template_id.sudo().write(values)
+            for language_code in language_codes:
+                translated_description = vehicle.with_context(lang=language_code).short_description
+                if translated_description:
+                    vehicle.product_template_id.with_context(lang=language_code).sudo().write(
+                        {"description_sale": translated_description}
+                    )
+
+    @api.model
+    def _sync_all_product_templates(self):
+        self.search([])._sync_product_template_from_vehicle()
 
     @api.constrains("year")
     def _check_year(self):

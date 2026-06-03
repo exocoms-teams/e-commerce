@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 
@@ -22,7 +22,10 @@ class AutoCompareController(http.Controller):
             [("id", "in", vehicle_ids), ("active", "=", True), ("website_published", "=", True)]
         )
         vehicles = vehicles.sorted(key=lambda v: vehicle_ids.index(v.id))
-        return request.render("auto_compare.compare_page", {"vehicles": vehicles})
+        return request.render(
+            "auto_compare.compare_page",
+            {"additional_title": _("Comparateur automobile"), "vehicles": vehicles},
+        )
 
     @http.route("/cars/compare/add/<int:vehicle_id>", type="http", auth="public", website=True)
     def compare_add(self, vehicle_id, **kwargs):

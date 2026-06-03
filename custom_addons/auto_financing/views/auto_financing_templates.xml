@@ -7,8 +7,8 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h1 class="h3 mb-3">Demande de financement</h1>
-                            <p class="text-muted">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/financing' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <div class="row g-3">
@@ -42,7 +42,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Commentaire</label>
-                                        <textarea class="form-control" name="note" rows="4"><t t-esc="post.get('note', '')"/></textarea>
+                                        <textarea class="form-control" name="note" rows="4"><t t-out="post.get('note', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
@@ -65,8 +65,8 @@
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
                                 <h1 class="h3">Demande de financement envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-esc="vehicle.display_name"/></p>
-                                <p t-if="request_obj">Demande ID: <strong t-esc="request_obj.id"/></p>
+                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="request_obj">Demande ID: <strong t-out="request_obj.id"/></p>
                                 <p class="text-muted">Un conseiller financement vous contacte après pré-analyse de votre dossier.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/financing-requests" class="btn auto-btn-primary">Mes demandes</a>
@@ -99,12 +99,12 @@
                                 <t t-if="records">
                                     <t t-foreach="records" t-as="rec">
                                         <tr>
-                                            <td t-esc="rec.vehicle_id.display_name"/>
+                                            <td t-out="rec.vehicle_id.display_name"/>
                                             <td>
                                                 <span t-field="rec.requested_amount" t-options='{"widget": "monetary", "display_currency": rec.currency_id}'/>
                                             </td>
-                                            <td><t t-esc="rec.duration_months"/> mois</td>
-                                            <td t-esc="rec.state_label"/>
+                                            <td><t t-out="rec.duration_months"/> mois</td>
+                                            <td t-out="rec.state_label"/>
                                         </tr>
                                     </t>
                                 </t>

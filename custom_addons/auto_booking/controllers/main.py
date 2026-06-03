@@ -61,6 +61,7 @@ class AutoBookingController(http.Controller):
                 return request.render(
                     "auto_booking.booking_form_page",
                     {
+                        "additional_title": _("Réservation automobile"),
                         "vehicle": vehicle,
                         "slots": slots,
                         "error": _("Le nom et l'email sont obligatoires."),
@@ -78,6 +79,7 @@ class AutoBookingController(http.Controller):
                 return request.render(
                     "auto_booking.booking_form_page",
                     {
+                        "additional_title": _("Réservation automobile"),
                         "vehicle": vehicle,
                         "slots": slots,
                         "error": _("Sélectionnez un créneau ou indiquez une date souhaitée."),
@@ -102,7 +104,12 @@ class AutoBookingController(http.Controller):
 
         return request.render(
             "auto_booking.booking_form_page",
-            {"vehicle": vehicle, "slots": slots, "post": {}},
+            {
+                "additional_title": _("Réservation automobile"),
+                "vehicle": vehicle,
+                "slots": slots,
+                "post": {},
+            },
         )
 
     @http.route(["/cars/<int:vehicle_id>/book/thanks"], type="http", auth="public", website=True)
@@ -111,7 +118,14 @@ class AutoBookingController(http.Controller):
         if not vehicle:
             return request.not_found()
         booking = request.env["auto.booking"].sudo().browse(int(booking_id)) if booking_id else False
-        return request.render("auto_booking.booking_thanks_page", {"vehicle": vehicle, "booking": booking})
+        return request.render(
+            "auto_booking.booking_thanks_page",
+            {
+                "additional_title": _("Confirmation de la réservation"),
+                "vehicle": vehicle,
+                "booking": booking,
+            },
+        )
 
     @http.route(
         ["/cars/<int:vehicle_id>/test-drive"],
@@ -140,6 +154,7 @@ class AutoBookingController(http.Controller):
                 return request.render(
                     "auto_booking.test_drive_form_page",
                     {
+                        "additional_title": _("Essai automobile"),
                         "vehicle": vehicle,
                         "slots": slots,
                         "error": _("Le nom et l'email sont obligatoires."),
@@ -158,6 +173,7 @@ class AutoBookingController(http.Controller):
                 return request.render(
                     "auto_booking.test_drive_form_page",
                     {
+                        "additional_title": _("Essai automobile"),
                         "vehicle": vehicle,
                         "slots": slots,
                         "error": _("Sélectionnez un créneau ou indiquez une date souhaitée."),
@@ -184,6 +200,7 @@ class AutoBookingController(http.Controller):
         return request.render(
             "auto_booking.test_drive_form_page",
             {
+                "additional_title": _("Essai automobile"),
                 "vehicle": vehicle,
                 "slots": slots,
                 "post": {},
@@ -206,7 +223,11 @@ class AutoBookingController(http.Controller):
         )
         return request.render(
             "auto_booking.test_drive_thanks_page",
-            {"vehicle": vehicle, "test_drive": test_drive},
+            {
+                "additional_title": _("Confirmation de l'essai"),
+                "vehicle": vehicle,
+                "test_drive": test_drive,
+            },
         )
 
     @http.route("/my/bookings", type="http", auth="user", website=True)
@@ -214,11 +235,17 @@ class AutoBookingController(http.Controller):
         bookings = request.env["auto.booking"].sudo().search(
             [("partner_id", "=", request.env.user.partner_id.id)], order="requested_datetime desc"
         )
-        return request.render("auto_booking.my_bookings_page", {"bookings": bookings})
+        return request.render(
+            "auto_booking.my_bookings_page",
+            {"additional_title": _("Réservations client"), "bookings": bookings},
+        )
 
     @http.route("/my/test-drives", type="http", auth="user", website=True)
     def my_test_drives(self, **kwargs):
         test_drives = request.env["auto.test.drive"].sudo().search(
             [("partner_id", "=", request.env.user.partner_id.id)], order="requested_datetime desc"
         )
-        return request.render("auto_booking.my_test_drives_page", {"test_drives": test_drives})
+        return request.render(
+            "auto_booking.my_test_drives_page",
+            {"additional_title": _("Essais client"), "test_drives": test_drives},
+        )

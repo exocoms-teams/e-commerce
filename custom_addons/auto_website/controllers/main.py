@@ -61,6 +61,10 @@ class AutoWebsiteController(http.Controller):
         }
         return sort_map.get(sort_key or "newest", "id desc")
 
+    @http.route("/shop", type="http", auth="public", website=True, sitemap=False)
+    def shop_redirect(self, **kwargs):
+        return request.redirect("/cars")
+
     @http.route(["/cars", "/cars/page/<int:page>"], type="http", auth="public", website=True, sitemap=True)
     def cars_catalog(self, page=1, **kwargs):
         vehicle_model = request.env["auto.vehicle"].sudo()
@@ -83,6 +87,7 @@ class AutoWebsiteController(http.Controller):
         vehicles = vehicle_model.search(domain, limit=12, offset=pager["offset"], order=order)
 
         values = {
+            "additional_title": _("Catalogue automobile"),
             "vehicles": vehicles,
             "brands": brand_model.search([("active", "=", True)], order="sequence,name"),
             "categories": category_model.search([("active", "=", True)], order="sequence,name"),
@@ -148,9 +153,14 @@ class AutoWebsiteController(http.Controller):
         )
         categories = category_model.search([("active", "=", True)], order="sequence,name")
 
-        category_group = vehicle_model.read_group(
-            public_domain, ["category_id"], ["category_id"], lazy=False
-        )
+        if hasattr(vehicle_model, "formatted_read_group"):
+            category_group = vehicle_model.formatted_read_group(
+                public_domain, ["category_id"], ["__count"]
+            )
+        else:
+            category_group = vehicle_model.read_group(
+                public_domain, ["category_id"], ["category_id"], lazy=False
+            )
         category_count_map = {}
         for row in category_group:
             if not row.get("category_id"):
@@ -165,6 +175,7 @@ class AutoWebsiteController(http.Controller):
         return request.render(
             "auto_website.home_page",
             {
+                "additional_title": _("Accueil automobile"),
                 "featured_vehicles": featured,
                 "hero_vehicles": hero_vehicles,
                 "latest_vehicles": latest_vehicles,
@@ -183,7 +194,10 @@ class AutoWebsiteController(http.Controller):
         brands = request.env["auto.brand"].sudo().search(
             [("website_published", "=", True), ("active", "=", True)], order="sequence,name"
         )
-        return request.render("auto_website.brand_list_page", {"brands": brands})
+        return request.render(
+            "auto_website.brand_list_page",
+            {"additional_title": _("Marques automobiles"), "brands": brands},
+        )
 
     @http.route("/brands/<int:brand_id>", type="http", auth="public", website=True, sitemap=True)
     def brand_detail(self, brand_id, **kwargs):
@@ -203,6 +217,45 @@ class AutoWebsiteController(http.Controller):
             {"brand": brand, "vehicles": vehicles},
         )
 
+    @http.route(
+        "/cars/cart/add",
+        type="http",
+        auth="public",
+        methods=["POST"],
+        website=True,
+        csrf=True,
+    )
+    def add_car_to_cart(self, product_id=None, add_qty=1, **kwargs):
+        """Add a vehicle variant to the cart across supported Odoo versions."""
+        try:
+            product_id = int(product_id or 0)
+            quantity = max(int(float(add_qty or 1)), 1)
+        except (TypeError, ValueError):
+            return request.redirect("/cars")
+
+        product = request.env["product.product"].sudo().browse(product_id).exists()
+        if not product:
+            return request.redirect("/cars")
+        if hasattr(product, "_is_add_to_cart_allowed") and not product._is_add_to_cart_allowed():
+            return request.redirect("/cars")
+
+        cart = getattr(request, "cart", False)
+        if not cart:
+            if hasattr(request.website, "_create_cart"):
+                cart = request.website._create_cart()
+            else:
+                cart = request.website.sale_get_order(force_create=True)
+
+        if hasattr(cart, "_cart_add"):
+            cart.with_context(skip_cart_verification=True)._cart_add(
+                product_id=product.id,
+                quantity=quantity,
+            )
+        else:
+            cart._cart_update(product_id=product.id, add_qty=quantity)
+
+        return request.redirect("/shop/cart")
+
     @http.route("/cars/favorite/<int:vehicle_id>", type="http", auth="user", methods=["POST"], website=True, csrf=True)
     def toggle_favorite(self, vehicle_id, **kwargs):
         vehicle = request.env["auto.vehicle"].sudo().browse(vehicle_id)
@@ -216,4 +269,7 @@ class AutoWebsiteController(http.Controller):
         favorites = request.env["auto.vehicle"].sudo().search(
             [("favorite_partner_ids", "in", partner.id)], order="id desc"
         )
-        return request.render("auto_website.my_favorites_page", {"vehicles": favorites})
+        return request.render(
+            "auto_website.my_favorites_page",
+            {"additional_title": _("Véhicules favoris"), "vehicles": favorites},
+        )
