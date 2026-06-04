@@ -14,13 +14,6 @@ class ProductTemplate(models.Model):
     )  
     x_brand = fields.Char(string='Marque')
     x_specs = fields.Text(string='Caractéristiques')
-    x_product_categ_ids = fields.Many2many(
-        'product.public.category',
-        'product_attribute_public_category_rel',
-        'attribute_id',
-        'category_id',
-        string='Catégories produits'
-    )
 
     @api.depends('pricelist_rule_ids')
     def _compute_is_promotion(self):
@@ -32,3 +25,15 @@ class ProductTemplate(models.Model):
         if options.get('x_is_promotion'):
             result['base_domain'].append([('x_is_promotion', '=', True)])
         return result
+
+
+class ProductAttribute(models.Model):
+    _inherit = 'product.attribute'
+
+    x_product_categ_ids = fields.Many2many(
+        'product.public.category',
+        'product_attribute_public_category_rel',
+        'attribute_id',
+        'category_id',
+        string='Catégories produits'
+    )
