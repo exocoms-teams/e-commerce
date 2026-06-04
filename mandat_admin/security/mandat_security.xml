@@ -12,14 +12,12 @@
         <!-- Groupe : Lecteur -->
         <record id="group_mandat_lecteur" model="res.groups">
             <field name="name">Lecteur</field>
-            <field name="category_id" ref="module_category_mandat"/>
             <field name="comment">Consultation des mandats uniquement.</field>
         </record>
 
         <!-- Groupe : Gestionnaire de mandats (agent comptable) -->
         <record id="group_mandat_gestionnaire" model="res.groups">
             <field name="name">Gestionnaire</field>
-            <field name="category_id" ref="module_category_mandat"/>
             <field name="implied_ids" eval="[(4, ref('group_mandat_lecteur'))]"/>
             <field name="comment">Création et modification des mandats.</field>
         </record>
@@ -27,7 +25,6 @@
         <!-- Groupe : Ordonnateur -->
         <record id="group_mandat_ordonnateur" model="res.groups">
             <field name="name">Ordonnateur</field>
-            <field name="category_id" ref="module_category_mandat"/>
             <field name="implied_ids" eval="[(4, ref('group_mandat_gestionnaire'))]"/>
             <field name="comment">Validation et ordonnancement des mandats.</field>
         </record>
@@ -35,7 +32,6 @@
         <!-- Groupe : Administrateur -->
         <record id="group_mandat_admin" model="res.groups">
             <field name="name">Administrateur</field>
-            <field name="category_id" ref="module_category_mandat"/>
             <field name="implied_ids" eval="[(4, ref('group_mandat_ordonnateur'))]"/>
             <field name="users" eval="[(4, ref('base.user_admin'))]"/>
             <field name="comment">Accès complet, configuration, annulations.</field>
