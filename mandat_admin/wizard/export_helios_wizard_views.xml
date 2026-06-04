@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_export_helios_wizard_form" model="ir.ui.view">
+        <field name="name">export.helios.wizard.form</field>
+        <field name="model">export.helios.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Hélios / Indigo (DGFiP)">
+                <group string="Paramètres d'export" invisible="etat == 'genere'">
+                    <field name="collectivite_id"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                    <field name="state_filter"/>
+                </group>
+                <group string="Fichier généré" invisible="etat != 'genere'">
+                    <div class="alert alert-success">
+                        <strong>✓ Export généré avec succès !</strong>
+                        Téléchargez le fichier CSV ci-dessous.
+                    </div>
+                    <field name="fichier_export" widget="binary" filename="nom_fichier"/>
+                    <field name="nom_fichier" readonly="1"/>
+                </group>
+                <field name="etat" invisible="1"/>
+                <footer>
+                    <button name="action_generer_export" type="object"
+                            string="Générer l'export" class="btn-primary"
+                            invisible="etat == 'genere'"/>
+                    <button special="cancel"
+                            string="Fermer" invisible="etat != 'genere'"/>
+                    <button special="cancel"
+                            string="Annuler" invisible="etat == 'genere'"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_export_helios_wizard" model="ir.actions.act_window">
+        <field name="name">Export Hélios / DGFiP</field>
+        <field name="res_model">export.helios.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Entrée de menu sous Analyse -->
+    <menuitem id="menu_export_helios"
+              name="Export Hélios (DGFiP)"
+              parent="menu_mandat_analyse"
+              action="action_export_helios_wizard"
+              sequence="20"
+              groups="mandat_administratif_fr.group_mandat_ordonnateur"/>
+
+</odoo>

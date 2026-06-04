@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu racine -->
+    <menuitem id="menu_mandat_root"
+              name="Mandats Administratifs"
+              sequence="80"
+              web_icon="mandat_administratif_fr,static/description/icon.png"/>
+
+    <!-- Mandats -->
+    <menuitem id="menu_mandat_mandats"
+              name="Mandats"
+              parent="menu_mandat_root"
+              sequence="10"/>
+
+    <menuitem id="menu_mandat_all"
+              name="Tous les mandats"
+              parent="menu_mandat_mandats"
+              action="action_mandat_administratif"
+              sequence="10"/>
+
+    <menuitem id="menu_mandat_a_valider"
+              name="À valider"
+              parent="menu_mandat_mandats"
+              action="action_mandats_a_valider"
+              sequence="20"
+              groups="mandat_administratif_fr.group_mandat_ordonnateur"/>
+
+    <!-- Bordereaux -->
+    <menuitem id="menu_mandat_bordereaux"
+              name="Bordereaux"
+              parent="menu_mandat_root"
+              sequence="20"/>
+
+    <menuitem id="menu_bordereau_all"
+              name="Bordereaux de mandats"
+              parent="menu_mandat_bordereaux"
+              action="action_bordereau_mandat"
+              sequence="10"/>
+
+    <!-- Analyse -->
+    <menuitem id="menu_mandat_analyse"
+              name="Analyse"
+              parent="menu_mandat_root"
+              sequence="30"/>
+
+    <menuitem id="menu_imputation_all"
+              name="Imputations budgétaires"
+              parent="menu_mandat_analyse"
+              action="action_imputation_budgetaire"
+              sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_mandat_config"
+              name="Configuration"
+              parent="menu_mandat_root"
+              sequence="99"
+              groups="mandat_administratif_fr.group_mandat_admin"/>
+
+</odoo>

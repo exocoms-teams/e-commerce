@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action rapport mandat -->
+    <record id="action_report_mandat" model="ir.actions.report">
+        <field name="name">Mandat de paiement</field>
+        <field name="model">mandat.administratif</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mandat_administratif_fr.report_mandat_template</field>
+        <field name="report_file">mandat_administratif_fr.report_mandat_template</field>
+        <field name="print_report_name">'Mandat_%s' % (object.name,)</field>
+        <field name="binding_model_id" ref="model_mandat_administratif"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template QWeb mandat -->
+    <template id="report_mandat_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- En-tête officiel -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h4><t t-out="o.collectivite_id.name"/></h4>
+                                <p>
+                                    <t t-out="o.collectivite_id.street or ''"/><br/>
+                                    <t t-out="o.collectivite_id.zip or ''"/>
+                                    <t t-out="o.collectivite_id.city or ''"/>
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h2>MANDAT DE PAIEMENT</h2>
+                                <p class="text-muted">
+                                    Instruction <strong><t t-out="o.instruction"/></strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- Numéro et date -->
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <strong>N° de mandat :</strong><br/>
+                                <span class="fs-5"><t t-out="o.name"/></span>
+                            </div>
+                            <div class="col-4">
+                                <strong>Date du mandat :</strong><br/>
+                                <t t-out="o.date_mandat"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>État :</strong><br/>
+                                <t t-out="dict(o._fields['state'].selection).get(o.state)"/>
+                            </div>
+                        </div>
+
+                        <!-- Objet -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong>Objet :</strong>
+                                <p><t t-out="o.objet"/></p>
+                            </div>
+                        </div>
+
+                        <!-- Créancier -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="border p-2">
+                                    <strong>CRÉANCIER (Bénéficiaire)</strong><br/>
+                                    <t t-out="o.creancier_id.name"/><br/>
+                                    <t t-if="o.creancier_id.street">
+                                        <t t-out="o.creancier_id.street"/><br/>
+                                    </t>
+                                    <t t-if="o.creancier_id.zip or o.creancier_id.city">
+                                        <t t-out="o.creancier_id.zip or ''"/>
+                                        <t t-out="o.creancier_id.city or ''"/><br/>
+                                    </t>
+                                    <t t-if="o.siret_creancier">
+                                        SIRET : <t t-out="o.siret_creancier"/><br/>
+                                    </t>
+                                    <t t-if="o.iban_creancier">
+                                        IBAN : <t t-out="o.iban_creancier"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border p-2">
+                                    <strong>IMPUTATION BUDGÉTAIRE</strong><br/>
+                                    <t t-if="o.chapitre">
+                                        Chapitre : <t t-out="o.chapitre"/><br/>
+                                    </t>
+                                    <t t-if="o.article">
+                                        Article : <t t-out="o.article"/><br/>
+                                    </t>
+                                    <t t-if="o.rubrique">
+                                        Rubrique : <t t-out="o.rubrique"/><br/>
+                                    </t>
+                                    <t t-if="o.fonction">
+                                        Fonction : <t t-out="o.fonction"/>
+                                    </t>
+                                    <t t-if="not (o.chapitre or o.article) and o.imputation_ids">
+                                        <t t-foreach="o.imputation_ids" t-as="imp">
+                                            <t t-out="imp.chapitre"/>/<t t-out="imp.article"/>
+                                            <t t-if="imp.libelle"> – <t t-out="imp.libelle"/></t><br/>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tableau des montants -->
+                        <table class="table table-bordered mt-3">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Désignation</th>
+                                    <th class="text-end">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Montant HT</td>
+                                    <td class="text-end">
+                                        <t t-out="'%.2f €' % o.montant_ht"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TVA (<t t-out="o.taux_tva"/> %)</td>
+                                    <td class="text-end">
+                                        <t t-out="'%.2f €' % o.montant_tva"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Montant TTC</strong></td>
+                                    <td class="text-end">
+                                        <strong><t t-out="'%.2f €' % o.montant_ttc"/></strong>
+                                    </td>
+                                </tr>
+                                <t t-if="o.retenue_garantie">
+                                    <tr>
+                                        <td>Retenue de garantie</td>
+                                        <td class="text-end text-danger">
+                                            – <t t-out="'%.2f €' % o.retenue_garantie"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="table-primary">
+                                    <td><strong>NET À PAYER</strong></td>
+                                    <td class="text-end fs-5">
+                                        <strong><t t-out="'%.2f €' % o.montant_net"/></strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Pièce justificative -->
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <strong>Pièce justificative :</strong>
+                                <t t-out="dict(o._fields['piece_justificative'].selection).get(o.piece_justificative)"/>
+                                <t t-if="o.numero_piece"> n° <t t-out="o.numero_piece"/></t>
+                                <t t-if="o.date_piece"> du <t t-out="o.date_piece"/></t>
+                            </div>
+                            <t t-if="o.marche_public">
+                                <div class="col-6">
+                                    <strong>Marché public n° :</strong>
+                                    <t t-out="o.numero_marche or ''"/>
+                                    <t t-if="o.lot_marche"> – Lot <t t-out="o.lot_marche"/></t>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p>L'Ordonnateur,</p>
+                                <br/><br/><br/>
+                                <p><t t-out="o.ordonnateur_id.name"/></p>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p>Le Comptable assignataire,</p>
+                                <br/><br/><br/>
+                                <p><t t-out="o.comptable_id.name if o.comptable_id else 'À renseigner'"/></p>
+                            </div>
+                        </div>
+
+                        <!-- Pied de page -->
+                        <div class="mt-4 text-muted small">
+                            <hr/>
+                            <p>
+                                Mandat émis conformément à l'instruction comptable
+                                <t t-out="o.instruction"/> –
+                                <t t-out="o.collectivite_id.name"/> –
+                                Exercice <t t-out="str(o.date_mandat.year) if o.date_mandat else ''"/>
+                            </p>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

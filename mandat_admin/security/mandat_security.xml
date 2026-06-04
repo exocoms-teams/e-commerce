@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Catégorie de sécurité -->
+        <record id="module_category_mandat" model="ir.module.category">
+            <field name="name">Mandat Administratif</field>
+            <field name="description">Gestion des mandats administratifs français</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <!-- Groupe : Lecteur -->
+        <record id="group_mandat_lecteur" model="res.groups">
+            <field name="name">Lecteur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="comment">Consultation des mandats uniquement.</field>
+        </record>
+
+        <!-- Groupe : Gestionnaire de mandats (agent comptable) -->
+        <record id="group_mandat_gestionnaire" model="res.groups">
+            <field name="name">Gestionnaire</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_lecteur'))]"/>
+            <field name="comment">Création et modification des mandats.</field>
+        </record>
+
+        <!-- Groupe : Ordonnateur -->
+        <record id="group_mandat_ordonnateur" model="res.groups">
+            <field name="name">Ordonnateur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_gestionnaire'))]"/>
+            <field name="comment">Validation et ordonnancement des mandats.</field>
+        </record>
+
+        <!-- Groupe : Administrateur -->
+        <record id="group_mandat_admin" model="res.groups">
+            <field name="name">Administrateur</field>
+            <field name="category_id" ref="module_category_mandat"/>
+            <field name="implied_ids" eval="[(4, ref('group_mandat_ordonnateur'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+            <field name="comment">Accès complet, configuration, annulations.</field>
+        </record>
+
+        <!-- Règles d'enregistrement : multi-société -->
+        <record id="rule_mandat_company" model="ir.rule">
+            <field name="name">Mandats : restriction par collectivité</field>
+            <field name="model_id" ref="model_mandat_administratif"/>
+            <field name="domain_force">[('collectivite_id', 'in', company_ids)]</field>
+            <field name="groups" eval="[(4, ref('group_mandat_lecteur'))]"/>
+        </record>
+
+    </data>
+</odoo>
