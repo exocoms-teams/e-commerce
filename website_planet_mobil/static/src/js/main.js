@@ -180,13 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // FILTRES /shop 
     // ══════════════════════════════════════════
 
-    const CATEGORY_FILTERS = {
-        'smartphones-1': ['Systeme', 'Stockage', 'Taille'],
-        'montres-2': ['Compatibilite'],
-        'accessoires-3': ['Compatibilite'],
-        'tv-4': ['Taille', 'Resolution'],
-    };
-
     if (!window.location.pathname.startsWith('/shop')) return;
     // Pré-coche le filtre promotion si dans l'URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -235,6 +228,26 @@ document.addEventListener('DOMContentLoaded', function () {
         return data.result || [];
     }
 
+    //Recupere attributs lié a une categorie
+    async function getCategoryAttributes(categoryId){
+        const res = await fetch('/web/dataset/call_kw', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method:'call',
+                params: {
+                    model: 'product.attribute',
+                    method: 'search_read',
+                    args: [[['x_product_categ_ids', 'in', [categoryId]]]],
+                    kwargs: { fields: ['id', 'name'] }
+                }  
+            })          
+        });
+        const data = await res.json();
+        return data.result || []
+    }
+
     // Peuple un dropdown dynamiquement
     function populateDropdown(filterName, values, attrId) {
         const ul = document.querySelector(
@@ -271,44 +284,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    //Injecte filtre dynamique selon categorie
-    async function injectCategoryFilters() {
+
+    //Inject filtre dynamiques selon categories
+    async function injectCategoryFilters(){
         const path = window.location.pathname;
         const match = path.match(/\/shop\/category\/([^\/]+)/);
         if (!match) return;
 
         const slug = match[1];
-        const attrNames = CATEGORY_FILTERS[slug];
-        if (!attrNames) return;
+        //extrait id depuis slug, smartphones-1 -> 1
+        const idMatch = slug.match(/-(\d+)$/);
+        if (!idMatch) return;
+        const categoryId = parseInt(idMatch[1]);
+
+        const attributes = await getCategoryAttributes(categoryId);
+        if (!attributes.length) return;
 
         const container = document.getElementById('tsp-category-filters');
-        if (!container) return;
+        if (!container) return; 
 
-        for (const name of attrNames) {
-            const attrId = await getAttributeId(name);
-            if (!attrId) continue;
-
-            const values = await getAttributeValues(attrId);
+        for (const attr of attributes){
+            const values = await getAttributeValues(attr.id);
             if (!values.length) continue;
 
-            //creer filtre group
-            const group = document.createElement('div');
+            const group = document.createElement('div')
             group.className = 'tsp-filter-group';
             group.innerHTML = `
-                <label>${name}</label>
-                <div class="tsp-custom-select" data-filter="${name.toLowerCase()}">
+                <label>${attr.name}</label>
+                <div class="tsp-custom-select" data-filter="${attr.name.toLowerCase()}">
                     <div class="tsp-custom-selected">Tous<i class="fa fa-chevron-down"></i></div>
                     <ul class="tsp-custom-options">
                         <li data-value="">Tous</li>
                     </ul>
                 </div>
             `;
+
             container.appendChild(group);
 
-            //peuple valeurs
-            populateDropdown(name.toLowerCase(), values, attrId);
-
-            //branche fonctionnement de l ouverture/fermeture du dropdown
+            populateDropdown(attr.name.toLowerCase(), values, attr.id);
             const select = group.querySelector('.tsp-custom-select');
             const selected = group.querySelector('.tsp-custom-selected');
             const options = group.querySelector('.tsp-custom-options');
@@ -324,6 +337,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('tsp-apply-filters');
         if (btn) container.appendChild(btn);
     }
+
+    
 
     // Init dropdowns marque + couleur
     async function initFilters() {
