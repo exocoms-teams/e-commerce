@@ -6,7 +6,7 @@
     'summary': 'Boutique e-commerce caméras de surveillance AXIS',
     'author': 'Johnny Farrane',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
+    'depends': ['website', 'website_sale', 'monetique_theme'],
     'data': [
         'data/website_data.xml',
         'views/layout.xml',
