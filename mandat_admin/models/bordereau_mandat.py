@@ -91,9 +91,9 @@ class BordereauMandat(models.Model):
             if rec.state != 'emis':
                 raise UserError(_('Le bordereau doit être émis avant transmission.'))
             rec.state = 'transmis'
-            # Passer tous les mandats en état "mandaté"
             mandats_valides = rec.mandat_ids.filtered(lambda m: m.state == 'valide')
-            mandats_valides.write({'state': 'mandate'})
+            for m in mandats_valides:
+                m.action_mandater()
             rec.message_post(body=_('Bordereau transmis au comptable.'))
 
     def action_cloturer(self):
