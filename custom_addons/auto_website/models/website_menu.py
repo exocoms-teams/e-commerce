@@ -14,6 +14,7 @@ class WebsiteMenu(models.Model):
             "odoo19_portal_language_selector_t_out",
             "odoo19_portal_user_dropdown_t_out",
             "odoo19_banner_categories_t_out",
+            "footer_copyright_exocoms",
         ]
         external_ids = self.env["ir.model.data"].sudo().search(
             [

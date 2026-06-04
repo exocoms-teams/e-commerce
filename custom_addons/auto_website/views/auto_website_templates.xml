@@ -32,6 +32,7 @@
 
     <template id="home_page" name="Accueil">
         <t t-call="website.layout">
+            <div id="wrap" class="oe_structure auto-page auto-home-page">
             <section class="auto-home-hero position-relative overflow-hidden">
                 <div id="autoHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="7000">
                     <div class="carousel-inner">
@@ -257,11 +258,13 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
     <template id="catalog_page" name="Catalogue des véhicules">
         <t t-call="website.layout">
+            <div id="wrap" class="oe_structure auto-page auto-catalog-page">
             <section class="py-4 auto-catalog-header">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -313,17 +316,34 @@
                                     </t>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-3 col-lg-1">
-                                <input class="form-control" name="price_min" type="number" min="0" placeholder="Prix min" t-att-value="query.get('price_min', '')"/>
+                            <div class="col-12 col-lg-3">
+                                <div class="auto-price-range" t-att-data-min="price_floor" t-att-data-max="price_ceiling">
+                                    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                                        <label class="auto-price-range-label mb-0">Budget</label>
+                                        <span class="auto-price-range-output">
+                                            <span data-auto-price-min-label="1" t-out="'%s €' % '{:,.0f}'.format(selected_price_min).replace(',', ' ')"/>
+                                            <span> - </span>
+                                            <span data-auto-price-max-label="1" t-out="'%s €' % '{:,.0f}'.format(selected_price_max).replace(',', ' ')"/>
+                                        </span>
+                                    </div>
+                                    <div class="auto-price-range-slider">
+                                        <input class="auto-range-input auto-range-min" name="price_min" type="range" t-att-min="price_floor" t-att-max="price_ceiling" step="500" t-att-value="selected_price_min"/>
+                                        <input class="auto-range-input auto-range-max" name="price_max" type="range" t-att-min="price_floor" t-att-max="price_ceiling" step="500" t-att-value="selected_price_max"/>
+                                        <div class="auto-price-range-track">
+                                            <span data-auto-price-range-fill="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between auto-price-range-bounds mt-1">
+                                        <span t-out="'%s €' % '{:,.0f}'.format(price_floor).replace(',', ' ')"/>
+                                        <span t-out="'%s €' % '{:,.0f}'.format(price_ceiling).replace(',', ' ')"/>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-6 col-md-3 col-lg-1">
-                                <input class="form-control" name="price_max" type="number" min="0" placeholder="Prix max" t-att-value="query.get('price_max', '')"/>
+                                <input class="form-control" name="year_min" type="number" min="1990" placeholder="Année min" t-att-value="selected_year_min or ''"/>
                             </div>
                             <div class="col-6 col-md-3 col-lg-1">
-                                <input class="form-control" name="year_min" type="number" min="1990" placeholder="Année min" t-att-value="query.get('year_min', '')"/>
-                            </div>
-                            <div class="col-6 col-md-3 col-lg-1">
-                                <input class="form-control" name="year_max" type="number" min="1990" placeholder="Année max" t-att-value="query.get('year_max', '')"/>
+                                <input class="form-control" name="year_max" type="number" min="1990" placeholder="Année max" t-att-value="selected_year_max or ''"/>
                             </div>
                             <div class="col-6 col-md-3 col-lg-2">
                                 <select class="form-select" name="sort">
@@ -361,6 +381,7 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
@@ -405,6 +426,7 @@
     <template id="vehicle_detail_page" name="Détail du véhicule">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="vehicle.display_name"/>
+            <div id="wrap" class="oe_structure auto-page auto-detail-template">
             <section class="py-4 auto-detail-page">
                 <div class="container">
                     <nav aria-label="breadcrumb">
@@ -556,11 +578,13 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
     <template id="brand_list_page" name="Liste des marques">
         <t t-call="website.layout">
+            <div id="wrap" class="oe_structure auto-page auto-brand-list-page">
             <section class="py-5">
                 <div class="container">
                     <h1 class="h2 mb-4">Toutes les marques</h1>
@@ -579,12 +603,14 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
     <template id="brand_detail_page" name="Détail de la marque">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="brand.name"/>
+            <div id="wrap" class="oe_structure auto-page auto-brand-detail-page">
             <section class="py-5">
                 <div class="container">
                     <div class="row g-4 align-items-start">
@@ -619,11 +645,13 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
     <template id="my_favorites_page" name="Mes véhicules favoris">
         <t t-call="website.layout">
+            <div id="wrap" class="oe_structure auto-page auto-favorites-page">
             <section class="py-5">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -646,6 +674,7 @@
                     </div>
                 </div>
             </section>
+            </div>
         </t>
     </template>
 
@@ -818,7 +847,7 @@
 
     <template id="footer_exocoms" inherit_id="website.footer_custom" name="Footer EXOCOMS sans réseaux sociaux" active="True">
         <xpath expr="//div[@id='footer']" position="replace">
-            <div id="footer" class="oe_structure oe_structure_solo auto-footer" t-ignore="true" t-if="not no_footer">
+            <div id="footer" class="oe_structure oe_structure_solo auto-footer" t-if="not no_footer">
                 <section class="pt40 pb24">
                     <div class="container">
                         <div class="row g-4">
@@ -856,18 +885,11 @@
                             <a href="/website/lang/en_GB?r=/cars/home" hreflang="en" t-translation="off">English</a>
                             <a href="/website/lang/ar_001?r=/cars/home" hreflang="ar" dir="rtl" t-translation="off">العربي</a>
                         </div>
+                        <div class="auto-footer-copyright mt-3 pt-3">
+                            <p class="mb-0 text-center">Copyright &#169; 2026 - EXOCOMS Group</p>
+                        </div>
                     </div>
                 </section>
-            </div>
-        </xpath>
-    </template>
-
-    <template id="footer_copyright_exocoms" inherit_id="website.layout" name="Copyright EXOCOMS Group">
-        <xpath expr="//footer//div[hasclass('o_footer_copyright')]" position="replace">
-            <div t-if="not no_copyright" class="o_footer_copyright auto-footer-copyright o_colored_level o_cc" data-name="Copyright">
-                <div class="container py-3">
-                    <p class="mb-0 text-center">Copyright &#169; 2026 - EXOCOMS Group</p>
-                </div>
             </div>
         </xpath>
     </template>

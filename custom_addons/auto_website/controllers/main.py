@@ -1,8 +1,27 @@
+import math
+
 from odoo import _, http
 from odoo.http import request
 
 
 class AutoWebsiteController(http.Controller):
+    def _parse_int(self, value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _parse_float(self, value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _normalize_range(self, min_value, max_value):
+        if min_value is not None and max_value is not None and min_value > max_value:
+            return max_value, min_value
+        return min_value, max_value
+
     def _get_public_vehicle(self, vehicle_id):
         vehicle = request.env["auto.vehicle"].sudo().browse(vehicle_id)
         if not vehicle.exists() or not vehicle.active:
@@ -26,30 +45,48 @@ class AutoWebsiteController(http.Controller):
         if search:
             domain += ["|", ("name", "ilike", search), ("brand_id.name", "ilike", search)]
 
-        if query.get("brand"):
-            domain.append(("brand_id", "=", int(query["brand"])))
-        if query.get("category"):
-            domain.append(("category_id", "=", int(query["category"])))
-        if query.get("motorization"):
-            domain.append(("motorization_id", "=", int(query["motorization"])))
+        brand_id = self._parse_int(query.get("brand"))
+        if brand_id:
+            domain.append(("brand_id", "=", brand_id))
+        category_id = self._parse_int(query.get("category"))
+        if category_id:
+            domain.append(("category_id", "=", category_id))
+        motorization_id = self._parse_int(query.get("motorization"))
+        if motorization_id:
+            domain.append(("motorization_id", "=", motorization_id))
         if query.get("availability"):
             domain.append(("availability", "=", query["availability"]))
 
-        year_min = query.get("year_min")
-        year_max = query.get("year_max")
+        year_min = self._parse_int(query.get("year_min"))
+        year_max = self._parse_int(query.get("year_max"))
+        year_min, year_max = self._normalize_range(year_min, year_max)
         if year_min:
-            domain.append(("year", ">=", int(year_min)))
+            domain.append(("year", ">=", year_min))
         if year_max:
-            domain.append(("year", "<=", int(year_max)))
+            domain.append(("year", "<=", year_max))
 
-        price_min = query.get("price_min")
-        price_max = query.get("price_max")
-        if price_min:
-            domain.append(("product_template_id.list_price", ">=", float(price_min)))
-        if price_max:
-            domain.append(("product_template_id.list_price", "<=", float(price_max)))
+        price_min = self._parse_float(query.get("price_min"))
+        price_max = self._parse_float(query.get("price_max"))
+        price_min, price_max = self._normalize_range(price_min, price_max)
+        if price_min is not None:
+            domain.append(("product_template_id.list_price", ">=", price_min))
+        if price_max is not None:
+            domain.append(("product_template_id.list_price", "<=", price_max))
 
         return domain
+
+    def _get_price_bounds(self):
+        vehicles = request.env["auto.vehicle"].sudo().search(
+            [("active", "=", True), ("website_published", "=", True)]
+        )
+        prices = [vehicle.list_price for vehicle in vehicles if vehicle.list_price > 0]
+        if not prices:
+            return 0, 100000
+        price_floor = int(math.floor(min(prices) / 1000.0) * 1000)
+        price_ceiling = int(math.ceil(max(prices) / 1000.0) * 1000)
+        if price_floor == price_ceiling:
+            price_ceiling += 1000
+        return price_floor, price_ceiling
 
     def _get_catalog_order(self, sort_key):
         sort_map = {
@@ -74,6 +111,19 @@ class AutoWebsiteController(http.Controller):
 
         domain = self._build_vehicle_domain(kwargs)
         order = self._get_catalog_order(kwargs.get("sort"))
+        price_floor, price_ceiling = self._get_price_bounds()
+        selected_price_min = self._parse_float(kwargs.get("price_min"))
+        selected_price_max = self._parse_float(kwargs.get("price_max"))
+        selected_price_min, selected_price_max = self._normalize_range(
+            selected_price_min,
+            selected_price_max,
+        )
+        selected_year_min = self._parse_int(kwargs.get("year_min"))
+        selected_year_max = self._parse_int(kwargs.get("year_max"))
+        selected_year_min, selected_year_max = self._normalize_range(
+            selected_year_min,
+            selected_year_max,
+        )
 
         total = vehicle_model.search_count(domain)
         pager = request.website.pager(
@@ -95,6 +145,12 @@ class AutoWebsiteController(http.Controller):
             "pager": pager,
             "query": kwargs,
             "sort_key": kwargs.get("sort", "newest"),
+            "price_floor": price_floor,
+            "price_ceiling": price_ceiling,
+            "selected_price_min": selected_price_min if selected_price_min is not None else price_floor,
+            "selected_price_max": selected_price_max if selected_price_max is not None else price_ceiling,
+            "selected_year_min": selected_year_min,
+            "selected_year_max": selected_year_max,
             "availability_values": vehicle_model._fields["availability"]._description_selection(
                 request.env
             ),
