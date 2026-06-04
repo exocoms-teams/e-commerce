@@ -20,6 +20,11 @@ class MandatAdministratif(models.Model):
         default='Nouveau',
         tracking=True,
     )
+    display_name = fields.Char(
+        string='Nom affiché',
+        compute='_compute_display_name',
+        store=True,
+    )
     reference_creancier = fields.Char(
         string='Référence créancier',
         help='Référence interne ou numéro de facture du créancier',
@@ -213,6 +218,12 @@ class MandatAdministratif(models.Model):
     # Calculs
     # ───────────────────────────────────────────────────────────────────────────
 
+    @api.depends('name', 'objet')
+    def _compute_display_name(self):
+        for rec in self:
+            n = rec.name if rec.name != 'Nouveau' else _('Nouveau mandat')
+            rec.display_name = f'{n} – {rec.objet[:40]}' if rec.objet else n
+
     @api.depends('montant_ht', 'taux_tva')
     def _compute_montants(self):
         for rec in self:
@@ -351,11 +362,3 @@ class MandatAdministratif(models.Model):
         })
         return super().copy(default)
 
-    def name_get(self):
-        result = []
-        for rec in self:
-            name = rec.name if rec.name != 'Nouveau' else _('Nouveau mandat')
-            if rec.objet:
-                name = f'{name} – {rec.objet[:40]}'
-            result.append((rec.id, name))
-        return result
