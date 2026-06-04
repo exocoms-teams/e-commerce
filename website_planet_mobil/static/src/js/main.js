@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const promotion = document.getElementById('filter-promotion');
             if (promotion && promotion.checked) {
                 params.set('x_is_promotion', '1');
-}
+            }
 
             // Attributs (marque + couleur)
             getCheckedAttribs().forEach(attrib => {
@@ -393,19 +393,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             window.location.href = redirect;
         });
-    }
-
-        //Promotion
-    const promotion = document.getElementById('filter-promotion');
-    if (promotion && promotion.checked){
-        params.set('x_is_promotion', '1')
-    }
-
-    //Pre coche filtre promotion si dans l'URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.get('x_is_promotion')){
-        const promo = document.getElementById('filter-promotion');
-        if (promo) promo.checked = true;
     }
 
 
