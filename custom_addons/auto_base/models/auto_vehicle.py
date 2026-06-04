@@ -69,7 +69,12 @@ class AutoVehicle(models.Model):
     currency_id = fields.Many2one(
         "res.currency", string="Devise", related="product_template_id.currency_id", readonly=True
     )
-    list_price = fields.Float(string="Prix de vente", related="product_template_id.list_price", readonly=False)
+    list_price = fields.Float(
+        string="Prix de vente",
+        related="product_template_id.list_price",
+        readonly=False,
+        store=True,
+    )
     main_image = fields.Image(
         string="Image principale",
         compute="_compute_main_image", store=False, max_width=1920, max_height=1920

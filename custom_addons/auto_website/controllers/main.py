@@ -69,9 +69,9 @@ class AutoWebsiteController(http.Controller):
         price_max = self._parse_float(query.get("price_max"))
         price_min, price_max = self._normalize_range(price_min, price_max)
         if price_min is not None:
-            domain.append(("product_template_id.list_price", ">=", price_min))
+            domain.append(("list_price", ">=", price_min))
         if price_max is not None:
-            domain.append(("product_template_id.list_price", "<=", price_max))
+            domain.append(("list_price", "<=", price_max))
 
         return domain
 
@@ -91,8 +91,8 @@ class AutoWebsiteController(http.Controller):
     def _get_catalog_order(self, sort_key):
         sort_map = {
             "newest": "id desc",
-            "price_asc": "product_template_id.list_price asc",
-            "price_desc": "product_template_id.list_price desc",
+            "price_asc": "list_price asc",
+            "price_desc": "list_price desc",
             "range_desc": "range_km desc",
             "year_desc": "year desc",
         }
