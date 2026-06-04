@@ -225,18 +225,17 @@
                         domain="[('type_mandat','=','depense_investissement')]"/>
                 <filter name="mois_courant" string="Mois en cours"
                         domain="[('date_mandat','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
-                <group string="Regrouper par">
-                    <filter name="group_creancier" string="Créancier"
-                            context="{'group_by': 'creancier_id'}"/>
-                    <filter name="group_type" string="Type de mandat"
-                            context="{'group_by': 'type_mandat'}"/>
-                    <filter name="group_state" string="État"
-                            context="{'group_by': 'state'}"/>
-                    <filter name="group_mois" string="Mois"
-                            context="{'group_by': 'date_mandat:month'}"/>
-                    <filter name="group_instruction" string="Instruction"
-                            context="{'group_by': 'instruction'}"/>
-                </group>
+                <separator/>
+                <filter name="group_creancier" string="Créancier"
+                        context="{'group_by': 'creancier_id'}"/>
+                <filter name="group_type" string="Type de mandat"
+                        context="{'group_by': 'type_mandat'}"/>
+                <filter name="group_state" string="État"
+                        context="{'group_by': 'state'}"/>
+                <filter name="group_mois" string="Mois"
+                        context="{'group_by': 'date_mandat:month'}"/>
+                <filter name="group_instruction" string="Instruction"
+                        context="{'group_by': 'instruction'}"/>
             </search>
         </field>
     </record>
