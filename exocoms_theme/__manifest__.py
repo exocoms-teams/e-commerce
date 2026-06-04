@@ -8,8 +8,6 @@
     'depends': [
         'website', 
         'website_sale',
-        'luxury_services',
-        'monetique_theme',
     ],
     'data': [
         'data/website_data.xml',
