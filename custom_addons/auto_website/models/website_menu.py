@@ -116,6 +116,30 @@ class WebsiteMenu(models.Model):
         return True
 
     @api.model
+    def _auto_website_configure_admin_language(self):
+        """Keep the EXOCOMS editing experience in French without affecting all users."""
+        french = self.env["res.lang"].sudo().with_context(active_test=False).search(
+            [("code", "=", "fr_FR")],
+            limit=1,
+        )
+        if not french:
+            return True
+
+        Users = self.env["res.users"].sudo().with_context(active_test=False)
+        users = Users.search([("login", "in", ["admin", "contact@exocoms.fr"])])
+
+        exocoms_admin_partners = self.env["res.partner"].sudo().with_context(active_test=False).search(
+            [("name", "ilike", "Administrateur EXOCOMS")]
+        )
+        if exocoms_admin_partners:
+            users |= Users.search([("partner_id", "in", exocoms_admin_partners.ids)])
+
+        partners = users.mapped("partner_id").filtered(lambda partner: partner.lang != french.code)
+        if partners:
+            partners.write({"lang": french.code})
+        return True
+
+    @api.model
     def _auto_website_remove_default_navigation(self):
         self.env.cr.execute(
             "SELECT id FROM website_menu WHERE url IN %s",
