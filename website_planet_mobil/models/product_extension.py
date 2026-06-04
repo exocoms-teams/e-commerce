@@ -14,6 +14,10 @@ class ProductTemplate(models.Model):
     )  
     x_brand = fields.Char(string='Marque')
     x_specs = fields.Text(string='Caractéristiques')
+    x_product_categ_ids = fields.Many2many(
+        'product.public.category',
+        string='Catégories produits'
+    )
 
     @api.depends('pricelist_rule_ids')
     def _compute_is_promotion(self):
