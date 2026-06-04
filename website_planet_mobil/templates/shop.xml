@@ -27,22 +27,14 @@
                                     class="fa fa-chevron-down tsp-chevron" />
                             </a>
                             <ul class="tsp-submenu">
-                                <li>
-                                    <a href="/shop/category/smartphones-1"><i class="fa fa-mobile" />
-                                        Smartphones</a>
-                                </li>
-                                <li>
-                                    <a href="/shop/category/montres-2"><i class="fa fa-clock-o" />
-                                        Montres connectees</a>
-                                </li>
-                                <li>
-                                    <a href="/shop/category/accessoires-3"><i class="fa fa-shield" />
-                                        Coques et Accessoires</a>
-                                </li>
-                                <li>
-                                    <a href="/shop/category/tv-4"><i class="fa fa-television" /> TV
-                                        et Audio</a>
-                                </li>
+                                <t t-set="categories" t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False)])"/>
+                                <t t-foreach="categories" t-as="cat">
+                                    <li>
+                                        <a t-att-href="'/shop/category/' + slug(cat)">
+                                            <i class="fa fa-tag"/> <t t-out="cat.name"/>
+                                        </a>
+                                    </li>
+                                </t>
                             </ul>
                         </li>
                         <li class="tsp-nav-item">
