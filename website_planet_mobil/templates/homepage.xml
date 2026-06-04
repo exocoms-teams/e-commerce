@@ -37,9 +37,14 @@
                                         </div>
                                     </a>
                                     <div class="hp-product-actions">
-                                        <a t-att-href="'/shop/' + slug(product)" class="hp-btn-cart">
-                                            <i class="fa fa-shopping-cart"/> Panier
-                                        </a>
+                                        <form t-att-action="'/shop/cart/update'" method="post" style="flex-grow:1;">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                            <input type="hidden" name="add_qty" value="1"/>
+                                            <button type="submit" class="hp-btn-cart">
+                                                <i class="fa fa-shopping-cart"/> Panier
+                                            </button>
+                                        </form>
                                         <a href="#" class="hp-btn-wishlist">
                                             <i class="fa fa-heart-o"/>
                                         </a>
