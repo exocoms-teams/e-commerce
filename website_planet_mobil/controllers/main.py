@@ -141,6 +141,13 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         all_reviews = request.env['planet.review'].sudo().search([
             ('is_published', '=', True)
         ])
+
+        nouveautes = request.env['product.template'].sudo().search(
+            [('is_published', '=', True)],
+            order='create_date desc',
+            limit=8
+        )
+
         if total > 0:
             avg = sum(r.rating for r in all_reviews) / total
             dist = {i: 0 for i in range(1, 6)}
@@ -157,6 +164,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         return request.render('website_planet_mobil.homepage', {
             'reviews': reviews,
             'stats': stats,
+            'nouveautes': nouveautes,
         })
 
     @http.route('/catalogue', type='http', auth='public', website=True, sitemap=True)
@@ -268,7 +276,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                             **kwargs)
 
 
-                            
+
     #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
     #def product(self, product_id, **kwargs):
     #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)

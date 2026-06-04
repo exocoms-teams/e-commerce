@@ -97,9 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // ══════════════════════════════════════════
     // CARROUSEL avis homepage 
     // ══════════════════════════════════════════
-    const carousel = document.getElementById('hp-avis-carousel');
-    if (carousel) {
-        const wrap = carousel.closest('.hp-avis-carousel-wrap');
+    function initCarousel(carouselId) {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return;
+        const wrap = carousel.closest('.hp-products-carousel-wrap, .hp-avis-carousel-wrap');
+        if (!wrap) return;
         let isDown = false;
         let startX;
         let scrollLeft;
@@ -110,17 +112,8 @@ document.addEventListener('DOMContentLoaded', function () {
             startX = e.pageX - carousel.offsetLeft;
             scrollLeft = carousel.scrollLeft;
         });
-
-        wrap.addEventListener('mouseleave', () => {
-            isDown = false;
-            wrap.classList.remove('dragging');
-        });
-
-        wrap.addEventListener('mouseup', () => {
-            isDown = false;
-            wrap.classList.remove('dragging');
-        });
-
+        wrap.addEventListener('mouseleave', () => { isDown = false; wrap.classList.remove('dragging'); });
+        wrap.addEventListener('mouseup', () => { isDown = false; wrap.classList.remove('dragging'); });
         wrap.addEventListener('mousemove', (e) => {
             if (!isDown) return;
             e.preventDefault();
@@ -129,6 +122,9 @@ document.addEventListener('DOMContentLoaded', function () {
             carousel.scrollLeft = scrollLeft - walk;
         });
     }
+
+    initCarousel('hp-avis-carousel');
+    initCarousel('hp-nouveautes-carousel');
 
 
     // ══════════════════════════════════════════
