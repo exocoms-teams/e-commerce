@@ -50,19 +50,19 @@
                             string="Valider (Ordonnancer)"
                             type="object"
                             class="btn-primary"
-                            groups="mandat_administratif_fr.group_mandat_ordonnateur"
+                            groups="mandat_admin.group_mandat_ordonnateur"
                             invisible="state != 'a_valider'"/>
                     <button name="action_mandater"
                             string="Mandater"
                             type="object"
                             class="btn-primary"
-                            groups="mandat_administratif_fr.group_mandat_ordonnateur"
+                            groups="mandat_admin.group_mandat_ordonnateur"
                             invisible="state != 'valide'"/>
                     <button name="action_marquer_paye"
                             string="Marquer comme payé"
                             type="object"
                             class="btn-success"
-                            groups="mandat_administratif_fr.group_mandat_ordonnateur"
+                            groups="mandat_admin.group_mandat_ordonnateur"
                             invisible="state != 'mandate'"/>
                     <button name="action_remettre_brouillon"
                             string="Remettre en brouillon"
@@ -72,7 +72,7 @@
                             string="Annuler"
                             type="object"
                             class="btn-danger"
-                            groups="mandat_administratif_fr.group_mandat_admin"
+                            groups="mandat_admin.group_mandat_admin"
                             invisible="state in ('paye','annule')"/>
                     <button name="action_imprimer_mandat"
                             string="Imprimer"
@@ -225,7 +225,7 @@
                         domain="[('type_mandat','=','depense_investissement')]"/>
                 <filter name="mois_courant" string="Mois en cours"
                         domain="[('date_mandat','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
-                <group expand="0" string="Regrouper par">
+                <group string="Regrouper par">
                     <filter name="group_creancier" string="Créancier"
                             context="{'group_by': 'creancier_id'}"/>
                     <filter name="group_type" string="Type de mandat"
