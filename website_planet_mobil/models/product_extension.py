@@ -16,6 +16,9 @@ class ProductTemplate(models.Model):
     x_specs = fields.Text(string='Caractéristiques')
     x_product_categ_ids = fields.Many2many(
         'product.public.category',
+        'product_attribute_public_category_rel',
+        'attribute_id',
+        'category_id',
         string='Catégories produits'
     )
 
