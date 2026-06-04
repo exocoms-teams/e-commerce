@@ -70,7 +70,7 @@ class ImputationBudgetaire(models.Model):
     @api.constrains('montant_impute', 'credit_disponible')
     def _check_disponibilite_credits(self):
         for rec in self:
-            if (rec.credit_disponible > 0 and
+            if (rec.credit_ouvert > 0 and
                     rec.montant_impute > rec.credit_disponible):
                 raise ValidationError(_(
                     'Crédit insuffisant sur l\'imputation %s/%s. '
