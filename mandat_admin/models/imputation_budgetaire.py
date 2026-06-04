@@ -48,6 +48,19 @@ class ImputationBudgetaire(models.Model):
         string='Compte PCG',
         help='Compte du Plan Comptable Général associé',
     )
+    display_name = fields.Char(
+        string='Nom affiché',
+        compute='_compute_display_name',
+        store=True,
+    )
+
+    @api.depends('chapitre', 'article', 'rubrique')
+    def _compute_display_name(self):
+        for rec in self:
+            name = f'{rec.chapitre}/{rec.article}' if rec.chapitre and rec.article else ''
+            if rec.rubrique:
+                name += f'/{rec.rubrique}'
+            rec.display_name = name or '/'
 
     @api.depends('credit_ouvert', 'credit_engage')
     def _compute_credit_disponible(self):
@@ -64,12 +77,3 @@ class ImputationBudgetaire(models.Model):
                     'Disponible : %.2f € – Demandé : %.2f €'
                 ) % (rec.chapitre, rec.article,
                      rec.credit_disponible, rec.montant_impute))
-
-    def name_get(self):
-        result = []
-        for rec in self:
-            name = f'{rec.chapitre}/{rec.article}'
-            if rec.rubrique:
-                name += f'/{rec.rubrique}'
-            result.append((rec.id, name))
-        return result
