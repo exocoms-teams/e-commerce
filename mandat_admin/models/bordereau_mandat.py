@@ -101,4 +101,4 @@ class BordereauMandat(models.Model):
             rec.state = 'cloture'
 
     def action_imprimer_bordereau(self):
-        return self.env.ref('mandat_administratif_fr.action_report_bordereau').report_action(self)
+        return self.env.ref('mandat_admin.action_report_bordereau').report_action(self)

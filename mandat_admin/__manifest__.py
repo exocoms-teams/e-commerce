@@ -68,7 +68,7 @@ Conformité réglementaire :
     ],
     'assets': {
         'web.assets_backend': [
-            'mandat_administratif_fr/static/src/css/mandat_style.css',
+            'mandat_admin/static/src/css/mandat_style.css',
         ],
     },
     'installable': True,
