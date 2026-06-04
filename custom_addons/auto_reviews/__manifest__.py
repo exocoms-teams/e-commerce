@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Avis",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "summary": "Avis clients avec modération",
     "category": "Website",
     "author": "Ecommerce Voitures Team",

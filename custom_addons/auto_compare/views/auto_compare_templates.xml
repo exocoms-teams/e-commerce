@@ -11,92 +11,102 @@
 
     <template id="compare_page" name="Comparateur de véhicules">
         <t t-call="website.layout">
-            <section class="py-5 auto-form-shell">
+            <t t-set="auto_lang" t-value="request.env.lang or ''"/>
+            <t t-set="auto_is_en" t-value="auto_lang.startswith('en')"/>
+            <t t-set="auto_is_ar" t-value="auto_lang.startswith('ar')"/>
+            <t t-set="compare_kicker" t-value="auto_is_ar and 'قرار الشراء' or auto_is_en and 'Purchase decision' or 'Décision d\'achat'"/>
+            <t t-set="compare_title" t-value="auto_is_ar and 'مقارن سيارات EXOCOMS' or auto_is_en and 'EXOCOMS vehicle comparison' or 'Comparateur automobile EXOCOMS'"/>
+            <t t-set="compare_intro" t-value="auto_is_ar and 'قارن السعر والمدى والقوة والبطارية والتوفر قبل طلب عرض سعر.' or auto_is_en and 'Compare price, range, power, battery and availability before requesting a quote.' or 'Analysez prix, autonomie, puissance, batterie et disponibilité avant de demander un devis.'"/>
+            <t t-set="compare_empty_title" t-value="auto_is_ar and 'قارن الطرز التي تهمك.' or auto_is_en and 'Compare the models you are interested in.' or 'Comparez les modèles qui vous intéressent.'"/>
+            <t t-set="compare_empty_text" t-value="auto_is_ar and 'أضف سيارتين على الأقل من الكتالوج لمقارنة السعر والمدى والقوة والبطارية والتوفر.' or auto_is_en and 'Add at least two vehicles from the catalog to compare price, range, power, battery and availability.' or 'Ajoutez au moins deux véhicules depuis le catalogue pour comparer prix, autonomie, puissance, batterie et disponibilité.'"/>
+            <t t-set="compare_empty_kicker" t-value="auto_is_ar and 'مقارنة موجهة' or auto_is_en and 'Guided comparison' or 'Comparaison guidée'"/>
+            <t t-set="compare_open_catalog" t-value="auto_is_ar and 'فتح الكتالوج' or auto_is_en and 'Open the catalog' or 'Ouvrir le catalogue'"/>
+            <t t-set="compare_clear" t-value="auto_is_ar and 'إفراغ المقارنة' or auto_is_en and 'Clear comparison' or 'Vider la comparaison'"/>
+            <t t-set="compare_step_one" t-value="auto_is_ar and 'اختر سيارات من الكتالوج.' or auto_is_en and 'Choose vehicles from the catalog.' or 'Choisissez des véhicules dans le catalogue.'"/>
+            <t t-set="compare_step_two" t-value="auto_is_ar and 'اضغط على مقارنة.' or auto_is_en and 'Click Compare.' or 'Cliquez sur Comparer.'"/>
+            <t t-set="compare_step_three" t-value="auto_is_ar and 'حلل الفروقات قبل طلب عرض سعر.' or auto_is_en and 'Review the differences before requesting a quote.' or 'Analysez les différences avant de demander un devis.'"/>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_compare_editor_top"/>
+            <section class="py-5 auto-form-shell auto-compare-page">
                 <div class="container">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h1 class="h3 mb-0">Comparer les véhicules</h1>
-                        <div class="d-flex gap-2">
-                            <a href="/cars" class="btn btn-outline-secondary">Ouvrir le catalogue</a>
-                            <a href="/cars/compare/clear" class="btn btn-outline-danger">Vider la comparaison</a>
+                    <div class="auto-page-hero mb-4">
+                        <span class="auto-page-kicker" t-out="compare_kicker"/>
+                        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+                            <div>
+                                <h1 class="h2 mb-2" t-out="compare_title"/>
+                                <p class="mb-0" t-out="compare_intro"/>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="/cars" class="btn auto-btn-primary"><t t-out="compare_open_catalog"/></a>
+                                <a href="/cars/compare/clear" class="btn auto-btn-outline"><t t-out="compare_clear"/></a>
+                            </div>
                         </div>
                     </div>
 
                     <t t-if="vehicles and len(vehicles) &gt; 1">
-                        <div class="table-responsive auto-table-panel">
+                        <div class="auto-compare-grid mb-4">
+                            <t t-foreach="vehicles" t-as="vehicle">
+                                <article class="auto-compare-card">
+                                    <a t-att-href="vehicle.website_url" class="auto-compare-media">
+                                        <img t-if="vehicle.main_image" t-att-src="image_data_uri(vehicle.main_image)" t-att-alt="vehicle.display_name"/>
+                                    </a>
+                                    <div class="auto-compare-card-body">
+                                        <span t-attf-class="badge auto-availability-badge auto-availability-#{vehicle.availability}" t-out="vehicle.availability_label"/>
+                                        <p class="text-muted small mb-1" t-out="vehicle.brand_id.name"/>
+                                        <h2 class="h5" t-out="vehicle.display_name"/>
+                                        <div class="auto-price mb-3">
+                                            <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
+                                        </div>
+                                        <div class="auto-compare-specs">
+                                            <span><strong t-out="vehicle.range_km or '-'"/> km</span>
+                                            <span><strong t-out="vehicle.power_kw or '-'"/> kW</span>
+                                            <span><strong t-out="vehicle.battery_capacity or '-'"/> kWh</span>
+                                        </div>
+                                        <div class="d-grid gap-2 mt-3">
+                                            <a t-att-href="vehicle.website_url" class="btn auto-btn-outline">Voir la fiche</a>
+                                            <a t-att-href="'/cars/%s/quote' % vehicle.id" class="btn auto-btn-primary">Demander un devis</a>
+                                            <a t-att-href="'/cars/compare/remove/%s' % vehicle.id" class="btn auto-btn-compare">Retirer</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </t>
+                        </div>
+                        <div class="table-responsive auto-table-panel auto-compare-table">
                             <table class="table table-bordered align-middle">
                                 <thead>
                                     <tr>
-                                        <th style="min-width: 190px;">Caractéristique</th>
-                                        <t t-foreach="vehicles" t-as="vehicle">
-                                            <th>
-                                                <div class="d-flex justify-content-between align-items-start gap-2">
-                                                    <div>
-                                                        <div class="text-muted small" t-out="vehicle.brand_id.name"/>
-                                                        <strong t-out="vehicle.name"/>
-                                                    </div>
-                                                    <a t-att-href="'/cars/compare/remove/%s' % vehicle.id" class="btn btn-sm btn-outline-danger">Retirer</a>
-                                                </div>
-                                            </th>
-                                        </t>
+                                        <th>Caractéristique</th>
+                                        <t t-foreach="vehicles" t-as="vehicle"><th t-out="vehicle.display_name"/></t>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Prix</td>
-                                        <t t-foreach="vehicles" t-as="vehicle">
-                                            <td>
-                                                <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
-                                            </td>
-                                        </t>
-                                    </tr>
-                                    <tr>
-                                        <td>Disponibilité</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.availability_label"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Motorisation</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.motorization_id.name"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Autonomie (km)</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.range_km"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Puissance (kW)</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.power_kw"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Batterie (kWh)</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.battery_capacity"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Places</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.seats"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Année</td>
-                                        <t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.year"/></t>
-                                    </tr>
-                                    <tr>
-                                        <td>Voir les détails</td>
-                                        <t t-foreach="vehicles" t-as="vehicle">
-                                            <td>
-                                                <a t-att-href="vehicle.website_url" class="btn btn-sm btn-outline-dark">Ouvrir la fiche</a>
-                                            </td>
-                                        </t>
-                                    </tr>
+                                    <tr><td>Prix</td><t t-foreach="vehicles" t-as="vehicle"><td><span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/></td></t></tr>
+                                    <tr><td>Disponibilité</td><t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.availability_label"/></t></tr>
+                                    <tr><td>Motorisation</td><t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.motorization_id.name"/></t></tr>
+                                    <tr><td>Autonomie</td><t t-foreach="vehicles" t-as="vehicle"><td><t t-out="vehicle.range_km"/> km</td></t></tr>
+                                    <tr><td>Puissance</td><t t-foreach="vehicles" t-as="vehicle"><td><t t-out="vehicle.power_kw"/> kW</td></t></tr>
+                                    <tr><td>Batterie</td><t t-foreach="vehicles" t-as="vehicle"><td><t t-out="vehicle.battery_capacity"/> kWh</td></t></tr>
+                                    <tr><td>Année</td><t t-foreach="vehicles" t-as="vehicle"><td t-out="vehicle.year"/></t></tr>
                                 </tbody>
                             </table>
                         </div>
                     </t>
 
                     <t t-if="not vehicles or len(vehicles) &lt; 2">
-                        <div class="alert alert-info mb-0">
-                            Sélectionnez au moins deux véhicules pour activer la comparaison.
+                        <div class="auto-empty-state auto-empty-compare">
+                            <span class="auto-page-kicker" t-out="compare_empty_kicker"/>
+                            <h2 t-out="compare_empty_title"/>
+                            <p t-out="compare_empty_text"/>
+                            <div class="auto-empty-steps">
+                                <div><strong>1</strong><span t-out="compare_step_one"/></div>
+                                <div><strong>2</strong><span t-out="compare_step_two"/></div>
+                                <div><strong>3</strong><span t-out="compare_step_three"/></div>
+                            </div>
+                            <a href="/cars" class="btn auto-btn-primary btn-lg"><t t-out="compare_open_catalog"/></a>
                         </div>
                     </t>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_compare_editor_bottom"/>
         </t>
     </template>
 </odoo>

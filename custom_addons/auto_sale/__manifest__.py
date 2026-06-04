@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Ventes",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "summary": "Demandes de devis et adaptation commerciale automobile",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",

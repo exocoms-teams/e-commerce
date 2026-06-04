@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Comparateur",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "summary": "Comparaison de véhicules",
     "category": "Website",
     "author": "Ecommerce Voitures Team",

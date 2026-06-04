@@ -1,13 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="financing_form_page" name="Formulaire de financement véhicule">
+    <template id="financing_form_page" name="Formulaire de financement vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_financing_form_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-5">
+                            <aside class="auto-form-vehicle-summary">
+                                <span class="auto-page-kicker">VÃ©hicule concernÃ©</span>
+                                <div class="auto-form-vehicle-media">
+                                    <img t-if="vehicle.main_image" t-att-src="image_data_uri(vehicle.main_image)" t-att-alt="vehicle.display_name"/>
+                                </div>
+                                <p class="text-muted small mb-1" t-out="vehicle.brand_id.name"/>
+                                <h2 class="h4 mb-2" t-out="vehicle.display_name"/>
+                                <div class="auto-price mb-3">
+                                    <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
+                                </div>
+                                <div class="auto-form-summary-specs">
+                                    <span t-if="vehicle.range_km"><strong t-out="vehicle.range_km"/> km</span>
+                                    <span t-if="vehicle.power_kw"><strong t-out="vehicle.power_kw"/> kW</span>
+                                    <span t-if="vehicle.battery_capacity"><strong t-out="vehicle.battery_capacity"/> kWh</span>
+                                    <span t-if="vehicle.motorization_id" t-out="vehicle.motorization_id.name"/>
+                                </div>
+                                <p class="auto-form-reassurance mb-0">RÃ©ponse rapide, donnÃ©es confidentielles et accompagnement EXOCOMS depuis Paris.</p>
+                            </aside>
+                        </div>
+                        <div class="col-lg-7">
                             <h1 class="h3 mb-3">Demande de financement</h1>
-                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <p class="text-muted">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
                             <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/financing' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -21,23 +42,23 @@
                                         <input class="form-control" type="email" name="email" required="required" t-att-value="post.get('email', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Téléphone</label>
+                                        <label class="form-label">TÃ©lÃ©phone</label>
                                         <input class="form-control" type="text" name="phone" t-att-value="post.get('phone', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Montant souhaité</label>
+                                        <label class="form-label">Montant souhaitÃ© en euros</label>
                                         <input class="form-control" type="number" min="0" step="0.01" name="requested_amount" required="required" t-att-value="post.get('requested_amount', '')"/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Durée (mois)</label>
+                                        <label class="form-label">DurÃ©e (mois)</label>
                                         <input class="form-control" type="number" min="6" step="1" name="duration_months" required="required" t-att-value="post.get('duration_months', '36')"/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Revenu mensuel</label>
+                                        <label class="form-label">Revenu mensuel en euros</label>
                                         <input class="form-control" type="number" min="0" step="0.01" name="monthly_income" t-att-value="post.get('monthly_income', '')"/>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Apport initial</label>
+                                        <label class="form-label">Apport initial en euros</label>
                                         <input class="form-control" type="number" min="0" step="0.01" name="down_payment" t-att-value="post.get('down_payment', '')"/>
                                     </div>
                                     <div class="col-12">
@@ -46,28 +67,31 @@
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
-                                    <button class="btn auto-btn-primary" type="submit">Envoyer la demande</button>
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
+                                    <button class="btn auto-btn-primary" type="submit">Ã‰tudier mon financement</button>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vÃ©hicule</a>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_financing_form_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="financing_thanks_page" name="Confirmation de financement véhicule">
+
+<template id="financing_thanks_page" name="Confirmation de financement vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_financing_thanks_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
-                                <h1 class="h3">Demande de financement envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <h1 class="h3">Demande de financement envoyÃ©e</h1>
+                                <p class="mb-2">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
                                 <p t-if="request_obj">Demande ID: <strong t-out="request_obj.id"/></p>
-                                <p class="text-muted">Un conseiller financement vous contacte après pré-analyse de votre dossier.</p>
+                                <p class="text-muted">Un conseiller financement vous contacte aprÃ¨s prÃ©-analyse de votre dossier.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/financing-requests" class="btn auto-btn-primary">Mes demandes</a>
                                     <a href="/cars" class="btn btn-outline-secondary">Continuer le catalogue</a>
@@ -77,11 +101,14 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_financing_thanks_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="my_financing_requests_page" name="Mes demandes de financement">
+
+<template id="my_financing_requests_page" name="Mes demandes de financement">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_my_financing_requests_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
                     <h1 class="h3 mb-4">Mes demandes de financement</h1>
@@ -89,9 +116,9 @@
                         <table class="table table-bordered align-middle">
                             <thead>
                                 <tr>
-                                    <th>Véhicule</th>
+                                    <th>VÃ©hicule</th>
                                     <th>Montant</th>
-                                    <th>Durée</th>
+                                    <th>DurÃ©e</th>
                                     <th>Statut</th>
                                 </tr>
                             </thead>
@@ -118,6 +145,7 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_my_financing_requests_page_editor_bottom"/>
         </t>
     </template>
 </odoo>

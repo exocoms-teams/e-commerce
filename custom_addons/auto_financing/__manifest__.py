@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Financement",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "summary": "Demandes de financement véhicule",
     "category": "Sales",
     "author": "Ecommerce Voitures Team",

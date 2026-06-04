@@ -1,13 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="booking_form_page" name="Formulaire de réservation véhicule">
+    <template id="booking_form_page" name="Formulaire de rÃ©servation vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_booking_form_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            <h1 class="h3 mb-3">Réserver ce véhicule</h1>
-                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-5">
+                            <aside class="auto-form-vehicle-summary">
+                                <span class="auto-page-kicker">VÃ©hicule concernÃ©</span>
+                                <div class="auto-form-vehicle-media">
+                                    <img t-if="vehicle.main_image" t-att-src="image_data_uri(vehicle.main_image)" t-att-alt="vehicle.display_name"/>
+                                </div>
+                                <p class="text-muted small mb-1" t-out="vehicle.brand_id.name"/>
+                                <h2 class="h4 mb-2" t-out="vehicle.display_name"/>
+                                <div class="auto-price mb-3">
+                                    <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
+                                </div>
+                                <div class="auto-form-summary-specs">
+                                    <span t-if="vehicle.range_km"><strong t-out="vehicle.range_km"/> km</span>
+                                    <span t-if="vehicle.power_kw"><strong t-out="vehicle.power_kw"/> kW</span>
+                                    <span t-if="vehicle.battery_capacity"><strong t-out="vehicle.battery_capacity"/> kWh</span>
+                                    <span t-if="vehicle.motorization_id" t-out="vehicle.motorization_id.name"/>
+                                </div>
+                                <p class="auto-form-reassurance mb-0">RÃ©ponse rapide, donnÃ©es confidentielles et accompagnement EXOCOMS depuis Paris.</p>
+                            </aside>
+                        </div>
+                        <div class="col-lg-7">
+                            <h1 class="h3 mb-3">RÃ©server ce vÃ©hicule</h1>
+                            <p class="text-muted">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
                             <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/book' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -21,13 +42,13 @@
                                         <input class="form-control" type="email" name="email" required="required" t-att-value="post.get('email', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Téléphone</label>
+                                        <label class="form-label">TÃ©lÃ©phone</label>
                                         <input class="form-control" type="text" name="phone" t-att-value="post.get('phone', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Choisir un créneau disponible</label>
+                                        <label class="form-label">Choisir un crÃ©neau disponible</label>
                                         <select class="form-select" name="slot_id">
-                                            <option value="">Aucun créneau sélectionné</option>
+                                            <option value="">Aucun crÃ©neau sÃ©lectionnÃ©</option>
                                             <t t-foreach="slots" t-as="slot">
                                                 <option t-att-value="slot.id"><t t-out="slot.name"/></option>
                                             </t>
@@ -38,35 +59,38 @@
                                         <input class="form-control" type="datetime-local" name="requested_datetime" t-att-value="post.get('requested_datetime', '')"/>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Note complémentaire</label>
+                                        <label class="form-label">Note complÃ©mentaire</label>
                                         <textarea name="note" class="form-control" rows="4"><t t-out="post.get('note', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
-                                    <button class="btn auto-btn-primary" type="submit">Envoyer la réservation</button>
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
+                                    <button class="btn auto-btn-primary" type="submit">Envoyer ma demande de rÃ©servation</button>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vÃ©hicule</a>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_booking_form_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="booking_thanks_page" name="Confirmation de réservation véhicule">
+
+<template id="booking_thanks_page" name="Confirmation de rÃ©servation vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_booking_thanks_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
-                                <h1 class="h3">Réservation envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
-                                <p t-if="booking">Référence: <strong t-out="booking.name"/></p>
-                                <p class="text-muted">Notre équipe valide le créneau et vous contacte rapidement.</p>
+                                <h1 class="h3">RÃ©servation envoyÃ©e</h1>
+                                <p class="mb-2">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="booking">RÃ©fÃ©rence: <strong t-out="booking.name"/></p>
+                                <p class="text-muted">Notre Ã©quipe valide le crÃ©neau et vous contacte rapidement.</p>
                                 <div class="d-flex gap-2 mt-3">
-                                    <a href="/my/bookings" class="btn auto-btn-primary">Mes réservations</a>
+                                    <a href="/my/bookings" class="btn auto-btn-primary">Mes rÃ©servations</a>
                                     <a href="/cars" class="btn btn-outline-secondary">Continuer le catalogue</a>
                                 </div>
                             </div>
@@ -74,17 +98,40 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_booking_thanks_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="test_drive_form_page" name="Formulaire d'essai véhicule">
+
+<template id="test_drive_form_page" name="Formulaire d'essai vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_test_drive_form_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-5">
+                            <aside class="auto-form-vehicle-summary">
+                                <span class="auto-page-kicker">VÃ©hicule concernÃ©</span>
+                                <div class="auto-form-vehicle-media">
+                                    <img t-if="vehicle.main_image" t-att-src="image_data_uri(vehicle.main_image)" t-att-alt="vehicle.display_name"/>
+                                </div>
+                                <p class="text-muted small mb-1" t-out="vehicle.brand_id.name"/>
+                                <h2 class="h4 mb-2" t-out="vehicle.display_name"/>
+                                <div class="auto-price mb-3">
+                                    <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
+                                </div>
+                                <div class="auto-form-summary-specs">
+                                    <span t-if="vehicle.range_km"><strong t-out="vehicle.range_km"/> km</span>
+                                    <span t-if="vehicle.power_kw"><strong t-out="vehicle.power_kw"/> kW</span>
+                                    <span t-if="vehicle.battery_capacity"><strong t-out="vehicle.battery_capacity"/> kWh</span>
+                                    <span t-if="vehicle.motorization_id" t-out="vehicle.motorization_id.name"/>
+                                </div>
+                                <p class="auto-form-reassurance mb-0">RÃ©ponse rapide, donnÃ©es confidentielles et accompagnement EXOCOMS depuis Paris.</p>
+                            </aside>
+                        </div>
+                        <div class="col-lg-7">
                             <h1 class="h3 mb-3">Demander un essai</h1>
-                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                            <p class="text-muted">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
                             <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/test-drive' % vehicle.id" class="card auto-form-card p-4 border-0 shadow-sm">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -98,7 +145,7 @@
                                         <input class="form-control" type="email" name="email" required="required" t-att-value="post.get('email', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Téléphone</label>
+                                        <label class="form-label">TÃ©lÃ©phone</label>
                                         <input class="form-control" type="text" name="phone" t-att-value="post.get('phone', '')"/>
                                     </div>
                                     <div class="col-md-6">
@@ -106,9 +153,9 @@
                                         <input class="form-control" type="text" name="location" t-att-value="post.get('location', default_location)"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Choisir un créneau disponible</label>
+                                        <label class="form-label">Choisir un crÃ©neau disponible</label>
                                         <select class="form-select" name="slot_id">
-                                            <option value="">Aucun créneau sélectionné</option>
+                                            <option value="">Aucun crÃ©neau sÃ©lectionnÃ©</option>
                                             <t t-foreach="slots" t-as="slot">
                                                 <option t-att-value="slot.id"><t t-out="slot.name"/></option>
                                             </t>
@@ -124,28 +171,31 @@
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
-                                    <button class="btn auto-btn-primary" type="submit">Envoyer la demande d'essai</button>
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
+                                    <button class="btn auto-btn-primary" type="submit">Planifier mon essai</button>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vÃ©hicule</a>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_test_drive_form_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="test_drive_thanks_page" name="Confirmation d'essai véhicule">
+
+<template id="test_drive_thanks_page" name="Confirmation d'essai vÃ©hicule">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_test_drive_thanks_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
-                                <h1 class="h3">Demande d'essai envoyée</h1>
-                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
-                                <p t-if="test_drive">Référence: <strong t-out="test_drive.name"/></p>
-                                <p class="text-muted">Notre équipe confirme rapidement la date, le lieu et le conseiller.</p>
+                                <h1 class="h3">Demande d'essai envoyÃ©e</h1>
+                                <p class="mb-2">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="test_drive">RÃ©fÃ©rence: <strong t-out="test_drive.name"/></p>
+                                <p class="text-muted">Notre Ã©quipe confirme rapidement la date, le lieu et le conseiller.</p>
                                 <div class="d-flex gap-2 mt-3">
                                     <a href="/my/test-drives" class="btn auto-btn-primary">Mes essais</a>
                                     <a href="/cars" class="btn btn-outline-secondary">Continuer le catalogue</a>
@@ -155,21 +205,24 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_test_drive_thanks_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="my_bookings_page" name="Mes réservations">
+
+<template id="my_bookings_page" name="Mes rÃ©servations">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_my_bookings_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
-                    <h1 class="h3 mb-4">Mes réservations</h1>
+                    <h1 class="h3 mb-4">Mes rÃ©servations</h1>
                     <div class="table-responsive auto-table-panel">
                         <table class="table table-bordered align-middle">
                             <thead>
                                 <tr>
                                     <th>Reference</th>
-                                    <th>Véhicule</th>
-                                    <th>Date/heure demandée</th>
+                                    <th>VÃ©hicule</th>
+                                    <th>Date/heure demandÃ©e</th>
                                     <th>Statut</th>
                                 </tr>
                             </thead>
@@ -186,7 +239,7 @@
                                 </t>
                                 <t t-if="not bookings">
                                     <tr>
-                                        <td colspan="4">Aucune réservation pour le moment.</td>
+                                        <td colspan="4">Aucune rÃ©servation pour le moment.</td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -194,11 +247,14 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_my_bookings_page_editor_bottom"/>
         </t>
     </template>
 
-    <template id="my_test_drives_page" name="Mes essais">
+
+<template id="my_test_drives_page" name="Mes essais">
         <t t-call="website.layout">
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_my_test_drives_page_editor_top"/>
             <section class="py-5 auto-form-shell">
                 <div class="container">
                     <h1 class="h3 mb-4">Mes essais</h1>
@@ -207,8 +263,8 @@
                             <thead>
                                 <tr>
                                     <th>Reference</th>
-                                    <th>Véhicule</th>
-                                    <th>Date/heure demandée</th>
+                                    <th>VÃ©hicule</th>
+                                    <th>Date/heure demandÃ©e</th>
                                     <th>Lieu</th>
                                     <th>Statut</th>
                                 </tr>
@@ -235,6 +291,7 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_my_test_drives_page_editor_bottom"/>
         </t>
     </template>
 </odoo>

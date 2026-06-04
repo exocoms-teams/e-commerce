@@ -32,11 +32,24 @@
 
     <template id="home_page" name="Accueil">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure auto-page auto-home-page"
+            <t t-set="auto_lang" t-value="request.env.lang or ''"/>
+            <t t-set="auto_is_en" t-value="auto_lang.startswith('en')"/>
+            <t t-set="auto_is_ar" t-value="auto_lang.startswith('ar')"/>
+            <t t-set="auto_home_kicker" t-value="auto_is_ar and 'صالة عرض رقمية مميزة' or auto_is_en and 'Premium digital showroom' or 'Showroom digital premium'"/>
+            <t t-set="auto_home_title" t-value="auto_is_ar and 'الجيل الجديد من السيارات، باختيار EXOCOMS.' or auto_is_en and 'The new generation of mobility, selected by EXOCOMS.' or 'La nouvelle génération automobile, sélectionnée par EXOCOMS.'"/>
+            <t t-set="auto_home_subtitle" t-value="auto_is_ar and 'اختيار مميز من السيارات الكهربائية والهجينة بدعم فريق مقيم في باريس.' or auto_is_en and 'Premium electric and hybrid selection, supported by a Paris-based team.' or 'Sélection électrique et hybride premium, accompagnée par une équipe basée à Paris.'"/>
+            <t t-set="auto_catalog_cta" t-value="auto_is_ar and 'تصفح الكتالوج' or auto_is_en and 'Explore the catalog' or 'Explorer le catalogue'"/>
+            <t t-set="auto_quote_cta" t-value="auto_is_ar and 'طلب عرض سعر' or auto_is_en and 'Request a quote' or 'Demander un devis'"/>
+            <t t-set="auto_compare_cta" t-value="auto_is_ar and 'مقارنة الطرز' or auto_is_en and 'Compare models' or 'Comparer les modèles'"/>
+            <t t-set="auto_from_price" t-value="auto_is_ar and 'ابتداءً من' or auto_is_en and 'from' or 'à partir de'"/>
+
+            <div id="wrap" class="auto-page auto-home-page"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.home_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_home_editor_top"/>
             <section class="auto-home-hero position-relative overflow-hidden">
                 <div id="autoHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="7000">
                     <div class="carousel-inner">
@@ -54,17 +67,18 @@
                                         <div class="auto-hero-content-box">
                                             <div class="auto-hero-branding">
                                                 <img src="/auto_website/static/src/img/exocoms-logo.png" alt="EXOCOMS Group" class="auto-hero-exocoms-logo"/>
-                                                <span class="auto-hero-kicker">EXOCOMS Mobilité</span>
+                                                <span class="auto-hero-kicker" t-out="auto_home_kicker"/>
                                             </div>
-                                            <h1 class="auto-hero-title">Trouvez la voiture de vos rêves.</h1>
+                                            <h1 class="auto-hero-title" t-out="auto_home_title"/>
                                             <p class="auto-hero-subtitle">
-                                                <strong t-out="hero_vehicle.display_name"/> à partir de
+                                                <strong t-out="hero_vehicle.display_name"/> <t t-out="auto_from_price"/>
                                                 <span t-field="hero_vehicle.list_price" t-options='{"widget": "monetary", "display_currency": hero_vehicle.currency_id}'/>.
-                                                L'excellence automobile asiatique, accompagnée par EXOCOMS.
+                                                <t t-out="auto_home_subtitle"/>
                                             </p>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <a class="btn auto-btn-primary btn-lg" href="/cars">Catalogue</a>
-                                                <a class="btn auto-btn-glass btn-lg" t-att-href="hero_vehicle.website_url">Voir ce modèle</a>
+                                                <a class="btn auto-btn-primary btn-lg" href="/cars"><t t-out="auto_catalog_cta"/></a>
+                                                <a class="btn auto-btn-glass btn-lg" t-att-href="'/cars/%s/quote' % hero_vehicle.id"><t t-out="auto_quote_cta"/></a>
+                                                <a class="btn auto-btn-ghost btn-lg" href="/cars/compare"><t t-out="auto_compare_cta"/></a>
                                             </div>
                                             <div class="auto-hero-mini-specs mt-4">
                                                 <span t-if="hero_vehicle.range_km"><strong t-out="hero_vehicle.range_km"/> km d'autonomie</span>
@@ -89,11 +103,11 @@
                                     <div class="auto-hero-content-box">
                                         <div class="auto-hero-branding">
                                             <img src="/auto_website/static/src/img/exocoms-logo.png" alt="EXOCOMS Group" class="auto-hero-exocoms-logo"/>
-                                            <span class="auto-hero-kicker">EXOCOMS Mobilité</span>
+                                            <span class="auto-hero-kicker" t-out="auto_home_kicker"/>
                                         </div>
-                                        <h1 class="auto-hero-title">Le catalogue premium des voitures chinoises.</h1>
-                                        <p class="auto-hero-subtitle">Véhicules vérifiés, prix transparents, accompagnement complet de la sélection à la livraison.</p>
-                                        <a class="btn auto-btn-primary btn-lg" href="/cars">Ouvrir le catalogue</a>
+                                        <h1 class="auto-hero-title" t-out="auto_home_title"/>
+                                        <p class="auto-hero-subtitle" t-out="auto_home_subtitle"/>
+                                        <a class="btn auto-btn-primary btn-lg" href="/cars"><t t-out="auto_catalog_cta"/></a>
                                     </div>
                                 </div>
                             </div>
@@ -143,9 +157,9 @@
                     <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-2">
                         <div>
                             <h2 class="auto-section-title mb-1">Marques partenaires</h2>
-                            <p class="text-muted mb-0">Défilement continu des constructeurs disponibles sur la plateforme.</p>
+                            <p class="text-muted mb-0">Constructeurs électriques et hybrides sélectionnés par EXOCOMS Group.</p>
                         </div>
-                        <a href="/brands" class="btn btn-outline-dark btn-sm">Tout voir</a>
+                        <a href="/brands" class="btn auto-btn-outline btn-sm">Voir toutes les marques</a>
                     </div>
                 </div>
                 <div class="auto-brand-marquee" aria-label="Marques partenaires">
@@ -210,9 +224,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <div>
                             <h2 class="auto-section-title mb-1">Modèles vedettes</h2>
-                            <p class="text-muted mb-0">Des prix réels, des fiches claires, des décisions plus rapides.</p>
+                            <p class="text-muted mb-0">Sélection prioritaire avec images soignées, prix en euros et parcours devis rapide.</p>
                         </div>
-                        <a href="/cars" class="btn btn-outline-dark">Ouvrir le catalogue complet</a>
+                        <a href="/cars" class="btn auto-btn-outline">Voir tout le catalogue</a>
                     </div>
                     <div class="row g-4">
                         <t t-foreach="featured_vehicles" t-as="vehicle">
@@ -249,9 +263,9 @@
                             <div class="auto-story-visual">
                                 <div class="auto-story-card">
                                     <img src="/auto_website/static/src/img/exocoms-logo.png" alt="EXOCOMS Group" class="auto-story-exocoms-logo"/>
-                                    <h3 class="h5 mb-2">Une expertise tech au service de votre mobilité</h3>
-                                    <p class="mb-3">"EXOCOMS accompagne les entreprises avec des services fiables, innovants et adaptés à chaque besoin."</p>
-                                    <div class="small text-muted mb-2">Source: exocoms.fr</div>
+                                    <h3 class="h5 mb-2">Accompagnement premium EXOCOMS</h3>
+                                    <p class="mb-3">Devis personnalisé, réservation simple, financement disponible et suivi commercial multilingue depuis Paris.</p>
+                                    <div class="small text-muted mb-2">58 rue de Monceau, 75008 Paris</div>
                                     <a class="auto-inline-link" href="/contactus">Contacter EXOCOMS</a>
                                 </div>
                                 <div class="auto-story-mini-image" t-if="latest_vehicles and latest_vehicles[0].main_image">
@@ -262,17 +276,20 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_home_editor_bottom"/>
             </div>
         </t>
     </template>
 
     <template id="catalog_page" name="Catalogue des véhicules">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure auto-page auto-catalog-page"
+            <div id="wrap" class="auto-page auto-catalog-page"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.catalog_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_catalog_editor_top"/>
             <section class="py-4 auto-catalog-header">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -280,7 +297,7 @@
                             <h1 class="h2 mb-1">Catalogue des véhicules</h1>
                             <p class="text-muted mb-0">Filtrez par marque, motorisation, disponibilité, année et budget.</p>
                         </div>
-                        <a href="/cars/home" class="btn btn-outline-dark">Retour accueil</a>
+                        <a href="/cars/home" class="btn auto-btn-outline">Retour accueil</a>
                     </div>
                 </div>
             </section>
@@ -363,7 +380,7 @@
                                 </select>
                             </div>
                             <div class="col-12 col-md-6 col-lg-3 d-flex gap-2 auto-filter-actions">
-                                <button class="btn auto-btn-primary flex-grow-1" type="submit">Appliquer</button>
+                                <button class="btn auto-btn-primary flex-grow-1" type="submit">Appliquer les filtres</button>
                                 <a href="/cars" class="btn auto-btn-reset">Réinitialiser</a>
                             </div>
                         </div>
@@ -389,6 +406,7 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_catalog_editor_bottom"/>
             </div>
         </t>
     </template>
@@ -407,7 +425,7 @@
                             <a t-att-href="vehicle.website_url" class="text-decoration-none text-dark" t-out="vehicle.display_name"/>
                         </h3>
                     </div>
-                    <span class="badge text-bg-secondary" t-out="vehicle.availability_label"/>
+                    <span t-attf-class="badge auto-availability-badge auto-availability-#{vehicle.availability}" t-out="vehicle.availability_label"/>
                 </div>
                 <div class="auto-vehicle-meta mt-2">
                     <span><strong t-out="vehicle.year"/></span>
@@ -418,14 +436,14 @@
                     <span t-field="vehicle.list_price" t-options='{"widget": "monetary", "display_currency": vehicle.currency_id}'/>
                 </div>
                 <div class="d-grid gap-2">
-                    <a t-att-href="vehicle.website_url" class="btn btn-outline-dark">Voir les détails</a>
+                    <a t-att-href="vehicle.website_url" class="btn auto-btn-outline">Voir les détails</a>
                     <form t-if="vehicle.availability == 'available'" action="/cars/cart/add" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="hidden" name="product_id" t-att-value="vehicle.product_template_id.product_variant_id.id"/>
                         <input type="hidden" name="add_qty" value="1"/>
-                        <button type="submit" class="btn auto-btn-primary w-100">Ajouter au panier</button>
+                        <button type="submit" class="btn auto-btn-soft w-100">Ajouter au panier</button>
                     </form>
-                    <a t-att-href="'/cars/compare/add/%s' % vehicle.id" class="btn btn-outline-secondary" data-auto-compare-link="1" t-att-data-auto-compare-label="vehicle.name">Comparer</a>
+                    <a t-att-href="'/cars/compare/add/%s' % vehicle.id" class="btn auto-btn-compare" data-auto-compare-link="1" t-att-data-auto-compare-label="vehicle.name">Comparer</a>
                 </div>
             </div>
         </article>
@@ -434,11 +452,13 @@
     <template id="vehicle_detail_page" name="Détail du véhicule">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="vehicle.display_name"/>
-            <div id="wrap" class="oe_structure auto-page auto-detail-template"
+            <div id="wrap" class="auto-page auto-detail-template"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.vehicle_detail_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_vehicle_detail_editor_top"/>
             <section class="py-4 auto-detail-page">
                 <div class="container">
                     <nav aria-label="breadcrumb">
@@ -471,7 +491,7 @@
                                         <p class="mb-1 text-muted" t-out="vehicle.brand_id.name"/>
                                         <h1 class="h3 mb-2" t-out="vehicle.display_name"/>
                                     </div>
-                                    <span class="badge text-bg-secondary" t-out="vehicle.availability_label"/>
+                                    <span t-attf-class="badge auto-availability-badge auto-availability-#{vehicle.availability}" t-out="vehicle.availability_label"/>
                                 </div>
 
                                 <div class="auto-price mb-2">
@@ -488,17 +508,17 @@
                                 </ul>
 
                                 <div class="d-grid gap-2">
+                                    <a t-att-href="'/cars/%s/quote' % vehicle.id" class="btn auto-btn-primary btn-lg">Demander un devis</a>
                                     <form t-if="vehicle.availability == 'available'" action="/cars/cart/add" method="post">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <input type="hidden" name="product_id" t-att-value="vehicle.product_template_id.product_variant_id.id"/>
                                         <input type="hidden" name="add_qty" value="1"/>
-                                        <button class="btn auto-btn-primary btn-lg w-100" type="submit">Ajouter au panier</button>
+                                        <button class="btn auto-btn-soft btn-lg w-100" type="submit">Ajouter au panier</button>
                                     </form>
-                                    <a t-att-href="'/cars/%s/quote' % vehicle.id" class="btn btn-outline-dark btn-lg">Demander un devis</a>
-                                    <a t-att-href="'/cars/%s/book' % vehicle.id" class="btn btn-outline-dark btn-lg">Réserver ce véhicule</a>
-                                    <a t-att-href="'/cars/%s/test-drive' % vehicle.id" class="btn btn-outline-dark btn-lg">Planifier un essai</a>
-                                    <a t-att-href="'/cars/%s/financing' % vehicle.id" class="btn btn-outline-dark btn-lg">Demander un financement</a>
-                                    <a t-att-href="'/cars/compare/add/%s' % vehicle.id" class="btn btn-outline-dark btn-lg" data-auto-compare-link="1" t-att-data-auto-compare-label="vehicle.name">Ajouter au comparateur</a>
+                                    <a t-att-href="'/cars/%s/book' % vehicle.id" class="btn auto-btn-outline btn-lg">Réserver ce véhicule</a>
+                                    <a t-att-href="'/cars/%s/test-drive' % vehicle.id" class="btn auto-btn-outline btn-lg">Planifier un essai</a>
+                                    <a t-att-href="'/cars/%s/financing' % vehicle.id" class="btn auto-btn-outline btn-lg">Demander un financement</a>
+                                    <a t-att-href="'/cars/compare/add/%s' % vehicle.id" class="btn auto-btn-outline btn-lg" data-auto-compare-link="1" t-att-data-auto-compare-label="vehicle.name">Ajouter au comparateur</a>
                                     <form t-if="request.env.user._is_public() == False" t-att-action="'/cars/favorite/%s' % vehicle.id" method="post">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <button class="btn btn-link p-0 auto-favorite-btn" type="submit">
@@ -590,20 +610,27 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_vehicle_detail_editor_bottom"/>
             </div>
         </t>
     </template>
 
     <template id="brand_list_page" name="Liste des marques">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure auto-page auto-brand-list-page"
+            <div id="wrap" class="auto-page auto-brand-list-page"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.brand_list_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_brand_list_editor_top"/>
             <section class="py-5">
                 <div class="container">
-                    <h1 class="h2 mb-4">Toutes les marques</h1>
+                    <div class="auto-page-hero auto-brand-hero mb-4">
+                        <span class="auto-page-kicker">Constructeurs sélectionnés</span>
+                        <h1 class="h2 mb-2">Nos marques partenaires</h1>
+                        <p class="mb-0">Explorez les constructeurs automobiles chinois et asiatiques sélectionnés par EXOCOMS.</p>
+                    </div>
                     <div class="row g-3">
                         <t t-foreach="brands" t-as="brand">
                             <div class="col-6 col-md-4 col-lg-3">
@@ -612,13 +639,15 @@
                                         <img t-if="brand.logo" t-att-src="image_data_uri(brand.logo)" t-att-alt="brand.name" class="auto-brand-logo"/>
                                         <span t-if="not brand.logo" class="auto-brand-fallback" t-out="brand.name"/>
                                     </div>
-                                    <div class="mt-2 fw-semibold text-dark" t-out="brand.name"/>
+                                    <div class="auto-brand-card-name" t-out="brand.name"/>
+                                    <div class="auto-brand-card-meta">Voir les modèles</div>
                                 </a>
                             </div>
                         </t>
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_brand_list_editor_bottom"/>
             </div>
         </t>
     </template>
@@ -626,14 +655,16 @@
     <template id="brand_detail_page" name="Détail de la marque">
         <t t-call="website.layout">
             <t t-set="additional_title" t-value="brand.name"/>
-            <div id="wrap" class="oe_structure auto-page auto-brand-detail-page"
+            <div id="wrap" class="auto-page auto-brand-detail-page"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.brand_detail_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
-            <section class="py-5">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_brand_detail_editor_top"/>
+            <section class="py-5 auto-brand-detail-hero">
                 <div class="container">
-                    <div class="row g-4 align-items-start">
+                    <div class="row g-4 align-items-center">
                         <div class="col-md-3">
                             <img t-if="brand.logo" t-att-src="image_data_uri(brand.logo)" t-att-alt="brand.name" class="img-fluid rounded border"/>
                         </div>
@@ -665,22 +696,25 @@
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_brand_detail_editor_bottom"/>
             </div>
         </t>
     </template>
 
     <template id="my_favorites_page" name="Mes véhicules favoris">
         <t t-call="website.layout">
-            <div id="wrap" class="oe_structure auto-page auto-favorites-page"
+            <div id="wrap" class="auto-page auto-favorites-page"
                  t-att-data-oe-model="'ir.ui.view'"
                  t-att-data-oe-id="request.env.ref('auto_website.my_favorites_page').id"
                  t-att-data-oe-field="'arch'"
                  t-att-data-oe-xpath="'/t[1]/t[1]/div[1]'">
+
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_favorites_editor_top"/>
             <section class="py-5">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h1 class="h3 mb-0">Mes véhicules favoris</h1>
-                        <a href="/cars" class="btn btn-outline-secondary">Explorer le catalogue</a>
+                        <a href="/cars" class="btn auto-btn-outline">Explorer le catalogue</a>
                     </div>
                     <div class="row g-4">
                         <t t-if="vehicles">
@@ -692,12 +726,13 @@
                         </t>
                         <t t-if="not vehicles">
                             <div class="col-12">
-                                <div class="alert alert-info mb-0">Aucun favori pour le moment.</div>
+                                <div class="alert alert-info mb-0">Aucun favori pour le moment. Ajoutez des véhicules depuis le catalogue pour retrouver rapidement vos modèles préférés.</div>
                             </div>
                         </t>
                     </div>
                 </div>
             </section>
+            <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-bottom" id="auto_favorites_editor_bottom"/>
             </div>
         </t>
     </template>
@@ -857,7 +892,7 @@
                 <i class="fa fa-shopping-cart fa-4x text-muted mb-3" aria-hidden="true"/>
                 <h5 class="mb-3">Votre panier est vide !</h5>
                 <p class="mb-0">
-                    <a href="/cars" class="btn btn-primary">Catalogue</a>
+                    <a href="/cars" class="btn auto-btn-primary">Catalogue</a>
                 </p>
             </div>
         </xpath>
@@ -885,6 +920,9 @@
                                     <li><a href="/cars/home">Accueil</a></li>
                                     <li><a href="/cars">Catalogue</a></li>
                                     <li><a href="/brands">Marques</a></li>
+                                    <li><a href="/cars/compare">Comparateur</a></li>
+                                    <li><a href="/cars">Demander un devis</a></li>
+                                    <li><a href="/cars">Financement</a></li>
                                     <li><a href="/contactus">Contact</a></li>
                                 </ul>
                             </div>
@@ -915,6 +953,12 @@
                     </div>
                 </section>
             </div>
+        </xpath>
+    </template>
+
+    <template id="footer_copyright_exocoms" inherit_id="website.layout" name="Copyright EXOCOMS Group" priority="40">
+        <xpath expr="//footer//span[hasclass('o_footer_copyright_name')]" position="replace">
+            <span class="o_footer_copyright_name me-2 small">Copyright &#169; 2026 - EXOCOMS Group</span>
         </xpath>
     </template>
 </odoo>
