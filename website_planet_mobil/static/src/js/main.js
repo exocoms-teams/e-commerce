@@ -100,15 +100,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.js-add-to-cart').forEach(btn => {
         btn.addEventListener('click', async function() {
             const productId = parseInt(this.dataset.productId);
-            const res = await fetch('/shop/cart/update', {
+            const res = await fetch('/shop/cart/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     jsonrpc: '2.0',
                     method: 'call',
                     params: {
+                        product_template_id: productId,
                         product_id: productId,
-                        add_qty: 1
+                        quantity: 1
                     }
                 })
             });
