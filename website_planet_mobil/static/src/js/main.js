@@ -180,19 +180,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // FILTRES /shop 
     // ══════════════════════════════════════════
 
-    //Promotion
-    const promotion = document.getElementById('filter-promotion');
-    if (promotion && promotion.checked){
-        params.set('x_is_promotion', '1')
-    }
-
-    //Pre coche filtre promotion si dans l'URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.get('x_is_promotion')){
-        const promo = document.getElementById('filter-promotion');
-        if (promo) promo.checked = true;
-    }
-
     const CATEGORY_FILTERS = {
         'smartphones-1': ['Systeme', 'Stockage', 'Taille'],
         'montres-2': ['Compatibilite'],
@@ -201,6 +188,12 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     if (!window.location.pathname.startsWith('/shop')) return;
+    // Pré-coche le filtre promotion si dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('x_is_promotion')) {
+        const promo = document.getElementById('filter-promotion');
+        if (promo) promo.checked = true;
+    }
 
     // Récupère l'ID d'un attribut par son nom
     async function getAttributeId(name) {
@@ -375,6 +368,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (minPrice) params.set('min_price', minPrice);
             if (maxPrice) params.set('max_price', maxPrice);
 
+            // Promotion ← ajoute ici
+            const promotion = document.getElementById('filter-promotion');
+            if (promotion && promotion.checked) {
+                params.set('x_is_promotion', '1');
+}
+
             // Attributs (marque + couleur)
             getCheckedAttribs().forEach(attrib => {
                 params.append('attribute_values', attrib);
@@ -394,6 +393,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             window.location.href = redirect;
         });
+    }
+
+        //Promotion
+    const promotion = document.getElementById('filter-promotion');
+    if (promotion && promotion.checked){
+        params.set('x_is_promotion', '1')
+    }
+
+    //Pre coche filtre promotion si dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('x_is_promotion')){
+        const promo = document.getElementById('filter-promotion');
+        if (promo) promo.checked = true;
     }
 
 
