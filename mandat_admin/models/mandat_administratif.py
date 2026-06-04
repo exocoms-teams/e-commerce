@@ -84,7 +84,7 @@ class MandatAdministratif(models.Model):
     )
     siret_creancier = fields.Char(
         string='SIRET',
-        related='creancier_id.siret',
+        compute='_compute_siret_creancier',
         store=True,
     )
     iban_creancier = fields.Char(
@@ -243,6 +243,11 @@ class MandatAdministratif(models.Model):
                 [('partner_id', '=', rec.creancier_id.id)], limit=1
             )
             rec.iban_creancier = bank.acc_number if bank else ''
+
+    @api.depends('creancier_id')
+    def _compute_siret_creancier(self):
+        for rec in self:
+            rec.siret_creancier = getattr(rec.creancier_id, 'siret', None) or ''
 
     def _compute_pieces_count(self):
         for rec in self:
