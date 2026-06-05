@@ -13,7 +13,6 @@
         'security/ir.model.access.csv',
         'data/website_data.xml',
         'views/templates/layout.xml',
-        'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
         'views/partials/hero.xml',
@@ -39,7 +38,6 @@
             'monetique_theme/static/src/js/main.js',
         ],
     },
-    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
 }
