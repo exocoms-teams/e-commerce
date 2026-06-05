@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
 
 
-class MonetiqueFrontend(http.Controller):
+class MonetiquethemeController(http.Controller):
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=True)
-    def home(self, **kw):
-        return request.render('monetique_theme.page_home', {})
+    @http.route('/', type='http', auth='public', website=True)
+    def home(self, **kwargs):
+        return request.render('monetique_theme.home')
