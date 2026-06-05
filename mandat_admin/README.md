@@ -17,8 +17,7 @@
 
 ## Présentation
 
-Ce module gère les **mandats administratifs** conformément à la réglementation
-française applicable aux collectivités territoriales et établissements publics.
+Ce module gère les **mandats administratifs** conformément à la réglementation française applicable aux collectivités territoriales et établissements publics.
 
 ### Conformité réglementaire
 
@@ -70,11 +69,11 @@ française applicable aux collectivités territoriales et établissements public
 cd /opt/odoo/custom-addons/
 
 # Copier le dossier du module
-cp -r /chemin/vers/mandat_administratif_fr .
+cp -r /chemin/vers/mandat_admin .
 
 # Vérifier les permissions
-chown -R odoo:odoo mandat_administratif_fr/
-chmod -R 755 mandat_administratif_fr/
+chown -R odoo:odoo mandat_admin
+chmod -R 755 mandat_admin/
 ```
 
 #### Étape 2 : Vérifier le chemin dans odoo.conf
@@ -134,7 +133,7 @@ sudo systemctl stop odoo
 sudo -u odoo /opt/odoo/odoo-bin \
   --config /etc/odoo/odoo.conf \
   --database NOM_DE_VOTRE_BASE \
-  --update mandat_administratif_fr \
+  --update mandat_admin \
   --stop-after-init
 
 # Redémarrer
@@ -160,12 +159,12 @@ services:
 
 ```bash
 # Copier le module
-cp -r mandat_administratif_fr ./custom-addons/
+cp -r mandat_admin ./custom-addons/
 
 # Mettre à jour
 docker-compose run --rm odoo \
   odoo --database mydb \
-  --update mandat_administratif_fr \
+  --update mandat_admin \
   --stop-after-init
 ```
 
@@ -323,7 +322,7 @@ budgétaire français, les rôles sont distincts :
 ## Architecture technique
 
 ```
-mandat_administratif_fr/
+mandat_admin/
 ├── __manifest__.py              # Déclaration du module
 ├── __init__.py
 ├── models/
@@ -350,7 +349,8 @@ mandat_administratif_fr/
 │   ├── mandat_sequence.xml  # Numérotation automatique
 │   └── mandat_type_data.xml
 └── static/
-    └── src/css/mandat_style.css
+    ├── src/css/mandat_style.css
+    └── description/icon.png
 ```
 
 ---
@@ -395,5 +395,3 @@ LGPL-3 — Ce module est distribué sous licence libre.
 Compatible avec Odoo Community (OCA) et Odoo Enterprise.
 
 ---
-
-*Développé pour les collectivités territoriales françaises — Odoo 19.0*
