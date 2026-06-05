@@ -10,15 +10,16 @@
         'website_sale',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'data/website_data.xml',
-        'views/pages/home.xml',
-        'views/partials/hero.xml',
-        'views/partials/dashboard.xml',
-        'views/partials/home_sections.xml',
+        'views/templates/layout.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/features.xml',
-        'views/templates/layout.xml',
+        'views/partials/hero.xml',
+        'views/partials/dashboard.xml',
+        'views/partials/home_sections.xml',
+        'views/pages/home.xml',
     ],
     'assets': {
         'web.assets_frontend': [
@@ -38,6 +39,7 @@
             'monetique_theme/static/src/js/main.js',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
 }
