@@ -126,17 +126,41 @@
     font-size: 0.9rem;
 }
 
-/* === PROMO BANNER === */
+/* === PROMO BANNER (DÉFILANT) === */
 .cam-promo-banner {
     background: var(--orange);
     color: #fff;
-    padding: 15px 20px;
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    padding: 15px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.cam-promo-track {
+    display: inline-flex;
+    gap: 60px;
+    animation: cam-scroll 25s linear infinite;
+}
+
+.cam-promo-track span {
     font-weight: 600;
+    position: relative;
+    padding-left: 60px;
+}
+
+.cam-promo-track span::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgba(255,255,255,0.6);
+}
+
+@keyframes cam-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.cam-promo-banner:hover .cam-promo-track {
+    animation-play-state: paused;
 }
 
 /* === CATÉGORIES === */
@@ -249,7 +273,7 @@
 
 /* === FOOTER === */
 .cam-footer {
-    background: var(--dark);
+    background: #2a2a2a;
     color: #fff;
 }
 
@@ -283,7 +307,7 @@
 }
 
 .cam-badge {
-    background: #2a2a2a;
+    background: #3a3a3a;
     color: var(--orange);
     padding: 5px 12px;
     border-radius: 5px;
@@ -313,7 +337,7 @@
 .cam-footer-col a:hover { color: var(--orange); }
 
 .cam-footer-bottom {
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid #3a3a3a;
     padding: 20px 0;
 }
 
