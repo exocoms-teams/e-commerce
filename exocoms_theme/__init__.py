@@ -96,8 +96,10 @@ def post_init_hook(env):
             menu.unlink()
 
     # === PROFIL DROPDOWN — Mon compte ===
-    account_view = env['ir.ui.view'].browse(637)
-    if account_view.exists():
+    account_view = env['ir.ui.view'].search([
+        ('key', '=', 'portal.user_dropdown')
+    ], limit=1)
+    if account_view:
         account_view.write({'arch': """
 <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
     <xpath expr="//*[@id='o_logout_divider']" position="before">
@@ -126,7 +128,6 @@ def post_init_hook(env):
             try:
                 arch = grid_view.arch
                 if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
-                    # Essayer plusieurs points d'insertion
                     if 'o_wsale_products_opt_layout_catalog' in arch:
                         arch = arch.replace(
                             'o_wsale_products_opt_layout_catalog',
@@ -142,17 +143,16 @@ def post_init_hook(env):
                 pass
     except Exception:
         pass
-    
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
-    # Archiver les catégories de démo
+    # Supprimer les catégories de démo
     demo_names = [
         'Desks', 'Furnitures', 'Boxes', 'Drawers',
         'Cabinets', 'Bins', 'Lamps', 'All',
         'Indoor', 'Outdoor', 'Multimedia',
     ]
-   # Par ça :
     cats_demo = cat.search([('name', 'in', demo_names)])
     if cats_demo:
         cats_demo.unlink()
@@ -309,7 +309,7 @@ def post_init_hook(env):
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
 
-    # === FOOTER CONTENT — compatible toutes versions Odoo ===
+    # === FOOTER CONTENT ===
     footer_content = """
         <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
             <div class="container">
@@ -376,17 +376,18 @@ def post_init_hook(env):
             </div>
         </section>"""
 
-    try:
-        footer_view = env.ref('website.footer_default')
-    except Exception:
-        footer_view = None
+    # === FOOTER — clé robuste Odoo 19 ===
+    footer_view = env['ir.ui.view'].search([
+        ('key', '=', 'website.footer_custom')
+    ], limit=1)
 
     if footer_view:
         try:
             footer_view.write({'arch': """
-<data>
+<data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo border text-break"
+             t-ignore="true" t-if="not no_footer"
              style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
 """ + footer_content + """
         </div>
@@ -394,25 +395,13 @@ def post_init_hook(env):
 </data>
 """})
         except Exception:
-            try:
-                footer_view.write({'arch': """
-<data>
-    <xpath expr="//div[hasclass('oe_structure_solo')]" position="replace">
-        <div id="footer" class="oe_structure oe_structure_solo border text-break"
-             style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
-""" + footer_content + """
-        </div>
-    </xpath>
-</data>
-"""})
-            except Exception:
-                pass
+            pass
 
-    # === COPYRIGHT — via xmlid natif Odoo ===
-    try:
-        copyright_view = env.ref('website.footer_copyright')
-    except Exception:
-        copyright_view = None
+    # === COPYRIGHT — clé robuste Odoo 19 ===
+    copyright_view = env['ir.ui.view'].search([
+        ('key', '=', 'website.footer_copyright_company_name')
+    ], limit=1)
+
     if copyright_view:
         try:
             copyright_view.write({'arch': """
