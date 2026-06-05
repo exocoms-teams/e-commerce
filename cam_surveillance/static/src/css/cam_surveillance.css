@@ -1,303 +1,157 @@
-/* ============================================
-   CAM SURVEILLANCE - Design System
-   Orange #FF6B00 | Moderne avec animations
-   ============================================ */
+/* ===================================
+   CAM SURVEILLANCE - THÈME ORANGE/BLANC
+   =================================== */
 
 :root {
     --orange: #FF6B00;
     --orange-dark: #e55a00;
     --orange-light: #fff3eb;
-    --dark: #0f0f0f;
-    --dark-2: #1a1a1a;
-    --dark-3: #2a2a2a;
+    --dark: #1a1a1a;
     --gray: #666;
     --light: #f8f8f8;
-    --white: #ffffff;
     --transition: all 0.3s ease;
-    --shadow: 0 4px 20px rgba(0,0,0,0.1);
-    --shadow-hover: 0 8px 30px rgba(255,107,0,0.2);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--dark);
-    background: var(--white);
-}
-
-/* === HEADER === */
-.cam-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--dark);
-    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-}
-
-.cam-nav-container {
-    max-width: 1400px;
+.cam-container {
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 70px;
-}
-
-.cam-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--white);
-}
-
-.cam-logo span { color: var(--orange); }
-.cam-logo-icon { font-size: 1.6rem; }
-
-.cam-menu {
-    display: flex;
-    list-style: none;
-    gap: 5px;
-}
-
-.cam-menu li a {
-    color: #ccc;
-    text-decoration: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.cam-menu li a:hover {
-    color: var(--orange);
-    background: rgba(255,107,0,0.1);
-}
-
-/* Dropdown */
-.cam-dropdown { position: relative; }
-
-.cam-dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: var(--dark-2);
-    border: 1px solid var(--dark-3);
-    border-radius: 10px;
-    padding: 10px;
-    min-width: 220px;
-    list-style: none;
-    box-shadow: var(--shadow);
-}
-
-.cam-dropdown:hover .cam-dropdown-menu { display: block; }
-
-.cam-dropdown-menu li a {
-    display: block;
-    padding: 8px 15px;
-    border-radius: 6px;
-    color: #ccc;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.cam-dropdown-menu li a:hover {
-    color: var(--orange);
-    background: rgba(255,107,0,0.1);
-}
-
-.cam-nav-actions { display: flex; align-items: center; gap: 15px; }
-
-.cam-btn-nav {
-    background: var(--orange);
-    color: var(--white) !important;
-    padding: 8px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.cam-btn-nav:hover { background: var(--orange-dark); transform: translateY(-1px); }
-
-.cam-cart {
-    color: var(--white);
-    text-decoration: none;
-    font-size: 1.2rem;
-    position: relative;
+    padding: 0 20px;
 }
 
 /* === HERO === */
 .cam-hero {
-    position: relative;
-    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 50%, #1a0a00 100%);
-    min-height: 85vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-}
-
-.cam-hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(255,107,0,0.15) 0%, transparent 70%);
-    animation: pulse 4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.1); opacity: 1; }
+    background: linear-gradient(135deg, #ffffff 0%, var(--orange-light) 100%);
+    padding: 100px 20px;
+    text-align: center;
 }
 
 .cam-hero-content {
-    position: relative;
-    max-width: 1400px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 60px 30px;
-    z-index: 1;
 }
 
 .cam-hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,107,0,0.15);
-    border: 1px solid rgba(255,107,0,0.3);
-    color: var(--orange);
-    padding: 8px 16px;
-    border-radius: 50px;
-    font-size: 0.9rem;
+    display: inline-block;
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    border: 1px solid var(--orange);
+    padding: 8px 20px;
+    border-radius: 30px;
     font-weight: 600;
+    font-size: 0.9rem;
     margin-bottom: 25px;
-    animation: fadeInDown 0.6s ease;
 }
 
 .cam-hero-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 900;
-    color: var(--white);
+    font-size: 3.5rem;
+    font-weight: 800;
     line-height: 1.1;
+    color: var(--dark);
     margin-bottom: 20px;
-    animation: fadeInUp 0.6s ease 0.2s both;
 }
 
 .cam-hero-title span {
-    display: block;
     color: var(--orange);
+    display: block;
 }
 
 .cam-hero-subtitle {
-    font-size: 1.1rem;
-    color: #aaa;
-    max-width: 600px;
-    line-height: 1.7;
+    font-size: 1.2rem;
+    color: var(--gray);
     margin-bottom: 35px;
-    animation: fadeInUp 0.6s ease 0.4s both;
+    line-height: 1.6;
 }
 
 .cam-hero-buttons {
     display: flex;
     gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
     margin-bottom: 50px;
-    animation: fadeInUp 0.6s ease 0.6s both;
 }
 
 .cam-btn-primary {
     background: var(--orange);
-    color: var(--white);
+    color: #fff;
     padding: 15px 35px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 700;
-    font-size: 1rem;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(255,107,0,0.4);
+    box-shadow: 0 4px 15px rgba(255,107,0,0.3);
 }
 
 .cam-btn-primary:hover {
     background: var(--orange-dark);
+    color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255,107,0,0.5);
-    color: var(--white);
 }
 
 .cam-btn-secondary {
-    background: transparent;
-    color: var(--white);
-    padding: 15px 35px;
+    background: #fff;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+    padding: 13px 35px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 700;
-    font-size: 1rem;
-    border: 2px solid rgba(255,255,255,0.3);
     transition: var(--transition);
 }
 
 .cam-btn-secondary:hover {
-    border-color: var(--orange);
-    color: var(--orange);
+    background: var(--orange);
+    color: #fff;
 }
 
 .cam-hero-stats {
     display: flex;
-    gap: 40px;
-    animation: fadeInUp 0.6s ease 0.8s both;
+    gap: 50px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-.cam-stat { text-align: center; }
+.cam-stat {
+    display: flex;
+    flex-direction: column;
+}
 
 .cam-stat-number {
-    display: block;
-    font-size: 2rem;
-    font-weight: 900;
+    font-size: 2.2rem;
+    font-weight: 800;
     color: var(--orange);
 }
 
 .cam-stat-label {
-    font-size: 0.85rem;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: var(--gray);
+    font-size: 0.9rem;
 }
 
 /* === PROMO BANNER === */
 .cam-promo-banner {
     background: var(--orange);
-    color: var(--white);
-    padding: 12px 30px;
+    color: #fff;
+    padding: 15px 20px;
     display: flex;
+    gap: 20px;
     justify-content: center;
     align-items: center;
-    gap: 25px;
-    font-size: 0.9rem;
-    font-weight: 600;
     flex-wrap: wrap;
+    font-weight: 600;
 }
 
-/* === CONTAINER === */
-.cam-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 30px;
+/* === CATÉGORIES === */
+.cam-categories {
+    padding: 80px 20px;
+    background: #fff;
 }
 
-/* === SECTION HEADERS === */
 .cam-section-header {
     text-align: center;
     margin-bottom: 50px;
 }
 
 .cam-section-header h2 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: var(--dark);
     margin-bottom: 10px;
@@ -308,12 +162,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* === CATÉGORIES === */
-.cam-categories {
-    padding: 80px 0;
-    background: var(--light);
-}
-
 .cam-cat-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -321,76 +169,53 @@ body {
 }
 
 .cam-cat-card {
-    background: var(--white);
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 12px;
     padding: 35px 25px;
     text-align: center;
     text-decoration: none;
-    color: var(--dark);
-    box-shadow: var(--shadow);
     transition: var(--transition);
-    border: 2px solid transparent;
-    position: relative;
-    overflow: hidden;
-}
-
-.cam-cat-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--orange);
-    transform: scaleX(0);
-    transition: var(--transition);
+    border-top: 3px solid transparent;
 }
 
 .cam-cat-card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--orange-light);
-    color: var(--dark);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    border-top: 3px solid var(--orange);
 }
 
-.cam-cat-card:hover::before { transform: scaleX(1); }
-
-.cam-cat-featured {
-    background: var(--dark);
-    color: var(--white);
+.cam-cat-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
 }
-
-.cam-cat-featured h3 { color: var(--orange); }
-.cam-cat-featured p { color: #999; }
-
-.cam-cat-icon { font-size: 2.5rem; margin-bottom: 15px; }
 
 .cam-cat-card h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
+    color: var(--dark);
     margin-bottom: 8px;
+    font-size: 1.3rem;
 }
 
 .cam-cat-card p {
-    font-size: 0.9rem;
     color: var(--gray);
     margin-bottom: 15px;
 }
 
 .cam-cat-link {
     color: var(--orange);
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.cam-cat-featured {
+    background: var(--orange-light);
+    border-top: 3px solid var(--orange);
 }
 
 /* === POURQUOI NOUS === */
 .cam-why {
-    padding: 80px 0;
-    background: var(--dark);
+    padding: 80px 20px;
+    background: var(--light);
 }
-
-.cam-section-dark h2 { color: var(--white) !important; }
-.cam-section-dark p { color: #888 !important; }
 
 .cam-why-grid {
     display: grid;
@@ -399,59 +224,33 @@ body {
 }
 
 .cam-why-card {
-    background: var(--dark-2);
+    background: #fff;
     border-radius: 12px;
-    padding: 30px;
+    padding: 30px 20px;
     text-align: center;
-    border: 1px solid var(--dark-3);
-    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-.cam-why-card:hover {
-    border-color: var(--orange);
-    transform: translateY(-5px);
+.cam-why-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
 }
-
-.cam-why-icon { font-size: 2rem; margin-bottom: 15px; }
 
 .cam-why-card h3 {
-    color: var(--white);
-    font-size: 1rem;
-    font-weight: 700;
+    color: var(--dark);
     margin-bottom: 10px;
+    font-size: 1.1rem;
 }
 
 .cam-why-card p {
-    color: #888;
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-/* === ANIMATIONS === */
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 768px) {
-    .cam-cat-grid { grid-template-columns: repeat(2, 1fr); }
-    .cam-why-grid { grid-template-columns: repeat(2, 1fr); }
-    .cam-menu { display: none; }
-    .cam-hero-stats { gap: 20px; }
-    .cam-hero-buttons { flex-direction: column; }
+    color: var(--gray);
+    font-size: 0.95rem;
 }
 
 /* === FOOTER === */
 .cam-footer {
     background: var(--dark);
     color: #fff;
-    padding: 0;
 }
 
 .cam-footer-top {
@@ -484,7 +283,7 @@ body {
 }
 
 .cam-badge {
-    background: var(--dark-3);
+    background: #2a2a2a;
     color: var(--orange);
     padding: 5px 12px;
     border-radius: 5px;
@@ -503,9 +302,7 @@ body {
     padding: 0;
 }
 
-.cam-footer-col li {
-    margin-bottom: 10px;
-}
+.cam-footer-col li { margin-bottom: 10px; }
 
 .cam-footer-col a {
     color: #888;
@@ -516,7 +313,7 @@ body {
 .cam-footer-col a:hover { color: var(--orange); }
 
 .cam-footer-bottom {
-    border-top: 1px solid var(--dark-3);
+    border-top: 1px solid #2a2a2a;
     padding: 20px 0;
 }
 
@@ -536,6 +333,10 @@ body {
 
 .cam-footer-bottom nav a:hover { color: var(--orange); }
 
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
+    .cam-hero-title { font-size: 2.2rem; }
+    .cam-cat-grid { grid-template-columns: 1fr; }
+    .cam-why-grid { grid-template-columns: 1fr 1fr; }
     .cam-footer-grid { grid-template-columns: 1fr 1fr; }
 }
