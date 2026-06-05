@@ -1,6 +1,6 @@
 {
     "name": "Automobile - Site web",
-    "version": "1.0.21",
+    "version": "1.0.22",
     "summary": "Pages publiques du site automobile",
     "category": "Website",
     "author": "Ecommerce Voitures Team",
@@ -16,6 +16,9 @@
         "web.assets_frontend": [
             "auto_website/static/src/scss/auto_website.scss",
             "auto_website/static/src/js/auto_website.js"
+        ],
+        "website.website_builder_assets": [
+            ("remove", "website/static/src/builder/plugins/font/builder.fonts.scss")
         ]
     },
     "application": False,

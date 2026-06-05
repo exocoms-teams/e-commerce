@@ -98,6 +98,14 @@ class AutoWebsiteController(http.Controller):
         }
         return sort_map.get(sort_key or "newest", "id desc")
 
+    def _catalog_apply_label(self):
+        lang = request.env.lang or ""
+        if lang.startswith("ar"):
+            return "تطبيق الفلاتر"
+        if lang.startswith("en"):
+            return "Apply filters"
+        return _("Appliquer les filtres")
+
     @http.route("/shop", type="http", auth="public", website=True, sitemap=False)
     def shop_redirect(self, **kwargs):
         return request.redirect("/cars")
@@ -151,6 +159,7 @@ class AutoWebsiteController(http.Controller):
             "selected_price_max": selected_price_max if selected_price_max is not None else price_ceiling,
             "selected_year_min": selected_year_min,
             "selected_year_max": selected_year_max,
+            "catalog_apply_label": self._catalog_apply_label(),
             "availability_values": vehicle_model._fields["availability"]._description_selection(
                 request.env
             ),
