@@ -152,9 +152,10 @@ def post_init_hook(env):
         'Cabinets', 'Bins', 'Lamps', 'All',
         'Indoor', 'Outdoor', 'Multimedia',
     ]
+   # Par ça :
     cats_demo = cat.search([('name', 'in', demo_names)])
     if cats_demo:
-        cats_demo.write({'active': False})
+        cats_demo.unlink()
 
     def get_or_create(name, parent=None, seq=10):
         domain = [('name', '=', name)]
