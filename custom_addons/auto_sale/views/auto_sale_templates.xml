@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="quote_form_page" name="Formulaire de devis vÃ©hicule">
+    <template id="quote_form_page" name="Formulaire de devis véhicule">
         <t t-call="website.layout">
             <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_quote_form_page_editor_top"/>
             <section class="py-5 auto-form-shell">
@@ -8,7 +8,7 @@
                     <div class="row g-4 align-items-start">
                         <div class="col-lg-5">
                             <aside class="auto-form-vehicle-summary">
-                                <span class="auto-page-kicker">VÃ©hicule concernÃ©</span>
+                                <span class="auto-page-kicker">Véhicule concerné</span>
                                 <div class="auto-form-vehicle-media">
                                     <img t-if="vehicle.main_image" t-att-src="image_data_uri(vehicle.main_image)" t-att-alt="vehicle.display_name"/>
                                 </div>
@@ -23,12 +23,12 @@
                                     <span t-if="vehicle.battery_capacity"><strong t-out="vehicle.battery_capacity"/> kWh</span>
                                     <span t-if="vehicle.motorization_id" t-out="vehicle.motorization_id.name"/>
                                 </div>
-                                <p class="auto-form-reassurance mb-0">RÃ©ponse rapide, donnÃ©es confidentielles et accompagnement EXOCOMS depuis Paris.</p>
+                                <p class="auto-form-reassurance mb-0">Réponse rapide, données confidentielles et accompagnement EXOCOMS depuis Paris.</p>
                             </aside>
                         </div>
                         <div class="col-lg-7">
                             <h1 class="h3 mb-3">Demander un devis</h1>
-                            <p class="text-muted">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
+                            <p class="text-muted">Véhicule: <strong t-out="vehicle.display_name"/></p>
                             <div t-if="error" class="alert alert-danger" t-out="error"/>
                             <form method="post" t-att-action="'/cars/%s/quote' % vehicle.id" class="card auto-form-card p-4 shadow-sm border-0">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -42,7 +42,7 @@
                                         <input type="email" name="email" class="form-control" required="required" t-att-value="post.get('email', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">TÃ©lÃ©phone</label>
+                                        <label class="form-label">Téléphone</label>
                                         <input type="text" name="phone" class="form-control" t-att-value="post.get('phone', '')"/>
                                     </div>
                                     <div class="col-md-6">
@@ -50,21 +50,21 @@
                                         <input type="number" min="0" step="0.01" name="budget" class="form-control" t-att-value="post.get('budget', '')"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Canal prÃ©fÃ©rÃ©</label>
+                                        <label class="form-label">Canal préféré</label>
                                         <select class="form-select" name="preferred_contact">
                                             <option value="email">Email</option>
-                                            <option value="phone">TÃ©lÃ©phone</option>
+                                            <option value="phone">Téléphone</option>
                                             <option value="whatsapp">WhatsApp</option>
                                         </select>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Message</label>
-                                        <textarea name="message" class="form-control" rows="4" placeholder="PrÃ©cisez votre dÃ©lai et la configuration souhaitÃ©e."><t t-out="post.get('message', '')"/></textarea>
+                                        <textarea name="message" class="form-control" rows="4" placeholder="Précisez votre délai et la configuration souhaitée."><t t-out="post.get('message', '')"/></textarea>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
-                                    <button class="btn auto-btn-primary" type="submit">Recevoir mon devis personnalisÃ©</button>
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vÃ©hicule</a>
+                                    <button class="btn auto-btn-primary" type="submit">Recevoir mon devis personnalisé</button>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
                                 </div>
                             </form>
                         </div>
@@ -76,7 +76,7 @@
     </template>
 
 
-<template id="quote_thanks_page" name="Confirmation de devis vÃ©hicule">
+<template id="quote_thanks_page" name="Confirmation de devis véhicule">
         <t t-call="website.layout">
             <div class="oe_structure oe_empty auto-editor-zone auto-editor-zone-top" id="auto_quote_thanks_page_editor_top"/>
             <section class="py-5 auto-form-shell">
@@ -84,12 +84,12 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card auto-form-card border-0 shadow-sm p-4">
-                                <h1 class="h3">Merci, votre demande a bien Ã©tÃ© envoyÃ©e.</h1>
-                                <p class="mb-2">VÃ©hicule: <strong t-out="vehicle.display_name"/></p>
-                                <p t-if="quote_request">RÃ©fÃ©rence: <strong t-out="quote_request.name"/></p>
-                                <p class="text-muted">Un conseiller vous contacte rapidement avec disponibilitÃ©, options et proposition commerciale.</p>
+                                <h1 class="h3">Merci, votre demande a bien été envoyée.</h1>
+                                <p class="mb-2">Véhicule: <strong t-out="vehicle.display_name"/></p>
+                                <p t-if="quote_request">Référence: <strong t-out="quote_request.name"/></p>
+                                <p class="text-muted">Un conseiller vous contacte rapidement avec disponibilité, options et proposition commerciale.</p>
                                 <div class="d-flex gap-2 mt-3">
-                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche vÃ©hicule</a>
+                                    <a t-att-href="vehicle.website_url" class="btn btn-outline-secondary">Retour fiche véhicule</a>
                                     <a href="/cars" class="btn auto-btn-primary">Continuer le catalogue</a>
                                 </div>
                             </div>
