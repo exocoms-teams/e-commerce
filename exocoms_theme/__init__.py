@@ -376,17 +376,18 @@ def post_init_hook(env):
             </div>
         </section>"""
 
-    try:
-        footer_view = env.ref('website.footer_default')
-    except Exception:
-        footer_view = None
+    # === FOOTER — clé robuste Odoo 19 ===
+    footer_view = env['ir.ui.view'].search([
+        ('key', '=', 'website.footer_custom')
+    ], limit=1)
 
     if footer_view:
         try:
             footer_view.write({'arch': """
-<data>
+<data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo border text-break"
+             t-ignore="true" t-if="not no_footer"
              style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
 """ + footer_content + """
         </div>
@@ -396,9 +397,10 @@ def post_init_hook(env):
         except Exception:
             try:
                 footer_view.write({'arch': """
-<data>
+<data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[hasclass('oe_structure_solo')]" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo border text-break"
+             t-ignore="true" t-if="not no_footer"
              style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
 """ + footer_content + """
         </div>
@@ -408,11 +410,11 @@ def post_init_hook(env):
             except Exception:
                 pass
 
-    # === COPYRIGHT — via xmlid natif Odoo ===
-    try:
-        copyright_view = env.ref('website.footer_copyright')
-    except Exception:
-        copyright_view = None
+    # === COPYRIGHT — clé robuste Odoo 19 ===
+    copyright_view = env['ir.ui.view'].search([
+        ('key', '=', 'website.footer_copyright_company_name')
+    ], limit=1)
+
     if copyright_view:
         try:
             copyright_view.write({'arch': """
