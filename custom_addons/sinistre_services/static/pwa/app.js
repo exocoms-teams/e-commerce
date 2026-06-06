@@ -241,7 +241,10 @@ window.App = (() => {
 
         // Charger les données de la vue
         if (viewId === 'dashboard')     Dashboard.init();
-        if (viewId === 'profile')       setTimeout(_updateUIFromUser, 100);
+        if (viewId === 'profile') {
+            // Recharger les données fraîches depuis l'API à chaque visite
+            _enrichUserFromAPI().then(function() { _updateUIFromUser(); });
+        }
         if (viewId === 'missions')      Dashboard.loadMissions();
         if (viewId === 'interventions') Dashboard.loadInterventions();
         if (viewId === 'carte') {
