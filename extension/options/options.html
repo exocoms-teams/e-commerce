@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Tracker Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Purchase Tracker Settings</h1>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="history">History</button>
+            <button class="tab-btn" data-tab="trends">Trends</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h2> Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Total Purchases</span>
+                    <span class="stat-value" id="totalPurchases">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Spent</span>
+                    <span class="stat-value" id="totalAmount">$0.00</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Average Purchase</span>
+                    <span class="stat-value" id="avgAmount">$0.00</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Highest Price</span>
+                    <span class="stat-value" id="maxAmount">$0.00</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Top Categories</h3>
+                <div id="topCategories" class="category-list">
+                    <p class="empty-message">No data yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <h2>Purchase History</h2>
+            <div class="filter-section">
+                <input type="search" id="searchInput" placeholder="Search purchases...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <button id="exportBtn" class="btn-secondary">Export CSV</button>
+            </div>
+
+            <div id="historyList" class="history-list">
+                <p class="empty-message">No purchase history</p>
+            </div>
+        </div>
+
+        <!-- Trends Tab -->
+        <div id="trends" class="tab-content">
+            <h2>Shopping Trends</h2>
+            <div id="trendsContainer">
+                <canvas id="trendsChart"></canvas>
+                <div id="topDomains" class="domain-list">
+                    <h3>Most Visited Domains</h3>
+                    <div id="domainsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <h2>Settings</h2>
+            
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="notificationsToggle" checked>
+                    Enable purchase notifications
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label>
+                    <input type="checkbox" id="autoTrackToggle" checked>
+                    Auto-track purchases on pages
+                </label>
+            </div>
+
+            <div class="setting-group">
+                <label for="refreshInterval">Data refresh interval (minutes):</label>
+                <input type="number" id="refreshInterval" min="1" max="60" value="5">
+            </div>
+
+            <div class="section">
+                <h3>Data Management</h3>
+                <div class="button-group">
+                    <button id="exportDataBtn" class="btn-primary">Export All Data</button>
+                    <button id="importDataBtn" class="btn-secondary">Import Data</button>
+                    <input type="file" id="fileInput" accept=".json" style="display: none;">
+                    <button id="clearAllBtn" class="btn-danger">Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>About</h3>
+                <p>Purchase Tracker v1.0.0</p>
+                <p>Track your shopping tendencies across e-commerce sites.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

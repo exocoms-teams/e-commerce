@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Tracker - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Purchase Tracker</h2>
+                <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="/history" class="nav-link" data-page="history">History</a></li>
+                <li><a href="/analytics" class="nav-link" data-page="analytics">Analytics</a></li>
+                <li><a href="/trends" class="nav-link" data-page="trends">Trends</a></li>
+                <li><a href="/settings" class="nav-link" data-page="settings">Settings</a></li>
+                <li><a href="/about" class="nav-link" data-page="about">About</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="btn-export" id="exportBtn">Export</button>
+                <button class="btn-import" id="importBtn">Import</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <input type="search" id="globalSearch" class="search-input" placeholder="Search purchases...">
+                    <button class="btn-refresh" id="refreshBtn" title="Refresh data">Refresh</button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-container">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon"></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Total Purchases</span>
+                                <span class="stat-value" id="dashTotalPurchases">0</span>
+                                <span class="stat-change" id="dashPurchasesChange">↗ +0%</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Total Spent</span>
+                                <span class="stat-value" id="dashTotalAmount">$0.00</span>
+                                <span class="stat-change" id="dashAmountChange">↗ +$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Average Price</span>
+                                <span class="stat-value" id="dashAvgPrice">$0.00</span>
+                                <span class="stat-change" id="dashAvgChange">→ 0%</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Categories</span>
+                                <span class="stat-value" id="dashCategoryCount">0</span>
+                                <span class="stat-change" id="dashCategoryChange">+0 new</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Top Categories</h2>
+                                <a href="/analytics" class="link-more">View All →</a>
+                            </div>
+                            <div class="card-body">
+                                <div id="topCategories" class="category-list">
+                                    <p class="empty-message">No data yet</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Recent Purchases</h2>
+                                <a href="/history" class="link-more">View All →</a>
+                            </div>
+                            <div class="card-body">
+                                <div id="recentPurchases" class="purchase-list">
+                                    <p class="empty-message">No purchases yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2>Spending by Day (Last 7 Days)</h2>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="spendingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Page -->
+                <div id="history-page" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Purchase History</h2>
+                            <div class="filter-controls">
+                                <select id="historyFilter" class="filter-select">
+                                    <option value="">All Categories</option>
+                                </select>
+                                <input type="date" id="dateFilter" class="filter-input">
+                                <button class="btn-secondary" id="clearFiltersBtn">Clear</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="historyList" class="history-table">
+                                <p class="empty-message">No purchases found</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Page -->
+                <div id="analytics-page" class="page">
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Category Breakdown</h2>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Price Distribution</h2>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="priceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2>All Categories</h2>
+                            </div>
+                            <div class="card-body">
+                                <div id="allCategories" class="category-table">
+                                    <p class="empty-message">No categories yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trends Page -->
+                <div id="trends-page" class="page">
+                    <div class="trends-grid">
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2>Top Domains</h2>
+                            </div>
+                            <div class="card-body">
+                                <div id="topDomains" class="domain-list">
+                                    <p class="empty-message">No domain data yet</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Spending Trend</h2>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2>Purchase Frequency</h2>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="frequencyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings-page" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Settings</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-group">
+                                <h3>Display</h3>
+                                <label class="setting-option">
+                                    <input type="checkbox" id="darkMode" checked>
+                                    <span>Dark Mode</span>
+                                </label>
+                                <label class="setting-option">
+                                    <input type="checkbox" id="notifications" checked>
+                                    <span>Enable Notifications</span>
+                                </label>
+                            </div>
+
+                            <div class="settings-group">
+                                <h3>Data</h3>
+                                <label class="setting-option">
+                                    <input type="checkbox" id="autoSync" checked>
+                                    <span>Auto Sync with Extension</span>
+                                </label>
+                                <label class="setting-option">
+                                    <span>Sync Interval (minutes):</span>
+                                    <input type="number" id="syncInterval" min="1" max="60" value="5" class="setting-input">
+                                </label>
+                            </div>
+
+                            <div class="settings-group">
+                                <h3>Data Management</h3>
+                                <button class="btn-primary" id="exportDataBtn">Export All Data (JSON)</button>
+                                <button class="btn-secondary" id="importDataBtn">Import Data</button>
+                                <button class="btn-danger" id="clearDataBtn">Clear All Data</button>
+                                <input type="file" id="fileInput" accept=".json" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Page -->
+                <div id="about-page" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>About Purchase Tracker</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="about-content">
+                                <h3> Purchase Tracker v1.0.0</h3>
+                                <p>A powerful web application and Chrome extension for tracking purchasing tendencies and shopping behaviors.</p>
+
+                                <h4>Features</h4>
+                                <ul>
+                                    <li>✅ Auto-track purchases across e-commerce sites</li>
+                                    <li>✅ Manual purchase logging</li>
+                                    <li>✅ Advanced analytics and trends</li>
+                                    <li>✅ Category organization</li>
+                                    <li>✅ Data export/import</li>
+                                    <li>✅ 100% privacy - all data stored locally</li>
+                                </ul>
+
+                                <h4>System Info</h4>
+                                <p>
+                                    <strong>Last Updated:</strong> <span id="lastUpdated">--:--</span><br>
+                                    <strong>Total Purchases:</strong> <span id="aboutTotalPurchases">0</span><br>
+                                    <strong>Data Size:</strong> <span id="dataSize">0 KB</span>
+                                </p>
+
+                                <h4>Quick Links</h4>
+                                <ul>
+                                    <li><a href="https://github.com" target="_blank">GitHub Repository</a></li>
+                                    <li><a href="https://chrome.google.com/webstore" target="_blank">Chrome Web Store</a></li>
+                                    <li><a href="#" id="reportBugBtn">Report a Bug</a></li>
+                                </ul>
+
+                                <h4>Privacy Policy</h4>
+                                <p>Your data is yours. We don't collect, store, or share any personal information. All data remains on your device.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    <!-- Scripts -->
+    <script src="/static/js/chart.js"></script>
+    <script src="/static/js/data-manager.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/ui-controller.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
