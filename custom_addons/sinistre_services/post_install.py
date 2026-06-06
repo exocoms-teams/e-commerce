@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 
 def post_install_hook(env):
+    _ensure_certification_table(env)
     _setup_admin_rights(env)
     _setup_demo_intervenant(env)
     _cleanup_menus(env)
@@ -31,6 +32,25 @@ def _setup_admin_rights(env):
         _logger.info(f"[sinistre_services] Droits admin → {admin.name}")
     except Exception as e:
         _logger.warning(f"[sinistre_services] Admin rights: {e}")
+
+
+def _ensure_certification_table(env):
+    """Crée la table sinistre_certification si absente (idempotent)."""
+    env.cr.execute("""
+        CREATE TABLE IF NOT EXISTS sinistre_certification (
+            id              SERIAL PRIMARY KEY,
+            intervenant_id  INTEGER NOT NULL
+                            REFERENCES sinistre_intervenant(id)
+                            ON DELETE CASCADE,
+            name            VARCHAR(255) NOT NULL,
+            date_validite   DATE,
+            sequence        INTEGER DEFAULT 10,
+            create_date     TIMESTAMP DEFAULT NOW(),
+            write_date      TIMESTAMP DEFAULT NOW(),
+            create_uid      INTEGER,
+            write_uid       INTEGER
+        )
+    """)
 
 
 def _setup_demo_intervenant(env):
