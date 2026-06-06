@@ -197,8 +197,12 @@ window.App = (() => {
         if (sl) sl.style.display = 'none';
         if (sa) sa.style.display = 'flex';
         FCM.autoInit();
-        _updateUIFromUser();
-        showView('dashboard', document.getElementById('nav-dashboard'));
+        // Vider le cache et recharger les données fraîches depuis /me à chaque connexion
+        localStorage.removeItem('ss_user');
+        _enrichUserFromAPI().then(() => {
+            _updateUIFromUser();
+            showView('dashboard', document.getElementById('nav-dashboard'));
+        });
 
         // Deep link : ouvrir une mission depuis push
         const urlParams = new URLSearchParams(window.location.search);
@@ -240,7 +244,10 @@ window.App = (() => {
         _currentView = viewId;
 
         // Charger les données de la vue
-        if (viewId === 'dashboard')     Dashboard.init();
+        if (viewId === 'dashboard') {
+            Dashboard.init();
+            _updateUIFromUser(); // Rafraîchir sidebar/greeting
+        }
         if (viewId === 'profile') {
             // Recharger les données fraîches depuis l'API à chaque visite
             _enrichUserFromAPI().then(function() { _updateUIFromUser(); });
