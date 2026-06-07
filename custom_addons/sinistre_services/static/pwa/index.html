@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -158,32 +157,18 @@
                     </div>
                 </div>
 
-                <!-- Map + Today -->
+                <!-- Missions proposées + Today -->
                 <div class="dash-grid">
+                    <!-- Missions proposées -->
                     <div class="dash-map-card">
                         <div class="dash-map-header">
-                            <h2 class="dash-section-title">Missions à proximité</h2>
-                            <button class="link-btn" onclick="App.showView('carte', document.getElementById('nav-carte'))">Plein écran →</button>
+                            <h2 class="dash-section-title">🆕 Missions disponibles</h2>
+                            <span id="proposeesBadge" style="background:#EFF6FF;color:#1D4ED8;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700"></span>
                         </div>
-                        <div class="map-container" id="dashMap" style="position:relative;border-radius:0 0 var(--r) var(--r);overflow:hidden;height:340px;">
-                            <div class="map-zone-badge" id="dashZoneBadge" style="position:absolute;top:14px;left:14px;z-index:5;background:white;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.1)">
-                                Chargement zone…
-                            </div>
-                            <div id="dashGoogleMap" style="width:100%;height:340px;background:#e8f0f7;overflow:hidden;"></div>
-                            <!-- Popup mission -->
-                            <div class="map-popup" id="mapPopup" style="display:none;position:absolute;bottom:16px;left:16px;z-index:10;background:white;border-radius:14px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);width:280px">
-                                <div class="map-popup-badges" id="mapPopupBadges"></div>
-                                <div class="map-popup-title" id="mapPopupTitle"></div>
-                                <div class="map-popup-addr" id="mapPopupAddr"></div>
-                                <div class="map-popup-price" id="mapPopupPrice"></div>
-                                <div class="map-popup-actions">
-                                    <button class="btn-accept" onclick="Dashboard.acceptMission()">Accepter</button>
-                                    <button class="btn-itinerary" onclick="Dashboard.itineraireMission()">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                        Itinéraire
-                                    </button>
-                                </div>
-                            </div>
+                        <div id="proposeesList" style="display:flex;flex-direction:column;gap:12px;padding:16px;max-height:480px;overflow-y:auto">
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
+                            <div class="skeleton-item"></div>
                         </div>
                     </div>
 
