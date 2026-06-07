@@ -526,6 +526,8 @@ class SinistrePWAController(http.Controller):
                 'date_rdv':          str(m.date_rdv) if m.date_rdv else None,
                 'montant_garanti':   m.montant_garanti or 0,
                 'montant_devis':     m.montant_devis or 0,
+                'montant_estime':    m.montant_estime or 0,
+                'montant_estime_max':m.montant_estime_max or 0,
                 'source':            m.source,
             })
         return _json_response({'success': True, 'missions': result})
