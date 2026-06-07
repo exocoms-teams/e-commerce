@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-api_pwa.py — Endpoints API pour la PWA Intervenant (version mise à jour)
-
-Nouveaux endpoints :
-  POST /api/sinistre/v1/intervenant/mission/<id>/signature-avant
-  POST /api/sinistre/v1/intervenant/mission/<id>/signature-apres
-  PUT  /api/sinistre/v1/intervenant/devis/<id>
-  GET  /api/sinistre/v1/intervenant/mission/<id>/messages
-  POST /api/sinistre/v1/intervenant/mission/<id>/messages
-  POST /api/sinistre/v1/intervenant/mission/<id>/messages/lus
-  POST /api/sinistre/v1/intervenant/mission/<id>/notes
-
-Règles métier :
-  - signature_avant obligatoire avant action_demarrer()
-  - signature_apres  obligatoire avant action_terminer() → génère la facture
-  - PUT devis : passe l'état à 'en_revision' + log tracking
-  - accepter avec is_modified=True relance depuis 'en_revision'
-"""
 import json
-import base64
 import logging
 
 from odoo import http, _
@@ -37,14 +18,27 @@ def _json_error(status, message):
     return _json_response({'success': False, 'error': message}, status=status)
 
 def _get_intervenant():
+    """Retourne l'intervenant lié à l'utilisateur connecté, le crée si absent."""
     user = request.env.user
     if user._is_public():
         return None
-    return request.env['sinistre.intervenant'].search([('user_id', '=', user.id)], limit=1)
+    iv = request.env['sinistre.intervenant'].sudo().search(
+        [('user_id', '=', user.id)], limit=1
+    )
+    if not iv:
+        iv = request.env['sinistre.intervenant'].sudo().create({
+            'name':            user.name,
+            'partner_id':      user.partner_id.id,
+            'user_id':         user.id,
+            'taux_commission': 15.0,
+            'disponible':      True,
+            'actif':           True,
+        })
+    return iv
 
 def _check_mission(intervenant, mission_id):
-    """Retourne la mission si accessible, None sinon."""
-    return request.env['sinistre.mission'].search([
+    """Retourne la mission si accessible à cet intervenant, None sinon."""
+    return request.env['sinistre.mission'].sudo().search([
         ('id', '=', mission_id),
         ('intervenant_id', '=', intervenant.id),
     ], limit=1)
@@ -66,20 +60,18 @@ class SinistrePWAController(http.Controller):
         else:
             domain.append(('reference', '=', reference))
 
-        mission = request.env['sinistre.mission'].search(domain, limit=1)
+        mission = request.env['sinistre.mission'].sudo().search(domain, limit=1)
         if not mission:
             return _json_error(404, "Mission introuvable")
 
-        # Photos
         photos = [{
-            'id':         p.id,
-            'type_photo': p.type_photo,
-            'description':p.description or '',
-            'date':       str(p.date_prise),
-            'url':        f'/web/image/sinistre.photo/{p.id}/image',
+            'id':          p.id,
+            'type_photo':  p.type_photo,
+            'description': p.description or '',
+            'date':        str(p.date_prise),
+            'url':         f'/web/image/sinistre.photo/{p.id}/image',
         } for p in mission.photo_ids]
 
-        # Devis (le plus récent)
         devis_data = None
         if mission.devis_ids:
             devis = mission.devis_ids.sorted('date_devis', reverse=True)[0]
@@ -99,8 +91,7 @@ class SinistrePWAController(http.Controller):
                 } for l in devis.ligne_ids],
             }
 
-        # Messages non lus par l'artisan
-        unread = request.env['sinistre.message'].search_count([
+        unread = request.env['sinistre.message'].sudo().search_count([
             ('mission_id', '=', mission.id),
             ('auteur_type', '!=', 'artisan'),
             ('lu_artisan', '=', False),
@@ -109,27 +100,26 @@ class SinistrePWAController(http.Controller):
         return _json_response({
             'success': True,
             'mission': {
-                'id':               mission.id,
-                'reference':        mission.reference,
-                'state':            mission.state,
-                'source':           mission.source,
-                'type_intervention':mission.type_intervention,
-                'urgence':          mission.urgence,
-                'description':      mission.description_sinistre,
-                'adresse':          mission.adresse_intervention,
-                'client':           mission.client_id.name if mission.client_id else '',
-                'tel_sur_place':    mission.tel_sur_place or '',
-                'contact_sur_place':mission.contact_sur_place or '',
-                'date_rdv':         str(mission.date_rdv) if mission.date_rdv else None,
-                'montant_devis':    mission.montant_devis,
-                'reste_a_charge':   mission.reste_a_charge,
-                'photos':           photos,
-                'devis':            devis_data,
-                # Nouveaux champs
-                'signature_avant':  bool(mission.signature_avant),
-                'signature_apres':  bool(mission.signature_apres),
-                'notes_artisan':    mission.notes_artisan or '',
-                'messages_non_lus': unread,
+                'id':                mission.id,
+                'reference':         mission.reference,
+                'state':             mission.state,
+                'source':            mission.source,
+                'type_intervention': mission.type_intervention,
+                'urgence':           mission.urgence,
+                'description':       mission.description_sinistre,
+                'adresse':           mission.adresse_intervention,
+                'client':            mission.client_id.name if mission.client_id else '',
+                'tel_sur_place':     mission.tel_sur_place or '',
+                'contact_sur_place': mission.contact_sur_place or '',
+                'date_rdv':          str(mission.date_rdv) if mission.date_rdv else None,
+                'montant_devis':     mission.montant_devis,
+                'reste_a_charge':    mission.reste_a_charge,
+                'photos':            photos,
+                'devis':             devis_data,
+                'signature_avant':   bool(mission.signature_avant),
+                'signature_apres':   bool(mission.signature_apres),
+                'notes_artisan':     mission.notes_artisan or '',
+                'messages_non_lus':  unread,
             }
         })
 
@@ -187,7 +177,7 @@ class SinistrePWAController(http.Controller):
         if not sig:
             return _json_error(400, "Signature requise")
         try:
-            mission.write({'signature_avant': sig})
+            mission.sudo().write({'signature_avant': sig})
             mission.message_post(body=_("✅ Signature avant intervention enregistrée par l'artisan."))
             return _json_response({'success': True})
         except Exception as e:
@@ -211,9 +201,8 @@ class SinistrePWAController(http.Controller):
         if not sig:
             return _json_error(400, "Signature requise")
         try:
-            mission.write({'signature_apres': sig})
+            mission.sudo().write({'signature_apres': sig})
             mission.message_post(body=_("✅ Signature après intervention enregistrée — génération facture."))
-            # Tenter la génération automatique de la facture
             if hasattr(mission, 'action_generer_facture'):
                 try:
                     mission.action_generer_facture()
@@ -241,7 +230,7 @@ class SinistrePWAController(http.Controller):
         if not lignes:
             return _json_error(400, "Au moins une ligne est requise")
         try:
-            devis = request.env['sinistre.devis'].create({
+            devis = request.env['sinistre.devis'].sudo().create({
                 'mission_id':  mission.id,
                 'note_client': body.get('note_client', ''),
                 'tva':         body.get('tva', 20.0),
@@ -253,8 +242,10 @@ class SinistrePWAController(http.Controller):
                 }) for l in lignes],
             })
             return _json_response({
-                'success': True, 'devis_id': devis.id,
-                'name': devis.name, 'montant_total': devis.montant_total,
+                'success': True,
+                'devis_id': devis.id,
+                'name': devis.name,
+                'montant_total': devis.montant_total,
             }, status=201)
         except Exception as e:
             return _json_error(500, str(e))
@@ -266,9 +257,9 @@ class SinistrePWAController(http.Controller):
         intervenant = _get_intervenant()
         if not intervenant:
             return _json_error(403, "Accès non autorisé")
-        devis = request.env['sinistre.devis'].search([
+        devis = request.env['sinistre.devis'].sudo().search([
             ('id', '=', devis_id),
-            ('intervenant_id', '=', intervenant.id),
+            ('mission_id.intervenant_id', '=', intervenant.id),
         ], limit=1)
         if not devis:
             return _json_error(404, "Devis introuvable")
@@ -276,16 +267,13 @@ class SinistrePWAController(http.Controller):
             body = json.loads(request.httprequest.data.decode('utf-8'))
         except Exception:
             return _json_error(400, "Body JSON invalide")
-
         is_amendment = body.get('is_amendment', False)
-        lignes       = body.get('ligne_ids', [])
+        lignes = body.get('ligne_ids', [])
         if not lignes:
             return _json_error(400, "Au moins une ligne est requise")
-
         try:
-            # Recréer toutes les lignes
-            devis.ligne_ids.unlink()
-            devis.write({
+            devis.sudo().ligne_ids.unlink()
+            devis.sudo().write({
                 'note_client': body.get('note_client', devis.note_client),
                 'ligne_ids': [(0, 0, {
                     'description':   l['description'],
@@ -295,14 +283,15 @@ class SinistrePWAController(http.Controller):
                 }) for l in lignes],
             })
             if is_amendment:
-                # Passe en "en_revision" : nécessite re-signature
-                devis.write({'state': 'en_revision'})
+                devis.sudo().write({'state': 'en_revision'})
                 devis.mission_id.message_post(
                     body=_("⚠️ Devis modifié par l'artisan pendant l'intervention — re-signature client requise.")
                 )
             return _json_response({
-                'success': True, 'devis_id': devis.id,
-                'state': devis.state, 'montant_total': devis.montant_total,
+                'success': True,
+                'devis_id': devis.id,
+                'state': devis.state,
+                'montant_total': devis.montant_total,
             })
         except Exception as e:
             return _json_error(500, str(e))
@@ -314,8 +303,9 @@ class SinistrePWAController(http.Controller):
         intervenant = _get_intervenant()
         if not intervenant:
             return _json_error(403, "Accès non autorisé")
-        devis = request.env['sinistre.devis'].search([
-            ('id', '=', devis_id), ('intervenant_id', '=', intervenant.id),
+        devis = request.env['sinistre.devis'].sudo().search([
+            ('id', '=', devis_id),
+            ('mission_id.intervenant_id', '=', intervenant.id),
         ], limit=1)
         if not devis:
             return _json_error(404, "Devis introuvable")
@@ -325,15 +315,16 @@ class SinistrePWAController(http.Controller):
         except Exception as e:
             return _json_error(400, str(e))
 
-    # ─── ACCEPTER LE DEVIS ──────────────────────────────────────────
+    # ─── ACCEPTER LE DEVIS (signature) ──────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/devis/<int:devis_id>/accepter',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def accepter_devis(self, devis_id, **kwargs):
         intervenant = _get_intervenant()
         if not intervenant:
             return _json_error(403, "Accès non autorisé")
-        devis = request.env['sinistre.devis'].search([
-            ('id', '=', devis_id), ('intervenant_id', '=', intervenant.id),
+        devis = request.env['sinistre.devis'].sudo().search([
+            ('id', '=', devis_id),
+            ('mission_id.intervenant_id', '=', intervenant.id),
         ], limit=1)
         if not devis:
             return _json_error(404, "Devis introuvable")
@@ -345,7 +336,7 @@ class SinistrePWAController(http.Controller):
         is_modified = body.get('is_modified', False)
         sig_field   = 'signature_client_modif' if is_modified else 'signature_client'
         try:
-            devis.write({sig_field: sig or False})
+            devis.sudo().write({sig_field: sig or False})
             devis.action_accepter()
             if is_modified:
                 devis.mission_id.message_post(
@@ -362,8 +353,9 @@ class SinistrePWAController(http.Controller):
         intervenant = _get_intervenant()
         if not intervenant:
             return _json_error(403, "Accès non autorisé")
-        devis = request.env['sinistre.devis'].search([
-            ('id', '=', devis_id), ('intervenant_id', '=', intervenant.id),
+        devis = request.env['sinistre.devis'].sudo().search([
+            ('id', '=', devis_id),
+            ('mission_id.intervenant_id', '=', intervenant.id),
         ], limit=1)
         if not devis:
             return _json_error(404, "Devis introuvable")
@@ -394,7 +386,7 @@ class SinistrePWAController(http.Controller):
         if type_photo not in ('avant', 'pendant', 'apres'):
             type_photo = 'avant'
         try:
-            photo = request.env['sinistre.photo'].create({
+            photo = request.env['sinistre.photo'].sudo().create({
                 'mission_id':     mission.id,
                 'type_photo':     type_photo,
                 'image':          image_b64,
@@ -402,7 +394,8 @@ class SinistrePWAController(http.Controller):
                 'intervenant_id': intervenant.id,
             })
             return _json_response({
-                'success': True, 'photo_id': photo.id,
+                'success': True,
+                'photo_id': photo.id,
                 'type_photo': type_photo,
                 'url': f'/web/image/sinistre.photo/{photo.id}/image',
             }, status=201)
@@ -421,12 +414,11 @@ class SinistrePWAController(http.Controller):
         if not mission:
             return _json_error(404, "Mission introuvable")
         try:
-            body  = json.loads(request.httprequest.data.decode('utf-8'))
-            notes = body.get('notes', '')
+            body = json.loads(request.httprequest.data.decode('utf-8'))
         except Exception:
             return _json_error(400, "Body JSON invalide")
         try:
-            mission.write({'notes_artisan': notes})
+            mission.sudo().write({'notes_artisan': body.get('notes', '')})
             return _json_response({'success': True})
         except Exception as e:
             return _json_error(500, str(e))
@@ -441,7 +433,7 @@ class SinistrePWAController(http.Controller):
         mission = _check_mission(intervenant, mission_id)
         if not mission:
             return _json_error(404, "Mission introuvable")
-        msgs = request.env['sinistre.message'].search([
+        msgs = request.env['sinistre.message'].sudo().search([
             ('mission_id', '=', mission.id)
         ], order='date_envoi asc')
         return _json_response({
@@ -474,7 +466,7 @@ class SinistrePWAController(http.Controller):
         if not contenu:
             return _json_error(400, "Contenu du message requis")
         try:
-            msg = request.env['sinistre.message'].create({
+            msg = request.env['sinistre.message'].sudo().create({
                 'mission_id':  mission.id,
                 'auteur_type': 'artisan',
                 'auteur_nom':  intervenant.name or request.env.user.name,
@@ -504,7 +496,7 @@ class SinistrePWAController(http.Controller):
         mission = _check_mission(intervenant, mission_id)
         if not mission:
             return _json_error(404, "Mission introuvable")
-        request.env['sinistre.message'].search([
+        request.env['sinistre.message'].sudo().search([
             ('mission_id', '=', mission.id),
             ('lu_artisan', '=', False),
             ('auteur_type', '!=', 'artisan'),
@@ -525,5 +517,5 @@ class SinistrePWAController(http.Controller):
             return _json_error(400, "Body JSON invalide")
         if not token:
             return _json_error(400, "Token FCM requis")
-        intervenant.write({'fcm_token': token})
+        intervenant.sudo().write({'fcm_token': token})
         return _json_response({'success': True, 'message': 'Token FCM enregistré'})
