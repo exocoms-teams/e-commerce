@@ -77,7 +77,7 @@ class SinistreWebsite(http.Controller):
             source = 'particulier'
 
         # Créer ou trouver le partenaire
-        env = request.env
+        env = request.env(su=True)
         email = post.get('email', '').strip()
         partner = env['res.partner'].search([('email', '=', email)], limit=1)
         if not partner:
@@ -96,7 +96,7 @@ class SinistreWebsite(http.Controller):
 
         # Créer la mission
         try:
-            mission = env['sinistre.mission'].sudo().create({
+            mission = env['sinistre.mission'].create({
                 'source': source,
                 'client_id': partner.id,
                 'type_intervention': post.get('type_intervention', 'autre'),
@@ -233,7 +233,7 @@ class SinistreWebsite(http.Controller):
                 _logger.warning(f"Rappel mail failed: {e}")
         return request.redirect('/?rappel=ok')
 
-    # ── Demande d'accès API (formulaire assurance) ───────────────────
+    # ── Demande d'accès API sandbox (formulaire assurance) ────────────
     @http.route('/assurances/api-access', type='http', auth='public',
                 website=True, methods=['GET'], csrf=False)
     def api_access_form(self, **kw):
@@ -245,147 +245,74 @@ class SinistreWebsite(http.Controller):
     @http.route('/assurances/api-access/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def api_access_send(self, **post):
-        import secrets as _secrets
         societe = post.get('societe', '').strip()
         nom     = post.get('nom', '').strip()
         email   = post.get('email', '').strip()
-        tel     = post.get('telephone', '').strip()
 
         if not societe or not nom or not email:
             return request.render('sinistre_services.ss_page_api_access', {
-                'error': True, 'success': False,
-                'year': datetime.datetime.now().year,
+                'error': True, 'success': False, 'year': datetime.datetime.now().year,
             })
 
-        env = request.env
-        base_url = request.httprequest.host_url.rstrip('/')
+        env = request.env(su=True)
 
-        # ── Vérifier doublon ──────────────────────────────────────
-        existing = env['sinistre.assurance'].sudo().search(
+        # Vérifier si assurance déjà existante
+        existing = env['sinistre.assurance'].search(
             [('partner_id.email', '=', email)], limit=1
         )
         if existing:
-            # Renvoyer les identifiants existants
-            if existing.api_key:
-                _send_credentials_email(env, existing, nom, email, base_url)
+            # Déjà inscrit — afficher succès quand même (sécurité)
             return request.render('sinistre_services.ss_page_api_access', {
-                'error': False, 'success': True,
-                'api_key': existing.api_key,
-                'societe': societe,
-                'portail_url': f"{base_url}/assurances/portail",
-                'year': datetime.datetime.now().year,
+                'error': False, 'success': True, 'year': datetime.datetime.now().year,
             })
 
-        # ── Créer le partenaire ───────────────────────────────────
-        partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1)
+        # Créer le partenaire
+        partner = env['res.partner'].search([('email', '=', email)], limit=1)
         if not partner:
-            partner = env['res.partner'].sudo().create({
+            partner = env['res.partner'].create({
                 'name':         societe,
                 'email':        email,
-                'phone':        tel,
+                'phone':        post.get('telephone', '').strip(),
                 'company_type': 'company',
             })
 
-        # ── Générer la clé API immédiatement ──────────────────────
-        api_key = _secrets.token_urlsafe(32)
+        # Types de sinistres cochés
+        types = []
+        for t in ['serrurerie', 'plomberie', 'vitrerie', 'menuiserie', 'electricite']:
+            if post.get(f'type_{t}'):
+                types.append(t)
 
-        # Types de sinistres
-        types = [t for t in ['serrurerie','plomberie','vitrerie','menuiserie','electricite']
-                 if post.get(f'type_{t}')]
-        note = (f"Contact: {nom} | Tel: {tel} | Volume: {post.get('volume','')} | "
-                f"Système: {post.get('systeme','')} | Types: {', '.join(types)} | "
-                f"Besoins: {post.get('besoins','')}")
-
-        # ── Créer la fiche assurance (actif directement) ──────────
-        assurance = env['sinistre.assurance'].sudo().create({
-            'name':            societe,
-            'partner_id':      partner.id,
-            'statut_compte':   'actif',
-            'api_key':         api_key,
-            'api_key_active':  True,
-            'note':            note,
+        # Créer la fiche assurance
+        note = f"Contact: {nom}\nVolume: {post.get('volume','')}\nSystème: {post.get('systeme','')}\nTypes: {', '.join(types)}\nBesoins: {post.get('besoins','')}"
+        assurance = env['sinistre.assurance'].create({
+            'name':          societe,
+            'partner_id':    partner.id,
+            'statut_compte': 'en_attente',
+            'note':          note,
         })
 
-        # ── Envoyer email avec identifiants ───────────────────────
-        _send_credentials_email(env, assurance, nom, email, base_url)
+        # Notifier l'admin par email
+        try:
+            admin = env.ref('base.user_admin')
+            env['mail.mail'].create({
+                'subject':    f"Nouvelle demande d'accès API — {societe}",
+                'email_to':   admin.email or 'admin@sinistre-services.fr',
+                'email_from': 'no-reply@sinistre-services.fr',
+                'body_html':  f"""
+                    <h3>Nouvelle demande sandbox API</h3>
+                    <p><b>Société :</b> {societe}</p>
+                    <p><b>Contact :</b> {nom}</p>
+                    <p><b>Email :</b> {email}</p>
+                    <p><b>Téléphone :</b> {post.get('telephone','')}</p>
+                    <p><b>Volume :</b> {post.get('volume','')}</p>
+                    <p><b>Types :</b> {', '.join(types)}</p>
+                    <p><b>Besoins :</b> {post.get('besoins','')}</p>
+                    <p><a href="/odoo/sinistre/assurances/{assurance.id}">Valider le compte dans Odoo →</a></p>
+                """,
+            }).send()
+        except Exception:
+            pass
 
         return request.render('sinistre_services.ss_page_api_access', {
-            'error':       False,
-            'success':     True,
-            'api_key':     api_key,
-            'societe':     societe,
-            'portail_url': f"{base_url}/assurances/portail",
-            'year':        datetime.datetime.now().year,
+            'error': False, 'success': True, 'year': datetime.datetime.now().year,
         })
-
-    # ── Portail assurance (créer un ordre de mission) ─────────────────
-    @http.route('/assurances/portail', type='http', auth='public',
-                website=True, methods=['GET'], csrf=False)
-    def assurance_portail(self, **kw):
-        api_key = kw.get('key', '')
-        env = request.env
-        assurance = None
-        if api_key:
-            assurance = env['sinistre.assurance'].sudo().search(
-                [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
-                limit=1
-            )
-        return request.render('sinistre_services.ss_page_portail_assurance', {
-            'assurance':   assurance,
-            'api_key':     api_key,
-            'success':     kw.get('success', False),
-            'error':       kw.get('error', False),
-            'missions':    assurance.mission_ids[:10] if assurance else [],
-            'base_url':    request.httprequest.host_url.rstrip('/'),
-            'year':        datetime.datetime.now().year,
-        })
-
-    @http.route('/assurances/portail/mission', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def assurance_portail_mission(self, **post):
-        import json
-        api_key = post.get('api_key', '').strip()
-        env     = request.env
-        base_url = request.httprequest.host_url.rstrip('/')
-
-        assurance = env['sinistre.assurance'].sudo().search(
-            [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
-            limit=1
-        )
-        if not assurance:
-            return request.redirect(f'/assurances/portail?key={api_key}&error=auth')
-
-        # Valider champs requis
-        required = ['client_nom','client_email','adresse','type_intervention','description']
-        if not all(post.get(f,'').strip() for f in required):
-            return request.redirect(f'/assurances/portail?key={api_key}&error=missing')
-
-        # Créer client
-        client_email = post.get('client_email','').strip()
-        partner = env['res.partner'].sudo().search([('email','=',client_email)], limit=1)
-        if not partner:
-            partner = env['res.partner'].sudo().create({
-                'name':  post.get('client_nom','').strip(),
-                'email': client_email,
-                'phone': post.get('client_tel','').strip(),
-            })
-
-        # Créer la mission
-        mission = env['sinistre.mission'].sudo().create({
-            'source':               'assurance',
-            'assurance_id':         assurance.id,
-            'ref_assurance':        post.get('ref_assurance','').strip(),
-            'client_id':            partner.id,
-            'type_intervention':    post.get('type_intervention','autre'),
-            'urgence':              post.get('urgence','normale'),
-            'description_sinistre': post.get('description','').strip(),
-            'adresse_intervention': post.get('adresse','').strip(),
-            'tel_sur_place':        post.get('client_tel','').strip(),
-            'montant_garanti':      float(post.get('montant_garanti',0) or 0),
-            'franchise':            float(post.get('franchise',0) or 0),
-        })
-        mission._notifier_artisans_zone()
-
-        return request.redirect(
-            f'/assurances/portail?key={api_key}&success=1&ref={mission.reference}'
-        )
