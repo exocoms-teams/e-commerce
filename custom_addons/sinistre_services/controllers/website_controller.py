@@ -232,3 +232,87 @@ class SinistreWebsite(http.Controller):
             except Exception as e:
                 _logger.warning(f"Rappel mail failed: {e}")
         return request.redirect('/?rappel=ok')
+
+    # ── Demande d'accès API sandbox (formulaire assurance) ────────────
+    @http.route('/assurances/api-access', type='http', auth='public',
+                website=True, methods=['GET'], csrf=False)
+    def api_access_form(self, **kw):
+        return request.render('sinistre_services.ss_page_api_access', {
+            'error': False, 'success': False,
+            'year': datetime.datetime.now().year,
+        })
+
+    @http.route('/assurances/api-access/send', type='http', auth='public',
+                website=True, methods=['POST'], csrf=True)
+    def api_access_send(self, **post):
+        societe = post.get('societe', '').strip()
+        nom     = post.get('nom', '').strip()
+        email   = post.get('email', '').strip()
+
+        if not societe or not nom or not email:
+            return request.render('sinistre_services.ss_page_api_access', {
+                'error': True, 'success': False, 'year': datetime.datetime.now().year,
+            })
+
+        env = request.env(su=True)
+
+        # Vérifier si assurance déjà existante
+        existing = env['sinistre.assurance'].search(
+            [('partner_id.email', '=', email)], limit=1
+        )
+        if existing:
+            # Déjà inscrit — afficher succès quand même (sécurité)
+            return request.render('sinistre_services.ss_page_api_access', {
+                'error': False, 'success': True, 'year': datetime.datetime.now().year,
+            })
+
+        # Créer le partenaire
+        partner = env['res.partner'].search([('email', '=', email)], limit=1)
+        if not partner:
+            partner = env['res.partner'].create({
+                'name':         societe,
+                'email':        email,
+                'phone':        post.get('telephone', '').strip(),
+                'company_type': 'company',
+            })
+
+        # Types de sinistres cochés
+        types = []
+        for t in ['serrurerie', 'plomberie', 'vitrerie', 'menuiserie', 'electricite']:
+            if post.get(f'type_{t}'):
+                types.append(t)
+
+        # Créer la fiche assurance
+        note = f"Contact: {nom}\nVolume: {post.get('volume','')}\nSystème: {post.get('systeme','')}\nTypes: {', '.join(types)}\nBesoins: {post.get('besoins','')}"
+        assurance = env['sinistre.assurance'].create({
+            'name':          societe,
+            'partner_id':    partner.id,
+            'statut_compte': 'en_attente',
+            'note':          note,
+        })
+
+        # Notifier l'admin par email
+        try:
+            admin = env.ref('base.user_admin')
+            env['mail.mail'].create({
+                'subject':    f"Nouvelle demande d'accès API — {societe}",
+                'email_to':   admin.email or 'admin@sinistre-services.fr',
+                'email_from': 'no-reply@sinistre-services.fr',
+                'body_html':  f"""
+                    <h3>Nouvelle demande sandbox API</h3>
+                    <p><b>Société :</b> {societe}</p>
+                    <p><b>Contact :</b> {nom}</p>
+                    <p><b>Email :</b> {email}</p>
+                    <p><b>Téléphone :</b> {post.get('telephone','')}</p>
+                    <p><b>Volume :</b> {post.get('volume','')}</p>
+                    <p><b>Types :</b> {', '.join(types)}</p>
+                    <p><b>Besoins :</b> {post.get('besoins','')}</p>
+                    <p><a href="/odoo/sinistre/assurances/{assurance.id}">Valider le compte dans Odoo →</a></p>
+                """,
+            }).send()
+        except Exception:
+            pass
+
+        return request.render('sinistre_services.ss_page_api_access', {
+            'error': False, 'success': True, 'year': datetime.datetime.now().year,
+        })
