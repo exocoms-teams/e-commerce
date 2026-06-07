@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -507,24 +508,93 @@
                         <div class="card-header"><span class="card-icon">💶</span><h3 class="card-title">Devis</h3><span class="devis-status-badge" id="devisStatusBadge"></span></div>
                         <div id="devisContent"></div>
                     </div>
+                    <div class="card" id="notesCard">
+                        <div class="card-header">
+                            <span class="card-icon">📝</span>
+                            <h3 class="card-title">Notes internes</h3>
+                            <button class="btn btn-outline btn-sm" style="margin-left:auto;padding:4px 10px" onclick="MissionDetail.saveNotes()">💾</button>
+                        </div>
+                        <textarea id="missionNotesText" class="field-input" rows="3" placeholder="Notes internes (non visibles du client)…" style="resize:vertical"></textarea>
+                    </div>
+                    <div class="card" id="messagerieCard" style="cursor:pointer" onclick="MissionDetail.openMessagerie()">
+                        <div class="card-header">
+                            <span class="card-icon">💬</span>
+                            <h3 class="card-title">Messages Plateforme</h3>
+                            <span id="msgBadge" style="display:none;background:#EF4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-left:auto;"></span>
+                            <svg style="margin-left:8px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        </div>
+                    </div>
                     <div class="actions-block" id="missionActions"></div>
                 </div>
             </div>
 
             <!-- ── Vue Devis ── -->
             <div id="view-devis" class="view-page">
-                <div class="page-header"><button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button></div>
-                <div class="card"><h3 class="section-title">Créer un devis</h3><div id="devisLignes" class="devis-lignes"></div><button class="btn btn-outline btn-sm" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button></div>
-                <div class="card devis-totaux"><div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div><div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div><div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div></div>
-                <div class="card"><label class="field-label">Note pour le client</label><textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complémentaires…"></textarea></div>
-                <div class="actions-block"><button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button><button class="btn btn-primary btn-block" id="btnEnvoyerDevis" style="background:var(--grn)" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button></div>
+                <div class="page-header">
+                    <button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
+                </div>
+                <div id="devisAmendmentBanner" style="display:none;background:#FEF3C7;border-left:4px solid #D97706;padding:12px 16px;margin:0 0 12px;border-radius:8px">
+                    <p style="color:#92400E;font-weight:600;margin:0 0 4px">⚠️ Modification en cours d'intervention</p>
+                    <p style="color:#92400E;font-size:12px;margin:0">Le client devra signer à nouveau avant la reprise des travaux.</p>
+                </div>
+                <div class="card">
+                    <h3 class="section-title">Lignes du devis</h3>
+                    <div id="devisLignes" class="devis-lignes"></div>
+                    <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button>
+                </div>
+                <div class="card devis-totaux">
+                    <div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div>
+                    <div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div>
+                    <div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div>
+                </div>
+                <div class="card">
+                    <label class="field-label">Note pour le client</label>
+                    <textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complémentaires…"></textarea>
+                </div>
+                <div id="devisActionsNormal" class="actions-block">
+                    <button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button>
+                    <button class="btn btn-block" id="btnEnvoyerDevis" style="background:var(--grn);display:none" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button>
+                </div>
+                <div id="devisActionsAmendment" class="actions-block" style="display:none">
+                    <button class="btn-warning btn-block" onclick="DevisForm.saveAmendment()"><span>⚠️ Enregistrer &amp; demander re-signature</span></button>
+                </div>
             </div>
 
             <!-- ── Vue Signature ── -->
             <div id="view-signature" class="view-page">
-                <div class="page-header"><button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button></div>
-                <div class="card"><h3 class="section-title">Signature du client</h3><p class="field-sub">Le client signe pour accepter le devis</p><div class="signature-wrap"><canvas id="signatureCanvas"></canvas><div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div></div><div class="signature-actions"><button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button></div></div>
-                <div class="actions-block"><button class="btn btn-primary btn-block" onclick="Signature.confirm()">✅ Confirmer l'acceptation</button><button class="btn btn-danger btn-block" onclick="Signature.refuse()">❌ Client refuse le devis</button></div>
+                <div class="page-header">
+                    <button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
+                </div>
+                <div class="card">
+                    <h3 class="section-title" id="signatureTitle">Signature</h3>
+                    <p class="field-sub" id="signatureSub" style="margin-bottom:12px;color:#6B7280;font-size:13px"></p>
+                    <div class="signature-wrap">
+                        <canvas id="signatureCanvas"></canvas>
+                        <div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div>
+                    </div>
+                    <div class="signature-actions">
+                        <button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button>
+                    </div>
+                </div>
+                <div class="actions-block">
+                    <button id="btnSignConfirm" class="btn-start" onclick="Signature.confirm()">✅ Confirmer</button>
+                    <button id="btnSignRefuse" class="btn-danger btn-block" onclick="Signature.refuse()" style="display:none">❌ Client refuse le devis</button>
+                </div>
+            </div>
+
+            <!-- ── Vue Messagerie ── -->
+            <div id="view-messagerie" class="view-page">
+                <div class="page-header">
+                    <button class="back-btn" onclick="App.goBack(); Messagerie.stopPolling()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
+                    <span style="font-weight:600;font-size:15px;margin-left:8px">💬 Messages Plateforme</span>
+                </div>
+                <div id="messagerieList" style="padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 200px);min-height:200px"></div>
+                <div style="position:sticky;bottom:0;background:var(--surface,#fff);border-top:1px solid #E5E7EB;padding:12px;display:flex;gap:8px;align-items:flex-end">
+                    <textarea id="messagerieInput" class="field-input" rows="2" placeholder="Écrire un message…" style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();Messagerie.send()}"></textarea>
+                    <button class="btn-start" style="padding:10px 16px" onclick="Messagerie.send()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
             </div>
 
         </main>
@@ -546,6 +616,7 @@
 <script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/messagerie.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/carte.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/dashboard.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/mission_detail.js"></script>
@@ -636,5 +707,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<style>
+.msg-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5}
+.msg-me{align-self:flex-end;background:#1E40AF;color:#fff;border-bottom-right-radius:4px}
+.msg-other{align-self:flex-start;background:#F3F4F6;color:#1F2937;border-bottom-left-radius:4px}
+.msg-author{font-size:11px;font-weight:700;margin-bottom:3px;opacity:.7}
+.msg-date{font-size:10px;margin-top:4px;opacity:.6;text-align:right}
+.btn-warning{background:#D97706;color:#fff;border-radius:12px;padding:14px 20px;font-weight:700;font-size:15px;border:none;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+</style>
 </body>
 </html>
