@@ -136,6 +136,17 @@ class SinistreMission(models.Model):
 
     facture_assurance_id = fields.Many2one('account.move', string='Facture Assurance', readonly=True)
 
+    # ── Estimation tarifaire (visible artisan avant acceptation) ─────
+    montant_estime = fields.Monetary(
+        string='Montant Estimé',
+        currency_field='currency_id',
+        help='Fourchette de prix communiquée à l\'artisan avant acceptation de la mission',
+    )
+    montant_estime_max = fields.Monetary(
+        string='Montant Estimé Maximum',
+        currency_field='currency_id',
+    )
+
     # ── Messagerie mission ────────────────────────────────────────────
     sinistre_message_ids = fields.One2many('sinistre.message', 'mission_id', string='Messages Mission')
 
