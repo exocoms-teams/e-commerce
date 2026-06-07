@@ -67,7 +67,7 @@ class SinistreAssurance(models.Model):
     name = fields.Char(required=True)
     partner_id = fields.Many2one('res.partner', required=True)
     code = fields.Char(string='Code Assurance', help="Ex: AXA, MAIF, ALLIANZ")
-    api_key = fields.Char(string='Clé API', copy=False, readonly=True)
+    api_key = fields.Char(string='Clé API', copy=False)
     api_key_active = fields.Boolean(default=True)
     webhook_url = fields.Char(string='URL Webhook Retour')
     format_api = fields.Selection([
@@ -145,6 +145,23 @@ class SinistreAssurance(models.Model):
         self.api_key = secrets.token_urlsafe(32)
         return {'type': 'ir.actions.client', 'tag': 'display_notification',
                 'params': {'title': _('Clé API générée'), 'message': _(f'Nouvelle clé pour {self.name}'), 'type': 'success'}}
+
+    def action_copier_api_key(self):
+        """Affiche la clé dans une notification pour pouvoir la copier."""
+        self.ensure_one()
+        if not self.api_key:
+            return {'type': 'ir.actions.client', 'tag': 'display_notification',
+                    'params': {'title': 'Aucune clé', 'message': 'Générez d\'abord une clé API.', 'type': 'warning'}}
+        return {
+            'type': 'ir.actions.client',
+            'tag':  'display_notification',
+            'params': {
+                'title':   '🔑 Clé API',
+                'message': self.api_key,
+                'type':    'info',
+                'sticky':  True,
+            }
+        }
 
     def action_revoquer_api_key(self):
         self.write({'api_key': False, 'api_key_active': False})
