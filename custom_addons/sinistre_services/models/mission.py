@@ -139,6 +139,25 @@ class SinistreMission(models.Model):
     # ── Messagerie mission ────────────────────────────────────────────
     sinistre_message_ids = fields.One2many('sinistre.message', 'mission_id', string='Messages Mission')
 
+    # ── Signatures intervention ───────────────────────────────────────
+    signature_avant = fields.Text(
+        string='Signature Avant Intervention',
+        help='Signature base64 du client autorisant le démarrage des travaux',
+        copy=False,
+    )
+    signature_apres = fields.Text(
+        string='Signature Après Intervention',
+        help='Signature base64 du client validant la fin des travaux',
+        copy=False,
+    )
+
+    # ── Notes artisan ────────────────────────────────────────────────
+    notes_artisan = fields.Text(
+        string='Notes Artisan',
+        help="Notes internes de l'artisan (non visibles du client)",
+    )
+
+
     # ── Séquence ─────────────────────────────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
