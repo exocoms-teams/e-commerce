@@ -102,3 +102,24 @@ def migrate(cr, version):
         """, (iv_id, nom, date_val, iv_id, nom))
 
     _logger.info("[sinistre_services] ✓ Données Thomas Moreau migrées")
+
+    _logger.info("Migration 2.2.0 — ajout champs signature et notes")
+    
+        # ── sinistre.mission ──────────────────────────────────────────
+        cr.execute("""
+            ALTER TABLE sinistre_mission
+            ADD COLUMN IF NOT EXISTS signature_avant       TEXT,
+            ADD COLUMN IF NOT EXISTS signature_apres       TEXT,
+            ADD COLUMN IF NOT EXISTS notes_artisan         TEXT;
+        """)
+    
+        # ── sinistre.devis ─────────────────────────────────────────────
+        # Ajout de l'état 'en_revision' dans le type ENUM Odoo
+        # (Odoo stocke les Selection en VARCHAR, pas besoin de modifier le type)
+        cr.execute("""
+            ALTER TABLE sinistre_devis
+            ADD COLUMN IF NOT EXISTS signature_client_modif TEXT;
+        """)
+    
+        _logger.info("Migration 2.2.0 terminée.")
+
