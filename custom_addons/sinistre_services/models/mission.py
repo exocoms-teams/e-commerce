@@ -114,6 +114,11 @@ class SinistreMission(models.Model):
     devis_ids    = fields.One2many('sinistre.devis', 'mission_id', string='Devis')
     devis_count  = fields.Integer(compute='_compute_devis_count')
     photo_ids    = fields.One2many('sinistre.photo', 'mission_id', string='Photos')
+    photos_avant_count = fields.Integer(compute='_compute_photos_count', string='Photos Avant')
+    photos_apres_count = fields.Integer(compute='_compute_photos_count', string='Photos Après')
+
+    facture_client_id = fields.Many2one('account.move', string='Facture Client', readonly=True)
+    token_api = fields.Char(string='Token API', readonly=True, copy=False)
 
     montant_devis = fields.Monetary(
         string='Montant Devis Accepté', compute='_compute_montant_devis',
@@ -138,6 +143,12 @@ class SinistreMission(models.Model):
         return super().create(vals_list)
 
     # ── Compute ──────────────────────────────────────────────────────
+    @api.depends('photo_ids', 'photo_ids.type_photo')
+    def _compute_photos_count(self):
+        for rec in self:
+            rec.photos_avant_count = len(rec.photo_ids.filtered(lambda p: p.type_photo == 'avant'))
+            rec.photos_apres_count = len(rec.photo_ids.filtered(lambda p: p.type_photo == 'apres'))
+
     @api.depends('devis_ids', 'devis_ids.state', 'devis_ids.montant_total')
     def _compute_montant_devis(self):
         for rec in self:
