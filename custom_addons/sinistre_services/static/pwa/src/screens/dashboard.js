@@ -1,21 +1,18 @@
 /**
- * dashboard.js — Dashboard Desktop ArtisanPro
- * Gère : tableau de bord, missions, interventions, carte
+ * dashboard.js — Dashboard ArtisanPro
+ * Remplace la mini-carte par une liste de missions proposées (à accepter/refuser)
  */
 
 window.Dashboard = (() => {
-    let _missions = [];
+    let _missions    = [];
+    let _proposees   = [];
     let _interventions = [];
     let _metierFilter = 'all';
     let _statusFilter = 'all';
     let _intervFilter = 'all';
-    let _searchQuery = '';
-    let _currentMapPin = null;
+    let _searchQuery  = '';
 
-    // Pins de carte — alimentés par les missions réelles
-    const MAP_PINS = [];
-
-    /* ── Badge helpers ── */
+    /* ── Badges ── */
     function _metierBadge(type) {
         const map = {
             serrurerie:     ['badge-serrurerie',  'Serrurerie'],
@@ -29,109 +26,83 @@ window.Dashboard = (() => {
         const [cls, label] = map[type] || ['badge-autre', type || '—'];
         return `<span class="badge ${cls}">${label}</span>`;
     }
-
     function _urgenceBadge(u) {
-        if (u === 'tres_urgente' || u === 'urgente') return `<span class="badge badge-urgente">Urgente</span>`;
+        if (u === 'tres_urgente') return `<span class="badge badge-urgente">🔴 Très urgente</span>`;
+        if (u === 'urgente')      return `<span class="badge badge-urgente">🟠 Urgente</span>`;
         return '';
     }
-
     function _stateBadge(state) {
         const map = {
-            nouveau: ['badge-planifiee', 'Planifiée'],
-            assigne: ['badge-en-cours', 'En cours'],
-            rdv_planifie: ['badge-planifiee', 'Planifiée'],
-            en_cours: ['badge-en-cours', 'En cours'],
-            travaux_en_cours: ['badge-en-cours', 'En cours'],
-            termine: ['badge-terminee', 'Terminée'],
-            clos: ['badge-terminee', 'Terminée'],
+            nouveau:          ['badge-planifiee', 'Planifiée'],
+            assigne:          ['badge-en-cours',  'En cours'],
+            rdv_planifie:     ['badge-planifiee', 'Planifiée'],
+            en_cours:         ['badge-en-cours',  'En cours'],
+            travaux_en_cours: ['badge-en-cours',  'En cours'],
+            termine:          ['badge-terminee',  'Terminée'],
+            clos:             ['badge-terminee',  'Terminée'],
         };
         const [cls, label] = map[state] || ['badge-planifiee', 'Planifiée'];
         return `<span class="badge ${cls}">${label}</span>`;
     }
 
-    /* ── Format date ── */
+    /* ── Dates ── */
     function _fmtDate(d) {
         if (!d) return '—';
-        const dt = new Date(d);
-        return dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
     }
-
     function _fmtDateTime(d) {
         if (!d) return '—';
         const dt = new Date(d);
         const today = new Date();
         const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-        let day = '';
-        if (dt.toDateString() === today.toDateString()) day = "Aujourd'hui";
-        else if (dt.toDateString() === tomorrow.toDateString()) day = 'Demain';
-        else day = dt.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-        const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        return `${day} · ${time}`;
+        let day = dt.toDateString() === today.toDateString()    ? "Aujourd'hui"
+                : dt.toDateString() === tomorrow.toDateString() ? 'Demain'
+                : dt.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+        return `${day} · ${dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`;
     }
 
-    /* ═══════════════════════════════════════════
-       DASHBOARD (tableau de bord)
-    ═══════════════════════════════════════════ */
-    function _loadDashboard() { return _loadDashboardAsync(); }
-    async function _loadDashboardAsync() {
+    /* ══════════════════════════════════════════════════════
+       DASHBOARD
+    ══════════════════════════════════════════════════════ */
+    async function _loadDashboard() {
         try {
             const data = await API.getMissions();
             _missions = data.missions || [];
             localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
         } catch(err) {
             const cached = localStorage.getItem('ss_missions_cache');
-            if (cached) {
-                try { _missions = JSON.parse(cached); } catch(e) {}
-            }
-            console.warn('[Dashboard] API unavailable, using cache');
+            if (cached) { try { _missions = JSON.parse(cached); } catch(e) {} }
         }
-
         _updateDashStats();
         _renderToday();
-        _renderCarteNext();
-        // Mettre à jour la mini carte si déjà initialisée
-        _placeDashMarkers();
+        await _loadProposees();
     }
 
     function _updateDashStats() {
-        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        const actives = _missions.filter(m => ACTIVE_STATES.includes(m.state)).length;
-
-        // Données réelles depuis le localStorage (remplies par /api/sinistre/v1/me)
+        const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        const actives = _missions.filter(m => ACTIVE.includes(m.state)).length;
         let user = {};
         try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        const nbInterv = user.interventions !== undefined ? user.interventions : 0;
-        const caMonth  = user.ca_mois       !== undefined ? user.ca_mois       : 0;
-        const caTotal  = user.ca_total      !== undefined ? user.ca_total      : 0;
+        const nbInterv = user.interventions ?? 0;
+        const caMonth  = user.ca_mois       ?? 0;
+        const caTotal  = user.ca_total      ?? 0;
         const note     = nbInterv > 0 ? (user.note_moyenne || 0) : 0;
 
-        var sA = document.getElementById('statActives');
-        var sC = document.getElementById('statCA');
-        var sN = document.getElementById('statNote');
-        var sI = document.getElementById('statInterventions');
-        if (sA) sA.textContent = actives || '0';
-        if (sC) sC.textContent = caMonth.toLocaleString('fr-FR') + ' €';
-        if (sN) sN.textContent = nbInterv > 0 ? note.toFixed(1) : '0';
-        if (sI) sI.textContent = nbInterv;
-
-        // Interventions page stats
-        var sIT = document.getElementById('statIntervTotal');
-        var sIC = document.getElementById('statIntervCA');
-        var sIM = document.getElementById('statIntervMoyen');
-        if (sIT) sIT.textContent = nbInterv;
-        if (sIC) sIC.textContent = caTotal.toLocaleString('fr-FR') + ' €';
-        if (sIM) sIM.textContent = nbInterv ? Math.round(caTotal / nbInterv).toLocaleString('fr-FR') + ' €' : '0 €';
+        const el = id => document.getElementById(id);
+        if (el('statActives'))      el('statActives').textContent      = actives;
+        if (el('statCA'))           el('statCA').textContent           = caMonth.toLocaleString('fr-FR') + ' €';
+        if (el('statNote'))         el('statNote').textContent         = nbInterv > 0 ? note.toFixed(1) : '0';
+        if (el('statInterventions'))el('statInterventions').textContent = nbInterv;
+        if (el('statIntervTotal'))  el('statIntervTotal').textContent  = nbInterv;
+        if (el('statIntervCA'))     el('statIntervCA').textContent     = caTotal.toLocaleString('fr-FR') + ' €';
+        if (el('statIntervMoyen'))  el('statIntervMoyen').textContent  = nbInterv ? Math.round(caTotal/nbInterv).toLocaleString('fr-FR') + ' €' : '0 €';
     }
 
     function _renderToday() {
         const container = document.getElementById('todayList');
         if (!container) return;
-
-        // Missions actives (tri par urgence puis date)
-        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        let items = _missions.filter(m => ACTIVE_STATES.includes(m.state));
-
-        // Aucune mission
+        const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
+        const items = _missions.filter(m => ACTIVE.includes(m.state));
         if (!items.length) {
             container.innerHTML = `
                 <div class="empty-missions">
@@ -141,21 +112,16 @@ window.Dashboard = (() => {
                 </div>`;
             return;
         }
-
         container.innerHTML = items.slice(0, 5).map(m => {
-            const addr = (m.adresse_intervention || m.adresse || '');
-            const city = addr.includes(',') ? addr.split(',').slice(-1)[0].trim() : addr.split(' · ').slice(-1)[0];
+            const addr  = m.adresse_intervention || m.adresse || '';
+            const city  = addr.includes(',') ? addr.split(',').slice(-1)[0].trim() : addr;
             const title = m.description_sinistre || m.title || '—';
             const price = m.montant || m.montant_devis || 0;
             const stateBadge = (m.urgence === 'urgente' || m.urgence === 'tres_urgente')
-                ? _urgenceBadge(m.urgence)
-                : _stateBadge(m.state);
+                ? _urgenceBadge(m.urgence) : _stateBadge(m.state);
             return `
-                <div class="today-item" ${m.id ? `onclick="MissionDetail.open(${m.id})"` : ''}>
-                    <div class="today-item-top">
-                        ${_metierBadge(m.type_intervention)}
-                        ${stateBadge}
-                    </div>
+                <div class="today-item" ${m.id ? `onclick="MissionDetail.open(${m.id})"` : ''} style="cursor:pointer">
+                    <div class="today-item-top">${_metierBadge(m.type_intervention)}${stateBadge}</div>
                     <div class="today-item-title">${title}</div>
                     <div class="today-item-addr">${city}</div>
                     <div class="today-item-foot">
@@ -165,192 +131,173 @@ window.Dashboard = (() => {
                         </span>
                         <span class="today-item-price">${price ? price.toLocaleString('fr-FR') + ' €' : '—'}</span>
                     </div>
-                </div>
-            `;
+                </div>`;
         }).join('');
     }
 
-    /* ═══════════════════════════════════════════
-       MINI CARTE DASHBOARD
-    ═══════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════
+       MISSIONS PROPOSÉES (nouvelles — à accepter/refuser)
+    ══════════════════════════════════════════════════════ */
+    async function _loadProposees() {
+        const container = document.getElementById('proposeesList');
+        const badge     = document.getElementById('proposeesBadge');
+        if (!container) return;
 
-    let _dashMap = null;
-    let _dashMarkers = [];
+        try {
+            const data = await API.getMissionsProposees();
+            _proposees = data.missions || [];
+        } catch(err) {
+            // Fallback : missions en état 'nouveau' non assignées
+            _proposees = [];
+        }
 
-    function _initDashMap() {
-        // Ne pas initialiser si la vue dashboard n'est pas active
-        var view = document.getElementById('view-dashboard');
-        if (!view || !view.classList.contains('active')) return;
+        if (badge) badge.textContent = _proposees.length ? `${_proposees.length} disponible${_proposees.length > 1 ? 's' : ''}` : '';
 
-        if (!window.google || !window.google.maps) {
-            setTimeout(_initDashMap, 400);
+        if (!_proposees.length) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px 20px;color:#9CA3AF">
+                    <div style="font-size:32px;margin-bottom:8px">🎯</div>
+                    <div style="font-weight:600;font-size:14px;color:#374151;margin-bottom:4px">Aucune mission disponible</div>
+                    <div style="font-size:13px">De nouvelles missions vous seront proposées prochainement</div>
+                </div>`;
             return;
         }
-        var el = document.getElementById('dashGoogleMap');
-        if (!el || _dashMap) return;
 
-        var user = {};
-        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        var zone = (user.zone || 'Paris').trim();
+        container.innerHTML = _proposees.map(m => _renderProposeeCard(m)).join('');
+    }
 
-        // Mettre à jour le badge
-        var badge = document.getElementById('dashZoneBadge');
-        if (badge) badge.textContent = 'Zone : ' + zone;
+    function _renderProposeeCard(m) {
+        const price    = m.montant_garanti || m.montant_devis || m.montant || 0;
+        const addr     = m.adresse_intervention || m.adresse || '—';
+        const desc     = m.description_sinistre || m.description || '—';
+        const isUrgent = m.urgence === 'urgente' || m.urgence === 'tres_urgente';
 
-        // Créer la carte avec mapId pour AdvancedMarker
-        _dashMap = new google.maps.Map(el, {
-            center: { lat: 48.8566, lng: 2.3522 },
-            zoom: 13,
-            mapId: 'DEMO_MAP_ID',
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-            zoomControl: true,
-            gestureHandling: 'cooperative',
-            styles: [
-                {featureType:'poi',stylers:[{visibility:'off'}]},
-                {featureType:'transit',elementType:'labels.icon',stylers:[{visibility:'off'}]},
-                {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
-                {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#e8e8e8'}]},
-                {featureType:'water',elementType:'geometry',stylers:[{color:'#93C5FD'}]},
-                {featureType:'landscape',elementType:'geometry',stylers:[{color:'#f0f4f8'}]},
-            ],
-        });
+        return `
+        <div class="proposee-card" id="proposee-${m.id}" style="
+            border:1.5px solid ${isUrgent ? '#FCA5A5' : '#E5E7EB'};
+            border-radius:14px;
+            padding:16px;
+            background:${isUrgent ? '#FFF7F7' : '#FAFAFA'};
+            transition:box-shadow .15s;
+        ">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${_metierBadge(m.type_intervention)}
+                    ${_urgenceBadge(m.urgence)}
+                </div>
+                <div style="font-size:20px;font-weight:800;color:#1E40AF;white-space:nowrap">
+                    ${price ? price.toLocaleString('fr-FR') + ' €' : '—'}
+                </div>
+            </div>
+            <div style="font-weight:600;font-size:14px;color:#111827;margin-bottom:6px;line-height:1.4">${desc}</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#6B7280;margin-bottom:4px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                ${addr}
+            </div>
+            ${m.date_rdv ? `
+            <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#6B7280;margin-bottom:12px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${_fmtDateTime(m.date_rdv)}
+            </div>` : '<div style="margin-bottom:12px"></div>'}
+            <div style="display:flex;gap:8px">
+                <button onclick="Dashboard.accepterMission(${m.id}, this)" style="
+                    flex:1;background:#059669;color:#fff;border:none;border-radius:10px;
+                    padding:10px;font-weight:700;font-size:13px;cursor:pointer;
+                    display:flex;align-items:center;justify-content:center;gap:6px
+                ">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Accepter
+                </button>
+                <button onclick="Dashboard.refuserMission(${m.id}, this)" style="
+                    flex:1;background:#F3F4F6;color:#374151;border:none;border-radius:10px;
+                    padding:10px;font-weight:600;font-size:13px;cursor:pointer;
+                    display:flex;align-items:center;justify-content:center;gap:6px
+                ">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    Refuser
+                </button>
+            </div>
+        </div>`;
+    }
 
-        // Géocoder la zone pour centrer
-        new google.maps.Geocoder().geocode(
-            { address: zone + ', France' },
-            function(res, st) {
-                if (st === 'OK' && res[0]) {
-                    _dashMap.setCenter(res[0].geometry.location);
-                }
+    async function accepterMission(missionId, btn) {
+        btn.disabled = true;
+        btn.textContent = '…';
+        try {
+            await API.accepterMissionProposee(missionId);
+            // Retirer la carte avec animation
+            const card = document.getElementById(`proposee-${missionId}`);
+            if (card) {
+                card.style.transition = 'opacity .3s, transform .3s';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(20px)';
+                setTimeout(() => card.remove(), 300);
             }
-        );
-
-        // Placer les marqueurs
-        _placeDashMarkers();
+            Toast.show('✅ Mission acceptée — elle est dans Mes Missions', 'success');
+            // Recharger les missions
+            const data = await API.getMissions();
+            _missions = data.missions || [];
+            _updateDashStats();
+            _renderToday();
+            // Mettre à jour badge
+            _proposees = _proposees.filter(m => m.id !== missionId);
+            const badge = document.getElementById('proposeesBadge');
+            if (badge) badge.textContent = _proposees.length ? `${_proposees.length} disponible${_proposees.length > 1 ? 's' : ''}` : '';
+        } catch(err) {
+            Toast.show('Erreur: ' + err.message, 'error');
+            btn.disabled = false;
+            btn.textContent = 'Accepter';
+        }
     }
 
-    function _renderDashMapEmbed(zone) {
-        // Alias pour compatibilité — appelle _initDashMap
-        _initDashMap();
-    }
-
-
-
-    function _formatZone(zone) {
-        // "Paris 75011" → "Paris 11e" ; "Bezons 95870" → "Bezons 95"
-        return zone.replace(/\s+\d+/g, function(match) {
-            var code = match.trim();
-            if (code.startsWith('75') && code.length >= 5) {
-                var arr = parseInt(code.slice(-2));
-                return ' ' + arr + 'e';
+    async function refuserMission(missionId, btn) {
+        if (!confirm('Refuser cette mission ?')) return;
+        btn.disabled = true;
+        try {
+            await API.refuserMissionProposee(missionId);
+            const card = document.getElementById(`proposee-${missionId}`);
+            if (card) {
+                card.style.transition = 'opacity .3s';
+                card.style.opacity = '0';
+                setTimeout(() => card.remove(), 300);
             }
-            return ' ' + code.slice(0, 2);
-        });
+            Toast.show('Mission refusée', 'warning');
+            _proposees = _proposees.filter(m => m.id !== missionId);
+            const badge = document.getElementById('proposeesBadge');
+            if (badge) badge.textContent = _proposees.length ? `${_proposees.length} disponible${_proposees.length > 1 ? 's' : ''}` : '';
+            if (!_proposees.length) {
+                const container = document.getElementById('proposeesList');
+                if (container) container.innerHTML = `
+                    <div style="text-align:center;padding:40px 20px;color:#9CA3AF">
+                        <div style="font-size:32px;margin-bottom:8px">🎯</div>
+                        <div style="font-weight:600;font-size:14px;color:#374151;margin-bottom:4px">Aucune mission disponible</div>
+                        <div style="font-size:13px">De nouvelles missions vous seront proposées prochainement</div>
+                    </div>`;
+            }
+        } catch(err) {
+            Toast.show('Erreur: ' + err.message, 'error');
+            btn.disabled = false;
+        }
     }
 
-    function _placeDashMarkers() {
-        if (!_dashMap || !window.google || !window.google.maps) return;
-
-        // Supprimer anciens marqueurs
-        _dashMarkers.forEach(function(m) { try { m.map = null; } catch(e) {} });
-        _dashMarkers = [];
-
-        var COLORS = { serrurerie:'#14B8A6', plomberie:'#3B82F6', electricite:'#F59E0B', vitrerie:'#10B981', menuiserie_int:'#8B5CF6', menuiserie_ext:'#8B5CF6', autre:'#6B7280' };
-        var ACTIVE  = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        var missions = _missions.filter(function(m) { return ACTIVE.includes(m.state); });
-        if (!missions.length) return;
-
-        var geocoder = new google.maps.Geocoder();
-        var bounds   = new google.maps.LatLngBounds();
-        var done     = 0;
-
-        missions.slice(0, 6).forEach(function(mission) {
-            var addr = mission.adresse_intervention || mission.adresse;
-            if (!addr) { done++; return; }
-            geocoder.geocode({ address: addr + ', France' }, function(res, st) {
-                done++;
-                if (st !== 'OK' || !res[0] || !_dashMap) return;
-                var pos   = res[0].geometry.location;
-                var color = COLORS[mission.type_intervention] || '#6B7280';
-                var urgent = mission.urgence === 'urgente' || mission.urgence === 'tres_urgente';
-
-                var pin = document.createElement('div');
-                pin.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 36 44">'
-                    + '<circle cx="18" cy="18" r="16" fill="'+color+'" stroke="white" stroke-width="2.5"/>'
-                    + '<circle cx="18" cy="18" r="6" fill="white"/>'
-                    + (urgent ? '<circle cx="27" cy="7" r="7" fill="#EF4444" stroke="white" stroke-width="2"/>' : '')
-                    + '<line x1="18" y1="34" x2="18" y2="44" stroke="'+color+'" stroke-width="3"/></svg>';
-                pin.style.cursor = 'pointer';
-
-                var marker = new google.maps.marker.AdvancedMarkerElement({
-                    position: pos, map: _dashMap,
-                    title: mission.description_sinistre || mission.reference,
-                    content: pin,
-                });
-                marker.addListener('gmp-click', function() { _showDashPopup(mission); });
-                _dashMarkers.push(marker);
-                bounds.extend(pos);
-
-                if (done >= missions.slice(0,6).length && !bounds.isEmpty()) {
-                    _dashMap.fitBounds(bounds, { padding: 40 });
-                    google.maps.event.addListenerOnce(_dashMap, 'bounds_changed', function() {
-                        if (_dashMap.getZoom() > 14) _dashMap.setZoom(14);
-                    });
-                }
-            });
-        });
-    }
-
-    function _showDashPopup(mission) {
-        var popup = document.getElementById('mapPopup');
-        if (!popup) return;
-        popup.style.display = 'block';
-
-        var COLORS = {serrurerie:'#14B8A6',plomberie:'#3B82F6',electricite:'#F59E0B',vitrerie:'#10B981',menuiserie_int:'#8B5CF6',menuiserie_ext:'#8B5CF6',autre:'#6B7280'};
-        var LABELS = {serrurerie:'Serrurerie',plomberie:'Plomberie',electricite:'Électricité',vitrerie:'Vitrerie',menuiserie_int:'Menuiserie',menuiserie_ext:'Menuiserie',autre:'Autre'};
-        var color = COLORS[mission.type_intervention] || '#6B7280';
-        var label = LABELS[mission.type_intervention] || mission.type_intervention;
-        var urgent = mission.urgence === 'urgente' || mission.urgence === 'tres_urgente';
-
-        document.getElementById('mapPopupBadges').innerHTML =
-            '<span style="background:'+color+'20;color:'+color+';padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">'+label+'</span>'+
-            (urgent?' <span style="background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">Urgente</span>':'');
-        document.getElementById('mapPopupTitle').textContent = mission.description_sinistre || '—';
-        document.getElementById('mapPopupAddr').textContent  = mission.adresse_intervention || mission.adresse || '—';
-        document.getElementById('mapPopupPrice').innerHTML   =
-            '<span style="font-size:18px;font-weight:800;color:#1E40AF">'+(mission.montant?mission.montant.toLocaleString('fr-FR')+' €':'—')+'</span>';
-
-        // Stocker pour itinéraire
-        window._dashSelectedMission = mission;
-    }
-
-    /* ═══════════════════════════════════════════
+    /* ══════════════════════════════════════════════════════
        MISSIONS EN COURS
-    ═══════════════════════════════════════════ */
+    ══════════════════════════════════════════════════════ */
     function loadMissions() {
         const container = document.getElementById('missionsList');
         if (!container) return;
-
         container.innerHTML = '<div class="skeleton-card-h"></div><div class="skeleton-card-h"></div>';
-
-        const ACTIVE_STATES = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        
-        // Try fresh API call
+        const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
         API.getMissions().then(data => {
             _missions = data.missions || [];
             localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
-        }).catch(() => {
-            // use cached
-        }).finally(() => {
-            const missions = _missions.filter(m => ACTIVE_STATES.includes(m.state));
-            var sub = document.getElementById('missionsSubtitle');
+        }).catch(() => {}).finally(() => {
+            const missions = _missions.filter(m => ACTIVE.includes(m.state));
+            const sub = document.getElementById('missionsSubtitle');
             if (sub) sub.textContent = missions.length + ' mission(s) active(s)';
             _renderMissions(missions);
         });
     }
-
 
     function _renderMissions(missions) {
         let filtered = missions.filter(m => {
@@ -360,8 +307,8 @@ window.Dashboard = (() => {
             if (_statusFilter === 'planifiee' && !['rdv_planifie','nouveau'].includes(m.state)) return false;
             if (_searchQuery) {
                 const q = _searchQuery.toLowerCase();
-                const haystack = ((m.description_sinistre||'')+(m.client||'')+(m.adresse_intervention||'')).toLowerCase();
-                if (!haystack.includes(q)) return false;
+                const hay = ((m.description_sinistre||'')+(m.client||'')+(m.adresse_intervention||'')).toLowerCase();
+                if (!hay.includes(q)) return false;
             }
             return true;
         });
@@ -375,7 +322,7 @@ window.Dashboard = (() => {
                 <div class="empty-state-full">
                     <div class="empty-state-icon">${isFiltered ? '🔍' : '📋'}</div>
                     <div class="empty-state-title">${isFiltered ? 'Aucun résultat' : 'Aucune mission en cours'}</div>
-                    <div class="empty-state-sub">${isFiltered ? 'Modifiez vos filtres pour voir plus de missions' : 'Vous n\'avez pas encore de missions assignées'}</div>
+                    <div class="empty-state-sub">${isFiltered ? 'Modifiez vos filtres' : "Vous n'avez pas encore de missions assignées"}</div>
                 </div>`;
             return;
         }
@@ -386,17 +333,14 @@ window.Dashboard = (() => {
                     ${_metierBadge(m.type_intervention)}
                     ${_urgenceBadge(m.urgence)}
                     <span class="mc-ref">Réf. ${m.reference}</span>
-                    <span class="mc-price">${(m.montant || m.montant_devis) ? (m.montant || m.montant_devis).toLocaleString('fr-FR') + ' €' : '—'}</span>
-                    <div style="text-align:right">
-                        <div style="font-size:11px;color:#9CA3AF">Client : ${m.client||'—'}</div>
-                    </div>
+                    <span class="mc-price">${(m.montant||m.montant_devis) ? (m.montant||m.montant_devis).toLocaleString('fr-FR')+' €' : '—'}</span>
+                    <div style="text-align:right"><div style="font-size:11px;color:#9CA3AF">Client : ${m.client||'—'}</div></div>
                 </div>
-                <div class="mc-title">${m.description_sinistre || m.description || '—'}</div>
-                <div class="mc-desc">${m.desc_detail || ''}</div>
+                <div class="mc-title">${m.description_sinistre||m.description||'—'}</div>
                 <div class="mc-meta">
                     <span class="mc-meta-item">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
-                        ${m.adresse_intervention || m.adresse || '—'}${m.dist ? ' · ' + m.dist : ''}
+                        ${m.adresse_intervention||m.adresse||'—'}
                     </span>
                     <span class="mc-meta-item">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -404,12 +348,8 @@ window.Dashboard = (() => {
                     </span>
                 </div>
                 <div class="mc-actions">
-                    <button class="btn-start" onclick="MissionDetail && MissionDetail.open(${JSON.stringify(m.id||m.reference)})">Démarrer l'intervention</button>
-                    <button class="btn-nav">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                        Itinéraire
-                    </button>
-                    <button class="btn-call">
+                    <button class="btn-start" onclick="MissionDetail&&MissionDetail.open(${JSON.stringify(m.id||m.reference)})">Ouvrir la mission</button>
+                    <button class="btn-call" onclick="window.location.href='tel:${m.tel_sur_place||''}'">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.86C1.6 3.82 2.4 3 3.44 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.78-.78a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 18z"/></svg>
                         Appeler client
                     </button>
@@ -418,20 +358,10 @@ window.Dashboard = (() => {
         `).join('');
     }
 
-    /* ═══════════════════════════════════════════
+    /* ══════════════════════════════════════════════════════
        INTERVENTIONS RÉALISÉES
-    ═══════════════════════════════════════════ */
+    ══════════════════════════════════════════════════════ */
     function loadInterventions() {
-        const demo = [
-            { ref: 'M-2026-0455', date: '2026-05-22', client: 'M. Roux',          type: 'serrurerie',  prestation: 'Changement cylindre',   addr: '15 rue du Faubourg',      montant: 240 },
-            { ref: 'M-2026-0452', date: '2026-05-20', client: 'Mme Aziz',         type: 'plomberie',   prestation: 'Débouchage canalisation', addr: '9 rue Saint-Maur',        montant: 165 },
-            { ref: 'M-2026-0448', date: '2026-05-18', client: 'Boulangerie Paul',  type: 'electricite', prestation: 'Réparation four pro',     addr: '31 av. de la République', montant: 380 },
-            { ref: 'M-2026-0444', date: '2026-05-15', client: 'M. Garnier',        type: 'plomberie',   prestation: 'Entretien annuel chaudière', addr: '4 rue Popincourt',     montant: 130 },
-            { ref: 'M-2026-0440', date: '2026-05-12', client: 'Mme Lefèvre',       type: 'vitrerie',    prestation: 'Pose miroir sur mesure',  addr: '18 rue Crussol',          montant: 290 },
-            { ref: 'M-2026-0437', date: '2026-05-08', client: 'M. Nguyen',         type: 'serrurerie',  prestation: 'Blindage porte palière',  addr: '62 rue de Charonne',      montant: 890 },
-        ];
-
-        // Merge avec missions terminées de l'API
         const apiTerminees = _missions
             .filter(m => m.state === 'termine' || m.state === 'clos')
             .map(m => ({
@@ -439,180 +369,80 @@ window.Dashboard = (() => {
                 type: m.type_intervention, prestation: m.description_sinistre,
                 addr: m.adresse_intervention, montant: m.montant,
             }));
-
         _interventions = apiTerminees;
         _renderInterventions();
-
-        // Update stats
         const total = _interventions.length;
-        const ca = _interventions.reduce((a, i) => a + (i.montant || 0), 0);
-        var sIT = document.getElementById('statIntervTotal');
-        var sIC = document.getElementById('statIntervCA');
-        var sIM = document.getElementById('statIntervMoyen');
-        if (sIT) sIT.textContent = total;
-        if (sIC) sIC.textContent = ca.toLocaleString('fr-FR') + ' €';
-        if (sIM) sIM.textContent = total ? Math.round(ca / total).toLocaleString('fr-FR') + ' €' : '—';
+        const ca = _interventions.reduce((a, i) => a + (i.montant||0), 0);
+        const el = id => document.getElementById(id);
+        if (el('statIntervTotal')) el('statIntervTotal').textContent = total;
+        if (el('statIntervCA'))    el('statIntervCA').textContent    = ca.toLocaleString('fr-FR') + ' €';
+        if (el('statIntervMoyen')) el('statIntervMoyen').textContent = total ? Math.round(ca/total).toLocaleString('fr-FR') + ' €' : '—';
     }
 
     function _renderInterventions() {
         const tbody = document.getElementById('intervTableBody');
         if (!tbody) return;
-
-        let list = _intervFilter === 'all'
-            ? _interventions
-            : _interventions.filter(i => i.type === _intervFilter);
-
+        const list = _intervFilter === 'all' ? _interventions : _interventions.filter(i => i.type === _intervFilter);
         if (!list.length) {
-            tbody.innerHTML = `
-                <tr><td colspan="7">
-                    <div class="empty-state-full" style="padding:60px 0">
-                        <div class="empty-state-icon">✅</div>
-                        <div class="empty-state-title">Aucune intervention terminée</div>
-                        <div class="empty-state-sub">Vos interventions réalisées apparaîtront ici</div>
-                    </div>
-                </td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state-full" style="padding:60px 0"><div class="empty-state-icon">✅</div><div class="empty-state-title">Aucune intervention terminée</div></div></td></tr>`;
             return;
         }
-
         tbody.innerHTML = list.map(i => `
             <tr>
                 <td class="interv-ref">${i.ref}</td>
-                <td class="interv-date">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    ${_fmtDate(i.date)}
-                </td>
-                <td>${i.client || '—'}</td>
+                <td class="interv-date">${_fmtDate(i.date)}</td>
+                <td>${i.client||'—'}</td>
                 <td>${_metierBadge(i.type)}</td>
-                <td>
-                    <div style="font-weight:600;font-size:13.5px">${i.prestation || '—'}</div>
-                    <div style="font-size:12px;color:#9CA3AF">${i.addr || ''}</div>
-                </td>
-                <td class="interv-amount">${i.montant ? i.montant + ' €' : '—'}</td>
+                <td><div style="font-weight:600;font-size:13.5px">${i.prestation||'—'}</div><div style="font-size:12px;color:#9CA3AF">${i.addr||''}</div></td>
+                <td class="interv-amount">${i.montant ? i.montant+' €' : '—'}</td>
                 <td><span class="badge badge-terminee">Terminée</span></td>
-            </tr>
-        `).join('');
+            </tr>`).join('');
     }
 
-    /* ═══════════════════════════════════════════
-       CARTE
-    ═══════════════════════════════════════════ */
-    function initCarte() {
-        _renderCarteNext();
-    }
+    /* ── Carte (compatibilité) ── */
+    function initCarte() {}
+    function _renderCarteNext() {}
 
-    function _renderCarteNext() {
-        // Prendre la première mission active
-        const ACTIVE = ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'];
-        const first = _missions.find(m => ACTIVE.includes(m.state));
-        var ct = document.getElementById('carteNextTitle');
-        var ca = document.getElementById('carteNextAddr');
-        var cd = document.getElementById('carteNextDist');
-        var cp = document.getElementById('carteNextPrice');
-        if (!first) {
-            if (ct) ct.textContent = 'Aucune mission';
-            if (ca) ca.textContent = '—';
-            if (cd) cd.textContent = '—';
-            if (cp) cp.textContent = '—';
-            return;
-        }
-        if (ct) ct.textContent = first.description_sinistre || first.description || '—';
-        if (ca) ca.textContent = first.adresse_intervention || first.adresse || '—';
-        if (cd) cd.textContent = '—';
-        if (cp) cp.textContent = first.montant ? first.montant + ' €' : '—';
-    }
-
-    function showMapPin(idx) {
-        const pin = MAP_PINS[idx];
-        if (!pin) return;
-        _currentMapPin = idx;
-
-        // Dashboard popup
-        var popup = document.getElementById('mapPopup');
-        if (popup) {
-            document.getElementById('mapPopupBadges').innerHTML = _metierBadge(pin.type) + (pin.urgence ? _urgenceBadge(pin.urgence) : '');
-            document.getElementById('mapPopupTitle').textContent = pin.title;
-            document.getElementById('mapPopupAddr').textContent = pin.addr;
-            document.getElementById('mapPopupPrice').innerHTML = `<span style="font-size:18px;font-weight:800;color:#1E40AF">${pin.price}</span> <span style="font-size:12px;color:#6B7280">${pin.dist}</span>`;
-            popup.style.display = 'block';
-        }
-
-        // Carte popup
-        var cp = document.getElementById('carteMapPopup');
-        if (cp) {
-            document.getElementById('cartePopupBadges').innerHTML = _metierBadge(pin.type) + (pin.urgence ? _urgenceBadge(pin.urgence) : '');
-            document.getElementById('cartePopupTitle').textContent = pin.title;
-            document.getElementById('cartePopupAddr').textContent = pin.addr;
-            document.getElementById('cartePopupPrice').innerHTML = `<span style="font-size:18px;font-weight:800;color:#1E40AF">${pin.price}</span> <span style="font-size:12px;color:#6B7280">${pin.dist}</span>`;
-            cp.style.display = 'block';
-        }
-    }
-
-    function acceptMission() {
-        Toast.show('Mission acceptée ! 🎉', 'success');
-        var popup = document.getElementById('mapPopup');
-        if (popup) popup.style.display = 'none';
-    }
-
-    /* ═══════════════════════════════════════════
-       FILTRES
-    ═══════════════════════════════════════════ */
+    /* ── Filtres ── */
     function setMetierFilter(val, btn) {
         _metierFilter = val;
         document.querySelectorAll('#metierFilters .tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
-
     function setStatusFilter(val, btn) {
         _statusFilter = val;
         document.querySelectorAll('#statusFilters .tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
-
     function setIntervFilter(val, btn) {
         _intervFilter = val;
         document.querySelectorAll('.interv-filters .tag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _renderInterventions();
     }
-
     function filterMissions() {
-        _searchQuery = (document.getElementById('missionsSearch') || {}).value || '';
+        _searchQuery = (document.getElementById('missionsSearch')||{}).value || '';
         _renderMissions(_missions.filter(m => ['assigne','rdv_planifie','en_cours','devis_envoye','devis_accepte','travaux_en_cours','nouveau'].includes(m.state)));
     }
 
-    /* ── API publique ── */
     return {
-        init() {
-            _loadDashboard().then(function() {
-                _initDashMap();
-            }).catch(function() {
-                _initDashMap();
-            });
-        },
+        init() { _loadDashboard(); },
         loadMissions,
-        itineraireMission() {
-            var m = window._dashSelectedMission;
-            if (!m) return;
-            var addr = encodeURIComponent((m.adresse_intervention || m.adresse || '') + ', France');
-            window.open('https://www.google.com/maps/dir//' + addr, '_blank');
-        },
-        acceptMission() {
-            var popup = document.getElementById('mapPopup');
-            if (popup) popup.style.display = 'none';
-            if (window.Toast) Toast.show('Fonctionnalité disponible dans Mes Missions', 'warning');
-        },
         loadInterventions,
         initCarte,
-        showMapPin,
-        acceptMission,
+        accepterMission,
+        refuserMission,
+        // Legacy
+        acceptMission() {},
+        itineraireMission() {},
         setMetierFilter,
         setStatusFilter,
         setIntervFilter,
         filterMissions,
-        // Legacy compat
-        setFilter(f, btn) {},
+        showMapPin() {},
         refresh() { _loadDashboard(); },
+        setFilter() {},
     };
 })();
