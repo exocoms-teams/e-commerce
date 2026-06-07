@@ -1,307 +1,261 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
-import secrets
+"""
+api_assurance.py — API REST pour les compagnies d'assurance
+Auth : clé API dans le header X-API-Key
+"""
+import json
+import logging
+from odoo import http, fields
+from odoo.http import request, Response
+
+_logger = logging.getLogger(__name__)
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# INTERVENANT
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistreIntervenant(models.Model):
-    _name = 'sinistre.intervenant'
-    _description = 'Intervenant / Artisan'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-
-    name = fields.Char(string='Nom', required=True, tracking=True)
-    partner_id = fields.Many2one('res.partner', string='Fiche Contact', required=True)
-    user_id = fields.Many2one('res.users', string='Compte Utilisateur (PWA)')
-    specialites = fields.Many2many('sinistre.specialite', string='Spécialités')
-    zone_intervention = fields.Char(string="Zone d'Intervention", help="Ex: 75, 92, 93…")
-    taux_commission = fields.Float(string='Commission Plateforme (%)', default=15.0)
-    actif = fields.Boolean(default=True, tracking=True)
-    disponible = fields.Boolean(default=True, tracking=True)
-    note = fields.Text(string='Notes')
-
-    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
-    mission_ids = fields.One2many('sinistre.mission', 'intervenant_id', string='Missions')
-    mission_count = fields.Integer(compute='_compute_stats')
-    ca_total = fields.Monetary(compute='_compute_stats', currency_field='currency_id')
-    commission_due = fields.Monetary(compute='_compute_stats', currency_field='currency_id')
-
-    @api.depends('mission_ids', 'mission_ids.state', 'mission_ids.montant_devis')
-    def _compute_stats(self):
-        for rec in self:
-            done = rec.mission_ids.filtered(lambda m: m.state in ('termine', 'facture', 'clos'))
-            rec.mission_count = len(rec.mission_ids)
-            rec.ca_total = sum(done.mapped('montant_devis'))
-            rec.commission_due = sum(done.mapped('commission_plateforme'))
-
-    def action_voir_missions(self):
-        return {'type': 'ir.actions.act_window', 'name': f"Missions de {self.name}",
-                'res_model': 'sinistre.mission', 'view_mode': 'list,kanban,form',
-                'domain': [('intervenant_id', '=', self.id)]}
-
-
-class SinistreSpecialite(models.Model):
-    _name = 'sinistre.specialite'
-    _description = 'Spécialité Intervenant'
-
-    name = fields.Char(required=True)
-    type_intervention = fields.Selection([
-        ('serrurerie', 'Serrurerie'), ('plomberie', 'Plomberie'),
-        ('menuiserie_int', 'Menuiserie Intérieure'), ('menuiserie_ext', 'Menuiserie Extérieure'),
-        ('vitrerie', 'Vitrerie'), ('electricite', 'Électricité'), ('autre', 'Autre'),
-    ])
-    color = fields.Integer(default=0)
-
-
-# ═══════════════════════════════════════════════════════════════════════
-# ASSURANCE
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistreAssurance(models.Model):
-    _name = 'sinistre.assurance'
-    _description = "Compagnie d'Assurance"
-    _inherit = ['mail.thread']
-
-    name = fields.Char(required=True)
-    partner_id = fields.Many2one('res.partner', required=True)
-    code = fields.Char(string='Code Assurance', help="Ex: AXA, MAIF, ALLIANZ")
-    api_key = fields.Char(string='Clé API', copy=False, readonly=True)
-    api_key_active = fields.Boolean(default=True)
-    webhook_url = fields.Char(string='URL Webhook Retour')
-    format_api = fields.Selection([
-        ('json_rest', 'JSON REST'), ('xml_soap', 'XML SOAP'),
-        ('csv_ftp', 'CSV FTP'), ('custom', 'Personnalisé'),
-    ], default='json_rest')
-    delai_paiement = fields.Integer(default=30)
-    note = fields.Text()
-    actif = fields.Boolean(default=True)
-
-    # ── Portail / Compte ──────────────────────────────────────────────
-    portal_user_id   = fields.Many2one('res.users', string='Compte Portail', readonly=True)
-    inscription_date = fields.Datetime(string="Date d'inscription", readonly=True)
-    statut_compte    = fields.Selection([
-        ('en_attente', 'En attente de validation'),
-        ('actif',      'Actif'),
-        ('suspendu',   'Suspendu'),
-    ], default='en_attente', string='Statut compte', tracking=True)
-    peut_annuler      = fields.Boolean(string='Peut annuler des missions', default=True)
-    delai_annulation  = fields.Integer(
-        string="Délai max annulation sans frais (h)", default=2,
-        help="Nombre d'heures avant le RDV en-deçà duquel l'annulation génère des frais"
+def _ok(data, status=200):
+    return Response(
+        json.dumps(data, default=str, ensure_ascii=False),
+        status=status, content_type='application/json; charset=utf-8',
     )
 
-    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
-    mission_ids = fields.One2many('sinistre.mission', 'assurance_id')
-    mission_count = fields.Integer(compute='_compute_stats')
-    ca_assurance = fields.Monetary(compute='_compute_stats', currency_field='currency_id')
+def _err(status, msg):
+    return _ok({'success': False, 'error': msg}, status=status)
 
-    @api.depends('mission_ids', 'mission_ids.montant_garanti')
-    def _compute_stats(self):
-        for rec in self:
-            rec.mission_count = len(rec.mission_ids)
-            rec.ca_assurance = sum(rec.mission_ids.mapped('montant_garanti'))
+def _auth_assurance():
+    """Retourne la compagnie d'assurance authentifiée via X-API-Key."""
+    key = request.httprequest.headers.get('X-API-Key', '')
+    if not key:
+        return None
+    return request.env['sinistre.assurance'].sudo().search(
+        [('api_key', '=', key), ('api_key_active', '=', True), ('statut_compte', '=', 'actif')],
+        limit=1
+    )
 
-    def action_valider_compte(self):
-        self.ensure_one()
-        if not self.portal_user_id:
-            self._creer_compte_portail()
-        self.write({'statut_compte': 'actif'})
-        self.message_post(body=f"Compte assurance activé")
 
-    def _creer_compte_portail(self):
-        import secrets as _secrets
-        if not self.partner_id.email:
-            from odoo.exceptions import UserError
-            raise UserError("L'assurance doit avoir un email pour créer un compte portail.")
-        group_portal = self.env.ref('base.group_portal')
-        user = self.env['res.users'].create({
-            'name':       self.name,
-            'login':      self.partner_id.email,
-            'partner_id': self.partner_id.id,
-            'groups_id':  [(4, group_portal.id)],
-            'password':   _secrets.token_urlsafe(12),
+class AssuranceAPIController(http.Controller):
+
+    # ── PING ─────────────────────────────────────────────────────────
+    @http.route('/api/assurance/v1/ping', type='http', auth='public', methods=['GET'], csrf=False)
+    def ping(self, **kw):
+        return _ok({'success': True, 'status': 'ok'})
+
+    # ── CRÉER ORDRE DE MISSION ────────────────────────────────────────
+    @http.route('/api/assurance/v1/mission', type='http', auth='public', methods=['POST'], csrf=False)
+    def create_mission(self, **kw):
+        assurance = _auth_assurance()
+        if not assurance:
+            return _err(401, "Clé API invalide ou compte inactif")
+        try:
+            data = json.loads(request.httprequest.data or '{}')
+
+            # Client / assuré
+            email = data.get('client_email', '')
+            partner = request.env['res.partner'].sudo().search([('email', '=', email)], limit=1) if email else None
+            if not partner:
+                partner = request.env['res.partner'].sudo().create({
+                    'name':  data.get('client_nom', 'Assuré'),
+                    'email': email,
+                    'phone': data.get('client_tel', ''),
+                    'street': data.get('adresse', ''),
+                })
+
+            mission = request.env['sinistre.mission'].sudo().create({
+                'source':               'assurance',
+                'assurance_id':         assurance.id,
+                'ref_assurance':        data.get('ref_assurance', ''),
+                'contrat_assurance':    data.get('num_contrat', ''),
+                'client_id':            partner.id,
+                'type_intervention':    data.get('type_intervention', 'autre'),
+                'urgence':              data.get('urgence', 'normale'),
+                'description_sinistre': data.get('description', ''),
+                'adresse_intervention': data.get('adresse', ''),
+                'tel_sur_place':        data.get('client_tel', ''),
+                'montant_garanti':      float(data.get('montant_garanti', 0)),
+                'franchise':            float(data.get('franchise', 0)),
+            })
+
+            # Notifier les artisans disponibles dans la zone
+            mission._notifier_artisans_zone()
+
+            return _ok({
+                'success':    True,
+                'reference':  mission.reference,
+                'id':         mission.id,
+                'state':      mission.state,
+            }, status=201)
+
+        except Exception as e:
+            _logger.error(f"[assurance API] create_mission: {e}")
+            return _err(500, str(e))
+
+    # ── LISTE MES MISSIONS ────────────────────────────────────────────
+    @http.route('/api/assurance/v1/missions', type='http', auth='public', methods=['GET'], csrf=False)
+    def list_missions(self, **kw):
+        assurance = _auth_assurance()
+        if not assurance:
+            return _err(401, "Clé API invalide")
+        missions = request.env['sinistre.mission'].sudo().search(
+            [('assurance_id', '=', assurance.id)],
+            order='date_reception desc', limit=100,
+        )
+        return _ok({'success': True, 'missions': [_fmt(m) for m in missions], 'total': len(missions)})
+
+    # ── DÉTAIL MISSION ────────────────────────────────────────────────
+    @http.route('/api/assurance/v1/mission/<string:ref>', type='http', auth='public', methods=['GET'], csrf=False)
+    def get_mission(self, ref, **kw):
+        assurance = _auth_assurance()
+        if not assurance:
+            return _err(401, "Clé API invalide")
+        m = request.env['sinistre.mission'].sudo().search(
+            [('assurance_id', '=', assurance.id), ('reference', '=', ref)], limit=1
+        ) or request.env['sinistre.mission'].sudo().search(
+            [('assurance_id', '=', assurance.id), ('ref_assurance', '=', ref)], limit=1
+        )
+        if not m:
+            return _err(404, "Mission introuvable")
+        data = _fmt(m)
+        # Messages
+        data['messages'] = [{
+            'auteur':    msg.auteur_nom or msg.auteur_type,
+            'contenu':   msg.contenu,
+            'date':      str(msg.date_envoi),
+        } for msg in m.sinistre_message_ids]
+        # Devis
+        data['devis'] = [{
+            'id':            d.id,
+            'state':         d.state,
+            'montant_total': d.montant_total,
+        } for d in m.devis_ids]
+        return _ok({'success': True, 'mission': data})
+
+    # ── ANNULER MISSION ───────────────────────────────────────────────
+    @http.route('/api/assurance/v1/mission/<string:ref>/annuler', type='http',
+                auth='public', methods=['POST'], csrf=False)
+    def annuler_mission(self, ref, **kw):
+        assurance = _auth_assurance()
+        if not assurance:
+            return _err(401, "Clé API invalide")
+        m = request.env['sinistre.mission'].sudo().search(
+            [('assurance_id', '=', assurance.id), ('reference', '=', ref)], limit=1
+        )
+        if not m:
+            return _err(404, "Mission introuvable")
+        if m.state in ('termine', 'facture', 'clos', 'annule'):
+            return _err(400, f"Impossible d'annuler une mission en état '{m.state}'")
+
+        data   = json.loads(request.httprequest.data or '{}')
+        motif  = data.get('motif', 'assurance_annule')
+        artisan_sur_place = data.get('artisan_sur_place', False)
+        frais  = float(data.get('frais_deplacement', 0))
+
+        # Vérifier délai d'annulation
+        ok, delta = assurance._check_annulation_autorisee(m)
+        facturer = artisan_sur_place or (not ok)
+
+        m.write({
+            'motif_annulation':          motif,
+            'annule_par':                'assurance',
+            'artisan_sur_place':         artisan_sur_place,
+            'facturer_deplacement':      facturer,
+            'frais_deplacement':         frais if facturer else 0,
+            'facturation_deplacement_a': 'assurance',
         })
-        if not self.api_key:
-            self.api_key = _secrets.token_urlsafe(32)
-        self.write({'portal_user_id': user.id, 'inscription_date': fields.Datetime.now()})
-        return user
+        m.action_annuler()
 
-    def action_suspendre(self):
-        self.write({'statut_compte': 'suspendu'})
-        if self.portal_user_id:
-            self.portal_user_id.write({'active': False})
+        # Message sur la mission
+        request.env['sinistre.message'].sudo().create({
+            'mission_id':  m.id,
+            'auteur_type': 'assurance',
+            'auteur_nom':  assurance.name,
+            'contenu':     f"Mission annulée par l'assurance. Motif : {motif}."
+                           + (f" Frais déplacement : {frais} €" if facturer else ""),
+        })
 
-    def _check_annulation_autorisee(self, mission):
-        if not mission.date_rdv:
-            return True, 0
-        from datetime import datetime
-        delta = (mission.date_rdv - datetime.now()).total_seconds() / 3600
-        return (delta >= self.delai_annulation), delta
+        return _ok({
+            'success':              True,
+            'reference':            m.reference,
+            'state':                'annule',
+            'frais_deplacement':    frais if facturer else 0,
+            'factures_a':           'assurance' if facturer else None,
+        })
 
-    def action_generer_api_key(self):
-        self.ensure_one()
-        self.api_key = secrets.token_urlsafe(32)
-        return {'type': 'ir.actions.client', 'tag': 'display_notification',
-                'params': {'title': _('Clé API générée'), 'message': _(f'Nouvelle clé pour {self.name}'), 'type': 'success'}}
+    # ── ENVOYER MESSAGE ───────────────────────────────────────────────
+    @http.route('/api/assurance/v1/mission/<string:ref>/message', type='http',
+                auth='public', methods=['POST'], csrf=False)
+    def send_message(self, ref, **kw):
+        assurance = _auth_assurance()
+        if not assurance:
+            return _err(401, "Clé API invalide")
+        m = request.env['sinistre.mission'].sudo().search(
+            [('assurance_id', '=', assurance.id), ('reference', '=', ref)], limit=1
+        )
+        if not m:
+            return _err(404, "Mission introuvable")
+        data = json.loads(request.httprequest.data or '{}')
+        msg  = request.env['sinistre.message'].sudo().create({
+            'mission_id':  m.id,
+            'auteur_type': 'assurance',
+            'auteur_nom':  assurance.name,
+            'contenu':     data.get('message', ''),
+        })
+        return _ok({'success': True, 'message_id': msg.id, 'date': str(msg.date_envoi)})
 
-    def action_revoquer_api_key(self):
-        self.write({'api_key': False, 'api_key_active': False})
+    # ── INSCRIPTION ASSURANCE ─────────────────────────────────────────
+    @http.route('/api/assurance/v1/inscription', type='http', auth='public', methods=['POST'], csrf=False)
+    def inscription(self, **kw):
+        """Inscription d'une nouvelle compagnie d'assurance."""
+        try:
+            data = json.loads(request.httprequest.data or '{}')
+            nom   = data.get('nom', '')
+            email = data.get('email', '')
+            tel   = data.get('telephone', '')
+            siret = data.get('siret', '')
+            if not nom or not email:
+                return _err(400, "Nom et email obligatoires")
 
-    def action_voir_missions(self):
-        return {'type': 'ir.actions.act_window', 'name': f"Missions {self.name}",
-                'res_model': 'sinistre.mission', 'view_mode': 'list,kanban,form',
-                'domain': [('assurance_id', '=', self.id)]}
+            # Vérifier doublon
+            existing = request.env['sinistre.assurance'].sudo().search([
+                ('partner_id.email', '=', email)
+            ], limit=1)
+            if existing:
+                return _err(409, "Une compagnie avec cet email existe déjà")
 
-
-# ═══════════════════════════════════════════════════════════════════════
-# DEVIS
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistreDevis(models.Model):
-    _name = 'sinistre.devis'
-    _description = 'Devis Intervention'
-    _inherit = ['mail.thread']
-    _order = 'date_devis desc'
-
-    name = fields.Char(required=True, default=lambda self: _('Nouveau'), copy=False)
-    mission_id = fields.Many2one('sinistre.mission', required=True, ondelete='cascade')
-    intervenant_id = fields.Many2one(related='mission_id.intervenant_id', store=True)
-    client_id = fields.Many2one(related='mission_id.client_id', store=True)
-    date_devis = fields.Datetime(default=fields.Datetime.now)
-    state = fields.Selection([
-        ('brouillon', 'Brouillon'), ('envoye', 'Envoyé'),
-        ('accepte', 'Accepté'), ('refuse', 'Refusé'),
-    ], default='brouillon', tracking=True)
-
-    ligne_ids = fields.One2many('sinistre.devis.ligne', 'devis_id', string='Lignes')
-    currency_id = fields.Many2one(related='mission_id.currency_id')
-    tva = fields.Float(default=20.0)
-    montant_ht = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
-    montant_tva = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
-    montant_total = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
-    note_client = fields.Text()
-    motif_refus = fields.Text()
-    signature_client = fields.Binary()
-    date_signature = fields.Datetime()
-
-    @api.depends('ligne_ids.montant_total', 'tva')
-    def _compute_montants(self):
-        for rec in self:
-            rec.montant_ht = sum(rec.ligne_ids.mapped('montant_total'))
-            rec.montant_tva = rec.montant_ht * (rec.tva / 100)
-            rec.montant_total = rec.montant_ht + rec.montant_tva
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', _('Nouveau')) == _('Nouveau'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('sinistre.devis') or _('Nouveau')
-        return super().create(vals_list)
-
-    def action_envoyer(self):
-        from odoo.exceptions import UserError
-        if not self.ligne_ids:
-            raise UserError(_("Ajoutez au moins une ligne."))
-        self.write({'state': 'envoye'})
-        self.mission_id.write({'state': 'devis_envoye'})
-
-    def action_accepter(self):
-        self.write({'state': 'accepte', 'date_signature': fields.Datetime.now()})
-        self.mission_id.write({'state': 'devis_accepte'})
-
-    def action_refuser(self):
-        self.write({'state': 'refuse'})
-        self.mission_id.write({'state': 'devis_refuse'})
+            partner = request.env['res.partner'].sudo().create({
+                'name':    nom,
+                'email':   email,
+                'phone':   tel,
+                'company_type': 'company',
+            })
+            assurance = request.env['sinistre.assurance'].sudo().create({
+                'name':           nom,
+                'partner_id':     partner.id,
+                'statut_compte':  'en_attente',
+                'note':           f"SIRET: {siret}" if siret else '',
+            })
+            return _ok({
+                'success': True,
+                'message': "Inscription reçue — en attente de validation par la plateforme",
+                'id':      assurance.id,
+            }, status=201)
+        except Exception as e:
+            return _err(500, str(e))
 
 
-class SinistreDevisLigne(models.Model):
-    _name = 'sinistre.devis.ligne'
-    _description = 'Ligne de Devis'
-
-    devis_id = fields.Many2one('sinistre.devis', ondelete='cascade')
-    sequence = fields.Integer(default=10)
-    description = fields.Char(required=True)
-    quantite = fields.Float(default=1.0)
-    unite = fields.Char(default='forfait')
-    prix_unitaire = fields.Monetary(currency_field='currency_id')
-    montant_total = fields.Monetary(compute='_compute_total', store=True, currency_field='currency_id')
-    currency_id = fields.Many2one(related='devis_id.currency_id')
-
-    @api.depends('quantite', 'prix_unitaire')
-    def _compute_total(self):
-        for rec in self:
-            rec.montant_total = rec.quantite * rec.prix_unitaire
-
-
-# ═══════════════════════════════════════════════════════════════════════
-# PHOTO DOSSIER
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistrePhoto(models.Model):
-    _name = 'sinistre.photo'
-    _description = 'Photo Dossier Sinistre'
-    _order = 'date_prise desc'
-
-    mission_id = fields.Many2one('sinistre.mission', required=True, ondelete='cascade')
-    type_photo = fields.Selection([
-        ('avant', 'Avant Intervention'),
-        ('pendant', 'Pendant'),
-        ('apres', 'Après Intervention'),
-    ], required=True, default='avant')
-    image = fields.Binary(required=True)
-    image_filename = fields.Char()
-    description = fields.Char()
-    date_prise = fields.Datetime(default=fields.Datetime.now)
-    intervenant_id = fields.Many2one(related='mission_id.intervenant_id', store=True)
-    latitude = fields.Float(digits=(10, 7))
-    longitude = fields.Float(digits=(10, 7))
-
-
-# ═══════════════════════════════════════════════════════════════════════
-# COMMISSION
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistreCommission(models.Model):
-    _name = 'sinistre.commission'
-    _description = 'Commission Plateforme'
-    _inherit = ['mail.thread']
-
-    name = fields.Char(required=True, default='/')
-    mission_id = fields.Many2one('sinistre.mission', required=True)
-    intervenant_id = fields.Many2one(related='mission_id.intervenant_id', store=True)
-    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
-    montant_intervention = fields.Monetary(currency_field='currency_id')
-    taux_commission = fields.Float()
-    montant_commission = fields.Monetary(currency_field='currency_id')
-    state = fields.Selection([('due', 'Due'), ('facturee', 'Facturée'), ('payee', 'Payée')], default='due', tracking=True)
-    date_echeance = fields.Date()
-    facture_id = fields.Many2one('account.move')
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', '/') == '/':
-                vals['name'] = self.env['ir.sequence'].next_by_code('sinistre.commission') or '/'
-        return super().create(vals_list)
-
-
-# ═══════════════════════════════════════════════════════════════════════
-# CERTIFICATION INTERVENANT
-# ═══════════════════════════════════════════════════════════════════════
-
-class SinistreCertification(models.Model):
-    _name        = 'sinistre.certification'
-    _description = 'Certification / Document Intervenant'
-    _order       = 'sequence, id'
-
-    intervenant_id = fields.Many2one('sinistre.intervenant', required=True, ondelete='cascade')
-    name           = fields.Char(string='Libellé', required=True)
-    date_validite  = fields.Date(string='Valide jusqu\'au')
-    sequence       = fields.Integer(default=10)
-
-    def _date_label(self):
-        if not self.date_validite:
-            return 'À jour'
-        return f"Valide jusqu'en {self.date_validite.strftime('%Y')}"
+def _fmt(m):
+    return {
+        'id':                  m.id,
+        'reference':           m.reference,
+        'ref_assurance':       m.ref_assurance or '',
+        'state':               m.state,
+        'type_intervention':   m.type_intervention,
+        'urgence':             m.urgence,
+        'client':              m.client_id.name if m.client_id else '',
+        'adresse':             m.adresse_intervention or '',
+        'date_rdv':            str(m.date_rdv) if m.date_rdv else None,
+        'description':         m.description_sinistre or '',
+        'montant_garanti':     m.montant_garanti or 0,
+        'franchise':           m.franchise or 0,
+        'montant_devis':       m.montant_devis or 0,
+        'intervenant':         m.intervenant_id.name if m.intervenant_id else None,
+        'date_reception':      str(m.date_reception) if m.date_reception else None,
+        'date_cloture':        str(m.date_cloture) if m.date_cloture else None,
+    }
