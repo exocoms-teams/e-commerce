@@ -499,6 +499,83 @@ class SinistrePWAController(http.Controller):
         ]).write({'lu_artisan': True})
         return _json_response({'success': True})
 
+
+    # ─── MISSIONS PROPOSÉES : liste ─────────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/missions/proposees',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def get_missions_proposees(self, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _json_error(403, "Accès non autorisé")
+        # Missions en état "nouveau" non encore assignées à un intervenant
+        # OU missions assignées à cet intervenant en attente de confirmation
+        missions = request.env['sinistre.mission'].sudo().search([
+            ('state', '=', 'nouveau'),
+            ('intervenant_id', '=', False),
+        ], order='urgence desc, date_reception asc', limit=20)
+        result = []
+        for m in missions:
+            result.append({
+                'id':                m.id,
+                'reference':         m.reference,
+                'state':             m.state,
+                'type_intervention': m.type_intervention,
+                'urgence':           m.urgence,
+                'description':       m.description_sinistre or '',
+                'adresse':           m.adresse_intervention or '',
+                'date_rdv':          str(m.date_rdv) if m.date_rdv else None,
+                'montant_garanti':   m.montant_garanti or 0,
+                'montant_devis':     m.montant_devis or 0,
+                'source':            m.source,
+            })
+        return _json_response({'success': True, 'missions': result})
+
+    # ─── ACCEPTER UNE MISSION PROPOSÉE ──────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/accepter',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def accepter_mission(self, mission_id, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _json_error(403, "Accès non autorisé")
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('id', '=', mission_id),
+            ('state', '=', 'nouveau'),
+        ], limit=1)
+        if not mission:
+            return _json_error(404, "Mission introuvable ou déjà assignée")
+        try:
+            mission.sudo().write({
+                'intervenant_id': intervenant.id,
+                'state':          'assigne',
+            })
+            mission.message_post(
+                body=_(f"✅ Mission acceptée par {intervenant.name}.")
+            )
+            return _json_response({'success': True, 'state': mission.state, 'mission_id': mission.id})
+        except Exception as e:
+            return _json_error(500, str(e))
+
+    # ─── REFUSER UNE MISSION PROPOSÉE ───────────────────────────────
+    @http.route('/api/sinistre/v1/intervenant/mission/<int:mission_id>/refuser-proposition',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def refuser_proposition(self, mission_id, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _json_error(403, "Accès non autorisé")
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('id', '=', mission_id),
+            ('state', '=', 'nouveau'),
+        ], limit=1)
+        if not mission:
+            return _json_error(404, "Mission introuvable")
+        try:
+            mission.message_post(
+                body=_(f"❌ Mission refusée par {intervenant.name}.")
+            )
+            return _json_response({'success': True})
+        except Exception as e:
+            return _json_error(500, str(e))
+
     # ─── FCM TOKEN ───────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/fcm-token',
                 type='http', auth='user', methods=['POST'], csrf=False)
