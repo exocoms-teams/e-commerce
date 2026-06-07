@@ -120,6 +120,11 @@ class SinistreMission(models.Model):
     facture_client_id = fields.Many2one('account.move', string='Facture Client', readonly=True)
     token_api = fields.Char(string='Token API', readonly=True, copy=False)
 
+    commission_plateforme = fields.Monetary(
+        string='Commission Plateforme', compute='_compute_commission',
+        store=True, currency_field='currency_id',
+    )
+
     montant_devis = fields.Monetary(
         string='Montant Devis Accepté', compute='_compute_montant_devis',
         store=True, currency_field='currency_id',
@@ -143,6 +148,12 @@ class SinistreMission(models.Model):
         return super().create(vals_list)
 
     # ── Compute ──────────────────────────────────────────────────────
+    @api.depends('montant_devis', 'intervenant_id', 'intervenant_id.taux_commission')
+    def _compute_commission(self):
+        for rec in self:
+            taux = rec.intervenant_id.taux_commission if rec.intervenant_id else 0
+            rec.commission_plateforme = rec.montant_devis * (taux / 100)
+
     @api.depends('photo_ids', 'photo_ids.type_photo')
     def _compute_photos_count(self):
         for rec in self:
