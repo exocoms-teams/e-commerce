@@ -4,7 +4,7 @@
     <template id="dashboard_menu" name="Dashboard Accueil Carousels">
 
         <!-- ── NOUVEAUTÉS ── -->
-       <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
+        <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
             <div>
                 <h2 class="h3">Nouveautés</h2>
                 <p class="lead">Découvrez nos derniers produits !</p>
@@ -21,14 +21,14 @@
                     t-value="request.env['product.template'].sudo().search([
                         ('is_published', '=', True)
                     ], limit=16, order='create_date desc')"/>
-                <t t-set="new_chunks" t-value="[new_products[i:i+2] for i in range(0, len(new_products), 2)]"/>
+                <t t-set="new_chunks" t-value="[new_products[i:i+4] for i in range(0, len(new_products), 4)]"/>
                 <div data-bs-ride="carousel" id="s_carousel_new" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="new_chunks" t-as="chunk">
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -66,14 +66,14 @@
                     t-value="request.env['product.template'].sudo().search([
                         ('is_published', '=', True)
                     ], limit=16, order='write_date desc')"/>
-                <t t-set="best_chunks" t-value="[best_products[i:i+2] for i in range(0, len(best_products), 2)]"/>
+                <t t-set="best_chunks" t-value="[best_products[i:i+4] for i in range(0, len(best_products), 4)]"/>
                 <div data-bs-ride="carousel" id="s_carousel_best" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="best_chunks" t-as="chunk">
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -110,14 +110,14 @@
                 <t t-set="recent_ids" t-value="request.session.get('website_sale_history', [])[:16]"/>
                 <t t-set="recent_products" t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
                 <t t-if="recent_products">
-                    <t t-set="recent_chunks" t-value="[recent_products[i:i+2] for i in range(0, len(recent_products), 2)]"/>
+                    <t t-set="recent_chunks" t-value="[recent_products[i:i+4] for i in range(0, len(recent_products), 4)]"/>
                     <div data-bs-ride="carousel" id="s_carousel_recent" class="carousel slide" data-bs-interval="5000">
                         <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                             <t t-foreach="recent_chunks" t-as="chunk">
                                 <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                     <div class="s_dynamic_snippet_row row g-3">
                                         <t t-foreach="chunk" t-as="product">
-                                            <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                            <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                                 <t t-call="exocoms_theme.dashboard_product_card"/>
                                             </div>
                                         </t>
@@ -143,15 +143,12 @@
 
     </template>
 
-    <!-- ── CARTE PRODUIT — copie exacte du HTML natif ── -->
     <template id="dashboard_product_card" name="Dashboard Product Card">
         <div class="oe_product_cart o_carousel_product_card d-flex"
              role="article"
              t-att-aria-label="product.name">
-
             <input type="hidden" name="product-id"
                    t-att-data-product-id="product.product_variant_id.id"/>
-
             <div class="oe_product_image position-relative flex-grow-0 overflow-hidden">
                 <a contenteditable="false"
                    t-att-href="'/shop/' + slug(product)"
@@ -165,7 +162,6 @@
                     </span>
                 </a>
             </div>
-
             <div class="o_wsale_product_information flex-grow-1 flex-shrink-1">
                 <div class="o_wsale_product_info_attributes_wrapper">
                     <div class="o_wsale_product_information_text">
