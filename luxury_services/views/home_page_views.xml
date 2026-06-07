@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="luxury_home_page" name="Home VIP">
+    <t t-call="website.layout">
+
+        <style>
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to   { opacity: 1; }
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateX(-50%) translateY(0); }
+                50%       { transform: translateX(-50%) translateY(8px); }
+            }
+            .vip-hero-btn-primary {
+                background: #c9a84c;
+                color: #000;
+                padding: 1rem 2.5rem;
+                font-weight: 700;
+                text-decoration: none;
+                border-radius: 2px;
+                font-size: 1rem;
+                letter-spacing: 0.5px;
+                transition: background 0.2s, transform 0.2s;
+                display: inline-block;
+            }
+            .vip-hero-btn-primary:hover {
+                background: #b8963e;
+                color: #000;
+                transform: translateY(-2px);
+            }
+            .vip-hero-btn-outline {
+                border: 2px solid rgba(255,255,255,0.8);
+                color: #fff;
+                padding: 1rem 2.5rem;
+                font-weight: 700;
+                text-decoration: none;
+                border-radius: 2px;
+                font-size: 1rem;
+                transition: all 0.2s;
+                display: inline-block;
+            }
+            .vip-hero-btn-outline:hover {
+                background: rgba(255,255,255,0.15);
+                color: #fff;
+                border-color: #fff;
+            }
+            .service-card {
+                position: relative;
+                overflow: hidden;
+                height: 460px;
+                cursor: pointer;
+            }
+            .service-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.7s ease;
+            }
+            .service-card:hover img {
+                transform: scale(1.08);
+            }
+            .service-card .card-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+                transition: background 0.4s;
+            }
+            .service-card:hover .card-overlay {
+                background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+            }
+            .service-card .card-content {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 2rem;
+            }
+            .service-card .card-hover {
+                opacity: 0;
+                transform: translateY(12px);
+                transition: all 0.4s ease;
+            }
+            .service-card:hover .card-hover {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .dest-thumb {
+                position: relative;
+                overflow: hidden;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+            .dest-thumb img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.6s ease;
+            }
+            .dest-thumb:hover img { transform: scale(1.06); }
+            .dest-thumb .dest-label {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+                padding: 1.5rem 1rem 1rem;
+                color: #fff;
+            }
+            .gold-badge {
+                display: inline-block;
+                background: #c9a84c;
+                color: #000;
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 2px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 0.4rem;
+            }
+            .testi-card {
+                background: #fff;
+                border-left: 3px solid #c9a84c;
+                padding: 2rem;
+                box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+                height: 100%;
+            }
+        </style>
+
+        <!-- ═══════════════════════════════════════════
+             HERO FULL SCREEN
+        ═══════════════════════════════════════════ -->
+        <section style="position: relative; height: 580px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+
+            <!-- Vidéo YouTube en fond -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden;">
+                <iframe
+                    id="vip-hero-video"
+                    src="https://www.youtube.com/embed/bF-01uyDXUc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=bF-01uyDXUc&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1&amp;start=4&amp;enablejsapi=1"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 180%; height: 180%; border: none; pointer-events: none;"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen="0"
+                    frameborder="0"/>
+            </div>
+            <script>
+                // Boucle sur le segment 3s à2min28s
+                var tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                document.head.appendChild(tag);
+
+                var player;
+                function onYouTubeIframeAPIReady() {
+                    player = new YT.Player('vip-hero-video', {
+                        events: {
+                            'onStateChange': function(event) {
+                                // Quand la vidéo joue, surveille le temps
+                                if (event.data === YT.PlayerState.PLAYING) {
+                                    setInterval(function() {
+                                        if (player.getCurrentTime() >= 148) {
+                                            
+                                            player.seekTo(4, true);
+                                        }
+                                    }, 1000);
+                                }
+                            }
+                        }
+                    });
+                }
+            </script>
+            
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                        background: linear-gradient(135deg,
+                            rgba(0,0,0,0.55) 0%,
+                            rgba(26,26,46,0.45) 50%,
+                            rgba(0,0,0,0.55) 100%);
+                        z-index: 1;"/>
+            <!-- Contenu hero -->
+            <div class="container" style="position: relative; text-align: center; animation: fadeInUp 1s ease both;">
+                <p style="text-transform: uppercase; letter-spacing: 6px; font-size: 0.75rem; color: #c9a84c; font-weight: 600; margin-bottom: 1.25rem;">
+                    Bienvenue dans l'univers VIP
+                </p>
+                <h1 style="font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 700; color: #fff; line-height: 1.1; margin: 0 0 1.5rem; text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+                    L'Excellence du Luxe<br/>
+                    <span style="color: #c9a84c;">Maritime &amp; Aérien</span>
+                </h1>
+                <p style="color: rgba(255,255,255,0.85); font-size: clamp(1rem, 2vw, 1.2rem); max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.9;">
+                    Yachts d'exception, jets privés et conciergerie personnalisée -
+                    vivez des expériences uniques dans les destinations les plus
+                    exclusives du monde.
+                </p>
+
+                <!-- Tags destinations -->
+                <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem;">
+                    <span style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.5); color: #c9a84c; padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fa fa-map-marker me-1"/>Monaco
+                    </span>
+                    <span style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.5); color: #c9a84c; padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fa fa-map-marker me-1"/>Maldives
+                    </span>
+                    <span style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.5); color: #c9a84c; padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fa fa-map-marker me-1"/>Santorin
+                    </span>
+                    <span style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.5); color: #c9a84c; padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fa fa-map-marker me-1"/>Dubaï
+                    </span>
+                    <span style="background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.5); color: #c9a84c; padding: 0.4rem 1rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600;">
+                        <i class="fa fa-map-marker me-1"/>Saint-Barth
+                    </span>
+                </div>
+
+                <!-- CTA -->
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/shop/category/yachts-1" class="vip-hero-btn-primary" style="mouse-events: auto;">
+                        <i class="fa fa-ship me-2"/>Explorer les Yachts
+                    </a>
+                    <a href="/shop/category/jets-2" class="vip-hero-btn-outline" style="mouse-events: auto;">
+                        <i class="fa fa-plane me-2"/>Voir les Jets
+                    </a>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div style="position: absolute; bottom: 2rem; left: 50%; animation: bounce 2s infinite; color: rgba(255,255,255,0.5); text-align: center;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 0.5rem; color: rgba(255,255,255,0.4);">Découvrir</div>
+                <i class="fa fa-chevron-down"/>
+            </div>
+
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             BARRE CHIFFRES CLÉS
+        ═══════════════════════════════════════════ -->
+        <section style="background: #0a0a0a; padding: 0;">
+            <div class="container-fluid px-0">
+                <div class="row g-0 text-center">
+                    <div class="col-6 col-md-3"
+                         style="padding: 2.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.07);">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #c9a84c; line-height: 1;">+4</div>
+                        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666; margin-top: 8px;">Ans d'expérience</div>
+                    </div>
+                    <div class="col-6 col-md-3"
+                         style="padding: 2.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.07);">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #c9a84c; line-height: 1;">+300</div>
+                        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666; margin-top: 8px;">Clients VIP</div>
+                    </div>
+                    <div class="col-6 col-md-3"
+                         style="padding: 2.5rem 1rem; border-right: 1px solid rgba(255,255,255,0.07);">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #c9a84c; line-height: 1;">+5</div>
+                        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666; margin-top: 8px;">Pays couverts</div>
+                    </div>
+                    <div class="col-6 col-md-3"
+                         style="padding: 2.5rem 1rem;">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #c9a84c; line-height: 1;">24/7</div>
+                        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: #666; margin-top: 8px;">Disponibilité</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             NOS SERVICES
+        ═══════════════════════════════════════════ -->
+        <section style="background: #fff; padding: 6rem 0;">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: #c9a84c; font-weight: 600;">
+                        Notre univers
+                    </p>
+                    <h2 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin: 0.5rem 0 0;">
+                        Des services pensés pour vous
+                    </h2>
+                    <div style="width: 48px; height: 2px; background: #c9a84c; margin: 0.75rem auto 0;"/>
+                </div>
+
+                <div class="row g-3">
+
+                    <!-- Yachts -->
+                    <div class="col-lg-4">
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=700&amp;q=80"
+                                 alt="Yachts de luxe"/>
+                            <div class="card-overlay"/>
+                            <div class="card-content">
+                                <span class="gold-badge">
+                                    <i class="fa fa-ship me-1"/>Location &amp; Vente
+                                </span>
+                                <h3 style="color: #fff; font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0 0.5rem;">
+                                    Yachts
+                                </h3>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0 0 0.25rem;">
+                                    De 15 à 80 mètres - équipage dédié
+                                </p>
+                                <div class="card-hover">
+                                    <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.7; margin: 0.75rem 0 1.25rem;">
+                                        Une flotte exclusive de yachts de prestige
+                                        disponibles à la location ou à la vente,
+                                        avec équipage professionnel et itinéraires
+                                        sur mesure.
+                                    </p>
+                                    <a href="/shop/category/yachts-1"
+                                       style="background: #c9a84c; color: #000; padding: 0.65rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 2px; font-size: 0.85rem; display: inline-block;">
+                                        Découvrir 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jets -->
+                    <div class="col-lg-4">
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=700&amp;q=80"
+                                 alt="Jets privés"/>
+                            <div class="card-overlay"/>
+                            <div class="card-content">
+                                <span class="gold-badge">
+                                    <i class="fa fa-plane me-1"/>Location &amp; Vente
+                                </span>
+                                <h3 style="color: #fff; font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0 0.5rem;">
+                                    Jets Privés
+                                </h3>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0 0 0.25rem;">
+                                    +15 destinations - disponible sous 24h
+                                </p>
+                                <div class="card-hover">
+                                    <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.7; margin: 0.75rem 0 1.25rem;">
+                                        Voyagez sans contrainte à bord de nos
+                                        jets de dernière génération. Pilotes
+                                        certifiés EASA, disponibilité immédiate.
+                                    </p>
+                                    <a href="/shop/category/jets-2"
+                                       style="background: #c9a84c; color: #000; padding: 0.65rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 2px; font-size: 0.85rem; display: inline-block;">
+                                        Découvrir 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conciergerie -->
+                    <div class="col-lg-4">
+                        <div class="service-card">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=700&amp;q=80"
+                                 alt="Conciergerie VIP"/>
+                            <div class="card-overlay"/>
+                            <div class="card-content">
+                                <span class="gold-badge">
+                                    <i class="fa fa-star me-1"/>Service Exclusif
+                                </span>
+                                <h3 style="color: #fff; font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0 0.5rem;">
+                                    Conciergerie VIP
+                                </h3>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0 0 0.25rem;">
+                                    Hôtels • Restaurants • Événements
+                                </p>
+                                <div class="card-hover">
+                                    <p style="color: rgba(255,255,255,0.85); font-size: 0.88rem; line-height: 1.7; margin: 0.75rem 0 1.25rem;">
+                                        Un conseiller dédié 24h/24 pour
+                                        orchestrer chaque détail de votre
+                                        séjour avec discrétion et excellence.
+                                    </p>
+                                    <a href="/concierge"
+                                       style="background: #c9a84c; color: #000; padding: 0.65rem 1.5rem; font-weight: 700; text-decoration: none; border-radius: 2px; font-size: 0.85rem; display: inline-block;">
+                                        Découvrir 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Liens secondaires -->
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <a href="/maintenance"
+                           style="display: flex; align-items: center; gap: 1.25rem; background: #f8f8f8; padding: 1.5rem 2rem; text-decoration: none; border-left: 3px solid #c9a84c; transition: background 0.2s;">
+                            <i class="fa fa-wrench fa-2x" style="color: #c9a84c; flex-shrink: 0;"/>
+                            <div>
+                                <div style="font-weight: 700; color: #1a1a1a; font-size: 1rem;">Service Maintenance</div>
+                                <div style="color: #888; font-size: 0.85rem;">Techniciens certifiés EASA &amp; ISO - intervention 24h</div>
+                            </div>
+                            <i class="fa fa-arrow-right ms-auto" style="color: #c9a84c;"/>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/destinations"
+                           style="display: flex; align-items: center; gap: 1.25rem; background: #f8f8f8; padding: 1.5rem 2rem; text-decoration: none; border-left: 3px solid #c9a84c; transition: background 0.2s;">
+                            <i class="fa fa-compass fa-2x" style="color: #c9a84c; flex-shrink: 0;"/>
+                            <div>
+                                <div style="font-weight: 700; color: #1a1a1a; font-size: 1rem;">Nos Destinations</div>
+                                <div style="color: #888; font-size: 0.85rem;">Monaco, Maldives, Santorin, Dubaï et bien plus...</div>
+                            </div>
+                            <i class="fa fa-arrow-right ms-auto" style="color: #c9a84c;"/>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             DESTINATIONS COUP DE CŒUR
+        ═══════════════════════════════════════════ -->
+        <section style="background: #0a0a0a; padding: 6rem 0;">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: #c9a84c; font-weight: 600;">
+                        Le monde vous appartient
+                    </p>
+                    <h2 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin: 0.5rem 0 0;">
+                        Destinations coup de cœur
+                    </h2>
+                    <div style="width: 48px; height: 2px; background: #c9a84c; margin: 0.75rem auto 0;"/>
+                </div>
+
+                <div class="row g-3">
+                    <!-- Grande image gauche -->
+                    <div class="col-lg-6">
+                        <a href="destinations" class="dest-thumb d-block" style="height: 500px;">
+                            <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=800&amp;q=80"
+                                 alt="Monaco"/>
+                            <div class="dest-label">
+                                <span class="gold-badge">Méditerranée</span>
+                                <h4 style="color: #fff; font-size: 1.6rem; font-weight: 700; margin: 0.25rem 0 0.1rem;">Monaco</h4>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 0;">Glamour &amp; prestige sur la Riviera</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Colonne droite 3 images -->
+                    <div class="col-lg-6">
+                        <div class="row g-3 h-100">
+                            <div class="col-12">
+                                <a href="/destinations" class="dest-thumb d-block" style="height: 240px;">
+                                    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&amp;q=80"
+                                         alt="Maldives"/>
+                                    <div class="dest-label">
+                                        <span class="gold-badge">Océan Indien</span>
+                                        <h4 style="color: #fff; font-size: 1.3rem; font-weight: 700; margin: 0.25rem 0 0;">Maldives</h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="/destinations" class="dest-thumb d-block" style="height: 245px;">
+                                    <img src="https://images.unsplash.com/photo-1507501336603-6760d5b09d26?w=500&amp;q=80"
+                                         alt="Santorin"/>
+                                    <div class="dest-label">
+                                        <span class="gold-badge">Grèce</span>
+                                        <h4 style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0.25rem 0 0;">Santorin</h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="destinations" class="dest-thumb d-block" style="height: 245px;">
+                                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=500&amp;q=80"
+                                         alt="Dubaï"/>
+                                    <div class="dest-label">
+                                        <span class="gold-badge">Moyen-Orient</span>
+                                        <h4 style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0.25rem 0 0;">Dubaï</h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/destinations"
+                       style="border: 2px solid #c9a84c; color: #c9a84c; padding: 0.85rem 2.5rem; font-weight: 700; text-decoration: none; border-radius: 2px; display: inline-block; transition: all 0.2s;">
+                        <i class="fa fa-compass me-2"/>
+                        Voir toutes les destinations
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             SECTION MAINTENANCE
+        ═══════════════════════════════════════════ -->
+        <section style="position: relative; padding: 6rem 0; overflow: hidden;">
+            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920&amp;q=80"
+                 alt="Maintenance yacht"
+                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"/>
+            <div style="position: absolute; inset: 0; background: rgba(10,10,10,0.85);"/>
+            <div class="container" style="position: relative;">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-7">
+                        <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: #c9a84c; font-weight: 600; margin-bottom: 1rem;">
+                            Préservez vos actifs
+                        </p>
+                        <h2 style="font-size: 2.2rem; font-weight: 700; color: #fff; margin: 0 0 1.25rem; line-height: 1.3;">
+                            Service de Maintenance<br/>Premium — Yachts &amp; Jets
+                        </h2>
+                        <p style="color: #aaa; line-height: 1.9; font-size: 0.95rem; margin-bottom: 2rem; max-width: 520px;">
+                            Nos techniciens certifiés EASA &amp; ISO interviennent
+                            partout dans le monde sous 24h pour assurer la longévité
+                            et la performance de vos actifs de luxe.
+                        </p>
+                        <div class="row g-3 mb-2.5rem">
+                            <div class="col-6">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fa fa-check-circle" style="color: #c9a84c; font-size: 1.1rem; flex-shrink: 0;"/>
+                                    <span style="color: #ccc; font-size: 0.9rem;">Intervention sous 24h</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fa fa-check-circle" style="color: #c9a84c; font-size: 1.1rem; flex-shrink: 0;"/>
+                                    <span style="color: #ccc; font-size: 0.9rem;">Certifiés EASA &amp; ISO</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fa fa-check-circle" style="color: #c9a84c; font-size: 1.1rem; flex-shrink: 0;"/>
+                                    <span style="color: #ccc; font-size: 0.9rem;">+5 pays couverts</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fa fa-check-circle" style="color: #c9a84c; font-size: 1.1rem; flex-shrink: 0;"/>
+                                    <span style="color: #ccc; font-size: 0.9rem;">Pièces d'origine garanties</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 text-center text-lg-end">
+                        <div style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.3); padding: 2.5rem; display: inline-block; max-width: 320px;">
+                            <i class="fa fa-wrench fa-3x mb-3" style="color: #c9a84c;"/>
+                            <div style="color: #fff; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">
+                                Devis gratuit sous 24h
+                            </div>
+                            <p style="color: #888; font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.6;">
+                                Décrivez votre besoin, notre équipe vous
+                                répond avec une proposition détaillée.
+                            </p>
+                            <a href="/maintenance"
+                               style="background: #c9a84c; color: #000; padding: 0.85rem 2rem; font-weight: 700; text-decoration: none; border-radius: 2px; display: block; text-align: center;">
+                                <i class="fa fa-arrow-right me-2"/>
+                                Demander un devis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             TÉMOIGNAGES
+        ═══════════════════════════════════════════ -->
+        <section style="background: #f8f8f8; padding: 6rem 0;">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: #c9a84c; font-weight: 600;">
+                        Ils nous font confiance
+                    </p>
+                    <h2 style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin: 0.5rem 0 0;">
+                        Ce que disent nos clients
+                    </h2>
+                    <div style="width: 48px; height: 2px; background: #c9a84c; margin: 0.75rem auto 0;"/>
+                </div>
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+                        <div class="testi-card">
+                            <div style="color: #c9a84c; font-size: 1.2rem; margin-bottom: 1rem; letter-spacing: 2px;">
+                                ★★★★★
+                            </div>
+                            <p style="color: #444; font-size: 0.95rem; line-height: 1.8; font-style: italic; margin-bottom: 1.5rem;">
+                                "Une semaine en yacht entre Monaco et Santorin -
+                                équipage exceptionnel, service 5 étoiles du début
+                                à la fin. Une expérience que je recommande à tous."
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: #c9a84c; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;">
+                                    JL
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem;">Jean-Louis M.</div>
+                                    <div style="color: #888; font-size: 0.8rem;">Monaco Santorin Juillet 2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="testi-card">
+                            <div style="color: #c9a84c; font-size: 1.2rem; margin-bottom: 1rem; letter-spacing: 2px;">
+                                ★★★★★
+                            </div>
+                            <p style="color: #444; font-size: 0.95rem; line-height: 1.8; font-style: italic; margin-bottom: 1.5rem;">
+                                "Vol en jet privé Paris-Dubaï organisé en moins de
+                                3 heures. L'équipe conciergerie a géré l'hôtel,
+                                les transferts et les restaurants. Parfait."
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: #c9a84c; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;">
+                                    SC
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem;">Sophie C.</div>
+                                    <div style="color: #888; font-size: 0.8rem;">Paris Dubaï  Novembre 2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="testi-card">
+                            <div style="color: #c9a84c; font-size: 1.2rem; margin-bottom: 1rem; letter-spacing: 2px;">
+                                ★★★★★
+                            </div>
+                            <p style="color: #444; font-size: 0.95rem; line-height: 1.8; font-style: italic; margin-bottom: 1.5rem;">
+                                "Le service maintenance a sauvé notre croisière.
+                                Technicien sur place en 18h à Ibiza, réparation
+                                faite en 4h. Professionnalisme absolu."
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #1a1a2e; display: flex; align-items: center; justify-content: center; color: #c9a84c; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;">
+                                    PD
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem;">Pierre D.</div>
+                                    <div style="color: #888; font-size: 0.8rem;">Ibiza Août 2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             CTA FINAL
+        ═══════════════════════════════════════════ -->
+        <section style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); padding: 6rem 0; text-align: center;">
+            <div class="container">
+                <p style="text-transform: uppercase; letter-spacing: 6px; font-size: 0.75rem; color: #c9a84c; font-weight: 600; margin-bottom: 1.25rem;">
+                    L'extraordinaire commence ici
+                </p>
+                <h2 style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; color: #fff; margin: 0 0 1.25rem; line-height: 1.2;">
+                    Votre expérience VIP<br/>
+                    <span style="color: #c9a84c;">commence maintenant</span>
+                </h2>
+                <p style="color: #aaa; max-width: 500px; margin: 0 auto 3rem; line-height: 1.9; font-size: 1rem;">
+                    Rejoignez notre cercle de clients d'exception et bénéficiez
+                    d'un accompagnement personnalisé à chaque étape de vos voyages.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
+                    <a href="/shop" class="vip-hero-btn-primary">
+                        <i class="fa fa-ship me-2"/>Explorer nos offres
+                    </a>
+                    <a href="/concierge" class="vip-hero-btn-outline">
+                        <i class="fa fa-star me-2"/>Conciergerie VIP
+                    </a>
+                </div>
+
+                <!-- Réassurance finale -->
+                <div class="row g-3 justify-content-center" style="max-width: 700px; margin: 0 auto;">
+                    <div class="col-6 col-md-3">
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;">
+                            <i class="fa fa-lock mb-1 d-block" style="color: #c9a84c; font-size: 1.1rem;"/>
+                            Paiement sécurisé
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;">
+                            <i class="fa fa-user-secret mb-1 d-block" style="color: #c9a84c; font-size: 1.1rem;"/>
+                            Discrétion totale
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;">
+                            <i class="fa fa-clock-o mb-1 d-block" style="color: #c9a84c; font-size: 1.1rem;"/>
+                            Dispo 24h/24
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;">
+                            <i class="fa fa-globe mb-1 d-block" style="color: #c9a84c; font-size: 1.1rem;"/>
+                            +5 pays
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </t>
+</template>
+</odoo>
