@@ -17,7 +17,11 @@ window.MissionDetail = (() => {
         if (_isLoading) return;
         _isLoading = true;
         const banner = document.getElementById('missionBanner');
-        if (banner) banner.textContent = 'Chargement…';
+        if (banner) {
+            const bt = document.getElementById('missionBannerText');
+            if (bt) bt.textContent = 'Chargement…';
+            else banner.textContent = 'Chargement…';
+        }
         try {
             const data = await API.getMission(_missionId);
             _mission   = data.mission || data;
@@ -38,10 +42,13 @@ window.MissionDetail = (() => {
         const titleEl = document.getElementById('topbarTitle');
         if (titleEl) titleEl.textContent = m.reference || 'Mission';
 
-        const state   = CONFIG.STATE_LABELS[m.state] || { label: m.state, icon: '❓' };
+        const state   = CONFIG.STATE_LABELS[m.state] || { label: m.state || '–', icon: '❓' };
         const urgConf = CONFIG.URGENCE_COLORS[m.urgence] || CONFIG.URGENCE_COLORS.normale;
         const banner  = document.getElementById('missionBanner');
-        if (banner) { banner.style.background = urgConf.bg; banner.style.color = urgConf.text; }
+        if (banner) {
+            banner.style.background = urgConf.bg;
+            banner.style.color      = urgConf.text;
+        }
         const bi = document.getElementById('missionBannerIcon');
         const bt = document.getElementById('missionBannerText');
         if (bi) bi.textContent = state.icon;
