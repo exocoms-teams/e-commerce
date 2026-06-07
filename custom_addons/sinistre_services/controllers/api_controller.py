@@ -69,67 +69,113 @@ class SinistreAPIController(http.Controller):
                 methods=['GET'], csrf=False)
     def me(self, **kw):
         user = request.env.user
-        cr   = request.env.cr
+        iv   = _get_interv()
 
-        # Tout en SQL direct — contourne le cache ORM
-        cr.execute("SELECT id, name, zone_intervention FROM sinistre_intervenant WHERE user_id = %s LIMIT 1", (user.id,))
-        iv_row = cr.fetchone()
-        if not iv_row:
-            iv = _get_interv()
-            cr.execute("SELECT id, name, zone_intervention FROM sinistre_intervenant WHERE id = %s", (iv.id,))
-            iv_row = cr.fetchone()
-        iv_id, iv_name, iv_zone = iv_row[0], iv_row[1] or user.name, iv_row[2] or ''
+        # Missions réalisées (terminées)
+        terminees = request.env['sinistre.mission'].sudo().search([
+            ('intervenant_id', '=', iv.id),
+            ('state', 'in', ('termine', 'clos', 'facture')),
+        ])
+        nb_terminees = len(terminees)
+        ca_total = sum(m.montant_devis or 0 for m in terminees)
 
-        cr.execute("SELECT phone, mobile FROM res_partner WHERE id = (SELECT partner_id FROM res_users WHERE id = %s)", (user.id,))
-        pr = cr.fetchone() or ('', '')
-        phone = pr[0] or pr[1] or ''
+        # CA du mois en cours
+        from datetime import datetime
+        now = datetime.now()
+        ca_mois = sum(
+            m.montant_devis or 0 for m in terminees
+            if m.date_cloture and m.date_cloture.month == now.month
+            and m.date_cloture.year == now.year
+        )
 
+        # Note moyenne (0 si aucune intervention)
+        note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
+        note = min(note, 5.0) if note else 0
+
+        # Certifications — lecture SQL directe (fiable même sans migration ORM)
+        certifications = []
+        try:
+            request.env.cr.execute(
+                """SELECT name, date_validite
+                   FROM sinistre_certification
+                   WHERE intervenant_id = %s
+                   ORDER BY sequence, id""",
+                (iv.id,)
+            )
+            for row in request.env.cr.fetchall():
+                nom, dv = row
+                if dv:
+                    date_label = f"Valide jusqu'en {dv.year}"
+                else:
+                    date_label = 'À jour'
+                certifications.append({'name': nom, 'date': date_label})
+        except Exception as e:
+            certifications = []
+
+        # Spécialités — lecture SQL directe
+        specialites       = []
+        specialites_types = []
+        try:
+            request.env.cr.execute(
+                """SELECT s.name, s.type_intervention
+                   FROM sinistre_specialite s
+                   JOIN sinistre_intervenant_sinistre_specialite_rel r
+                     ON r.sinistre_specialite_id = s.id
+                   WHERE r.sinistre_intervenant_id = %s""",
+                (iv.id,)
+            )
+            for row in request.env.cr.fetchall():
+                nom, type_iv = row
+                specialites.append(nom)
+                if type_iv:
+                    specialites_types.append(type_iv)
+        except Exception:
+            # Fallback ORM
+            for s in (iv.specialites or []):
+                specialites.append(s.name)
+                if hasattr(s, 'type_intervention') and s.type_intervention:
+                    specialites_types.append(s.type_intervention)
+
+        # Date création du user (membre depuis) — robuste
         membre_depuis = ''
         try:
             cd = user.create_date
             if cd:
-                mois = {1:'Janvier',2:'Février',3:'Mars',4:'Avril',5:'Mai',6:'Juin',7:'Juillet',8:'Août',9:'Septembre',10:'Octobre',11:'Novembre',12:'Décembre'}
-                membre_depuis = f"{mois.get(cd.month,'')} {cd.year}"
+                mois_fr = {
+                    1:'Janvier',2:'Février',3:'Mars',4:'Avril',5:'Mai',6:'Juin',
+                    7:'Juillet',8:'Août',9:'Septembre',10:'Octobre',11:'Novembre',12:'Décembre'
+                }
+                membre_depuis = f"{mois_fr.get(cd.month, '')} {cd.year}"
         except Exception:
-            pass
+            membre_depuis = ''
 
-        cr.execute("SELECT COUNT(*), COALESCE(SUM(montant_devis),0) FROM sinistre_mission WHERE intervenant_id=%s AND state IN ('termine','clos','facture')", (iv_id,))
-        st = cr.fetchone() or (0, 0)
-        nb_terminees, ca_total = st[0], float(st[1])
+        # Téléphone depuis le partenaire
+        partner = user.partner_id
+        phone   = partner.phone or partner.mobile or ''
 
-        from datetime import datetime
-        now = datetime.now()
-        cr.execute("SELECT COALESCE(SUM(montant_devis),0) FROM sinistre_mission WHERE intervenant_id=%s AND state IN ('termine','clos','facture') AND EXTRACT(month FROM date_cloture)=%s AND EXTRACT(year FROM date_cloture)=%s", (iv_id, now.month, now.year))
-        ca_mois = float((cr.fetchone() or (0,))[0])
-
-        specialites, specialites_types = [], []
-        try:
-            cr.execute("SELECT s.name, s.type_intervention FROM sinistre_specialite s JOIN sinistre_intervenant_sinistre_specialite_rel r ON r.sinistre_specialite_id=s.id WHERE r.sinistre_intervenant_id=%s", (iv_id,))
-            for nom, ti in cr.fetchall():
-                specialites.append(nom)
-                if ti: specialites_types.append(ti)
-        except Exception:
-            pass
-
-        certifications = []
-        try:
-            cr.execute("SELECT name, date_validite FROM sinistre_certification WHERE intervenant_id=%s ORDER BY sequence, id", (iv_id,))
-            for nom, dv in cr.fetchall():
-                certifications.append({'name': nom, 'date': f"Valide jusqu'en {dv.year}" if dv else 'À jour'})
-        except Exception:
-            pass
+        # Entreprise = nom de la fiche intervenant ou nom du partenaire société
+        entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
 
         return _ok({'success': True, 'user': {
-            'uid': user.id, 'name': user.name, 'email': user.login,
-            'phone': phone, 'company_name': iv_name, 'zone': iv_zone,
-            'note_moyenne': 0, 'interventions': nb_terminees,
-            'ca_total': ca_total, 'ca_mois': ca_mois,
-            'specialites': specialites, 'specialites_types': specialites_types,
-            'membre_depuis': membre_depuis, 'intervenant_id': iv_id,
-            'certifications': certifications,
+            'uid':              user.id,
+            'name':             user.name,
+            'email':            user.login,
+            'phone':            phone,
+            'company_name':     entreprise,
+            'zone':             iv.zone_intervention or '',
+            'note_moyenne':     note,
+            'interventions':    nb_terminees,
+            'ca_total':         ca_total,
+            'ca_mois':          ca_mois,
+            'specialites':      specialites,
+            'specialites_types': specialites_types,
+            'membre_depuis':    membre_depuis,
+            'intervenant_id':   iv.id,
+            'create_date':      str(user.create_date) if user.create_date else '',
+            'certifications':   certifications,
         }})
 
-
+    # ── MES MISSIONS ─────────────────────────────────────────────────
     @http.route('/api/sinistre/v1/intervenant/missions', type='http',
                 auth='user', methods=['GET'], csrf=False)
     def mes_missions(self, **kw):
