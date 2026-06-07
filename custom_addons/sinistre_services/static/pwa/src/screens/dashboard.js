@@ -166,8 +166,56 @@ window.Dashboard = (() => {
         container.innerHTML = _proposees.map(m => _renderProposeeCard(m)).join('');
     }
 
+    /* ── Grille tarifaire de référence (fourchettes marché) ── */
+    const TARIFS = {
+        serrurerie:     { min: 90,  max: 350, label: 'Ouverture / Serrurerie' },
+        plomberie:      { min: 80,  max: 400, label: 'Plomberie' },
+        electricite:    { min: 100, max: 500, label: 'Électricité' },
+        vitrerie:       { min: 120, max: 600, label: 'Vitrerie' },
+        menuiserie_int: { min: 80,  max: 300, label: 'Menuiserie' },
+        menuiserie_ext: { min: 100, max: 450, label: 'Menuiserie Ext.' },
+        autre:          { min: 60,  max: 250, label: 'Intervention' },
+    };
+
+    function _getPrixDisplay(m) {
+        // Priorité : montant_estime saisi par la plateforme
+        if (m.montant_estime && m.montant_estime > 0) {
+            if (m.montant_estime_max && m.montant_estime_max > m.montant_estime) {
+                return {
+                    label: `${m.montant_estime.toLocaleString('fr-FR')} – ${m.montant_estime_max.toLocaleString('fr-FR')} €`,
+                    sub: 'Estimation plateforme',
+                    color: '#1E40AF',
+                };
+            }
+            return {
+                label: `${m.montant_estime.toLocaleString('fr-FR')} €`,
+                sub: 'Estimation plateforme',
+                color: '#1E40AF',
+            };
+        }
+        // Montant garanti assurance
+        if (m.montant_garanti && m.montant_garanti > 0) {
+            return {
+                label: `${m.montant_garanti.toLocaleString('fr-FR')} €`,
+                sub: 'Montant garanti assurance',
+                color: '#059669',
+            };
+        }
+        // Fourchette marché selon type
+        const tarif = TARIFS[m.type_intervention] || TARIFS.autre;
+        const mult  = (m.urgence === 'tres_urgente') ? 1.5
+                    : (m.urgence === 'urgente')       ? 1.25 : 1;
+        const min = Math.round(tarif.min * mult / 10) * 10;
+        const max = Math.round(tarif.max * mult / 10) * 10;
+        return {
+            label: `${min} – ${max} €`,
+            sub: m.urgence !== 'normale' ? 'Estimation · majoration urgence' : 'Estimation de marché',
+            color: '#6B7280',
+        };
+    }
+
     function _renderProposeeCard(m) {
-        const price    = m.montant_garanti || m.montant_devis || m.montant || 0;
+        const prix     = _getPrixDisplay(m);
         const addr     = m.adresse_intervention || m.adresse || '—';
         const desc     = m.description_sinistre || m.description || '—';
         const isUrgent = m.urgence === 'urgente' || m.urgence === 'tres_urgente';
@@ -185,8 +233,9 @@ window.Dashboard = (() => {
                     ${_metierBadge(m.type_intervention)}
                     ${_urgenceBadge(m.urgence)}
                 </div>
-                <div style="font-size:20px;font-weight:800;color:#1E40AF;white-space:nowrap">
-                    ${price ? price.toLocaleString('fr-FR') + ' €' : '—'}
+                <div style="text-align:right">
+                    <div style="font-size:18px;font-weight:800;color:${prix.color};white-space:nowrap">${prix.label}</div>
+                    <div style="font-size:10px;color:#9CA3AF;margin-top:1px">${prix.sub}</div>
                 </div>
             </div>
             <div style="font-weight:600;font-size:14px;color:#111827;margin-bottom:6px;line-height:1.4">${desc}</div>
