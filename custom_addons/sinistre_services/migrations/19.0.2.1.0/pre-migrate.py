@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Migration 19.0.2.1.0 — Création table sinistre_certification
-S'exécute automatiquement à chaque mise à jour du module.
+Migration 19.0.2.1.0 — Création table sinistre_certification + champs v2.2.0
 """
 import logging
 _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    """Crée la table sinistre_certification si absente."""
+    """Crée la table sinistre_certification si absente + ajout champs signature/notes."""
 
-    # Table certification
+    # ── Table certification ───────────────────────────────────────────
     cr.execute("""
         CREATE TABLE IF NOT EXISTS sinistre_certification (
             id              SERIAL PRIMARY KEY,
@@ -28,7 +27,7 @@ def migrate(cr, version):
     """)
     _logger.info("[sinistre_services] ✓ Table sinistre_certification OK")
 
-    # Enregistrer le modèle dans ir_model si absent
+    # ── Enregistrer le modèle dans ir_model si absent ─────────────────
     cr.execute("""
         INSERT INTO ir_model (model, name, state, transient)
         SELECT 'sinistre.certification', 'Certification Intervenant', 'base', false
@@ -37,89 +36,78 @@ def migrate(cr, version):
         )
     """)
 
-    # Données de démo — Thomas Moreau
+    # ── Données de démo — Thomas Moreau ──────────────────────────────
     cr.execute("""
         SELECT id FROM res_users WHERE login = 'thomas.moreau@artisanpro.fr' LIMIT 1
     """)
     row = cr.fetchone()
-    if not row:
-        return
-
-    user_id = row[0]
-    cr.execute("""
-        SELECT id FROM sinistre_intervenant WHERE user_id = %s LIMIT 1
-    """, (user_id,))
-    iv_row = cr.fetchone()
-    if not iv_row:
-        return
-
-    iv_id = iv_row[0]
-
-    # Spécialités — s'assurer qu'elles existent
-    for nom, type_iv in [
-        ('Serrurerie',  'serrurerie'),
-        ('Plomberie',   'plomberie'),
-        ('Electricite', 'electricite'),
-    ]:
+    if row:
+        user_id = row[0]
         cr.execute("""
-            INSERT INTO sinistre_specialite (name, type_intervention)
-            SELECT %s, %s
-            WHERE NOT EXISTS (
-                SELECT 1 FROM sinistre_specialite WHERE name = %s
-            )
-        """, (nom, type_iv, nom))
+            SELECT id FROM sinistre_intervenant WHERE user_id = %s LIMIT 1
+        """, (user_id,))
+        iv_row = cr.fetchone()
+        if iv_row:
+            iv_id = iv_row[0]
 
-        # Lier à l'intervenant
-        cr.execute("SELECT id FROM sinistre_specialite WHERE name = %s LIMIT 1", (nom,))
-        spec = cr.fetchone()
-        if spec:
-            cr.execute("""
-                INSERT INTO sinistre_intervenant_sinistre_specialite_rel
-                    (sinistre_intervenant_id, sinistre_specialite_id)
-                SELECT %s, %s
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM sinistre_intervenant_sinistre_specialite_rel
-                    WHERE sinistre_intervenant_id = %s
-                    AND sinistre_specialite_id = %s
-                )
-            """, (iv_id, spec[0], iv_id, spec[0]))
+            for nom, type_iv in [
+                ('Serrurerie',  'serrurerie'),
+                ('Plomberie',   'plomberie'),
+                ('Electricite', 'electricite'),
+            ]:
+                cr.execute("""
+                    INSERT INTO sinistre_specialite (name, type_intervention)
+                    SELECT %s, %s
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM sinistre_specialite WHERE name = %s
+                    )
+                """, (nom, type_iv, nom))
 
-    # Certifications — insérer si absentes
-    for nom, annee in [
-        ('Assurance RC Pro',  2027),
-        ('Qualibat Plomberie', 2026),
-        ('Kbis verifie',       None),
-    ]:
-        date_val = f"{annee}-12-31" if annee else None
-        cr.execute("""
-            INSERT INTO sinistre_certification
-                (intervenant_id, name, date_validite, create_uid, write_uid)
-            SELECT %s, %s, %s, 1, 1
-            WHERE NOT EXISTS (
-                SELECT 1 FROM sinistre_certification
-                WHERE intervenant_id = %s AND name = %s
-            )
-        """, (iv_id, nom, date_val, iv_id, nom))
+                cr.execute("SELECT id FROM sinistre_specialite WHERE name = %s LIMIT 1", (nom,))
+                spec = cr.fetchone()
+                if spec:
+                    cr.execute("""
+                        INSERT INTO sinistre_intervenant_sinistre_specialite_rel
+                            (sinistre_intervenant_id, sinistre_specialite_id)
+                        SELECT %s, %s
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM sinistre_intervenant_sinistre_specialite_rel
+                            WHERE sinistre_intervenant_id = %s
+                            AND sinistre_specialite_id = %s
+                        )
+                    """, (iv_id, spec[0], iv_id, spec[0]))
 
-    _logger.info("[sinistre_services] ✓ Données Thomas Moreau migrées")
+            for nom, annee in [
+                ('Assurance RC Pro',   2027),
+                ('Qualibat Plomberie', 2026),
+                ('Kbis verifie',       None),
+            ]:
+                date_val = f"{annee}-12-31" if annee else None
+                cr.execute("""
+                    INSERT INTO sinistre_certification
+                        (intervenant_id, name, date_validite, create_uid, write_uid)
+                    SELECT %s, %s, %s, 1, 1
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM sinistre_certification
+                        WHERE intervenant_id = %s AND name = %s
+                    )
+                """, (iv_id, nom, date_val, iv_id, nom))
 
+            _logger.info("[sinistre_services] ✓ Données Thomas Moreau migrées")
+
+    # ── Champs v2.2.0 : signatures + notes ───────────────────────────
     _logger.info("Migration 2.2.0 — ajout champs signature et notes")
-    
-        # ── sinistre.mission ──────────────────────────────────────────
-        cr.execute("""
-            ALTER TABLE sinistre_mission
-            ADD COLUMN IF NOT EXISTS signature_avant       TEXT,
-            ADD COLUMN IF NOT EXISTS signature_apres       TEXT,
-            ADD COLUMN IF NOT EXISTS notes_artisan         TEXT;
-        """)
-    
-        # ── sinistre.devis ─────────────────────────────────────────────
-        # Ajout de l'état 'en_revision' dans le type ENUM Odoo
-        # (Odoo stocke les Selection en VARCHAR, pas besoin de modifier le type)
-        cr.execute("""
-            ALTER TABLE sinistre_devis
-            ADD COLUMN IF NOT EXISTS signature_client_modif TEXT;
-        """)
-    
-        _logger.info("Migration 2.2.0 terminée.")
 
+    cr.execute("""
+        ALTER TABLE sinistre_mission
+        ADD COLUMN IF NOT EXISTS signature_avant        TEXT,
+        ADD COLUMN IF NOT EXISTS signature_apres        TEXT,
+        ADD COLUMN IF NOT EXISTS notes_artisan          TEXT
+    """)
+
+    cr.execute("""
+        ALTER TABLE sinistre_devis
+        ADD COLUMN IF NOT EXISTS signature_client_modif TEXT
+    """)
+
+    _logger.info("[sinistre_services] ✓ Migration 2.2.0 terminée")
