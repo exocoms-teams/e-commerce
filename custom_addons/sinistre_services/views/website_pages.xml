@@ -1,391 +1,1269 @@
-# -*- coding: utf-8 -*-
-"""
-Contrôleur Website public — Sinistre Services
-Adapté de monetique_theme/controllers/main.py
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
-Routes :
-  /                           → Page d'accueil
-  /nos-services               → Présentation des services
-  /urgence                    → Page urgence 24/7
-  /demande-intervention       → Formulaire demande (particulier / entreprise)
-  /demande-intervention/send  → Traitement POST formulaire
-  /contact                    → Formulaire contact
-  /contact/send               → Traitement POST contact
-  /suivi/<token>              → Suivi dossier public par token UUID
-  /rappel                     → POST modal rappel
-"""
-import datetime
-import logging
+<!-- ════════════════════════════════════════════════════════════
+     PAGE NOS SERVICES
+════════════════════════════════════════════════════════════ -->
+<template id="page_nos_services" name="Sinistre Services — Nos Services">
+    <t t-call="website.layout">
 
-from odoo import http, _
-from odoo.http import request
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;margin-bottom:12px;">
+                    <a href="/">Accueil</a> › Nos Services
+                </p>
+                <h1>Nos Services d'Intervention</h1>
+                <p>Artisans qualifies disponibles 24h/24 — Intervention garantie en moins de 2h</p>
+            </div>
+        </div>
 
-_logger = logging.getLogger(__name__)
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+
+                <!-- SERRURERIE -->
+                <div id="serrurerie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div>
+                        <span class="mn-eyebrow">Serrurerie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Ouverture de porte et serrurerie</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Porte claquee, serrure forcee suite a effraction, cylindre a changer. Nos serruriers interviennent sans destruction dans 95% des cas.</p>
+                        <ul style="margin-bottom:28px;display:flex;flex-direction:column;gap:8px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Ouverture de porte sans destruction</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Remplacement de cylindre et serrure</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Serrure multipoints et connectee</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Securisation apres effraction</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Blindage de porte</li>
+                        </ul>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <a href="/demande-intervention?type=serrurerie&amp;urgence=tres_urgente" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Intervention urgente</a>
+                            <a href="/demande-intervention?type=serrurerie" class="mn-btn mn-btn--outline">Devis gratuit</a>
+                        </div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                          <img 
+                             src="monetique_theme/static/src/img/serrure.jpg" 
+                             alt="Illustration cadenas"
+                              style="width:100%;height:100%;min-height:280px;display:block;object-fit:cover;" />
+
+                    </div>
+                </div>
+
+                <!-- PLOMBERIE -->
+                <div id="plomberie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <img 
+                             src="monetique_theme/static/src/img/plomberie.jpeg" 
+                             alt="Illustration eau"
+                              style="width:100%;height:100%;min-height:280px;display:block;object-fit:cover;" />
+                    </div>
+                    <div>
+                        <span class="mn-eyebrow">Plomberie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Plomberie et degat des eaux</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Fuite d'eau, degat des eaux, canalisation bouchee. Nos plombiers diagnostiquent et reparent pour limiter les dommages.</p>
+                        <ul style="margin-bottom:28px;display:flex;flex-direction:column;gap:8px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Fuite sous evier, robinetterie</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Degat des eaux — pompage</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Chauffe-eau, ballon d'eau chaude</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Recherche de fuite non destructive</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Rapport pour declaration assurance</li>
+                        </ul>
+                        <a href="/demande-intervention?type=plomberie" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                </div>
+
+                <!-- MENUISERIE -->
+                <div id="menuiserie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div>
+                        <span class="mn-eyebrow">Menuiserie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Menuiserie interieure et exterieure</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Porte fracturee, fenetre endommagee, volet casse. Securisation immediate puis remplacement par nos menuisiers qualifies.</p>
+                        <ul style="margin-bottom:28px;display:flex;flex-direction:column;gap:8px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Porte d'entree fracturee</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Fenetre et double vitrage</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Volet roulant, store</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Bois, PVC, aluminium</li>
+                        </ul>
+                        <a href="/demande-intervention?type=menuiserie_ext" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <img 
+                             src="monetique_theme/static/src/img/menuserie.jpg" 
+                             alt="Illustration maison"
+                              style="width:100%;height:100%;min-height:280px;display:block;object-fit:cover;" />
+                    </div>
+                </div>
+
+               <!-- VITRERIE -->
+                <div id="vitrerie" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <img 
+                             src="monetique_theme/static/src/img/vitre.jpg" 
+                             alt="Illustration vitre"
+                              style="width:100%;height:100%;min-height:280px;display:block;object-fit:cover;" />
+                    </div>
+                    <div>
+                        <span class="mn-eyebrow">Vitrerie</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Vitrerie intérieure et extérieure</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Bris de glace, fenetre cassee, double vitrage. Bache provisoire disponible dans l'heure.</p>
+                        <ul style="margin-bottom:28px;display:flex;flex-direction:column;gap:8px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Vitrine et baie vitrée</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Fenêtre et double vitrage</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Verre cassé, miroir, cloison vitrée</li>
+                        </ul>
+                        <a href="/demande-intervention?type=vitrerie" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                </div>
+
+               <!-- ELECTRICITE -->
+                <div id="electricite" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:72px;padding-bottom:72px;border-bottom:1px solid #E5E7EB;">
+                    <div>
+                        <span class="mn-eyebrow">Electricite</span>
+                        <h2 style="font-size:30px;font-weight:800;color:#0F172A;margin:12px 0 16px;">Assistance et dépannage électrique</h2>
+                        <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:20px;">Panne electrique, disjoncteur, court-circuit. Electriciens Qualifie disponibles immediatement.</p>
+                        <ul style="margin-bottom:28px;display:flex;flex-direction:column;gap:8px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Panne électrique</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Disjoncteur et tableau électrique</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:14px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Court-circuit, prise, éclairage</li>
+                        </ul>
+                        <a href="/demande-intervention?type=electricite" class="mn-btn mn-btn--primary"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:20px;min-height:280px;display:flex;align-items:center;justify-content:center;">
+                        <img 
+                             src="monetique_theme/static/src/img/electricite.jpg" 
+                             alt="Illustration courant"
+                              style="width:100%;height:100%;min-height:280px;display:block;object-fit:cover;" />
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="mn-cta">
+            <div class="mn-container">
+                <div class="mn-cta__inner">
+                    <h2>Vous etes une assurance ?</h2>
+                    <p>Integrez notre API pour envoyer vos ordres de mission automatiquement.</p>
+                    <div class="mn-cta__actions">
+                        <a href="/assurances" class="mn-btn mn-btn--white mn-btn--lg">Decouvrir notre offre</a>
+                        <a href="/contact" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,.4);color:white;">Nous contacter</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE URGENCE
+════════════════════════════════════════════════════════════ -->
+<template id="page_urgence" name="Sinistre Services — Urgence">
+    <t t-call="website.layout">
+
+        <div style="background:linear-gradient(135deg,#B71C1C 0%,#C62828 100%);padding:80px 0;text-align:center;color:white;position:relative;overflow:hidden;">
+            <div class="mn-container" style="position:relative;z-index:1;">
+                <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;margin-bottom:20px;">
+                    <span style="width:8px;height:8px;background:#4ADE80;border-radius:50%;display:inline-block;"/>
+                    Intervenants disponibles maintenant
+                </div>
+                <h1 style="font-size:48px;font-weight:800;letter-spacing:-.025em;margin-bottom:16px;">Urgence Sinistre</h1>
+                <p style="font-size:18px;opacity:.85;margin-bottom:32px;">Appelez maintenant — un artisan chez vous en moins de 2h</p>
+                <a href="tel:+33100000000" style="display:inline-block;font-size:42px;font-weight:900;color:white;letter-spacing:-.03em;margin-bottom:32px;text-decoration:none;">01 XX XX XX XX</a>
+                <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                    <a href="/demande-intervention?urgence=tres_urgente" class="mn-btn mn-btn--white mn-btn--lg"><i class="fa fa-wrench" aria-hidden="true"/> Formulaire d'urgence</a>
+                    <a href="#" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.4);" data-rappel="1"><i class="fa fa-phone" aria-hidden="true"/> Etre rappele</a>
+                </div>
+            </div>
+        </div>
+
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">En cas d'urgence</span>
+                    <h2>Que faire avant notre arrivee ?</h2>
+                </div>
+                <div class="mn-grid mn-grid--3">
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#128272;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Effraction / Serrure</h4>
+                        <ul style="display:flex;flex-direction:column;gap:6px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Deposez une main courante a la police</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Ne touchez pas a la zone</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Photographiez les degats</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Attendez notre intervenant</li>
+                        </ul>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#128295;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Fuite / Degat des eaux</h4>
+                        <ul style="display:flex;flex-direction:column;gap:6px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Coupez l'eau au general</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Coupez le disjoncteur</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Eloignez vos affaires</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Photographiez les degats</li>
+                        </ul>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;">
+                        <div style="font-size:36px;margin-bottom:16px;">&#9889;</div>
+                        <h4 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:10px;">Panne Electrique</h4>
+                        <ul style="display:flex;flex-direction:column;gap:6px;">
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Verifiez le disjoncteur general</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Debranchez les appareils</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>N'intervenez pas sur les fils</li>
+                            <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#6B7280;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Appelez-nous immediatement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE DEMANDE D'INTERVENTION
+════════════════════════════════════════════════════════════ -->
+<template id="page_demande" name="Sinistre Services — Demande">
+    <t t-call="website.layout">
+
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Demande d'intervention</p>
+                <h1>Demande d'Intervention</h1>
+                <p>Particulier, entreprise ou assure — nous intervenons sous 2h</p>
+            </div>
+        </div>
+
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <t t-if="success">
+                    <div style="max-width:600px;margin:0 auto;background:white;border:1px solid #A7F3D0;border-radius:16px;padding:48px;text-align:center;">
+                        <div style="width:72px;height:72px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;">&#10003;</div>
+                        <h2 style="font-size:24px;font-weight:700;color:#065F46;margin-bottom:10px;">Demande enregistree !</h2>
+                        <p style="color:#6B7280;margin-bottom:20px;">Votre demande a bien ete recue. Un conseiller vous contacte dans les 30 minutes.</p>
+                        <t t-if="reference">
+                            <p style="font-size:14px;color:#9CA3AF;margin-bottom:28px;">Reference dossier : <strong style="color:#C62828;font-size:18px;"><t t-esc="reference"/></strong></p>
+                        </t>
+                        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                            <a href="/" class="mn-btn mn-btn--primary">Retour a l'accueil</a>
+                            <a href="/nos-services" class="mn-btn mn-btn--outline">Voir nos services</a>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="not success">
+                    <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start;">
+
+                        <!-- Formulaire principal -->
+                        <div class="mn-form-card">
+                            <h2>Decrivez votre sinistre</h2>
+                            <p class="mn-form-sub">Remplissez ce formulaire — un conseiller vous rappelle sous 30 minutes.</p>
+                            <t t-if="error">
+                                <div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires (telephone, type, adresse).</div>
+                            </t>
+                            <form method="POST" action="/demande-intervention/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Prenom</label>
+                                        <input type="text" name="prenom" placeholder="Votre prenom"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Nom</label>
+                                        <input type="text" name="nom" placeholder="Votre nom"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Telephone <span class="required">*</span></label>
+                                        <input type="tel" name="telephone" required="required" placeholder="06 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email</label>
+                                        <input type="email" name="email" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Vous etes</label>
+                                    <select name="source">
+                                        <option value="particulier">Particulier</option>
+                                        <option value="entreprise">Entreprise / Professionnel</option>
+                                        <option value="assurance">Mandate par une assurance</option>
+                                    </select>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Type d'intervention <span class="required">*</span></label>
+                                        <select name="type_intervention" required="required">
+                                            <option value="">-- Selectionnez --</option>
+                                            <option value="serrurerie">Serrurerie</option>
+                                            <option value="plomberie">Plomberie</option>
+                                            <option value="menuiserie_int">Menuiserie Interieure</option>
+                                            <option value="menuiserie_ext">Menuiserie Exterieure</option>
+                                            <option value="vitrerie">Vitrerie</option>
+                                            <option value="electricite">Electricite</option>
+                                            <option value="autre">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Niveau d'urgence</label>
+                                        <select name="urgence">
+                                            <option value="normale">Normale — sous 48h</option>
+                                            <option value="urgente">Urgente — aujourd'hui</option>
+                                            <option value="tres_urgente">Tres urgente — moins de 2h</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Adresse d'intervention <span class="required">*</span></label>
+                                    <input type="text" name="adresse" required="required" placeholder="Adresse complete avec code postal"/>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Description du sinistre</label>
+                                    <textarea name="description" rows="5" placeholder="Decrivez votre probleme : que s'est-il passe, depuis quand, acces possible ?"/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma demande
+                                    </button>
+                                    <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:10px;">Sans engagement · Devis gratuit · Reponse sous 30 min</p>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div style="display:flex;flex-direction:column;gap:16px;">
+                            <div class="mn-contact-info-card">
+                                <h3>Urgence ? Appelez directement</h3>
+                                <div style="text-align:center;padding:16px 0;">
+                                    <a href="tel:+33100000000" style="font-size:26px;font-weight:800;color:#C62828;display:block;margin-bottom:6px;text-decoration:none;">01 XX XX XX XX</a>
+                                    <p style="font-size:12px;color:#9CA3AF;">Disponible 24h/24 · 7j/7</p>
+                                </div>
+                                <a href="#" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;" data-rappel="1">
+                                    <i class="fa fa-phone" aria-hidden="true"/> Etre rappele
+                                </a>
+                            </div>
+                            <div class="mn-contact-info-card">
+                                <h3>Delais d'intervention</h3>
+                                <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#FFF5F5;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128308; Tres urgent</span>
+                                        <strong style="font-size:13px;color:#C62828;">Moins de 2h</strong>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#FFF7ED;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128992; Urgent</span>
+                                        <strong style="font-size:13px;color:#EA580C;">Aujourd'hui</strong>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#F0FDF4;border-radius:8px;">
+                                        <span style="font-size:13px;color:#374151;">&#128994; Normal</span>
+                                        <strong style="font-size:13px;color:#16A34A;">Sous 48h</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mn-contact-info-card">
+                                <h3>Vous avez une assurance ?</h3>
+                                <p style="font-size:13px;color:#6B7280;margin-bottom:14px;">Votre assurance peut prendre en charge tout ou partie de l'intervention. Contactez-la en priorite.</p>
+                                <a href="/assurances" class="mn-btn mn-btn--outline mn-btn--sm" style="width:100%;justify-content:center;">En savoir plus</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE REJOINDRE LE RESEAU
+════════════════════════════════════════════════════════════ -->
+<template id="page_rejoindre" name="Sinistre Services — Rejoindre le reseau">
+    <t t-call="website.layout">
+
+        <div class="mn-page-hero" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Rejoindre le reseau</p>
+                <h1>Rejoignez notre reseau d'artisans</h1>
+                <p>Recevez des missions qualifiees, gerez votre planning, encaissez rapidement</p>
+            </div>
+        </div>
+
+        <!-- Avantages -->
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">Pourquoi nous rejoindre</span>
+                    <h2>Les avantages du reseau</h2>
+                    <p>Plus de 1 700 artisans nous font deja confiance</p>
+                </div>
+                <div class="mn-grid mn-grid--4" style="margin-bottom:64px;">
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div class="mn-card__icon" style="margin:0 auto 16px;"><i class="fa fa-mobile" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">App mobile</h4>
+                        <p style="font-size:13px;color:#6B7280;">Recevez et gerez vos missions en temps reel.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div class="mn-card__icon" style="margin:0 auto 16px;"><i class="fa fa-money" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Paiement 48h</h4>
+                        <p style="font-size:13px;color:#6B7280;">Virement garanti sous 48h. Zero impaye.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div class="mn-card__icon" style="margin:0 auto 16px;"><i class="fa fa-map-marker" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Votre zone</h4>
+                        <p style="font-size:13px;color:#6B7280;">Missions uniquement dans votre perimetre.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;text-align:center;">
+                        <div class="mn-card__icon" style="margin:0 auto 16px;"><i class="fa fa-star" aria-hidden="true"/></div>
+                        <h4 style="font-weight:700;color:#0F172A;margin-bottom:8px;">Badge certifie</h4>
+                        <p style="font-size:13px;color:#6B7280;">Visibilite aupres des assurances partenaires.</p>
+                    </div>
+                </div>
+
+                <!-- Formulaire -->
+                <div style="display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start;">
+                    <div class="mn-form-card">
+                        <h2>Candidature artisan</h2>
+                        <p class="mn-form-sub">Notre equipe vous recontacte sous 48h ouvrees.</p>
+                        <t t-if="error">
+                            <div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires.</div>
+                        </t>
+                        <t t-if="success">
+                            <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:12px;padding:32px;text-align:center;">
+                                <div style="font-size:48px;margin-bottom:14px;">&#10003;</div>
+                                <h3 style="color:#065F46;font-size:18px;font-weight:700;margin-bottom:8px;">Candidature reçue !</h3>
+                                <p style="color:#6B7280;">Notre equipe vous contacte dans les 48h.</p>
+                            </div>
+                        </t>
+                        <t t-if="not success">
+                            <form method="POST" action="/rejoindre-le-reseau/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Nom complet <span class="required">*</span></label>
+                                        <input type="text" name="nom" required="required" placeholder="Votre nom"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Telephone <span class="required">*</span></label>
+                                        <input type="tel" name="telephone" required="required" placeholder="06 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Specialite <span class="required">*</span></label>
+                                        <select name="specialite" required="required">
+                                            <option value="">-- Selectionnez --</option>
+                                            <option value="serrurerie">Serrurerie</option>
+                                            <option value="plomberie">Plomberie</option>
+                                            <option value="menuiserie">Menuiserie</option>
+                                            <option value="vitrerie">Vitrerie</option>
+                                            <option value="electricite">Electricite</option>
+                                            <option value="multi">Multi-metiers</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Zone d'intervention</label>
+                                        <input type="text" name="zone" placeholder="Ex: 75, 92, 93..."/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Annees d'experience</label>
+                                        <select name="experience">
+                                            <option value="1-3">1 a 3 ans</option>
+                                            <option value="3-10">3 a 10 ans</option>
+                                            <option value="10+">Plus de 10 ans</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Certifications (Qualifelec, RGE, etc.)</label>
+                                    <input type="text" name="certifications" placeholder="Listez vos certifications"/>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Presentation libre</label>
+                                    <textarea name="message" rows="3" placeholder="Votre activite, equipements, disponibilite..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma candidature
+                                    </button>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+
+                    <!-- Processus -->
+                    <div style="background:linear-gradient(135deg,#0F172A,#1E2A4A);border-radius:16px;padding:28px;color:white;">
+                        <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;">Le processus en 4 etapes</h3>
+                        <div style="display:flex;flex-direction:column;gap:16px;">
+                            <div style="display:flex;gap:12px;align-items:flex-start;">
+                                <div style="width:28px;height:28px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">1</div>
+                                <div><p style="font-size:13px;font-weight:600;color:white;margin-bottom:1px;">Candidature en ligne</p><p style="font-size:11px;color:rgba(255,255,255,.5);">Remplissez le formulaire</p></div>
+                            </div>
+                            <div style="display:flex;gap:12px;align-items:flex-start;">
+                                <div style="width:28px;height:28px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">2</div>
+                                <div><p style="font-size:13px;font-weight:600;color:white;margin-bottom:1px;">Verification dossier</p><p style="font-size:11px;color:rgba(255,255,255,.5);">Kbis, assurance RC, certifications</p></div>
+                            </div>
+                            <div style="display:flex;gap:12px;align-items:flex-start;">
+                                <div style="width:28px;height:28px;background:#C62828;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">3</div>
+                                <div><p style="font-size:13px;font-weight:600;color:white;margin-bottom:1px;">Formation app mobile</p><p style="font-size:11px;color:rgba(255,255,255,.5);">Prise en main en 1h</p></div>
+                            </div>
+                            <div style="display:flex;gap:12px;align-items:flex-start;">
+                                <div style="width:28px;height:28px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">&#10003;</div>
+                                <div><p style="font-size:13px;font-weight:600;color:white;margin-bottom:1px;">Premieres missions</p><p style="font-size:11px;color:rgba(255,255,255,.5);">Debut d'activite immediat</p></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);">
+                            <p style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:4px;">Commission plateforme</p>
+                            <p style="font-size:28px;font-weight:800;color:white;">15%</p>
+                            <p style="font-size:11px;color:rgba(255,255,255,.4);">Paiement 48h · Zero impaye garanti</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE ASSURANCES
+════════════════════════════════════════════════════════════ -->
+<template id="page_assurances" name="Sinistre Services — Assurances">
+    <t t-call="website.layout">
+
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Assurances</p>
+                <h1>Solutions pour les Assureurs</h1>
+                <p>Plateforme agreee — API dediee, suivi temps reel, rapports automatiques</p>
+            </div>
+        </div>
+
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div class="mn-section__header">
+                    <span class="mn-eyebrow">Notre offre</span>
+                    <h2>Une plateforme conçue pour les assureurs</h2>
+                    <p>Simplifiez la gestion de vos sinistres avec une integration directe dans vos systemes</p>
+                </div>
+                <div class="mn-grid mn-grid--3" style="margin-bottom:64px;">
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-code" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">API REST documentee</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Integration simple. Envoi automatique des ordres de mission. Documentation complete et sandbox gratuite.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-clock-o" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Suivi temps reel</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Tableau de bord dedie. Webhooks a chaque changement d'etat. Photos transmises automatiquement.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                        <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-file-text-o" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Rapports automatiques</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Rapport PDF complet genere apres chaque intervention. Photos avant/apres, devis, bon de travaux.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-shield" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Artisans verifies</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Kbis, RC pro, certifications verifies. Notation systematique. Standard de qualite garanti.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-euro" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Tarification transparente</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Grille tarifaire fixe. Devis valide avant execution. Facturation directe ou via votre systeme.</p>
+                    </div>
+                    <div style="background:white;border-radius:14px;padding:32px;border:1px solid #E5E7EB;border-top:4px solid #1E40AF;">
+                        <div style="font-size:28px;color:#1E40AF;margin-bottom:14px;"><i class="fa fa-headphones" aria-hidden="true"/></div>
+                        <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Support dedie</h3>
+                        <p style="font-size:14px;color:#6B7280;line-height:1.7;">Interlocuteur unique. SLA garanti. Support technique 24h/24 pour les integrations critiques.</p>
+                    </div>
+                </div>
+
+                <!-- Partenaires -->
+                <div style="text-align:center;margin-bottom:48px;">
+                    <p style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9CA3AF;margin-bottom:20px;">Assurances partenaires</p>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">AXA</div>
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">MAIF</div>
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">Allianz</div>
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">Groupama</div>
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">MMA</div>
+                        <div style="padding:14px 24px;background:white;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;font-weight:700;color:#374151;">MACIF</div>
+                    </div>
+                </div>
+
+                <!-- CTA API -->
+                <div style="background:linear-gradient(135deg,#0F172A,#1E2A4A);border-radius:20px;padding:48px;text-align:center;color:white;">
+                    <span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FCA5A5;background:rgba(198,40,40,.2);padding:4px 14px;border-radius:100px;margin-bottom:20px;">Acces API</span>
+                    <h2 style="font-size:32px;font-weight:800;margin-bottom:14px;">Pret a integrer notre plateforme ?</h2>
+                    <p style="font-size:16px;opacity:.7;margin-bottom:32px;max-width:520px;margin-left:auto;margin-right:auto;">Sandbox gratuite. Mise en production en moins d'une semaine. Notre equipe vous accompagne.</p>
+                    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                        <a href="/assurances/api-access" class="mn-btn mn-btn--primary mn-btn--lg"><i class="fa fa-code" aria-hidden="true"/> Demander un acces API</a>
+                        <a href="/contact" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.1);color:white;border:2px solid rgba(255,255,255,.2);">Parler a un expert</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE ACCES API
+════════════════════════════════════════════════════════════ -->
+<template id="page_api_access" name="Sinistre Services — Acces API">
+    <t t-call="website.layout">
+
+        <div class="mn-page-hero" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › <a href="/assurances" style="color:rgba(255,255,255,.6);">Assurances</a> › Acces API</p>
+                <h1>Demande d'acces API</h1>
+                <p>Sandbox gratuite · Documentation OpenAPI · Mise en production en 5 jours</p>
+            </div>
+        </div>
+
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <div style="display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start;">
+
+                    <div class="mn-form-card">
+                        <h2>Formulaire de demande d'acces</h2>
+                        <p class="mn-form-sub">Notre equipe technique vous contacte sous 24h ouvrees avec vos identifiants sandbox.</p>
+                        <t t-if="error">
+                            <div class="mn-form-alert mn-form-alert-error">Veuillez remplir les champs obligatoires (societe, nom, email).</div>
+                        </t>
+                        <t t-if="success">
+                            <div style="background:#F0FDF4;border:1px solid #A7F3D0;border-radius:12px;padding:32px;text-align:center;">
+                                <div style="font-size:48px;margin-bottom:14px;">&#10003;</div>
+                                <h3 style="color:#065F46;font-size:20px;font-weight:700;margin-bottom:8px;">Demande enregistree !</h3>
+                                <p style="color:#6B7280;">Notre equipe technique vous contacte sous 24h ouvrees avec vos identifiants sandbox et la documentation.</p>
+                            </div>
+                        </t>
+                        <t t-if="not success">
+                            <form method="POST" action="/assurances/api-access/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Societe <span class="required">*</span></label>
+                                        <input type="text" name="societe" required="required" placeholder="Votre compagnie d'assurance"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Nom du contact <span class="required">*</span></label>
+                                        <input type="text" name="nom" required="required" placeholder="Prenom Nom"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Email professionnel <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="vous@assurance.fr"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Telephone</label>
+                                        <input type="tel" name="telephone" placeholder="01 XX XX XX XX"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Volume de sinistres / mois</label>
+                                        <select name="volume">
+                                            <option value="moins-100">Moins de 100</option>
+                                            <option value="100-500">100 a 500</option>
+                                            <option value="500-2000">500 a 2 000</option>
+                                            <option value="plus-2000">Plus de 2 000</option>
+                                        </select>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Systeme de gestion actuel</label>
+                                        <input type="text" name="systeme" placeholder="Ex: Guidewire, Majesco..."/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Types de sinistres geres</label>
+                                    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_serrurerie" value="1"/> Serrurerie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_plomberie" value="1"/> Plomberie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_vitrerie" value="1"/> Vitrerie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_menuiserie" value="1"/> Menuiserie</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;"><input type="checkbox" name="type_electricite" value="1"/> Electricite</label>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Besoins specifiques et contexte d'integration</label>
+                                    <textarea name="besoins" rows="4" placeholder="Decrivez votre besoin, les volumes, les specificites techniques attendues..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+                                        <i class="fa fa-code" aria-hidden="true"/> Demander mon acces sandbox
+                                    </button>
+                                    <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:10px;">Sandbox gratuite · Reponse sous 24h · Sans engagement</p>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+
+                    <!-- Sidebar technique -->
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        <div class="mn-contact-info-card">
+                            <h3>Ce que vous recevrez</h3>
+                            <ul style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Cles API sandbox</li>
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Documentation OpenAPI</li>
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>SDK Python et JavaScript</li>
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Exemples de code</li>
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Support technique dedie</li>
+                                <li style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;"><i class="fa fa-check" style="color:#C62828;" aria-hidden="true"/>Webhooks pre-configures</li>
+                            </ul>
+                        </div>
+                        <div class="mn-contact-info-card">
+                            <h3>Endpoints principaux</h3>
+                            <div style="background:#0F172A;border-radius:10px;padding:16px;margin-top:4px;">
+                                <p style="font-family:monospace;font-size:11px;color:#4ADE80;margin-bottom:8px;">POST /api/v1/missions</p>
+                                <p style="font-family:monospace;font-size:11px;color:#60A5FA;margin-bottom:8px;">GET  /api/v1/missions/{id}</p>
+                                <p style="font-family:monospace;font-size:11px;color:#60A5FA;margin-bottom:8px;">GET  /api/v1/missions/{id}/pdf</p>
+                                <p style="font-family:monospace;font-size:11px;color:#A78BFA;margin-bottom:0;">POST /api/v1/webhooks</p>
+                            </div>
+                        </div>
+                        <div class="mn-contact-info-card">
+                            <h3>Contact technique</h3>
+                            <div class="mn-contact-detail">
+                                <div class="mn-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></div>
+                                <div>
+                                    <span class="mn-contact-detail-label">Email API</span>
+                                    <a href="mailto:api@sinistre-services.fr" class="mn-contact-detail-val">api@sinistre-services.fr</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE CONTACT
+════════════════════════════════════════════════════════════ -->
+<template id="page_contact" name="Sinistre Services — Contact">
+    <t t-call="website.layout">
+
+        <div class="mn-page-hero">
+            <div class="mn-container">
+                <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;"><a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> › Contact</p>
+                <h1>Contactez-nous</h1>
+                <p>Notre equipe vous repond sous 24h ouvrees</p>
+            </div>
+        </div>
+
+        <section class="mn-section mn-section--gray">
+            <div class="mn-container">
+                <t t-if="success">
+                    <div style="max-width:560px;margin:0 auto;background:white;border:1px solid #A7F3D0;border-radius:16px;padding:48px;text-align:center;">
+                        <div style="font-size:48px;margin-bottom:14px;">&#10003;</div>
+                        <h3 style="color:#065F46;font-size:22px;font-weight:700;margin-bottom:8px;">Message envoye !</h3>
+                        <p style="color:#6B7280;margin-bottom:24px;">Merci pour votre message. Notre equipe vous repond sous 24h ouvrees.</p>
+                        <a href="/" class="mn-btn mn-btn--primary">Retour a l'accueil</a>
+                    </div>
+                </t>
+                <t t-if="not success">
+                    <div class="mn-contact-grid">
+                        <div class="mn-form-card">
+                            <h2>Envoyez-nous un message</h2>
+                            <p class="mn-form-sub">Reponse sous 24h ouvrees.</p>
+                            <t t-if="error">
+                                <div class="mn-form-alert mn-form-alert-error">Veuillez remplir tous les champs obligatoires (nom, email, message).</div>
+                            </t>
+                            <form method="POST" action="/contact/send">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Nom <span class="required">*</span></label>
+                                        <input type="text" name="name" required="required" placeholder="Votre nom complet"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Email <span class="required">*</span></label>
+                                        <input type="email" name="email" required="required" placeholder="votre@email.fr"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-row-2">
+                                    <div class="mn-form-group">
+                                        <label>Telephone</label>
+                                        <input type="tel" name="phone" placeholder="01 XX XX XX XX"/>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Sujet</label>
+                                        <input type="text" name="sujet" placeholder="Sujet de votre message"/>
+                                    </div>
+                                </div>
+                                <div class="mn-form-group">
+                                    <label>Message <span class="required">*</span></label>
+                                    <textarea name="message" required="required" rows="6" placeholder="Votre message..."/>
+                                </div>
+                                <div class="mn-form-submit">
+                                    <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;padding:14px;">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mn-contact-sidebar">
+                            <div class="mn-contact-info-card">
+                                <h3>Nos coordonnees</h3>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-phone" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">Urgences 24/7</span>
+                                        <a href="tel:+33100000000" class="mn-contact-detail-val">01 XX XX XX XX</a>
+                                    </div>
+                                </div>
+                                <div class="mn-contact-detail">
+                                    <div class="mn-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></div>
+                                    <div>
+                                        <span class="mn-contact-detail-label">Email general</span>
+                                        <a href="mailto:contact@sinistre-services.fr" class="mn-contact-detail-val">contact@sinistre-services.fr</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background:linear-gradient(135deg,#FFF5F5,white);border:1px solid rgba(198,40,40,.15);border-radius:14px;padding:24px;text-align:center;">
+                                <h4 style="font-size:15px;font-weight:700;color:#C62828;margin-bottom:8px;">Urgence sinistre ?</h4>
+                                <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">N'attendez pas — appelez notre ligne d'urgence disponible 24h/24.</p>
+                                <a href="tel:+33100000000" class="mn-btn mn-btn--secondary" style="width:100%;justify-content:center;"><i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX</a>
+                            </div>
+                            <div class="mn-contact-info-card">
+                                <h3>Liens rapides</h3>
+                                <ul style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+                                    <li><a href="/demande-intervention" style="font-size:14px;color:var(--mn-blue);display:flex;align-items:center;gap:8px;"><i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention</a></li>
+                                    <li><a href="/assurances/api-access" style="font-size:14px;color:var(--mn-blue);display:flex;align-items:center;gap:8px;"><i class="fa fa-code" aria-hidden="true"/> Demander un acces API</a></li>
+                                    <li><a href="/rejoindre-le-reseau" style="font-size:14px;color:var(--mn-blue);display:flex;align-items:center;gap:8px;"><i class="fa fa-users" aria-hidden="true"/> Rejoindre le reseau artisan</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </section>
+    </t>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE 404
+════════════════════════════════════════════════════════════ -->
+<template id="page_404" name="Sinistre Services — 404">
+    <t t-call="website.layout">
+        <section style="padding:100px 0;text-align:center;background:#F9FAFB;min-height:60vh;display:flex;align-items:center;">
+            <div class="mn-container">
+                <div style="font-size:80px;margin-bottom:24px;">&#128269;</div>
+                <h1 style="font-size:32px;font-weight:800;color:#0F172A;margin-bottom:12px;">Dossier introuvable</h1>
+                <p t-if="message" style="font-size:16px;color:#6B7280;max-width:480px;margin:0 auto 32px;"><t t-esc="message"/></p>
+                <p t-else="" style="font-size:16px;color:#6B7280;max-width:480px;margin:0 auto 32px;">La page que vous recherchez n'existe pas ou le lien est expire.</p>
+                <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+                    <a href="/" class="mn-btn mn-btn--primary">Retour a l'accueil</a>
+                    <a href="/contact" class="mn-btn mn-btn--outline">Nous contacter</a>
+                </div>
+            </div>
+        </section>
+    </t>
+</template>
 
 
-class SinistreWebsite(http.Controller):
+    <!-- ═══════════════════════════════════════════════════════════════
+         PAGE API ACCESS — avec affichage clé après inscription
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="ss_page_api_access" name="Demande Accès API">
+        <t t-call="website.layout">
+            <div class="mn-hero mn-hero--dark" style="padding:40px 0 30px;">
+                <div class="mn-container">
+                    <p style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:12px;">
+                        <a href="/" style="color:rgba(255,255,255,.6);">Accueil</a> ›
+                        <a href="/assurances" style="color:rgba(255,255,255,.6);">Assurances</a> › Accès API
+                    </p>
+                    <h1>Demande d'accès API</h1>
+                    <p>Sandbox gratuite · Documentation OpenAPI · Mise en production en 5 jours</p>
+                </div>
+            </div>
+            <section class="mn-section mn-section--gray">
+                <div class="mn-container">
+                    <div style="max-width:680px;margin:0 auto;">
 
-    # ─── ACCUEIL ────────────────────────────────────────────────────
-    @http.route('/', type='http', auth='public', website=True)
-    def homepage(self, **kwargs):
-        return request.render('sinistre_services.ss_homepage', {
-            'year': datetime.datetime.now().year,
-        })
+                        <t t-if="success and api_key">
+                            <!-- Succès avec affichage de la clé -->
+                            <div style="background:white;border-radius:16px;padding:40px;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center;">
+                                <div style="font-size:52px;margin-bottom:16px;">🎉</div>
+                                <h2 style="color:#065F46;font-size:24px;font-weight:800;margin-bottom:8px;">
+                                    Compte activé !
+                                </h2>
+                                <p style="color:#6B7280;margin-bottom:28px;">
+                                    Bienvenue <strong t-esc="societe"/>.
+                                    Vos identifiants ont été envoyés par email.
+                                </p>
 
-    # ─── NOS SERVICES ───────────────────────────────────────────────
-    @http.route('/nos-services', type='http', auth='public', website=True)
-    def nos_services(self, **kwargs):
-        return request.render('sinistre_services.ss_page_services', {
-            'year': datetime.datetime.now().year,
-        })
+                                <div style="background:#0F1B33;border-radius:12px;padding:20px;margin:20px 0;text-align:left;">
+                                    <p style="color:#94A3B8;font-size:11px;font-weight:700;letter-spacing:.08em;margin:0 0 8px;">
+                                        VOTRE CLÉ API
+                                    </p>
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <code id="apiKeyDisplay" style="color:#10B981;font-size:13px;word-break:break-all;flex:1;"
+                                              t-esc="api_key"/>
+                                        <button onclick="navigator.clipboard.writeText(document.getElementById('apiKeyDisplay').textContent);this.textContent='✓ Copié!';setTimeout(()=>this.textContent='📋 Copier',2000)"
+                                                style="background:#14B8A6;color:white;border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:12px;white-space:nowrap;">
+                                            📋 Copier
+                                        </button>
+                                    </div>
+                                </div>
 
-    # ─── URGENCE 24/7 ───────────────────────────────────────────────
-    @http.route('/urgence', type='http', auth='public', website=True)
-    def urgence(self, **kwargs):
-        return request.render('sinistre_services.ss_page_urgence', {
-            'year': datetime.datetime.now().year,
-        })
+                                <p style="color:#EF4444;font-size:13px;margin-bottom:24px;">
+                                    ⚠️ Conservez cette clé — elle ne sera plus visible en clair après fermeture de cette page.
+                                </p>
 
-    # ─── FORMULAIRE DE DEMANDE D'INTERVENTION ───────────────────────
-    @http.route('/demande-intervention', type='http', auth='public', website=True)
-    def demande_intervention(self, **kwargs):
-        """Formulaire de prise de contact / demande directe."""
-        success = kwargs.get('success', False)
-        return request.render('sinistre_services.ss_page_demande', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': success,
-            'form_data': {},
-        })
+                                <a t-att-href="portail_url"
+                                   style="display:inline-block;background:#0F1B33;color:white;padding:14px 32px;
+                                          border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:12px;">
+                                    🖥️ Accéder au portail de mission
+                                </a>
+                                <br/>
+                                <a href="/assurances"
+                                   style="color:#6B7280;font-size:13px;text-decoration:none;">
+                                    ← Retour aux assurances
+                                </a>
+                            </div>
+                        </t>
 
-    @http.route('/demande-intervention/send', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def demande_send(self, **post):
-        """Traitement du formulaire de demande d'intervention."""
-        # Validation basique
-        required = ['nom', 'email', 'telephone', 'type_intervention', 'adresse', 'description']
-        if not all(post.get(f, '').strip() for f in required):
-            return request.render('sinistre_services.ss_page_demande', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
+                        <t t-elif="success">
+                            <div style="background:white;border-radius:16px;padding:40px;text-align:center;">
+                                <div style="font-size:52px;">✅</div>
+                                <h2 style="color:#065F46;">Demande enregistrée !</h2>
+                                <p style="color:#6B7280;">Vos identifiants ont été renvoyés par email.</p>
+                            </div>
+                        </t>
 
-        source = post.get('source', 'particulier')
-        if source not in ('particulier', 'entreprise'):
-            source = 'particulier'
+                        <t t-else="">
+                            <div style="background:white;border-radius:16px;padding:40px;box-shadow:0 4px 24px rgba(0,0,0,.08);">
+                                <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;">
+                                    Formulaire de demande d'accès
+                                </h2>
+                                <p style="color:#6B7280;margin-bottom:24px;">
+                                    Votre clé API est générée instantanément et envoyée par email.
+                                </p>
 
-        # Créer ou trouver le partenaire
-        env = request.env(su=True)
-        email = post.get('email', '').strip()
-        partner = env['res.partner'].search([('email', '=', email)], limit=1)
-        if not partner:
-            is_company = (source == 'entreprise')
-            name_parts = [post.get('prenom', '').strip(), post.get('nom', '').strip()]
-            if is_company and post.get('entreprise_nom', '').strip():
-                full_name = post.get('entreprise_nom', '').strip()
-            else:
-                full_name = ' '.join(p for p in name_parts if p) or post.get('nom', 'Client').strip()
-            partner = env['res.partner'].create({
-                'name': full_name,
-                'email': email,
-                'phone': post.get('telephone', '').strip(),
-                'is_company': is_company,
-            })
+                                <t t-if="error">
+                                    <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#991B1B;">
+                                        Veuillez remplir les champs obligatoires (société, nom, email).
+                                    </div>
+                                </t>
 
-        # Créer la mission
-        try:
-            mission = env['sinistre.mission'].create({
-                'source': source,
-                'client_id': partner.id,
-                'type_intervention': post.get('type_intervention', 'autre'),
-                'urgence': post.get('urgence', 'normale'),
-                'description_sinistre': post.get('description', ''),
-                'adresse_intervention': post.get('adresse', ''),
-                'contact_sur_place': f"{post.get('prenom', '')} {post.get('nom', '')}".strip(),
-                'tel_sur_place': post.get('telephone', ''),
-                'commentaire_interne': post.get('commentaire', ''),
-            })
-            _logger.info(f"[WEBSITE] Nouvelle demande créée : {mission.reference} ({source})")
-        except Exception as e:
-            _logger.error(f"[WEBSITE] Erreur création mission web: {e}")
-            return request.render('sinistre_services.ss_page_demande', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
+                                <form method="POST" action="/assurances/api-access/send">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-        # Notification email interne
-        try:
-            mail_vals = {
-                'subject': f'[Sinistre Services] Nouvelle demande {source} — {mission.reference}',
-                'body_html': f"""
-                    <p><strong>Référence :</strong> {mission.reference}</p>
-                    <p><strong>Source :</strong> {source}</p>
-                    <p><strong>Type :</strong> {post.get('type_intervention', '')}</p>
-                    <p><strong>Urgence :</strong> {post.get('urgence', 'normale')}</p>
-                    <p><strong>Client :</strong> {partner.name} — {email} — {post.get('telephone', '')}</p>
-                    <p><strong>Adresse :</strong> {post.get('adresse', '')}</p>
-                    <p><strong>Description :</strong><br/>{post.get('description', '')}</p>
-                """,
-                'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
-            }
-            env['mail.mail'].create(mail_vals).send()
-        except Exception as e:
-            _logger.warning(f"Email notification failed: {e}")
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                SOCIÉTÉ <span style="color:#EF4444;">*</span>
+                                            </label>
+                                            <input type="text" name="societe" required="required"
+                                                   placeholder="Votre compagnie d'assurance"
+                                                   style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                NOM DU CONTACT <span style="color:#EF4444;">*</span>
+                                            </label>
+                                            <input type="text" name="nom" required="required"
+                                                   placeholder="Prénom Nom"
+                                                   style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                                        </div>
+                                    </div>
 
-        return request.render('sinistre_services.ss_page_demande', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': True,
-            'reference': mission.reference,
-            'token': mission.token_api,
-            'form_data': {},
-        })
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                EMAIL PROFESSIONNEL <span style="color:#EF4444;">*</span>
+                                            </label>
+                                            <input type="email" name="email" required="required"
+                                                   placeholder="vous@assurance.fr"
+                                                   style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                TÉLÉPHONE
+                                            </label>
+                                            <input type="tel" name="telephone"
+                                                   placeholder="01 XX XX XX XX"
+                                                   style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                                        </div>
+                                    </div>
 
-    # ─── CONTACT ────────────────────────────────────────────────────
-    @http.route('/contact', type='http', auth='public', website=True)
-    def contact(self, **kwargs):
-        return request.render('sinistre_services.ss_page_contact', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': False,
-            'form_data': {},
-        })
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                VOLUME DE SINISTRES / MOIS
+                                            </label>
+                                            <select name="volume"
+                                                    style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;background:white;">
+                                                <option value="moins-100">Moins de 100</option>
+                                                <option value="100-500">100 à 500</option>
+                                                <option value="500-2000">500 à 2 000</option>
+                                                <option value="plus-2000">Plus de 2 000</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                                SYSTÈME DE GESTION ACTUEL
+                                            </label>
+                                            <input type="text" name="systeme"
+                                                   placeholder="Ex: Guidewire, Majesco..."
+                                                   style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;"/>
+                                        </div>
+                                    </div>
 
-    @http.route('/contact/send', type='http', auth='public', website=True,
-                methods=['POST'], csrf=True)
-    def contact_send(self, **post):
-        name = post.get('name', '').strip()
-        email = post.get('email', '').strip()
-        message = post.get('message', '').strip()
+                                    <div style="margin-bottom:16px;">
+                                        <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:8px;">
+                                            TYPES DE SINISTRES GÉRÉS
+                                        </label>
+                                        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                                                <input type="checkbox" name="type_serrurerie" value="1"/> Serrurerie
+                                            </label>
+                                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                                                <input type="checkbox" name="type_plomberie" value="1"/> Plomberie
+                                            </label>
+                                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                                                <input type="checkbox" name="type_vitrerie" value="1"/> Vitrerie
+                                            </label>
+                                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                                                <input type="checkbox" name="type_menuiserie" value="1"/> Menuiserie
+                                            </label>
+                                            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                                                <input type="checkbox" name="type_electricite" value="1"/> Électricité
+                                            </label>
+                                        </div>
+                                    </div>
 
-        if not (name and email and message):
-            return request.render('sinistre_services.ss_page_contact', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
+                                    <div style="margin-bottom:24px;">
+                                        <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">
+                                            BESOINS SPÉCIFIQUES
+                                        </label>
+                                        <textarea name="besoins" rows="3"
+                                                  placeholder="Décrivez votre besoin d'intégration..."
+                                                  style="width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"/>
+                                    </div>
 
-        try:
-            mail_vals = {
-                'subject': f"[Contact] {post.get('sujet', 'Nouveau message')}",
-                'body_html': f"""
-                    <p><strong>Nom :</strong> {name}</p>
-                    <p><strong>Email :</strong> {email}</p>
-                    <p><strong>Téléphone :</strong> {post.get('phone', 'Non renseigné')}</p>
-                    <p><strong>Message :</strong><br/>{message}</p>
-                """,
-                'email_from': email,
-                'email_to': request.website.email or 'contact@sinistre-services.fr',
-            }
-            request.env['mail.mail'].sudo().create(mail_vals).send()
-        except Exception as e:
-            _logger.warning(f"Contact send failed: {e}")
+                                    <button type="submit"
+                                            style="width:100%;background:#0F1B33;color:white;border:none;
+                                                   border-radius:10px;padding:14px;font-size:15px;font-weight:700;
+                                                   cursor:pointer;">
+                                        🔑 Obtenir ma clé API instantanément
+                                    </button>
+                                    <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:10px;">
+                                        Clé générée immédiatement · Email de confirmation envoyé · Sans engagement
+                                    </p>
+                                </form>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
 
-        return request.render('sinistre_services.ss_page_contact', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': True,
-            'form_data': {},
-        })
+    <!-- ═══════════════════════════════════════════════════════════════
+         PORTAIL ASSURANCE — Créer des ordres de mission en ligne
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="ss_page_portail_assurance" name="Portail Assurance">
+        <t t-call="website.layout">
+            <div style="background:#0F1B33;padding:32px 0 24px;">
+                <div class="mn-container">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:24px;">🏢</span>
+                        <div>
+                            <h1 style="color:white;font-size:20px;margin:0;">
+                                Portail Assurance
+                                <t t-if="assurance"> — <t t-esc="assurance.name"/></t>
+                            </h1>
+                            <p style="color:rgba(255,255,255,.5);font-size:13px;margin:0;">
+                                Créez et suivez vos ordres de mission
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    # ─── SUIVI DOSSIER (token public) ───────────────────────────────
-    @http.route('/suivi/<string:token>', type='http', auth='public', website=True)
-    def suivi_dossier(self, token, **kwargs):
-        """Suivi public d'une mission par token UUID — sans authentification."""
-        mission = request.env['sinistre.mission'].sudo().search([
-            ('token_api', '=', token),
-        ], limit=1)
+            <section style="background:#F3F4F6;min-height:calc(100vh - 120px);padding:32px 0;">
+                <div class="mn-container">
 
-        if not mission:
-            return request.render('sinistre_services.ss_page_404', {
-                'year': datetime.datetime.now().year,
-                'message': "Dossier introuvable. Vérifiez le lien reçu par email.",
-            })
+                    <!-- Auth check -->
+                    <t t-if="not assurance">
+                        <div style="max-width:480px;margin:0 auto;background:white;border-radius:16px;padding:40px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.08);">
+                            <div style="font-size:48px;margin-bottom:16px;">🔒</div>
+                            <h2>Accès non autorisé</h2>
+                            <p style="color:#6B7280;">Clé API invalide ou expirée.</p>
+                            <a href="/assurances/api-access"
+                               style="display:inline-block;background:#0F1B33;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:16px;">
+                                Obtenir une clé API
+                            </a>
+                        </div>
+                    </t>
 
-        return request.render('sinistre_services.ss_page_suivi', {
-            'year': datetime.datetime.now().year,
-            'mission': mission,
-        })
+                    <t t-if="assurance">
+                        <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;">
 
-    # ─── MODAL RAPPEL ───────────────────────────────────────────────
-    @http.route('/rappel', type='http', auth='public', website=True,
-                methods=['POST'], csrf=True)
-    def rappel(self, **post):
-        phone = post.get('phone', '').strip()
-        name = post.get('name', '').strip()
-        if phone:
-            try:
-                mail_vals = {
-                    'subject': '[Sinistre Services] Demande de rappel',
-                    'body_html': f'<p><strong>Nom :</strong> {name or "Non renseigné"}</p>'
-                                 f'<p><strong>Téléphone :</strong> {phone}</p>',
-                    'email_from': request.website.email or 'contact@sinistre-services.fr',
-                    'email_to': request.website.email or 'contact@sinistre-services.fr',
-                }
-                request.env['mail.mail'].sudo().create(mail_vals).send()
-            except Exception as e:
-                _logger.warning(f"Rappel mail failed: {e}")
-        return request.redirect('/?rappel=ok')
+                            <!-- Formulaire nouvelle mission -->
+                            <div style="background:white;border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+                                <h2 style="font-size:18px;font-weight:800;margin-bottom:6px;">
+                                    Nouvel ordre de mission
+                                </h2>
 
-    # ── Demande d'accès API (formulaire assurance) ───────────────────
-    @http.route('/assurances/api-access', type='http', auth='public',
-                website=True, methods=['GET'], csrf=False)
-    def api_access_form(self, **kw):
-        return request.render('sinistre_services.ss_page_api_access', {
-            'error': False, 'success': False,
-            'year': datetime.datetime.now().year,
-        })
+                                <t t-if="request.params.get('success')">
+                                    <div style="background:#D1FAE5;border-radius:8px;padding:14px;margin-bottom:20px;color:#065F46;font-weight:600;">
+                                        ✅ Mission créée : <t t-esc="request.params.get('ref','')"/>
+                                    </div>
+                                </t>
+                                <t t-if="request.params.get('error') == 'missing'">
+                                    <div style="background:#FEE2E2;border-radius:8px;padding:14px;margin-bottom:20px;color:#991B1B;">
+                                        ⚠️ Veuillez remplir tous les champs obligatoires.
+                                    </div>
+                                </t>
 
-    @http.route('/assurances/api-access/send', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def api_access_send(self, **post):
-        import secrets as _secrets
-        societe = post.get('societe', '').strip()
-        nom     = post.get('nom', '').strip()
-        email   = post.get('email', '').strip()
-        tel     = post.get('telephone', '').strip()
+                                <form method="POST" action="/assurances/portail/mission">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="api_key" t-att-value="api_key"/>
 
-        if not societe or not nom or not email:
-            return request.render('sinistre_services.ss_page_api_access', {
-                'error': True, 'success': False,
-                'year': datetime.datetime.now().year,
-            })
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">REF. INTERNE ASSURANCE</label>
+                                            <input type="text" name="ref_assurance" placeholder="AXA-2026-001"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">TYPE D'INTERVENTION *</label>
+                                            <select name="type_intervention" required="required"
+                                                    style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;background:white;">
+                                                <option value="serrurerie">Serrurerie</option>
+                                                <option value="plomberie">Plomberie</option>
+                                                <option value="electricite">Électricité</option>
+                                                <option value="vitrerie">Vitrerie</option>
+                                                <option value="menuiserie_int">Menuiserie Int.</option>
+                                                <option value="menuiserie_ext">Menuiserie Ext.</option>
+                                                <option value="autre">Autre</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-        env = request.env(su=True)
-        base_url = request.httprequest.host_url.rstrip('/')
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">NOM ASSURÉ *</label>
+                                            <input type="text" name="client_nom" required="required" placeholder="M. Martin"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">EMAIL ASSURÉ *</label>
+                                            <input type="email" name="client_email" required="required" placeholder="client@email.fr"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                    </div>
 
-        # ── Vérifier doublon ──────────────────────────────────────
-        existing = env['sinistre.assurance'].search(
-            [('partner_id.email', '=', email)], limit=1
-        )
-        if existing:
-            # Renvoyer les identifiants existants
-            if existing.api_key:
-                _send_credentials_email(env, existing, nom, email, base_url)
-            return request.render('sinistre_services.ss_page_api_access', {
-                'error': False, 'success': True,
-                'api_key': existing.api_key,
-                'societe': societe,
-                'portail_url': f"{base_url}/assurances/portail",
-                'year': datetime.datetime.now().year,
-            })
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">TÉLÉPHONE SUR PLACE</label>
+                                            <input type="tel" name="client_tel" placeholder="06 XX XX XX XX"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">URGENCE</label>
+                                            <select name="urgence"
+                                                    style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;background:white;">
+                                                <option value="normale">Normale</option>
+                                                <option value="urgente">Urgente</option>
+                                                <option value="tres_urgente">Très urgente</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-        # ── Créer le partenaire ───────────────────────────────────
-        partner = env['res.partner'].search([('email', '=', email)], limit=1)
-        if not partner:
-            partner = env['res.partner'].create({
-                'name':         societe,
-                'email':        email,
-                'phone':        tel,
-                'company_type': 'company',
-            })
+                                    <div style="margin-bottom:14px;">
+                                        <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">ADRESSE D'INTERVENTION *</label>
+                                        <input type="text" name="adresse" required="required"
+                                               placeholder="12 rue de la Paix, Paris 2e"
+                                               style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                    </div>
 
-        # ── Générer la clé API immédiatement ──────────────────────
-        api_key = _secrets.token_urlsafe(32)
+                                    <div style="margin-bottom:14px;">
+                                        <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">DESCRIPTION DU SINISTRE *</label>
+                                        <textarea name="description" required="required" rows="3"
+                                                  placeholder="Décrivez le sinistre..."
+                                                  style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;resize:vertical;"/>
+                                    </div>
 
-        # Types de sinistres
-        types = [t for t in ['serrurerie','plomberie','vitrerie','menuiserie','electricite']
-                 if post.get(f'type_{t}')]
-        note = (f"Contact: {nom} | Tel: {tel} | Volume: {post.get('volume','')} | "
-                f"Système: {post.get('systeme','')} | Types: {', '.join(types)} | "
-                f"Besoins: {post.get('besoins','')}")
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">MONTANT GARANTI (€)</label>
+                                            <input type="number" name="montant_garanti" placeholder="500" min="0"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;">FRANCHISE (€)</label>
+                                            <input type="number" name="franchise" placeholder="50" min="0"
+                                                   style="width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;"/>
+                                        </div>
+                                    </div>
 
-        # ── Créer la fiche assurance (actif directement) ──────────
-        assurance = env['sinistre.assurance'].create({
-            'name':            societe,
-            'partner_id':      partner.id,
-            'statut_compte':   'actif',
-            'api_key':         api_key,
-            'api_key_active':  True,
-            'note':            note,
-        })
+                                    <button type="submit"
+                                            style="width:100%;background:#0F1B33;color:white;border:none;border-radius:10px;
+                                                   padding:13px;font-size:14px;font-weight:700;cursor:pointer;">
+                                        📤 Envoyer l'ordre de mission
+                                    </button>
+                                </form>
+                            </div>
 
-        # ── Envoyer email avec identifiants ───────────────────────
-        _send_credentials_email(env, assurance, nom, email, base_url)
+                            <!-- Sidebar : missions récentes + clé API -->
+                            <div style="display:flex;flex-direction:column;gap:16px;">
 
-        return request.render('sinistre_services.ss_page_api_access', {
-            'error':       False,
-            'success':     True,
-            'api_key':     api_key,
-            'societe':     societe,
-            'portail_url': f"{base_url}/assurances/portail",
-            'year':        datetime.datetime.now().year,
-        })
+                                <div style="background:#0F1B33;border-radius:12px;padding:18px;">
+                                    <p style="color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:.08em;margin:0 0 8px;">VOTRE CLÉ API</p>
+                                    <code id="keyDisplay" style="color:#10B981;font-size:11px;word-break:break-all;display:block;margin-bottom:10px;"
+                                          t-esc="api_key"/>
+                                    <button onclick="navigator.clipboard.writeText(document.getElementById('keyDisplay').textContent);this.textContent='✓ Copié!';setTimeout(()=>this.textContent='📋 Copier',2000)"
+                                            style="background:#14B8A6;color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;">
+                                        📋 Copier
+                                    </button>
+                                </div>
 
-    # ── Portail assurance (créer un ordre de mission) ─────────────────
-    @http.route('/assurances/portail', type='http', auth='public',
-                website=True, methods=['GET'], csrf=False)
-    def assurance_portail(self, **kw):
-        api_key = kw.get('key', '')
-        env = request.env(su=True)
-        assurance = None
-        if api_key:
-            assurance = env['sinistre.assurance'].search(
-                [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
-                limit=1
-            )
-        return request.render('sinistre_services.ss_page_portail_assurance', {
-            'assurance':   assurance,
-            'api_key':     api_key,
-            'success':     kw.get('success', False),
-            'error':       kw.get('error', False),
-            'missions':    assurance.mission_ids[:10] if assurance else [],
-            'base_url':    request.httprequest.host_url.rstrip('/'),
-            'year':        datetime.datetime.now().year,
-        })
+                                <div style="background:white;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+                                    <h3 style="font-size:14px;font-weight:700;margin:0 0 14px;">Mes dernières missions</h3>
+                                    <t t-if="not missions">
+                                        <p style="color:#9CA3AF;font-size:13px;text-align:center;padding:16px 0;">
+                                            Aucune mission pour le moment
+                                        </p>
+                                    </t>
+                                    <t t-foreach="missions" t-as="m">
+                                        <div style="border-bottom:1px solid #F3F4F6;padding:10px 0;">
+                                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                                <span style="font-size:12px;font-weight:700;" t-esc="m.reference"/>
+                                                <span style="font-size:11px;background:#F3F4F6;padding:2px 8px;border-radius:20px;"
+                                                      t-esc="m.state"/>
+                                            </div>
+                                            <p style="font-size:12px;color:#6B7280;margin:3px 0 0;"
+                                               t-esc="m.description_sinistre[:60] + '...' if m.description_sinistre and len(m.description_sinistre) > 60 else m.description_sinistre"/>
+                                        </div>
+                                    </t>
+                                </div>
 
-    @http.route('/assurances/portail/mission', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def assurance_portail_mission(self, **post):
-        import json
-        api_key = post.get('api_key', '').strip()
-        env     = request.env(su=True)
-        base_url = request.httprequest.host_url.rstrip('/')
+                                <div style="background:#EFF6FF;border-radius:12px;padding:16px;">
+                                    <h4 style="font-size:13px;font-weight:700;margin:0 0 8px;color:#1E40AF;">
+                                        API REST
+                                    </h4>
+                                    <code style="font-size:11px;color:#374151;display:block;line-height:1.8;">
+                                        POST /api/assurance/v1/mission<br/>
+                                        GET  /api/assurance/v1/missions<br/>
+                                        POST /api/assurance/v1/mission/&lt;ref&gt;/annuler<br/>
+                                        POST /api/assurance/v1/mission/&lt;ref&gt;/message
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+        </t>
+    </template>
 
-        assurance = env['sinistre.assurance'].search(
-            [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
-            limit=1
-        )
-        if not assurance:
-            return request.redirect(f'/assurances/portail?key={api_key}&error=auth')
-
-        # Valider champs requis
-        required = ['client_nom','client_email','adresse','type_intervention','description']
-        if not all(post.get(f,'').strip() for f in required):
-            return request.redirect(f'/assurances/portail?key={api_key}&error=missing')
-
-        # Créer client
-        client_email = post.get('client_email','').strip()
-        partner = env['res.partner'].search([('email','=',client_email)], limit=1)
-        if not partner:
-            partner = env['res.partner'].create({
-                'name':  post.get('client_nom','').strip(),
-                'email': client_email,
-                'phone': post.get('client_tel','').strip(),
-            })
-
-        # Créer la mission
-        mission = env['sinistre.mission'].create({
-            'source':               'assurance',
-            'assurance_id':         assurance.id,
-            'ref_assurance':        post.get('ref_assurance','').strip(),
-            'client_id':            partner.id,
-            'type_intervention':    post.get('type_intervention','autre'),
-            'urgence':              post.get('urgence','normale'),
-            'description_sinistre': post.get('description','').strip(),
-            'adresse_intervention': post.get('adresse','').strip(),
-            'tel_sur_place':        post.get('client_tel','').strip(),
-            'montant_garanti':      float(post.get('montant_garanti',0) or 0),
-            'franchise':            float(post.get('franchise',0) or 0),
-        })
-        mission._notifier_artisans_zone()
-
-        return request.redirect(
-            f'/assurances/portail?key={api_key}&success=1&ref={mission.reference}'
-        )
+</odoo>
