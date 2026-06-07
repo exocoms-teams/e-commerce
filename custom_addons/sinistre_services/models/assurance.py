@@ -188,8 +188,11 @@ class SinistreDevis(models.Model):
     client_id = fields.Many2one(related='mission_id.client_id', store=True)
     date_devis = fields.Datetime(default=fields.Datetime.now)
     state = fields.Selection([
-        ('brouillon', 'Brouillon'), ('envoye', 'Envoyé'),
-        ('accepte', 'Accepté'), ('refuse', 'Refusé'),
+        ('brouillon',   'Brouillon'),
+        ('envoye',      'Envoyé'),
+        ('en_revision', 'En Révision'),
+        ('accepte',     'Accepté'),
+        ('refuse',      'Refusé'),
     ], default='brouillon', tracking=True)
 
     ligne_ids = fields.One2many('sinistre.devis.ligne', 'devis_id', string='Lignes')
@@ -201,6 +204,11 @@ class SinistreDevis(models.Model):
     note_client = fields.Text()
     motif_refus = fields.Text()
     signature_client = fields.Binary()
+    signature_client_modif = fields.Text(
+        string='Re-Signature Devis Modifié',
+        help='Signature base64 du client après modification du devis',
+        copy=False,
+    )
     date_signature = fields.Datetime()
 
     @api.depends('ligne_ids.montant_total', 'tva')
@@ -225,6 +233,9 @@ class SinistreDevis(models.Model):
         self.mission_id.write({'state': 'devis_envoye'})
 
     def action_accepter(self):
+        from odoo.exceptions import UserError
+        if self.state not in ('envoye', 'en_revision'):
+            raise UserError(_("Le devis doit être dans l'état Envoyé ou En Révision."))
         self.write({'state': 'accepte', 'date_signature': fields.Datetime.now()})
         self.mission_id.write({'state': 'devis_accepte'})
 
