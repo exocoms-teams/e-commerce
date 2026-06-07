@@ -137,7 +137,7 @@ class SinistreMission(models.Model):
     facture_assurance_id = fields.Many2one('account.move', string='Facture Assurance', readonly=True)
 
     # ── Messagerie mission ────────────────────────────────────────────
-    message_mission_ids = fields.One2many('sinistre.message', 'mission_id', string='Messages')
+    sinistre_message_ids = fields.One2many('sinistre.message', 'mission_id', string='Messages Mission')
 
     # ── Séquence ─────────────────────────────────────────────────────
     @api.model_create_multi
