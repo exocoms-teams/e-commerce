@@ -208,6 +208,34 @@ class SinistreMission(models.Model):
         self.write({'facture_assurance_id': facture.id})
         self.message_post(body=f"Facture frais déplacement créée : {facture.name}")
 
+    # Alias pour compatibilité avec les vues XML existantes
+    def action_creer_facture_assurance(self):
+        return self.action_facturer_assurance()
+
+    def action_creer_facture_client(self):
+        """Facture le reste à charge au client."""
+        self.ensure_one()
+        if not self.client_id:
+            from odoo.exceptions import UserError
+            raise UserError("Pas de client lié à cette mission.")
+        facture = self.env['account.move'].sudo().create({
+            'move_type':  'out_invoice',
+            'partner_id': self.client_id.id,
+            'ref':        f"Reste à charge {self.reference}",
+            'invoice_line_ids': [(0, 0, {
+                'name':       f"Reste à charge — {self.reference}",
+                'quantity':   1,
+                'price_unit': self.reste_a_charge,
+            })],
+        })
+        self.message_post(body=f"Facture client créée : {facture.name}")
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': facture.id,
+            'view_mode': 'form',
+        }
+
     def action_facturer_assurance(self):
         self.ensure_one()
         if not self.assurance_id:
@@ -248,6 +276,26 @@ class SinistreMission(models.Model):
                 body=f"{self.type_intervention} — {self.adresse_intervention or ''}",
                 data={'type': 'new_mission', 'mission_id': str(self.id)},
             )
+
+    def action_voir_devis(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Devis',
+            'res_model': 'sinistre.devis',
+            'view_mode': 'list,form',
+            'domain': [('mission_id', '=', self.id)],
+            'context': {'default_mission_id': self.id},
+        }
+
+    def action_voir_photos(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Photos',
+            'res_model': 'sinistre.photo',
+            'view_mode': 'list,form',
+            'domain': [('mission_id', '=', self.id)],
+            'context': {'default_mission_id': self.id},
+        }
 
     def _notify_assurance(self, event):
         """Notifie l'assurance via webhook si configuré."""
