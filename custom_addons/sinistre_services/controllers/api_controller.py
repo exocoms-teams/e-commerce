@@ -92,49 +92,26 @@ class SinistreAPIController(http.Controller):
         note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
         note = min(note, 5.0) if note else 0
 
-        # Certifications — lecture SQL directe (fiable même sans migration ORM)
+        # Certifications
         certifications = []
         try:
-            request.env.cr.execute(
-                """SELECT name, date_validite
-                   FROM sinistre_certification
-                   WHERE intervenant_id = %s
-                   ORDER BY sequence, id""",
-                (iv.id,)
-            )
-            for row in request.env.cr.fetchall():
-                nom, dv = row
-                if dv:
-                    date_label = f"Valide jusqu'en {dv.year}"
+            for cert in (iv.certification_ids or []):
+                date_label = ''
+                if cert.date_validite:
+                    date_label = f"Valide jusqu'en {cert.date_validite.strftime('%Y')}"
                 else:
                     date_label = 'À jour'
-                certifications.append({'name': nom, 'date': date_label})
-        except Exception as e:
+                certifications.append({'name': cert.name, 'date': date_label})
+        except Exception:
             certifications = []
 
-        # Spécialités — lecture SQL directe
-        specialites       = []
+        # Spécialités avec leur type_intervention
+        specialites      = []
         specialites_types = []
-        try:
-            request.env.cr.execute(
-                """SELECT s.name, s.type_intervention
-                   FROM sinistre_specialite s
-                   JOIN sinistre_intervenant_sinistre_specialite_rel r
-                     ON r.sinistre_specialite_id = s.id
-                   WHERE r.sinistre_intervenant_id = %s""",
-                (iv.id,)
-            )
-            for row in request.env.cr.fetchall():
-                nom, type_iv = row
-                specialites.append(nom)
-                if type_iv:
-                    specialites_types.append(type_iv)
-        except Exception:
-            # Fallback ORM
-            for s in (iv.specialites or []):
-                specialites.append(s.name)
-                if hasattr(s, 'type_intervention') and s.type_intervention:
-                    specialites_types.append(s.type_intervention)
+        for s in (iv.specialites or []):
+            specialites.append(s.name)
+            if hasattr(s, 'type_intervention') and s.type_intervention:
+                specialites_types.append(s.type_intervention)
 
         # Date création du user (membre depuis) — robuste
         membre_depuis = ''
