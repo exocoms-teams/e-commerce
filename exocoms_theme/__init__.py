@@ -383,7 +383,10 @@ def post_init_hook(env):
 
     if footer_view:
         try:
-            footer_view.write({'arch': """
+            footer_view.write({
+                'priority': 1000,
+                'active': True,  
+                'arch': """
 <data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
         <div id="footer" class="oe_structure oe_structure_solo border text-break"
