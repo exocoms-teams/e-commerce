@@ -11,9 +11,8 @@
     'post_migrate_hook': 'post_install_hook',
     'uninstall_hook': 'uninstall_hook',
     'depends': [
-    'base', 'mail', 'account', 'sale', 'hr',
-    'contacts', 'web', 'website', 'portal',
-    'monetique_theme',   # ← ajouter
+        'base', 'mail', 'account', 'sale', 'hr',
+        'contacts', 'web', 'website', 'portal',
     ],
    'data': [
     # Security
