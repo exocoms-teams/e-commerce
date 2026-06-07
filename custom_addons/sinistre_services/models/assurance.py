@@ -78,6 +78,20 @@ class SinistreAssurance(models.Model):
     note = fields.Text()
     actif = fields.Boolean(default=True)
 
+    # ── Portail / Compte ──────────────────────────────────────────────
+    portal_user_id   = fields.Many2one('res.users', string='Compte Portail', readonly=True)
+    inscription_date = fields.Datetime(string="Date d'inscription", readonly=True)
+    statut_compte    = fields.Selection([
+        ('en_attente', 'En attente de validation'),
+        ('actif',      'Actif'),
+        ('suspendu',   'Suspendu'),
+    ], default='en_attente', string='Statut compte', tracking=True)
+    peut_annuler      = fields.Boolean(string='Peut annuler des missions', default=True)
+    delai_annulation  = fields.Integer(
+        string="Délai max annulation sans frais (h)", default=2,
+        help="Nombre d'heures avant le RDV en-deçà duquel l'annulation génère des frais"
+    )
+
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     mission_ids = fields.One2many('sinistre.mission', 'assurance_id')
     mission_count = fields.Integer(compute='_compute_stats')
@@ -88,6 +102,43 @@ class SinistreAssurance(models.Model):
         for rec in self:
             rec.mission_count = len(rec.mission_ids)
             rec.ca_assurance = sum(rec.mission_ids.mapped('montant_garanti'))
+
+    def action_valider_compte(self):
+        self.ensure_one()
+        if not self.portal_user_id:
+            self._creer_compte_portail()
+        self.write({'statut_compte': 'actif'})
+        self.message_post(body=f"Compte assurance activé")
+
+    def _creer_compte_portail(self):
+        import secrets as _secrets
+        if not self.partner_id.email:
+            from odoo.exceptions import UserError
+            raise UserError("L'assurance doit avoir un email pour créer un compte portail.")
+        group_portal = self.env.ref('base.group_portal')
+        user = self.env['res.users'].create({
+            'name':       self.name,
+            'login':      self.partner_id.email,
+            'partner_id': self.partner_id.id,
+            'groups_id':  [(4, group_portal.id)],
+            'password':   _secrets.token_urlsafe(12),
+        })
+        if not self.api_key:
+            self.api_key = _secrets.token_urlsafe(32)
+        self.write({'portal_user_id': user.id, 'inscription_date': fields.Datetime.now()})
+        return user
+
+    def action_suspendre(self):
+        self.write({'statut_compte': 'suspendu'})
+        if self.portal_user_id:
+            self.portal_user_id.write({'active': False})
+
+    def _check_annulation_autorisee(self, mission):
+        if not mission.date_rdv:
+            return True, 0
+        from datetime import datetime
+        delta = (mission.date_rdv - datetime.now()).total_seconds() / 3600
+        return (delta >= self.delai_annulation), delta
 
     def action_generer_api_key(self):
         self.ensure_one()
