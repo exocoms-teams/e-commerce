@@ -133,8 +133,6 @@ class SinistrePWAController(http.Controller):
         mission = _check_mission(intervenant, mission_id)
         if not mission:
             return _json_error(404, "Mission introuvable")
-        if not mission.signature_avant:
-            return _json_error(400, "Signature avant intervention obligatoire")
         try:
             mission.action_demarrer()
             return _json_response({'success': True, 'state': mission.state})
@@ -151,8 +149,6 @@ class SinistrePWAController(http.Controller):
         mission = _check_mission(intervenant, mission_id)
         if not mission:
             return _json_error(404, "Mission introuvable")
-        if not mission.signature_apres:
-            return _json_error(400, "Signature après intervention obligatoire")
         try:
             mission.action_terminer()
             return _json_response({'success': True, 'state': mission.state})
