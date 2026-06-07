@@ -175,9 +175,7 @@ window.MissionDetail = (() => {
         const devis = m.devis || null;
         if (!devis) {
             if (badge) badge.style.display = 'none';
-            content.innerHTML = ['en_cours','rdv_planifie','assigne','nouveau'].includes(m.state)
-                ? `<p style="color:#9CA3AF;font-size:13px;margin-bottom:12px">Aucun devis créé</p>`
-                : `<p style="color:#9CA3AF;font-size:13px">–</p>`;
+            content.innerHTML = `<p style="color:#9CA3AF;font-size:13px;margin-bottom:12px">Aucun devis créé</p>`;
             return;
         }
         const devisStates = {
@@ -219,7 +217,7 @@ window.MissionDetail = (() => {
     }
 
     /* ══════════════════════════════════════════════════════════
-       ACTIONS — Workflow complet
+       ACTIONS
     ══════════════════════════════════════════════════════════ */
     function _renderActions(m) {
         const block = document.getElementById('missionActions');
@@ -229,55 +227,49 @@ window.MissionDetail = (() => {
         const st  = m.state;
         const dev = m.devis;
 
-        // États où l'intervention peut commencer ou est en cours
-        const isActive = ['nouveau','assigne','rdv_planifie','en_cours','devis_accepte','travaux_en_cours','devis_envoye','devis_refuse'].includes(st);
-        // États avant démarrage
-        const isPreStart = ['nouveau','assigne','rdv_planifie'].includes(st);
-        // États après démarrage
-        const isStarted = ['en_cours','devis_accepte','travaux_en_cours','devis_envoye','devis_refuse'].includes(st);
+        // La mission est-elle terminée/annulée ?
+        const isDone = ['termine','facture','clos','annule'].includes(st);
+        if (isDone) return;
 
-        /* ── 1. Signature AVANT (si pas encore faite et mission pas terminée) ── */
-        if (!m.signature_avant && isActive) {
+        // Signature AVANT — affichée si pas encore faite
+        if (!m.signature_avant) {
             block.appendChild(_btn('✍️ Signature Avant Intervention', 'btn-start', () =>
                 Signature.open({ mode: 'avant', missionId: m.id })
             ));
         }
 
-        /* ── 2. Démarrer (si signature avant OK — états larges) ── */
-        if (isPreStart || (isActive && !isStarted)) {
+        // Démarrer — disponible tant que pas encore en cours
+        // Le check signature est informatif (toast) mais ne bloque plus l'affichage
+        if (!['en_cours','travaux_en_cours','devis_accepte','devis_envoye','devis_refuse'].includes(st)) {
             block.appendChild(_btn('🔧 Démarrer l\'intervention', 'btn-start', async () => {
-                if (!m.signature_avant) {
-                    Toast.show('⚠️ La signature AVANT est obligatoire', 'warning');
-                    return;
-                }
                 const avant = document.querySelectorAll('.photo-thumb.avant').length;
                 if (avant === 0) {
-                    Toast.show('⚠️ Prenez des photos AVANT de démarrer', 'warning');
+                    Toast.show('⚠️ Prenez au moins une photo AVANT de démarrer', 'warning');
                     return;
                 }
                 await _action('DEMARRER_MISSION', () => API.demarrer(m.id), { missionId: m.id });
             }));
         }
 
-        /* ── 3. Créer un devis ── */
-        if (isActive && !dev) {
+        // Créer un devis (si pas encore de devis)
+        if (!dev) {
             block.appendChild(_btn('💶 Créer un devis', 'btn-nav', () => DevisForm.open(m.id)));
         }
 
-        /* ── 4a. Modifier devis brouillon ── */
+        // Modifier devis brouillon
         if (dev?.state === 'brouillon') {
             block.appendChild(_btn('✏️ Modifier le devis', 'btn-nav', () => DevisForm.open(m.id, dev, false)));
         }
 
-        /* ── 4b. Avenant (devis accepté pendant travaux) ── */
-        if (dev?.state === 'accepte' && isStarted) {
+        // Avenant — devis accepté pendant travaux
+        if (dev?.state === 'accepte') {
             block.appendChild(_btn('⚠️ Modifier le devis (avenant)', 'btn-warning', () => {
                 if (!confirm('Modifier le devis obligera le client à signer à nouveau. Continuer ?')) return;
                 DevisForm.open(m.id, dev, true);
             }));
         }
 
-        /* ── 4c. Faire signer devis envoyé ── */
+        // Faire signer le devis envoyé
         if (dev?.state === 'envoye') {
             block.appendChild(_btn('✅ Faire signer le client (devis)', 'btn-start', () =>
                 Signature.open({ mode: 'devis', devisId: dev.id, missionId: m.id })
@@ -288,18 +280,18 @@ window.MissionDetail = (() => {
             }));
         }
 
-        /* ── 4d. Re-signature devis en révision ── */
+        // Re-signature devis modifié
         if (dev?.state === 'en_revision') {
             block.appendChild(_btn('✍️ Re-signature client (devis modifié)', 'btn-warning', () =>
                 Signature.open({ mode: 'devis_modifie', devisId: dev.id, missionId: m.id })
             ));
         }
 
-        /* ── 5. Signature APRÈS + Clôture ── */
-        if (isStarted) {
-            const apres = document.querySelectorAll('.photo-thumb.apres').length;
+        // Signature APRÈS + Clôture (mission démarrée)
+        if (['en_cours','travaux_en_cours','devis_accepte'].includes(st)) {
             if (!m.signature_apres) {
                 block.appendChild(_btn('✍️ Signature Après Intervention', 'btn-start', async () => {
+                    const apres = document.querySelectorAll('.photo-thumb.apres').length;
                     if (apres === 0) {
                         Toast.show('⚠️ Prenez des photos APRÈS les travaux avant de faire signer', 'warning');
                         return;
@@ -308,6 +300,7 @@ window.MissionDetail = (() => {
                 }));
             } else {
                 block.appendChild(_btn('🎉 Clôturer la mission', 'btn-start', async () => {
+                    const apres = document.querySelectorAll('.photo-thumb.apres').length;
                     if (apres === 0) {
                         Toast.show('⚠️ Prenez des photos APRÈS les travaux', 'warning');
                         return;
@@ -318,7 +311,7 @@ window.MissionDetail = (() => {
             }
         }
 
-        /* ── 6. Contact / Maps ── */
+        // Contact / Maps
         if (m.tel_sur_place) {
             block.appendChild(_btn(`📞 Appeler ${m.tel_sur_place}`, 'btn-call', () => {
                 window.location.href = `tel:${m.tel_sur_place}`;
