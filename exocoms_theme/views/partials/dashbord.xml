@@ -3,179 +3,204 @@
 
     <template id="dashboard_menu" name="Dashboard Accueil Carousels">
 
-        <div class="exo-carousels-fullwidth">
-
-            <!-- ── NOUVEAUTÉS ── -->
-            <div class="exo-products-section">
-                <div class="exo-section-header">
-                    <h3>Nouveautés</h3>
-                    <a href="/shop">Voir plus</a>
-                </div>
-                <div class="exo-carousel-wrapper">
-                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-new">
-                        <i class="fa fa-chevron-left"/>
-                    </button>
-                    <div class="exo-products-carousel" id="carousel-new">
-                        <t t-set="new_products"
-                            t-value="request.env['product.template'].sudo().search([
-                                ('is_published', '=', True)
-                            ], limit=8, order='create_date desc')"/>
-                        <t t-foreach="new_products" t-as="product">
-                            <t t-set="ribbon"
-                                t-value="request.env['product.ribbon'].sudo().browse([])"/>
-                            <t t-set="product_variants"
-                                t-value="{product: product.product_variant_id}"/>
-                            <t t-set="previewed_attribute_values" t-value="{}"/>
-                            <t t-set="product_href"
-                                t-value="'/shop/' + slug(product)"/>
-                            <t t-set="show_ribbons" t-value="False"/>
-                            <t t-set="show_variations" t-value="False"/>
-                            <t t-set="product_price">
-                                <div class="product_price" aria-label="Price information">
-                                    <span class="mb-0 fw-bold">
-                                        <t t-esc="'%.2f' % product.list_price"/>
-                                        <t t-esc="' ' + product.currency_id.symbol"/>
-                                    </span>
+        <!-- ── NOUVEAUTÉS ── -->
+        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
+            <div>
+                <h2 class="h3">Nouveautés</h2>
+            </div>
+            <div>
+                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+            </div>
+        </div>
+        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+            <div class="dynamic_snippet_template">
+                <t t-set="new_products"
+                    t-value="request.env['product.template'].sudo().search([
+                        ('is_published', '=', True)
+                    ], limit=16, order='create_date desc')"/>
+                <t t-set="new_chunks" t-value="[new_products[i:i+2] for i in range(0, len(new_products), 2)]"/>
+                <div data-bs-ride="carousel" id="s_carousel_new" class="carousel slide" data-bs-interval="5000">
+                    <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
+                        <t t-foreach="new_chunks" t-as="chunk">
+                            <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
+                                <div class="s_dynamic_snippet_row row g-3">
+                                    <t t-foreach="chunk" t-as="product">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                            <t t-call="exocoms_theme.carousel_product_card"/>
+                                        </div>
+                                    </t>
                                 </div>
-                            </t>
-                            <div class="exo-product-card-big">
-                                <t t-call="website_sale.products_item"/>
                             </div>
                         </t>
                     </div>
-                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-new">
-                        <i class="fa fa-chevron-right"/>
-                    </button>
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_new">
+                        <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
+                        <span class="visually-hidden">Précédent</span>
+                    </a>
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_new">
+                        <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
+                        <span class="visually-hidden">Suivant</span>
+                    </a>
                 </div>
             </div>
-
-            <!-- ── MEILLEURES VENTES ── -->
-            <div class="exo-products-section">
-                <div class="exo-section-header">
-                    <h3>Meilleures ventes</h3>
-                    <a href="/shop">Voir plus</a>
-                </div>
-                <div class="exo-carousel-wrapper">
-                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-best">
-                        <i class="fa fa-chevron-left"/>
-                    </button>
-                    <div class="exo-products-carousel" id="carousel-best">
-                        <t t-set="best_products"
-                            t-value="request.env['product.template'].sudo().search([
-                                ('is_published', '=', True)
-                            ], limit=8, order='write_date desc')"/>
-                        <t t-foreach="best_products" t-as="product">
-                            <t t-set="ribbon"
-                                t-value="request.env['product.ribbon'].sudo().browse([])"/>
-                            <t t-set="product_variants"
-                                t-value="{product: product.product_variant_id}"/>
-                            <t t-set="previewed_attribute_values" t-value="{}"/>
-                            <t t-set="product_href"
-                                t-value="'/shop/' + slug(product)"/>
-                            <t t-set="show_ribbons" t-value="False"/>
-                            <t t-set="show_variations" t-value="False"/>
-                            <t t-set="product_price">
-                                <div class="product_price" aria-label="Price information">
-                                    <span class="mb-0 fw-bold">
-                                        <t t-esc="'%.2f' % product.list_price"/>
-                                        <t t-esc="' ' + product.currency_id.symbol"/>
-                                    </span>
-                                </div>
-                            </t>
-                            <div class="exo-product-card-big">
-                                <t t-call="website_sale.products_item"/>
-                            </div>
-                        </t>
-                    </div>
-                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-best">
-                        <i class="fa fa-chevron-right"/>
-                    </button>
-                </div>
-            </div>
-
-            <!-- ── VUS RÉCEMMENT ── -->
-            <div class="exo-products-section">
-                <div class="exo-section-header">
-                    <h3>Vus récemment</h3>
-                    <a href="/shop">Voir plus</a>
-                </div>
-                <div class="exo-carousel-wrapper">
-                    <button class="exo-carousel-btn exo-carousel-prev" data-target="carousel-recent">
-                        <i class="fa fa-chevron-left"/>
-                    </button>
-                    <div class="exo-products-carousel" id="carousel-recent">
-                        <t t-set="recent_ids"
-                            t-value="request.session.get('website_sale_history', [])[:8]"/>
-                        <t t-set="recent_products"
-                            t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
-                        <t t-if="recent_products">
-                            <t t-foreach="recent_products" t-as="product">
-                                <t t-set="ribbon"
-                                    t-value="request.env['product.ribbon'].sudo().browse([])"/>
-                                <t t-set="product_variants"
-                                    t-value="{product: product.product_variant_id}"/>
-                                <t t-set="previewed_attribute_values" t-value="{}"/>
-                                <t t-set="product_href"
-                                    t-value="'/shop/' + slug(product)"/>
-                                <t t-set="show_ribbons" t-value="False"/>
-                                <t t-set="show_variations" t-value="False"/>
-                                <t t-set="product_price">
-                                    <div class="product_price" aria-label="Price information">
-                                        <span class="mb-0 fw-bold">
-                                            <t t-esc="'%.2f' % product.list_price"/>
-                                            <t t-esc="' ' + product.currency_id.symbol"/>
-                                        </span>
-                                    </div>
-                                </t>
-                                <div class="exo-product-card-big">
-                                    <t t-call="website_sale.products_item"/>
-                                </div>
-                            </t>
-                        </t>
-                        <t t-else="">
-                            <div class="exo-product-card-big d-flex align-items-center justify-content-center text-muted" style="min-width:200px">
-                                Aucun produit consulté récemment.
-                            </div>
-                        </t>
-                    </div>
-                    <button class="exo-carousel-btn exo-carousel-next" data-target="carousel-recent">
-                        <i class="fa fa-chevron-right"/>
-                    </button>
-                </div>
-            </div>
-
         </div>
 
-        <script><![CDATA[
-        (function() {
-            document.querySelectorAll('.exo-carousel-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var id  = btn.getAttribute('data-target');
-                    var el  = document.getElementById(id);
-                    if (!el) return;
-                    var card = el.querySelector('.exo-product-card-big');
-                    var w    = card ? card.offsetWidth + 16 : 300;
-                    var dir  = btn.classList.contains('exo-carousel-prev') ? -1 : 1;
-                    el.scrollBy({ left: dir * w, behavior: 'smooth' });
-                });
-            });
-            ['carousel-new', 'carousel-best', 'carousel-recent'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                setInterval(function() {
-                    var max = el.scrollWidth - el.clientWidth;
-                    if (el.scrollLeft >= max - 10) {
-                        el.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        var card = el.querySelector('.exo-product-card-big');
-                        var w = card ? card.offsetWidth + 16 : 300;
-                        el.scrollBy({ left: w, behavior: 'smooth' });
-                    }
-                }, 4000);
-            });
-        })();
-        ]]></script>
+        <!-- ── MEILLEURES VENTES ── -->
+        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
+            <div>
+                <h2 class="h3">Meilleures ventes</h2>
+            </div>
+            <div>
+                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+            </div>
+        </div>
+        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+            <div class="dynamic_snippet_template">
+                <t t-set="best_products"
+                    t-value="request.env['product.template'].sudo().search([
+                        ('is_published', '=', True)
+                    ], limit=16, order='write_date desc')"/>
+                <t t-set="best_chunks" t-value="[best_products[i:i+2] for i in range(0, len(best_products), 2)]"/>
+                <div data-bs-ride="carousel" id="s_carousel_best" class="carousel slide" data-bs-interval="5000">
+                    <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
+                        <t t-foreach="best_chunks" t-as="chunk">
+                            <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
+                                <div class="s_dynamic_snippet_row row g-3">
+                                    <t t-foreach="chunk" t-as="product">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                            <t t-call="exocoms_theme.carousel_product_card"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_best">
+                        <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
+                        <span class="visually-hidden">Précédent</span>
+                    </a>
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_best">
+                        <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
+                        <span class="visually-hidden">Suivant</span>
+                    </a>
+                </div>
+            </div>
+        </div>
 
+        <!-- ── VUS RÉCEMMENT ── -->
+        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
+            <div>
+                <h2 class="h3">Vus récemment</h2>
+            </div>
+            <div>
+                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+            </div>
+        </div>
+        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+            <div class="dynamic_snippet_template">
+                <t t-set="recent_ids" t-value="request.session.get('website_sale_history', [])[:16]"/>
+                <t t-set="recent_products" t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
+                <t t-if="recent_products">
+                    <t t-set="recent_chunks" t-value="[recent_products[i:i+2] for i in range(0, len(recent_products), 2)]"/>
+                    <div data-bs-ride="carousel" id="s_carousel_recent" class="carousel slide" data-bs-interval="5000">
+                        <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
+                            <t t-foreach="recent_chunks" t-as="chunk">
+                                <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
+                                    <div class="s_dynamic_snippet_row row g-3">
+                                        <t t-foreach="chunk" t-as="product">
+                                            <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
+                                                <t t-call="exocoms_theme.carousel_product_card"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_recent">
+                            <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
+                            <span class="visually-hidden">Précédent</span>
+                        </a>
+                        <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_recent">
+                            <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
+                            <span class="visually-hidden">Suivant</span>
+                        </a>
+                    </div>
+                </t>
+                <t t-else="">
+                    <p class="text-muted p-3">Aucun produit consulté récemment.</p>
+                </t>
+            </div>
+        </div>
+
+        <!-- ── SOUS-TEMPLATE CARTE PRODUIT ── -->
+        <!-- À mettre dans un fichier séparé ou juste après -->
+
+    </template>
+
+    <!-- Carte produit native réutilisable -->
+    <template id="carousel_product_card" name="Carousel Product Card">
+        <div class="oe_product_cart o_carousel_product_card d-flex" role="article" t-att-aria-label="product.name">
+            <input type="hidden" name="product-id" t-att-data-product-id="product.product_variant_id.id"/>
+            <div class="oe_product_image position-relative flex-grow-0 overflow-hidden">
+                <a t-att-href="'/shop/' + slug(product)"
+                   class="oe_product_image_link position-relative"
+                   t-att-title="product.name"
+                   contenteditable="false">
+                    <span role="img"
+                          class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center"
+                          t-att-alt="product.name + ' image'">
+                        <span class="oe_product_image_img h-100 w-100"
+                              t-attf-style="background-image: url(/web/image/product.product/#{product.product_variant_id.id}/image_512);"/>
+                    </span>
+                </a>
+            </div>
+            <div class="o_wsale_product_information flex-grow-1 flex-shrink-1">
+                <div class="o_wsale_product_info_attributes_wrapper">
+                    <div class="o_wsale_product_information_text">
+                        <h6 class="o_wsale_products_item_title text-break">
+                            <a class="text-decoration-none"
+                               t-att-href="'/shop/' + slug(product)"
+                               t-att-content="product.name"
+                               t-att-title="product.name">
+                                <t t-esc="product.name"/>
+                            </a>
+                        </h6>
+                        <div class="oe_subdescription_wrapper">
+                            <div class="oe_subdescription text-muted small" contenteditable="false">
+                                <t t-if="product.description_sale">
+                                    <div t-esc="product.description_sale"/>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="o_wsale_product_sub justify-content-between gap-2">
+                    <div class="product_price" aria-label="Informations sur le prix">
+                        <span class="mb-0 fw-bold">
+                            <span class="oe_currency_value">
+                                <t t-esc="'%.2f' % product.list_price"/>
+                            </span>
+                            &#160;<t t-esc="product.currency_id.symbol"/>
+                        </span>
+                    </div>
+                    <div class="o_wsale_product_btn">
+                        <div class="o_wsale_product_action_row">
+                            <button type="button"
+                                    class="o_wsale_product_btn_primary btn js_add_cart"
+                                    title="Ajouter au panier"
+                                    t-att-data-product-id="product.product_variant_id.id"
+                                    data-product-selected="True"
+                                    t-att-data-product-template-id="product.id"
+                                    t-att-data-product-type="product.type"
+                                    data-show-quantity="True">
+                                <i class="fa fa-shopping-cart fa-fw" role="presentation"/>
+                                <span class="o_label small ms-1">Ajouter au panier</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </template>
 
 </odoo>
