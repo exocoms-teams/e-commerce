@@ -117,6 +117,16 @@ window.API = (() => {
         },
 
         /* ── FCM Token ── */
+        async getMissionsProposees() {
+            return this.get('/intervenant/missions/proposees');
+        },
+        async accepterMissionProposee(missionId) {
+            return this.post(`/intervenant/mission/${missionId}/accepter`, {});
+        },
+        async refuserMissionProposee(missionId) {
+            return this.post(`/intervenant/mission/${missionId}/refuser-proposition`, {});
+        },
+
         async saveFCMToken(token) {
             return this.post('/intervenant/fcm-token', { token });
         },
