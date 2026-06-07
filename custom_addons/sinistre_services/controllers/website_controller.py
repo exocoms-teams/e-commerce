@@ -77,7 +77,7 @@ class SinistreWebsite(http.Controller):
             source = 'particulier'
 
         # Créer ou trouver le partenaire
-        env = request.env(su=True)
+        env = request.env
         email = post.get('email', '').strip()
         partner = env['res.partner'].search([('email', '=', email)], limit=1)
         if not partner:
@@ -96,7 +96,7 @@ class SinistreWebsite(http.Controller):
 
         # Créer la mission
         try:
-            mission = env['sinistre.mission'].create({
+            mission = env['sinistre.mission'].sudo().create({
                 'source': source,
                 'client_id': partner.id,
                 'type_intervention': post.get('type_intervention', 'autre'),
@@ -257,11 +257,11 @@ class SinistreWebsite(http.Controller):
                 'year': datetime.datetime.now().year,
             })
 
-        env = request.env(su=True)
+        env = request.env
         base_url = request.httprequest.host_url.rstrip('/')
 
         # ── Vérifier doublon ──────────────────────────────────────
-        existing = env['sinistre.assurance'].search(
+        existing = env['sinistre.assurance'].sudo().search(
             [('partner_id.email', '=', email)], limit=1
         )
         if existing:
@@ -277,9 +277,9 @@ class SinistreWebsite(http.Controller):
             })
 
         # ── Créer le partenaire ───────────────────────────────────
-        partner = env['res.partner'].search([('email', '=', email)], limit=1)
+        partner = env['res.partner'].sudo().search([('email', '=', email)], limit=1)
         if not partner:
-            partner = env['res.partner'].create({
+            partner = env['res.partner'].sudo().create({
                 'name':         societe,
                 'email':        email,
                 'phone':        tel,
@@ -297,7 +297,7 @@ class SinistreWebsite(http.Controller):
                 f"Besoins: {post.get('besoins','')}")
 
         # ── Créer la fiche assurance (actif directement) ──────────
-        assurance = env['sinistre.assurance'].create({
+        assurance = env['sinistre.assurance'].sudo().create({
             'name':            societe,
             'partner_id':      partner.id,
             'statut_compte':   'actif',
@@ -323,10 +323,10 @@ class SinistreWebsite(http.Controller):
                 website=True, methods=['GET'], csrf=False)
     def assurance_portail(self, **kw):
         api_key = kw.get('key', '')
-        env = request.env(su=True)
+        env = request.env
         assurance = None
         if api_key:
-            assurance = env['sinistre.assurance'].search(
+            assurance = env['sinistre.assurance'].sudo().search(
                 [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
                 limit=1
             )
@@ -345,10 +345,10 @@ class SinistreWebsite(http.Controller):
     def assurance_portail_mission(self, **post):
         import json
         api_key = post.get('api_key', '').strip()
-        env     = request.env(su=True)
+        env     = request.env
         base_url = request.httprequest.host_url.rstrip('/')
 
-        assurance = env['sinistre.assurance'].search(
+        assurance = env['sinistre.assurance'].sudo().search(
             [('api_key','=',api_key),('api_key_active','=',True),('statut_compte','=','actif')],
             limit=1
         )
@@ -362,16 +362,16 @@ class SinistreWebsite(http.Controller):
 
         # Créer client
         client_email = post.get('client_email','').strip()
-        partner = env['res.partner'].search([('email','=',client_email)], limit=1)
+        partner = env['res.partner'].sudo().search([('email','=',client_email)], limit=1)
         if not partner:
-            partner = env['res.partner'].create({
+            partner = env['res.partner'].sudo().create({
                 'name':  post.get('client_nom','').strip(),
                 'email': client_email,
                 'phone': post.get('client_tel','').strip(),
             })
 
         # Créer la mission
-        mission = env['sinistre.mission'].create({
+        mission = env['sinistre.mission'].sudo().create({
             'source':               'assurance',
             'assurance_id':         assurance.id,
             'ref_assurance':        post.get('ref_assurance','').strip(),
