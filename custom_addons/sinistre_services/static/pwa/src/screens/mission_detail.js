@@ -289,26 +289,25 @@ window.MissionDetail = (() => {
 
         // Signature APRÈS + Clôture (mission démarrée)
         if (['en_cours','travaux_en_cours','devis_accepte'].includes(st)) {
-            if (!m.signature_apres) {
-                block.appendChild(_btn('✍️ Signature Après Intervention', 'btn-start', async () => {
-                    const apres = document.querySelectorAll('.photo-thumb.apres').length;
-                    if (apres === 0) {
-                        Toast.show('⚠️ Prenez des photos APRÈS les travaux avant de faire signer', 'warning');
-                        return;
-                    }
-                    Signature.open({ mode: 'apres', missionId: m.id });
-                }));
-            } else {
-                block.appendChild(_btn('🎉 Clôturer la mission', 'btn-start', async () => {
-                    const apres = document.querySelectorAll('.photo-thumb.apres').length;
-                    if (apres === 0) {
-                        Toast.show('⚠️ Prenez des photos APRÈS les travaux', 'warning');
-                        return;
-                    }
-                    if (!confirm('Confirmer la clôture de la mission ?')) return;
-                    await _action('TERMINER_MISSION', () => API.terminer(m.id), { missionId: m.id });
-                }));
-            }
+            // Toujours proposer la signature après
+            block.appendChild(_btn('✍️ Signature Après Intervention', 'btn-start', async () => {
+                const apres = document.querySelectorAll('.photo-thumb.apres').length;
+                if (apres === 0) {
+                    Toast.show('⚠️ Prenez des photos APRÈS les travaux avant de faire signer', 'warning');
+                    return;
+                }
+                Signature.open({ mode: 'apres', missionId: m.id });
+            }));
+            // Toujours proposer la clôture (la signature est encouragée, pas bloquante)
+            block.appendChild(_btn('🎉 Clôturer la mission', 'btn-start', async () => {
+                const apres = document.querySelectorAll('.photo-thumb.apres').length;
+                if (apres === 0) {
+                    Toast.show('⚠️ Prenez des photos APRÈS les travaux', 'warning');
+                    return;
+                }
+                if (!confirm('Confirmer la clôture de la mission ?')) return;
+                await _action('TERMINER_MISSION', () => API.terminer(m.id), { missionId: m.id });
+            }));
         }
 
         // Contact / Maps
