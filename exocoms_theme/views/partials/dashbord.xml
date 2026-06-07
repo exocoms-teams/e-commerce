@@ -4,15 +4,17 @@
     <template id="dashboard_menu" name="Dashboard Accueil Carousels">
 
         <!-- ── NOUVEAUTÉS ── -->
-        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
+        <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
             <div>
                 <h2 class="h3">Nouveautés</h2>
             </div>
             <div>
-                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+                <a title="Voir plus" href="/shop">Voir plus
+                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
+                </a>
             </div>
-        </div>
-        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+        </section>
+        <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
             <div class="dynamic_snippet_template">
                 <t t-set="new_products"
                     t-value="request.env['product.template'].sudo().search([
@@ -26,35 +28,37 @@
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
                                         <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
-                                            <t t-call="exocoms_theme.carousel_product_card"/>
+                                            <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
                                 </div>
                             </div>
                         </t>
                     </div>
-                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_new">
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_new">
                         <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
                         <span class="visually-hidden">Précédent</span>
                     </a>
-                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_new">
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_new">
                         <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
                         <span class="visually-hidden">Suivant</span>
                     </a>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ── MEILLEURES VENTES ── -->
-        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
+        <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
             <div>
                 <h2 class="h3">Meilleures ventes</h2>
             </div>
             <div>
-                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+                <a title="Voir plus" href="/shop">Voir plus
+                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
+                </a>
             </div>
-        </div>
-        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+        </section>
+        <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
             <div class="dynamic_snippet_template">
                 <t t-set="best_products"
                     t-value="request.env['product.template'].sudo().search([
@@ -68,35 +72,37 @@
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
                                         <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
-                                            <t t-call="exocoms_theme.carousel_product_card"/>
+                                            <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
                                 </div>
                             </div>
                         </t>
                     </div>
-                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_best">
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_best">
                         <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
                         <span class="visually-hidden">Précédent</span>
                     </a>
-                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_best">
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_best">
                         <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
                         <span class="visually-hidden">Suivant</span>
                     </a>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ── VUS RÉCEMMENT ── -->
-        <div class="s_dynamic_snippet_title justify-content-between d-flex oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
+        <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
             <div>
                 <h2 class="h3">Vus récemment</h2>
             </div>
             <div>
-                <a href="/shop" title="Voir plus">Voir plus <span class="fa fa-long-arrow-right ms-2"/></a>
+                <a title="Voir plus" href="/shop">Voir plus
+                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
+                </a>
             </div>
-        </div>
-        <div class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+        </section>
+        <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
             <div class="dynamic_snippet_template">
                 <t t-set="recent_ids" t-value="request.session.get('website_sale_history', [])[:16]"/>
                 <t t-set="recent_products" t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
@@ -109,18 +115,18 @@
                                     <div class="s_dynamic_snippet_row row g-3">
                                         <t t-foreach="chunk" t-as="product">
                                             <div class="d-flex flex-grow-0 flex-shrink-0 col-6">
-                                                <t t-call="exocoms_theme.carousel_product_card"/>
+                                                <t t-call="exocoms_theme.dashboard_product_card"/>
                                             </div>
                                         </t>
                                     </div>
                                 </div>
                             </t>
                         </div>
-                        <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_recent">
+                        <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_recent">
                             <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
                             <span class="visually-hidden">Précédent</span>
                         </a>
-                        <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_recent">
+                        <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_recent">
                             <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
                             <span class="visually-hidden">Suivant</span>
                         </a>
@@ -130,22 +136,24 @@
                     <p class="text-muted p-3">Aucun produit consulté récemment.</p>
                 </t>
             </div>
-        </div>
-
-        <!-- ── SOUS-TEMPLATE CARTE PRODUIT ── -->
-        <!-- À mettre dans un fichier séparé ou juste après -->
+        </section>
 
     </template>
 
-    <!-- Carte produit native réutilisable -->
-    <template id="carousel_product_card" name="Carousel Product Card">
-        <div class="oe_product_cart o_carousel_product_card d-flex" role="article" t-att-aria-label="product.name">
-            <input type="hidden" name="product-id" t-att-data-product-id="product.product_variant_id.id"/>
+    <!-- ── CARTE PRODUIT — copie exacte du HTML natif ── -->
+    <template id="dashboard_product_card" name="Dashboard Product Card">
+        <div class="oe_product_cart o_carousel_product_card d-flex"
+             role="article"
+             t-att-aria-label="product.name">
+
+            <input type="hidden" name="product-id"
+                   t-att-data-product-id="product.product_variant_id.id"/>
+
             <div class="oe_product_image position-relative flex-grow-0 overflow-hidden">
-                <a t-att-href="'/shop/' + slug(product)"
+                <a contenteditable="false"
+                   t-att-href="'/shop/' + slug(product)"
                    class="oe_product_image_link position-relative"
-                   t-att-title="product.name"
-                   contenteditable="false">
+                   t-att-title="product.name">
                     <span role="img"
                           class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center"
                           t-att-alt="product.name + ' image'">
@@ -154,6 +162,7 @@
                     </span>
                 </a>
             </div>
+
             <div class="o_wsale_product_information flex-grow-1 flex-shrink-1">
                 <div class="o_wsale_product_info_attributes_wrapper">
                     <div class="o_wsale_product_information_text">
@@ -179,8 +188,7 @@
                         <span class="mb-0 fw-bold">
                             <span class="oe_currency_value">
                                 <t t-esc="'%.2f' % product.list_price"/>
-                            </span>
-                            &#160;<t t-esc="product.currency_id.symbol"/>
+                            </span>&#160;<t t-esc="product.currency_id.symbol"/>
                         </span>
                     </div>
                     <div class="o_wsale_product_btn">
