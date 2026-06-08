@@ -94,36 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ══════════════════════════════════════════
-    // BOUTON Ajouter au panier homepage
-    // ══════════════════════════════════════════
-    document.querySelectorAll('.js-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const productId = parseInt(this.dataset.productId);
-            const res = await fetch('/shop/cart/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    params: {
-                        product_template_id: productId,
-                        product_id: productId,
-                        quantity: 1
-                    }
-                })
-            });
-            const data = await res.json();
-            if (data.result) {
-                this.innerHTML = '<i class="fa fa-check"></i> Ajouté !';
-                this.style.background = '#16a34a';
-                setTimeout(() => {
-                    this.innerHTML = '<i class="fa fa-shopping-cart"></i> Panier';
-                    this.style.background = '';
-                }, 1500);
-            }
-        });
-    });
 
     // ══════════════════════════════════════════
     // CARROUSEL avis homepage 
@@ -155,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     initCarousel('hp-avis-carousel');
-    initCarousel('hp-nouveautes-carousel');
 
 
     // ══════════════════════════════════════════
