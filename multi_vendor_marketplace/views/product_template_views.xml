@@ -10,23 +10,23 @@
                     <button string="Approve" type="object"
                             name="change_state_approved"
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ('draft', 'approved', 'rejected'))]}"
+                            invisible="state in ['draft', 'approved', 'rejected']"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button string="Request For Approve" type="object"
                             name="change_state_pending"
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ('pending', 'approved', 'rejected'))]}"
+                            invisible="state in ['pending', 'approved', 'rejected']"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_seller,multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button string="reject" type="object"
                             name="change_state_reject" class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ('draft', 'approved', 'rejected'))]}"
+                            invisible="state in ['draft', 'approved', 'rejected']"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,pending,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box"
-                         attrs="{'invisible':['|', ('state', 'in', ('pending','draft','rejected')), ('id', '=', False)]}">
+                         invisible="state in ['pending','draft','rejected'] or not id">
                         <button name="toggle_website_published"
                                 type="object"
                                 class="oe_stat_button" icon="fa-globe">
@@ -70,7 +70,7 @@
                         </page>
                         <field name="product_variants_setting" invisible="1"/>
                         <page string="Variants"
-                              attrs="{'invisible': [('product_variants_setting', '!=', True)]}">
+                              invisible="not product_variants_setting">
                             <field name="attribute_line_ids"
                                    widget="one2many"
                                    context="{'show_attribute': False}">
@@ -79,7 +79,7 @@
                                     <field name="value_count"
                                            invisible="1"/>
                                     <field name="attribute_id"
-                                           attrs="{'readonly': [('id', '!=', False)]}"/>
+                                           readonly="id != False"/>
                                     <field name="value_ids"
                                            widget="many2many_tags"
                                            options="{'no_create_edit': True, 'color_field': 'color'}"
@@ -95,7 +95,7 @@
                         <page string="Sales">
                             <field name="product_price_setting" invisible="1"/>
                             <field name="item_ids"
-                                   attrs="{'invisible': [('product_price_setting', '!=', True)]}"/>
+                                   invisible="not product_price_setting"/>
                             <group>
 
                                 <group string="Description For Customers"

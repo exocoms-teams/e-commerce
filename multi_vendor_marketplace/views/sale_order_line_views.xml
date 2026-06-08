@@ -11,13 +11,13 @@
                 <header>
                     <button name="approve_order" type="object"
                             class="oe_highlight"
-                            string="Approve" states="pending"/>
+                            string="Approve" invisible="state != 'pending'"/>
                     <button name="shipped" type="object"
                             class="oe_highlight"
-                            string="Ship Now" states="approved"/>
+                            string="Ship Now" invisible="state != 'Approved'"/>
                     <button name="cancel_order" type="object"
                             class="oe_highlight"
-                            string="Cancel" states="pending"/>
+                            string="Cancel" invisible="state != 'pending'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="pending,approved,shipped"/>
                 </header>

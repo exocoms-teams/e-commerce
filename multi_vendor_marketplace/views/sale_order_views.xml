@@ -78,16 +78,16 @@
                 <header>
                     <button name="approve_order" type="object"
                             class="oe_highlight"
-                            string="Approve" states="pending"/>
+                            string="Approve" invisible="state != 'pending'"/>
                     <button name="shipped" type="object"
                             class="oe_highlight"
-                            string="Ship Now" states="approved"/>
+                            string="Ship Now" invisible="state != 'Approved'"/>
                     <button name="test" type="object"
                             class="oe_highlight"
-                            string="test" states="sale,sent,draft"/>
+                            string="test" invisible="state not in ['sale','sent','draft']"/>
                     <button name="cancel_order" type="object"
                             class="oe_highlight"
-                            string="Cancel" states="pending,shipped"/>
+                            string="Cancel" invisible="state not in ['pending','shipped']"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="approved,shipped"/>
                 </header>

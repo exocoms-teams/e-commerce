@@ -35,19 +35,19 @@
             <form>
                 <header>
                     <button name="validate" class="oe_highlight"
-                            string="Validate" states="Requested"
+                            string="Validate" invisible="state != 'Requested'"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button name="reject" class="oe_highlight"
-                            string="Rejected" states="Requested"
+                            string="Rejected" invisible="state != 'Requested'"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button name="request" type="object" string="Request"
                             class="oe_highlight"
-                            states="Draft"
+                            invisible="state != 'draft'"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_seller,multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button name="cancel" type="object"
-                            string="Cancel" states="Draft"/>
+                            string="Cancel" invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="Draft,Requested,Validated,Rejected"/>
                 </header>

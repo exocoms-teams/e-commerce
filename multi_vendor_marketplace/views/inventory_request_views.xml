@@ -22,16 +22,16 @@
                     <button name="approve_request" class="oe_highlight"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"
-                            string="Approve" states="Requested"/>
+                            string="Approve" invisible="state != 'Requested'"/>
                     <button name="reject_request" class="oe_highlight"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"
-                            string="Reject" states="Requested"/>
+                            string="Reject" invisible="state != 'Requested'"/>
                     <button name="request" class="oe_highlight"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_seller,
                                 multi_vendor_marketplace.multi_vendor_marketplace_admin"
-                            string="Request" states="Draft"/>
+                            string="Request" invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="Draft,Approved,Requested,Rejected"/>
                 </header>

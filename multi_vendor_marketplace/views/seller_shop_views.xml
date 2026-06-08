@@ -20,12 +20,12 @@
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"
                             string="Approve"
-                            attrs="{'invisible': [('state', '=', 'Approved')]}"/>
+                            invisible="state == 'Approved'"/>
                     <button name="reject_request" class="oe_highlight"
                             type="object"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"
                             string="Reject"
-                            attrs="{'invisible': [('state', '=', 'Denied')]}"/>
+                            invisible="state == 'Denied'"/>
                     <button name="cancel"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"
                             string="Cancel" special="cancel"/>
@@ -35,7 +35,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_toggle_is_published"
-                                attrs="{'invisible': [('is_publish', '=', False)]}"
+                                invisible="not is_publish"
                                 class="oe_stat_button"
                                 type="object"
                                 icon="fa-globe">
@@ -44,7 +44,7 @@
                             </div>
                         </button>
                         <button name="action_toggle_is_published"
-                                attrs="{'invisible': [('is_publish', '=', True)]}"
+                                invisible="is_publish"
                                 class="oe_stat_button"
                                 type="object"
                                 icon="fa-eye-slash">
