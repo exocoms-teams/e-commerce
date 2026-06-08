@@ -20,6 +20,7 @@
         'templates/product_page.xml',
         'templates/shop.xml',
         'data/product_categories.xml',
+        'data/homepage_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [
