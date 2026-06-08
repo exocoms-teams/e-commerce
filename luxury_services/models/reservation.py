@@ -30,11 +30,13 @@ class LuxuryReservation(models.Model):
     
     client_id = fields.Many2one('res.partner', string='Client')
     client_name = fields.Char(string='Nom du client', required=True)
+    client_firstname = fields.Char(string='Prénom du client', required=True)
     client_email = fields.Char(string='Email du client', required=True)
     client_phone = fields.Char(string='Téléphone')
 
     # Adresse
     client_adresse = fields.Char(string='Adresse')
+    client_adresse_complement = fields.Char(string='Complément d\'adresse')
     client_code_postal = fields.Char(string='Code postal')
     client_pays = fields.Many2one('res.country', string='Pays')
 

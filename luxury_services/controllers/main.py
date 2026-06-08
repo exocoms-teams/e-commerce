@@ -60,6 +60,10 @@ class LuxuryController(WebsiteSale):
         vitesse_min = params.get('vitesse_min', '')
         if vitesse_min:
             extra_domains.append([('vitesse_croisiere', '>=', float(vitesse_min))])
+            
+        destination = params.get('destination', '')
+        if destination:
+            extra_domains.append([('destination_ids', 'in', int(destination))])
     
         import logging
         _logger = logging.getLogger(__name__)
@@ -174,9 +178,11 @@ class LuxuryController(WebsiteSale):
         
         product_id = int(kwargs.get('product_id', 0))
         client_name = kwargs.get('client_name', '').strip()
+        client_firstname = kwargs.get('client_firstname', '').strip()
         client_email = kwargs.get('client_email', '').strip()
         client_phone = kwargs.get('client_phone', '').strip()
         client_adresse = kwargs.get('client_adresse', '').strip()
+        client_adresse_complement = kwargs.get('client_adresse_complement', '').strip()
         client_code_postal = kwargs.get('client_code_postal', '').strip()
         client_pays_id = int(kwargs.get('client_pays_id', 0))
         date_debut_str = kwargs.get('date_debut', '')
@@ -234,10 +240,12 @@ class LuxuryController(WebsiteSale):
         return request.render('luxury_services.luxury_reservation_recap', {
             'product': product,
             'client_name': client_name,
+            'client_firstname': client_firstname,
             'client_email': client_email,
             'client_phone': client_phone,
             'client_adresse': client_adresse,
             'client_code_postal': client_code_postal,
+            'client_adresse_complement': client_adresse_complement,
             'client_pays': pays,
             'client_pays_id': client_pays_id,
             'date_debut': date_debut_str,
@@ -285,15 +293,17 @@ class LuxuryController(WebsiteSale):
         reservation = request.env['luxury.reservation'].sudo().create({
             'product_id': product_id,
             'client_name': client_name,
+            'client_firstname': client_firstname,
             'client_email': client_email,
             'client_phone': client_phone,
             'client_adresse': client_adresse,
+            'client_adresse_complement': client_adresse_complement,
             'client_code_postal': client_code_postal,
             'client_pays': client_pays_id if client_pays_id else False,
             'date_debut': date_debut,
             'date_fin': date_fin,
             'notes': notes,
-            'destination_ids': destination_id if destination_id else False,
+            'destination_ids': [(4, destination_id)] if destination_id else False,
             'state': 'en_attente',
         })
 

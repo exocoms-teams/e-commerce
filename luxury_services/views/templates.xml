@@ -7,59 +7,46 @@
               name="Luxury - Bouton dynamique"
               >
 
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="replace">
-
-            <t t-if="request.website.id == 14">
-
-                <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
-                    <div id="add_to_cart_wrap"
-                        class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
-                        <a id="add_to_cart"
-                        role="button"
-                        href="#"
-                        class="btn btn-primary js_check_product a-submit flex-grow-1"
-                        data-animation-selector=".o_wsale_product_images">
-                            <i class="fa fa-envelope me-2"/>
-                            prendre contact
-                        </a>
-                    </div>
-                </t>
-
-                <t t-if="product.type_service in ('location', 'les_deux')">
-                    <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
-                        <t t-if="product.disponible">
-                            <a role="button"
-                            class="btn btn-luxury flex-grow-1"
-                            t-attf-href="/luxury/reserver/#{product.id}">
-                                <i class="fa fa-calendar me-2"/>
-                                Réserver
+            <xpath expr="//div[@id='add_to_cart_wrap']" position="attributes">
+                <attribute name="t-att-style">
+                    'display:none;' if request.website.id == 14 else ''
+                </attribute>
+            </xpath>
+        
+            <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
+                <t t-if="request.website.id == 14">
+                    <t t-if="not product.type_service or product.type_service in ('vente', 'les_deux')">
+                        <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                            <a id="add_to_cart"
+                            role="button"
+                            href="#"
+                            class="btn btn-primary js_check_product a-submit flex-grow-1"
+                            data-animation-selector=".o_wsale_product_images">
+                                <i class="fa fa-envelope me-2"/>
+                                Nous contacter
                             </a>
-                        </t>
-                        <t t-else="">
-                            <button class="btn btn-secondary flex-grow-1" disabled="1">
-                                <i class="fa fa-times me-2"/>
-                                Non disponible
-                            </button>
-                        </t>
-                    </div>
+                        </div>
+                    </t>
+                    <t t-if="product.type_service in ('location', 'les_deux')">
+                        <div class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
+                            <t t-if="product.disponible">
+                                <a role="button"
+                                class="btn btn-luxury flex-grow-1"
+                                t-attf-href="/luxury/reserver/#{product.id}">
+                                    <i class="fa fa-calendar me-2"/>
+                                    Réserver
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <button class="btn btn-secondary flex-grow-1" disabled="1">
+                                    <i class="fa fa-times me-2"/>
+                                    Non disponible
+                                </button>
+                            </t>
+                        </div>
+                    </t>
                 </t>
-            </t>
-           
-            <t t-else="">
-                <div id="add_to_cart_wrap"
-                    class="d-flex flex-grow-1 flex-lg-grow-0 flex-wrap align-items-center gap-2">
-                    <a id="add_to_cart"
-                    role="button"
-                    href="#"
-                    class="btn btn-primary js_check_product a-submit flex-grow-1"
-                    data-animation-selector=".o_wsale_product_images">
-                        <i class="fa fa-shopping-cart me-2"/>
-                        Ajouter au panier
-                    </a>
-                </div>
-            </t>
-
-        </xpath>
+            </xpath>
     </template>
 
     <!-- Infos luxury sur la page produit -->
@@ -242,15 +229,21 @@
                                         <h5 class="mb-3">Identité</h5>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label"><strong>Nom complet *</strong></label>
+                                                <label class="form-label"><strong>Nom  *</strong></label>
                                                 <input type="text" name="client_name"
                                                     class="form-control" required="1"/>
+                                        
                                             </div>
                                             <div class="col-md-6 mb-3">
+                                                <label class="form-label"><strong>Prénom  *</strong></label>
+                                                <input type="text" name="client_firstname"
+                                                    class="form-control" required="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
                                                 <label class="form-label"><strong>Email *</strong></label>
                                                 <input type="email" name="client_email"
                                                     class="form-control" required="1"/>
-                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label"><strong>Téléphone</strong></label>
@@ -264,6 +257,11 @@
                                             <label class="form-label"><strong>Adresse *</strong></label>
                                             <input type="text" name="client_adresse"
                                                 class="form-control" required="1"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label"><strong>Complément d'adresse</strong></label>
+                                            <input type="text" name="client_adresse_complement"
+                                                class="form-control"/>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4 mb-3">
@@ -305,12 +303,10 @@
                                             <label class="form-label"><strong>Destination souhaitée *</strong></label>
 
                                             <t t-if="destinations">
-                                                <select name="destination_id" class="form-select" required="1">
-                                                    <option value="">-- Sélectionnez une destination --</option>
+                                                <select name="destination_id">
                                                     <t t-foreach="destinations" t-as="dest">
-                                                        <option t-att-value="dest.id">
+                                                        <option t-att-value="dest.id" t-att-selected="dest.id == destination.id">
                                                             <t t-esc="dest.name"/>
-                                                            <t t-if="dest.pays_id"> — <t t-esc="dest.pays_id.name"/></t>
                                                         </option>
                                                     </t>
                                                 </select>
@@ -386,12 +382,13 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <p><strong>Nom :</strong> <t t-esc="client_name"/></p>
+                                            <p><strong>Nom et prénom :</strong> <t t-esc="client_name"/> <t t-esc="client_firstname"/></p>
                                             <p><strong>Email :</strong> <t t-esc="client_email"/></p>
                                             <p><strong>Téléphone :</strong> <t t-esc="client_phone"/></p>
                                         </div>
                                         <div class="col-md-6">
                                             <p><strong>Adresse :</strong> <t t-esc="client_adresse"/></p>
+                                            <p><strong>Complément d'adresse :</strong> <t t-esc="client_adresse_complement"/></p>
                                             <p><strong>Code postal :</strong> <t t-esc="client_code_postal"/></p>
                                             <p><strong>Pays :</strong> <t t-esc="client_pays.name"/></p>
                                         </div>
@@ -419,15 +416,17 @@
                                     t-att-value="request.csrf_token()"/>
                                 <input type="hidden" name="product_id" t-att-value="product.id"/>
                                 <input type="hidden" name="client_name" t-att-value="client_name"/>
+                                <input type="hidden" name="client_firstname" t-att-value="client_firstname"/>
                                 <input type="hidden" name="client_email" t-att-value="client_email"/>
                                 <input type="hidden" name="client_phone" t-att-value="client_phone"/>
                                 <input type="hidden" name="client_adresse" t-att-value="client_adresse"/>
+                                <input type="hidden" name="client_adresse_complement" t-att-value="client_adresse_complement"/>
                                 <input type="hidden" name="client_code_postal" t-att-value="client_code_postal"/>
                                 <input type="hidden" name="client_pays_id" t-att-value="client_pays_id"/>
                                 <input type="hidden" name="date_debut" t-att-value="date_debut"/>
                                 <input type="hidden" name="date_fin" t-att-value="date_fin"/>
                                 <input type="hidden" name="notes" t-att-value="notes"/>
-                                <input type="hidden" name="destination_id" t-att-value="destination.name if destination else ''"/>
+                                <input type="hidden" name="destination_id" t-att-value="destination.id if destination else ''"/>
 
                                 <div class="d-flex gap-3">
                                     <a t-attf-href="/luxury/reserver/#{product.id}"
@@ -506,7 +505,7 @@
 
                         <!-- Garde les paramètres existants -->
                         <t t-foreach="request.params.items()" t-as="param">
-                            <t t-if="param[0] not in ('longueur_min', 'longueur_max', 'capacite_min', 'cabines_min', 'type_service', 'vitesse_min')">
+                            <t t-if="param[0] not in ('longueur_min', 'longueur_max', 'capacite_min', 'cabines_min', 'type_service', 'vitesse_min', 'destination')">
                                 <input type="hidden"
                                     t-att-name="param[0]"
                                     t-att-value="param[1]"/>
@@ -597,6 +596,20 @@
                                 class="form-control form-control-sm"
                                 placeholder="Ex: 15"
                                 t-att-value="request.params.get('vitesse_min', '')"/>
+                        </div>
+                        <div class="mb-3 border-top pt-3">
+                            <h6 class="fw-bold small text-uppercase mb-2"
+                                style="color: #714b67;">Destination</h6>
+                            <select name="destination" class="form-select form-select-sm">
+                                <option value="">-- Toutes --</option>
+                                <t t-foreach="destinations" t-as="dest">
+                                    <option t-att-value="dest.id"
+                                            t-att-selected="request.params.get('destination') == str(dest.id)">
+                                        <t t-esc="dest.name"/>
+                                    </option>
+                                </t>
+                            </select>
+
                         </div>
 
                         <div class="d-grid gap-2 border-top pt-3">
