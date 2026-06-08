@@ -177,7 +177,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/* TICKER — bandeau défilant services                         */
+/* TICKER — 6 items plein écran                               */
 /* ═══════════════════════════════════════════════════════════ */
 
 .exo-ticker-wrap {
@@ -195,7 +195,7 @@
 
 .exo-ticker {
     display: flex;
-    width: max-content;
+    width: 200%;
     animation: ticker-scroll 20s linear infinite;
 }
 
@@ -203,13 +203,15 @@
     animation-play-state: paused;
 }
 
+/* Chaque item = 1/12 de 200% = 1/6 de l'écran */
 .exo-ticker-item {
+    flex: 0 0 calc(100% / 12);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 16px 44px;
+    padding: 16px 0;
     color: #1a2340 !important;
     text-decoration: none !important;
     font-size: 12px;
@@ -219,7 +221,6 @@
     transition: all 0.2s ease;
     letter-spacing: 0.3px;
     text-transform: uppercase;
-    min-width: 140px;
 }
 
 .exo-ticker-item:hover {
@@ -250,15 +251,33 @@
     100% { transform: translateX(-50%); }
 }
 
-@media (max-width: 768px) {
+/* ═══════════════════════════════════════════════════════════ */
+/* RESPONSIVE TICKER                                          */
+/* ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 991px) {
+    /* 3 items visibles sur tablette */
     .exo-ticker-item {
-        padding: 12px 28px;
+        flex: 0 0 calc(100% / 6);
         font-size: 11px;
-        min-width: 110px;
     }
     .exo-ticker-icon {
         width: 36px;
         height: 36px;
         font-size: 18px;
+    }
+}
+
+@media (max-width: 575px) {
+    /* 2 items visibles sur mobile */
+    .exo-ticker-item {
+        flex: 0 0 calc(100% / 4);
+        font-size: 10px;
+        padding: 12px 0;
+    }
+    .exo-ticker-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
     }
 }
