@@ -1,0 +1,359 @@
+/* =========================================================
+   HEADER NATIF ODOO — DESIGN EXOCOMS
+========================================================= */
+
+header#top {
+    background: white !important;
+    border-bottom: 1px solid #e8ecf8 !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* =========================================================
+   NAVBAR DESKTOP
+========================================================= */
+
+header#top .navbar.d-lg-block {
+    padding: 0 !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+header#top #o_main_nav.container {
+    max-width: 1400px !important;
+    padding: 0 40px !important;
+    height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 24px !important;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+header#top .navbar-brand.logo {
+    padding: 0 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.2s ease !important;
+}
+header#top .navbar-brand.logo:hover { transform: scale(1.04) !important; }
+header#top .navbar-brand.logo img { height: 34px !important; width: auto !important; }
+
+/* =========================================================
+   NAV LINKS
+========================================================= */
+
+header#top #top_menu.navbar-nav {
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+}
+
+header#top #top_menu .nav-item .nav-link {
+    color: #1a2240 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    background: transparent !important;
+}
+
+header#top #top_menu .nav-item .nav-link::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 2px !important;
+    left: 12px !important;
+    right: 12px !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, #0d4dff, #4d8aff) !important;
+    border-radius: 2px !important;
+    transform: scaleX(0) !important;
+    transition: transform 0.2s ease !important;
+}
+
+header#top #top_menu .nav-item .nav-link:hover,
+header#top #top_menu .nav-item .nav-link.active {
+    color: #0d4dff !important;
+    background: rgba(13, 77, 255, 0.06) !important;
+}
+
+header#top #top_menu .nav-item .nav-link:hover::after,
+header#top #top_menu .nav-item .nav-link.active::after {
+    transform: scaleX(1) !important;
+}
+
+/* =========================================================
+   ICONES — panier, wishlist, search
+========================================================= */
+
+header#top .navbar-nav.align-items-center {
+    gap: 6px !important;
+    padding: 0 !important;
+}
+
+header#top .o_wsale_my_cart a,
+header#top .o_wsale_my_wish a,
+header#top a[data-bs-target="#o_search_modal"] {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #1a2240 !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+}
+
+header#top .o_wsale_my_cart a:hover,
+header#top .o_wsale_my_wish a:hover,
+header#top a[data-bs-target="#o_search_modal"]:hover {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+    transform: scale(1.08) !important;
+}
+
+header#top .o_wsale_my_cart a i,
+header#top .o_wsale_my_wish a i,
+header#top a[data-bs-target="#o_search_modal"] i { color: inherit !important; }
+
+header#top .my_cart_quantity,
+header#top .my_wish_quantity {
+    background: #0d4dff !important;
+    font-size: 10px !important;
+}
+
+/* Wishlist — toujours visible même vide */
+header#top .o_wsale_my_wish { display: flex !important; }
+
+/* =========================================================
+   ELEMENTS CACHÉS — téléphone, Contact Us
+   ⚠️ Le sélecteur de langue est gardé visible (voir section dédiée)
+========================================================= */
+
+header#top li:has(a[href^="tel:"]) { display: none !important; }
+header#top li:has(div[data-oe-id="1067"]) { display: none !important; }
+header#top li:has(a.btn_cta) { display: none !important; }
+header#top li:has(div[data-oe-id="1029"]) { display: none !important; }
+
+/* =========================================================
+   PROFIL CONNECTÉ — icône ronde grise avec dropdown
+========================================================= */
+
+header#top li.dropdown.o_no_autohide_item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #1a2240 !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle span { display: none !important; }
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::after { display: none !important; }
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::before {
+    content: '\f007' !important;
+    font-family: 'FontAwesome' !important;
+    font-size: 14px !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle:hover {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    color: white !important;
+    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+    transform: scale(1.08) !important;
+}
+
+header#top .dropdown-menu.js_usermenu .dropdown-item i {
+    color: #0d4dff !important;
+}
+
+/* =========================================================
+   DÉCONNECTÉ — bouton Connexion
+   ⚠️ On laisse Odoo afficher le texte natif (traduit auto FR/EN)
+   On ne touche PAS au contenu via ::after
+========================================================= */
+
+header#top li.o_no_autohide_item:not(.dropdown) {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn {
+    background: #0d4dff !important;
+    color: white !important;
+    border: 1px solid #0d4dff !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 6px 14px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn:hover {
+    background: #0a3ad4 !important;
+    border-color: #0a3ad4 !important;
+    box-shadow: 0 4px 14px rgba(13, 77, 255, 0.3) !important;
+}
+
+/* =========================================================
+   NAVBAR MOBILE
+========================================================= */
+
+header#top .o_header_mobile.d-lg-none {
+    padding: 0 !important;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+header#top .o_header_mobile .o_main_nav.container {
+    height: 52px !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top .o_header_mobile .navbar-brand.logo img { height: 30px !important; width: auto !important; }
+
+header#top .o_header_mobile button[data-bs-toggle="offcanvas"] {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    color: #1a2240 !important;
+    transition: all 0.2s ease !important;
+}
+
+header#top .o_header_mobile button[data-bs-toggle="offcanvas"]:hover {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    color: white !important;
+}
+
+header#top .o_header_mobile_buttons_wrap .o_wsale_my_cart a,
+header#top .o_header_mobile_buttons_wrap .o_wsale_my_wish a {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #1a2240 !important;
+    padding: 0 !important;
+}
+
+header#top .o_navbar_mobile { border-left: 1px solid #e8ecf8 !important; }
+
+header#top .o_navbar_mobile .nav-link {
+    color: #1a2240 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+header#top .o_navbar_mobile .nav-link:hover,
+header#top .o_navbar_mobile .nav-link.active {
+    color: #0d4dff !important;
+    background: rgba(13, 77, 255, 0.06) !important;
+}
+
+header#top .o_navbar_mobile li:has(a[href^="tel:"]) { display: none !important; }
+header#top .o_navbar_mobile li:has(div[data-oe-id="1067"]) { display: none !important; }
+header#top .o_navbar_mobile li:has(a.btn_cta) { display: none !important; }
+header#top .o_navbar_mobile li:has(div[data-oe-id="1029"]) { display: none !important; }
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 480px) {
+    header#top .o_header_mobile .o_main_nav.container {
+        height: 50px !important;
+        padding: 0 12px !important;
+    }
+    header#top .o_header_mobile .navbar-brand.logo img { height: 26px !important; }
+}
+
+/* =========================================================
+   SÉLECTEUR DE LANGUE — visible et stylisé
+========================================================= */
+
+header#top .o_header_language_selector {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top .o_header_language_selector .dropdown-toggle {
+    height: 36px !important;
+    border-radius: 8px !important;
+    background: #f5f7fb !important;
+    border: 1px solid #e0e5f0 !important;
+    color: #1a2240 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 0 10px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+header#top .o_header_language_selector .dropdown-toggle:hover {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    color: white !important;
+}
+
+header#top .o_header_language_selector .dropdown-menu {
+    border-radius: 8px !important;
+    border: 1px solid #e0e5f0 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important;
+    padding: 4px 0 !important;
+}
+
+header#top .o_header_language_selector .dropdown-item {
+    font-size: 13px !important;
+    color: #1a2240 !important;
+    padding: 8px 16px !important;
+}
+
+header#top .o_header_language_selector .dropdown-item:hover {
+    background: rgba(13, 77, 255, 0.06) !important;
+    color: #0d4dff !important;
+}

@@ -1,0 +1,365 @@
+/* ========================================
+   INTÉGRATION ODOO/SHOP
+   ======================================== */
+
+/* Header et footer gérés nativement par Odoo */
+
+#wrap {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Cache la sidebar catégories native UNIQUEMENT
+   (remplacée par dashboard_menu_boutiques_sidebar)
+   On ne cache PLUS o_wsale_products_attributes car
+   le filtre prix en fait partie */
+.o_wsale_products_categories {
+    display: none !important;
+}
+
+/* Cache les attributs natifs (taille, couleur...) mais PAS le filtre prix */
+.o_wsale_products_attributes > div:not(.o_wsale_products_price_filter) {
+    display: none !important;
+}
+
+/* ========================================
+   FILTRE PRIX — inline avec Search + Sort By
+   ======================================== */
+
+/* Le JS (main.js) déplace .o_wsale_products_price_filter
+   dans #o_wsale_products_header — on le style ici */
+.o_wsale_products_price_filter {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    min-width: 200px !important;
+    border: 1px solid #dce5ff !important;
+    border-radius: 8px !important;
+    padding: 4px 10px !important;
+    background: #fff !important;
+}
+
+/* Cache le titre "Price Range" — juste le slider */
+.o_wsale_products_price_filter .accordion-header {
+    display: none !important;
+}
+
+/* Force l'ouverture du accordion */
+.o_wsale_products_price_filter .accordion-collapse {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+}
+
+.o_wsale_products_price_filter .accordion-body {
+    padding: 4px 0 !important;
+}
+
+/* ========================================
+   HEADER SHOP — Search + Price + Sort By
+   ======================================== */
+
+#o_wsale_products_header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 8px 0 !important;
+    flex-wrap: wrap !important;
+}
+
+.o_wsale_products_header_search_form_container {
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    max-width: 320px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.o_wsale_products_header_search_form_container form {
+    width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+}
+
+.o_wsale_products_header_search_form_container input {
+    border-radius: 8px !important;
+    border: 1px solid #dce5ff !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    flex: 1 !important;
+}
+
+.o_wsale_products_header_search_form_container button {
+    background: #0d4dff !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+}
+
+.o_wsale_products_sort {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+}
+
+/* ========================================
+   PRODUITS
+   ======================================== */
+
+.o_product {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    transition: all var(--transition-normal) !important;
+    box-shadow: var(--shadow-md) !important;
+    border: none !important;
+}
+.o_product:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+.o_product_img {
+    border-radius: 12px 12px 0 0 !important;
+    height: 240px !important;
+    object-fit: cover !important;
+}
+.o_product_detail { padding: var(--spacing-lg) !important; }
+.product_name {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: var(--black) !important;
+    margin-bottom: var(--spacing-md) !important;
+}
+.o_product_price {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: var(--accent-blue) !important;
+}
+.o_add_to_cart {
+    background: var(--gradient-accent) !important;
+    color: var(--white) !important;
+    border-radius: 8px !important;
+    padding: var(--spacing-md) var(--spacing-lg) !important;
+    font-weight: 600 !important;
+    transition: all var(--transition-normal) !important;
+    border: none !important;
+}
+.o_add_to_cart:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ========================================
+   PANIER
+   ======================================== */
+
+.o_website_sale_cart {
+    background: var(--light) !important;
+    padding: var(--spacing-2xl) var(--spacing-lg) !important;
+    border-radius: 12px !important;
+}
+.o_website_sale_cart .table {
+    background: var(--white) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-md) !important;
+}
+.o_website_sale_cart .table thead {
+    background: var(--primary) !important;
+    color: var(--white) !important;
+}
+.o_website_sale_cart .table thead th {
+    border: none !important;
+    padding: var(--spacing-lg) !important;
+    font-weight: 600 !important;
+}
+.o_website_sale_cart .table tbody td {
+    padding: var(--spacing-lg) !important;
+    vertical-align: middle !important;
+    border: 1px solid var(--light-gray) !important;
+}
+.o_website_sale_cart .table tbody tr:hover { background: var(--light) !important; }
+.o_website_sale_cart input[type="number"] {
+    max-width: 80px !important;
+    padding: var(--spacing-sm) !important;
+    border: 1px solid var(--light-gray) !important;
+    border-radius: 6px !important;
+}
+
+/* ========================================
+   CHECKOUT
+   ======================================== */
+
+.oe_cart_checkout_step {
+    padding: var(--spacing-xl) !important;
+    background: var(--white) !important;
+    border-radius: 12px !important;
+    margin-bottom: var(--spacing-xl) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+.checkout_step_title {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--black) !important;
+    margin-bottom: var(--spacing-lg) !important;
+    padding-bottom: var(--spacing-lg) !important;
+    border-bottom: 2px solid var(--light-gray) !important;
+}
+.oe_cart_checkout_step.active { border-left: 4px solid var(--accent-blue) !important; }
+
+/* ========================================
+   FORMULAIRES
+   ======================================== */
+
+.form-control {
+    border: 1px solid var(--light-gray) !important;
+    border-radius: 8px !important;
+    padding: var(--spacing-md) var(--spacing-lg) !important;
+    font-size: 1rem !important;
+    transition: all var(--transition-normal) !important;
+}
+.form-control:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+    outline: none !important;
+}
+.form-control.form-control-sm {
+    padding: var(--spacing-sm) var(--spacing-lg) !important;
+    font-size: 0.9rem !important;
+}
+.form-check-input { accent-color: var(--accent-blue) !important; }
+.form-check-input:checked {
+    background-color: var(--accent-blue) !important;
+    border-color: var(--accent-blue) !important;
+}
+
+/* ========================================
+   ALERTES
+   ======================================== */
+
+.alert {
+    border-radius: 12px !important;
+    padding: var(--spacing-lg) !important;
+    margin-bottom: var(--spacing-lg) !important;
+    border-left: 4px solid !important;
+}
+.alert-info { background-color: rgba(59,130,246,0.1) !important; border-color: #3b82f6 !important; color: #1e40af !important; }
+.alert-success { background-color: rgba(34,197,94,0.1) !important; border-color: #22c55e !important; color: #166534 !important; }
+.alert-warning { background-color: rgba(251,146,60,0.1) !important; border-color: #fb923c !important; color: #92400e !important; }
+.alert-danger { background-color: rgba(239,68,68,0.1) !important; border-color: #ef4444 !important; color: #991b1b !important; }
+
+/* ========================================
+   BADGES / RATING / AVIS
+   ======================================== */
+
+.product_ribbon {
+    border-radius: 8px !important;
+    padding: var(--spacing-sm) var(--spacing-lg) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+.product_ribbon.sale { background: var(--gradient-accent) !important; color: var(--white) !important; }
+.product_ribbon.new { background: var(--accent-purple) !important; color: var(--white) !important; }
+.product_ribbon.out_of_stock { background: var(--gray) !important; color: var(--white) !important; }
+.product-rating { color: #fbbf24 !important; font-size: 1rem !important; }
+.review_container {
+    padding: var(--spacing-lg) !important;
+    background: var(--light) !important;
+    border-radius: 12px !important;
+    margin-bottom: var(--spacing-lg) !important;
+    border-left: 4px solid var(--accent-blue) !important;
+}
+.review_author { font-weight: 600 !important; color: var(--black) !important; }
+.review_date { font-size: 0.85rem !important; color: var(--gray) !important; }
+.review_text { margin-top: var(--spacing-md) !important; color: var(--gray) !important; line-height: 1.7 !important; }
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    #o_wsale_products_header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .o_wsale_products_header_search_form_container {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    .o_wsale_products_price_filter {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+    .o_website_sale_cart .table { font-size: 0.9rem !important; }
+    .oe_cart_checkout_step { padding: var(--spacing-lg) !important; }
+    .checkout_step_title { font-size: 1.125rem !important; }
+}
+/* ========================================
+   DESIGN CHIPS NATIF ODOO — corrections
+   ======================================== */
+
+/* Bouton panier rond bleu */
+.o_wsale_product_btn .btn-primary,
+.o_add_wishlist_dyn ~ .btn-primary,
+a.btn-primary.o_add_to_cart_btn {
+    background: #0d4dff !important;
+    border-color: #0d4dff !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+}
+
+/* Icônes comparaison et wishlist */
+.o_wsale_compare,
+.o_add_wishlist_dyn {
+    color: #1a2340 !important;
+    border-color: #dce5ff !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+}
+
+.o_wsale_compare:hover,
+.o_add_wishlist_dyn:hover {
+    color: #0d4dff !important;
+    border-color: #0d4dff !important;
+}
+
+/* Image produit — hauteur fixe propre */
+.o_product_image_background {
+    height: 220px !important;
+    background-size: contain !important;
+    background-position: center !important;
+}
+
+/* Carte produit — ombre et hover */
+.o_product_image {
+    border-radius: 12px 12px 0 0 !important;
+    overflow: hidden !important;
+}
+
+.oe_product {
+    border-radius: 12px !important;
+    border: 1px solid #f0f4ff !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    overflow: hidden !important;
+}
+
+.oe_product:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 32px rgba(13, 77, 255, 0.12) !important;
+}
+
+/* Prix */
+.oe_product .oe_price .oe_currency_value,
+.oe_product .price {
+    color: #0d4dff !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+}

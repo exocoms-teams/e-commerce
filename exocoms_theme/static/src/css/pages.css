@@ -1,0 +1,280 @@
+/* ========================================
+   PAGES INTÉRIEURES
+   ======================================== */
+
+.page-header {
+    background: var(--gradient-primary);
+    color: var(--white);
+    padding: var(--spacing-3xl) var(--spacing-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.5;
+}
+
+.page-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+.page-header h1 {
+    margin-bottom: var(--spacing-lg);
+    font-size: 3rem;
+}
+
+.page-header p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+}
+
+.page-breadcrumb {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    margin-top: var(--spacing-lg);
+}
+
+.page-breadcrumb a {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+/* ========================================
+   CONTENU DE PAGE
+   ======================================== */
+
+.page-content {
+    padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+.page-section {
+    margin-bottom: var(--spacing-3xl);
+}
+
+.page-section h2 {
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    padding-bottom: var(--spacing-lg);
+}
+
+.page-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-accent);
+}
+
+.page-section p {
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.8;
+}
+
+/* ========================================
+   FORMULAIRES
+   ======================================== */
+
+.form-group {
+    margin-bottom: var(--spacing-xl);
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--black);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    transition: all var(--transition-normal);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.form-checkbox label {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/* ========================================
+   ERREURS ET MESSAGES
+   ======================================== */
+
+.alert {
+    padding: var(--spacing-xl);
+    border-radius: 8px;
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #166534;
+    border-color: #22c55e;
+}
+
+.alert-error,
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.alert-warning {
+    background: rgba(251, 146, 60, 0.1);
+    color: #92400e;
+    border-color: #fb923c;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1e40af;
+    border-color: #3b82f6;
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+
+.sidebar {
+    background: var(--light);
+    padding: var(--spacing-xl);
+    border-radius: 12px;
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--spacing-lg) + 80px);
+}
+
+.sidebar h3 {
+    margin-bottom: var(--spacing-lg);
+    color: var(--black);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: var(--spacing-md);
+}
+
+.sidebar a {
+    display: block;
+    color: var(--accent-blue);
+    transition: all var(--transition-normal);
+    padding: var(--spacing-sm) 0;
+}
+
+.sidebar a:hover {
+    color: var(--accent-cyan);
+    transform: translateX(4px);
+}
+
+.sidebar a.active {
+    color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+/* ========================================
+   2 COLONNES LAYOUT
+   ======================================== */
+
+.page-with-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--spacing-2xl);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .page-with-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        top: auto;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        padding: var(--spacing-2xl) var(--spacing-lg);
+    }
+
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .page-content {
+        padding: var(--spacing-2xl) var(--spacing-lg);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+        font-size: 16px;
+    }
+
+    .form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+}

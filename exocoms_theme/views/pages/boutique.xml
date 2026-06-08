@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="boutique_sidebar"
+              inherit_id="website_sale.products"
+              name="Boutique Sidebar">
+
+        <xpath expr="//t[@t-set='hasLeftColumn']" position="replace">
+            <t t-set="hasLeftColumn" t-value="True"/>
+        </xpath>
+
+        <xpath expr="//t[@t-set='wsale_has_filters_btn']" position="replace">
+            <t t-set="wsale_has_filters_btn" t-value="False"/>
+        </xpath>
+
+        <xpath expr="//t[@t-set='wsale_has_filters_btn_lg']" position="replace">
+            <t t-set="wsale_has_filters_btn_lg" t-value="False"/>
+        </xpath>
+
+    </template>
+
+    <template id="boutique_seo"
+              inherit_id="website.layout"
+              name="Boutique SEO Head">
+        <xpath expr="//head" position="inside">
+            <t t-if="request.httprequest.path.startswith('/shop')">
+                <meta name="description" content="Achetez vos terminaux de paiement TPE INGENICO, SUNMI, PAX, caisses enregistreuses tactiles, imprimantes tickets et accessoires monétiques. Livraison France et Europe."/>
+                <meta name="keywords" content="acheter TPE, terminal paiement en ligne, caisse enregistreuse SUNMI, TPE INGENICO, TPE PAX, imprimante ticket, accessoires monétique"/>
+                <meta name="robots" content="index, follow"/>
+                <meta property="og:type" content="website"/>
+                <meta property="og:title" content="Boutique Exocoms — TPE, Caisses &amp; Monétique"/>
+                <meta property="og:description" content="Achetez vos TPE INGENICO, SUNMI, PAX et caisses enregistreuses tactiles en ligne."/>
+                <meta property="og:image" content="/exocoms_theme/static/src/img/EXOCOMS.png"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

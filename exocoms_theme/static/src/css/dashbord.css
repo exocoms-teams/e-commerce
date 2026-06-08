@@ -1,0 +1,205 @@
+/* =========================================================
+   CAROUSELS — accueil uniquement
+========================================================= */
+
+.exo-carousels-fullwidth {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px 48px 48px;   /* ← padding top réduit pour coller au hero */
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* Section header (titre + voir plus) */
+.exo-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.exo-section-header h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #08152d;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.exo-section-header h3::before {
+  content: '';
+  width: 16px;
+  height: 4px;
+  background: linear-gradient(90deg, #0d4dff, #4d8aff);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.exo-section-header a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0d4dff;
+  text-decoration: none;
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: #eef2ff;
+  transition: all 0.2s ease;
+}
+
+.exo-section-header a:hover {
+  background: #0d4dff;
+  color: white;
+}
+
+/* Wrapper flèches + carousel */
+.exo-carousel-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Flèches */
+.exo-carousel-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e0e5f0;
+  color: #1a2240;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.exo-carousel-btn:hover {
+  background: #0d4dff;
+  border-color: #0d4dff;
+  color: white;
+  box-shadow: 0 6px 20px rgba(13,77,255,0.35);
+}
+
+/* Carousel scroll */
+.exo-products-carousel {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 8px 4px 16px;   /* ← padding réduit */
+  align-items: stretch;
+}
+
+.exo-products-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Carte ── */
+.exo-product-card-big {
+  flex: 0 0 calc(20% - 16px);
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e8ecf4;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.exo-product-card-big:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(13,77,255,0.14);
+  border-color: #c0ceff;
+}
+
+/* Zone image */
+.exo-product-card-img-wrap {
+  width: 100%;
+  height: 200px;            /* ← hauteur réduite pour que les cartes restent visibles */
+  background: #f8faff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.exo-product-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 16px;
+}
+
+/* Corps texte */
+.exo-product-card-body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  border-top: 1px solid #f0f2f8;
+}
+
+.exo-product-card-big h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #08152d;
+  margin: 0;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.exo-product-card-big p {
+  font-size: 12px;
+  color: #8890aa;
+  margin: 0;
+}
+
+.exo-product-card-big span {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0d4dff;
+  margin-top: 6px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+  .exo-product-card-big { flex: 0 0 calc(25% - 15px); }
+}
+
+@media (max-width: 900px) {
+  .exo-product-card-big { flex: 0 0 calc(33.33% - 14px); }
+}
+
+@media (max-width: 768px) {
+  .exo-carousels-fullwidth { padding: 16px 20px 40px; gap: 36px; }
+  .exo-product-card-big { flex: 0 0 calc(50% - 10px); }
+  .exo-product-card-img-wrap { height: 160px; }
+}
+
+@media (max-width: 480px) {
+  .exo-product-card-big { flex: 0 0 75%; }
+}

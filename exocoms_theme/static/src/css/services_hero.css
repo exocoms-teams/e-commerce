@@ -1,0 +1,156 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* HERO SERVICES                                              */
+/* ═══════════════════════════════════════════════════════════ */
+
+.services-hero-section {
+    position: relative;
+    height: 55vh;
+    min-height: 380px;
+    max-height: 520px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #07122a;
+}
+
+/* Image de fond très visible */
+.services-hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/exocoms_theme/static/src/img/hero_service.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.85;         /* ← 0.55 → 0.85 : image bien visible */
+    z-index: 0;
+}
+
+.services-hero-section::after {
+    display: none;
+}
+
+/* Overlay très léger */
+.services-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+        rgba(7, 18, 42, 0.35) 0%,
+        rgba(7, 18, 42, 0.25) 55%,
+        rgba(7, 18, 42, 0.15) 100%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* CONTENU HERO SERVICES                                      */
+/* ═══════════════════════════════════════════════════════════ */
+
+.services-hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 820px;
+    text-align: center;
+    color: white;
+    padding: 0 32px;
+    animation: servicesFadeUp 0.9s ease-out;
+}
+
+@keyframes servicesFadeUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.services-hero-content h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+    color: white;
+    -webkit-text-fill-color: white;
+    background: none;
+}
+
+.services-hero-content p {
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 660px;
+    margin: 0 auto 32px;
+}
+
+/* Boutons */
+.services-hero-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.services-hero-btn-primary,
+.services-hero-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 32px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.services-hero-btn-primary {
+    background: #0d4dff;
+    color: white;
+    box-shadow: 0 6px 28px rgba(13, 77, 255, 0.4);
+    border: none;
+}
+
+.services-hero-btn-primary:hover {
+    background: #0a3ad4;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(13, 77, 255, 0.5);
+}
+
+.services-hero-btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.services-hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: white;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* RESPONSIVE                                                 */
+/* ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .services-hero-section { height: 65vh; }
+    .services-hero-content h1 { font-size: 1.8rem; }
+    .services-hero-content p  { font-size: 0.95rem; }
+    .services-hero-buttons    { flex-direction: column; align-items: center; }
+    .services-hero-btn-primary,
+    .services-hero-btn-secondary { width: 100%; max-width: 280px; }
+}
+
+@media (max-width: 480px) {
+    .services-hero-content h1 { font-size: 1.5rem; }
+    .services-hero-btn-primary,
+    .services-hero-btn-secondary { padding: 12px 22px; font-size: 13px; }
+}
