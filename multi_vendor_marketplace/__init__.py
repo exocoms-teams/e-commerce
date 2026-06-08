@@ -25,10 +25,10 @@ from . import wizard
 
 from odoo import api, SUPERUSER_ID
 
-@api.model
-def test_pre_init_hook(cr):
+#@api.model
+def test_pre_init_hook(env):
     """For hiding some menus after login a seller user"""
-    env = api.Environment(cr, SUPERUSER_ID, {})
+    #env = api.Environment(cr, SUPERUSER_ID, {})
     res = env.ref('stock.menu_stock_root')
     res1 = env.ref('stock.group_stock_user')
     res.write({'group_ids': [(3, res1.id, 0)]})
