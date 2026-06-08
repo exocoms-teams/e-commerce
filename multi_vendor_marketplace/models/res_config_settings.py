@@ -44,8 +44,8 @@ class ResConfigSettings(models.TransientModel):
         string='Internal category',
         help='Internal category',
         config_parameter='multi_vendor_marketplace.internal_categ_id',
-        default=lambda self: self.env.ref(
-            'product.product_category_all'))
+        default=lambda self: self.env['product.category'].search(
+            [('name', '=', 'All')], limit=1))
     product_variants = fields.Boolean(
         string='Product variants',
         help='Product variants',
