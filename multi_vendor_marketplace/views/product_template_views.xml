@@ -48,7 +48,7 @@
                         <page string="Information">
                             <group>
                                 <group>
-                                    <field name="detailed_type"
+                                    <field name="type"
                                            string="Product Type"/>
                                     <field name="categ_id"
                                            string="Internal Category"/>
@@ -79,7 +79,7 @@
                                     <field name="value_count"
                                            invisible="1"/>
                                     <field name="attribute_id"
-                                           readonly="id != False"/>
+                                           readonly="id"/>
                                     <field name="value_ids"
                                            widget="many2many_tags"
                                            options="{'no_create_edit': True, 'color_field': 'color'}"
@@ -191,13 +191,13 @@
                                                 type="object"
                                                 name="change_state_approved"
                                                 class="oe_highlight"
-                                                attrs="{'invisible': [('state', 'in', ('draft', 'approved', 'rejected'))]}"
+                                                invisible="state in ['draft', 'approved', 'rejected']"
                                                 groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                                         <button string="Reject"
                                                 type="object"
                                                 name="change_state_reject"
                                                 class="oe_highlight"
-                                                attrs="{'invisible': [('state', 'in', ('draft', 'approved', 'rejected'))]}"
+                                                invisible="state in ['draft', 'approved', 'rejected']"
                                                 groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                                     </div>
                                 </div>
