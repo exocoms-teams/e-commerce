@@ -62,6 +62,40 @@
                             </div>
                         </div>
 
+                        <!-- PRODUITS -->
+                        <section class="cam-products">
+                            <div class="cam-container">
+                                <div class="cam-section-header">
+                                    <h2>Nos produits les plus demandés</h2>
+                                    <p>Caméras et équipements AXIS certifiés, prêts à déployer</p>
+                                </div>
+                                <div class="cam-products-grid">
+                                    <t t-foreach="request.env['product.template'].search([('is_published','=',True)], limit=8)" t-as="product">
+                                        <a t-attf-href="/shop/#{product.id}" class="cam-product-card">
+                                            <div class="cam-product-img">
+                                                <t t-if="product.image_512">
+                                                    <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="cam-product-noimg">📷</div>
+                                                </t>
+                                            </div>
+                                            <div class="cam-product-body">
+                                                <h3 t-esc="product.name"/>
+                                                <div class="cam-product-footer">
+                                                    <span class="cam-product-price" t-esc="'%.2f € HT' % product.list_price"/>
+                                                    <span class="cam-btn-sm">Voir</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </t>
+                                </div>
+                                <div class="cam-products-footer">
+                                    <a href="/shop" class="cam-btn-secondary">Voir tous nos produits →</a>
+                                </div>
+                            </div>
+                        </section>
+
                         <!-- CATÉGORIES -->
                         <section class="cam-categories">
                             <div class="cam-container">
