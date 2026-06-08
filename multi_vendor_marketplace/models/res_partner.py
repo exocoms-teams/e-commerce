@@ -242,7 +242,7 @@ class ResPartner(models.Model):
         sale_group = self.env.ref('sales_team.group_sale_manager')
         seller_user = self.env.ref(
             "multi_vendor_marketplace.multi_vendor_marketplace_seller")
-        user1.sudo().write({'groups_id': [(6, 0, [
+        user1.sudo().write({'groups_ids': [(6, 0, [
             internal.id,
             seller_user.id,
             stock_group.id,
