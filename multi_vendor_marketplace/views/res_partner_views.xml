@@ -188,20 +188,20 @@
                             string="Register for Payment"
                             groups="multi_vendor_marketplace.multi_vendor_marketplace_seller"/>
                     <button type="object" name="approve_seller"
-                            class="oe_highlight"
-                            string="Approve"
-                            states="Pending for Approval"
-                            groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
+                        class="oe_highlight"
+                        string="Approve"
+                        invisible="state != 'Pending for Approval'"
+                        groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button type="object" name="req_approve"
-                            class="oe_highlight"
-                            string="Request For Approve"
-                            groups="multi_vendor_marketplace.multi_vendor_marketplace_req_seller,multi_vendor_marketplace.multi_vendor_marketplace_admin"
-                            states="new"/>
+                        class="oe_highlight"
+                        string="Request For Approve"
+                        invisible="state != 'new'"
+                        groups="multi_vendor_marketplace.multi_vendor_marketplace_req_seller,multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <button type="object" name="reject_seller"
-                            class="oe_highlight"
-                            string="Reject"
-                            states="Pending for Approval"
-                            groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
+                        class="oe_highlight"
+                        string="Reject"
+                        invisible="state != 'Pending for Approval'"
+                        groups="multi_vendor_marketplace.multi_vendor_marketplace_admin"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="Pending for Approval,Approved,Denied"/>
                 </header>
