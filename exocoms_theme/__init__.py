@@ -116,15 +116,32 @@ def post_init_hook(env):
     if existing:
         existing.unlink()
 
-   # === DESIGN BOUTIQUE — Chips par défaut ===
-    website = env['website'].search([], limit=1)
-    if website:
-        try:
-            website.write({
-                'shop_opt_products_design_classes': 'o_wsale_products_opt_design_chips',
-            })
-        except Exception:
-            pass
+    # === DESIGN BOUTIQUE — Chips par défaut ===
+    try:
+        grid_views = env['ir.ui.view'].search([
+            ('key', 'like', 'website_sale.products'),
+            ('type', '=', 'qweb'),
+        ])
+        for grid_view in grid_views:
+            try:
+                arch = grid_view.arch
+                if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
+                    # Essayer plusieurs points d'insertion
+                    if 'o_wsale_products_opt_layout_catalog' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_opt_layout_catalog',
+                            'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                        )
+                    elif 'o_wsale_products_grid_table grid' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_grid_table grid',
+                            'o_wsale_products_grid_table grid o_wsale_products_opt_design_chips'
+                        )
+                    grid_view.write({'arch': arch})
+            except Exception:
+                pass
+    except Exception:
+        pass
     
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
