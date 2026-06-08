@@ -442,7 +442,7 @@ def post_migrate_hook(env):
     if website:
         try:
             website.write({
-                'shop_opt_products_design_classes': 'o_wsale_products_opt_design_chips',
+                'shop_opt_products_design_classes': 'o_wsale_products_opt_name_color_regular o_wsale_products_opt_thumb_cover o_wsale_products_opt_img_secondary_show o_wsale_products_opt_img_hover_zoom_out_light o_wsale_products_opt_has_cta o_wsale_products_opt_has_wishlist o_wsale_products_opt_has_comparison o_wsale_products_opt_actions_inline o_wsale_products_opt_wishlist_inline o_wsale_products_opt_actions_promote o_wsale_products_opt_cc o_wsale_products_opt_cc1 o_wsale_products_opt_rounded_4 o_wsale_products_opt_thumb_6_5 o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips',
             })
         except Exception:
             pass
