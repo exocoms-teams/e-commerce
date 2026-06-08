@@ -143,6 +143,10 @@ class AccountMove(models.Model):
         Après la validation standard, on crée le mandat si le journal est MAND.
         """
         res = super().action_post()
+        import logging
+        _logger = logging.getLogger(__name__)
+        _logger.warning("=== ACTION_POST account.payment appelé, journal: %s", 
+                        self.mapped('journal_id.code'))
         # On ne crée le mandat que sur les écritures validées (posted)
         posted = self.filtered(lambda m: m.state == 'posted')
         posted._auto_create_mandat_if_needed()
