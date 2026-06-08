@@ -61,6 +61,7 @@
         ],
     },
     'post_init_hook': 'post_init_hook',
+    'post_migrate': 'post_migrate_hook',
     'installable': True,
     'application': True,
 }

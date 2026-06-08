@@ -436,3 +436,13 @@ def post_init_hook(env):
 """})
         except Exception:
             pass
+def post_migrate_hook(env):
+    """S'exécute à chaque update du module"""
+    website = env['website'].search([], limit=1)
+    if website:
+        try:
+            website.write({
+                'shop_opt_products_design_classes': 'o_wsale_products_opt_design_chips',
+            })
+        except Exception:
+            pass
