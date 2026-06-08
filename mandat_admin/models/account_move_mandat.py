@@ -99,6 +99,7 @@ class AccountMove(models.Model):
 
             # ── Chercher la facture liée pour enrichir les données ────────────
             linked_invoices = move._get_related_invoice()
+            first_invoice = linked_invoices[:1]
             if linked_invoices:
                 first_inv = linked_invoices[:1]
                 partner = partner or first_inv.partner_id
@@ -113,7 +114,7 @@ class AccountMove(models.Model):
                 'ordonnateur_id': self.env.user.id,
                 'collectivite_id': self.env.company.id,
                 'piece_justificative': 'facture',
-                'invoice_id': move.id,
+                'invoice_id': first_invoice.id if first_invoice else move.id,
                 # Si une seule facture est liée, on stocke aussi sa référence
                 'reference_creancier': (
                     linked_invoices[:1].name if linked_invoices else move.ref or ''
