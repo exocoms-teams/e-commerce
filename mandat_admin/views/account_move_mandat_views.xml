@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. Fiche FACTURE / ÉCRITURE COMPTABLE (account.move)
+            → Bouton stat "Mandats" + groupe d'info si journal MAND
+    ══════════════════════════════════════════════════════════════════ -->
+    <record id="view_account_move_mandat_form" model="ir.ui.view">
+        <field name="name">account.move.mandat.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Bouton stat dans le header de la facture -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    name="action_view_mandats"
+                    icon="fa-file-text-o"
+                    invisible="mandat_count == 0"
+                >
+                    <field string="Mandat(s)" name="mandat_count" widget="statinfo"/>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. Fiche MANDAT ADMINISTRATIF
+            → Afficher l'écriture / facture liée
+    ══════════════════════════════════════════════════════════════════ -->
+    <record id="view_mandat_administratif_invoice_form" model="ir.ui.view">
+        <field name="name">mandat.administratif.invoice.form</field>
+        <field name="model">mandat.administratif</field>
+        <field name="inherit_id" ref="mandat_admin.view_mandat_administratif_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Juste après le champ reference_creancier existant -->
+            <xpath expr="//field[@name='reference_creancier']" position="after">
+                <field
+                    name="invoice_id"
+                    readonly="1"
+                    invisible="not invoice_id"
+                    options="{'no_open': False}"
+                />
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. Vue LIST mandats : ajouter la colonne facture liée
+    ══════════════════════════════════════════════════════════════════ -->
+    <record id="view_mandat_administratif_invoice_list" model="ir.ui.view">
+        <field name="name">mandat.administratif.invoice.list</field>
+        <field name="model">mandat.administratif</field>
+        <field name="inherit_id" ref="mandat_admin.view_mandat_administratif_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='creancier_id']" position="after">
+                <field name="invoice_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

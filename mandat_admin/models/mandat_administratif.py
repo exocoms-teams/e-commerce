@@ -167,6 +167,16 @@ class MandatAdministratif(models.Model):
         store=True,
     )
 
+    # ─── Écriture comptable / Facture liée ────────────────────────────────────
+    invoice_id = fields.Many2one(
+        'account.move',
+        string='Écriture / Facture liée',
+        readonly=True,
+        copy=False,
+        ondelete='set null',
+        help='Écriture comptable ou facture à l\'origine de ce mandat.',
+    )
+
     # ─── Bordereau ─────────────────────────────────────────────────────────────
     bordereau_id = fields.Many2one(
         'bordereau.mandat',
