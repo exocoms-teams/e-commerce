@@ -13,17 +13,16 @@
     align-items: center;
     justify-content: center;
     background: #07122a;
-    margin-bottom: 0 !important;  /* ← ajoutez ceci */
+    margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
 
-/* Image de fond très visible */
 .hero-section::before {
     content: '';
     position: absolute;
     inset: 0;
     background: url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg') center/cover no-repeat;
-    opacity: 0.85;         /* ← 0.55 → 0.85 : image bien visible */
+    opacity: 0.85;
     z-index: 0;
 }
 
@@ -31,7 +30,6 @@
     display: none;
 }
 
-/* Overlay très léger — laisse voir l'image */
 .hero-overlay {
     position: absolute;
     inset: 0;
@@ -85,7 +83,6 @@
     margin: 0 auto 32px;
 }
 
-/* Boutons */
 .hero-buttons {
     display: flex;
     gap: 14px;
@@ -159,7 +156,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════ */
-/* RESPONSIVE                                                 */
+/* RESPONSIVE HERO                                            */
 /* ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
@@ -178,20 +175,22 @@
         padding: 12px 22px; font-size: 13px;
     }
 }
+
 /* ═══════════════════════════════════════════════════════════ */
 /* TICKER — bandeau défilant services                         */
 /* ═══════════════════════════════════════════════════════════ */
 
 .exo-ticker-wrap {
     width: 100%;
-    background: #0d4dff;
+    background: white;
     overflow: hidden;
-    border-top: none !important;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-top: 3px solid #0d4dff;
+    border-bottom: 1px solid #e8ecf4;
     margin-top: 0;
+    margin-bottom: 30px;
     padding: 0;
     display: block;
-    margin-bottom: 30px !important;
+    box-shadow: 0 4px 20px rgba(13,77,255,0.08);
 }
 
 .exo-ticker {
@@ -206,25 +205,44 @@
 
 .exo-ticker-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 13px 36px;
-    color: white !important;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 44px;
+    color: #1a2340 !important;
     text-decoration: none !important;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     white-space: nowrap;
-    border-right: 1px solid rgba(255,255,255,0.2);
-    transition: background 0.2s;
+    border-right: 1px solid #e8ecf4;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    min-width: 140px;
 }
 
 .exo-ticker-item:hover {
-    background: rgba(255,255,255,0.15);
+    background: #eef2ff;
+    color: #0d4dff !important;
 }
 
-.exo-ticker-item i {
-    font-size: 16px;
-    opacity: 0.85;
+.exo-ticker-item:hover .exo-ticker-icon {
+    background: #0d4dff;
+    color: white;
+}
+
+.exo-ticker-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #eef2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d4dff;
+    font-size: 22px;
+    transition: all 0.2s ease;
 }
 
 @keyframes ticker-scroll {
@@ -234,7 +252,13 @@
 
 @media (max-width: 768px) {
     .exo-ticker-item {
-        padding: 10px 24px;
-        font-size: 13px;
+        padding: 12px 28px;
+        font-size: 11px;
+        min-width: 110px;
+    }
+    .exo-ticker-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
 }
