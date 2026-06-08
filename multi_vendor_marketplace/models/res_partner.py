@@ -194,12 +194,16 @@ class ResPartner(models.Model):
         }
 
     @api.model
-    def create(self, vals):
-        res = super(ResPartner, self).create(vals)
+    def create(self, vals_list):
+        res = super(ResPartner, self).create(vals_list)
         params = self.env[
             'res.config.settings'].search([],
                                           order='create_date desc', limit=1)
-        context = {'seller': vals['name'], }
+        if isinstance(vals_list, list):
+            vals = vals_list[0] if vals_list else {}
+        else:
+            vals = vals_list
+        context = {'seller': vals.get('name', ''), }
         if params.seller_request_admin_mail:
             name = params.seller_request_admin_mail_template_id.name
             template = self.env['mail.template'].sudo().search(
@@ -211,8 +215,7 @@ class ResPartner(models.Model):
             template = self.env['mail.template'].sudo().search(
                 [('name', '=', name)], limit=1)
             self.env['mail.template'].browse(template.id).with_context(
-                context).send_mail(self.id,
-                                   force_send=True)
+                context).send_mail(self.id, force_send=True)
         return res
 
     def send_seller_status_mail(self):
