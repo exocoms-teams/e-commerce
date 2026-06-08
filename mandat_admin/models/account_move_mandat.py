@@ -189,6 +189,19 @@ class AccountPayment(models.Model):
         """
         res = super().action_post()
         for payment in self:
-            if payment.journal_id.code == 'MAND' and payment.move_id:
-                payment.move_id._auto_create_mandat_if_needed()
+            if payment.journal_id.code != 'MAND':
+                continue
+            # Chercher la facture liée via les réconciliations
+            invoices = payment.reconciled_invoice_ids
+            self.env['mandat.administratif'].create({
+                'objet': (invoices[:1].name or payment.name or 'Paiement mandat')[:200],
+                'montant_ht': payment.amount,
+                'taux_tva': '0.0',
+                'creancier_id': payment.partner_id.id or self.env.company.partner_id.id,
+                'ordonnateur_id': self.env.user.id,
+                'collectivite_id': self.env.company.id,
+                'piece_justificative': 'facture',
+                'invoice_id': invoices[:1].id if invoices else False,
+                'reference_creancier': invoices[:1].name if invoices else payment.ref or '',
+            })
         return res
