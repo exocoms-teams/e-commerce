@@ -58,6 +58,7 @@
             'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
             # JS
             'exocoms_theme/static/src/js/main.js',
+            'exocoms_theme/static/src/js/carousel_fix.js',
         ],
     },
     'post_init_hook': 'post_init_hook',
