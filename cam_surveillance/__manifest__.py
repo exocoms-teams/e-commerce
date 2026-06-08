@@ -9,7 +9,7 @@
     'depends': ['website', 'website_sale', 'monetique_theme'],
     'data': [
         'data/website_data.xml',
-        'data/products.xml'
+        'data/products.xml',
         'views/layout.xml',
         'views/home.xml',
     ],
