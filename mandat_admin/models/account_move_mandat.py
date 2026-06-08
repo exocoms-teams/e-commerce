@@ -183,10 +183,6 @@ class AccountPayment(models.Model):
         Après validation du paiement, si le journal est MAND, on déclenche
         la création du mandat sur l'écriture générée.
         """
-        import logging
-        _logger = logging.getLogger(__name__)
-        _logger.warning("=== ACTION_POST account.payment appelé, journal: %s", 
-                        self.mapped('journal_id.code'))
         res = super().action_post()
         for payment in self:
             if payment.journal_id.code != 'MAND':
@@ -202,6 +198,6 @@ class AccountPayment(models.Model):
                 'collectivite_id': self.env.company.id,
                 'piece_justificative': 'facture',
                 'invoice_id': invoices[:1].id if invoices else False,
-                'reference_creancier': invoices[:1].name if invoices else payment.ref or '',
+                'reference_creancier': invoices[:1].name if invoices else payment.payment_reference or '',
             })
         return res
