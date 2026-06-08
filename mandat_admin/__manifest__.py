@@ -42,6 +42,8 @@ Conformité réglementaire :
         'mail',
         'base_setup',
         'l10n_fr',
+        'payment',
+        'sale',
     ],
     'data': [
         # Sécurité
@@ -51,11 +53,13 @@ Conformité réglementaire :
         # Données de référence
         'data/mandat_sequence.xml',
         'data/mandat_type_data.xml',
+        'data/payment_provider_data.xml',
 
         # Vues
         'views/mandat_administratif_views.xml',
         'views/bordereau_mandat_views.xml',
         'views/imputation_budgetaire_views.xml',
+        'views/payment_mandat_views.xml',
         'views/mandat_menu.xml',
 
         # Rapports
