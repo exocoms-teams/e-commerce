@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════
+         SÉQUENCE
+    ═══════════════════════════════════════════ -->
+    <record id="seq_luxury_listing" model="ir.sequence">
+        <field name="name">Luxury Listing</field>
+        <field name="code">luxury.listing.request</field>
+        <field name="prefix">LIST/</field>
+        <field name="padding">5</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         EMAILS
+    ═══════════════════════════════════════════ -->
+    <record id="email_template_listing_approved" model="mail.template">
+        <field name="name">Annonce Approuvée - Luxury VIP</field>
+        <field name="model_id" ref="luxury_services.model_luxury_listing_request"/>
+        <field name="subject"> Votre annonce {{object.bien_nom}} est en ligne !</field>
+        <field name="email_to">{{object.owner_email}}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #0a0a0a, #1a1a2e); padding: 2rem; text-align: center;">
+                    <h1 style="color: #c9a84c; margin: 0; font-size: 1.5rem;">
+                        Luxury VIP Services
+                    </h1>
+                </div>
+                <div style="padding: 2rem; background: #f9f9f9;">
+                    <p>Bonjour <strong>{{object.owner_name}}</strong>,</p>
+                    <p>Excellente nouvelle ! Votre annonce a été validée par notre équipe et est désormais <strong>visible sur le site VIP</strong>.</p>
+
+                    <div style="background: #fff; border-left: 4px solid #c9a84c; padding: 1.5rem; margin: 1.5rem 0;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 8px; color: #888; font-size: 0.85rem;">Référence</td>
+                                <td style="padding: 8px; font-weight: 700;">{{object.name}}</td>
+                            </tr>
+                            <tr style="background: #f8f8f8;">
+                                <td style="padding: 8px; color: #888; font-size: 0.85rem;">Bien</td>
+                                <td style="padding: 8px; font-weight: 700;">{{object.bien_nom}}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; color: #888; font-size: 0.85rem;">Type</td>
+                                <td style="padding: 8px;">{{object.type_bien}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <p>Notre équipe conciergerie prendra contact avec vous prochainement pour finaliser les modalités de mise en location.</p>
+                    <p>Merci de nous faire confiance.</p>
+                    <p>Cordialement,<br/><strong style="color: #c9a84c;">L'équipe Luxury VIP Services</strong></p>
+                </div>
+            </div>
+        ]]></field>
+    </record>
+
+    <record id="email_template_listing_refused" model="mail.template">
+        <field name="name">Annonce Refusée - Luxury VIP</field>
+        <field name="model_id" ref="luxury_services.model_luxury_listing_request"/>
+        <field name="subject">Votre demande d'annonce {{object.bien_nom}} — Suite</field>
+        <field name="email_to">{{object.owner_email}}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #0a0a0a, #1a1a2e); padding: 2rem; text-align: center;">
+                    <h1 style="color: #c9a84c; margin: 0; font-size: 1.5rem;">
+                        Luxury VIP Services
+                    </h1>
+                </div>
+                <div style="padding: 2rem; background: #f9f9f9;">
+                    <p>Bonjour <strong>{{object.owner_name}}</strong>,</p>
+                    <p>Après examen de votre dossier, nous ne sommes malheureusement pas en mesure de publier votre annonce pour la raison suivante :</p>
+
+                    <div style="background: #fff3f3; border-left: 4px solid #e74c3c; padding: 1.5rem; margin: 1.5rem 0;">
+                        <p style="margin: 0; color: #c0392b;">{{object.refus_raison}}</p>
+                    </div>
+
+                    <p>Vous pouvez soumettre une nouvelle demande en corrigeant les points mentionnés ci-dessus.</p>
+                    <p>Cordialement,<br/><strong style="color: #c9a84c;">L'équipe Luxury VIP Services</strong></p>
+                </div>
+            </div>
+        ]]></field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         VUE LISTE
+    ═══════════════════════════════════════════ -->
+    <record id="view_luxury_listing_list" model="ir.ui.view">
+        <field name="name">luxury.listing.request.list</field>
+        <field name="model">luxury.listing.request</field>
+        <field name="arch" type="xml">
+            <list string="Demandes d'annonces"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'review'"
+                  decoration-success="state in ('approved', 'published')"
+                  decoration-danger="state == 'refused'">
+                <field name="name"/>
+                <field name="owner_name"/>
+                <field name="owner_email"/>
+                <field name="type_bien"/>
+                <field name="bien_nom"/>
+                <field name="type_service"/>
+                <field name="bien_prix_location"/>
+                <field name="bien_prix_vente"/>
+                <field name="state"/>
+                <field name="product_id"/>
+                <field name="create_date" string="Reçue le"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         VUE FORMULAIRE
+    ═══════════════════════════════════════════ -->
+    <record id="view_luxury_listing_form" model="ir.ui.view">
+        <field name="name">luxury.listing.request.form</field>
+        <field name="model">luxury.listing.request</field>
+        <field name="arch" type="xml">
+            <form string="Demande d'annonce">
+                <header>
+                    <button name="action_review"
+                            string="Examiner le dossier"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve"
+                            string="Approuver et publier"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'review'"/>
+                    <button name="action_refuse"
+                            string="Refuser"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('refused', 'published')"/>
+                    <button name="action_reset"
+                            string="Remettre en Nouvelle"
+                            type="object"
+                            invisible="state != 'refused'"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,review,approved,published"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                type="object"
+                                name="action_view_product"
+                                icon="fa-tag"
+                                invisible="not product_id">
+                            <field name="product_id" widget="statinfo" string="Produit"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <!-- Propriétaire -->
+                    <group string="Informations du propriétaire">
+                        <group>
+                            <field name="owner_name"/>
+                            <field name="owner_email"/>
+                            <field name="owner_phone"/>
+                        </group>
+                        <group>
+                            <field name="owner_country_id"/>
+                            <field name="owner_adresse"/>
+                        </group>
+                    </group>
+
+                    <!-- Infos bien -->
+                    <group string="Informations du bien">
+                        <group>
+                            <field name="type_bien"/>
+                            <field name="bien_nom"/>
+                            <field name="bien_annee"/>
+                            <field name="type_service"/>
+                        </group>
+                        <group>
+                            <field name="bien_prix_location"
+                                   invisible="type_service == 'vente'"/>
+                            <field name="bien_prix_vente"
+                                   invisible="type_service == 'location'"/>
+                        </group>
+                    </group>
+
+                    <group string="Description">
+                        <field name="bien_description" nolabel="1"/>
+                    </group>
+
+                    <!-- Caractéristiques Yacht -->
+                    <group string="Caractéristiques Yacht"
+                           invisible="type_bien != 'yacht'">
+                        <group>
+                            <field name="longueur"/>
+                            <field name="capacite_personnes"/>
+                            <field name="nb_cabines"/>
+                        </group>
+                        <group>
+                            <field name="vitesse_croisiere"/>
+                            <field name="pavillon"/>
+                        </group>
+                    </group>
+
+                    <!-- Caractéristiques Jet -->
+                    <group string="Caractéristiques Jet"
+                           invisible="type_bien != 'jet'">
+                        <group>
+                            <field name="constructeur_jet"/>
+                            <field name="autonomie_vol"/>
+                            <field name="vitesse_max"/>
+                            <field name="nombre_moteurs"/>
+                        </group>
+                        <group>
+                            <field name="altitude_max"/>
+                            <field name="equipage"/>
+                        </group>
+                    </group>
+
+                    <!-- Caractéristiques Hôtel -->
+                    <group string="Caractéristiques Hôtel / Villa"
+                           invisible="type_bien != 'hotel'">
+                        <group>
+                            <field name="nb_chambres"/>
+                            <field name="superficie"/>
+                        </group>
+                        <group>
+                            <field name="localisation"/>
+                            <field name="equipements"/>
+                        </group>
+                    </group>
+
+                    <!-- Caractéristiques Voiture -->
+                    <group string="Caractéristiques Voiture"
+                           invisible="type_bien != 'voiture'">
+                        <group>
+                            <field name="marque"/>
+                            <field name="modele_voiture"/>
+                        </group>
+                        <group>
+                            <field name="kilometrage"/>
+                            <field name="couleur"/>
+                        </group>
+                    </group>
+
+                    <!-- Pièces justificatives -->
+                    <group string="Pièces justificatives">
+                        <group>
+                            <field name="piece_identite"
+                                   filename="piece_identite_filename"
+                                   widget="binary"/>
+                            <field name="piece_identite_filename" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="justif_propriete"
+                                   filename="justif_propriete_filename"
+                                   widget="binary"/>
+                            <field name="justif_propriete_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Localisation &amp; Disponibilité">
+                        <group>
+                            <field name="pays_disponibilite_id"/>
+                            <field name="ville_disponibilite"/>
+                            <field name="adresse_disponibilite"/>
+                        </group>
+                        <group>
+                            <field name="zone_navigation"/>
+                            <field name="disponible_des"/>
+                        </group>
+                    </group>
+
+                    <!-- Photos -->
+                    <group string="Photos du bien">
+                        <field name="photos_bien"
+                               widget="many2many_binary"
+                               nolabel="1"/>
+                    </group>
+
+                    <!-- Produit créé -->
+                    <group string="Produit publié"
+                           invisible="not product_id">
+                        <field name="product_id"/>
+                    </group>
+
+                    <!-- Notes admin -->
+                    <group string="Notes internes">
+                        <field name="notes_admin" nolabel="1"/>
+                    </group>
+
+                    <!-- Raison refus -->
+                    <group string="Raison du refus"
+                           invisible="state != 'refused'">
+                        <field name="refus_raison" nolabel="1"/>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         VUE KANBAN
+    ═══════════════════════════════════════════ -->
+    <record id="view_luxury_listing_kanban" model="ir.ui.view">
+        <field name="name">luxury.listing.request.kanban</field>
+        <field name="model">luxury.listing.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state"
+                    class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="owner_name"/>
+                <field name="type_bien"/>
+                <field name="bien_nom"/>
+                <field name="state"/>
+                <field name="create_date"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb-2">
+                                <strong><field name="bien_nom"/></strong>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <span class="badge rounded-pill bg-secondary me-1">
+                                    <field name="type_bien"/>
+                                </span>
+                                <div class="text-muted mt-1" style="font-size: 0.85rem;">
+                                    <i class="fa fa-user me-1"/>
+                                    <field name="owner_name"/>
+                                </div>
+                                <div class="text-muted" style="font-size: 0.8rem;">
+                                    <i class="fa fa-clock-o me-1"/>
+                                    <field name="create_date" widget="date"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         ACTION
+    ═══════════════════════════════════════════ -->
+    <record id="action_luxury_listing" model="ir.actions.act_window">
+        <field name="name">Demandes d'annonces</field>
+        <field name="res_model">luxury.listing.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_draft': 1}</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════
+         MENU
+    ═══════════════════════════════════════════ -->
+    <menuitem id="menu_luxury_listing"
+              name="Annonces"
+              parent="menu_luxury_root"
+              action="action_luxury_listing"
+              sequence="40"/>
+
+</odoo>

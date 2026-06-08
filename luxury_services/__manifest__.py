@@ -18,6 +18,8 @@
         'views/service_convierge_views.xml',
         'views/concierge_back_views.xml',
         'views/home_page_views.xml',
+        'views/luxury_listing_back.xml',
+        'views/annonce_tpl_views.xml',
     ],
     'assets': {
         'web.assets_frontend': [

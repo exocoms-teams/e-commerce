@@ -22,8 +22,18 @@ class LuxuryController(WebsiteSale):
         return request.website.id == vip.id
 
 
-
-    
+    def _get_additional_shop_values(self, options):
+        values = super()._get_additional_shop_values(options)
+        
+        if self._is_vip_website():
+            destinations = request.env['luxury.destination'].sudo().search(
+                [('active', '=', True)], 
+                order='name asc'
+            )
+            values['destinations'] = destinations
+        
+        return values
+        
 
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         domain = super()._get_shop_domain(
@@ -130,6 +140,12 @@ class LuxuryController(WebsiteSale):
         if vitesse_min:
             search_result = search_result.filtered(
                 lambda p: p.vitesse_croisiere >= float(vitesse_min)
+            )
+        
+        destination = params.get('destination', '')
+        if destination:
+            search_result = search_result.filtered(
+                lambda p: int(destination) in p.destination_ids.ids
             )
     
         product_count = len(search_result)
@@ -454,6 +470,205 @@ class LuxuryController(WebsiteSale):
             return request.render('website.homepage', {})
         return request.render('luxury_services.luxury_home_page', {})
     
+    
+        """ =========================
+            PUBLICATIONS D'ANNONCES
+            ========================= 
+        """
+    @http.route('/vip/annonce', type='http', auth='public', website=True)
+    def listing_page(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        pays = request.env['res.country'].sudo().search([])
+        return request.render('luxury_services.luxury_listing_page', {
+            'pays_list': pays,
+        })
+
+
+    @http.route('/vip/annonce/submit', type='http', auth='public',
+                website=True, methods=['POST'])
+    def listing_submit(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        pays = request.env['res.country'].sudo().search([])
+
+        # Validation
+        required = ['owner_name', 'owner_email', 'type_bien',
+                    'bien_nom', 'type_service']
+        for field in required:
+            if not kwargs.get(field, '').strip():
+                return request.render('luxury_services.luxury_listing_page', {
+                    'pays_list': pays,
+                    'error': 'Veuillez remplir tous les champs obligatoires.',
+                })
+
+        # Fichiers uploadés
+        files = request.httprequest.files
+        piece_identite = files.get('piece_identite')
+        justif_propriete = files.get('justif_propriete')
+
+        if not piece_identite or not piece_identite.filename:
+            return request.render('luxury_services.luxury_listing_page', {
+                'pays_list': pays,
+                'error': 'La pièce d\'identité est obligatoire.',
+            })
+
+        if not justif_propriete or not justif_propriete.filename:
+            return request.render('luxury_services.luxury_listing_page', {
+                'pays_list': pays,
+                'error': 'Le justificatif de propriété est obligatoire.',
+            })
+
+        # Lecture des fichiers
+        import base64
+        piece_identite_data = base64.b64encode(piece_identite.read())
+        justif_propriete_data = base64.b64encode(justif_propriete.read())
+
+        # Création de la demande
+        vals = {
+            'owner_name':               kwargs.get('owner_name', '').strip(),
+            'owner_email':              kwargs.get('owner_email', '').strip(),
+            'owner_phone':              kwargs.get('owner_phone', '').strip(),
+            'owner_country_id':         int(kwargs.get('owner_country_id') or 0) or False,
+            'owner_adresse':            kwargs.get('owner_adresse', '').strip(),
+            'type_bien':                kwargs.get('type_bien'),
+            'type_service':             kwargs.get('type_service'),
+            'bien_nom':                 kwargs.get('bien_nom', '').strip(),
+            'bien_description':         kwargs.get('bien_description', '').strip(),
+            'bien_annee':               int(kwargs.get('bien_annee') or 0) or False,
+            'bien_prix_location':       float(kwargs.get('bien_prix_location') or 0),
+            'bien_prix_vente':          float(kwargs.get('bien_prix_vente') or 0),
+            'piece_identite':           piece_identite_data,
+            'piece_identite_filename':  piece_identite.filename,
+            'justif_propriete':         justif_propriete_data,
+            'justif_propriete_filename': justif_propriete.filename,
+            'state':                    'draft',
+        }
+
+        # Champs spécifiques par type
+        type_bien = kwargs.get('type_bien')
+        if type_bien == 'yacht':
+            vals.update({
+                'longueur':           float(kwargs.get('longueur') or 0),
+                'capacite_personnes': int(kwargs.get('capacite_personnes') or 0),
+                'nb_cabines':         int(kwargs.get('nb_cabines') or 0),
+                'vitesse_croisiere':  float(kwargs.get('vitesse_croisiere') or 0),
+                'pavillon':           kwargs.get('pavillon', '').strip(),
+                'pays_disponibilite_id': int(kwargs.get('pays_disponibilite_id') or 0) or False,
+                'ville_disponibilite':   kwargs.get('ville_disponibilite', '').strip(),
+                'zone_navigation':       kwargs.get('zone_navigation', '').strip(),
+                'adresse_disponibilite': kwargs.get('adresse_disponibilite', '').strip(),
+                'disponible_des':        kwargs.get('disponible_des') or False,
+            })
+        elif type_bien == 'jet':
+            vals.update({
+                'constructeur_jet': kwargs.get('constructeur_jet', '').strip(),
+                'autonomie_vol':    float(kwargs.get('autonomie_vol') or 0),
+                'vitesse_max':      float(kwargs.get('vitesse_max') or 0),
+                'nombre_moteurs':   int(kwargs.get('nombre_moteurs') or 0),
+                'altitude_max':     float(kwargs.get('altitude_max') or 0),
+                'equipage':         int(kwargs.get('equipage') or 0),
+                'pays_disponibilite_id': int(kwargs.get('pays_disponibilite_id') or 0) or False,
+                'ville_disponibilite':   kwargs.get('ville_disponibilite', '').strip(),
+                'zone_navigation':       kwargs.get('zone_navigation', '').strip(),
+                'adresse_disponibilite': kwargs.get('adresse_disponibilite', '').strip(),
+                'disponible_des':        kwargs.get('disponible_des') or False,
+                        })
+        elif type_bien == 'hotel':
+            vals.update({
+                'nb_chambres': int(kwargs.get('nb_chambres') or 0),
+                'superficie':  float(kwargs.get('superficie') or 0),
+                'localisation': kwargs.get('localisation', '').strip(),
+                'equipements': kwargs.get('equipements', '').strip(),
+            })
+        elif type_bien == 'voiture':
+            vals.update({
+                'marque':          kwargs.get('marque', '').strip(),
+                'modele_voiture':  kwargs.get('modele_voiture', '').strip(),
+                'kilometrage':     int(kwargs.get('kilometrage') or 0),
+                'couleur':         kwargs.get('couleur', '').strip(),
+                'pays_disponibilite_id': int(kwargs.get('pays_disponibilite_id') or 0) or False,
+                'ville_disponibilite':   kwargs.get('ville_disponibilite', '').strip(),
+                'zone_navigation':       kwargs.get('zone_navigation', '').strip(),
+                'adresse_disponibilite': kwargs.get('adresse_disponibilite', '').strip(),
+                'disponible_des':        kwargs.get('disponible_des') or False,
+            })
+
+        listing = request.env['luxury.listing.request'].sudo().create(vals)
+
+        # Photos multiples
+        photos = files.getlist('photos_bien')
+        if photos:
+            attachments = []
+            for photo in photos:
+                if photo and photo.filename:
+                    photo_data = base64.b64encode(photo.read())
+                    attachment = request.env['ir.attachment'].sudo().create({
+                        'name':      photo.filename,
+                        'datas':     photo_data,
+                        'res_model': 'luxury.listing.request',
+                        'res_id':    listing.id,
+                    })
+                    attachments.append(attachment.id)
+            if attachments:
+                listing.write({'photos_bien': [(6, 0, attachments)]})
+
+        return request.render('luxury_services.luxury_listing_confirm', {
+            'owner_name': listing.owner_name,
+            'owner_email': listing.owner_email,
+            'reference':  listing.name,
+        })
+    
+    
+    
+    #url vip annonce client
+    @http.route('/vip/annonces', type='http', auth='public', website=True)
+    def listings_page(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        # Filtres
+        type_bien    = kwargs.get('type_bien', '')
+        type_service = kwargs.get('type_service', '')
+        pays         = kwargs.get('pays', '')
+        prix_max     = kwargs.get('prix_max', '')
+        search       = kwargs.get('search', '')
+        sort         = kwargs.get('sort', 'recent')
+
+        # Domaine de base — uniquement les annonces publiées
+        domain = [('state', '=', 'published')]
+
+        if type_bien:
+            domain.append(('type_bien', '=', type_bien))
+        if type_service:
+            domain.append(('type_service', 'in', [type_service, 'les_deux']))
+        if pays:
+            domain.append(('pays_disponibilite_id', '=', int(pays)))
+        if prix_max:
+            domain.append(('bien_prix_location', '<=', float(prix_max)))
+        if search:
+            domain.append(('bien_nom', 'ilike', search))
+
+        # Tri
+        order_map = {
+            'recent':    'create_date desc',
+            'prix_asc':  'bien_prix_location asc',
+            'prix_desc': 'bien_prix_location desc',
+        }
+        order = order_map.get(sort, 'create_date desc')
+
+        listings = request.env['luxury.listing.request'].sudo().search(
+            domain, order=order
+        )
+        pays_list = request.env['res.country'].sudo().search([])
+
+        return request.render('luxury_services.luxury_listings_page', {
+            'listings':  listings,
+            'pays_list': pays_list,
+            'filters':   kwargs,
+        })
     
     
     """ https://www.youtube.com/watch?v=bF-01uyDXUc"""

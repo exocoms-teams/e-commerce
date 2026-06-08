@@ -604,7 +604,7 @@
                                 <option value="">-- Toutes --</option>
                                 <t t-foreach="destinations" t-as="dest">
                                     <option t-att-value="dest.id"
-                                            t-att-selected="request.params.get('destination') == str(dest.id)">
+                                            t-att-selected="'selected' if request.params.get('destination') == str(dest.id) else False">
                                         <t t-esc="dest.name"/>
                                     </option>
                                 </t>

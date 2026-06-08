@@ -1,0 +1,371 @@
+<!-- ═══════════════════════════════════════════
+     PAGE LISTE DES ANNONCES
+═══════════════════════════════════════════ -->
+<template id="luxury_listings_page" name="Liste des annonces VIP">
+    <t t-call="website.layout">
+
+        <!-- HERO -->
+        <section style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); padding: 4rem 0;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <p style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: #c9a84c; font-weight: 600; margin-bottom: 1rem;">
+                            Marketplace VIP
+                        </p>
+                        <h1 style="font-size: 2.5rem; font-weight: 700; color: #fff; margin: 0 0 1rem; line-height: 1.2;">
+                            Biens de Luxe<br/>
+                            <span style="color: #c9a84c;">disponibles à la location &amp; vente</span>
+                        </h1>
+                        <p style="color: #aaa; line-height: 1.8; margin-bottom: 0;">
+                            Yachts, jets privés, hôtels et voitures de luxe
+                            proposés par des propriétaires vérifiés.
+                        </p>
+                    </div>
+                    <div class="col-lg-5 text-lg-end mt-4 mt-lg-0">
+                        <a href="/vip/annonce"
+                           style="background: #c9a84c; color: #000; padding: 1rem 2rem; font-weight: 700; text-decoration: none; border-radius: 2px; display: inline-block; font-size: 1rem;">
+                            <i class="fa fa-plus me-2"/>
+                            Déposer mon annonce
+                        </a>
+                        <p style="color: #666; font-size: 0.8rem; margin-top: 0.75rem; margin-bottom: 0;">
+                            <i class="fa fa-shield me-1" style="color: #c9a84c;"/>
+                            Propriétaires vérifiés - Dossier examiné sous 48h
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTRES -->
+        <section style="background: #fff; padding: 1.5rem 0; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.06);">
+            <div class="container">
+                <form method="GET" action="/vip/annonces">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-6 col-md-2">
+                            <select name="type_bien" class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+                                <option value="">Tous les types</option>
+                                <option value="yacht"
+                                        t-att-selected="filters.get('type_bien') == 'yacht'">
+                                    Yachts
+                                </option>
+                                <option value="jet"
+                                        t-att-selected="filters.get('type_bien') == 'jet'">
+                                    Jets
+                                </option>
+                                <option value="hotel"
+                                        t-att-selected="filters.get('type_bien') == 'hotel'">
+                                    Hôtels / Villas
+                                </option>
+                                <option value="voiture"
+                                        t-att-selected="filters.get('type_bien') == 'voiture'">
+                                    Voitures
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <select name="type_service" class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+                                <option value="">Location &amp; Vente</option>
+                                <option value="location"
+                                        t-att-selected="filters.get('type_service') == 'location'">
+                                    Location
+                                </option>
+                                <option value="vente"
+                                        t-att-selected="filters.get('type_service') == 'vente'">
+                                    Vente
+                                </option>
+                                <option value="les_deux"
+                                        t-att-selected="filters.get('type_service') == 'les_deux'">
+                                    Les deux
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <select name="pays" class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+                                <option value="">Tous les pays</option>
+                                <t t-foreach="pays_list" t-as="pays">
+                                    <option t-att-value="pays.id"
+                                            t-att-selected="filters.get('pays') == str(pays.id)"
+                                            t-esc="pays.name"/>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <select name="prix_max" class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+                                <option value="">Tous les prix</option>
+                                <option value="1000"
+                                        t-att-selected="filters.get('prix_max') == '1000'">
+                                    Jusqu'à 500€/j
+                                </option>
+                                <option value="5000"
+                                        t-att-selected="filters.get('prix_max') == '5000'">
+                                    Jusqu'à 12 00€/j
+                                </option>
+                                <option value="10000"
+                                        t-att-selected="filters.get('prix_max') == '10000'">
+                                    Jusqu'à 5 000€/j
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="search"
+                                       class="form-control"
+                                       placeholder="Rechercher..."
+                                       t-att-value="filters.get('search', '')"/>
+                                <button class="btn btn-sm"
+                                        style="background: #c9a84c; color: #000;"
+                                        type="submit">
+                                    <i class="fa fa-search"/>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a href="/vip/annonces"
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-times"/>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- RÉSULTATS -->
+        <section style="background: #f8f8f8; padding: 3rem 0; min-height: 60vh;">
+            <div class="container">
+
+                <!-- Compteur -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                        <strong style="color: #1a1a1a;">
+                            <t t-esc="len(listings)"/>
+                        </strong>
+                        annonce<t t-if="len(listings) > 1">s</t> disponible<t t-if="len(listings) > 1">s</t>
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="font-size: 0.85rem; color: #888;">Trier par :</span>
+                        <select class="form-select form-select-sm" style="width: auto;"
+                                onchange="window.location.href='/vip/annonces?sort='+this.value">
+                            <option value="recent">Plus récents</option>
+                            <option value="prix_asc">Prix croissant</option>
+                            <option value="prix_desc">Prix décroissant</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grille annonces -->
+                <t t-if="listings">
+                    <div class="row g-4">
+                        <t t-foreach="listings" t-as="listing">
+                            <div class="col-md-6 col-lg-4">
+                                <a t-attf-href="/vip/annonces/#{listing.id}"
+                                   style="text-decoration: none; display: block;">
+                                    <div style="background: #fff; overflow: hidden; box-shadow: 0 2px 15px rgba(0,0,0,0.06); transition: transform 0.3s, box-shadow 0.3s; height: 100%;"
+                                         onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 12px 40px rgba(0,0,0,0.12)'"
+                                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 15px rgba(0,0,0,0.06)'">
+
+                                        <!-- Photo principale -->
+                                        <div style="position: relative; height: 220px; overflow: hidden; background: #1a1a2e;">
+                                            <t t-if="listing.photos_bien">
+                                                <img t-attf-src="/web/image/ir.attachment/#{listing.photos_bien[0].id}/datas"
+                                                     t-att-alt="listing.bien_nom"
+                                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s;"
+                                                     onmouseover="this.style.transform='scale(1.06)'"
+                                                     onmouseout="this.style.transform='scale(1)'"/>
+                                            </t>
+                                            <t t-else="">
+                                                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                                    <t t-if="listing.type_bien == 'yacht'">
+                                                        <i class="fa fa-ship fa-4x" style="color: rgba(201,168,76,0.3);"/>
+                                                    </t>
+                                                    <t t-elif="listing.type_bien == 'jet'">
+                                                        <i class="fa fa-plane fa-4x" style="color: rgba(201,168,76,0.3);"/>
+                                                    </t>
+                                                    <t t-elif="listing.type_bien == 'hotel'">
+                                                        <i class="fa fa-building fa-4x" style="color: rgba(201,168,76,0.3);"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-car fa-4x" style="color: rgba(201,168,76,0.3);"/>
+                                                    </t>
+                                                </div>
+                                            </t>
+
+                                            <!-- Badges -->
+                                            <div style="position: absolute; top: 1rem; left: 1rem; display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                                <span style="background: #c9a84c; color: #000; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px;">
+                                                    <t t-if="listing.type_bien == 'yacht'"> Yacht</t>
+                                                    <t t-elif="listing.type_bien == 'jet'">Jet</t>
+                                                    <t t-elif="listing.type_bien == 'hotel'">Hôtel</t>
+                                                    <t t-else="">Voiture</t>
+                                                </span>
+                                                <span style="background: rgba(0,0,0,0.6); color: #fff; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 2px; text-transform: uppercase;">
+                                                    <t t-if="listing.type_service == 'location'">Location</t>
+                                                    <t t-elif="listing.type_service == 'vente'">Vente</t>
+                                                    <t t-else="">Location &amp; Vente</t>
+                                                </span>
+                                            </div>
+
+                                            <!-- Vérifié -->
+                                            <div style="position: absolute; top: 1rem; right: 1rem;">
+                                                <span style="background: rgba(39,174,96,0.9); color: #fff; font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 2px;">
+                                                    <i class="fa fa-check me-1"/>Vérifié
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Contenu -->
+                                        <div style="padding: 1.5rem;">
+                                            <h5 style="color: #1a1a1a; font-weight: 700; margin: 0 0 0.5rem; font-size: 1.1rem;">
+                                                <t t-esc="listing.bien_nom"/>
+                                            </h5>
+
+                                            <!-- Localisation -->
+                                            <p style="color: #888; font-size: 0.85rem; margin: 0 0 1rem;">
+                                                <i class="fa fa-map-marker me-1" style="color: #c9a84c;"/>
+                                                <t t-esc="listing.ville_disponibilite or ''"/>
+                                                <t t-if="listing.pays_disponibilite_id">
+                                                    — <t t-esc="listing.pays_disponibilite_id.name"/>
+                                                </t>
+                                            </p>
+
+                                            <!-- Caractéristiques rapides -->
+                                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.82rem; color: #555;">
+                                                <t t-if="listing.type_bien == 'yacht'">
+                                                    <t t-if="listing.longueur">
+                                                        <span>
+                                                            <i class="fa fa-arrows-h me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.longueur"/>m
+                                                        </span>
+                                                    </t>
+                                                    <t t-if="listing.capacite_personnes">
+                                                        <span>
+                                                            <i class="fa fa-users me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.capacite_personnes"/> pers.
+                                                        </span>
+                                                    </t>
+                                                    <t t-if="listing.nb_cabines">
+                                                        <span>
+                                                            <i class="fa fa-bed me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.nb_cabines"/> cab.
+                                                        </span>
+                                                    </t>
+                                                </t>
+                                                <t t-elif="listing.type_bien == 'jet'">
+                                                    <t t-if="listing.constructeur_jet">
+                                                        <span>
+                                                            <i class="fa fa-cogs me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.constructeur_jet"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-if="listing.autonomie_vol">
+                                                        <span>
+                                                            <i class="fa fa-clock-o me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.autonomie_vol"/>h
+                                                        </span>
+                                                    </t>
+                                                </t>
+                                                <t t-elif="listing.type_bien == 'hotel'">
+                                                    <t t-if="listing.nb_chambres">
+                                                        <span>
+                                                            <i class="fa fa-bed me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.nb_chambres"/> ch.
+                                                        </span>
+                                                    </t>
+                                                    <t t-if="listing.superficie">
+                                                        <span>
+                                                            <i class="fa fa-expand me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.superficie"/>m²
+                                                        </span>
+                                                    </t>
+                                                </t>
+                                                <t t-elif="listing.type_bien == 'voiture'">
+                                                    <t t-if="listing.marque">
+                                                        <span>
+                                                            <i class="fa fa-car me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.marque"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-if="listing.bien_annee">
+                                                        <span>
+                                                            <i class="fa fa-calendar me-1" style="color: #c9a84c;"/>
+                                                            <t t-esc="listing.bien_annee"/>
+                                                        </span>
+                                                    </t>
+                                                </t>
+                                            </div>
+
+                                            <!-- Prix + CTA -->
+                                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #eee; padding-top: 1rem;">
+                                                <div>
+                                                    <t t-if="listing.bien_prix_location and listing.type_service != 'vente'">
+                                                        <div style="color: #c9a84c; font-weight: 700; font-size: 1.1rem;">
+                                                            <t t-esc="'{:,.0f}'.format(listing.bien_prix_location)"/>€
+                                                            <span style="color: #888; font-size: 0.75rem; font-weight: 400;">/jour</span>
+                                                        </div>
+                                                    </t>
+                                                    <t t-elif="listing.bien_prix_vente">
+                                                        <div style="color: #c9a84c; font-weight: 700; font-size: 1.1rem;">
+                                                            <t t-esc="'{:,.0f}'.format(listing.bien_prix_vente)"/>€
+                                                            <span style="color: #888; font-size: 0.75rem; font-weight: 400;">à vendre</span>
+                                                        </div>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <div style="color: #888; font-size: 0.9rem;">
+                                                            Prix sur demande
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                                <span style="background: #1a1a2e; color: #c9a84c; padding: 0.5rem 1.25rem; font-size: 0.85rem; font-weight: 700; border-radius: 2px;">
+                                                    Voir →
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Aucune annonce -->
+                <t t-else="">
+                    <div class="text-center py-5">
+                        <i class="fa fa-search fa-4x mb-4" style="color: #ddd;"/>
+                        <h4 style="color: #888; font-weight: 400;">Aucune annonce trouvée</h4>
+                        <p class="text-muted mb-4">
+                            Essayez de modifier vos filtres ou revenez plus tard.
+                        </p>
+                        <a href="/vip/annonces"
+                           style="background: #c9a84c; color: #000; padding: 0.85rem 2rem; font-weight: 700; text-decoration: none; border-radius: 2px; display: inline-block;">
+                            Voir toutes les annonces
+                        </a>
+                    </div>
+                </t>
+
+            </div>
+        </section>
+
+        <!-- CTA DÉPOSER -->
+        <section style="background: #1a1a2e; padding: 4rem 0; text-align: center;">
+            <div class="container">
+                <h2 style="color: #fff; font-weight: 700; margin-bottom: 1rem;">
+                    Vous avez un bien de luxe à proposer ?
+                </h2>
+                <p style="color: #aaa; max-width: 500px; margin: 0 auto 2rem; line-height: 1.8;">
+                    Rejoignez notre plateforme VIP et proposez votre bien
+                    à notre clientèle internationale triée sur le volet.
+                </p>
+                <a href="/vip/annonce"
+                   style="background: #c9a84c; color: #000; padding: 1rem 2.5rem; font-weight: 700; text-decoration: none; border-radius: 2px; font-size: 1rem;">
+                    <i class="fa fa-plus me-2"/>
+                    Déposer mon annonce gratuitement
+                </a>
+            </div>
+        </section>
+
+    </t>
+</template>

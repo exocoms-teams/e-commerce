@@ -20,6 +20,7 @@ class LuxuryMaintenanceRequest(models.Model):
     # =========================
 
     client_name = fields.Char(string='Nom client', required=True)
+    client_firstname = fields.Char(string='Prénom client', required=True)
     client_email = fields.Char(string='Email')
     client_phone = fields.Char(string='Téléphone')
 
