@@ -1,49 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Tracker</title>
-    <link rel="stylesheet" href="popup.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minea Tracker</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-                <h1>Purchase Tracker</h1>
-                <button id="settingsBtn" class="settings-btn" title="Settings">Settings</button>
-        <div class="stats-section">
-            <h2>Today's Activity</h2>
-            <div class="stat-item">
-                <span class="label">Items Tracked:</span>
-                <span class="value" id="itemsCount">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="label">Total Spent:</span>
-                <span class="value" id="totalSpent">$0.00</span>
-            </div>
-            <div class="stat-item">
-                <span class="label">Average Price:</span>
-                <span class="value" id="avgPrice">$0.00</span>
-            </div>
-        </div>
+  <div class="popup-wrap">
+    <header class="header">
+      <div class="header-logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">Minea Tracker</span>
+      </div>
+      <button id="optionsBtn" class="icon-btn" title="Open Full Dashboard">&#9881;</button>
+    </header>
 
-        <div class="category-section">
-            <h2>Categories</h2>
-            <div id="categoriesList" class="categories-list">
-                <p class="empty-message">No data yet</p>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button id="viewHistoryBtn" class="btn btn-primary">View History</button>
-            <button id="clearDataBtn" class="btn btn-secondary">Clear Data</button>
-        </div>
-
-        <footer>
-            <small>Last updated: <span id="lastUpdated">--:--</span></small>
-        </footer>
+    <div class="stats-row">
+      <div class="stat-pill">
+        <span class="stat-num" id="statProducts">0</span>
+        <span class="stat-lbl">Products</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num" id="statViews">0</span>
+        <span class="stat-lbl">Views</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-num" id="statPurchases">0</span>
+        <span class="stat-lbl">Purchases</span>
+      </div>
     </div>
 
-    <script src="popup.js"></script>
+    <div class="section-label">Trending Now</div>
+    <div id="trendingList" class="trending-list">
+      <p class="empty">Loading...</p>
+    </div>
+
+    <div class="section-label">Log Product Manually</div>
+    <div class="manual-form">
+      <input id="manualTitle" type="text" placeholder="Product name" class="input">
+      <div class="form-row">
+        <input id="manualPrice" type="number" placeholder="Price $" class="input half" step="0.01">
+        <input id="manualCategory" type="text" placeholder="Category" class="input half">
+      </div>
+      <button id="manualSave" class="btn-save">Log Purchase</button>
+    </div>
+
+    <footer class="footer">
+      <button id="openDashboard" class="btn-dashboard">Open Full Dashboard</button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>

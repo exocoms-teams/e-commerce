@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minea Tracker - Web Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0b0b10; --surface: #13131a; --surface2: #1a1a24; --border: #25253a;
+      --primary: #6c47ff; --primary-light: #a78bfa; --text: #e4e4f0; --muted: #6b7280;
+      --success: #34d399; --warning: #f59e0b; --danger: #f87171; --radius: 12px;
+    }
+    body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar { width: 240px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; position: sticky; top: 0; height: 100vh; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 20px 20px; font-size: 16px; font-weight: 700; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .brand-dot { width: 10px; height: 10px; background: var(--primary-light); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+    .nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .nav-btn { background: transparent; border: none; color: var(--muted); text-align: left; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .15s; }
+    .nav-btn:hover { background: var(--surface2); color: var(--text); }
+    .nav-btn.active { background: rgba(108,71,255,.15); color: var(--primary-light); font-weight: 600; }
+    .sidebar-info { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .info-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+    .info-row strong { color: var(--text); font-weight: 600; }
+    .api-status { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 8px 20px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-dot.ok { background: var(--success); }
+    .status-dot.err { background: var(--danger); }
+
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
+    .topbar h1 { font-size: 20px; font-weight: 700; }
+    .topbar-right { display: flex; gap: 10px; align-items: center; }
+    .search, .filter-select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+    .search { width: 220px; } .search::placeholder { color: var(--muted); }
+    .search:focus, .filter-select:focus { outline: none; border-color: var(--primary); }
+    .btn-icon { background: var(--surface2); border: 1px solid var(--border); color: var(--text); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary-light); }
+    .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary-light); border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-outline:hover { background: rgba(108,71,255,.1); }
+
+    /* Pages */
+    .page { display: none; padding: 24px 28px; }
+    .page.active { display: block; animation: fadeUp .2s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+
+    /* KPI */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; transition: border-color .2s; }
+    .kpi-card:hover { border-color: var(--primary); }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+    .kpi-value { font-size: 22px; font-weight: 700; color: var(--text); }
+    .kpi-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Card */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .card-head h2 { font-size: 15px; font-weight: 600; }
+    .badge-live { background: rgba(52,211,153,.15); color: var(--success); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; letter-spacing: .5px; border: 1px solid rgba(52,211,153,.3); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-weight: 600; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: var(--surface2); }
+    .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; font-size: 12px; font-weight: 700; background: var(--surface2); color: var(--muted); }
+    .rank-badge.r1 { background: rgba(245,158,11,.15); color: #f59e0b; }
+    .rank-badge.r2 { background: rgba(148,163,184,.15); color: #94a3b8; }
+    .rank-badge.r3 { background: rgba(180,83,9,.15); color: #d97706; }
+    .product-cell { display: flex; flex-direction: column; gap: 2px; max-width: 280px; }
+    .product-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-url { font-size: 11px; color: var(--muted); }
+    .cat-pill { background: rgba(108,71,255,.12); color: var(--primary-light); border-radius: 99px; padding: 3px 9px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-bar { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; min-width: 60px; }
+    .score-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 3px; }
+    .score-val { font-size: 12px; font-weight: 700; color: var(--primary-light); min-width: 32px; text-align: right; }
+    .empty-row { text-align: center; color: var(--muted); padding: 32px; font-style: italic; }
+
+    /* Charts */
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+    .chart-box { padding: 16px; max-height: 300px; }
+    .chart-box-wide { padding: 16px; max-height: 340px; }
+
+    .domain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 16px 20px; }
+    .domain-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .domain-name { font-weight: 700; font-size: 14px; }
+    .domain-count { font-size: 12px; color: var(--muted); }
+    .domain-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+    .domain-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 2px; }
+
+    .funnel-wrap { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .funnel-row { display: flex; align-items: center; gap: 14px; }
+    .funnel-label { min-width: 120px; font-size: 13px; font-weight: 600; }
+    .funnel-bar-bg { flex: 1; height: 30px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+    .funnel-bar-fill { height: 100%; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 700; color: #fff; border-radius: 6px; }
+    .funnel-bar-fill.views-fill { background: linear-gradient(90deg, var(--primary), #8b5cf6); }
+    .funnel-bar-fill.purchases-fill { background: linear-gradient(90deg, var(--success), #059669); }
+    .funnel-num { min-width: 50px; text-align: right; font-weight: 700; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-dot"></span>Minea Tracker</div>
+    <nav class="nav">
+      <button class="nav-btn active" data-page="trending">Trending Products</button>
+      <button class="nav-btn" data-page="categories">By Category</button>
+      <button class="nav-btn" data-page="domains">By Store</button>
+      <button class="nav-btn" data-page="activity">Activity</button>
+    </nav>
+    <div class="api-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+    <div class="sidebar-info">
+      <div class="info-row"><span>Products</span><strong id="sTotal">0</strong></div>
+      <div class="info-row"><span>Total Views</span><strong id="sViews">0</strong></div>
+      <div class="info-row"><span>Purchases</span><strong id="sPurchases">0</strong></div>
+      <div class="info-row"><span>Conv. Rate</span><strong id="sConv">0%</strong></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Trending Products</h1>
+      <div class="topbar-right">
+        <input type="search" id="searchInput" class="search" placeholder="Search products...">
+        <select id="categoryFilter" class="filter-select"><option value="">All Categories</option></select>
+        <button class="btn-icon" id="refreshBtn" title="Refresh">&#8635;</button>
+        <button class="btn-outline" id="exportBtn">Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Trending -->
+    <section id="page-trending" class="page active">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <span class="kpi-label">Total Products</span>
+          <span class="kpi-value" id="kpiProducts">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Total Views</span>
+          <span class="kpi-value" id="kpiViews">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Purchases Tracked</span>
+          <span class="kpi-value" id="kpiPurchases">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Conversion Rate</span>
+          <span class="kpi-value" id="kpiConv">0%</span>
+          <span class="kpi-sub" id="kpiTopProduct">-</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Product Leaderboard</h2><span class="badge-live">LIVE</span></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Store</th><th>Price</th><th>Views</th><th>Purchases</th><th>Trend Score</th></tr></thead>
+            <tbody id="trendingBody"><tr><td colspan="8" class="empty-row">Connecting to Python backend...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="page-categories" class="page">
+      <div class="charts-grid">
+        <div class="card"><div class="card-head"><h2>Category Breakdown</h2></div><div class="chart-box"><canvas id="catPieChart"></canvas></div></div>
+        <div class="card"><div class="card-head"><h2>Views Per Category</h2></div><div class="chart-box"><canvas id="catBarChart"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- Domains -->
+    <section id="page-domains" class="page">
+      <div class="card"><div class="card-head"><h2>Store Intelligence</h2></div><div class="chart-box chart-box-wide"><canvas id="domainChart"></canvas></div></div>
+      <div class="card"><div class="card-head"><h2>All Stores</h2></div><div id="domainGrid" class="domain-grid"></div></div>
+    </section>
+
+    <!-- Activity -->
+    <section id="page-activity" class="page">
+      <div class="card"><div class="card-head"><h2>Daily Activity (Last 14 Days)</h2></div><div class="chart-box chart-box-wide"><canvas id="activityChart"></canvas></div></div>
+      <div class="card"><div class="card-head"><h2>Purchase Funnel</h2></div><div id="funnelWrap" class="funnel-wrap"></div></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+const COLORS = ['#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b','#f87171','#34d399','#60a5fa','#e879f9','#fb923c'];
+let allData = null, charts = {};
+
+async function fetchData() {
+  try {
+    const [products, stats] = await Promise.all([
+      fetch(`${API}/products?limit=200`).then(r => r.json()),
+      fetch(`${API}/stats`).then(r => r.json()),
+    ]);
+    allData = { ...products, ...stats };
+    document.getElementById('statusDot').className = 'status-dot ok';
+    document.getElementById('statusText').textContent = 'Backend connected';
+    updateSidebar();
+    populateCategoryFilter();
+    renderCurrentPage();
+  } catch (e) {
+    document.getElementById('statusDot').className = 'status-dot err';
+    document.getElementById('statusText').textContent = 'Backend offline';
+    document.getElementById('trendingBody').innerHTML = '<tr><td colspan="8" class="empty-row">Python backend not running. Start it with: python app.py</td></tr>';
+  }
+}
+
+function updateSidebar() {
+  if (!allData) return;
+  setText('sTotal', allData.total_products || 0);
+  setText('sViews', allData.total_views || 0);
+  setText('sPurchases', allData.total_purchases || 0);
+  setText('sConv', (allData.conversion_rate || 0) + '%');
+  setText('kpiProducts', allData.total_products || 0);
+  setText('kpiViews', allData.total_views || 0);
+  setText('kpiPurchases', allData.total_purchases || 0);
+  setText('kpiConv', (allData.conversion_rate || 0) + '%');
+  setText('kpiTopProduct', allData.top_product ? truncate(allData.top_product, 30) : '-');
+}
+
+function populateCategoryFilter() {
+  const sel = document.getElementById('categoryFilter');
+  sel.innerHTML = '<option value="">All Categories</option>';
+  Object.keys(allData?.categories || {}).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+}
+
+function renderCurrentPage() {
+  const active = document.querySelector('.page.active');
+  if (!active || !allData) return;
+  const id = active.id;
+  if (id === 'page-trending') renderTrending();
+  if (id === 'page-categories') renderCategories();
+  if (id === 'page-domains') renderDomains();
+  if (id === 'page-activity') renderActivity();
+}
+
+function filterProducts() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value;
+  return (allData?.products || []).filter(p =>
+    (!q || p.title.toLowerCase().includes(q) || p.domain.includes(q)) &&
+    (!cat || p.category === cat)
+  );
+}
+
+function renderTrending() {
+  const products = filterProducts();
+  const maxScore = products.length ? products[0].trend_score : 1;
+  const body = document.getElementById('trendingBody');
+  if (!products.length) {
+    body.innerHTML = '<tr><td colspan="8" class="empty-row">No products tracked yet.</td></tr>';
+    return;
+  }
+  body.innerHTML = products.slice(0, 100).map((p, i) => {
+    const rClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const price = p.latest_price ? '$' + parseFloat(p.latest_price).toFixed(2) : '-';
+    const pct = maxScore > 0 ? Math.round((p.trend_score / maxScore) * 100) : 0;
+    return `<tr>
+      <td><span class="rank-badge ${rClass}">${i+1}</span></td>
+      <td><div class="product-cell"><span class="product-name" title="${esc(p.title)}">${esc(truncate(p.title,50))}</span><span class="product-url">${esc(p.domain)}</span></div></td>
+      <td><span class="cat-pill">${esc(p.category||'General')}</span></td>
+      <td>${esc(p.domain)}</td>
+      <td>${price}</td>
+      <td>${p.view_count}</td>
+      <td>${p.purchase_count > 0 ? '<strong style="color:var(--success)">'+p.purchase_count+'</strong>' : '0'}</td>
+      <td><div class="score-bar-wrap"><div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div><span class="score-val">${Math.round(p.trend_score)}</span></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCategories() {
+  const cats = allData?.categories || {};
+  const entries = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  destroyChart('catPie'); destroyChart('catBar');
+  if (!entries.length) return;
+  charts.catPie = new Chart(document.getElementById('catPieChart'), {
+    type: 'doughnut',
+    data: { labels: entries.map(e=>e[0]), datasets: [{ data: entries.map(e=>e[1]), backgroundColor: COLORS, borderColor: '#13131a', borderWidth: 3 }] },
+    options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#e4e4f0', font: { size: 11 } } } } }
+  });
+  charts.catBar = new Chart(document.getElementById('catBarChart'), {
+    type: 'bar',
+    data: { labels: entries.map(e=>e[0]), datasets: [{ label: 'Views', data: entries.map(e=>e[1]), backgroundColor: COLORS.map(c=>c+'cc'), borderColor: COLORS, borderWidth: 1, borderRadius: 6 }] },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } }, y: { ticks: { color: '#e4e4f0' }, grid: { display: false } } } }
+  });
+}
+
+function renderDomains() {
+  const domains = allData?.domains || {};
+  const entries = Object.entries(domains).sort((a,b) => b[1]-a[1]);
+  const max = entries.length ? entries[0][1] : 1;
+  destroyChart('domain');
+  if (!entries.length) return;
+  charts.domain = new Chart(document.getElementById('domainChart'), {
+    type: 'bar',
+    data: { labels: entries.slice(0,12).map(e=>e[0]), datasets: [{ label: 'Products', data: entries.slice(0,12).map(e=>e[1]), backgroundColor: COLORS.map(c=>c+'bb'), borderColor: COLORS, borderWidth: 1, borderRadius: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#e4e4f0' }, grid: { color: '#25253a' } }, y: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' }, beginAtZero: true } } }
+  });
+  document.getElementById('domainGrid').innerHTML = entries.map(([d, count]) =>
+    `<div class="domain-card"><span class="domain-name">${d}</span><span class="domain-count">${count} products</span><div class="domain-bar"><div class="domain-fill" style="width:${Math.round(count/max*100)}%"></div></div></div>`
+  ).join('');
+}
+
+function renderActivity() {
+  const daily = allData?.daily || {};
+  const days = getLast14Days();
+  const labels = days.map(d => d.slice(5));
+  const views = days.map(d => (daily[d]||{}).views||0);
+  const purchases = days.map(d => (daily[d]||{}).purchases||0);
+  destroyChart('activity');
+  charts.activity = new Chart(document.getElementById('activityChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Views', data: views, borderColor: '#6c47ff', backgroundColor: 'rgba(108,71,255,.08)', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#6c47ff' },
+      { label: 'Purchases', data: purchases, borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,.08)', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#34d399' }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#e4e4f0' } } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } }, y: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' }, beginAtZero: true } } }
+  });
+  const tv = allData?.total_views || 0, tp = allData?.total_purchases || 0;
+  const pp = tv > 0 ? Math.round(tp/tv*100) : 0;
+  document.getElementById('funnelWrap').innerHTML = `
+    <div class="funnel-row"><span class="funnel-label">Product Views</span><div class="funnel-bar-bg"><div class="funnel-bar-fill views-fill" style="width:100%">${tv}</div></div><span class="funnel-num">${tv}</span></div>
+    <div class="funnel-row"><span class="funnel-label">Purchases</span><div class="funnel-bar-bg"><div class="funnel-bar-fill purchases-fill" style="width:${Math.max(pp,tp>0?5:0)}%">${tp}</div></div><span class="funnel-num">${tp}</span></div>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted)">Purchase signal rate: <strong style="color:var(--success)">${pp}%</strong></p>`;
+}
+
+// Controls
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    document.getElementById('pageTitle').textContent = btn.textContent;
+    renderCurrentPage();
+  });
+});
+
+document.getElementById('refreshBtn').addEventListener('click', fetchData);
+document.getElementById('searchInput').addEventListener('input', renderTrending);
+document.getElementById('categoryFilter').addEventListener('change', renderTrending);
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  if (!allData) return;
+  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore\n';
+  (allData.products || []).forEach((p, i) => {
+    csv += `${i+1},"${(p.title||'').replace(/"/g,'""')}","${p.category}","${p.domain}","${p.latest_price||''}",${p.view_count},${p.purchase_count},${Math.round(p.trend_score)}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `minea-tracker-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+});
+
+// Helpers
+function destroyChart(k) { if (charts[k]) { charts[k].destroy(); delete charts[k]; } }
+function setText(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
+function truncate(s, n) { return s && s.length > n ? s.slice(0,n)+'...' : (s||''); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function getLast14Days() {
+  return Array.from({length:14},(_,i) => { const d=new Date(); d.setDate(d.getDate()-(13-i)); return d.toISOString().split('T')[0]; });
+}
+
+// Boot
+fetchData();
+setInterval(fetchData, 30000);
+</script>
+</body>
+</html>

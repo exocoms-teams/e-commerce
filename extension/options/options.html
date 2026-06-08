@@ -1,123 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Tracker Settings</title>
-    <link rel="stylesheet" href="options.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minea Tracker - Dashboard</title>
+  <link rel="stylesheet" href="options.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Purchase Tracker Settings</h1>
-        </header>
+  <div class="layout">
 
-        <nav class="tabs">
-            <button class="tab-btn active" data-tab="overview">Overview</button>
-            <button class="tab-btn" data-tab="history">History</button>
-            <button class="tab-btn" data-tab="trends">Trends</button>
-            <button class="tab-btn" data-tab="settings">Settings</button>
-        </nav>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>Minea Tracker</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-page="trending">Trending Products</button>
+        <button class="nav-btn" data-page="categories">By Category</button>
+        <button class="nav-btn" data-page="domains">By Store</button>
+        <button class="nav-btn" data-page="activity">Activity</button>
+        <button class="nav-btn" data-page="settings">Settings</button>
+      </nav>
+      <div class="sidebar-info">
+        <div class="info-row"><span>Products tracked</span><strong id="sTotal">0</strong></div>
+        <div class="info-row"><span>Total views</span><strong id="sViews">0</strong></div>
+        <div class="info-row"><span>Purchases</span><strong id="sPurchases">0</strong></div>
+        <div class="info-row"><span>Last updated</span><strong id="sUpdated">--</strong></div>
+      </div>
+    </aside>
 
-        <!-- Overview Tab -->
-        <div id="overview" class="tab-content active">
-            <h2> Statistics</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">Total Purchases</span>
-                    <span class="stat-value" id="totalPurchases">0</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Total Spent</span>
-                    <span class="stat-value" id="totalAmount">$0.00</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Average Purchase</span>
-                    <span class="stat-value" id="avgAmount">$0.00</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Highest Price</span>
-                    <span class="stat-value" id="maxAmount">$0.00</span>
-                </div>
-            </div>
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <h1 id="pageTitle">Trending Products</h1>
+        <div class="topbar-right">
+          <input type="search" id="searchInput" class="search" placeholder="Search products...">
+          <select id="categoryFilter" class="filter-select">
+            <option value="">All Categories</option>
+          </select>
+          <button id="refreshBtn" class="btn-icon" title="Refresh">&#8635;</button>
+          <button id="exportBtn" class="btn-outline">Export CSV</button>
+        </div>
+      </div>
 
-            <div class="section">
-                <h3>Top Categories</h3>
-                <div id="topCategories" class="category-list">
-                    <p class="empty-message">No data yet</p>
-                </div>
-            </div>
+      <!-- Trending Page -->
+      <section id="page-trending" class="page active">
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <span class="kpi-label">Most Viewed</span>
+            <span class="kpi-value" id="kpiMostViewed">-</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Most Purchased</span>
+            <span class="kpi-value" id="kpiMostPurchased">-</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Hottest Category</span>
+            <span class="kpi-value" id="kpiTopCat">-</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Top Store</span>
+            <span class="kpi-value" id="kpiTopStore">-</span>
+          </div>
         </div>
 
-        <!-- History Tab -->
-        <div id="history" class="tab-content">
-            <h2>Purchase History</h2>
-            <div class="filter-section">
-                <input type="search" id="searchInput" placeholder="Search purchases...">
-                <select id="categoryFilter">
-                    <option value="">All Categories</option>
-                </select>
-                <button id="exportBtn" class="btn-secondary">Export CSV</button>
-            </div>
-
-            <div id="historyList" class="history-list">
-                <p class="empty-message">No purchase history</p>
-            </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Product Leaderboard</h2>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="trendingTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Store</th>
+                  <th>Price</th>
+                  <th>Views</th>
+                  <th>Purchases</th>
+                  <th>Trend Score</th>
+                </tr>
+              </thead>
+              <tbody id="trendingBody">
+                <tr><td colspan="8" class="empty-row">No data yet. Browse shopping sites to start tracking.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </section>
 
-        <!-- Trends Tab -->
-        <div id="trends" class="tab-content">
-            <h2>Shopping Trends</h2>
-            <div id="trendsContainer">
-                <canvas id="trendsChart"></canvas>
-                <div id="topDomains" class="domain-list">
-                    <h3>Most Visited Domains</h3>
-                    <div id="domainsList"></div>
-                </div>
-            </div>
+      <!-- Categories Page -->
+      <section id="page-categories" class="page">
+        <div class="charts-grid">
+          <div class="card">
+            <div class="card-head"><h2>Category Breakdown</h2></div>
+            <div class="chart-box"><canvas id="catPieChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Views Per Category</h2></div>
+            <div class="chart-box"><canvas id="catBarChart"></canvas></div>
+          </div>
         </div>
-
-        <!-- Settings Tab -->
-        <div id="settings" class="tab-content">
-            <h2>Settings</h2>
-            
-            <div class="setting-group">
-                <label>
-                    <input type="checkbox" id="notificationsToggle" checked>
-                    Enable purchase notifications
-                </label>
-            </div>
-
-            <div class="setting-group">
-                <label>
-                    <input type="checkbox" id="autoTrackToggle" checked>
-                    Auto-track purchases on pages
-                </label>
-            </div>
-
-            <div class="setting-group">
-                <label for="refreshInterval">Data refresh interval (minutes):</label>
-                <input type="number" id="refreshInterval" min="1" max="60" value="5">
-            </div>
-
-            <div class="section">
-                <h3>Data Management</h3>
-                <div class="button-group">
-                    <button id="exportDataBtn" class="btn-primary">Export All Data</button>
-                    <button id="importDataBtn" class="btn-secondary">Import Data</button>
-                    <input type="file" id="fileInput" accept=".json" style="display: none;">
-                    <button id="clearAllBtn" class="btn-danger">Clear All Data</button>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3>About</h3>
-                <p>Purchase Tracker v1.0.0</p>
-                <p>Track your shopping tendencies across e-commerce sites.</p>
-            </div>
+        <div class="card">
+          <div class="card-head"><h2>All Categories</h2></div>
+          <div id="catList" class="tag-grid"></div>
         </div>
-    </div>
+      </section>
 
-    <script src="options.js"></script>
+      <!-- Domains Page -->
+      <section id="page-domains" class="page">
+        <div class="card">
+          <div class="card-head"><h2>Store Intelligence</h2></div>
+          <div class="chart-box chart-box-wide"><canvas id="domainChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>All Stores</h2></div>
+          <div id="domainList" class="domain-grid"></div>
+        </div>
+      </section>
+
+      <!-- Activity Page -->
+      <section id="page-activity" class="page">
+        <div class="card">
+          <div class="card-head"><h2>Daily Activity (Last 14 Days)</h2></div>
+          <div class="chart-box chart-box-wide"><canvas id="activityChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Purchase Funnel</h2></div>
+          <div id="funnelWrap" class="funnel-wrap"></div>
+        </div>
+      </section>
+
+      <!-- Settings Page -->
+      <section id="page-settings" class="page">
+        <div class="card settings-card">
+          <div class="card-head"><h2>Data Management</h2></div>
+          <div class="settings-body">
+            <button id="exportJsonBtn" class="btn-primary">Export All Data (JSON)</button>
+            <button id="importJsonBtn" class="btn-outline">Import Data (JSON)</button>
+            <input type="file" id="fileInput" accept=".json" style="display:none">
+            <hr class="divider">
+            <button id="clearAllBtn" class="btn-danger">Clear All Data</button>
+          </div>
+        </div>
+        <div class="card settings-card">
+          <div class="card-head"><h2>About</h2></div>
+          <div class="settings-body">
+            <p>Minea Tracker v2.0.0 — Product intelligence for e-commerce.</p>
+            <p>Tracks product views, purchase signals, pricing, and trends across Amazon, eBay, Etsy, AliExpress, Walmart, and generic Shopify stores.</p>
+            <p>All data is stored locally in your browser. Nothing is sent to any server.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="options.js"></script>
 </body>
 </html>

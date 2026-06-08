@@ -1,62 +1,97 @@
-// Popup functionality
+// Popup logic
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadStats();
-    setupEventListeners();
+  await loadData();
+  setupListeners();
 });
 
-async function loadStats() {
-    const data = await chrome.storage.local.get(['purchases', 'categories']);
-    const purchases = data.purchases || [];
-    const categories = data.categories || {};
+async function loadData() {
+  const data = await sendMessage({ action: 'getData' });
+  if (!data) return;
 
-    // Calculate stats
-    const today = new Date().toDateString();
-    const todaysPurchases = purchases.filter(p => new Date(p.date).toDateString() === today);
+  document.getElementById('statProducts').textContent = data.totalProducts || 0;
+  document.getElementById('statViews').textContent = fmt(data.totalViews || 0);
+  document.getElementById('statPurchases').textContent = fmt(data.totalPurchases || 0);
 
-    const itemsCount = todaysPurchases.length;
-    const totalSpent = todaysPurchases.reduce((sum, p) => sum + (parseFloat(p.price) || 0), 0);
-    const avgPrice = itemsCount > 0 ? (totalSpent / itemsCount) : 0;
-
-    // Update UI
-    document.getElementById('itemsCount').textContent = itemsCount;
-    document.getElementById('totalSpent').textContent = `$${totalSpent.toFixed(2)}`;
-    document.getElementById('avgPrice').textContent = `$${avgPrice.toFixed(2)}`;
-    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
-
-    // Display categories
-    displayCategories(categories);
+  renderTrending(data.topProducts || []);
 }
 
-function displayCategories(categories) {
-    const list = document.getElementById('categoriesList');
-    const categoryItems = Object.entries(categories);
+function renderTrending(products) {
+  const list = document.getElementById('trendingList');
+  if (!products.length) {
+    list.innerHTML = '<p class="empty">Browse shopping sites to collect data.</p>';
+    return;
+  }
 
-    if (categoryItems.length === 0) {
-        list.innerHTML = '<p class="empty-message">No categories tracked yet</p>';
-        return;
+  list.innerHTML = products.slice(0, 8).map((p, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const fire = p.purchaseCount > 0 ? '🔥' : p.viewCount > 5 ? '📈' : '';
+    const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '';
+    const meta = [p.domain, price, p.category].filter(Boolean).join(' · ');
+    return `
+      <div class="trending-item">
+        <span class="rank ${rankClass}">#${i + 1}</span>
+        <div class="item-info">
+          <div class="item-title" title="${esc(p.title)}">${esc(p.title)}</div>
+          <div class="item-meta">${esc(meta)}</div>
+        </div>
+        <span class="item-score">${fire} ${Math.round(p.trendScore)}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function setupListeners() {
+  document.getElementById('optionsBtn').addEventListener('click', () => {
+    chrome.runtime.openOptionsPage();
+  });
+
+  document.getElementById('openDashboard').addEventListener('click', () => {
+    chrome.runtime.openOptionsPage();
+  });
+
+  document.getElementById('manualSave').addEventListener('click', () => {
+    const title = document.getElementById('manualTitle').value.trim();
+    const price = parseFloat(document.getElementById('manualPrice').value) || null;
+    const category = document.getElementById('manualCategory').value.trim() || 'General';
+
+    if (!title) {
+      document.getElementById('manualTitle').focus();
+      return;
     }
 
-    list.innerHTML = categoryItems.map(([name, count]) => `
-        <div class="category-item">
-            <span class="category-name">${name}</span>
-            <span class="category-count">${count}</span>
-        </div>
-    `).join('');
+    sendMessage({
+      action: 'addManualProduct',
+      product: {
+        title,
+        price,
+        category,
+        domain: 'manual',
+        url: '',
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    document.getElementById('manualTitle').value = '';
+    document.getElementById('manualPrice').value = '';
+    document.getElementById('manualCategory').value = '';
+
+    setTimeout(loadData, 300);
+  });
 }
 
-function setupEventListeners() {
-    document.getElementById('settingsBtn').addEventListener('click', () => {
-        chrome.runtime.openOptionsPage();
+function sendMessage(msg) {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage(msg, response => {
+      if (chrome.runtime.lastError) resolve(null);
+      else resolve(response);
     });
+  });
+}
 
-    document.getElementById('viewHistoryBtn').addEventListener('click', () => {
-        chrome.tabs.create({ url: chrome.runtime.getURL('options/options.html?tab=history') });
-    });
+function fmt(n) {
+  return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+}
 
-    document.getElementById('clearDataBtn').addEventListener('click', async () => {
-        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-            await chrome.storage.local.clear();
-            await loadStats();
-        }
-    });
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }

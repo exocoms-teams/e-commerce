@@ -1,17 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Purchase Tendency Tracker",
-  "version": "1.0.0",
-  "language": "python",
-  "description": "Track purchasing tendencies and shopping behaviors across e-commerce sites",
+  "name": "Minea Tracker - Product Intelligence",
+  "version": "2.0.0",
+  "description": "Track which products are bought most across e-commerce sites. Minea-style product intelligence.",
   "permissions": [
     "storage",
     "scripting",
-    "tabs"
+    "tabs",
+    "notifications",
+    "activeTab"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -19,7 +18,7 @@
   },
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Purchase Tracker",
+    "default_title": "Minea Tracker",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png"
@@ -30,12 +29,9 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content/content.js"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"],
+      "run_at": "document_idle"
     }
   ],
   "options_page": "options/options.html"

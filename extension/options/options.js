@@ -1,211 +1,403 @@
-// Options page functionality
-let allPurchases = [];
+// ============================================================
+// MINEA TRACKER - Dashboard Logic
+// ============================================================
+
+let allData = null;
+let charts = {};
+
+const COLORS = [
+  '#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b',
+  '#f87171','#34d399','#60a5fa','#e879f9','#fb923c'
+];
+
+// ---- Init ----
 
 document.addEventListener('DOMContentLoaded', async () => {
-    setupTabs();
-    await loadData();
-    setupEventListeners();
+  setupNav();
+  await refresh();
+  setupControls();
 });
 
-function setupTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+async function refresh() {
+  allData = await sendMessage({ action: 'getData' });
+  if (!allData) return;
+  updateSidebar();
+  renderCurrentPage();
+}
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active class
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
+// ---- Navigation ----
 
-            // Add active class to clicked tab
-            btn.classList.add('active');
-            const tabId = btn.getAttribute('data-tab');
-            document.getElementById(tabId).classList.add('active');
-        });
+function setupNav() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const pageId = 'page-' + btn.dataset.page;
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('pageTitle').textContent = btn.textContent;
+      renderCurrentPage();
     });
+  });
 }
 
-async function loadData() {
-    const data = await chrome.storage.local.get(['purchases', 'categories', 'trends']);
-    allPurchases = data.purchases || [];
-    const categories = data.categories || {};
-    const trends = data.trends || {};
-
-    updateOverviewTab(categories);
-    updateHistoryTab();
-    updateTrendsTab(trends);
+function renderCurrentPage() {
+  const active = document.querySelector('.page.active');
+  if (!active || !allData) return;
+  const id = active.id;
+  if (id === 'page-trending') renderTrending();
+  if (id === 'page-categories') renderCategories();
+  if (id === 'page-domains') renderDomains();
+  if (id === 'page-activity') renderActivity();
 }
 
-function updateOverviewTab(categories) {
-    const totalPurchases = allPurchases.length;
-    const totalAmount = allPurchases.reduce((sum, p) => sum + (p.price || 0), 0);
-    const avgAmount = totalPurchases > 0 ? (totalAmount / totalPurchases) : 0;
-    const maxAmount = totalPurchases > 0 ? Math.max(...allPurchases.map(p => p.price || 0)) : 0;
+// ---- Sidebar ----
 
-    document.getElementById('totalPurchases').textContent = totalPurchases;
-    document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
-    document.getElementById('avgAmount').textContent = `$${avgAmount.toFixed(2)}`;
-    document.getElementById('maxAmount').textContent = `$${maxAmount.toFixed(2)}`;
-
-    // Display top categories
-    const sortedCategories = Object.entries(categories)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
-
-    const categoriesHtml = sortedCategories.length > 0 ? sortedCategories.map(([name, count]) => `
-        <div class="category-item">
-            <span class="category-name">${name}</span>
-            <span class="category-badge">${count}</span>
-        </div>
-    `).join('') : '<p class="empty-message">No categories yet</p>';
-
-    document.getElementById('topCategories').innerHTML = categoriesHtml;
+function updateSidebar() {
+  setText('sTotal', allData.totalProducts || 0);
+  setText('sViews', allData.totalViews || 0);
+  setText('sPurchases', allData.totalPurchases || 0);
+  const updated = allData.lastUpdated ? new Date(allData.lastUpdated).toLocaleTimeString() : '--';
+  setText('sUpdated', updated);
 }
 
-function updateHistoryTab() {
-    const categoryFilter = document.getElementById('categoryFilter');
-    const categories = new Set(allPurchases.map(p => p.category || 'Uncategorized'));
+// ---- Trending Page ----
 
-    // Populate category filter
-    categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        option.textContent = cat;
-        categoryFilter.appendChild(option);
-    });
+function renderTrending() {
+  const products = filterProducts(allData.products || []);
 
-    displayHistory();
+  // KPIs
+  const byViews = [...products].sort((a, b) => b.viewCount - a.viewCount)[0];
+  const byPurchases = [...products].sort((a, b) => b.purchaseCount - a.purchaseCount)[0];
+
+  setText('kpiMostViewed', byViews ? truncate(byViews.title, 24) : '-');
+  setText('kpiMostPurchased', byPurchases && byPurchases.purchaseCount > 0 ? truncate(byPurchases.title, 24) : '-');
+
+  const cats = allData.categories || {};
+  const topCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+  setText('kpiTopCat', topCat ? topCat[0] : '-');
+
+  const domains = allData.domains || {};
+  const topDomain = Object.entries(domains).sort((a, b) => b[1] - a[1])[0];
+  setText('kpiTopStore', topDomain ? topDomain[0] : '-');
+
+  // Table
+  const maxScore = products.length ? products[0].trendScore : 1;
+  const body = document.getElementById('trendingBody');
+
+  if (!products.length) {
+    body.innerHTML = '<tr><td colspan="8" class="empty-row">No products tracked yet. Browse shopping sites.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = products.slice(0, 100).map((p, i) => {
+    const rClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '-';
+    const pct = maxScore > 0 ? Math.round((p.trendScore / maxScore) * 100) : 0;
+    return `
+      <tr>
+        <td><span class="rank-badge ${rClass}">${i + 1}</span></td>
+        <td>
+          <div class="product-cell">
+            <span class="product-name" title="${esc(p.title)}">${esc(truncate(p.title, 50))}</span>
+            <span class="product-url">${esc(p.domain)}</span>
+          </div>
+        </td>
+        <td><span class="cat-pill">${esc(p.category || 'General')}</span></td>
+        <td>${esc(p.domain)}</td>
+        <td>${price}</td>
+        <td>${p.viewCount}</td>
+        <td>${p.purchaseCount > 0 ? `<strong style="color:var(--success)">${p.purchaseCount}</strong>` : '0'}</td>
+        <td>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+            <span class="score-val">${Math.round(p.trendScore)}</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
-function displayHistory(searchTerm = '', filterCategory = '') {
-    let filtered = allPurchases.slice().reverse(); // Most recent first
+// ---- Categories Page ----
 
-    if (searchTerm) {
-        filtered = filtered.filter(p =>
-            p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.domain.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+function renderCategories() {
+  const cats = allData.categories || {};
+  const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const labels = entries.map(e => e[0]);
+  const values = entries.map(e => e[1]);
+
+  destroyChart('catPie');
+  destroyChart('catBar');
+
+  if (entries.length === 0) return;
+
+  charts.catPie = new Chart(document.getElementById('catPieChart'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: COLORS, borderColor: '#13131a', borderWidth: 3 }]
+    },
+    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'right', labels: { color: '#e4e4f0', font: { size: 11 } } } } }
+  });
+
+  charts.catBar = new Chart(document.getElementById('catBarChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Product Views', data: values, backgroundColor: COLORS.map(c => c + 'cc'), borderColor: COLORS, borderWidth: 1, borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } }, y: { ticks: { color: '#e4e4f0' }, grid: { display: false } } }
     }
+  });
 
-    if (filterCategory) {
-        filtered = filtered.filter(p => (p.category || 'Uncategorized') === filterCategory);
+  document.getElementById('catList').innerHTML = entries.map(([name, count], i) =>
+    `<div class="cat-tag">${name} <span>${count}</span></div>`
+  ).join('');
+}
+
+// ---- Domains Page ----
+
+function renderDomains() {
+  const domains = allData.domains || {};
+  const entries = Object.entries(domains).sort((a, b) => b[1] - a[1]);
+  const max = entries.length ? entries[0][1] : 1;
+
+  destroyChart('domain');
+
+  if (entries.length === 0) return;
+
+  charts.domain = new Chart(document.getElementById('domainChart'), {
+    type: 'bar',
+    data: {
+      labels: entries.slice(0, 12).map(e => e[0]),
+      datasets: [{
+        label: 'Products Detected',
+        data: entries.slice(0, 12).map(e => e[1]),
+        backgroundColor: COLORS.map(c => c + 'bb'),
+        borderColor: COLORS,
+        borderWidth: 1,
+        borderRadius: 8,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#e4e4f0' }, grid: { color: '#25253a' } },
+        y: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' }, beginAtZero: true }
+      }
     }
+  });
 
-    const historyHtml = filtered.length > 0 ? filtered.slice(0, 100).map((purchase, index) => `
-        <div class="history-item">
-            <div>
-                <div class="history-title">${purchase.title}</div>
-                <small class="history-date">${purchase.domain} • ${new Date(purchase.date).toLocaleDateString()}</small>
-            </div>
-            <span class="history-price">$${purchase.price.toFixed(2)}</span>
-        </div>
-    `).join('') : '<p class="empty-message">No purchases found</p>';
-
-    document.getElementById('historyList').innerHTML = historyHtml;
+  document.getElementById('domainList').innerHTML = entries.map(([domain, count], i) => `
+    <div class="domain-card">
+      <span class="domain-name">${domain}</span>
+      <span class="domain-count">${count} product${count !== 1 ? 's' : ''} detected</span>
+      <div class="domain-bar"><div class="domain-fill" style="width:${Math.round((count/max)*100)}%"></div></div>
+    </div>
+  `).join('');
 }
 
-function updateTrendsTab(trends) {
-    const sortedDomains = Object.entries(trends)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
+// ---- Activity Page ----
 
-    const domainsHtml = sortedDomains.length > 0 ? sortedDomains.map(([domain, count]) => `
-        <div class="domain-item">
-            <span>${domain}</span>
-            <span class="category-badge">${count}</span>
-        </div>
-    `).join('') : '<p class="empty-message">No domain trends yet</p>';
+function renderActivity() {
+  const daily = allData.daily || {};
+  const days = getLast14Days();
 
-    document.getElementById('domainsList').innerHTML = domainsHtml;
+  const viewData = days.map(d => (daily[d] || {}).views || 0);
+  const purchaseData = days.map(d => (daily[d] || {}).purchases || 0);
+  const labels = days.map(d => d.slice(5)); // MM-DD
+
+  destroyChart('activity');
+
+  charts.activity = new Chart(document.getElementById('activityChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Views',
+          data: viewData,
+          borderColor: '#6c47ff',
+          backgroundColor: 'rgba(108,71,255,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#6c47ff',
+        },
+        {
+          label: 'Purchases',
+          data: purchaseData,
+          borderColor: '#34d399',
+          backgroundColor: 'rgba(52,211,153,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: '#34d399',
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#e4e4f0' } } },
+      scales: {
+        x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } },
+        y: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' }, beginAtZero: true }
+      }
+    }
+  });
+
+  // Funnel
+  const totalViews = allData.totalViews || 0;
+  const totalPurchases = allData.totalPurchases || 0;
+  const viewPct = 100;
+  const purchasePct = totalViews > 0 ? Math.round((totalPurchases / totalViews) * 100) : 0;
+
+  document.getElementById('funnelWrap').innerHTML = `
+    <div class="funnel-row">
+      <span class="funnel-label">Product Views</span>
+      <div class="funnel-bar-bg">
+        <div class="funnel-bar-fill views-fill" style="width:${viewPct}%">${totalViews}</div>
+      </div>
+      <span class="funnel-num">${totalViews}</span>
+    </div>
+    <div class="funnel-row">
+      <span class="funnel-label">Purchases</span>
+      <div class="funnel-bar-bg">
+        <div class="funnel-bar-fill purchases-fill" style="width:${Math.max(purchasePct, totalPurchases > 0 ? 5 : 0)}%">${totalPurchases}</div>
+      </div>
+      <span class="funnel-num">${totalPurchases}</span>
+    </div>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted)">
+      Conversion signal rate: <strong style="color:var(--success)">${purchasePct}%</strong>
+    </p>
+  `;
 }
 
-function setupEventListeners() {
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const category = document.getElementById('categoryFilter').value;
-        displayHistory(e.target.value, category);
-    });
+// ---- Controls ----
 
-    // Category filter
-    document.getElementById('categoryFilter').addEventListener('change', (e) => {
-        const search = document.getElementById('searchInput').value;
-        displayHistory(search, e.target.value);
-    });
+function setupControls() {
+  document.getElementById('refreshBtn').addEventListener('click', refresh);
 
-    // Export CSV
-    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('searchInput').addEventListener('input', () => renderTrending());
+  document.getElementById('categoryFilter').addEventListener('change', () => renderTrending());
 
-    // Settings
-    document.getElementById('notificationsToggle').addEventListener('change', (e) => {
-        chrome.storage.local.set({ notificationsEnabled: e.target.checked });
-    });
+  // Populate category filter
+  const sel = document.getElementById('categoryFilter');
+  const cats = Object.keys(allData?.categories || {});
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
 
-    document.getElementById('autoTrackToggle').addEventListener('change', (e) => {
-        chrome.storage.local.set({ autoTrackEnabled: e.target.checked });
-    });
-
-    document.getElementById('refreshInterval').addEventListener('change', (e) => {
-        chrome.storage.local.set({ refreshInterval: parseInt(e.target.value) });
-    });
-
-    document.getElementById('exportDataBtn').addEventListener('click', exportAllData);
-    document.getElementById('importDataBtn').addEventListener('click', () => {
-        document.getElementById('fileInput').click();
-    });
-
-    document.getElementById('fileInput').addEventListener('change', importData);
-    document.getElementById('clearAllBtn').addEventListener('click', clearAllData);
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('exportJsonBtn').addEventListener('click', exportJSON);
+  document.getElementById('importJsonBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+  document.getElementById('fileInput').addEventListener('change', importJSON);
+  document.getElementById('clearAllBtn').addEventListener('click', clearData);
 }
+
+function filterProducts(products) {
+  const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const cat = document.getElementById('categoryFilter')?.value || '';
+  return products.filter(p =>
+    (!search || p.title.toLowerCase().includes(search) || p.domain.includes(search)) &&
+    (!cat || p.category === cat)
+  );
+}
+
+// ---- Export / Import ----
 
 function exportCSV() {
-    let csv = 'Title,Price,Category,Domain,Date\n';
-    allPurchases.forEach(purchase => {
-        csv += `"${purchase.title}","${purchase.price}","${purchase.category || 'Uncategorized'}","${purchase.domain}","${purchase.date}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `purchases_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
+  const products = allData?.products || [];
+  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore,FirstSeen,LastSeen\n';
+  products.forEach((p, i) => {
+    csv += `${i+1},"${esc2(p.title)}","${p.category}","${p.domain}","${p.latestPrice || ''}",${p.viewCount},${p.purchaseCount},${Math.round(p.trendScore)},"${p.firstSeen}","${p.lastSeen}"\n`;
+  });
+  downloadFile(csv, `minea-tracker-${date()}.csv`, 'text/csv');
 }
 
-function exportAllData() {
-    chrome.storage.local.get(null, (data) => {
-        const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `purchase-tracker-backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    });
+function exportJSON() {
+  downloadFile(JSON.stringify(allData, null, 2), `minea-tracker-${date()}.json`, 'application/json');
 }
 
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        try {
-            const data = JSON.parse(e.target.result);
-            chrome.storage.local.set(data, () => {
-                alert('Data imported successfully!');
-                location.reload();
-            });
-        } catch (error) {
-            alert('Error importing data: ' + error.message);
-        }
-    };
-    reader.readAsText(file);
-}
-
-async function clearAllData() {
-    if (confirm('Are you sure you want to clear ALL data? This cannot be undone!')) {
-        await chrome.storage.local.clear();
-        alert('All data has been cleared.');
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      chrome.storage.local.set(data, () => {
+        alert('Data imported. Refreshing...');
         location.reload();
+      });
+    } catch (err) {
+      alert('Invalid JSON file: ' + err.message);
     }
+  };
+  reader.readAsText(file);
+}
+
+function clearData() {
+  if (!confirm('Delete ALL tracking data? This cannot be undone.')) return;
+  sendMessage({ action: 'clearData' }).then(() => location.reload());
+}
+
+// ---- Helpers ----
+
+function sendMessage(msg) {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage(msg, r => {
+      if (chrome.runtime.lastError) resolve(null);
+      else resolve(r);
+    });
+  });
+}
+
+function destroyChart(key) {
+  if (charts[key]) { charts[key].destroy(); delete charts[key]; }
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function truncate(str, n) {
+  return str && str.length > n ? str.substring(0, n) + '...' : (str || '');
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function esc2(str) { return String(str || '').replace(/"/g, '""'); }
+
+function date() { return new Date().toISOString().split('T')[0]; }
+
+function getLast14Days() {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  return days;
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
