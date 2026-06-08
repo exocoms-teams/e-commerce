@@ -176,3 +176,59 @@
         padding: 12px 22px; font-size: 13px;
     }
 }
+/* ═══════════════════════════════════════════════════════════ */
+/* TICKER — bandeau défilant services                         */
+/* ═══════════════════════════════════════════════════════════ */
+
+.exo-ticker-wrap {
+    width: 100%;
+    background: #0d4dff;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.exo-ticker {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 20s linear infinite;
+}
+
+.exo-ticker-wrap:hover .exo-ticker {
+    animation-play-state: paused;
+}
+
+.exo-ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 36px;
+    color: white !important;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    transition: background 0.2s;
+}
+
+.exo-ticker-item:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.exo-ticker-item i {
+    font-size: 16px;
+    opacity: 0.85;
+}
+
+@keyframes ticker-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 768px) {
+    .exo-ticker-item {
+        padding: 10px 24px;
+        font-size: 13px;
+    }
+}
