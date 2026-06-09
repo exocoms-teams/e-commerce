@@ -17,17 +17,19 @@
     padding-bottom: 0 !important;
 }
 
-.hero-section::before {
-    content: '';
+.hero-section::before { display: none; }
+.hero-section::after  { display: none; }
+
+/* Image de fond éditable */
+.hero-bg {
     position: absolute;
     inset: 0;
-    background: url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg') center/cover no-repeat;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
     opacity: 0.85;
     z-index: 0;
-}
-
-.hero-section::after {
-    display: none;
+    transition: opacity 0.3s ease;
 }
 
 .hero-overlay {
@@ -46,7 +48,41 @@
 .hero-section .shape-blob { display: none; }
 
 /* ═══════════════════════════════════════════════════════════ */
-/* CONTENU HERO ACCUEIL                                       */
+/* BADGE                                                      */
+/* ═══════════════════════════════════════════════════════════ */
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    padding: 7px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.hero-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* CONTENU HERO                                               */
 /* ═══════════════════════════════════════════════════════════ */
 
 .hero-content {
@@ -56,6 +92,9 @@
     text-align: center;
     color: white;
     padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     animation: fadeUp 0.9s ease-out;
 }
 
@@ -79,15 +118,20 @@
     font-size: clamp(0.95rem, 1.4vw, 1.05rem);
     line-height: 1.75;
     color: rgba(255, 255, 255, 0.92);
-    max-width: 660px;
+    max-width: 600px;
     margin: 0 auto 32px;
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* BOUTONS                                                    */
+/* ═══════════════════════════════════════════════════════════ */
 
 .hero-buttons {
     display: flex;
     gap: 14px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 28px;
 }
 
 .hero-btn,
@@ -103,27 +147,27 @@
     border-radius: 50px;
     border: none;
     cursor: pointer;
-    text-decoration: none;
+    text-decoration: none !important;
     transition: all 0.25s ease;
     line-height: 1;
 }
 
 .hero-btn-primary {
     background: #0d4dff;
-    color: white;
+    color: white !important;
     box-shadow: 0 6px 28px rgba(13, 77, 255, 0.4);
 }
 
 .hero-btn-primary:hover {
     background: #0a3ad4;
-    color: white;
+    color: white !important;
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(13, 77, 255, 0.5);
 }
 
 .hero-btn-secondary {
     background: rgba(255, 255, 255, 0.15);
-    color: white;
+    color: white !important;
     border: 1.5px solid rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
 }
@@ -131,9 +175,37 @@
 .hero-btn-secondary:hover {
     background: rgba(255, 255, 255, 0.25);
     border-color: white;
-    color: white;
+    color: white !important;
     transform: translateY(-2px);
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* TRUST SIGNALS                                              */
+/* ═══════════════════════════════════════════════════════════ */
+
+.hero-trust {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.hero-trust span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hero-trust .fa-check {
+    color: #22c55e;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* FLÈCHE SCROLL                                              */
+/* ═══════════════════════════════════════════════════════════ */
 
 .hero-floating {
     position: absolute;
@@ -160,19 +232,46 @@
 /* ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-    .hero-section { height: 65vh; }
-    .hero-content h1 { font-size: 1.8rem; }
-    .hero-content p  { font-size: 0.95rem; }
-    .hero-buttons    { flex-direction: column; align-items: center; }
-    .hero-btn, .hero-btn-primary, .hero-btn-secondary {
-        width: 100%; max-width: 280px;
+    .hero-section {
+        height: 65vh;
+    }
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    .hero-content p {
+        font-size: 0.95rem;
+    }
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    .hero-btn,
+    .hero-btn-primary,
+    .hero-btn-secondary {
+        width: 100%;
+        max-width: 280px;
+    }
+    .hero-trust {
+        gap: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    .hero-content h1 { font-size: 1.5rem; letter-spacing: -0.3px; }
-    .hero-btn, .hero-btn-primary, .hero-btn-secondary {
-        padding: 12px 22px; font-size: 13px;
+    .hero-content {
+        padding: 0 20px;
+    }
+    .hero-content h1 {
+        font-size: 1.5rem;
+        letter-spacing: -0.3px;
+    }
+    .hero-btn,
+    .hero-btn-primary,
+    .hero-btn-secondary {
+        padding: 12px 22px;
+        font-size: 13px;
+    }
+    .hero-trust {
+        font-size: 12px;
     }
 }
 
@@ -185,7 +284,7 @@
     background: transparent !important;
     overflow: hidden;
     border-top: 3px solid #0d4dff;
-    border-bottom: 1px solid rgba(13,77,255,0.15);
+    border-bottom: 1px solid rgba(13, 77, 255, 0.15);
     margin-top: 0;
     margin-bottom: 45px;
     padding: 0;
@@ -215,7 +314,7 @@
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
-    border-right: 1px solid rgba(13,77,255,0.1);
+    border-right: 1px solid rgba(13, 77, 255, 0.1);
     transition: all 0.2s ease;
     letter-spacing: 0.3px;
     text-transform: uppercase;
@@ -223,7 +322,7 @@
 }
 
 .exo-ticker-item:hover {
-    background: rgba(13,77,255,0.05) !important;
+    background: rgba(13, 77, 255, 0.05) !important;
     color: #0d4dff !important;
 }
 
