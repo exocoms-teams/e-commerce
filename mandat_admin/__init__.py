@@ -4,16 +4,13 @@ from . import wizard
 
 
 def post_init_hook(env):
-    # Cherche le compte 512
     account = env['account.account'].search([
-        ('code', 'like', '512%'),
-        ('company_ids', 'in', env.company.id),
+        ('account_type', '=', 'asset_cash'),
     ], limit=1)
 
     if not account:
-        return  # plan comptable pas encore chargé
+        return
 
-    # Vérifie si le journal existe déjà
     journal = env['account.journal'].search([('code', '=', 'MAND')], limit=1)
     if not journal:
         env['account.journal'].create({
