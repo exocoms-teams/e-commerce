@@ -3,22 +3,31 @@
 
     <template id="footer" name="Planet Mobil - Footer">
 
+        <style>
+            .o_footer { background: var(--white) !important; }
+            .o_footer .tsp-footer-links a { color: var(--muted) !important; }
+            .o_footer .tsp-footer-links a:hover { color: var(--blue) !important; }
+            .o_footer .tsp-link-blue { color: var(--blue) !important; }
+            .o_footer_copyright { display: none !important; }
+        </style>
+
         <!-- NEWSLETTER -->
         <div class="tsp-newsletter">
             <div class="tsp-newsletter-text">
                 <h3>📧 Restez informé !</h3>
                 <p>Inscrivez-vous pour ne rater aucune offre exclusive Planet Mobil</p>
             </div>
-            <div class="tsp-newsletter-form">
-                <input type="email" placeholder="Votre adresse email..."/>
-                <button class="tsp-newsletter-btn">S'inscrire</button>
+            <div class="tsp-newsletter-form s_newsletter_subscribe_form" data-list-id="1">
+                <input type="email" name="email" class="js_subscribe_email"
+                       placeholder="Votre adresse email..." required="required"/>
+                <button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
+                <small class="js_subscribe_msg"></small>
             </div>
         </div>
 
         <footer class="tsp-footer">
             <div class="tsp-footer-grid">
 
-                
                 <div class="tsp-footer-col">
                     <div class="tsp-footer-logo">🌍 PLANET <span>MOBIL</span></div>
                     <p class="tsp-footer-desc">
@@ -28,7 +37,6 @@
                     </p>
                 </div>
 
-                
                 <div class="tsp-footer-col">
                     <h4 class="tsp-footer-title">Liens utiles</h4>
                     <ul class="tsp-footer-links">
@@ -41,7 +49,6 @@
                     </ul>
                 </div>
 
-                
                 <div class="tsp-footer-col">
                     <h4 class="tsp-footer-title">EXOCOMS Group</h4>
                     <ul class="tsp-footer-links">
@@ -51,7 +58,6 @@
                     </ul>
                 </div>
 
-                
                 <div class="tsp-footer-col">
                     <h4 class="tsp-footer-title">Suivez-nous</h4>
                     <ul class="tsp-footer-links">
@@ -72,6 +78,15 @@
             </div>
         </footer>
 
+    </template>
+
+    <!-- Remplace le footer par défaut d'Odoo par le nôtre -->
+    <template id="footer_replace" inherit_id="website.layout" name="Planet Mobil - Remplacement du footer">
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+                <t t-call="website_planet_mobil.footer"/>
+            </div>
+        </xpath>
     </template>
 
 </odoo>
