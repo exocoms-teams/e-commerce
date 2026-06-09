@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="page_paiement" name="Payment Page">
+            <t t-call="website.layout">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="card shadow">
+                                <div class="card-body p-5">
+                                    <h1 class="mb-4 text-center">Formulaire de Paiement</h1>
+
+                                    <t t-if="error">
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <strong>Erreur:</strong> <t t-esc="error_msg or 'Une erreur est survenue'"/>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </t>
+
+                                    <form method="POST" action="/paiement/traiter" id="payment_form" class="needs-validation">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="reservation_id" t-att-value="form_data.get('reservation_id', 0)"/>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="first_name" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="first_name" name="first_name"
+                                                       t-att-value="form_data.get('first_name', '')" required="1"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="last_name" class="form-label">Nom <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="last_name" name="last_name"
+                                                       t-att-value="form_data.get('last_name', '')" required="1"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="email" name="email"
+                                                       t-att-value="form_data.get('email', '')" required="1"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="phone" class="form-label">Téléphone</label>
+                                                <input type="tel" class="form-control" id="phone" name="phone"
+                                                       t-att-value="form_data.get('phone', '')"/>
+                                            </div>
+                                        </div>
+
+                                        <h5 class="mt-4 mb-3">Adresse de Facturation</h5>
+
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Adresse</label>
+                                            <input type="text" class="form-control" id="address" name="address"
+                                                   t-att-value="form_data.get('address', '')"/>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="city" class="form-label">Ville</label>
+                                                <input type="text" class="form-control" id="city" name="city"
+                                                       t-att-value="form_data.get('city', '')"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="zip_code" class="form-label">Code Postal</label>
+                                                <input type="text" class="form-control" id="zip_code" name="zip_code"
+                                                       t-att-value="form_data.get('zip_code', '')"/>
+                                            </div>
+                                        </div>
+
+                                        <h5 class="mt-4 mb-3">Montant</h5>
+
+                                        <div class="mb-3">
+                                            <label for="amount" class="form-label">Montant (€) <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="amount" name="amount"
+                                                       step="0.01" min="0" t-att-value="form_data.get('amount', '')" required="1"/>
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+
+                                        <h5 class="mt-4 mb-3">Informations de Carte Bancaire</h5>
+
+                                        <div class="mb-3">
+                                            <label for="card_number" class="form-label">Numéro de Carte <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="card_number" name="card_number"
+                                                   placeholder="1234 5678 9012 3456" maxlength="19"
+                                                   t-att-value="form_data.get('card_number', '')" required="1"/>
+                                            <small class="text-muted">Numéro sans espaces ni tirets</small>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="card_expiry" class="form-label">Date d'Expiration <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="card_expiry" name="card_expiry"
+                                                       placeholder="MM/YY" maxlength="5"
+                                                       t-att-value="form_data.get('card_expiry', '')" required="1"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="card_cvv" class="form-label">CVV <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="card_cvv" name="card_cvv"
+                                                       placeholder="123" maxlength="4"
+                                                       t-att-value="form_data.get('card_cvv', '')" required="1"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 form-check">
+                                            <input type="checkbox" class="form-check-input" id="terms" required="1"/>
+                                            <label class="form-check-label" for="terms">
+                                                J'accepte les <a href="#" target="_blank">conditions d'utilisation</a> et la <a href="#" target="_blank">politique de confidentialité</a>
+                                            </label>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fa fa-lock"/> Payer Maintenant
+                                            </button>
+                                            <a href="/" class="btn btn-secondary btn-lg">Annuler</a>
+                                        </div>
+                                    </form>
+
+                                    <div class="alert alert-info mt-4">
+                                        <i class="fa fa-shield"/> Vos données de paiement sont traitées de manière sécurisée et encryptée.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="page_paiement_success" name="Payment Success Page">
+            <t t-call="website.layout">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto text-center">
+                            <div class="card shadow">
+                                <div class="card-body p-5">
+                                    <div class="mb-4">
+                                        <i class="fa fa-check-circle" style="font-size: 60px; color: #28a745;"/>
+                                    </div>
+
+                                    <h1 class="mb-3">Paiement Réussi!</h1>
+
+                                    <p class="lead text-muted mb-4">
+                                        Votre paiement de <strong><t t-esc="'{:.2f}'.format(amount)"/></strong> € a été accepté avec succès.
+                                    </p>
+
+                                    <div class="alert alert-light border">
+                                        <p><strong>Référence de Transaction:</strong></p>
+                                        <p class="h5"><t t-esc="transaction_id"/></p>
+                                    </div>
+
+                                    <p class="text-muted mb-4">
+                                        Un email de confirmation a été envoyé à votre adresse email.
+                                    </p>
+
+                                    <div class="d-grid gap-2">
+                                        <a href="/" class="btn btn-primary btn-lg">Retourner à l'Accueil</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -87,12 +87,12 @@ class MonetiqueWebsite(Website):
         return request.redirect('/?rappel=ok')
 
     @http.route('/paiement', type='http', auth='public', website=True)
-    def payment_page(self, amount=0, **kwargs):
+    def payment_page(self, amount=0, reservation_id=0, **kwargs):
         return request.render('monetique_theme.page_paiement', {
             'year': datetime.datetime.now().year,
             'error': False,
             'success': False,
-            'form_data': {'amount': amount},
+            'form_data': {'amount': amount, 'reservation_id': reservation_id},
         })
 
     @http.route('/paiement/traiter', type='http', auth='public', website=True,
@@ -127,21 +127,28 @@ class MonetiqueWebsite(Website):
                     'form_data': post,
                 })
 
+            reservation_id = int(post.get('reservation_id', 0))
+            provider = request.env['travel.payment.provider'].sudo().search([], limit=1)
+
             payment_vals = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'email': email,
                 'phone': phone,
-                'amount': float(amount),
                 'address': address,
                 'city': city,
                 'zip_code': zip_code,
-                'payment_date': datetime.datetime.now(),
-                'status': 'pending',
                 'card_last_4': card_number[-4:],
+                'currency': 'EUR',
+                'state': 'pending',
+                'date_transaction': datetime.datetime.now(),
             }
+            if reservation_id:
+                payment_vals['reservation_id'] = reservation_id
+            if provider:
+                payment_vals['provider_id'] = provider.id
 
-            payment_record = request.env['payment.transaction'].sudo().create(payment_vals)
+            payment_record = request.env['travel.payment.transaction'].sudo().create(payment_vals)
 
             mail_vals = {
                 'subject': '[monetiques.fr] Confirmation de paiement',

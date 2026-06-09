@@ -23,6 +23,14 @@ class TravelPaymentTransaction(models.Model):
     ], string='Status', default='draft')
     date_transaction = fields.Datetime(string='Transaction Date')
     notes = fields.Text(string='Notes')
+    first_name = fields.Char(string='Prénom')
+    last_name = fields.Char(string='Nom')
+    email = fields.Char(string='Email')
+    phone = fields.Char(string='Téléphone')
+    address = fields.Char(string='Adresse')
+    city = fields.Char(string='Ville')
+    zip_code = fields.Char(string='Code Postal')
+    card_last_4 = fields.Char(string='4 derniers chiffres carte')
 
     @api.model
     def create(self, vals):
