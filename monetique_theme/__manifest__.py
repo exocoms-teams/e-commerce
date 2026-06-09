@@ -15,6 +15,7 @@
     'assets': {
         'web.assets_frontend': [
             'monetique_theme/static/src/css/main.css',
+            'monetique_theme/static/src/js/carousel.js',
         ],
     },
     'installable': True,
