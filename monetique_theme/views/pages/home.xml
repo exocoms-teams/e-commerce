@@ -101,6 +101,39 @@
                 </div>
             </section>
 
+            <section class="mn-section mn-products">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Agence de voyage</span>
+                        <h2>Nos destinations</h2>
+                        <p>Vols, hotels, circuits — reservez votre voyage en quelques clics.</p>
+                    </div>
+                    <div class="mn-products__grid">
+                        <t t-foreach="request.env['product.template'].sudo().search([('prix_par_personne', '>', 0)], limit=6)" t-as="product">
+                            <a t-attf-href="/travels/book/#{product.id}" class="mn-product-card">
+                                <div class="mn-product-card__img">
+                                    <t t-if="product.image_512">
+                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                                            t-att-alt="product.name"
+                                            style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
+                                    </t>
+                                </div>
+                                <div class="mn-product-card__body">
+                                    <h3 t-esc="product.name"/>
+                                    <div class="mn-product-card__footer">
+                                        <span class="mn-product-card__price" t-esc="'%.2f € / pers.' % product.prix_par_personne"/>
+                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Reserver</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <div class="mn-section__footer">
+                        <a href="/travels" class="mn-btn mn-btn--outline">Voir tous nos voyages &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
             <section class="mn-reviews mn-section">
                 <div class="mn-container">
                     <div class="mn-section__header">
