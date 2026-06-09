@@ -5,8 +5,8 @@ class TravelPaymentTransaction(models.Model):
     _description = 'Travel Payment Transaction'
 
     name = fields.Char(string='Transaction Reference', required=True, default='New')
-    reservation_id = fields.Many2one('travel.reservation', string='Reservation', required=True)
-    provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider', required=True)
+    reservation_id = fields.Many2one('travel.reservation', string='Reservation')
+    provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider')
     amount = fields.Float(string='Amount', related='reservation_id.prix_total', store=True)
     commission = fields.Float(string='Commission', related='reservation_id.commission_amount', store=True)
     currency = fields.Selection([
