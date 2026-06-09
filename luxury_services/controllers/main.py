@@ -475,7 +475,7 @@ class LuxuryController(WebsiteSale):
             PUBLICATIONS D'ANNONCES
             ========================= 
         """
-    @http.route('/vip/annonce', type='http', auth='public', website=True)
+    @http.route('/vip/demande-annonce', type='http', auth='public', website=True)
     def listing_page(self, **kwargs):
         if not self._is_vip_website():
             return request.redirect('/shop')
@@ -486,7 +486,7 @@ class LuxuryController(WebsiteSale):
         })
 
 
-    @http.route('/vip/annonce/submit', type='http', auth='public',
+    @http.route('/vip/demande-annonce/submit', type='http', auth='public',
                 website=True, methods=['POST'])
     def listing_submit(self, **kwargs):
         if not self._is_vip_website():
@@ -669,6 +669,9 @@ class LuxuryController(WebsiteSale):
             'pays_list': pays_list,
             'filters':   kwargs,
         })
+        
+        
+    
     
     
     """ https://www.youtube.com/watch?v=bF-01uyDXUc"""
