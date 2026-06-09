@@ -17,7 +17,6 @@
         'views/homepage_templates.xml',
         'views/pages_templates.xml',
         'views/shop_templates.xml',
-        'views/payment_templates.xml',
         'views/booking_templates.xml',
         'data/website_data.xml',
         'data/payment_menu.xml',
