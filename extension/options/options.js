@@ -1,6 +1,3 @@
-// ============================================================
-// MINEA TRACKER - Dashboard Logic
-// ============================================================
 
 let allData = null;
 let charts = {};
@@ -321,11 +318,11 @@ function exportCSV() {
   products.forEach((p, i) => {
     csv += `${i+1},"${esc2(p.title)}","${p.category}","${p.domain}","${p.latestPrice || ''}",${p.viewCount},${p.purchaseCount},${Math.round(p.trendScore)},"${p.firstSeen}","${p.lastSeen}"\n`;
   });
-  downloadFile(csv, `minea-tracker-${date()}.csv`, 'text/csv');
+  downloadFile(csv, `tracker-${date()}.csv`, 'text/csv');
 }
 
 function exportJSON() {
-  downloadFile(JSON.stringify(allData, null, 2), `minea-tracker-${date()}.json`, 'application/json');
+  downloadFile(JSON.stringify(allData, null, 2), `tracker-${date()}.json`, 'application/json');
 }
 
 function importJSON(event) {

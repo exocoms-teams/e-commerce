@@ -1,9 +1,3 @@
-"""
-Minea Tracker - Python Backend
-Flask API for product data aggregation, analytics, and persistence.
-Run with: python app.py
-"""
-
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json
@@ -255,7 +249,7 @@ def clear_data():
 
 
 if __name__ == '__main__':
-    print('Minea Tracker Python Backend')
+    print('Python Backend')
     print('Running at http://localhost:5000')
     print('Dashboard at http://localhost:5000/')
     app.run(debug=True, port=5000)

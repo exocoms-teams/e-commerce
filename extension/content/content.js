@@ -1,9 +1,4 @@
-// ============================================================
-// MINEA TRACKER - Content Script
-// Detects products and purchase signals on e-commerce sites
-// ============================================================
-
-console.log('[Minea Tracker] Content script active on:', window.location.hostname);
+console.log('[Tracker] Content script active on:', window.location.hostname);
 
 // Site-specific scrapers for major platforms
 const SITE_SCRAPERS = {

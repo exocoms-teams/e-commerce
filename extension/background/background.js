@@ -1,9 +1,6 @@
-// ============================================================
-// MINEA TRACKER - Background Service Worker
-// Central data store and aggregation engine
-// ============================================================
 
-console.log('[Minea Tracker] Background service worker started');
+
+console.log('[Tracker] Background service worker started');
 
 // ---- Message handler ----
 
