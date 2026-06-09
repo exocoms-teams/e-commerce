@@ -11,6 +11,7 @@
         'views/travel_product_views.xml',
         'views/travel_reservation_views.xml',
         'views/payment_provider_views.xml',
+        'views/website_travel.xml',
         'report/reservation_report.xml',
     ],
     'installable': True,
