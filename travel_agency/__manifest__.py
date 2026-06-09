@@ -8,6 +8,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/email_template.xml',
+        'data/demo.xml',
         'views/travel_product_views.xml',
         'views/travel_reservation_views.xml',
         'views/payment_provider_views.xml',
