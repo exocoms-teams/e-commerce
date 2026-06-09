@@ -4,7 +4,7 @@ class TravelReservation(models.Model):
     _name = 'travel.reservation'
     _description = 'Travel Reservation'
 
-    name = fields.Char(string='Reference', required=True, default='New')
+    name = fields.Char(string='Reference', required=True, copy=False, readonly=True, default='New')
     client_name = fields.Char(string='Client Name', required=True)
     client_email = fields.Char(string='Email')
     client_phone = fields.Char(string='Phone')
@@ -55,6 +55,12 @@ class TravelReservation(models.Model):
                 rec.commission_amount = rec.prix_total * (rec.payment_provider_id.commission_rate / 100)
             else:
                 rec.commission_amount = 0.0
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'New') == 'New':
+            vals['name'] = self.env['ir.sequence'].next_by_code('travel.reservation') or 'New'
+        return super().create(vals)
 
     def action_confirm(self):
         for rec in self:

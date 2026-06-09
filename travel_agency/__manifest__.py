@@ -7,6 +7,7 @@
     'depends': ['base', 'product', 'website'],
     'data': [
         'security/ir.model.access.csv',
+        'data/sequence.xml',
         'data/email_template.xml',
         'data/demo.xml',
         'views/travel_product_views.xml',
