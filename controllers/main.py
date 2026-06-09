@@ -87,11 +87,12 @@ class MonetiqueWebsite(Website):
         return request.redirect('/?rappel=ok')
 
     @http.route('/paiement', type='http', auth='public', website=True)
-    def payment_page(self, **kwargs):
+    def payment_page(self, amount=0, **kwargs):
         return request.render('monetique_theme.page_paiement', {
             'year': datetime.datetime.now().year,
             'error': False,
             'success': False,
+            'form_data': {'amount': amount},
         })
 
     @http.route('/paiement/traiter', type='http', auth='public', website=True,
