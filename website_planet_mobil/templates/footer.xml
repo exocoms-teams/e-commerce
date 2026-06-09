@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ===== Contenu du footer Planet Mobil ===== -->
     <template id="footer" name="Planet Mobil - Footer">
+
+        <!-- Correctif d'affichage : uniquement pour CE footer, ne touche pas au style.css global -->
+        <style>
+            .o_footer { background: var(--white) !important; }
+            .o_footer .tsp-footer-links a { color: var(--muted) !important; }
+            .o_footer .tsp-footer-links a:hover { color: var(--blue) !important; }
+            .o_footer .tsp-link-blue { color: var(--blue) !important; }
+        </style>
 
         <!-- NEWSLETTER -->
         <div class="tsp-newsletter">
@@ -73,7 +80,7 @@
 
     </template>
 
-    <!-- ===== Remplace le footer par défaut d'Odoo par le nôtre ===== -->
+    <!-- Remplace le footer par défaut d'Odoo par le nôtre -->
     <template id="footer_replace" inherit_id="website.layout" name="Planet Mobil - Remplacement du footer">
         <xpath expr="//div[@id='footer']" position="replace">
             <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
