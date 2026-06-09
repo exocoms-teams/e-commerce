@@ -81,5 +81,6 @@ Conformité réglementaire :
     'application': True,
     'auto_install': False,
     'post_init_hook': 'post_init_hook',
+    'post_migrate_hook': 'post_init_hook',
     'images': ['static/description/icon.png'],
 }
