@@ -80,14 +80,16 @@ class ResConfigSettings(models.TransientModel):
         help='Location',
         config_parameter='multi_vendor_marketplace.seller_location_id',
         default=lambda self: self.env.ref(
-            'stock.stock_location_stock'))
+            'stock.stock_location_stock',
+            raise_if_not_found=False))
     seller_warehouse_id = fields.Many2one(
         'stock.warehouse',
         string='Warehouse', help='Warehouse',
         required=True,
         config_parameter='multi_vendor_marketplace.seller_warehouse_id',
         default=lambda self: self.env.ref(
-            'stock.warehouse0'))
+            'stock.warehouse0',
+            raise_if_not_found=False))
     seller_shop = fields.Boolean(
         string='Seller shop', help='Seller shop',
         config_parameter='multi_vendor_marketplace.seller_shop')
@@ -114,14 +116,16 @@ class ResConfigSettings(models.TransientModel):
         help='Seller Payment Journal',
         config_parameter='multi_vendor_marketplace.pay_journal',
         default=lambda self: self.env.ref(
-            'multi_vendor_marketplace.seller_payment_journal_creation'))
+            'multi_vendor_marketplace.seller_payment_journal_creation',
+            raise_if_not_found=False))
     pay_product = fields.Many2one(
         'product.product',
         string='Payment Product',
         help='Payment Product',
         config_parameter='multi_vendor_marketplace.pay_product',
         default=lambda self: self.env.ref(
-            'multi_vendor_marketplace.seller_payment_product_creation'))
+            'multi_vendor_marketplace.seller_payment_product_creation',
+            raise_if_not_found=False))
     seller_request_admin_mail = fields.Boolean(
         string='Mail notification',
         help='Enable notification for '
