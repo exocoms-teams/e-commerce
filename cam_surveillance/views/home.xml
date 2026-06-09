@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- La vue de la page d'accueil -->
+    <!-- Vue de la page d'accueil -->
     <record id="cam_home_view" model="ir.ui.view">
         <field name="name">cam.home</field>
         <field name="type">qweb</field>
@@ -11,23 +11,17 @@
                 <t t-call="website.layout">
                     <div id="wrap">
 
-                        <!-- HERO -->
+                        <!-- Hero -->
                         <section class="cam-hero">
                             <div class="cam-hero-content">
-                                <div class="cam-hero-badge">
-                                    Revendeur certifié AXIS · Vidéosurveillance professionnelle
-                                </div>
-                                <h1 class="cam-hero-title">
-                                    La sécurité intelligente
+                                <div class="cam-hero-badge">Revendeur certifié AXIS · Vidéosurveillance professionnelle</div>
+                                <h1 class="cam-hero-title">La sécurité intelligente
                                     <span>pour votre entreprise</span>
                                 </h1>
-                                <p class="cam-hero-subtitle">
-                                    Caméras réseau, contrôle d'accès et solutions de vidéosurveillance.
-                                    Livraison rapide et support technique gratuit.
-                                </p>
+                                <p class="cam-hero-subtitle">Caméras réseau, contrôle d'accès et solutions de vidéosurveillance. Livraison rapide et support technique gratuit.</p>
                                 <div class="cam-hero-buttons">
                                     <a href="/shop" class="cam-btn-primary">Voir nos produits</a>
-                                    <a href="/contactus" class="cam-btn-secondary">Demander un audit gratuit</a>
+                                   <a href="/contactus" class="cam-btn-secondary cam-btn-audit">Demander un audit gratuit</a>
                                 </div>
                                 <div class="cam-hero-stats">
                                     <div class="cam-stat">
@@ -46,7 +40,7 @@
                             </div>
                         </section>
 
-                        <!-- PROMO BANNER (DÉFILANT) -->
+                        <!-- Bandeau promo -->
                         <div class="cam-promo-banner">
                             <div class="cam-promo-track">
                                 <span>Livraison gratuite dès 500€</span>
@@ -62,7 +56,7 @@
                             </div>
                         </div>
 
-                        <!-- PRODUITS -->
+                        <!-- Produits -->
                         <section class="cam-products">
                             <div class="cam-container">
                                 <div class="cam-section-header">
@@ -70,14 +64,14 @@
                                     <p>Caméras et équipements AXIS certifiés, prêts à déployer</p>
                                 </div>
                                 <div class="cam-products-grid">
-                                   <t t-foreach="request.env['product.template'].search([('is_published','=',True),('categ_id.name','=','Caméras réseau')], limit=8)" t-as="product">
+                                    <t t-foreach="request.env['product.template'].search([('is_published','=',True),('categ_id.name','=','Caméras réseau')], limit=8)" t-as="product">
                                         <a t-attf-href="/shop/#{product.id}" class="cam-product-card">
                                             <div class="cam-product-img">
                                                 <t t-if="product.image_512">
                                                     <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <div class="cam-product-noimg">📷</div>
+                                                    <div class="cam-product-noimg">—</div>
                                                 </t>
                                             </div>
                                             <div class="cam-product-body">
@@ -91,60 +85,54 @@
                                     </t>
                                 </div>
                                 <div class="cam-products-footer">
-                                    <a href="/shop" class="cam-btn-secondary">Voir tous nos produits →</a>
+                                    <a href="/shop" class="cam-btn-secondary">Voir tous nos produits</a>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- CATÉGORIES -->
+                        <!-- Catégories -->
                         <section class="cam-categories">
                             <div class="cam-container">
                                 <div class="cam-section-header">
-                                    <h2>Nos Catégories de Produits</h2>
+                                    <h2>Nos catégories de produits</h2>
                                     <p>Large gamme de produits IP à plateforme ouverte AXIS</p>
                                 </div>
                                 <div class="cam-cat-grid">
                                     <a href="/shop" class="cam-cat-card">
-                                        <div class="cam-cat-icon">📷</div>
                                         <h3>Caméras réseau</h3>
                                         <p>Innovation, qualité et performance</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                     <a href="/shop" class="cam-cat-card">
-                                        <div class="cam-cat-icon">💾</div>
                                         <h3>Stockage et enregistreurs</h3>
                                         <p>Solutions cloud, edge et on-site</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                     <a href="/shop" class="cam-cat-card cam-cat-featured">
-                                        <div class="cam-cat-icon">🔐</div>
                                         <h3>Contrôle d'accès</h3>
                                         <p>Flexible et sécurisé</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                     <a href="/shop" class="cam-cat-card">
-                                        <div class="cam-cat-icon">🔊</div>
                                         <h3>Audio réseau</h3>
                                         <p>Le son chic et facile</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                     <a href="/shop" class="cam-cat-card">
-                                        <div class="cam-cat-icon">📡</div>
                                         <h3>Périphériques radar</h3>
                                         <p>Protection étendue</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                     <a href="/shop" class="cam-cat-card">
-                                        <div class="cam-cat-icon">🔩</div>
                                         <h3>Accessoires</h3>
                                         <p>Tout pour compléter vos systèmes</p>
-                                        <span class="cam-cat-link">Voir →</span>
+                                        <span class="cam-cat-link">Voir</span>
                                     </a>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- POURQUOI NOUS -->
+                        <!-- Pourquoi nous -->
                         <section class="cam-why">
                             <div class="cam-container">
                                 <div class="cam-section-header">
@@ -153,22 +141,18 @@
                                 </div>
                                 <div class="cam-why-grid">
                                     <div class="cam-why-card">
-                                        <div class="cam-why-icon">🏆</div>
                                         <h3>Revendeur certifié AXIS</h3>
                                         <p>Partenaire officiel AXIS Communications, leader mondial de la vidéosurveillance IP</p>
                                     </div>
                                     <div class="cam-why-card">
-                                        <div class="cam-why-icon">⚡</div>
                                         <h3>Livraison rapide</h3>
                                         <p>Expédition sous 24h pour tous les produits en stock</p>
                                     </div>
                                     <div class="cam-why-card">
-                                        <div class="cam-why-icon">🛠️</div>
                                         <h3>Support technique gratuit</h3>
                                         <p>Notre équipe d'experts vous accompagne à chaque étape</p>
                                     </div>
                                     <div class="cam-why-card">
-                                        <div class="cam-why-icon">🔒</div>
                                         <h3>Garantie 5 ans</h3>
                                         <p>Tous nos produits AXIS bénéficient d'une garantie de 5 ans</p>
                                     </div>
@@ -182,7 +166,7 @@
         </field>
     </record>
 
-    <!-- La page liée à TON site -->
+    <!-- Page liée au site Cam Surveillance -->
     <record id="cam_home_page" model="website.page">
         <field name="name">Accueil</field>
         <field name="url">/</field>

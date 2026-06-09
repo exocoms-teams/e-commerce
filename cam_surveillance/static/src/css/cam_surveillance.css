@@ -1,6 +1,4 @@
-/* ===================================
-            CAM SURVEILLANCE 
-   =================================== */
+/* ===== CAM SURVEILLANCE ===== */
 
 :root {
     --orange: #FF6B00;
@@ -9,7 +7,7 @@
     --dark: #1a1a1a;
     --gray: #666;
     --light: #f8f8f8;
-    --transition: all 0.3s ease;
+    --t: all 0.3s ease;
 }
 
 .cam-container {
@@ -18,7 +16,51 @@
     padding: 0 20px;
 }
 
-/* === HERO === */
+.cam-section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.cam-section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+.cam-section-header p {
+    color: var(--gray);
+    font-size: 1.1rem;
+}
+
+/* Boutons */
+.cam-btn-primary,
+.cam-btn-secondary {
+    padding: 15px 35px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: var(--t);
+}
+.cam-btn-primary {
+    background: var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(255,107,0,0.3);
+}
+.cam-btn-primary:hover {
+    background: var(--orange-dark);
+    color: #fff;
+    transform: translateY(-2px);
+}
+.cam-btn-secondary {
+    background: #fff;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+}
+.cam-btn-secondary:hover {
+    background: var(--orange);
+    color: #fff;
+}
+
+/* Hero */
 .cam-hero {
     background: linear-gradient(135deg, rgba(0,0,0,0.65), rgba(255,107,0,0.45)),
                 url('/cam_surveillance/static/src/img/hero-bg.jpeg');
@@ -27,12 +69,10 @@
     padding: 120px 20px;
     text-align: center;
 }
-
 .cam-hero-content {
     max-width: 800px;
     margin: 0 auto;
 }
-
 .cam-hero-badge {
     display: inline-block;
     background: var(--orange-light);
@@ -44,7 +84,6 @@
     font-size: 0.9rem;
     margin-bottom: 25px;
 }
-
 .cam-hero-title {
     font-size: 3.5rem;
     font-weight: 800;
@@ -52,19 +91,16 @@
     color: #fff;
     margin-bottom: 20px;
 }
-
 .cam-hero-title span {
     color: var(--orange);
     display: block;
 }
-
 .cam-hero-subtitle {
     font-size: 1.2rem;
     color: rgba(255,255,255,0.9);
     margin-bottom: 35px;
     line-height: 1.6;
 }
-
 .cam-hero-buttons {
     display: flex;
     gap: 15px;
@@ -72,47 +108,12 @@
     flex-wrap: wrap;
     margin-bottom: 50px;
 }
-
-.cam-btn-primary {
-    background: var(--orange);
-    color: #fff;
-    padding: 15px 35px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(255,107,0,0.3);
-}
-
-.cam-btn-primary:hover {
-    background: var(--orange-dark);
-    color: #fff;
-    transform: translateY(-2px);
-}
-
-.cam-btn-secondary {
-    background: #fff;
-    color: var(--orange);
-    border: 2px solid var(--orange);
-    padding: 13px 35px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: var(--transition);
-}
-
-.cam-btn-secondary:hover {
-    background: var(--orange);
-    color: #fff;
-}
-
 .cam-hero-stats {
     display: flex;
     gap: 20px;
     justify-content: center;
     flex-wrap: wrap;
 }
-
 .cam-stat {
     display: flex;
     flex-direction: column;
@@ -123,20 +124,18 @@
     padding: 18px 30px;
     min-width: 120px;
 }
-
 .cam-stat-number {
     font-size: 2.2rem;
     font-weight: 800;
     color: var(--orange);
 }
-
 .cam-stat-label {
     color: #fff;
     font-size: 0.9rem;
     margin-top: 4px;
 }
 
-/* === PROMO BANNER (DÉFILANT) === */
+/* Bandeau promo défilant */
 .cam-promo-banner {
     background: var(--orange);
     color: #fff;
@@ -144,84 +143,57 @@
     overflow: hidden;
     white-space: nowrap;
 }
-
 .cam-promo-track {
     display: inline-flex;
     gap: 60px;
     animation: cam-scroll 25s linear infinite;
 }
-
 .cam-promo-track span {
     font-weight: 600;
     position: relative;
     padding-left: 60px;
 }
-
 .cam-promo-track span::before {
     content: "•";
     position: absolute;
     left: 0;
     color: rgba(255,255,255,0.6);
 }
-
 @keyframes cam-scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
 }
-
 .cam-promo-banner:hover .cam-promo-track {
     animation-play-state: paused;
 }
 
-/* === CATÉGORIES === */
+/* Catégories */
 .cam-categories {
     padding: 80px 20px;
     background: #fff;
 }
-
-.cam-section-header {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.cam-section-header h2 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 10px;
-}
-
-.cam-section-header p {
-    color: var(--gray);
-    font-size: 1.1rem;
-}
-
 .cam-cat-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
 }
-
 .cam-cat-card {
     background: #fff;
     border: 1px solid #eee;
+    border-top: 3px solid transparent;
     border-radius: 12px;
     padding: 35px 25px;
     text-align: center;
     text-decoration: none;
-    transition: var(--transition);
-    border-top: 3px solid transparent;
+    transition: var(--t);
 }
-
 .cam-cat-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     border-top: 3px solid var(--orange);
 }
-
-.cam-cat-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
+.cam-btn-audit {
+    border: none;
 }
 
 .cam-cat-card h3 {
@@ -229,34 +201,29 @@
     margin-bottom: 8px;
     font-size: 1.3rem;
 }
-
 .cam-cat-card p {
     color: var(--gray);
     margin-bottom: 15px;
 }
-
 .cam-cat-link {
     color: var(--orange);
     font-weight: 700;
 }
-
 .cam-cat-featured {
     background: var(--orange-light);
     border-top: 3px solid var(--orange);
 }
 
-/* === POURQUOI NOUS === */
+/* Pourquoi nous */
 .cam-why {
     padding: 80px 20px;
     background: var(--light);
 }
-
 .cam-why-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
 }
-
 .cam-why-card {
     background: #fff;
     border-radius: 12px;
@@ -265,134 +232,38 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-.cam-why-icon {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-}
-
 .cam-why-card h3 {
     color: var(--dark);
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
-
 .cam-why-card p {
     color: var(--gray);
     font-size: 0.95rem;
 }
 
-/* === FOOTER === */
-.cam-footer {
-    background: #2a2a2a;
-    color: #fff;
-}
-
-.cam-footer-top {
-    padding: 60px 0 40px;
-}
-
-.cam-footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 40px;
-}
-
-.cam-footer-logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #fff;
-    text-decoration: none;
-}
-
-.cam-footer-logo span { color: var(--orange); }
-
-.cam-footer-brand p {
-    color: #888;
-    margin: 15px 0;
-}
-
-.cam-footer-badges {
-    display: flex;
-    gap: 10px;
-}
-
-.cam-badge {
-    background: #3a3a3a;
-    color: var(--orange);
-    padding: 5px 12px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.cam-footer-col h4 {
-    color: #fff;
-    margin-bottom: 15px;
-    font-size: 1rem;
-}
-
-.cam-footer-col ul {
-    list-style: none;
-    padding: 0;
-}
-
-.cam-footer-col li { margin-bottom: 10px; }
-
-.cam-footer-col a {
-    color: #888;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.cam-footer-col a:hover { color: var(--orange); }
-
-.cam-footer-bottom {
-    border-top: 1px solid #3a3a3a;
-    padding: 20px 0;
-}
-
-.cam-footer-bottom .cam-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cam-footer-bottom p { color: #888; margin: 0; }
-
-.cam-footer-bottom nav a {
-    color: #888;
-    text-decoration: none;
-    margin-left: 20px;
-}
-
-.cam-footer-bottom nav a:hover { color: var(--orange); }
-
-/* === PRODUITS === */
+/* Produits */
 .cam-products {
     padding: 80px 20px;
     background: var(--light);
 }
-
 .cam-products-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
 }
-
 .cam-product-card {
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
     text-decoration: none;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: var(--transition);
+    transition: var(--t);
 }
-
 .cam-product-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(0,0,0,0.12);
 }
-
 .cam-product-img {
     height: 200px;
     background: #f0f0f0;
@@ -400,41 +271,34 @@
     align-items: center;
     justify-content: center;
 }
-
 .cam-product-img img {
     width: 100%;
     height: 200px;
     object-fit: cover;
 }
-
 .cam-product-noimg {
     font-size: 4rem;
     opacity: 0.3;
 }
-
 .cam-product-body {
     padding: 20px;
 }
-
 .cam-product-body h3 {
     color: var(--dark);
     font-size: 1.1rem;
     margin-bottom: 15px;
     min-height: 50px;
 }
-
 .cam-product-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .cam-product-price {
     color: var(--orange);
     font-weight: 800;
     font-size: 1.2rem;
 }
-
 .cam-btn-sm {
     background: var(--orange);
     color: #fff;
@@ -443,16 +307,86 @@
     font-weight: 700;
     font-size: 0.9rem;
 }
-
 .cam-products-footer {
     text-align: center;
     margin-top: 40px;
 }
-/* === RESPONSIVE === */
+
+/* Footer */
+.cam-footer {
+    background: #2a2a2a;
+    color: #fff;
+}
+.cam-footer-top {
+    padding: 60px 0 40px;
+}
+.cam-footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+}
+.cam-footer-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
+}
+.cam-footer-logo span { color: var(--orange); }
+.cam-footer-brand p {
+    color: #888;
+    margin: 15px 0;
+}
+.cam-footer-badges {
+    display: flex;
+    gap: 10px;
+}
+.cam-badge {
+    background: #3a3a3a;
+    color: var(--orange);
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.cam-footer-col h4 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+.cam-footer-col ul {
+    list-style: none;
+    padding: 0;
+}
+.cam-footer-col li { margin-bottom: 10px; }
+.cam-footer-col a {
+    color: #888;
+    text-decoration: none;
+    transition: var(--t);
+}
+.cam-footer-col a:hover { color: var(--orange); }
+.cam-footer-bottom {
+    border-top: 1px solid #3a3a3a;
+    padding: 20px 0;
+}
+.cam-footer-bottom .cam-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.cam-footer-bottom p { color: #888; margin: 0; }
+.cam-footer-bottom nav a {
+    color: #888;
+    text-decoration: none;
+    margin-left: 20px;
+}
+.cam-footer-bottom nav a:hover { color: var(--orange); }
+
+/* Responsive */
 @media (max-width: 768px) {
     .cam-hero-title { font-size: 2.2rem; }
-    .cam-cat-grid { grid-template-columns: 1fr; }
-    .cam-why-grid { grid-template-columns: 1fr 1fr; }
-    .cam-footer-grid { grid-template-columns: 1fr 1fr; }
+    .cam-cat-grid,
+    .cam-why-grid,
+    .cam-footer-grid,
     .cam-products-grid { grid-template-columns: 1fr 1fr; }
+    .cam-cat-grid { grid-template-columns: 1fr; }
 }
