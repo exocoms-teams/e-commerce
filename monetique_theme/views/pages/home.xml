@@ -38,41 +38,6 @@
 
             <t t-call="monetique_theme.stats_section"/>
 
-            <section class="mn-section mn-products">
-                <div class="mn-container">
-                    <div class="mn-section__header">
-                        <span class="mn-eyebrow">Nos produits</span>
-                        <h2>Nos solutions les plus demandees</h2>
-                        <p>Equipements certifies, prets a deployer. Livraison et installation incluses.</p>
-                    </div>
-                    <div class="mn-products__grid">
-                        <t t-set="products" t-value="website.sale_product_domain()"/>
-                        <t t-foreach="request.env['product.template'].search([], limit=8)" t-as="product">
-                            <a t-attf-href="/shop/#{product.id}" class="mn-product-card">
-                                <div class="mn-product-card__img">
-                                    <t t-if="product.image_512">
-                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="mn-product-card__no-img"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="26" rx="4" stroke="#94A3B8" stroke-width="2"/><path d="M6 18h36" stroke="#94A3B8" stroke-width="2"/><rect x="14" y="22" width="20" height="8" rx="2" fill="#94A3B8" opacity="0.3"/></svg></div>
-                                    </t>
-                                </div>
-                                <div class="mn-product-card__body">
-                                    <h3 t-esc="product.name"/>
-                                    <div class="mn-product-card__footer">
-                                        <span class="mn-product-card__price" t-esc="'%.2f € HT' % product.list_price"/>
-                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </t>
-                        
-                    </div>
-                    <div class="mn-section__footer">
-                        <a href="/shop" class="mn-btn mn-btn--outline">Voir tous nos produits &#8594;</a>
-                    </div>
-                </div>
-            </section>
 
             <section class="mn-section mn-products">
                 <div class="mn-container">
