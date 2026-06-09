@@ -1,199 +1,103 @@
-odoo.define('multi_vendor_marketplace.seller_dashboard_action', function (require){
-"use strict";
-var AbstractAction = require('web.AbstractAction');
-var ControlPanel = require('web.ControlPanel');
-var core = require('web.core');
-var QWeb = core.qweb;
-var rpc = require('web.rpc');
-var ajax = require('web.ajax');
-var CustomDashBoard = AbstractAction.extend({
-   template: 'SellerDashBoard',
-   //Set the seller dashboard
-   start: function() {
-        var self = this;
-        ajax.rpc('/seller_dashboard').then(function (res) {
-        $('#pending').text(res.pending)
-        $('#approved').text(res.approved)
-        $('#rejected').text(res.rejected)
-        if(res.user_type == false){
-        $('#check_user_type').hide()
+/** @odoo-module **/
+import { registry } from "@web/core/registry";
+import { Component, onMounted, useRef } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
+import { rpc } from "@web/core/network/rpc";
+
+class SellerDashBoard extends Component {
+    static template = "SellerDashBoard";
+
+    setup() {
+        this.action = useService("action");
+        onMounted(() => this._loadDashboard());
+    }
+
+    async _loadDashboard() {
+        try {
+            const res = await rpc("/seller_dashboard");
+            if (!res) return;
+
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+
+            set("pending", res.pending);
+            set("approved", res.approved);
+            set("rejected", res.rejected);
+
+            if (res.user_type === false) {
+                const el = document.getElementById("check_user_type");
+                if (el) el.style.display = "none";
+            }
+
+            set("product_pending", res.pending);
+            set("product_approved", res.approved);
+            set("product_rejected", res.rejected);
+            set("seller_pending", res.seller_pending);
+            set("seller_approved", res.seller_approved);
+            set("seller_rejected", res.seller_rejected);
+            set("inventory_pending", res.inventory_pending);
+            set("inventory_approved", res.inventory_approved);
+            set("inventory_rejected", res.inventory_rejected);
+            set("payment_pending", res.payment_pending);
+            set("payment_approved", res.payment_approved);
+            set("payment_rejected", res.payment_rejected);
+            set("order_pending", res.order_pending);
+            set("order_approved", res.order_approved);
+            set("order_shipped", res.order_shipped);
+            set("order_cancel", res.order_cancel);
+
+            this._bindClick("product_pending", "product.template", "kanban",
+                [[res.product_kanban_id, "kanban"]], [["state", "=", "pending"]]);
+            this._bindClick("product_approved", "product.template", "kanban",
+                [[res.product_kanban_id, "kanban"]], [["state", "=", "approved"]]);
+            this._bindClick("product_rejected", "product.template", "kanban",
+                [[res.product_kanban_id, "kanban"]], [["state", "=", "rejected"]]);
+            this._bindClick("divseller_pending", "res.partner", "kanban,form",
+                [[false, "kanban"], [false, "form"]], [["state", "=", "Pending for Approval"]]);
+            this._bindClick("divseller_approved", "res.partner", "kanban,form",
+                [[false, "kanban"], [false, "form"]], [["state", "=", "Approved"]]);
+            this._bindClick("divseller_rejected", "res.partner", "kanban,form",
+                [[false, "kanban"], [false, "form"]], [["state", "=", "Denied"]]);
+            this._bindClick("div_payment_pending", "seller.payment", "list,form",
+                [[false, "list"], [false, "form"]], [["state", "=", "Requested"]]);
+            this._bindClick("div_payment_approved", "seller.payment", "list,form",
+                [[false, "list"], [false, "form"]], [["state", "=", "Validated"]]);
+            this._bindClick("div_payment_rejected", "seller.payment", "list,form",
+                [[false, "list"], [false, "form"]], [["state", "=", "Rejected"]]);
+            this._bindClick("divorder_pending", "sale.order.line", "kanban,form",
+                [[res.sale_order_kanban_id, "kanban"], [res.sale_order_form_id, "form"]],
+                [["state", "=", "pending"]]);
+            this._bindClick("divorder_approved", "sale.order.line", "kanban,form",
+                [[res.sale_order_kanban_id, "kanban"], [res.sale_order_form_id, "form"]],
+                [["state", "=", "approved"]]);
+            this._bindClick("divorder_shipped", "sale.order.line", "kanban,form",
+                [[res.sale_order_kanban_id, "kanban"], [res.sale_order_form_id, "form"]],
+                [["state", "=", "shipped"]]);
+            this._bindClick("divorder_cancel", "sale.order.line", "kanban,form",
+                [[res.sale_order_kanban_id, "kanban"], [res.sale_order_form_id, "form"]],
+                [["state", "=", "cancel"]]);
+        } catch (e) {
+            console.error("Dashboard error:", e);
         }
-        $("#product_pending").click(function(){
-        self.do_action({
-            name:'Product Pending',
-            type: 'ir.actions.act_window',
-            res_model: 'product.template',
-            view_mode: 'kanban',
-            views: [[res.product_kanban_id, 'kanban']],
-            domain: [['state', '=', 'pending']],
-        })
-        })
-        $("#product_approved").click(function(){
-        self.do_action({
-            name:'Product Approved',
-            type: 'ir.actions.act_window',
-            res_model: 'product.template',
-            view_mode: 'kanban',
-            views: [[res.product_kanban_id, 'kanban']],
-            domain: [['state', '=', 'approved']],
-        })
-        })
-        $("#product_rejected").click(function(){
-        self.do_action({
-            name:'Product Rejected',
-            type: 'ir.actions.act_window',
-            res_model: 'product.template',
-            view_mode: 'kanban',
-            views: [[res.product_kanban_id, 'kanban']],
-            domain: [['state', '=', 'rejected']],
-        })
-        })
-        $("#seller_pending").text(res.seller_pending)
-        $("#seller_approved").text(res.seller_approved)
-        $("#seller_rejected").text(res.seller_rejected)
-        $("#inventory_pending").text(res.inventory_pending)
-        $("#inventory_approved").text(res.inventory_approved)
-        $("#inventory_rejected").text(res.inventory_rejected)
-        $("#payment_pending").text(res.payment_pending)
-        $("#payment_approved").text(res.payment_approved)
-        $("#payment_rejected").text(res.payment_rejected)
-        $("#order_pending").text(res.order_pending)
-        $("#order_approved").text(res.order_approved)
-        $("#order_shipped").text(res.order_shipped)
-        $("#order_cancel").text(res.order_cancel)
-        $("#divseller_rejected").click(function(){
-        self.do_action({
-            name:'Seller Rejected',
-            type: 'ir.actions.act_window',
-            res_model: 'res.partner',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Denied']],
-        })
-        })
-        $("#divseller_approved").click(function(){
-        self.do_action({
-            name:'Seller Approved',
-            type: 'ir.actions.act_window',
-            res_model: 'res.partner',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Approved']],
-        })
-        })
-        $("#divseller_pending").click(function(){
-        self.do_action({
-            name:'Seller Pending',
-            type: 'ir.actions.act_window',
-            res_model: 'res.partner',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Pending for Approval']],
-        })
-        })
-        $("#inv_req_pending").click(function(){
-        self.do_action({
-            name:'Inventory Request Pending',
-            type: 'ir.actions.act_window',
-            res_model: 'inventory.request',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Requested']],
-        })
-        })
-        $("#inv_req_approved").click(function(){
-        self.do_action({
-            name:'Inventory Request Approved',
-            type: 'ir.actions.act_window',
-            res_model: 'inventory.request',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Approved']],
-        })
-        })
-        $("#inv_req_rejected").click(function(){
-        self.do_action({
-            name:'Inventory Request Rejected',
-            type: 'ir.actions.act_window',
-            res_model: 'inventory.request',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Rejected']],
-        })
-        })
-        $("#div_payment_pending").click(function(){
-        self.do_action({
-            name:'Payment Request Pending',
-            type: 'ir.actions.act_window',
-            res_model: 'seller.payment',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Requested']],
-        })
-        })
-        $("#div_payment_approved").click(function(){
-        self.do_action({
-            name:'Payment Request Approved',
-            type: 'ir.actions.act_window',
-            res_model: 'seller.payment',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Validated']],
-        })
-        })
-        $("#div_payment_rejected").click(function(){
-        self.do_action({
-            name:'Payment Request Rejected',
-            type: 'ir.actions.act_window',
-            res_model: 'seller.payment',
-            view_mode: 'kanban,form',
-            views: [[false, 'kanban'],[false, 'form']],
-            domain: [['state', '=', 'Rejected']],
-        })
-        })
-        $("#divorder_pending").click(function(){
-        self.do_action({
-            name:'Sale Order Pending',
-            type: 'ir.actions.act_window',
-            res_model: 'sale.order.line',
-            view_mode: 'kanban,form',
-            views: [[res.sale_order_kanban_id, 'kanban'],[res.sale_order_form_id, 'form']],
-            domain: [['state', '=', 'pending']],
-        })
-        })
-        $("#divorder_approved").click(function(){
-        self.do_action({
-            name:'Sale Order Approved',
-            type: 'ir.actions.act_window',
-            res_model: 'sale.order.line',
-            view_mode: 'kanban,form',
-            views: [[res.sale_order_kanban_id, 'kanban'],[res.sale_order_form_id, 'form']],
-            domain: [['state', '=', 'approved']],
-        })
-        })
-        $("#divorder_shipped").click(function(){
-        self.do_action({
-            name:'Sale Order Shipped',
-            type: 'ir.actions.act_window',
-            res_model: 'sale.order.line',
-            view_mode: 'kanban,form',
-            views: [[res.sale_order_kanban_id, 'kanban'],[res.sale_order_form_id, 'form']],
-            domain: [['state', '=', 'shipped']],
-        })
-        })
-        $("#divorder_cancel").click(function(){
-        self.do_action({
-            name:'Sale Order cancelled',
-            type: 'ir.actions.act_window',
-            res_model: 'sale.order.line',
-            view_mode: 'kanban,form',
-            views: [[res.sale_order_kanban_id, 'kanban'],[res.sale_order_form_id, 'form']],
-            domain: [['state', '=', 'cancel']],
-        })
-        })
-        })
-    },
-})
-core.action_registry.add('seller_dashboard_tag', CustomDashBoard);
-return CustomDashBoard
-})
+    }
+
+    _bindClick(id, model, viewMode, views, domain) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.cursor = "pointer";
+            el.addEventListener("click", () => {
+                this.action.doAction({
+                    type: "ir.actions.act_window",
+                    res_model: model,
+                    view_mode: viewMode,
+                    views: views,
+                    domain: domain,
+                });
+            });
+        }
+    }
+}
+
+registry.category("actions").add("seller_dashboard_tag", SellerDashBoard);
