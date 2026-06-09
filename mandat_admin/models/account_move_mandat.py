@@ -134,21 +134,6 @@ class AccountMove(models.Model):
             )
 
     # ─────────────────────────────────────────────────────────────────────────
-    # Hooks ORM
-    # ─────────────────────────────────────────────────────────────────────────
-
-    def action_post(self):
-        """
-        Override de la validation de l'écriture comptable.
-        Après la validation standard, on crée le mandat si le journal est MAND.
-        """
-        res = super().action_post()
-        # On ne crée le mandat que sur les écritures validées (posted)
-        posted = self.filtered(lambda m: m.state == 'posted')
-        posted._auto_create_mandat_if_needed()
-        return res
-
-    # ─────────────────────────────────────────────────────────────────────────
     # Action vue mandat
     # ─────────────────────────────────────────────────────────────────────────
 

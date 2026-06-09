@@ -41,9 +41,6 @@ Conformité réglementaire :
         'account',
         'mail',
         'base_setup',
-        'l10n_fr',
-        'payment',
-        'sale',
     ],
     'data': [
         # Sécurité
