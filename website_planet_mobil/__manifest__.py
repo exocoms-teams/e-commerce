@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'planet Mobil- Website Planet Mobil',
-    'version': '19.0.1.0.8',
+    'version': '19.0.1.0.9',
     'category': 'Website/eCommerce',
     'summary': 'Page d\'accueil e-commerce Planet Mobil',
     'author': 'Planet Mobil',
