@@ -5,16 +5,137 @@
         <t t-call="website_planet_mobil.layout">
 
             <div id="wrap" class="oe_structure">
-                <div id="oe_structure_contact_top" class="oe_structure oe_empty" />
+
+                <!-- Bandeau -->
                 <div class="contact-hero">
                     <h1>📞 Contactez-nous</h1>
                     <p>Notre équipe est disponible pour répondre à toutes vos questions</p>
                 </div>
 
-                <div id="oe_structure_contact_middle" class="oe_structure oe_empty" />
+                <!-- Zone coordonnées + formulaire -->
+                <div class="contact-section">
+                    <div class="container">
+                        <div class="row">
 
-                <div id="oe_structure_contact_bottom" class="oe_structure oe_empty" />
+                            <!-- Colonne coordonnées -->
+                            <div class="col-lg-5 contact-info">
+                                <h2>Nos coordonnées</h2>
+
+                                <div class="contact-item">
+                                    <span class="contact-icon">📍</span>
+                                    <div>
+                                        <strong>Adresse</strong>
+                                        <p>[Adresse à compléter], Paris</p>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <span class="contact-icon">📞</span>
+                                    <div>
+                                        <strong>Téléphone</strong>
+                                        <p>01 84 79 37 55</p>
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <span class="contact-icon">✉️</span>
+                                    <div>
+                                        <strong>Email</strong>
+                                        <p>contact@exocom.fr</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Colonne formulaire -->
+                            <div class="col-lg-7 contact-form-wrap">
+                                <h2>Envoyez-nous un message</h2>
+
+                                <form action="/website/form/" method="post"
+                                      enctype="multipart/form-data"
+                                      class="s_website_form o_mark_required"
+                                      data-mark="*"
+                                      data-model_name="mail.mail"
+                                      data-success-mode="redirect"
+                                      data-success-page="/contactus-thank-you">
+
+                                    <div class="s_website_form_rows row s_col_no_bgcolor">
+
+                                        <!-- Nom -->
+                                        <div class="mb-3 col-12 s_website_form_field s_website_form_required" data-name="Field">
+                                            <label class="s_website_form_label" for="contact_name">
+                                                <span class="s_website_form_label_content">Nom</span>
+                                                <span class="s_website_form_mark"> *</span>
+                                            </label>
+                                            <input type="text" class="form-control s_website_form_input" name="contact_name" required="1"/>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="mb-3 col-12 s_website_form_field s_website_form_required" data-name="Field">
+                                            <label class="s_website_form_label" for="email_from">
+                                                <span class="s_website_form_label_content">Email</span>
+                                                <span class="s_website_form_mark"> *</span>
+                                            </label>
+                                            <input type="email" class="form-control s_website_form_input" name="email_from" required="1"/>
+                                        </div>
+
+                                        <!-- Téléphone -->
+                                        <div class="mb-3 col-12 s_website_form_field" data-name="Field">
+                                            <label class="s_website_form_label" for="phone">
+                                                <span class="s_website_form_label_content">Téléphone</span>
+                                            </label>
+                                            <input type="tel" class="form-control s_website_form_input" name="phone"/>
+                                        </div>
+
+                                        <!-- Sujet -->
+                                        <div class="mb-3 col-12 s_website_form_field s_website_form_required" data-name="Field">
+                                            <label class="s_website_form_label" for="subject">
+                                                <span class="s_website_form_label_content">Sujet</span>
+                                                <span class="s_website_form_mark"> *</span>
+                                            </label>
+                                            <input type="text" class="form-control s_website_form_input" name="subject" required="1"/>
+                                        </div>
+
+                                        <!-- Message -->
+                                        <div class="mb-3 col-12 s_website_form_field s_website_form_required" data-name="Field">
+                                            <label class="s_website_form_label" for="description">
+                                                <span class="s_website_form_label_content">Message</span>
+                                                <span class="s_website_form_mark"> *</span>
+                                            </label>
+                                            <textarea class="form-control s_website_form_input" name="description" rows="5" required="1"></textarea>
+                                        </div>
+
+                                        <!-- Destinataire de l'email (caché) -->
+                                        <input type="hidden" class="form-control s_website_form_input" name="email_to" value="contact@planet-mobil.com"/>
+
+                                        <!-- Bouton -->
+                                        <div class="mb-0 py-2 col-12 s_website_form_submit" data-name="Submit Button">
+                                            <div class="s_website_form_label"/>
+                                            <a href="#" role="button" class="btn btn-primary s_website_form_send">Envoyer</a>
+                                            <span id="s_website_form_result"/>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- Styles de la page contact -->
+            <style>
+                .contact-section { padding: 50px 0; }
+                .contact-info { padding-right: 30px; }
+                .contact-item { display: flex; align-items: flex-start; margin-bottom: 25px; }
+                .contact-icon { font-size: 28px; margin-right: 15px; }
+                .contact-item strong { display: block; margin-bottom: 4px; }
+                .contact-item p { margin: 0; color: #555; }
+                .contact-form-wrap { background: #f8f9fa; padding: 30px; border-radius: 10px; }
+                .contact-form-wrap h2 { margin-bottom: 20px; }
+            </style>
+
         </t>
     </template>
 
