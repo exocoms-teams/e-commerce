@@ -80,9 +80,12 @@ def post_init_hook(env):
         7: ('Boutique', '/shop',         'Shop'),
         6: ('Nos services', '/services', 'Our Services'),
     }
-    for menu_id, (name_fr, url, name_en) in menus_update.items():
-        menu = env['website.menu'].browse(menu_id)
-        if not menu.exists():
+    for url, name_fr, name_en in menus_update:
+        menu = env['website.menu'].search([
+            ('url', '=', url),
+            ('website_id', '!=', False),
+        ], limit=1)
+        if not menu:
             continue
         menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
         if lang_en:
@@ -96,7 +99,9 @@ def post_init_hook(env):
             menu.unlink()
 
     # === PROFIL DROPDOWN — Mon compte ===
-    account_view = env['ir.ui.view'].browse(637)
+    account_view = env['ir.ui.view'].search([
+        ('key', '=', 'portal.user_dropdown')
+        ], limit=1)
     if account_view.exists():
         account_view.write({'arch': """
 <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
