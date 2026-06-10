@@ -74,30 +74,52 @@ def post_init_hook(env):
     except Exception:
         pass
 
-    # === MENUS — CORRECTION 1 : recherche par URL au lieu d'IDs ===
-    menus_update = [
-        ('/',         'Accueil',      'Home'),
-        ('/shop',     'Boutique',     'Shop'),
-        ('/services', 'Nos services', 'Our Services'),
-    ]
-    for url, name_fr, name_en in menus_update:
-        menu = env['website.menu'].search([
-            ('url', '=', url),
+    # === MENUS ===
+        menus_update = [
+            ('/',         'Accueil',      'Home'),
+            ('/shop',     'Boutique',     'Shop'),
+            ('/services', 'Nos services', 'Our Services'),
+        ]
+        for url, name_fr, name_en in menus_update:
+            menu = env['website.menu'].search([
+                ('url', '=', url),
+                ('website_id', '!=', False),
+            ], limit=1)
+            if not menu:
+                continue
+            menu.with_context(lang='fr_FR').write({'name': name_fr})
+            if lang_en:
+                menu.with_context(lang='en_US').write({'name': name_en})
+
+        # Créer le menu services s'il n'existe pas
+        menu_services = env['website.menu'].search([
+            ('url', '=', '/services'),
             ('website_id', '!=', False),
         ], limit=1)
-        if not menu:
-            continue
-        menu.with_context(lang='fr_FR').write({'name': name_fr})
-        if lang_en:
-            menu.with_context(lang='en_US').write({'name': name_en})
+        if not menu_services:
+            parent = env['website.menu'].search([
+                ('parent_id', '=', False),
+                ('website_id', '!=', False),
+            ], limit=1)
+            if parent and website:
+                env['website.menu'].create({
+                    'name': 'Nos services',
+                    'url': '/services',
+                    'parent_id': parent.id,
+                    'website_id': website.id,
+                    'sequence': 30,
+                })
 
-    # Supprimer les menus indésirables par URL
-    menus_to_delete = env['website.menu'].search([
-        ('url', 'in', ['/blog', '/forum', '/slides', '/event']),
-        ('website_id', '!=', False),
-    ])
-    if menus_to_delete:
-        menus_to_delete.unlink()
+        # Supprimer les menus indésirables par URL
+        menus_to_delete = env['website.menu'].search([
+            ('url', 'in', [
+                '/blog', '/forum', '/slides', '/event',
+                '/contactus', '/contact-us',
+            ]),
+            ('website_id', '!=', False),
+        ])
+        if menus_to_delete:
+            menus_to_delete.unlink()
 
     # === PROFIL DROPDOWN — CORRECTION 2 : commenté car o_logout_divider
     # n'existe plus dans Odoo 19 ===
