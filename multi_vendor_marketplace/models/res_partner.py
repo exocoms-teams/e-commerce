@@ -176,7 +176,7 @@ class ResPartner(models.Model):
         """ Seller approve state also changed """
         self.state = 'Approved'
 
-    def _group_expand_states(self,states, domain, order):
+    def _group_expand_states(self,states, domain, order=None):
         """Returns a list of states"""
         return [key for key, val in type(self).state.selection]
 
@@ -280,7 +280,7 @@ class ResPartner(models.Model):
             'target': 'new',
         }
 
-    def _group_expand_states(self, states, domain, order):
+    def _group_expand_states(self, states, domain, order=None):
         """ For expanding the values for selection field """
         return [key for key, val in type(self).state.selection]
 
