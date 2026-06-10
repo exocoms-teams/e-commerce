@@ -75,11 +75,11 @@ def post_init_hook(env):
         pass
 
     # === MENUS — FR par défaut + traduction EN ===
-    menus_update = {
-        5: ('Accueil', '/',              'Home'),
-        7: ('Boutique', '/shop',         'Shop'),
-        6: ('Nos services', '/services', 'Our Services'),
-    }
+    menus_update = [
+        ('/', 'Accueil', 'Home'),
+        ('/shop', 'Boutique', 'Shop'),
+        ('/services', 'Nos services', 'Our Services'),
+    ]
     for url, name_fr, name_en in menus_update:
         menu = env['website.menu'].search([
             ('url', '=', url),
@@ -87,17 +87,17 @@ def post_init_hook(env):
         ], limit=1)
         if not menu:
             continue
-        menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
+        menu.with_context(lang='fr_FR').write({'name': name_fr})
         if lang_en:
             menu.with_context(lang='en_US').write({'name': name_en})
 
     # Supprimer les menus indésirables
-    menus_to_delete = [9, 10, 11, 12, 13]
-    for menu_id in menus_to_delete:
-        menu = env['website.menu'].browse(menu_id)
-        if menu.exists():
-            menu.unlink()
-
+    menus_to_delete = env['website.menu'].search([
+        ('url', 'in', ['/blog', '/forum', '/slides', '/event']),
+        ('website_id', '!=', False),
+    ])
+    if menus_to_delete:
+        menus_to_delete.unlink()
     # === PROFIL DROPDOWN — Mon compte ===
     account_view = env['ir.ui.view'].search([
         ('key', '=', 'portal.user_dropdown')
