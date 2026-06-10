@@ -12,6 +12,62 @@
 
                 <div class="row">
 
+                    <div class="col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Filtrer</h5>
+                                <form action="/travels" method="GET">
+                                    <div class="mb-3">
+                                        <label class="form-label">Destination</label>
+                                        <input type="text" name="destination" class="form-control"
+                                            placeholder="Ville ou pays"
+                                            t-att-value="filters.get('destination', '')"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Type de voyage</label>
+                                        <select name="type_voyage" class="form-select">
+                                            <option value="">Tous</option>
+                                            <option value="aller_simple"
+                                                t-att-selected="filters.get('type_voyage') == 'aller_simple' or None">Aller simple</option>
+                                            <option value="aller_retour"
+                                                t-att-selected="filters.get('type_voyage') == 'aller_retour' or None">Aller-retour</option>
+                                            <option value="circuit"
+                                                t-att-selected="filters.get('type_voyage') == 'circuit' or None">Circuit touristique</option>
+                                            <option value="sejour"
+                                                t-att-selected="filters.get('type_voyage') == 'sejour' or None">Séjour</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Étoiles minimum</label>
+                                        <select name="etoiles" class="form-select">
+                                            <option value="">Toutes</option>
+                                            <option value="1" t-att-selected="filters.get('etoiles') == '1' or None">1 étoile et +</option>
+                                            <option value="2" t-att-selected="filters.get('etoiles') == '2' or None">2 étoiles et +</option>
+                                            <option value="3" t-att-selected="filters.get('etoiles') == '3' or None">3 étoiles et +</option>
+                                            <option value="4" t-att-selected="filters.get('etoiles') == '4' or None">4 étoiles et +</option>
+                                            <option value="5" t-att-selected="filters.get('etoiles') == '5' or None">5 étoiles</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Prix max (€)</label>
+                                        <input type="number" name="prix_max" class="form-control"
+                                            min="0" t-att-value="filters.get('prix_max', '')"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fa fa-filter me-2"/>
+                                        Filtrer
+                                    </button>
+                                    <a href="/travels" class="btn btn-link w-100 mt-2">
+                                        Réinitialiser
+                                    </a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9">
+                    <div class="row">
+
                     <t t-foreach="products" t-as="product">
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 shadow-sm">
@@ -38,7 +94,7 @@
                                     <a t-attf-href="/travels/#{product.id}"
                                         class="btn btn-primary w-100">
                                         <i class="fa fa-info-circle me-2"/>
-                                        Voir le détail
+                                        Afficher les détails
                                     </a>
                                 </div>
 
@@ -53,6 +109,9 @@
                             </div>
                         </div>
                     </t>
+
+                    </div>
+                    </div>
 
                 </div>
             </div>

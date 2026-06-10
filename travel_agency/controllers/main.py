@@ -7,11 +7,33 @@ class TravelController(http.Controller):
 
     @http.route('/travels', type='http', auth='public', website=True)
     def travel_list(self, **kwargs):
-        products = request.env['product.template'].sudo().search([
-            ('prix_par_personne', '>', 0),
-        ])
+        domain = [('prix_par_personne', '>', 0)]
+
+        destination = kwargs.get('destination', '').strip()
+        if destination:
+            domain += ['|',
+                       ('ville_destination', 'ilike', destination),
+                       ('pays_destination', 'ilike', destination)]
+
+        type_voyage = kwargs.get('type_voyage', '').strip()
+        if type_voyage:
+            domain.append(('type_voyage', '=', type_voyage))
+
+        etoiles = kwargs.get('etoiles', '').strip()
+        if etoiles:
+            domain.append(('etoiles', '>=', etoiles))
+
+        prix_max = kwargs.get('prix_max', '').strip()
+        if prix_max:
+            try:
+                domain.append(('prix_par_personne', '<=', float(prix_max)))
+            except ValueError:
+                pass
+
+        products = request.env['product.template'].sudo().search(domain)
         return request.render('travel_agency.travel_list_page', {
             'products': products,
+            'filters': kwargs,
         })
 
     @http.route('/travels/<int:product_id>', type='http', auth='public', website=True)

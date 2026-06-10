@@ -30,6 +30,14 @@ class ProductTemplate(models.Model):
         ('premiere', 'Première classe'),
     ], string='Classe', default='economique')
 
+    etoiles = fields.Selection([
+        ('1', '1 étoile'),
+        ('2', '2 étoiles'),
+        ('3', '3 étoiles'),
+        ('4', '4 étoiles'),
+        ('5', '5 étoiles'),
+    ], string='Étoiles')
+
     prix_par_personne = fields.Float(string='Prix par personne (€)')
     disponible = fields.Boolean(string='Disponible', default=True)
 
