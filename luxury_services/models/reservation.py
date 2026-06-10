@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 class LuxuryReservation(models.Model):
     _name = 'luxury.reservation'
     _description = 'Réservation Luxury'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
     _order = 'date_debut desc'
 

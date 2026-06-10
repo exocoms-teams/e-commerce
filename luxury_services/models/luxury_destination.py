@@ -3,6 +3,7 @@ from odoo import models, fields
 class LuxuryDestination(models.Model):
     _name= 'luxury.destination'
     _description = 'Destination Luxury'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'name'
 
 

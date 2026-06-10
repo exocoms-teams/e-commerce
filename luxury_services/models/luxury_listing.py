@@ -187,17 +187,47 @@ class LuxuryListingRequest(models.Model):
     # =========================
     def action_review(self):
         self.write({'state': 'review'})
+        
+    def action_view_product(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Produit',
+            'res_model': 'product.template',
+            'res_id': self.product_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     def action_refuse(self):
-        if not self.refus_raison:
-            raise UserError(
-                'Veuillez indiquer une raison de refus avant de refuser.'
-            )
-        self.write({'state': 'refused'})
-        self._send_refusal_email()
+        self.ensure_one()
+        #  Ouvre le wizard au lieu de lever une erreur
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Raison du refus',
+            'res_model': 'luxury.listing.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',  # popup
+            'context': {
+                'default_listing_id': self.id,
+            },
+        }
 
     def action_approve(self):
         self.write({'state': 'approved'})
+
+        # Logger l'approbation
+        self.message_post(
+            body=f"""
+                <div style="padding: 1rem; background: #f0fff4; border-left: 4px solid #27ae60;">
+                    <p><strong> Annonce approuvée</strong></p>
+                    <p><strong>Approuvée par :</strong> {self.env.user.name}</p>
+                </div>
+            """,
+            message_type='comment',
+            subtype_xmlid='mail.mt_note',
+        )
+
         self._create_product()
 
     def action_reset(self):

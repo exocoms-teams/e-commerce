@@ -155,152 +155,218 @@
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
+                    <notebook>
 
-                    <!-- Propriétaire -->
-                    <group string="Informations du propriétaire">
-                        <group>
-                            <field name="owner_name"/>
-                            <field name="owner_email"/>
-                            <field name="owner_phone"/>
-                        </group>
-                        <group>
-                            <field name="owner_country_id"/>
-                            <field name="owner_adresse"/>
-                        </group>
-                    </group>
+                        <!-- ═══ ONGLET 1 : DOSSIER ═══ -->
+                        <page string="Dossier" name="dossier">
 
-                    <!-- Infos bien -->
-                    <group string="Informations du bien">
-                        <group>
-                            <field name="type_bien"/>
-                            <field name="bien_nom"/>
-                            <field name="bien_annee"/>
-                            <field name="type_service"/>
-                        </group>
-                        <group>
-                            <field name="bien_prix_location"
-                                   invisible="type_service == 'vente'"/>
-                            <field name="bien_prix_vente"
-                                   invisible="type_service == 'location'"/>
-                        </group>
-                    </group>
+                            <!-- Propriétaire -->
+                            <group string="Informations du propriétaire">
+                                <group>
+                                    <field name="owner_name"/>
+                                    <field name="owner_email"/>
+                                    <field name="owner_phone"/>
+                                </group>
+                                <group>
+                                    <field name="owner_country_id"/>
+                                    <field name="owner_adresse"/>
+                                </group>
+                            </group>
 
-                    <group string="Description">
-                        <field name="bien_description" nolabel="1"/>
-                    </group>
+                            <!-- Infos bien -->
+                            <group string="Informations du bien">
+                                <group>
+                                    <field name="type_bien"/>
+                                    <field name="bien_nom"/>
+                                    <field name="bien_annee"/>
+                                    <field name="type_service"/>
+                                </group>
+                                <group>
+                                    <field name="bien_prix_location"
+                                        invisible="type_service == 'vente'"/>
+                                    <field name="bien_prix_vente"
+                                        invisible="type_service == 'location'"/>
+                                </group>
+                            </group>
 
-                    <!-- Caractéristiques Yacht -->
-                    <group string="Caractéristiques Yacht"
-                           invisible="type_bien != 'yacht'">
-                        <group>
-                            <field name="longueur"/>
-                            <field name="capacite_personnes"/>
-                            <field name="nb_cabines"/>
-                        </group>
-                        <group>
-                            <field name="vitesse_croisiere"/>
-                            <field name="pavillon"/>
-                        </group>
-                    </group>
+                            <group string="Description">
+                                <field name="bien_description" nolabel="1"/>
+                            </group>
 
-                    <!-- Caractéristiques Jet -->
-                    <group string="Caractéristiques Jet"
-                           invisible="type_bien != 'jet'">
-                        <group>
-                            <field name="constructeur_jet"/>
-                            <field name="autonomie_vol"/>
-                            <field name="vitesse_max"/>
-                            <field name="nombre_moteurs"/>
-                        </group>
-                        <group>
-                            <field name="altitude_max"/>
-                            <field name="equipage"/>
-                        </group>
-                    </group>
+                            <!-- Caractéristiques Yacht -->
+                            <group string="Caractéristiques Yacht"
+                                invisible="type_bien != 'yacht'">
+                                <group>
+                                    <field name="longueur"/>
+                                    <field name="capacite_personnes"/>
+                                    <field name="nb_cabines"/>
+                                </group>
+                                <group>
+                                    <field name="vitesse_croisiere"/>
+                                    <field name="pavillon"/>
+                                </group>
+                            </group>
 
-                    <!-- Caractéristiques Hôtel -->
-                    <group string="Caractéristiques Hôtel / Villa"
-                           invisible="type_bien != 'hotel'">
-                        <group>
-                            <field name="nb_chambres"/>
-                            <field name="superficie"/>
-                        </group>
-                        <group>
-                            <field name="localisation"/>
-                            <field name="equipements"/>
-                        </group>
-                    </group>
+                            <!-- Caractéristiques Jet -->
+                            <group string="Caractéristiques Jet"
+                                invisible="type_bien != 'jet'">
+                                <group>
+                                    <field name="constructeur_jet"/>
+                                    <field name="autonomie_vol"/>
+                                    <field name="vitesse_max"/>
+                                    <field name="nombre_moteurs"/>
+                                </group>
+                                <group>
+                                    <field name="altitude_max"/>
+                                    <field name="equipage"/>
+                                </group>
+                            </group>
 
-                    <!-- Caractéristiques Voiture -->
-                    <group string="Caractéristiques Voiture"
-                           invisible="type_bien != 'voiture'">
-                        <group>
-                            <field name="marque"/>
-                            <field name="modele_voiture"/>
-                        </group>
-                        <group>
-                            <field name="kilometrage"/>
-                            <field name="couleur"/>
-                        </group>
-                    </group>
+                            <!-- Caractéristiques Hôtel -->
+                            <group string="Caractéristiques Hôtel / Villa"
+                                invisible="type_bien != 'hotel'">
+                                <group>
+                                    <field name="nb_chambres"/>
+                                    <field name="superficie"/>
+                                </group>
+                                <group>
+                                    <field name="localisation"/>
+                                    <field name="equipements"/>
+                                </group>
+                            </group>
 
-                    <!-- Pièces justificatives -->
-                    <group string="Pièces justificatives">
-                        <group>
-                            <field name="piece_identite"
-                                   filename="piece_identite_filename"
-                                   widget="binary"/>
-                            <field name="piece_identite_filename" invisible="1"/>
-                        </group>
-                        <group>
-                            <field name="justif_propriete"
-                                   filename="justif_propriete_filename"
-                                   widget="binary"/>
-                            <field name="justif_propriete_filename" invisible="1"/>
-                        </group>
-                    </group>
-                    <group string="Localisation &amp; Disponibilité">
-                        <group>
-                            <field name="pays_disponibilite_id"/>
-                            <field name="ville_disponibilite"/>
-                            <field name="adresse_disponibilite"/>
-                        </group>
-                        <group>
-                            <field name="zone_navigation"/>
-                            <field name="disponible_des"/>
-                        </group>
-                    </group>
+                            <!-- Caractéristiques Voiture -->
+                            <group string="Caractéristiques Voiture"
+                                invisible="type_bien != 'voiture'">
+                                <group>
+                                    <field name="marque"/>
+                                    <field name="modele_voiture"/>
+                                </group>
+                                <group>
+                                    <field name="kilometrage"/>
+                                    <field name="couleur"/>
+                                </group>
+                            </group>
 
-                    <!-- Photos -->
-                    <group string="Photos du bien">
-                        <field name="photos_bien"
-                               widget="many2many_binary"
-                               nolabel="1"/>
-                    </group>
+                            <!-- Localisation -->
+                            <group string="Localisation &amp; Disponibilité">
+                                <group>
+                                    <field name="pays_disponibilite_id"/>
+                                    <field name="ville_disponibilite"/>
+                                    <field name="adresse_disponibilite"/>
+                                </group>
+                                <group>
+                                    <field name="zone_navigation"/>
+                                    <field name="disponible_des"/>
+                                </group>
+                            </group>
 
-                    <!-- Produit créé -->
-                    <group string="Produit publié"
-                           invisible="not product_id">
-                        <field name="product_id"/>
-                    </group>
+                            <!-- Notes admin -->
+                            <group string="Notes internes">
+                                <field name="notes_admin" nolabel="1"/>
+                            </group>
 
-                    <!-- Notes admin -->
-                    <group string="Notes internes">
-                        <field name="notes_admin" nolabel="1"/>
-                    </group>
+                        </page>
 
-                    <!-- Raison refus -->
-                    <group string="Raison du refus"
-                           invisible="state != 'refused'">
-                        <field name="refus_raison" nolabel="1"/>
-                    </group>
+                        <!-- ═══ ONGLET 2 : PIÈCES JUSTIFICATIVES ═══ -->
+                        <page string="Documents" name="documents">
+
+                            <group string="Pièces justificatives">
+                                <group>
+                                    <field name="piece_identite"
+                                        filename="piece_identite_filename"
+                                        widget="binary"/>
+                                    <field name="piece_identite_filename" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="justif_propriete"
+                                        filename="justif_propriete_filename"
+                                        widget="binary"/>
+                                    <field name="justif_propriete_filename" invisible="1"/>
+                                </group>
+                            </group>
+
+                            <group string="Photos du bien">
+                                <field name="photos_bien"
+                                    widget="many2many_binary"
+                                    nolabel="1"/>
+                            </group>
+
+                        </page>
+
+                        <!-- ═══ ONGLET 3 : HISTORIQUE & AUDIT ═══ -->
+                        <page string="Historique &amp; Audit" name="audit">
+
+                            <group string="Décision">
+                                <group>
+                                    <field name="state" readonly="1"/>
+                                    <field name="refus_raison"
+                                        readonly="1"
+                                        invisible="state != 'refused'"/>
+                                </group>
+                                <group>
+                                    <field name="product_id"
+                                        readonly="1"
+                                        invisible="not product_id"/>
+                                </group>
+                            </group>
+
+                            <group string="Traçabilité">
+                                <group>
+                                    <field name="create_date"
+                                        string="Date de soumission"
+                                        readonly="1"/>
+                                    <field name="write_date"
+                                        string="Dernière modification"
+                                        readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="write_uid"
+                                        string="Modifié par"
+                                        readonly="1"/>
+                                </group>
+                            </group>
+
+                        </page>
+
+                    </notebook>
 
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                    
+                <chatter/>
+                
+            </form>
+        </field>
+    </record>
+    <!-- ═══════════════════════════════════════════
+        WIZARD REFUS ANNONCE
+    ═══════════════════════════════════════════ -->
+    <record id="view_luxury_listing_refuse_wizard" model="ir.ui.view">
+        <field name="name">luxury.listing.refuse.wizard.form</field>
+        <field name="model">luxury.listing.refuse.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Refuser l'annonce">
+                <sheet>
+                    <div class="alert alert-warning mb-3">
+                        <i class="fa fa-exclamation-triangle me-2"/>
+                        Un email sera envoyé au propriétaire avec la raison indiquée.
+                    </div>
+                    <group>
+                        <field name="listing_id" readonly="1"/>
+                        <field name="refus_raison"
+                            placeholder="Ex: Documents insuffisants, photos de mauvaise qualité..."
+                            nolabel="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_confirm_refuse"
+                            string="Confirmer le refus"
+                            type="object"
+                            class="btn-danger"/>
+                    <button string="Annuler"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
             </form>
         </field>
     </record>

@@ -671,7 +671,65 @@ class LuxuryController(WebsiteSale):
         })
         
         
+    """
+        =========================
+        prise de contact annonce
+        =========================
+    """
     
-    
-    
+    @http.route('/vip/annonces/<int:listing_id>',
+            type='http', auth='public', website=True)
+    def listing_detail(self, listing_id, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        listing = request.env['luxury.listing.request'].sudo().browse(listing_id)
+
+        if not listing.exists() or listing.state != 'published':
+            return request.redirect('/vip/annonces')
+
+        # Annonces similaires — même type, exclure l'annonce courante
+        similar = request.env['luxury.listing.request'].sudo().search([
+            ('state', '=', 'published'),
+            ('type_bien', '=', listing.type_bien),
+            ('id', '!=', listing_id),
+        ], limit=3)
+
+        return request.render('luxury_services.luxury_listing_detail', {
+            'listing': listing,
+            'similar_listings': similar,
+        })
+
+
+    @http.route('/vip/annonces/contact',
+                type='http', auth='public', website=True, methods=['POST'])
+    def listing_contact(self, **kwargs):
+        if not self._is_vip_website():
+            return request.redirect('/shop')
+
+        listing_id  = int(kwargs.get('listing_id', 0))
+        contact_name    = kwargs.get('contact_name', '').strip()
+        contact_email   = kwargs.get('contact_email', '').strip()
+        contact_phone   = kwargs.get('contact_phone', '').strip()
+        contact_message = kwargs.get('contact_message', '').strip()
+
+        listing = request.env['luxury.listing.request'].sudo().browse(listing_id)
+
+        if listing.exists():
+            # Envoyer un email au propriétaire via le chatter
+            listing.sudo().message_post(
+                body=f"""
+                    <p><strong>Nouveau message de :</strong> {contact_name} ({contact_email})</p>
+                    <p><strong>Téléphone :</strong> {contact_phone or 'Non renseigné'}</p>
+                    <p><strong>Message :</strong></p>
+                    <p>{contact_message}</p>
+                """,
+                subject=f"Demande de contact — {listing.bien_nom}",
+                message_type='comment',
+            )
+
+        return request.render('luxury_services.luxury_listing_contact_confirm', {
+            'listing': listing,
+            'contact_name': contact_name,
+        })
     """ https://www.youtube.com/watch?v=bF-01uyDXUc"""
