@@ -46,7 +46,7 @@ function setupListeners() {
   });
 
   document.getElementById('openDashboard').addEventListener('click', () => {
-    chrome.runtime.openOptionsPage();
+    chrome.tabs.create({ url: 'http://localhost:5000/dashboard/' });
   });
 
   document.getElementById('manualSave').addEventListener('click', () => {

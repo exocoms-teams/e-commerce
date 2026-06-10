@@ -46,7 +46,23 @@ def compute_trend_score(product: dict) -> float:
 
 @app.route('/')
 def index():
-    return send_from_directory('dashboard', 'index.html')
+    return send_from_directory('website', 'index.html')
+
+
+@app.route('/website/<path:filename>')
+def website_files(filename):
+    return send_from_directory('website', filename)
+
+
+@app.route('/extension/<path:filename>')
+def extension_assets(filename):
+    return send_from_directory('extension', filename)
+
+
+@app.route('/dashboard/')
+@app.route('/dashboard/<path:filename>')
+def dashboard(filename='index.html'):
+    return send_from_directory('dashboard', filename)
 
 
 @app.route('/api/track', methods=['POST'])
@@ -251,5 +267,6 @@ def clear_data():
 if __name__ == '__main__':
     print('Python Backend')
     print('Running at http://localhost:5000')
-    print('Dashboard at http://localhost:5000/')
+    print('Download page at http://localhost:5000/')
+    print('Dashboard at http://localhost:5000/dashboard/')
     app.run(debug=True, port=5000)
