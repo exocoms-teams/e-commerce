@@ -5,7 +5,9 @@ class TravelReservation(models.Model):
     _description = 'Travel Reservation'
 
     name = fields.Char(string='Reference', required=True, copy=False, readonly=True, default='New')
-    client_name = fields.Char(string='Client Name', required=True)
+    client_firstname = fields.Char(string='Client Firstname', required=True)
+    client_lastname = fields.Char(string='Client Lastname', required=True)
+    client_name = fields.Char(string='Client Name', compute='_compute_client_name', store=True)
     client_email = fields.Char(string='Email')
     client_phone = fields.Char(string='Phone')
     client_country = fields.Char(string='Country')
@@ -19,6 +21,7 @@ class TravelReservation(models.Model):
     prix_total = fields.Float(string='Total Price', compute='_compute_prix_total', store=True)
     payment_provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider')
     commission_amount = fields.Float(string='Commission Amount', compute='_compute_commission', store=True)
+    passenger_ids = fields.One2many('travel.reservation.passenger', 'reservation_id', string='Passengers')
     notes = fields.Text(string='Notes')
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -26,6 +29,11 @@ class TravelReservation(models.Model):
         ('confirmed', 'Confirmed'),
         ('cancel', 'Cancelled')
     ], default='draft')
+
+    @api.depends('client_firstname', 'client_lastname')
+    def _compute_client_name(self):
+        for rec in self:
+            rec.client_name = ' '.join(filter(None, [rec.client_firstname, rec.client_lastname]))
 
     @api.depends('date_depart', 'date_retour')
     def _compute_duration(self):
