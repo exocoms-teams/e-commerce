@@ -194,18 +194,29 @@
                     </div>
                     <div class="o_wsale_product_btn">
                         <div class="o_wsale_product_action_row">
-                           <button type="button"
-                                    class="o_wsale_product_btn_primary btn js_add_cart"
-                                    title="Ajouter au panier"
-                                    t-att-data-product-id="product.product_variant_id.id"
-                                    data-product-selected="True"
-                                    t-att-data-product-template-id="product.id"
-                                    t-att-data-product-type="product.type"
-                                    data-show-quantity="True"
-                                    data-action="o_website_sale_main_product_cart_update">
-                                <i class="fa fa-shopping-cart fa-fw" role="presentation"/>
-                                <span class="o_label small ms-1">Ajouter au panier</span>
-                            </button>
+                            <!-- Tentative native Odoo -->
+                            <t t-if="product.product_variant_id">
+                                <button type="button"
+                                        class="btn o_wsale_product_btn_primary js_add_cart"
+                                        title="Ajouter au panier"
+                                        t-att-data-product-id="product.product_variant_id.id"
+                                        data-product-selected="True"
+                                        t-att-data-product-template-id="product.id"
+                                        t-att-data-product-type="product.type"
+                                        data-show-quantity="True"
+                                        data-action="o_website_sale_main_product_cart_update">
+                                    <i class="fa fa-shopping-cart fa-fw" role="presentation"/>
+                                    <span class="o_label small ms-1">Ajouter au panier</span>
+                                </button>
+                            </t>
+                            <!-- Fallback si variante indisponible -->
+                            <t t-else="">
+                                <a t-att-href="'/shop/' + slug(product)"
+                                class="btn btn-primary btn-sm">
+                                    <i class="fa fa-eye fa-fw"/>
+                                    Voir le produit
+                                </a>
+                            </t>
                         </div>
                     </div>
                 </div>
