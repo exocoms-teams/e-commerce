@@ -98,23 +98,15 @@ def post_init_hook(env):
     ])
     if menus_to_delete:
         menus_to_delete.unlink()
-    # === PROFIL DROPDOWN — Mon compte ===
-    account_view = env['ir.ui.view'].search([
-        ('key', '=', 'portal.user_dropdown')
-        ], limit=1)
-    if account_view.exists():
-        account_view.write({'arch': """
-<data name="Link to frontend portal" inherit_id="portal.user_dropdown">
-    <xpath expr="//*[@id='o_logout_divider']" position="before">
-        <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
-            My Account
-        </a>
-    </xpath>
-</data>
-"""})
 
-    # === DÉCONNEXION — supprimer la vue custom, Odoo gère nativement FR/EN ===
+    # === PROFIL DROPDOWN — désactivé Odoo 19 ===
+    # o_logout_divider n'existe plus dans Odoo 19
+    # à réactiver si besoin après inspection du template
+    # account_view = env['ir.ui.view'].search([
+    #     ('key', '=', 'portal.user_dropdown')
+    # ], limit=1)
+
+    # === DÉCONNEXION — supprimer la vue custom ===
     existing = env['ir.ui.view'].search([
         ('name', '=', 'Exocoms Logout FR')
     ], limit=1)
@@ -130,34 +122,35 @@ def post_init_hook(env):
         for grid_view in grid_views:
             try:
                 arch = grid_view.arch
-                if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
-                    # Essayer plusieurs points d'insertion
+                if 'o_wsale_products_grid' in arch and \
+                   'o_wsale_products_opt_design_chips' not in arch:
                     if 'o_wsale_products_opt_layout_catalog' in arch:
                         arch = arch.replace(
                             'o_wsale_products_opt_layout_catalog',
-                            'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                            'o_wsale_products_opt_layout_catalog'
+                            ' o_wsale_products_opt_design_chips'
                         )
                     elif 'o_wsale_products_grid_table grid' in arch:
                         arch = arch.replace(
                             'o_wsale_products_grid_table grid',
-                            'o_wsale_products_grid_table grid o_wsale_products_opt_design_chips'
+                            'o_wsale_products_grid_table grid'
+                            ' o_wsale_products_opt_design_chips'
                         )
                     grid_view.write({'arch': arch})
             except Exception:
                 pass
     except Exception:
         pass
-    
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
-    # Archiver les catégories de démo
+    # Supprimer les catégories de démo
     demo_names = [
         'Desks', 'Furnitures', 'Boxes', 'Drawers',
         'Cabinets', 'Bins', 'Lamps', 'All',
         'Indoor', 'Outdoor', 'Multimedia',
     ]
-   # Par ça :
     cats_demo = cat.search([('name', 'in', demo_names)])
     if cats_demo:
         cats_demo.unlink()
@@ -176,17 +169,22 @@ def post_init_hook(env):
             c = cat.create(vals)
         return c
 
-    # === RACINES — filmstrip ===
+    # === RACINES ===
     informatique = get_or_create('Informatique & Réseaux', seq=1)
     monetique_root = get_or_create('Monétique', seq=2)
     telecom = get_or_create('Télécom', seq=3)
 
-    # Mettre Monetique et Point de vente sous Monétique
-    monetique_sub = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', False)], limit=1)
+    monetique_sub = cat.search([
+        ('name', '=', 'Monetique'),
+        ('parent_id', '=', False)
+    ], limit=1)
     if monetique_sub:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
 
-    pdv = cat.search([('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)], limit=1)
+    pdv = cat.search([
+        ('name', 'ilike', 'Point de vente'),
+        ('parent_id', '=', False)
+    ], limit=1)
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
 
@@ -196,9 +194,16 @@ def post_init_hook(env):
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
     # === MONÉTIQUE — niveau 1 ===
-    monetique = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)], limit=1)
+    monetique = cat.search([
+        ('name', '=', 'Monetique'),
+        ('parent_id', '=', monetique_root.id)
+    ], limit=1)
     if not monetique:
-        monetique = cat.create({'name': 'Monetique', 'parent_id': monetique_root.id, 'sequence': 1})
+        monetique = cat.create({
+            'name': 'Monetique',
+            'parent_id': monetique_root.id,
+            'sequence': 1
+        })
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
@@ -314,7 +319,7 @@ def post_init_hook(env):
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
 
-    # === FOOTER CONTENT — compatible toutes versions Odoo ===
+    # === FOOTER CONTENT ===
     footer_content = """
         <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
             <div class="container">
@@ -390,7 +395,7 @@ def post_init_hook(env):
         try:
             footer_view.write({
                 'priority': 1000,
-                'active': True,  
+                'active': True,
                 'arch': """
 <data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
@@ -418,7 +423,7 @@ def post_init_hook(env):
             except Exception:
                 pass
 
-    # === COPYRIGHT — clé robuste Odoo 19 ===
+    # === COPYRIGHT ===
     copyright_view = env['ir.ui.view'].search([
         ('key', '=', 'website.footer_copyright_company_name')
     ], limit=1)
@@ -441,13 +446,32 @@ def post_init_hook(env):
 """})
         except Exception:
             pass
+
+
 def post_migrate_hook(env):
     """S'exécute à chaque update du module"""
     website = env['website'].search([], limit=1)
     if website:
         try:
             website.write({
-                'shop_opt_products_design_classes': 'o_wsale_products_opt_name_color_regular o_wsale_products_opt_thumb_cover o_wsale_products_opt_img_secondary_show o_wsale_products_opt_img_hover_zoom_out_light o_wsale_products_opt_has_cta o_wsale_products_opt_has_wishlist o_wsale_products_opt_has_comparison o_wsale_products_opt_actions_inline o_wsale_products_opt_wishlist_inline o_wsale_products_opt_actions_promote o_wsale_products_opt_cc o_wsale_products_opt_cc1 o_wsale_products_opt_rounded_4 o_wsale_products_opt_thumb_6_5 o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips',
+                'shop_opt_products_design_classes': (
+                    'o_wsale_products_opt_name_color_regular '
+                    'o_wsale_products_opt_thumb_cover '
+                    'o_wsale_products_opt_img_secondary_show '
+                    'o_wsale_products_opt_img_hover_zoom_out_light '
+                    'o_wsale_products_opt_has_cta '
+                    'o_wsale_products_opt_has_wishlist '
+                    'o_wsale_products_opt_has_comparison '
+                    'o_wsale_products_opt_actions_inline '
+                    'o_wsale_products_opt_wishlist_inline '
+                    'o_wsale_products_opt_actions_promote '
+                    'o_wsale_products_opt_cc '
+                    'o_wsale_products_opt_cc1 '
+                    'o_wsale_products_opt_rounded_4 '
+                    'o_wsale_products_opt_thumb_6_5 '
+                    'o_wsale_products_opt_layout_catalog '
+                    'o_wsale_products_opt_design_chips'
+                ),
             })
         except Exception:
             pass
