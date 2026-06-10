@@ -9,6 +9,11 @@
             .o_footer .tsp-footer-links a:hover { color: var(--blue) !important; }
             .o_footer .tsp-link-blue { color: var(--blue) !important; }
             .o_footer_copyright { display: none !important; }
+
+            /* Mise en page du formulaire newsletter Odoo */
+            .tsp-newsletter .js_subscribe_wrap { display: flex; gap: 8px; align-items: center; }
+            .tsp-newsletter .js_subscribe_value { flex: 1 1 auto; }
+            .tsp-newsletter .js_subscribed_wrap { color: #fff; }
         </style>
 
         <!-- NEWSLETTER -->
@@ -17,11 +22,26 @@
                 <h3>📧 Restez informé !</h3>
                 <p>Inscrivez-vous pour ne rater aucune offre exclusive Planet Mobil</p>
             </div>
-            <div class="tsp-newsletter-form s_newsletter_subscribe_form" data-list-id="1">
-                <input type="email" name="email" class="js_subscribe_email"
-                       placeholder="Votre adresse email..." required="required"/>
-                <button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
-                <small class="js_subscribe_msg"></small>
+
+            <!--
+                Formulaire newsletter FONCTIONNEL (structure officielle Odoo 19).
+                - class "js_subscribe" : c'est ce que le JS d'Odoo recherche pour activer le formulaire
+                - "js_subscribe_wrap" / "js_subscribed_wrap" : obligatoires (sinon le JS plante)
+                - data-list-id="3" : la liste de diffusion "Planet Mobil"
+            -->
+            <div class="tsp-newsletter-form s_newsletter_subscribe_form s_newsletter_list js_subscribe"
+                 data-list-id="3" data-name="Newsletter Form">
+                <div class="js_subscribed_wrap d-none">
+                    <p class="tsp-newsletter-thanks" style="margin:0;">
+                        <i class="fa fa-check-circle-o" role="img"/> Merci, vous êtes bien inscrit !
+                    </p>
+                </div>
+                <div class="js_subscribe_wrap">
+                    <input type="email" name="email"
+                           class="js_subscribe_value form-control"
+                           placeholder="Votre adresse email..."/>
+                    <button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
+                </div>
             </div>
         </div>
 
