@@ -19,6 +19,7 @@
         'templates/category_page.xml',
         'templates/product_page.xml',
         'templates/shop.xml',
+        'templates/wishlist.xml',
         'data/product_categories.xml',
         'data/homepage_views.xml',
         'data/product_detail_views.xml',
