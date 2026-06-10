@@ -176,7 +176,7 @@ class ResPartner(models.Model):
         """ Seller approve state also changed """
         self.state = 'Approved'
 
-    def _group_expand_states(self,states, domain, order=None):
+    def _group_expand_states(self,states, domain, order=None ):
         """Returns a list of states"""
         return [key for key, val in type(self).state.selection]
 
