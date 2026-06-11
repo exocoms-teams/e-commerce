@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <report id="action_report_bca"
-            model="sale.order"
-            string="Bon de Commande Administratif (BCA)"
-            report_type="qweb-pdf"
-            name="mandat_administratif.report_bca"
-            file="mandat_administratif.report_bca"
-            print_report_name="'BCA-' + (object.mandat_numero or object.name)"/>
 
-    <report id="action_report_bordereau"
-            model="mandat.bordereau"
-            string="Bordereau de mandats"
-            report_type="qweb-pdf"
-            name="mandat_administratif.report_bordereau"
-            file="mandat_administratif.report_bordereau"
-            print_report_name="object.name or 'Bordereau'"/>
+    <record id="action_report_bca" model="ir.actions.report">
+        <field name="name">Bon de Commande Administratif (BCA)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mandat_administratif.report_bca</field>
+        <field name="report_file">mandat_administratif.report_bca</field>
+        <field name="print_report_name">'BCA-' + (object.mandat_numero or object.name)</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_bordereau" model="ir.actions.report">
+        <field name="name">Bordereau de mandats</field>
+        <field name="model">mandat.bordereau</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mandat_administratif.report_bordereau</field>
+        <field name="report_file">mandat_administratif.report_bordereau</field>
+        <field name="print_report_name">object.name or 'Bordereau'</field>
+        <field name="binding_model_id" ref="model_mandat_bordereau"/>
+        <field name="binding_type">report</field>
+    </record>
+
 </odoo>
