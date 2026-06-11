@@ -7,24 +7,29 @@
     'description': """
 Mandat Administratif Français – Conforme GBCP
 ==============================================
-• Décret n°2012-1246 du 7 novembre 2012 (GBCP)
-• Décret n°2016-33 du 20 janvier 2016 (pièces justificatives)
-• Article L.1617-1 CGCT (comptabilité publique)
-• Article L.2192-10 CCP (délai 30 jours, intérêts moratoires)
-• Arrêté du 9 décembre 2016 (Chorus Pro)
-• Nomenclatures M14 / M57 / M22
 
-Fonctionnalités :
------------------
-• Sélection "Mandat Administratif" au moment du paiement (account.payment)
-• Wizard BCA complet : SIRET Luhn, IBAN, imputation budgétaire, PJ
-• Certification du service fait (obligatoire)
-• Prise en charge comptable (PEC)
-• Export XML UBL 2.1 / Factur-X pour Chorus Pro
-• Bordereau récapitulatif des mandats signé par l'ordonnateur
-• Calcul automatique des intérêts moratoires
-• Gestion TVA publique (FCTVA, assujetti partiel)
-• PDF BCA conforme GBCP avec zones de signature
+Références réglementaires
+--------------------------
+
+- Décret n°2012-1246 du 7 novembre 2012 (GBCP)
+- Décret n°2016-33 du 20 janvier 2016 (pièces justificatives)
+- Article L.1617-1 CGCT (comptabilité publique)
+- Article L.2192-10 CCP (délai 30 jours, intérêts moratoires)
+- Arrêté du 9 décembre 2016 (Chorus Pro)
+- Nomenclatures M14 / M57 / M22
+
+Fonctionnalités
+---------------
+
+- Sélection "Mandat Administratif" au moment du paiement (account.payment)
+- Wizard BCA complet : SIRET Luhn, IBAN, imputation budgétaire, PJ
+- Certification du service fait (obligatoire)
+- Prise en charge comptable (PEC)
+- Export XML UBL 2.1 / Factur-X pour Chorus Pro
+- Bordereau récapitulatif des mandats signé par l'ordonnateur
+- Calcul automatique des intérêts moratoires
+- Gestion TVA publique (FCTVA, assujetti partiel)
+- PDF BCA conforme GBCP avec zones de signature
     """,
     'author': 'Exocoms',
     'website': 'https://www.exocoms.fr',
