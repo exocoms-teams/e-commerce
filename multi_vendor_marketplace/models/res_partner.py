@@ -60,7 +60,7 @@ class ResPartner(models.Model):
     profile_message = fields.Html(string="profile Message",
                                   help="Profile message for the seller")
     sale_count = fields.Integer(compute='_compute_sale_count',
-                                sting="Sale Count",
+                                string="Sale Count",
                                 help="For getting total sale count for seller")
     amount_available = fields.Float(compute='_compute_amount_available',
                                     string="Amount available")

@@ -28,7 +28,7 @@ class SocialMedia(models.Model):
     _description = "Social Media"
 
     name = fields.Char(string="Name", help="For getting name", required=True)
-    icon = fields.Binary(sting="Icon", help="Icon for the Social media")
+    icon = fields.Binary(string="Icon", help="Icon for the Social media")
     base_url = fields.Char(
         string="Base Url",
         help="For storing the base url of the social media page", required=True)
