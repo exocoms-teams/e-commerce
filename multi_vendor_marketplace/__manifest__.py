@@ -37,7 +37,7 @@
     'maintainer': 'Cybrosys Techno Solutions',
     'website': 'https://www.cybrosys.com',
     'depends': ['base', 'sale_management', 'account', 'website', 'stock',
-                'website_sale'],
+                'website_sale', 'mail'],
     'data': [
         'security/multi_vendor_marketplace_groups.xml',
         'security/inventory_request_security.xml',
