@@ -58,9 +58,9 @@ class SellerReview(models.Model):
     help_info_ids = fields.One2many('helpful.info', 'review_id',
                                     string="Help info",
                                     help="Helpful info details")
-    _sql_constraints = [
-        ('rating_range', 'check(rating >= 0 and rating <= 5)',
-         'Rating should be between 0 and 5')]
+    #_sql_constraints = [
+    #    ('rating_range', 'check(rating >= 0 and rating <= 5)',
+    #     'Rating should be between 0 and 5')]
 
     @api.model
     def rate_review(self, vals):
