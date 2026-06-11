@@ -35,14 +35,14 @@ class SellerRecommend(models.Model):
     seller_id = fields.Many2one('res.partner', string="Seller",
                                 help="For getting seller name", required=True)
     recommend = fields.Selection(selection=[('no', 'NO'), ('yes', 'YES')],
-                                 default='NO', track_visibility='always')
+                                 default='NO', tracking=True)
     date = fields.Date(string="Date", help="Storing date",
                        default=fields.Date.today, required=True)
     state = fields.Selection(selection=[('unpublished', 'Unpublished'),
                                         ('published', 'Published')],
                              string='Status',
                              help="Status of the Recommendation",
-                             default='unpublished', track_visibility='always')
+                             default='unpublished', tracking=True)
 
     @api.model
     def recommend_func(self, vals):
