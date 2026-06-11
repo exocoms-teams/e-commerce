@@ -35,8 +35,8 @@ class MultiVendorPriceList(models.Model):
                              help='Minimum quantity')
     start_date = fields.Date(required=True, string='Start Date',
                              help='Start Date')
-    end_date = fields.Date(required=True, string='Start Date',
-                           help='Start Date')
+    end_date = fields.Date(required=True, string='End Date',
+                           help='End Date')
     product_inv_id = fields.Many2one('product.template',
                                      string='Product', help='Product',
                                      ondelete='cascade')
