@@ -47,7 +47,7 @@ class InventoryRequest(models.Model):
         selection=[('Draft', 'Draft'), ('Requested', 'Requested'),
                    ('Approved', 'Approved'), ('Rejected', 'Rejected')],
         string='Inventory Req Status', group_expand='_group_expand_states',
-        help="For adding state", default='Draft', track_visibility='always',
+        help="For adding state", default='Draft', tracking=True,
         readonly=True)
 
     @api.onchange('name')
