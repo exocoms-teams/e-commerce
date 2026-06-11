@@ -26,7 +26,7 @@ from odoo.http import request
 class SellerDashboard(http.Controller):
     """This Class for creating dashboard"""
 
-    @http.route(['/seller_dashboard'], type='json', auth="public",
+    @http.route(['/seller_dashboard'], type='jsonrpc', auth="public",
                 website=True)
     def seller_dashboard(self):
         """Load the dashboard information"""
