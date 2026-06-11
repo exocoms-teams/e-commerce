@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
     partner_id = fields.Many2one('res.partner',
                                  related='order_id.partner_id',
                                  string="Customer",
-                                 Help="Get the partner information")
+                                 help="Get the partner information")
     state = fields.Selection(selection=[('pending', 'Pending'),
                                         ('approved', 'Approved'),
                                         ('shipped', 'Shipped'),
