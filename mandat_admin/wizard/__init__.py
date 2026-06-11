@@ -1,3 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import validation_mandat_wizard
-from . import export_helios_wizard
+from . import mandat_wizard
+from . import service_fait_wizard
+from . import pec_wizard
+from . import bordereau_wizard

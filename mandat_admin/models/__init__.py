@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from . import mandat_administratif
-from . import bordereau_mandat
-from . import imputation_budgetaire
-from . import payment_provider_mandat
-from . import payment_transaction_mandat
-from . import account_move_mandat
+from . import res_partner
+from . import mandat_imputation
+from . import mandat_pj
+from . import mandat_bordereau
+from . import sale_order
+from . import account_move
+from . import account_payment

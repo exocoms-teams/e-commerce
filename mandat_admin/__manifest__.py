@@ -1,83 +1,59 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Mandat Administratif Français',
-    'version': '19.0.1.0.0',
-    'category': 'Accounting/Localizations',
-    'summary': 'Gestion des mandats administratifs pour les collectivités et administrations françaises',
+    'name': 'Mandat Administratif Français – GBCP Complet',
+    'version': '19.0.4.0.0',
+    'category': 'Accounting/Payment',
+    'summary': 'Mandat administratif public français : GBCP, service fait, PEC, Chorus Pro, bordereau',
     'description': """
-Mandat Administratif Français
-==============================
-
-Ce module permet de gérer les mandats administratifs conformément à la
-réglementation française (Instruction budgétaire et comptable M14, M52, M57).
+Mandat Administratif Français – Conforme GBCP
+==============================================
+• Décret n°2012-1246 du 7 novembre 2012 (GBCP)
+• Décret n°2016-33 du 20 janvier 2016 (pièces justificatives)
+• Article L.1617-1 CGCT (comptabilité publique)
+• Article L.2192-10 CCP (délai 30 jours, intérêts moratoires)
+• Arrêté du 9 décembre 2016 (Chorus Pro)
+• Nomenclatures M14 / M57 / M22
 
 Fonctionnalités :
 -----------------
-* Création et gestion des mandats de paiement
-* Numérotation automatique conforme aux nomenclatures françaises
-* Gestion des bordereaux de mandats
-* Suivi des états : Brouillon → Validé → Mandaté → Payé → Annulé
-* Pièces justificatives attachées
-* Génération de l'ordonnancement de dépense (OD)
-* Export comptable compatible Hélios / CHD / GFC
-* Gestion des imputations budgétaires (chapitres, articles, rubriques)
-* Contrôle de disponibilité des crédits
-* Certificat de prise en charge comptable
-* Journal de mandatement
-* Rapport de synthèse par période
-
-Conformité réglementaire :
---------------------------
-* Instruction M14 (communes)
-* Instruction M52 (départements)
-* Instruction M57 (régions et autres collectivités)
-* DGFIP - Direction Générale des Finances Publiques
+• Sélection "Mandat Administratif" au moment du paiement (account.payment)
+• Wizard BCA complet : SIRET Luhn, IBAN, imputation budgétaire, PJ
+• Certification du service fait (obligatoire)
+• Prise en charge comptable (PEC)
+• Export XML UBL 2.1 / Factur-X pour Chorus Pro
+• Bordereau récapitulatif des mandats signé par l'ordonnateur
+• Calcul automatique des intérêts moratoires
+• Gestion TVA publique (FCTVA, assujetti partiel)
+• PDF BCA conforme GBCP avec zones de signature
     """,
-    'author': 'Localisation Française',
-    'website': 'https://www.collectivites-locales.gouv.fr',
+    'author': 'Exocoms',
+    'website': 'https://www.exocoms.fr',
     'license': 'LGPL-3',
-    'depends': [
-        'base',
-        'account',
-        'mail',
-        'base_setup',
-    ],
+    'depends': ['account', 'sale', 'sale_management', 'mail'],
     'data': [
-        # Sécurité
-        'security/mandat_security.xml',
         'security/ir.model.access.csv',
-
-        # Données de référence
-        'data/mandat_sequence.xml',
-        'data/mandat_type_data.xml',
-        'data/payment_provider_data.xml',
-        'data/account_journal_data.xml',
-
-        # Vues
-        'views/mandat_administratif_views.xml',
-        'views/bordereau_mandat_views.xml',
-        'views/imputation_budgetaire_views.xml',
-        'views/payment_mandat_views.xml',
-        'views/account_move_mandat_views.xml',
-        'views/mandat_menu.xml',
-
-        # Rapports
-        'report/mandat_report.xml',
-        'report/bordereau_report.xml',
-
-        # Wizard
-        'wizard/validation_mandat_wizard_views.xml',
-        'wizard/export_helios_wizard_views.xml',
+        'data/sequence_data.xml',
+        'data/payment_method_data.xml',
+        'views/res_partner_views.xml',
+        'views/sale_order_views.xml',
+        'views/account_move_views.xml',
+        'views/account_payment_views.xml',
+        'views/mandat_bordereau_views.xml',
+        'views/menus.xml',
+        'wizard/mandat_wizard_views.xml',
+        'wizard/service_fait_wizard_views.xml',
+        'wizard/pec_wizard_views.xml',
+        'wizard/bordereau_wizard_views.xml',
+        'report/report_action.xml',
+        'report/bca_template.xml',
+        'report/bordereau_template.xml',
     ],
     'assets': {
         'web.assets_backend': [
-            'mandat_admin/static/src/css/mandat_style.css',
+            'mandat_administratif/static/src/css/mandat.css',
         ],
     },
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
-    'post_init_hook': 'post_init_hook',
-    'post_migrate_hook': 'post_init_hook',
-    'images': ['static/description/icon.png'],
 }

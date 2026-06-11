@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_bordereau">
+<t t-call="web.html_container">
+<t t-foreach="docs" t-as="o">
+<t t-call="web.external_layout">
+<div class="page">
+
+  <div class="row mb-3">
+    <div class="col-8">
+      <h2 class="text-primary">BORDEREAU DE MANDATS</h2>
+      <small class="text-muted">Art. L.1617-5 CGCT | Décret n°2012-1246 (GBCP)</small>
+    </div>
+    <div class="col-4">
+      <table class="table table-sm table-bordered" style="font-size:9.5px;">
+        <tr><td class="bg-light fw-bold">N° bordereau</td>
+            <td><strong><t t-esc="o.name"/></strong></td></tr>
+        <tr><td class="bg-light fw-bold">Date émission</td>
+            <td><t t-esc="o.date_emission" t-options='{"widget":"date","format":"dd/MM/yyyy"}'/></td></tr>
+        <tr><td class="bg-light fw-bold">Période</td>
+            <td>
+              <t t-esc="o.date_debut" t-options='{"widget":"date","format":"dd/MM/yyyy"}'/> au
+              <t t-esc="o.date_fin"   t-options='{"widget":"date","format":"dd/MM/yyyy"}'/>
+            </td></tr>
+        <tr><td class="bg-light fw-bold">Nb mandats</td>
+            <td><t t-esc="o.nombre_mandats"/></td></tr>
+        <tr><td class="bg-light fw-bold">Montant total TTC</td>
+            <td><strong>
+              <t t-esc="o.montant_total" t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+            </strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <strong>Ordonnateur :</strong> <t t-esc="o.ordonnateur"/>
+    </div>
+    <div class="col-6">
+      <strong>Comptable public assignataire :</strong> <t t-esc="o.comptable_public"/>
+    </div>
+  </div>
+
+  <h6 class="bg-primary text-white p-1 px-2">LISTE DES MANDATS</h6>
+  <table class="table table-sm table-striped" style="font-size:9.5px;">
+    <thead>
+      <tr class="bg-light">
+        <th>N°</th>
+        <th>N° mandat</th>
+        <th>Créancier</th>
+        <th>N° facture</th>
+        <th>Date facture</th>
+        <th class="text-end">Montant TTC</th>
+      </tr>
+    </thead>
+    <tbody>
+      <t t-foreach="o.invoice_ids" t-as="inv">
+      <tr>
+        <td><t t-esc="inv_index + 1"/></td>
+        <td><t t-esc="inv.mandat_numero or '-'"/></td>
+        <td><t t-esc="inv.partner_id.name"/></td>
+        <td><t t-esc="inv.name"/></td>
+        <td><t t-esc="inv.invoice_date" t-options='{"widget":"date","format":"dd/MM/yyyy"}'/></td>
+        <td class="text-end">
+          <t t-esc="inv.amount_total" t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+        </td>
+      </tr>
+      </t>
+    </tbody>
+    <tfoot>
+      <tr style="background:#e9f5ff;font-weight:bold;">
+        <td colspan="5" class="text-end">TOTAL</td>
+        <td class="text-end">
+          <t t-esc="o.montant_total" t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <t t-if="o.note">
+    <p style="font-size:9.5px;"><strong>Observations :</strong> <t t-esc="o.note"/></p>
+  </t>
+
+  <div class="row mt-5">
+    <div class="col-6 border text-center p-3">
+      <p class="fw-bold">L'ORDONNATEUR</p>
+      <p><t t-esc="o.ordonnateur"/></p>
+      <br/>
+      <div style="height:60px;border-bottom:1px dashed #aaa;"></div>
+      <small class="text-muted">Signature et date</small>
+    </div>
+    <div class="col-6 border text-center p-3">
+      <p class="fw-bold">LE COMPTABLE PUBLIC</p>
+      <p><t t-esc="o.comptable_public"/></p>
+      <br/>
+      <div style="height:60px;border-bottom:1px dashed #aaa;"></div>
+      <small class="text-muted">Cachet et date de prise en charge</small>
+    </div>
+  </div>
+
+  <div class="mt-3 p-2" style="background:#f8f9fa;font-size:7.5px;border:1px solid #dee2e6;">
+    Le présent bordereau récapitule les mandats émis pour la période indiquée,
+    conformément à l'article L.1617-5 du CGCT et au décret n°2012-1246 du 7 novembre 2012.
+  </div>
+
+</div>
+</t>
+</t>
+</t>
+</template>
+</odoo>
