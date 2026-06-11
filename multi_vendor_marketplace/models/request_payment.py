@@ -31,7 +31,7 @@ class RequestPayment(models.Model):
                                 required=True, help='Seller', default=lambda
                                 self: self.env.user.partner_id.id)
     cashable_amount = fields.Float(string='Commission', help='Commission',
-                                   readonlt=True)
+                                   readonly=True)
     request_amount = fields.Float(string='Requested Payment Amount',
                                   help='Requested Amount', required=True)
     payment_description = fields.Text(string='Payment Description',
