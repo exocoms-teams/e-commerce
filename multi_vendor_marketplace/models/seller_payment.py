@@ -27,7 +27,7 @@ from odoo.http import request
 class SellerPayment(models.Model):
     """ Managing seller payments"""
     _name = 'seller.payment'
-    _description = "Seller Payment"
+    _description = 'Seller Payment'
 
     name = fields.Char(string='Record Reference', required=True,
                        help="Sequence of the payment", readonly=True,
