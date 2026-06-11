@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+<!-- ── Actions déclarées EN PREMIER ────────────────────── -->
+<record id="action_ma_payments" model="ir.actions.act_window">
+    <field name="name">Paiements par mandat administratif</field>
+    <field name="res_model">account.payment</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('is_mandat_administratif','=',True)]</field>
+</record>
+
 <!-- ── Menus Ventes ─────────────────────────────────────── -->
 <menuitem id="menu_ma_root"
           name="🏛 Mandats Administratifs"
@@ -42,13 +50,5 @@
           parent="menu_ma_compta_root"
           action="action_mandat_bordereau"
           sequence="20"/>
-
-<!-- Actions globales déclarées ici -->
-<record id="action_ma_payments" model="ir.actions.act_window">
-    <field name="name">Paiements par mandat administratif</field>
-    <field name="res_model">account.payment</field>
-    <field name="view_mode">list,form</field>
-    <field name="domain">[('is_mandat_administratif','=',True)]</field>
-</record>
 
 </odoo>
