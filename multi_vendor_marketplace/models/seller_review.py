@@ -54,7 +54,7 @@ class SellerReview(models.Model):
     state = fields.Selection(selection=[('unpublished', 'Unpublished'),
                                         ('published', 'Published')],
                              string='Status', help="state of the review",
-                             default='unpublished', track_visibility='always')
+                             default='unpublished', tracking=True)
     help_info_ids = fields.One2many('helpful.info', 'review_id',
                                     string="Help info",
                                     help="Helpful info details")
