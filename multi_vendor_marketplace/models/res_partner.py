@@ -83,7 +83,7 @@ class ResPartner(models.Model):
         default="new",
         string='Seller Status', help="The status of the seller",
         group_expand='_group_expand_states',
-        track_visibility='always')
+        tracking=True)
     default_commission = fields.Float(string='Default Sale Commission(%)',
                                       help="For getting the default commission")
     amount_limit = fields.Float(
