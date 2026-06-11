@@ -55,7 +55,7 @@ Fonctionnalités
     ],
     'assets': {
         'web.assets_backend': [
-            'mandat_administratif/static/src/css/mandat.css',
+            'mandat_admin/static/src/css/mandat.css',
         ],
     },
     'installable': True,
