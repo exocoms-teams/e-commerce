@@ -56,7 +56,7 @@ class ProductTemplate(models.Model):
         [('draft', 'Draft'), ('pending', 'pending'),
          ('approved', 'Approved'), ('rejected', 'Rejected')],
         string='Product Status', group_expand='_group_expand_states',
-        default='draft', help='Product Status', track_visibility='always',
+        default='draft', help='Product Status', tracking=True,
         readonly=True)
     item_ids = fields.One2many('multi.vendor.pricelist',
                                'product_inv_id', string='Items',
