@@ -29,7 +29,7 @@ class MultiVendorPriceList(models.Model):
 
     price_list_id = fields.Many2one('product.pricelist',
                                     string='Price list', help='Price list')
-    price_of_pricelist = fields.Float(required=True, string='Price',
+    price_of_pricelist = fields.Float(required=True, String='Price',
                                       help='Price')
     min_qty = fields.Integer(required=True, string='Minimum quantity',
                              help='Minimum quantity')
