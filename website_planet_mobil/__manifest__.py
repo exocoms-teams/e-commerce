@@ -12,6 +12,7 @@
         'views/review_views.xml',
         'views/attribute_views.xml',
         'templates/header.xml',
+        'templates/layout.xml',
         'templates/footer.xml',
         'templates/homepage.xml',
         'templates/avis_page.xml',
