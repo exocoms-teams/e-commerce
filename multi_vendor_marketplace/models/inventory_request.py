@@ -26,6 +26,7 @@ class InventoryRequest(models.Model):
     """Creating class inventoryRequest for requesting products"""
     _name = 'inventory.request'
     _description = "Inventory Request"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Title', required=True, help='Name of the '
                                                            'request')
