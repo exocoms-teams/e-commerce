@@ -25,5 +25,6 @@ from odoo import fields, models
 class VendorDashboard(models.Model):
     """Vendor details maintained for the Dashboard"""
     _name = 'vendor.dashboard'
+    _description = 'Tableau de bord du vendeur'
 
     sample = fields.Boolean(string='Sample', help='Sample dashboard')
