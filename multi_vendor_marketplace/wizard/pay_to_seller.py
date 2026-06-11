@@ -25,7 +25,7 @@ from odoo import fields, models
 class PayToSeller(models.TransientModel):
     """Model to manage the payment of Sellers"""
     _name = 'pay.to.seller'
-    _description = 'Enregistrement des paiements aux vendeurs'
+    _description = "Enregistrement des paiements aux vendeurs"
 
     date = fields.Date(string='Date', required=True, help='Date',
                        default=fields.Date.today())
