@@ -26,6 +26,7 @@ from odoo.exceptions import ValidationError
 class RequestPayment(models.Model):
     """Create a RequestPayment class for request for payment"""
     _name = 'request.payment'
+    _description = 'Demande de paiement du vendeur'
 
     seller_id = fields.Many2one('res.partner', string='Seller',
                                 required=True, help='Seller', default=lambda
