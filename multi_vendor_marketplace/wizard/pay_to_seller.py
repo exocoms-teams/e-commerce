@@ -31,7 +31,7 @@ class PayToSeller(models.TransientModel):
                        default=fields.Date.today())
     seller_id = fields.Many2one('res.partner', help='Sellers',
                                 string='Seller', required=True)
-    cashable_amount = fields.Float(string='Cashable Amount', default=0,
+    cashable_amount = fields.Float(string='Cashable Amount',
                                    help='Cashable Amount',
                                    related='seller_id.total_commission')
     payment_amount = fields.Float(string='Payment Amount', help='Payment '

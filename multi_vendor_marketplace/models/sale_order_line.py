@@ -34,11 +34,12 @@ class SaleOrder(models.Model):
                                  related='order_id.partner_id',
                                  string="Customer",
                                  help="Get the partner information")
-    state = fields.Selection(selection=[('pending', 'Pending'),
+    state = fields.Selection(selection_add=[('pending', 'Pending'),
                                         ('approved', 'Approved'),
-                                        ('shipped', 'Shipped'),
-                                        ('cancel', 'Cancel')], string="State",
-                             help="Get the approval states")
+                                        ('shipped', 'Shipped')],
+                         ondelete={'pending': 'set default',
+                                   'approved': 'set default',
+                                   'shipped': 'set default'})
 
     def cancel_order(self):
         """ Function to cancel the current order from order line"""

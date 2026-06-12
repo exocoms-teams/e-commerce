@@ -48,7 +48,7 @@ class ResPartner(models.Model):
                                   default=lambda self: self.env
                                   ['res.currency'].search([
                                       ('name', '=', 'USD')]).id,
-                                  readonly=True, hide=True)
+                                  readonly=True)
     return_policy = fields.Html(string='Return Policies',
                                 help="Product return policy for seller")
     shipping_policy = fields.Html(string='Shipping Policies',
