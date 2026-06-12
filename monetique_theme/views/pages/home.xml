@@ -268,6 +268,108 @@
                 </div>
             </section>
 
+            <section class="mn-section mn-products">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Hebergement</span>
+                        <h2>Nos hôtels les mieux notés</h2>
+                        <p>Des établissements sélectionnés pour leur confort et leur service.</p>
+                    </div>
+                    <div class="mn-products__grid">
+                        <t t-foreach="request.env['travel.hotel'].sudo().search([('disponible', '=', True)], order='etoiles desc', limit=8)" t-as="hotel">
+                            <a t-attf-href="/hotels/#{hotel.id}" class="mn-product-card">
+                                <div class="mn-product-card__img">
+                                    <t t-if="hotel.image_1920">
+                                        <img t-attf-src="/web/image/travel.hotel/#{hotel.id}/image_1920"
+                                            t-att-alt="hotel.name"
+                                            style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
+                                    </t>
+                                </div>
+                                <div class="mn-product-card__body">
+                                    <h3 t-esc="hotel.name"/>
+                                    <p t-esc="hotel.ville"/>
+                                    <div class="mn-product-card__footer">
+                                        <span class="mn-product-card__price" t-esc="'%s €toiles' % hotel.etoiles"/>
+                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir l'hôtel</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <div class="mn-section__footer">
+                        <a href="/hotels" class="mn-btn mn-btn--outline">Voir tous nos hôtels &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mn-section mn-products">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Transport</span>
+                        <h2>Nos trajets en train les plus rapides</h2>
+                        <p>Voyagez vite et confortablement vers votre destination.</p>
+                    </div>
+                    <div class="mn-products__grid">
+                        <t t-foreach="request.env['travel.train'].sudo().search([('disponible', '=', True)], order='duree_heures asc', limit=8)" t-as="train">
+                            <a t-attf-href="/trains/#{train.id}" class="mn-product-card">
+                                <div class="mn-product-card__img">
+                                    <t t-if="train.image_1920">
+                                        <img t-attf-src="/web/image/travel.train/#{train.id}/image_1920"
+                                            t-att-alt="train.name"
+                                            style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
+                                    </t>
+                                </div>
+                                <div class="mn-product-card__body">
+                                    <h3 t-esc="train.name"/>
+                                    <p><span t-esc="train.ville_depart"/> &#8594; <span t-esc="train.ville_arrivee"/></p>
+                                    <div class="mn-product-card__footer">
+                                        <span class="mn-product-card__price" t-esc="'%.1f h - %.2f €' % (train.duree_heures, train.prix)"/>
+                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir le trajet</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <div class="mn-section__footer">
+                        <a href="/trains" class="mn-btn mn-btn--outline">Voir tous nos trains &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mn-section mn-products">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Mobilite</span>
+                        <h2>Nos voitures les plus demandées</h2>
+                        <p>Louez le véhicule idéal pour explorer votre destination.</p>
+                    </div>
+                    <div class="mn-products__grid">
+                        <t t-foreach="request.env['travel.car'].sudo().search([('disponible', '=', True)], limit=8)" t-as="car">
+                            <a t-attf-href="/voitures/#{car.id}" class="mn-product-card">
+                                <div class="mn-product-card__img">
+                                    <t t-if="car.image_1920">
+                                        <img t-attf-src="/web/image/travel.car/#{car.id}/image_1920"
+                                            t-att-alt="car.name"
+                                            style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;"/>
+                                    </t>
+                                </div>
+                                <div class="mn-product-card__body">
+                                    <h3 t-esc="car.name"/>
+                                    <p><span t-esc="car.marque"/> <span t-esc="car.modele"/></p>
+                                    <div class="mn-product-card__footer">
+                                        <span class="mn-product-card__price" t-esc="'%.2f € / jour' % car.prix_par_jour"/>
+                                        <span class="mn-btn mn-btn--primary mn-btn--sm">Voir l'offre</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                    <div class="mn-section__footer">
+                        <a href="/voitures" class="mn-btn mn-btn--outline">Voir toutes nos voitures &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
             <section class="mn-reviews mn-section">
                 <div class="mn-container">
                     <div class="mn-section__header">
