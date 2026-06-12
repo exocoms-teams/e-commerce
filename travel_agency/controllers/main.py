@@ -13,6 +13,10 @@ class TravelController(http.Controller):
     def about_page(self, **kwargs):
         return request.render('travel_agency.about_page', {})
 
+    @http.route('/faq', type='http', auth='public', website=True)
+    def faq_page(self, **kwargs):
+        return request.render('travel_agency.faq_page', {})
+
     @http.route('/travels', type='http', auth='public', website=True)
     def travel_list(self, **kwargs):
         domain = [('prix_par_personne', '>', 0)]
