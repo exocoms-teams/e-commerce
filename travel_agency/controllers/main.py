@@ -5,6 +5,14 @@ from datetime import datetime
 
 class TravelController(http.Controller):
 
+    @http.route('/conditions-utilisation', type='http', auth='public', website=True)
+    def terms_page(self, **kwargs):
+        return request.render('travel_agency.terms_page', {})
+
+    @http.route('/a-propos', type='http', auth='public', website=True)
+    def about_page(self, **kwargs):
+        return request.render('travel_agency.about_page', {})
+
     @http.route('/travels', type='http', auth='public', website=True)
     def travel_list(self, **kwargs):
         domain = [('prix_par_personne', '>', 0)]
