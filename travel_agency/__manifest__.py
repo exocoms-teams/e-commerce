@@ -4,7 +4,7 @@
     'author': 'ARMOD07',
     'license': 'LGPL-3',
     'category': 'Sales',
-    'depends': ['base', 'product', 'website', 'website_sale'],
+    'depends': ['base', 'product', 'website'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
