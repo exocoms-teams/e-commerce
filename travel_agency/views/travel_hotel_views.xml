@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_hotel_form" model="ir.ui.view">
+        <field name="name">travel.hotel.form</field>
+        <field name="model">travel.hotel</field>
+        <field name="arch" type="xml">
+            <form string="Hôtel">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group string="Localisation">
+                        <field name="pays"/>
+                        <field name="ville"/>
+                        <field name="adresse"/>
+                        <field name="latitude"/>
+                        <field name="longitude"/>
+                    </group>
+                    <group string="Caractéristiques">
+                        <field name="etoiles"/>
+                        <field name="type_chambre"/>
+                        <field name="pension"/>
+                        <field name="nombre_chambres"/>
+                        <field name="prix_par_nuit"/>
+                        <field name="disponible"/>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group string="Les plus">
+                        <field name="points_forts" nolabel="1" placeholder="Un avantage par ligne"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_hotel_tree" model="ir.ui.view">
+        <field name="name">travel.hotel.tree</field>
+        <field name="model">travel.hotel</field>
+        <field name="arch" type="xml">
+            <list string="Hôtels">
+                <field name="name"/>
+                <field name="ville"/>
+                <field name="pays"/>
+                <field name="etoiles"/>
+                <field name="prix_par_nuit"/>
+                <field name="disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_travel_hotel" model="ir.actions.act_window">
+        <field name="name">Hôtels</field>
+        <field name="res_model">travel.hotel</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_travel_hotel" name="Hôtels"
+              parent="menu_travel_root"
+              action="action_travel_hotel"
+              sequence="5"/>
+
+</odoo>

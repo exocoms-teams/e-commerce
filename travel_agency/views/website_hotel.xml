@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="hotel_list_page" name="Liste des hôtels">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <h1 class="mb-4">Nos hôtels</h1>
+
+                <form method="get" class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <input type="text" name="destination" class="form-control"
+                               placeholder="Ville ou pays" t-att-value="filters.get('destination', '')"/>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="etoiles" class="form-select">
+                            <option value="">Toutes étoiles</option>
+                            <option value="3">3 étoiles et +</option>
+                            <option value="4">4 étoiles et +</option>
+                            <option value="5">5 étoiles</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                    </div>
+                </form>
+
+                <div class="row">
+                    <t t-foreach="hotels" t-as="hotel">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <t t-if="hotel.image_1920">
+                                    <img t-attf-src="/web/image/travel.hotel/#{hotel.id}/image_1920"
+                                        class="card-img-top" style="height:200px; object-fit:cover;"/>
+                                </t>
+                                <div class="card-body">
+                                    <h5 class="card-title"><t t-esc="hotel.name"/></h5>
+                                    <p class="text-muted">
+                                        <i class="fa fa-map-marker-alt me-1"/>
+                                        <t t-esc="hotel.ville"/>, <t t-esc="hotel.pays"/>
+                                    </p>
+                                    <p class="text-warning">
+                                        <t t-foreach="range(int(hotel.etoiles or 0))" t-as="i">
+                                            <i class="fa fa-star"/>
+                                        </t>
+                                    </p>
+                                    <p class="fw-bold"><t t-esc="hotel.prix_par_nuit"/> € / nuit</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a t-attf-href="/hotels/#{hotel.id}" class="btn btn-primary w-100">
+                                        <i class="fa fa-info-circle me-2"/>
+                                        Afficher les détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="not hotels">
+                        <div class="col-12">
+                            <div class="alert alert-info">Aucun hôtel disponible pour le moment.</div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="hotel_detail_page" name="Détail de l'hôtel">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <t t-if="hotel.image_1920">
+                            <img t-attf-src="/web/image/travel.hotel/#{hotel.id}/image_1920"
+                                class="img-fluid rounded shadow-sm"/>
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="mb-3"><t t-esc="hotel.name"/></h1>
+                        <p class="fs-4 text-primary">
+                            <strong><t t-esc="hotel.prix_par_nuit"/> € / nuit</strong>
+                        </p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <i class="fa fa-map-marker-alt me-2"/>
+                                <strong>Adresse :</strong>
+                                <t t-esc="hotel.adresse"/> — <t t-esc="hotel.ville"/>, <t t-esc="hotel.pays"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-star me-2"/>
+                                <strong>Étoiles :</strong> <t t-esc="hotel.etoiles"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-bed me-2"/>
+                                <strong>Type de chambre :</strong> <t t-esc="hotel.type_chambre"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-utensils me-2"/>
+                                <strong>Formule repas :</strong> <t t-esc="hotel.pension"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-door-open me-2"/>
+                                <strong>Chambres disponibles :</strong> <t t-esc="hotel.nombre_chambres"/>
+                            </li>
+                        </ul>
+
+                        <t t-if="hotel.description">
+                            <div t-field="hotel.description" class="mb-4"/>
+                        </t>
+
+                        <t t-if="hotel.points_forts">
+                            <h5>Les plus</h5>
+                            <ul class="mb-4">
+                                <t t-foreach="hotel.points_forts.splitlines()" t-as="ligne">
+                                    <li t-if="ligne.strip()" t-esc="ligne"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <a href="/hotels" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

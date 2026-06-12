@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="car_list_page" name="Liste des locations de voiture">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <h1 class="mb-4">Location de voiture</h1>
+
+                <form method="get" class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <input type="text" name="destination" class="form-control"
+                               placeholder="Ville ou pays" t-att-value="filters.get('destination', '')"/>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="categorie" class="form-select">
+                            <option value="">Toutes catégories</option>
+                            <option value="economique">Économique</option>
+                            <option value="compacte">Compacte</option>
+                            <option value="berline">Berline</option>
+                            <option value="suv">SUV</option>
+                            <option value="luxe">Luxe</option>
+                            <option value="utilitaire">Utilitaire</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                    </div>
+                </form>
+
+                <div class="row">
+                    <t t-foreach="cars" t-as="car">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <t t-if="car.image_1920">
+                                    <img t-attf-src="/web/image/travel.car/#{car.id}/image_1920"
+                                        class="card-img-top" style="height:200px; object-fit:cover;"/>
+                                </t>
+                                <div class="card-body">
+                                    <h5 class="card-title"><t t-esc="car.name"/></h5>
+                                    <p class="text-muted">
+                                        <i class="fa fa-car me-1"/>
+                                        <t t-esc="car.marque"/> <t t-esc="car.modele"/>
+                                    </p>
+                                    <p class="text-muted">
+                                        <i class="fa fa-map-marker-alt me-1"/>
+                                        <t t-esc="car.ville_prise_en_charge"/>
+                                    </p>
+                                    <p class="fw-bold"><t t-esc="car.prix_par_jour"/> € / jour</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a t-attf-href="/voitures/#{car.id}" class="btn btn-primary w-100">
+                                        <i class="fa fa-info-circle me-2"/>
+                                        Afficher les détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="not cars">
+                        <div class="col-12">
+                            <div class="alert alert-info">Aucune voiture disponible pour le moment.</div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="car_detail_page" name="Détail de la location">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <t t-if="car.image_1920">
+                            <img t-attf-src="/web/image/travel.car/#{car.id}/image_1920"
+                                class="img-fluid rounded shadow-sm"/>
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="mb-3"><t t-esc="car.name"/></h1>
+                        <p class="fs-4 text-primary">
+                            <strong><t t-esc="car.prix_par_jour"/> € / jour</strong>
+                        </p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <i class="fa fa-car me-2"/>
+                                <strong>Véhicule :</strong> <t t-esc="car.marque"/> <t t-esc="car.modele"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-th-large me-2"/>
+                                <strong>Catégorie :</strong> <t t-esc="car.categorie"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-cogs me-2"/>
+                                <strong>Transmission :</strong> <t t-esc="car.transmission"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-users me-2"/>
+                                <strong>Places :</strong> <t t-esc="car.nombre_places"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-map-marker-alt me-2"/>
+                                <strong>Prise en charge :</strong> <t t-esc="car.ville_prise_en_charge"/> — <t t-esc="car.pays"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-map-marker me-2"/>
+                                <strong>Restitution :</strong> <t t-esc="car.ville_restitution"/>
+                            </li>
+                        </ul>
+
+                        <t t-if="car.description">
+                            <div t-field="car.description" class="mb-4"/>
+                        </t>
+
+                        <t t-if="car.points_forts">
+                            <h5>Les plus</h5>
+                            <ul class="mb-4">
+                                <t t-foreach="car.points_forts.splitlines()" t-as="ligne">
+                                    <li t-if="ligne.strip()" t-esc="ligne"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <a href="/voitures" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

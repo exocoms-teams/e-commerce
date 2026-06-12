@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_vol_form" model="ir.ui.view">
+        <field name="name">travel.vol.form</field>
+        <field name="model">travel.vol</field>
+        <field name="arch" type="xml">
+            <form string="Vol">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group string="Compagnie">
+                        <field name="compagnie"/>
+                        <field name="numero_vol"/>
+                        <field name="type_vol"/>
+                        <field name="classe"/>
+                    </group>
+                    <group string="Départ">
+                        <field name="pays_depart"/>
+                        <field name="ville_depart"/>
+                        <field name="aeroport_depart"/>
+                    </group>
+                    <group string="Arrivée">
+                        <field name="pays_arrivee"/>
+                        <field name="ville_arrivee"/>
+                        <field name="aeroport_arrivee"/>
+                    </group>
+                    <group string="Détails">
+                        <field name="duree_heures"/>
+                        <field name="prix"/>
+                        <field name="disponible"/>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group string="Les plus">
+                        <field name="points_forts" nolabel="1" placeholder="Un avantage par ligne"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_vol_tree" model="ir.ui.view">
+        <field name="name">travel.vol.tree</field>
+        <field name="model">travel.vol</field>
+        <field name="arch" type="xml">
+            <list string="Vols">
+                <field name="name"/>
+                <field name="ville_depart"/>
+                <field name="ville_arrivee"/>
+                <field name="compagnie"/>
+                <field name="prix"/>
+                <field name="disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_travel_vol" model="ir.actions.act_window">
+        <field name="name">Vols</field>
+        <field name="res_model">travel.vol</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_travel_vol" name="Vols"
+              parent="menu_travel_root"
+              action="action_travel_vol"
+              sequence="2"/>
+
+</odoo>

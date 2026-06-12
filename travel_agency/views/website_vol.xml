@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="vol_list_page" name="Liste des vols">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <h1 class="mb-4">Nos vols</h1>
+
+                <form method="get" class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <input type="text" name="destination" class="form-control"
+                               placeholder="Ville ou pays d'arrivée" t-att-value="filters.get('destination', '')"/>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="classe" class="form-select">
+                            <option value="">Toutes classes</option>
+                            <option value="economique">Économique</option>
+                            <option value="affaires">Affaires</option>
+                            <option value="premiere">Première classe</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                    </div>
+                </form>
+
+                <div class="row">
+                    <t t-foreach="vols" t-as="vol">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <t t-if="vol.image_1920">
+                                    <img t-attf-src="/web/image/travel.vol/#{vol.id}/image_1920"
+                                        class="card-img-top" style="height:200px; object-fit:cover;"/>
+                                </t>
+                                <div class="card-body">
+                                    <h5 class="card-title"><t t-esc="vol.name"/></h5>
+                                    <p class="text-muted">
+                                        <i class="fa fa-plane-departure me-1"/>
+                                        <t t-esc="vol.ville_depart"/>
+                                        <i class="fa fa-arrow-right mx-2"/>
+                                        <i class="fa fa-plane-arrival me-1"/>
+                                        <t t-esc="vol.ville_arrivee"/>
+                                    </p>
+                                    <p class="fw-bold"><t t-esc="vol.prix"/> €</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a t-attf-href="/vols/#{vol.id}" class="btn btn-primary w-100">
+                                        <i class="fa fa-info-circle me-2"/>
+                                        Afficher les détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="not vols">
+                        <div class="col-12">
+                            <div class="alert alert-info">Aucun vol disponible pour le moment.</div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="vol_detail_page" name="Détail du vol">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <t t-if="vol.image_1920">
+                            <img t-attf-src="/web/image/travel.vol/#{vol.id}/image_1920"
+                                class="img-fluid rounded shadow-sm"/>
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="mb-3"><t t-esc="vol.name"/></h1>
+                        <p class="fs-4 text-primary">
+                            <strong><t t-esc="vol.prix"/> €</strong>
+                        </p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <i class="fa fa-plane-departure me-2"/>
+                                <strong>Départ :</strong>
+                                <t t-esc="vol.ville_depart"/> (<t t-esc="vol.aeroport_depart"/>) — <t t-esc="vol.pays_depart"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-plane-arrival me-2"/>
+                                <strong>Arrivée :</strong>
+                                <t t-esc="vol.ville_arrivee"/> (<t t-esc="vol.aeroport_arrivee"/>) — <t t-esc="vol.pays_arrivee"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-building me-2"/>
+                                <strong>Compagnie :</strong> <t t-esc="vol.compagnie"/> <t t-esc="vol.numero_vol"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-chair me-2"/>
+                                <strong>Classe :</strong> <t t-esc="vol.classe"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-route me-2"/>
+                                <strong>Type :</strong> <t t-esc="vol.type_vol"/>
+                            </li>
+                            <li class="list-group-item" t-if="vol.duree_heures">
+                                <i class="fa fa-clock me-2"/>
+                                <strong>Durée :</strong> <t t-esc="vol.duree_heures"/> h
+                            </li>
+                        </ul>
+
+                        <t t-if="vol.description">
+                            <div t-field="vol.description" class="mb-4"/>
+                        </t>
+
+                        <t t-if="vol.points_forts">
+                            <h5>Les plus</h5>
+                            <ul class="mb-4">
+                                <t t-foreach="vol.points_forts.splitlines()" t-as="ligne">
+                                    <li t-if="ligne.strip()" t-esc="ligne"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <a href="/vols" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

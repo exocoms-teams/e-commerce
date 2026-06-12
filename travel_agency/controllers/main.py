@@ -36,6 +36,122 @@ class TravelController(http.Controller):
             'filters': kwargs,
         })
 
+    @http.route('/hotels', type='http', auth='public', website=True)
+    def hotel_list(self, **kwargs):
+        domain = [('disponible', '=', True)]
+
+        destination = kwargs.get('destination', '').strip()
+        if destination:
+            domain += ['|',
+                       ('ville', 'ilike', destination),
+                       ('pays', 'ilike', destination)]
+
+        etoiles = kwargs.get('etoiles', '').strip()
+        if etoiles:
+            domain.append(('etoiles', '>=', etoiles))
+
+        hotels = request.env['travel.hotel'].sudo().search(domain)
+        return request.render('travel_agency.hotel_list_page', {
+            'hotels': hotels,
+            'filters': kwargs,
+        })
+
+    @http.route('/hotels/<int:hotel_id>', type='http', auth='public', website=True)
+    def hotel_detail(self, hotel_id, **kwargs):
+        hotel = request.env['travel.hotel'].sudo().browse(hotel_id)
+        if not hotel.exists():
+            return request.redirect('/hotels')
+        return request.render('travel_agency.hotel_detail_page', {
+            'hotel': hotel,
+        })
+
+    @http.route('/vols', type='http', auth='public', website=True)
+    def vol_list(self, **kwargs):
+        domain = [('disponible', '=', True)]
+
+        destination = kwargs.get('destination', '').strip()
+        if destination:
+            domain += ['|',
+                       ('ville_arrivee', 'ilike', destination),
+                       ('pays_arrivee', 'ilike', destination)]
+
+        classe = kwargs.get('classe', '').strip()
+        if classe:
+            domain.append(('classe', '=', classe))
+
+        vols = request.env['travel.vol'].sudo().search(domain)
+        return request.render('travel_agency.vol_list_page', {
+            'vols': vols,
+            'filters': kwargs,
+        })
+
+    @http.route('/vols/<int:vol_id>', type='http', auth='public', website=True)
+    def vol_detail(self, vol_id, **kwargs):
+        vol = request.env['travel.vol'].sudo().browse(vol_id)
+        if not vol.exists():
+            return request.redirect('/vols')
+        return request.render('travel_agency.vol_detail_page', {
+            'vol': vol,
+        })
+
+    @http.route('/trains', type='http', auth='public', website=True)
+    def train_list(self, **kwargs):
+        domain = [('disponible', '=', True)]
+
+        destination = kwargs.get('destination', '').strip()
+        if destination:
+            domain += ['|',
+                       ('ville_arrivee', 'ilike', destination),
+                       ('pays_arrivee', 'ilike', destination)]
+
+        classe = kwargs.get('classe', '').strip()
+        if classe:
+            domain.append(('classe', '=', classe))
+
+        trains = request.env['travel.train'].sudo().search(domain)
+        return request.render('travel_agency.train_list_page', {
+            'trains': trains,
+            'filters': kwargs,
+        })
+
+    @http.route('/trains/<int:train_id>', type='http', auth='public', website=True)
+    def train_detail(self, train_id, **kwargs):
+        train = request.env['travel.train'].sudo().browse(train_id)
+        if not train.exists():
+            return request.redirect('/trains')
+        return request.render('travel_agency.train_detail_page', {
+            'train': train,
+        })
+
+    @http.route('/voitures', type='http', auth='public', website=True)
+    def car_list(self, **kwargs):
+        domain = [('disponible', '=', True)]
+
+        destination = kwargs.get('destination', '').strip()
+        if destination:
+            domain += ['|',
+                       ('ville_prise_en_charge', 'ilike', destination),
+                       ('pays', 'ilike', destination)]
+
+        categorie = kwargs.get('categorie', '').strip()
+        if categorie:
+            domain.append(('categorie', '=', categorie))
+
+        cars = request.env['travel.car'].sudo().search(domain)
+        return request.render('travel_agency.car_list_page', {
+            'cars': cars,
+            'filters': kwargs,
+        })
+
+    @http.route('/voitures/<int:car_id>', type='http', auth='public', website=True)
+    def car_detail(self, car_id, **kwargs):
+        car = request.env['travel.car'].sudo().browse(car_id)
+        if not car.exists():
+            return request.redirect('/voitures')
+        return request.render('travel_agency.car_detail_page', {
+            'car': car,
+        })
+
     @http.route('/travels/<int:product_id>', type='http', auth='public', website=True)
     def travel_detail(self, product_id, **kwargs):
         product = request.env['product.template'].sudo().browse(product_id)

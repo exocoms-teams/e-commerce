@@ -23,8 +23,141 @@
                             <span class="mn-hero__accent">du monde</span>
                         </h1>
                         <p class="mn-hero__desc" style="color:rgba(255,255,255,0.85)">Vols, hôtels, circuits et séjours tout compris, n'attendez plus et réservez en quelques clics.</p>
+                        <div class="mn-search">
+                            <ul class="mn-search__tabs" role="tablist">
+                                <li class="mn-search__tab active" data-target="search-voyages">
+                                    <i class="fa fa-suitcase me-1"/>Voyages
+                                </li>
+                                <li class="mn-search__tab" data-target="search-hotels">
+                                    <i class="fa fa-bed me-1"/>Hôtels
+                                </li>
+                                <li class="mn-search__tab" data-target="search-vols">
+                                    <i class="fa fa-plane me-1"/>Vols
+                                </li>
+                                <li class="mn-search__tab" data-target="search-trains">
+                                    <i class="fa fa-train me-1"/>Trains
+                                </li>
+                                <li class="mn-search__tab" data-target="search-voitures">
+                                    <i class="fa fa-car me-1"/>Location de voiture
+                                </li>
+                            </ul>
+
+                            <form action="/travels" method="get" class="mn-search-bar" id="search-voyages">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Où allez-vous ?"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Type de voyage</label>
+                                    <select name="type_voyage">
+                                        <option value="">Tous</option>
+                                        <option value="sejour">Séjour</option>
+                                        <option value="circuit">Circuit touristique</option>
+                                        <option value="aller_retour">Aller-retour</option>
+                                        <option value="aller_simple">Aller simple</option>
+                                    </select>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Budget max</label>
+                                    <input type="number" name="prix_max" placeholder="€ / personne" min="0"/>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/hotels" method="get" class="mn-search-bar" id="search-hotels" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Étoiles min.</label>
+                                    <select name="etoiles">
+                                        <option value="">Toutes</option>
+                                        <option value="3">3 étoiles et +</option>
+                                        <option value="4">4 étoiles et +</option>
+                                        <option value="5">5 étoiles</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/vols" method="get" class="mn-search-bar" id="search-vols" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays d'arrivée"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Classe</label>
+                                    <select name="classe">
+                                        <option value="">Toutes</option>
+                                        <option value="economique">Économique</option>
+                                        <option value="affaires">Affaires</option>
+                                        <option value="premiere">Première classe</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/trains" method="get" class="mn-search-bar" id="search-trains" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays d'arrivée"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Classe</label>
+                                    <select name="classe">
+                                        <option value="">Toutes</option>
+                                        <option value="seconde">Seconde classe</option>
+                                        <option value="premiere">Première classe</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/voitures" method="get" class="mn-search-bar" id="search-voitures" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Catégorie</label>
+                                    <select name="categorie">
+                                        <option value="">Toutes</option>
+                                        <option value="economique">Économique</option>
+                                        <option value="compacte">Compacte</option>
+                                        <option value="berline">Berline</option>
+                                        <option value="suv">SUV</option>
+                                        <option value="luxe">Luxe</option>
+                                        <option value="utilitaire">Utilitaire</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <script>
+                                document.querySelectorAll('.mn-search__tab').forEach(function (tab) {
+                                    tab.addEventListener('click', function () {
+                                        document.querySelectorAll('.mn-search__tab').forEach(function (t) { t.classList.remove('active'); });
+                                        document.querySelectorAll('.mn-search-bar').forEach(function (f) { f.style.display = 'none'; });
+                                        tab.classList.add('active');
+                                        document.getElementById(tab.dataset.target).style.display = 'flex';
+                                    });
+                                });
+                            </script>
+                        </div>
+
                         <div class="mn-hero__actions">
-                            <a href="/contact" class="mn-btn mn-btn--primary mn-btn--lg">Découvrir nos voyages</a>
+                            <a href="/travels" class="mn-btn mn-btn--primary mn-btn--lg">Découvrir nos voyages</a>
                             <a href="/shop" class="mn-btn mn-btn--outline mn-btn--lg" style="color:white;border-color:white">Voir nos destinations</a>
                         </div>
                         <div class="mn-hero__trust" style="color:rgba(255,255,255,0.8)">

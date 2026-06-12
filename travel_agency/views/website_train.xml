@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="train_list_page" name="Liste des trains">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <h1 class="mb-4">Nos trains</h1>
+
+                <form method="get" class="row g-2 mb-4">
+                    <div class="col-md-4">
+                        <input type="text" name="destination" class="form-control"
+                               placeholder="Ville ou pays d'arrivée" t-att-value="filters.get('destination', '')"/>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="classe" class="form-select">
+                            <option value="">Toutes classes</option>
+                            <option value="seconde">Seconde classe</option>
+                            <option value="premiere">Première classe</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                    </div>
+                </form>
+
+                <div class="row">
+                    <t t-foreach="trains" t-as="train">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <t t-if="train.image_1920">
+                                    <img t-attf-src="/web/image/travel.train/#{train.id}/image_1920"
+                                        class="card-img-top" style="height:200px; object-fit:cover;"/>
+                                </t>
+                                <div class="card-body">
+                                    <h5 class="card-title"><t t-esc="train.name"/></h5>
+                                    <p class="text-muted">
+                                        <i class="fa fa-train me-1"/>
+                                        <t t-esc="train.ville_depart"/>
+                                        <i class="fa fa-arrow-right mx-2"/>
+                                        <t t-esc="train.ville_arrivee"/>
+                                    </p>
+                                    <p class="fw-bold"><t t-esc="train.prix"/> €</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a t-attf-href="/trains/#{train.id}" class="btn btn-primary w-100">
+                                        <i class="fa fa-info-circle me-2"/>
+                                        Afficher les détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="not trains">
+                        <div class="col-12">
+                            <div class="alert alert-info">Aucun trajet disponible pour le moment.</div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="train_detail_page" name="Détail du trajet">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <t t-if="train.image_1920">
+                            <img t-attf-src="/web/image/travel.train/#{train.id}/image_1920"
+                                class="img-fluid rounded shadow-sm"/>
+                        </t>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="mb-3"><t t-esc="train.name"/></h1>
+                        <p class="fs-4 text-primary">
+                            <strong><t t-esc="train.prix"/> €</strong>
+                        </p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <i class="fa fa-train me-2"/>
+                                <strong>Départ :</strong>
+                                <t t-esc="train.ville_depart"/> (<t t-esc="train.gare_depart"/>) — <t t-esc="train.pays_depart"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-flag-checkered me-2"/>
+                                <strong>Arrivée :</strong>
+                                <t t-esc="train.ville_arrivee"/> (<t t-esc="train.gare_arrivee"/>) — <t t-esc="train.pays_arrivee"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-building me-2"/>
+                                <strong>Compagnie :</strong> <t t-esc="train.compagnie"/> <t t-esc="train.numero_train"/>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fa fa-chair me-2"/>
+                                <strong>Classe :</strong> <t t-esc="train.classe"/>
+                            </li>
+                            <li class="list-group-item" t-if="train.duree_heures">
+                                <i class="fa fa-clock me-2"/>
+                                <strong>Durée :</strong> <t t-esc="train.duree_heures"/> h
+                            </li>
+                        </ul>
+
+                        <t t-if="train.description">
+                            <div t-field="train.description" class="mb-4"/>
+                        </t>
+
+                        <t t-if="train.points_forts">
+                            <h5>Les plus</h5>
+                            <ul class="mb-4">
+                                <t t-foreach="train.points_forts.splitlines()" t-as="ligne">
+                                    <li t-if="ligne.strip()" t-esc="ligne"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <a href="/trains" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

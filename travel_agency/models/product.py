@@ -41,6 +41,18 @@ class ProductTemplate(models.Model):
     prix_par_personne = fields.Float(string='Prix par personne (€)')
     disponible = fields.Boolean(string='Disponible', default=True)
 
+    description_situation = fields.Html(string='Situation')
+    description_hotel = fields.Html(string="L'hôtel")
+    points_forts = fields.Text(string='Les plus')
+    description_logement = fields.Html(string='Logement')
+    description_animations = fields.Html(string='Animations')
+    description_restauration = fields.Html(string='Restauration')
+    description_excursions = fields.Html(string='Excursions')
+    description_formalites = fields.Html(string='Formalités')
+
+    latitude = fields.Float(string='Latitude', digits=(10, 6))
+    longitude = fields.Float(string='Longitude', digits=(10, 6))
+
     def is_available_for_dates(self, date_debut, date_fin):
         """Vérifie si le produit est disponible pour des dates données"""
         self.ensure_one()

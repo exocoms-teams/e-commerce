@@ -186,6 +186,100 @@
                         </a>
                     </div>
                 </div>
+
+                <ul class="nav nav-tabs mt-5" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#tab-presentation">Présentation</a>
+                    </li>
+                    <li class="nav-item" t-if="product.description_logement">
+                        <a class="nav-link" data-bs-toggle="tab" href="#tab-logement">Logement</a>
+                    </li>
+                    <li class="nav-item" t-if="product.description_animations">
+                        <a class="nav-link" data-bs-toggle="tab" href="#tab-animations">Animations</a>
+                    </li>
+                    <li class="nav-item" t-if="product.description_restauration">
+                        <a class="nav-link" data-bs-toggle="tab" href="#tab-restauration">Restauration</a>
+                    </li>
+                    <li class="nav-item" t-if="product.description_excursions">
+                        <a class="nav-link" data-bs-toggle="tab" href="#tab-excursions">Excursions</a>
+                    </li>
+                    <li class="nav-item" t-if="product.description_formalites">
+                        <a class="nav-link" data-bs-toggle="tab" href="#tab-formalites">Formalités</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content border border-top-0 p-4">
+                    <div class="tab-pane fade show active" id="tab-presentation">
+
+                        <t t-if="product.description_situation">
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-8">
+                                    <h3>Situation</h3>
+                                    <div t-field="product.description_situation"/>
+                                </div>
+                                <div class="col-md-4" t-if="product.latitude and product.longitude">
+                                    <div id="travel-map" style="height:250px;" t-attf-data-lat="#{product.latitude}" t-attf-data-lng="#{product.longitude}"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-if="product.description_hotel">
+                            <h3>L'hôtel</h3>
+                            <div t-field="product.description_hotel" class="mb-4"/>
+                        </t>
+
+                        <t t-if="product.points_forts">
+                            <h3>Les plus</h3>
+                            <ul class="mb-4">
+                                <t t-foreach="product.points_forts.splitlines()" t-as="ligne">
+                                    <li t-if="ligne.strip()" t-esc="ligne"/>
+                                </t>
+                            </ul>
+                        </t>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-logement" t-if="product.description_logement">
+                        <h3>Logement</h3>
+                        <div t-field="product.description_logement"/>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-animations" t-if="product.description_animations">
+                        <h3>Animations</h3>
+                        <div t-field="product.description_animations"/>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-restauration" t-if="product.description_restauration">
+                        <h3>Restauration</h3>
+                        <div t-field="product.description_restauration"/>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-excursions" t-if="product.description_excursions">
+                        <h3>Excursions</h3>
+                        <div t-field="product.description_excursions"/>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-formalites" t-if="product.description_formalites">
+                        <h3>Formalités</h3>
+                        <div t-field="product.description_formalites"/>
+                    </div>
+                </div>
+
+                <t t-if="product.latitude and product.longitude">
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var el = document.getElementById('travel-map');
+                            if (!el || typeof L === 'undefined') return;
+                            var lat = parseFloat(el.dataset.lat);
+                            var lng = parseFloat(el.dataset.lng);
+                            var map = L.map(el).setView([lat, lng], 10);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                            L.marker([lat, lng]).addTo(map);
+                        });
+                    </script>
+                </t>
+
             </div>
         </t>
     </template>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_car_form" model="ir.ui.view">
+        <field name="name">travel.car.form</field>
+        <field name="model">travel.car</field>
+        <field name="arch" type="xml">
+            <form string="Location de voiture">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group string="Véhicule">
+                        <field name="marque"/>
+                        <field name="modele"/>
+                        <field name="categorie"/>
+                        <field name="transmission"/>
+                        <field name="nombre_places"/>
+                    </group>
+                    <group string="Lieux">
+                        <field name="pays"/>
+                        <field name="ville_prise_en_charge"/>
+                        <field name="ville_restitution"/>
+                    </group>
+                    <group string="Détails">
+                        <field name="prix_par_jour"/>
+                        <field name="disponible"/>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group string="Les plus">
+                        <field name="points_forts" nolabel="1" placeholder="Un avantage par ligne"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_car_tree" model="ir.ui.view">
+        <field name="name">travel.car.tree</field>
+        <field name="model">travel.car</field>
+        <field name="arch" type="xml">
+            <list string="Locations de voiture">
+                <field name="name"/>
+                <field name="marque"/>
+                <field name="modele"/>
+                <field name="ville_prise_en_charge"/>
+                <field name="prix_par_jour"/>
+                <field name="disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_travel_car" model="ir.actions.act_window">
+        <field name="name">Locations de voiture</field>
+        <field name="res_model">travel.car</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_travel_car" name="Locations de voiture"
+              parent="menu_travel_root"
+              action="action_travel_car"
+              sequence="4"/>
+
+</odoo>
