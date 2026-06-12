@@ -70,4 +70,4 @@ class MandatBordereau(models.Model):
         self.write({'state': 'acquitte'})
 
     def action_print(self):
-        return self.env.ref('mandat_administratif.action_report_bordereau').report_action(self)
+        return self.env.ref('mandat_admin.action_report_bordereau').report_action(self)
