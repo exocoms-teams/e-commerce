@@ -19,6 +19,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
+# -*- coding: utf-8 -*-
 from odoo import fields, models
 
 
@@ -34,20 +35,19 @@ class SaleOrder(models.Model):
                                  related='order_id.partner_id',
                                  string="Customer",
                                  help="Get the partner information")
-    state = fields.Selection(selection_add=[('pending', 'Pending'),
-                                        ('approved', 'Approved'),
-                                        ('shipped', 'Shipped')],
-                         ondelete={'pending': 'set default',
-                                   'approved': 'set default',
-                                   'shipped': 'set default'})
+    marketplace_state = fields.Selection(
+        selection=[('pending', 'Pending'),
+                   ('approved', 'Approved'),
+                   ('shipped', 'Shipped'),
+                   ('cancel', 'Cancel')],
+        string="Marketplace State",
+        help="Get the approval states",
+        default='pending')
 
     def cancel_order(self):
-        """ Function to cancel the current order from order line"""
-        self.state = 'cancel'
+        self.marketplace_state = 'cancel'
 
     def approve_order(self):
-        """ Approve sale order and change to state in approved  only in seller
-          order view and its created new delivery form for that product """
         data_stock_pick = self.env['stock.picking'].sudo().search(
             [('origin', '=', self.order_id.name)])
         partner_id = data_stock_pick.partner_id
@@ -77,11 +77,9 @@ class SaleOrder(models.Model):
                 'move_ids_without_package': vals,
                 'origin': ' ' + self.order_id.name,
             })
-            new_rec.update({
-                'ref_id': self.id
-            })
+            new_rec.update({'ref_id': self.id})
             new_rec.state = 'assigned'
-            self.state = 'approved'
+            self.marketplace_state = 'approved'
         else:
             new_rec = self.env['stock.picking'].create({
                 'partner_id': partner_id.id,
@@ -89,14 +87,11 @@ class SaleOrder(models.Model):
                 'move_ids_without_package': vals,
                 'origin': ' ' + self.order_id.name,
             })
-            new_rec.update({
-                'ref_id': self.id
-            })
+            new_rec.update({'ref_id': self.id})
             new_rec.state = 'assigned'
-            self.state = 'approved'
+            self.marketplace_state = 'approved'
 
     def shipped(self):
-        """ Redirect to delivery form for validating """
         stock_picking_record = self.env['stock.picking'].search(
             [('ref_id', '=', self.id)])
         return {
