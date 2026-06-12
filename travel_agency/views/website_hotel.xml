@@ -119,6 +119,28 @@
                         <a href="/hotels" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
                     </div>
                 </div>
+
+                <t t-if="hotel.latitude and hotel.longitude">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div id="hotel-map" style="height:300px;" t-attf-data-lat="#{hotel.latitude}" t-attf-data-lng="#{hotel.longitude}"/>
+                        </div>
+                    </div>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var el = document.getElementById('hotel-map');
+                            if (!el || typeof L === 'undefined') return;
+                            var lat = parseFloat(el.dataset.lat);
+                            var lng = parseFloat(el.dataset.lng);
+                            var map = L.map(el).setView([lat, lng], 14);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                            L.marker([lat, lng]).addTo(map);
+                        });
+                    </script>
+                </t>
+
             </div>
         </t>
     </template>
