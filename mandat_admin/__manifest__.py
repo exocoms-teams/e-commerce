@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Mandat Administratif Français – GBCP Complet',
+    'name': 'Mandat Administratif',
     'version': '19.0.4.0.0',
     'category': 'Accounting/Payment',
-    'summary': 'Mandat administratif public français : GBCP, service fait, PEC, Chorus Pro, bordereau',
+    'summary': 'Gestion complète des mandats administratifs conformes GBCP pour organismes publics français',
     'description': """
 Mandat Administratif Français – Conforme GBCP
 ==============================================
