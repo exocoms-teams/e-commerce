@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="travel_rental_list_view" model="ir.ui.view">
+        <field name="name">travel.rental.list</field>
+        <field name="model">travel.rental</field>
+        <field name="arch" type="xml">
+            <list string="Maisons de location">
+                <field name="name"/>
+                <field name="type_logement"/>
+                <field name="ville"/>
+                <field name="pays"/>
+                <field name="nb_chambres"/>
+                <field name="nb_personnes"/>
+                <field name="prix_par_nuit"/>
+                <field name="disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="travel_rental_form_view" model="ir.ui.view">
+        <field name="name">travel.rental.form</field>
+        <field name="model">travel.rental</field>
+        <field name="arch" type="xml">
+            <form string="Maison de location">
+                <sheet>
+                    <field name="image_1920" widget="image"
+                           class="oe_avatar" options="{'size': [128, 128]}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nom du logement"/></h1>
+                    </div>
+                    <group>
+                        <group string="Localisation">
+                            <field name="pays"/>
+                            <field name="ville"/>
+                            <field name="adresse"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                        <group string="Caractéristiques">
+                            <field name="type_logement"/>
+                            <field name="nb_chambres"/>
+                            <field name="nb_personnes"/>
+                            <field name="superficie_m2"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Équipements">
+                            <field name="piscine"/>
+                            <field name="wifi"/>
+                            <field name="parking"/>
+                            <field name="climatisation"/>
+                            <field name="cuisine_equipee"/>
+                            <field name="animaux_admis"/>
+                        </group>
+                        <group string="Tarif &amp; Disponibilité">
+                            <field name="prix_par_nuit"/>
+                            <field name="disponible"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Points forts">
+                            <field name="points_forts"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="travel_rental_action" model="ir.actions.act_window">
+        <field name="name">Maisons de location</field>
+        <field name="res_model">travel.rental</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_travel_rental"
+              name="Maisons de location"
+              parent="menu_travel_main"
+              action="travel_rental_action"
+              sequence="50"/>
+
+</data>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- Vue liste back-office -->
+    <record id="travel_guide_list_view" model="ir.ui.view">
+        <field name="name">travel.guide.list</field>
+        <field name="model">travel.guide</field>
+        <field name="arch" type="xml">
+            <list string="Guides touristiques">
+                <field name="name"/>
+                <field name="prenom"/>
+                <field name="specialite"/>
+                <field name="ville"/>
+                <field name="pays"/>
+                <field name="prix_par_jour"/>
+                <field name="note"/>
+                <field name="disponible"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue formulaire back-office -->
+    <record id="travel_guide_form_view" model="ir.ui.view">
+        <field name="name">travel.guide.form</field>
+        <field name="model">travel.guide</field>
+        <field name="arch" type="xml">
+            <form string="Guide touristique">
+                <sheet>
+                    <field name="image_1920" widget="image"
+                           class="oe_avatar" options="{'size': [128, 128]}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nom du guide"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identité">
+                            <field name="prenom"/>
+                            <field name="specialite"/>
+                            <field name="langues"/>
+                            <field name="experience_ans"/>
+                            <field name="note"/>
+                        </group>
+                        <group string="Zone d'activité">
+                            <field name="pays"/>
+                            <field name="ville"/>
+                            <field name="email"/>
+                            <field name="telephone"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Tarif &amp; Disponibilité">
+                            <field name="prix_par_jour"/>
+                            <field name="disponible"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Points forts">
+                            <field name="points_forts"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="travel_guide_action" model="ir.actions.act_window">
+        <field name="name">Guides touristiques</field>
+        <field name="res_model">travel.guide</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_travel_guide"
+              name="Guides touristiques"
+              parent="menu_travel_main"
+              action="travel_guide_action"
+              sequence="40"/>
+
+</data>
+</odoo>
