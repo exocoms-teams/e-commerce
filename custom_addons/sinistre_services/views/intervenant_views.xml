@@ -15,46 +15,22 @@
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Nom de l'intervenant"/></h1>
                     </div>
-
-                    <notebook>
-
-                        <!-- ── Onglet Général ── -->
-                        <page string="Général" name="general">
-                            <group>
-                                <group string="Informations">
-                                    <field name="partner_id" options="{'quick_create': false}"/>
-                                    <field name="user_id" help="Compte pour accès PWA"/>
-                                    <field name="specialites" widget="many2many_tags"/>
-                                    <field name="zone_intervention"/>
-                                </group>
-                                <group string="Contrat">
-                                    <field name="taux_commission" widget="percentage"/>
-                                    <field name="disponible" widget="boolean_toggle"/>
-                                    <field name="actif" widget="boolean_toggle"/>
-                                </group>
-                            </group>
-                            <group string="Notes">
-                                <field name="note" nolabel="1"/>
-                            </group>
-                        </page>
-
-                        <!-- ── Onglet Stats ── -->
-                        <page string="Statistiques" name="stats">
-                            <group>
-                                <group string="Chiffre d'affaires">
-                                    <field name="ca_total" widget="monetary"/>
-                                    <field name="commission_due" widget="monetary"/>
-                                </group>
-                            </group>
-                            <field name="certification_ids">
-                                <list editable="bottom">
-                                    <field name="name"/>
-                                    <field name="date_validite"/>
-                                </list>
-                            </field>
-                        </page>
-
-                    </notebook>
+                    <group>
+                        <group string="Informations">
+                            <field name="partner_id" options="{'quick_create': false}"/>
+                            <field name="user_id" help="Compte pour accès PWA"/>
+                            <field name="specialites" widget="many2many_tags"/>
+                            <field name="zone_intervention"/>
+                        </group>
+                        <group string="Contrat">
+                            <field name="taux_commission" widget="percentage"/>
+                            <field name="disponible" widget="boolean_toggle"/>
+                            <field name="actif" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="note" nolabel="1"/>
+                    </group>
                 </sheet>
                 <chatter/>
             </form>
