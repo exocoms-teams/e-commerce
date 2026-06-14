@@ -13,6 +13,11 @@
     'depends': [
         'base', 'mail', 'account', 'sale', 'hr',
         'contacts', 'web', 'website', 'portal',
+        # Dépendances pour activer les blocs du website builder
+        'website_sale',       # Catalog
+        'website_blog',       # Blogs
+        'appointment',        # Appointments
+        'event',              # Events
     ],
     'data': [
         # Security
@@ -24,6 +29,7 @@
         'data/mission_type_data.xml',
         'data/website_data.xml',
         # Website
+        'views/website_homepage.xml',
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
         # Back-office views
@@ -39,7 +45,12 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/css/main.css',
+            'sinistre_services/static/src/css/base.css',
+            'sinistre_services/static/src/css/variables.css',
+            'sinistre_services/static/src/css/homepage.css',
+            'sinistre_services/static/src/css/layout.css',
+            'sinistre_services/static/src/css/pages.css',
+            'sinistre_services/static/src/js/main.js',
         ],
         'web.assets_backend': [
             'sinistre_services/static/src/css/backend.css',
