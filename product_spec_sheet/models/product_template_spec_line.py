@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ProductTemplateSpecLine(models.Model):
@@ -23,9 +24,15 @@ class ProductTemplateSpecLine(models.Model):
     sequence = fields.Integer(related='attribute_id.sequence', store=True, readonly=True)
     value = fields.Char(string="Valeur", required=True, translate=True)
 
-    _constraints = [
-        models.Constraint(
-            'unique(product_tmpl_id, attribute_id)',
-            "Cette caractéristique est déjà renseignée pour ce produit.",
-        ),
-    ]
+    @api.constrains('product_tmpl_id', 'attribute_id')
+    def _check_unique_attribute_per_product(self):
+        for rec in self:
+            duplicate = self.search([
+                ('product_tmpl_id', '=', rec.product_tmpl_id.id),
+                ('attribute_id', '=', rec.attribute_id.id),
+                ('id', '!=', rec.id),
+            ], limit=1)
+            if duplicate:
+                raise ValidationError(
+                    "Cette caractéristique est déjà renseignée pour ce produit."
+                )
