@@ -413,3 +413,129 @@ class SinistreAPIController(http.Controller):
         except Exception as e:
             _logger.error(f"[sinistre] create_mission_public: {e}")
             return _err(500, str(e))
+
+    # ══════════════════════════════════════════════════════════════════
+    #  PLANNING — Heures d'ouverture
+    # ══════════════════════════════════════════════════════════════════
+
+    @http.route('/sinistre_services/api/intervenant/planning',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def planning_get(self, **kw):
+        try:
+            iv = _get_interv()
+            slots = iv.get_planning_slots()
+
+            # Absences à venir (date_fin >= aujourd'hui)
+            from odoo.fields import Date
+            today = Date.today()
+            absences = iv.absence_ids.filtered(lambda a: a.date_fin >= today)
+            absences_data = [a._fmt() for a in absences.sorted('date_debut')]
+
+            return _ok({'success': True, 'slots': slots, 'absences': absences_data})
+        except Exception as e:
+            _logger.error(f"[sinistre] planning_get: {e}")
+            return _err(500, str(e))
+
+    @http.route('/sinistre_services/api/intervenant/planning',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def planning_save(self, **kw):
+        try:
+            data  = json.loads(request.httprequest.data or '{}')
+            slots = data.get('slots', {})
+            iv    = _get_interv()
+            iv.set_planning_slots(slots)
+            return _ok({'success': True})
+        except Exception as e:
+            _logger.error(f"[sinistre] planning_save: {e}")
+            return _err(500, str(e))
+
+    # ══════════════════════════════════════════════════════════════════
+    #  ABSENCES
+    # ══════════════════════════════════════════════════════════════════
+
+    @http.route('/sinistre_services/api/intervenant/absences',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def absence_add(self, **kw):
+        try:
+            data       = json.loads(request.httprequest.data or '{}')
+            date_debut = data.get('date_debut')
+            date_fin   = data.get('date_fin')
+            motif      = data.get('motif', '')
+
+            if not date_debut or not date_fin:
+                return _err(400, "date_debut et date_fin sont requis")
+
+            iv = _get_interv()
+            request.env['sinistre.intervenant.absence'].sudo().create({
+                'intervenant_id': iv.id,
+                'date_debut':     date_debut,
+                'date_fin':       date_fin,
+                'motif':          motif,
+            })
+
+            from odoo.fields import Date
+            today    = Date.today()
+            absences = iv.absence_ids.filtered(lambda a: a.date_fin >= today)
+            return _ok({'success': True,
+                        'absences': [a._fmt() for a in absences.sorted('date_debut')]})
+        except Exception as e:
+            _logger.error(f"[sinistre] absence_add: {e}")
+            return _err(500, str(e))
+
+    @http.route('/sinistre_services/api/intervenant/absences/delete',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def absence_delete(self, **kw):
+        try:
+            data       = json.loads(request.httprequest.data or '{}')
+            absence_id = int(data.get('id', 0))
+            iv         = _get_interv()
+
+            absence = request.env['sinistre.intervenant.absence'].sudo().browse(absence_id)
+            if not absence.exists() or absence.intervenant_id.id != iv.id:
+                return _err(404, "Absence introuvable ou accès interdit")
+
+            absence.unlink()
+
+            from odoo.fields import Date
+            today    = Date.today()
+            absences = iv.absence_ids.filtered(lambda a: a.date_fin >= today)
+            return _ok({'success': True,
+                        'absences': [a._fmt() for a in absences.sorted('date_debut')]})
+        except Exception as e:
+            _logger.error(f"[sinistre] absence_delete: {e}")
+            return _err(500, str(e))
+
+    # ══════════════════════════════════════════════════════════════════
+    #  COORDONNÉES BANCAIRES
+    # ══════════════════════════════════════════════════════════════════
+
+    @http.route('/sinistre_services/api/intervenant/bancaire',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def bancaire_get(self, **kw):
+        try:
+            iv = _get_interv()
+            return _ok({'success': True, 'bancaire': {
+                'iban':             iv.iban or '',
+                'bic':              iv.bic  or '',
+                'titulaire_compte': iv.titulaire_compte or '',
+                'banque':           iv.banque or '',
+            }})
+        except Exception as e:
+            return _err(500, str(e))
+
+    @http.route('/sinistre_services/api/intervenant/bancaire',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def bancaire_save(self, **kw):
+        try:
+            data = json.loads(request.httprequest.data or '{}')
+            iv   = _get_interv()
+            iv.sudo().write({
+                'iban':             data.get('iban', '').strip().upper(),
+                'bic':              data.get('bic',  '').strip().upper(),
+                'titulaire_compte': data.get('titulaire', '').strip(),
+                'banque':           data.get('banque', '').strip(),
+            })
+            return _ok({'success': True})
+        except Exception as e:
+            _logger.error(f"[sinistre] bancaire_save: {e}")
+            return _err(500, str(e))
