@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_product_spec_sheet">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="product">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2><t t-esc="product.name"/></h2>
+                        <p t-if="product.default_code" class="text-muted">
+                            Référence : <t t-esc="product.default_code"/>
+                        </p>
+                        <p t-if="product.description_sale">
+                            <t t-esc="product.description_sale"/>
+                        </p>
+
+                        <div t-if="not product.spec_line_ids" class="text-muted">
+                            <p>Aucune caractéristique renseignée pour ce produit.</p>
+                        </div>
+
+                        <t t-foreach="product._get_spec_categories()" t-as="spec_category">
+                            <h4 class="mt-3"><t t-esc="spec_category.name"/></h4>
+                            <table class="table table-sm table-bordered">
+                                <t t-foreach="product._get_spec_lines_by_category(spec_category)" t-as="spec_line">
+                                    <tr>
+                                        <td style="width: 40%;">
+                                            <strong><t t-esc="spec_line.attribute_id.name"/></strong>
+                                        </td>
+                                        <td>
+                                            <t t-esc="spec_line.value"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_product_spec_sheet" model="ir.actions.report">
+        <field name="name">Fiche technique</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">product_spec_sheet.report_product_spec_sheet</field>
+        <field name="report_file">product_spec_sheet.report_product_spec_sheet</field>
+        <field name="print_report_name">'Fiche technique - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bloc réutilisable : tableau des caractéristiques, groupées par catégorie -->
+    <template id="product_spec_table" name="Tableau des caractéristiques produit">
+        <div class="o_product_spec_table mt-4" t-if="product.spec_line_ids">
+            <h5>Caractéristiques techniques</h5>
+            <t t-foreach="product._get_spec_categories()" t-as="spec_category">
+                <div class="o_product_spec_category mb-3">
+                    <p class="text-muted text-uppercase small mb-1">
+                        <t t-esc="spec_category.name"/>
+                    </p>
+                    <table class="table table-sm mb-0">
+                        <t t-foreach="product._get_spec_lines_by_category(spec_category)" t-as="spec_line">
+                            <tr>
+                                <td class="text-muted" style="width: 45%;">
+                                    <t t-esc="spec_line.attribute_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="spec_line.value"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!--
+        Insertion sur la fiche produit du site e-commerce.
+
+        L'ancre "product_full_description" correspond au bloc de description
+        longue (product.description_ecommerce) dans website_sale.product.
+        Si votre thème a renommé ou déplacé ce bloc, repérez le bon ancrage
+        avec l'inspecteur du navigateur (mode développeur > Modifier) et
+        ajustez l'attribut expr ci-dessous.
+    -->
+    <record id="website_sale_product_spec_table_inherit" model="ir.ui.view">
+        <field name="name">website_sale.product.spec.table.inherit</field>
+        <field name="model">ir.ui.view</field>
+        <field name="inherit_id" ref="website_sale.product"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='product_full_description']" position="after">
+                <t t-call="product_spec_sheet.product_spec_table"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

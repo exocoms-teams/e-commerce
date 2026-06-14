@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="product_spec_compare_page" name="Comparer les caractéristiques">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container my-4">
+                    <h1>Comparer les caractéristiques</h1>
+
+                    <div t-if="not products" class="alert alert-info">
+                        Sélectionnez au moins un produit ci-dessous pour commencer la comparaison.
+                    </div>
+
+                    <div t-if="products" class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 220px;">Caractéristique</th>
+                                    <t t-foreach="products" t-as="product">
+                                        <th class="text-center">
+                                            <div>
+                                                <a t-attf-href="/shop/#{ slug(product) }">
+                                                    <t t-esc="product.name"/>
+                                                </a>
+                                            </div>
+                                            <a class="small text-muted"
+                                               t-attf-href="/product-specs/compare?product_ids=#{ remove_ids_map.get(product.id, '') }">
+                                                Retirer
+                                            </a>
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="categories" t-as="spec_category">
+                                    <tr class="table-light">
+                                        <th t-attf-colspan="#{ 1 + len(products) }">
+                                            <t t-esc="spec_category.name"/>
+                                        </th>
+                                    </tr>
+                                    <t t-foreach="category_attributes.get(spec_category.id, [])" t-as="spec_attribute">
+                                        <tr>
+                                            <td><t t-esc="spec_attribute.name"/></td>
+                                            <t t-foreach="products" t-as="product">
+                                                <t t-set="spec_value" t-value="product._get_spec_value(spec_attribute)"/>
+                                                <td class="text-center">
+                                                    <t t-if="spec_value"><t t-esc="spec_value"/></t>
+                                                    <t t-else="">—</t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <form method="get" action="/product-specs/compare" class="row g-2 align-items-end mt-3" style="max-width: 600px;">
+                        <input type="hidden" name="product_ids" t-att-value="product_ids_str"/>
+                        <div class="col-8">
+                            <label class="form-label" for="compare_add_product">Ajouter un produit à la comparaison</label>
+                            <select id="compare_add_product" name="add" class="form-select">
+                                <t t-foreach="available_products" t-as="available_product">
+                                    <option t-att-value="available_product.id">
+                                        <t t-esc="available_product.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Lien "Comparer" sous le tableau de caractéristiques de la fiche produit -->
+    <template id="product_spec_compare_link" inherit_id="product_spec_sheet.product_spec_table">
+        <xpath expr="//div[hasclass('o_product_spec_table')]" position="inside">
+            <a class="btn btn-link p-0 mt-2"
+               t-if="product.spec_line_ids"
+               t-attf-href="/product-specs/compare?product_ids=#{ product.id }">
+                Comparer les caractéristiques avec un autre produit
+            </a>
+        </xpath>
+    </template>
+
+</odoo>

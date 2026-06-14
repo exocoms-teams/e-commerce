@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_form_view_spec_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.spec.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Caractéristiques" name="specifications">
+                    <field name="spec_line_ids">
+                        <list editable="bottom">
+                            <field name="category_id" readonly="1" optional="show"/>
+                            <field name="attribute_id"/>
+                            <field name="value"/>
+                        </list>
+                    </field>
+                    <p class="text-muted">
+                        La catégorie est reprise automatiquement depuis la caractéristique choisie.
+                        Pour ajouter une nouvelle catégorie ou une nouvelle caractéristique,
+                        utilisez Ventes &gt; Configuration &gt; Caractéristiques produit.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
