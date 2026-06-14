@@ -288,7 +288,7 @@ window.CarteMap = (() => {
             (urgent ? ' <span style="background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">Urgente</span>' : '');
         _set('carteInfoTitle',   mission.description_sinistre || mission.description || '—');
         _set('carteInfoAddr',    mission.adresse_intervention  || mission.adresse    || '—');
-        _set('carteInfoMontant', mission.montant ? mission.montant.toLocaleString('fr-FR') + ' €' : '—');
+        // Pas d'affichage de montant sur la carte
         _set('carteInfoDuree', _userPos ? 'Calcul…' : '—');
         _set('carteInfoDist',  '—');
 
@@ -395,7 +395,6 @@ window.CarteMap = (() => {
                 +'<div class="carte-mission-title">'+(m.description_sinistre||LABELS[m.type_intervention]||'—')+'</div>'
                 +'<div class="carte-mission-meta">'+(mm.distTxt?'📍 '+mm.distTxt:'')+(mm.durTxt?' · 🚗 '+mm.durTxt:'')+'</div>'
                 +'</div>'
-                +'<div class="carte-mission-price">'+(m.montant?m.montant+' €':'—')+'</div>'
                 +'</div>';
         }).join('');
     }
