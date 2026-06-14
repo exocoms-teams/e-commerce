@@ -84,18 +84,11 @@ window.Dashboard = (() => {
         let user = {};
         try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
         const nbInterv = user.interventions ?? 0;
-        const caMonth  = user.ca_mois       ?? 0;
-        const caTotal  = user.ca_total      ?? 0;
-        const note     = nbInterv > 0 ? (user.note_moyenne || 0) : 0;
 
         const el = id => document.getElementById(id);
         if (el('statActives'))      el('statActives').textContent      = actives;
-        if (el('statCA'))           el('statCA').textContent           = caMonth.toLocaleString('fr-FR') + ' €';
-        if (el('statNote'))         el('statNote').textContent         = nbInterv > 0 ? note.toFixed(1) : '0';
         if (el('statInterventions'))el('statInterventions').textContent = nbInterv;
         if (el('statIntervTotal'))  el('statIntervTotal').textContent  = nbInterv;
-        if (el('statIntervCA'))     el('statIntervCA').textContent     = caTotal.toLocaleString('fr-FR') + ' €';
-        if (el('statIntervMoyen'))  el('statIntervMoyen').textContent  = nbInterv ? Math.round(caTotal/nbInterv).toLocaleString('fr-FR') + ' €' : '0 €';
     }
 
     function _renderToday() {
@@ -116,7 +109,6 @@ window.Dashboard = (() => {
             const addr  = m.adresse_intervention || m.adresse || '';
             const city  = addr.includes(',') ? addr.split(',').slice(-1)[0].trim() : addr;
             const title = m.description_sinistre || m.title || '—';
-            const price = m.montant || m.montant_devis || 0;
             const stateBadge = (m.urgence === 'urgente' || m.urgence === 'tres_urgente')
                 ? _urgenceBadge(m.urgence) : _stateBadge(m.state);
             return `
@@ -129,7 +121,6 @@ window.Dashboard = (() => {
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             ${_fmtDateTime(m.date_rdv)}
                         </span>
-                        <span class="today-item-price">${price ? price.toLocaleString('fr-FR') + ' €' : '—'}</span>
                     </div>
                 </div>`;
         }).join('');
@@ -166,59 +157,12 @@ window.Dashboard = (() => {
         container.innerHTML = _proposees.map(m => _renderProposeeCard(m)).join('');
     }
 
-    /* ── Grille tarifaire de référence (fourchettes marché) ── */
-    const TARIFS = {
-        serrurerie:     { min: 90,  max: 350, label: 'Ouverture / Serrurerie' },
-        plomberie:      { min: 80,  max: 400, label: 'Plomberie' },
-        electricite:    { min: 100, max: 500, label: 'Électricité' },
-        vitrerie:       { min: 120, max: 600, label: 'Vitrerie' },
-        menuiserie_int: { min: 80,  max: 300, label: 'Menuiserie' },
-        menuiserie_ext: { min: 100, max: 450, label: 'Menuiserie Ext.' },
-        autre:          { min: 60,  max: 250, label: 'Intervention' },
-    };
-
-    function _getPrixDisplay(m) {
-        // Priorité : montant_estime saisi par la plateforme
-        if (m.montant_estime && m.montant_estime > 0) {
-            if (m.montant_estime_max && m.montant_estime_max > m.montant_estime) {
-                return {
-                    label: `${m.montant_estime.toLocaleString('fr-FR')} – ${m.montant_estime_max.toLocaleString('fr-FR')} €`,
-                    sub: 'Estimation plateforme',
-                    color: '#1E40AF',
-                };
-            }
-            return {
-                label: `${m.montant_estime.toLocaleString('fr-FR')} €`,
-                sub: 'Estimation plateforme',
-                color: '#1E40AF',
-            };
-        }
-        // Montant garanti assurance
-        if (m.montant_garanti && m.montant_garanti > 0) {
-            return {
-                label: `${m.montant_garanti.toLocaleString('fr-FR')} €`,
-                sub: 'Montant garanti assurance',
-                color: '#059669',
-            };
-        }
-        // Fourchette marché selon type
-        const tarif = TARIFS[m.type_intervention] || TARIFS.autre;
-        const mult  = (m.urgence === 'tres_urgente') ? 1.5
-                    : (m.urgence === 'urgente')       ? 1.25 : 1;
-        const min = Math.round(tarif.min * mult / 10) * 10;
-        const max = Math.round(tarif.max * mult / 10) * 10;
-        return {
-            label: `${min} – ${max} €`,
-            sub: m.urgence !== 'normale' ? 'Estimation · majoration urgence' : 'Estimation de marché',
-            color: '#6B7280',
-        };
-    }
-
     function _renderProposeeCard(m) {
-        const prix     = _getPrixDisplay(m);
         const addr     = m.adresse_intervention || m.adresse || '—';
         const desc     = m.description_sinistre || m.description || '—';
         const isUrgent = m.urgence === 'urgente' || m.urgence === 'tres_urgente';
+        // Informations complémentaires sur la nature de l'intervention
+        const details  = m.details_intervention || m.commentaire || '';
 
         return `
         <div class="proposee-card" id="proposee-${m.id}" style="
@@ -228,17 +172,12 @@ window.Dashboard = (() => {
             background:${isUrgent ? '#FFF7F7' : '#FAFAFA'};
             transition:box-shadow .15s;
         ">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
-                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                    ${_metierBadge(m.type_intervention)}
-                    ${_urgenceBadge(m.urgence)}
-                </div>
-                <div style="text-align:right">
-                    <div style="font-size:18px;font-weight:800;color:${prix.color};white-space:nowrap">${prix.label}</div>
-                    <div style="font-size:10px;color:#9CA3AF;margin-top:1px">${prix.sub}</div>
-                </div>
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+                ${_metierBadge(m.type_intervention)}
+                ${_urgenceBadge(m.urgence)}
             </div>
             <div style="font-weight:600;font-size:14px;color:#111827;margin-bottom:6px;line-height:1.4">${desc}</div>
+            ${details ? `<div style="font-size:13px;color:#6B7280;margin-bottom:6px;font-style:italic">${details}</div>` : ''}
             <div style="display:flex;align-items:center;gap:5px;font-size:13px;color:#6B7280;margin-bottom:4px">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
                 ${addr}
@@ -382,7 +321,6 @@ window.Dashboard = (() => {
                     ${_metierBadge(m.type_intervention)}
                     ${_urgenceBadge(m.urgence)}
                     <span class="mc-ref">Réf. ${m.reference}</span>
-                    <span class="mc-price">${(m.montant||m.montant_devis) ? (m.montant||m.montant_devis).toLocaleString('fr-FR')+' €' : '—'}</span>
                     <div style="text-align:right"><div style="font-size:11px;color:#9CA3AF">Client : ${m.client||'—'}</div></div>
                 </div>
                 <div class="mc-title">${m.description_sinistre||m.description||'—'}</div>
@@ -416,16 +354,13 @@ window.Dashboard = (() => {
             .map(m => ({
                 ref: m.reference, date: m.date_cloture, client: m.client,
                 type: m.type_intervention, prestation: m.description_sinistre,
-                addr: m.adresse_intervention, montant: m.montant,
+                addr: m.adresse_intervention,
             }));
         _interventions = apiTerminees;
         _renderInterventions();
         const total = _interventions.length;
-        const ca = _interventions.reduce((a, i) => a + (i.montant||0), 0);
         const el = id => document.getElementById(id);
         if (el('statIntervTotal')) el('statIntervTotal').textContent = total;
-        if (el('statIntervCA'))    el('statIntervCA').textContent    = ca.toLocaleString('fr-FR') + ' €';
-        if (el('statIntervMoyen')) el('statIntervMoyen').textContent = total ? Math.round(ca/total).toLocaleString('fr-FR') + ' €' : '—';
     }
 
     function _renderInterventions() {
@@ -443,7 +378,6 @@ window.Dashboard = (() => {
                 <td>${i.client||'—'}</td>
                 <td>${_metierBadge(i.type)}</td>
                 <td><div style="font-weight:600;font-size:13.5px">${i.prestation||'—'}</div><div style="font-size:12px;color:#9CA3AF">${i.addr||''}</div></td>
-                <td class="interv-amount">${i.montant ? i.montant+' €' : '—'}</td>
                 <td><span class="badge badge-terminee">Terminée</span></td>
             </tr>`).join('');
     }
