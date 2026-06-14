@@ -1,8 +1,8 @@
 {
-    'name': 'Sinistre Services — Theme',
+    'name': 'Sinistre Services — Infrastructure de gestion d intervention',
     'version': '19.0.1.0.0',
     'category': 'Website',
-    'summary': 'Theme officiel Sinistre Services — urgence, artisans, assurances',
+    'summary': 'Sinistre Services — urgence, artisans, assurances',
     'author': 'exocoms',
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale'],
@@ -14,7 +14,7 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'sinistre_theme/static/src/css/main.css',
+            'monetique_theme/static/src/css/main.css',
         ],
     },
     'installable': True,

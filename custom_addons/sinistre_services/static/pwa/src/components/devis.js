@@ -1,40 +1,59 @@
 /**
- * devis.js — Formulaire de création et gestion des devis
+ * devis.js — Formulaire de création ET modification du devis
+ *
+ * Règles métier :
+ *  - Création : états 'en_cours', 'rdv_planifie', 'assigne'
+ *  - Modification (avenant) : possible si devis déjà accepté PENDANT l'intervention
+ *    → déclenche une re-signature obligatoire du client
+ *  - Après enregistrement/envoi : retour mission
  */
 
 window.DevisForm = (() => {
-    let _missionId = null;
-    let _devisId   = null;
-    let _lignes    = [];
+    let _missionId  = null;
+    let _devisId    = null;
+    let _lignes     = [];
+    let _isAmendment = false;   // true = modification en cours d'intervention
 
-    function open(missionId, existingDevis = null) {
-        _missionId = missionId;
-        _lignes    = [];
+    /* ── Ouvrir le formulaire ── */
+    function open(missionId, existingDevis = null, isAmendment = false) {
+        _missionId   = missionId;
+        _devisId     = null;
+        _lignes      = [];
+        _isAmendment = isAmendment;
 
         if (existingDevis) {
             _devisId = existingDevis.id;
-            _lignes  = existingDevis.ligne_ids?.map(l => ({
-                id:           l.id,
-                description:  l.description,
-                quantite:     l.quantite,
-                prix_unitaire:l.prix_unitaire,
-                montant_total:l.montant_total,
-            })) || [];
+            _lignes  = (existingDevis.lignes || existingDevis.ligne_ids || []).map(l => ({
+                id:            l.id,
+                description:   l.description,
+                quantite:      l.quantite,
+                prix_unitaire: l.prix_unitaire,
+                montant_total: l.montant_total,
+            }));
         } else {
-            _devisId = null;
-            // Ligne par défaut
             _lignes = [{ description: '', quantite: 1, prix_unitaire: 0, montant_total: 0 }];
         }
 
-        App.showView('devis', 'Créer un Devis');
+        const title = isAmendment
+            ? '⚠️ Modifier le Devis (Avenant)'
+            : (existingDevis ? 'Modifier le Devis' : 'Créer un Devis');
+        App.showView('devis', title);
+
+        // Afficher bannière avertissement si avenant
+        const banner = document.getElementById('devisAmendmentBanner');
+        if (banner) {
+            banner.style.display = isAmendment ? 'block' : 'none';
+        }
+
         renderLignes();
         updateTotaux();
     }
 
+    /* ── Rendu lignes ── */
     function renderLignes() {
         const container = document.getElementById('devisLignes');
+        if (!container) return;
         container.innerHTML = '';
-
         _lignes.forEach((ligne, idx) => {
             const div = document.createElement('div');
             div.className = 'devis-ligne';
@@ -42,41 +61,67 @@ window.DevisForm = (() => {
                 <input class="field-input" type="text" placeholder="Description"
                        value="${_escape(ligne.description)}"
                        oninput="DevisForm.updateLigne(${idx}, 'description', this.value)"/>
-                <input class="field-input" type="number" min="0.01" step="0.01" placeholder="Qté"
-                       value="${ligne.quantite}"
-                       oninput="DevisForm.updateLigne(${idx}, 'quantite', parseFloat(this.value)||0)"/>
-                <input class="field-input" type="number" min="0" step="0.01" placeholder="Prix HT"
-                       value="${ligne.prix_unitaire}"
-                       oninput="DevisForm.updateLigne(${idx}, 'prix_unitaire', parseFloat(this.value)||0)"/>
-                <button class="btn btn-danger btn-sm" style="padding:8px 10px; min-width:32px"
-                        onclick="DevisForm.removeLigne(${idx})">✕</button>
+                <div style="display:flex;gap:8px">
+                    <input class="field-input" type="number" min="0.01" step="0.01" placeholder="Qté"
+                           value="${ligne.quantite}" style="flex:1"
+                           oninput="DevisForm.updateLigne(${idx}, 'quantite', parseFloat(this.value)||0)"/>
+                    <input class="field-input" type="number" min="0" step="0.01" placeholder="Prix HT"
+                           value="${ligne.prix_unitaire}" style="flex:2"
+                           oninput="DevisForm.updateLigne(${idx}, 'prix_unitaire', parseFloat(this.value)||0)"/>
+                    <span style="line-height:44px;font-size:13px;color:#6B7280;min-width:60px;text-align:right">
+                        ${_fmt(ligne.montant_total)}
+                    </span>
+                    <button class="btn btn-danger btn-sm" style="padding:8px 10px;min-width:32px"
+                            onclick="DevisForm.removeLigne(${idx})">✕</button>
+                </div>
             `;
             container.appendChild(div);
         });
     }
 
-    function _escape(str) {
-        return String(str).replace(/"/g, '&quot;');
-    }
+    function _escape(str) { return String(str).replace(/"/g, '&quot;'); }
 
     function updateLigne(idx, field, value) {
         _lignes[idx][field] = value;
         _lignes[idx].montant_total = _lignes[idx].quantite * _lignes[idx].prix_unitaire;
         updateTotaux();
+        // Mise à jour montant ligne affichée
+        renderLignes();
     }
 
     function updateTotaux() {
         const ht  = _lignes.reduce((sum, l) => sum + (l.montant_total || 0), 0);
         const tva = ht * 0.2;
         const ttc = ht + tva;
-
-        document.getElementById('totalHT').textContent  = _fmt(ht);
-        document.getElementById('totalTVA').textContent = _fmt(tva);
-        document.getElementById('totalTTC').textContent = _fmt(ttc);
+        const el  = (id) => document.getElementById(id);
+        if (el('totalHT'))  el('totalHT').textContent  = _fmt(ht);
+        if (el('totalTVA')) el('totalTVA').textContent = _fmt(tva);
+        if (el('totalTTC')) el('totalTTC').textContent = _fmt(ttc);
     }
 
-    function _fmt(n) {
-        return n.toFixed(2).replace('.', ',') + ' €';
+    function _fmt(n) { return parseFloat(n || 0).toFixed(2).replace('.', ',') + ' €'; }
+
+    function _validate() {
+        if (!_lignes.length) { Toast.show('Ajoutez au moins une ligne', 'warning'); return false; }
+        for (const [i, l] of _lignes.entries()) {
+            if (!l.description.trim()) { Toast.show(`Ligne ${i+1} : description manquante`, 'warning'); return false; }
+            if (l.prix_unitaire <= 0)  { Toast.show(`Ligne ${i+1} : prix invalide`, 'warning'); return false; }
+        }
+        return true;
+    }
+
+    function _buildPayload() {
+        return {
+            ligne_ids: _lignes.map(l => ({
+                id:            l.id || null,
+                description:   l.description.trim(),
+                quantite:      parseFloat(l.quantite)      || 1,
+                prix_unitaire: parseFloat(l.prix_unitaire) || 0,
+            })),
+            note_client:  document.getElementById('devisNote')?.value.trim() || '',
+            tva:          20.0,
+            is_amendment: _isAmendment,
+        };
     }
 
     return {
@@ -90,75 +135,38 @@ window.DevisForm = (() => {
         },
 
         removeLigne(idx) {
-            if (_lignes.length <= 1) {
-                Toast.show('Minimum 1 ligne requise', 'warning');
-                return;
-            }
+            if (_lignes.length <= 1) { Toast.show('Minimum 1 ligne requise', 'warning'); return; }
             _lignes.splice(idx, 1);
             renderLignes();
             updateTotaux();
         },
 
-        _validate() {
-            if (!_lignes.length) {
-                Toast.show('Ajoutez au moins une ligne', 'warning');
-                return false;
-            }
-            for (const [i, l] of _lignes.entries()) {
-                if (!l.description.trim()) {
-                    Toast.show(`Ligne ${i+1} : description manquante`, 'warning');
-                    return false;
-                }
-                if (l.prix_unitaire <= 0) {
-                    Toast.show(`Ligne ${i+1} : prix invalide`, 'warning');
-                    return false;
-                }
-            }
-            return true;
-        },
-
-        _buildPayload() {
-            const note = document.getElementById('devisNote')?.value.trim() || '';
-            return {
-                ligne_ids: _lignes.map(l => ({
-                    description:   l.description,
-                    quantite:      l.quantite,
-                    prix_unitaire: l.prix_unitaire,
-                })),
-                note_client: note,
-                tva: 20,
-            };
-        },
-
+        /* ── Enregistrer (brouillon) ── */
         async save() {
-            if (!this._validate()) return;
-            const payload = this._buildPayload();
-
+            if (!_validate()) return;
+            const payload = _buildPayload();
             try {
                 const result = await Offline.tryOrQueue(
-                    'CREATE_DEVIS',
-                    () => API.createDevis(_missionId, payload),
-                    { missionId: _missionId, payload }
+                    _devisId ? 'UPDATE_DEVIS' : 'CREATE_DEVIS',
+                    () => _devisId
+                        ? API.updateDevis(_devisId, payload)
+                        : API.createDevis(_missionId, payload),
+                    { missionId: _missionId, devisId: _devisId, payload }
                 );
                 if (result && !result.queued) {
-                    _devisId = result.devis_id || result.id;
+                    _devisId = result.devis_id || result.id || _devisId;
                     Toast.show('💾 Devis enregistré', 'success');
-                    document.getElementById('btnEnvoyerDevis').style.display = 'flex';
+                    const btnEnv = document.getElementById('btnEnvoyerDevis');
+                    if (btnEnv) btnEnv.style.display = 'flex';
+                    setTimeout(() => MissionDetail?.reload(), 500);
                 }
-            } catch (err) {
-                Toast.show('Erreur: ' + err.message, 'error');
-            }
+            } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
         },
 
+        /* ── Envoyer (état → envoye) ── */
         async envoyer() {
-            if (!this._validate()) return;
-
-            // Si pas encore sauvegardé → sauvegarder d'abord
-            if (!_devisId) {
-                await this.save();
-                if (!_devisId) return;
-            }
-
+            if (!_validate()) return;
+            if (!_devisId) { await this.save(); if (!_devisId) return; }
             try {
                 await Offline.tryOrQueue(
                     'ENVOYER_DEVIS',
@@ -168,9 +176,25 @@ window.DevisForm = (() => {
                 Toast.show('📤 Devis envoyé au client', 'success');
                 App.showView('mission', 'Mission');
                 MissionDetail.reload();
-            } catch (err) {
-                Toast.show('Erreur: ' + err.message, 'error');
-            }
+            } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+        },
+
+        /* ── Sauvegarder avenant + demander re-signature ── */
+        async saveAmendment() {
+            if (!_validate()) return;
+            const payload = _buildPayload();
+            try {
+                const result = await Offline.tryOrQueue(
+                    'UPDATE_DEVIS',
+                    () => API.updateDevis(_devisId, payload),
+                    { devisId: _devisId, payload }
+                );
+                if (result && !result.queued) {
+                    Toast.show('💾 Avenant enregistré — re-signature requise', 'warning');
+                    // Ouvrir la signature en mode re-signature
+                    Signature.open({ mode: 'devis_modifie', devisId: _devisId, missionId: _missionId });
+                }
+            } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
         },
     };
 })();

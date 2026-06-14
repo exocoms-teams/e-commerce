@@ -74,11 +74,21 @@
                             <field name="description_sinistre" placeholder="Décrivez le sinistre..."/>
                         </page>
                         <page string="Financier">
-                            <group>
+                            <group string="Estimation (visible artisan avant acceptation)">
                                 <group>
-                                    <field name="montant_devis"/>
+                                    <field name="montant_estime" widget="monetary"
+                                           help="Montant minimum communiqué à l'artisan avant acceptation"/>
+                                    <field name="montant_estime_max" widget="monetary"
+                                           help="Montant maximum de la fourchette estimée"/>
+                                </group>
+                                <group>
                                     <field name="montant_garanti" invisible="source != 'assurance'"/>
                                     <field name="franchise" invisible="source != 'assurance'"/>
+                                </group>
+                            </group>
+                            <group string="Facturation">
+                                <group>
+                                    <field name="montant_devis"/>
                                     <field name="reste_a_charge" class="fw-bold"/>
                                     <field name="commission_plateforme"/>
                                 </group>
@@ -89,7 +99,30 @@
                             </group>
                         </page>
                         <page string="Notes internes">
-                            <field name="commentaire_interne"/>
+                            <group>
+                                <field name="notes_artisan" string="Notes Artisan (PWA)"
+                                       readonly="1"
+                                       help="Notes saisies par l'artisan depuis l'application mobile"/>
+                            </group>
+                            <group string="Commentaire interne plateforme">
+                                <field name="commentaire_interne" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Signatures">
+                            <group>
+                                <group string="Avant intervention">
+                                    <field name="signature_avant" widget="image"
+                                           string="Signature client (avant)"
+                                           readonly="1"
+                                           help="Signature du client autorisant le démarrage des travaux"/>
+                                </group>
+                                <group string="Après intervention">
+                                    <field name="signature_apres" widget="image"
+                                           string="Signature client (après)"
+                                           readonly="1"
+                                           help="Signature du client validant la fin des travaux"/>
+                                </group>
+                            </group>
                         </page>
                         <page string="Technique">
                             <group>
