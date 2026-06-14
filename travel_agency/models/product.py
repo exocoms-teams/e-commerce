@@ -1,6 +1,12 @@
 from odoo import models, fields
 
 class ProductTemplate(models.Model):
+    is_travel_product = fields.Boolean(
+        string='Produit Voyage',
+        default=False,
+        help="Cocher cette case pour afficher les onglets "
+             "'Travel' et 'Contenu page détail' sur ce produit."
+    )
     _inherit = 'product.template'
 
     type_voyage = fields.Selection([
@@ -75,3 +81,5 @@ class ProductTemplate(models.Model):
             return len(reservations) == 0
         except Exception:
             return True
+        
+        
