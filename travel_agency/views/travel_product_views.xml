@@ -6,8 +6,19 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
+
+            <!-- 1. Ajouter la checkbox "Produit Voyage" dans l'onglet Informations générales -->
+            <xpath expr="//div[@name='options']" position="inside">
+                <span class="d-inline-flex align-items-center">
+                    <field name="is_travel_product" class="me-1"/>
+                    <label for="is_travel_product" string="Produit Voyage"/>
+                </span>
+            </xpath>
+
+            <!-- 2. Onglet Travel — visible uniquement si is_travel_product = True -->
             <xpath expr="//notebook" position="inside">
-                <page string="Travel" name="travel">
+                <page string="Travel" name="travel"
+                      invisible="not is_travel_product">
                     <group string="Travel Type">
                         <field name="type_voyage"/>
                         <field name="categorie_voyage"/>
@@ -31,7 +42,10 @@
                         <field name="longitude"/>
                     </group>
                 </page>
-                <page string="Contenu page détail" name="travel_content">
+
+                <!-- 3. Onglet Contenu page détail — même condition -->
+                <page string="Contenu page détail" name="travel_content"
+                      invisible="not is_travel_product">
                     <group string="Les plus">
                         <field name="points_forts" nolabel="1" placeholder="Un avantage par ligne"/>
                     </group>
