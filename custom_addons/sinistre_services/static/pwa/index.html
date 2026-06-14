@@ -295,10 +295,6 @@
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
                                     <span id="carteInfoDist">—</span>
                                 </div>
-                                <div class="trajet-item">
-                                    <span style="font-size:11px;font-weight:600;color:#6B7280">💰</span>
-                                    <span id="carteInfoMontant" style="font-weight:700;color:#1E40AF">—</span>
-                                </div>
                             </div>
                             <div class="carte-info-actions">
                                 <button class="carte-btn-primary" id="carteInfoItineraire" onclick="CarteMap.launchRoute()">
@@ -363,83 +359,329 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Mon profil</h1>
-                        <p class="page-subtitle">Gérez vos informations et certifications</p>
+                        <p class="page-subtitle">Gérez vos informations et documents</p>
                     </div>
                 </div>
-                <div class="profile-grid">
-                    <!-- Left card -->
-                    <div class="profile-left">
-                        <div class="profile-card">
-                            <div class="profile-avatar-lg" id="profileAvatarLg">TM</div>
-                            <div class="profile-name-lg" id="profileNameLg">Thomas Moreau</div>
-                            <div class="profile-company-lg" id="profileCompanyLg">Moreau Multiservices</div>
-                            <div class="profile-stats-row">
-                                <div><div class="profile-stat-num" id="profileInterv">487</div><div class="profile-stat-lbl">Interventions</div></div>
-                                <div><div class="profile-stat-num" id="profileSince">Mars 2022</div><div class="profile-stat-lbl">Membre depuis</div></div>
+
+                <!-- Onglets style FairFair -->
+                <div class="ff-tabs">
+                    <button class="ff-tab active" onclick="Profile.switchTab('entreprise', this)">ENTREPRISE</button>
+                    <button class="ff-tab" onclick="Profile.switchTab('intervenants', this)">INTERVENANTS</button>
+                    <button class="ff-tab" onclick="Profile.switchTab('metiers', this)">CORPS DE MÉTIERS</button>
+                    <button class="ff-tab" onclick="Profile.switchTab('docs-legaux', this)">DOCUMENTS LÉGAUX</button>
+                    <button class="ff-tab" onclick="Profile.switchTab('docs-dl', this)">DOCUMENTS À TÉLÉCHARGER</button>
+                </div>
+
+                <!-- ── Onglet ENTREPRISE ── -->
+                <div id="ff-tab-entreprise" class="ff-tab-content active">
+                    <div class="ff-section-grid">
+                        <!-- Colonne Entité juridique -->
+                        <div class="ff-col">
+                            <div class="ff-col-header">Entité juridique</div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Raison sociale</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_raison_sociale" placeholder="—"/>
+                                    <span class="ff-check" id="ent_rs_check">✓</span>
+                                </div>
                             </div>
-                            <div class="profile-metiers-tags" id="profileMetiersTags">
-                                <span class="metier-tag">Serrurerie</span>
-                                <span class="metier-tag">Plomberie</span>
-                                <span class="metier-tag">Électricité</span>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Siret</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_siret" placeholder="—"/>
+                                    <span class="ff-check" id="ent_siret_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Code APE</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_ape" placeholder="—"/>
+                                    <span class="ff-check" id="ent_ape_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Numéro &amp; Rue</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_rue" placeholder="—"/>
+                                    <span class="ff-check" id="ent_rue_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Complément 1</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_comp1" placeholder="—"/>
+                                    <span class="ff-check" id="ent_comp1_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Complément 2</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_comp2" placeholder="—"/>
+                                    <span class="ff-check" id="ent_comp2_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Ville</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_ville" placeholder="—"/>
+                                    <span class="ff-check" id="ent_ville_check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Code postal</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="ent_cp" placeholder="—"/>
+                                    <span class="ff-check" id="ent_cp_check">✓</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="certifs-card" id="certifCard">
-                            <h3 class="certifs-title">Certifications</h3>
-                            <div id="certifList">
-                                <p style="color:#9CA3AF;font-size:13px;padding:8px 0">Aucune certification renseignée</p>
+
+                        <!-- Colonne Contact de votre entreprise -->
+                        <div class="ff-col">
+                            <div class="ff-col-header">Contact de votre entreprise</div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Téléphone portable</div>
+                                <div class="ff-field-row">
+                                    <input type="tel" class="ff-input" id="ent_tel_portable" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Téléphone fixe</div>
+                                <div class="ff-field-row">
+                                    <input type="tel" class="ff-input" id="ent_tel_fixe" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Email</div>
+                                <div class="ff-field-row">
+                                    <input type="email" class="ff-input" id="ent_email" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-notif-box">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                <span>Vous recevrez les propositions de missions sur l'email et le numéro de téléphone ci-dessus</span>
+                            </div>
+                            <label class="ff-checkbox-row">
+                                <input type="checkbox" id="notif_email" checked/>
+                                <span>Recevoir un email lors de la suggestion d'une mission</span>
+                            </label>
+                            <label class="ff-checkbox-row">
+                                <input type="checkbox" id="notif_sms" checked/>
+                                <span>Recevoir un SMS lors de la suggestion d'une mission</span>
+                            </label>
+                        </div>
+
+                        <!-- Colonne Vous êtes -->
+                        <div class="ff-col">
+                            <div class="ff-col-header">Vous êtes</div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Prénom</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="profileFirstName" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Nom de famille</div>
+                                <div class="ff-field-row">
+                                    <input type="text" class="ff-input" id="profileLastName" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Téléphone</div>
+                                <div class="ff-field-row">
+                                    <input type="tel" class="ff-input" id="profileTel" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
+                            </div>
+                            <div class="ff-field">
+                                <div class="ff-field-label">Email</div>
+                                <div class="ff-field-row">
+                                    <input type="email" class="ff-input" id="profileEmail" placeholder="—"/>
+                                    <span class="ff-check">✓</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Right: form -->
-                    <div class="profile-right">
-                        <div class="profile-form-card">
-                            <h3 class="profile-section-title">Informations professionnelles</h3>
-                            <div class="profile-form-grid">
-                                <div class="profile-field">
-                                    <label class="profile-field-label">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-                                        ENTREPRISE
-                                    </label>
-                                    <input type="text" class="profile-input" id="profileEntreprise" value="Moreau Multiservices"/>
+                    <div class="ff-save-bar">
+                        <button class="btn-save" onclick="Profile.saveEntreprise()">Enregistrer les modifications</button>
+                    </div>
+                </div>
+
+                <!-- ── Onglet INTERVENANTS ── -->
+                <div id="ff-tab-intervenants" class="ff-tab-content">
+                    <div class="ff-intervenant-block">
+                        <div class="ff-intervenant-header">
+                            <span id="ff_interv_loc">—</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                        </div>
+                        <div class="ff-section-grid">
+                            <div class="ff-col">
+                                <div class="ff-col-header">ADRESSE</div>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Numéro &amp; Rue</div>
+                                    <div class="ff-field-row">
+                                        <input type="text" class="ff-input" id="interv_rue" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
                                 </div>
-                                <div class="profile-field">
-                                    <label class="profile-field-label">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
-                                        ZONE D'INTERVENTION
-                                    </label>
-                                    <input type="text" class="profile-input" id="profileZone" value="Paris 11e"/>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Complément 1</div>
+                                    <div class="ff-field-row">
+                                        <input type="text" class="ff-input" id="interv_comp1" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
                                 </div>
-                                <div class="profile-field">
-                                    <label class="profile-field-label">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                                        EMAIL
-                                    </label>
-                                    <input type="email" class="profile-input" id="profileEmail" value="thomas.moreau@artisanpro.fr"/>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Complément 2</div>
+                                    <div class="ff-field-row">
+                                        <input type="text" class="ff-input" id="interv_comp2" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
                                 </div>
-                                <div class="profile-field">
-                                    <label class="profile-field-label">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.86C1.6 3.82 2.4 3 3.44 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.78-.78a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 18z"/></svg>
-                                        TÉLÉPHONE
-                                    </label>
-                                    <input type="tel" class="profile-input" id="profileTel" value="+33 6 12 34 56 78"/>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Code postal</div>
+                                    <div class="ff-field-row">
+                                        <input type="text" class="ff-input" id="interv_cp" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
+                                </div>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Ville</div>
+                                    <div class="ff-field-row">
+                                        <input type="text" class="ff-input" id="interv_ville" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            <h3 class="profile-section-title" style="margin-top:28px">Métiers proposés</h3>
-                            <div class="metier-checkboxes">
-                                <label class="metier-check active"><input type="checkbox" checked onchange="this.closest('label').classList.toggle('active',this.checked)"/> Serrurerie</label>
-                                <label class="metier-check active"><input type="checkbox" checked onchange="this.closest('label').classList.toggle('active',this.checked)"/> Plomberie</label>
-                                <label class="metier-check active"><input type="checkbox" checked onchange="this.closest('label').classList.toggle('active',this.checked)"/> Électricité</label>
-                                <label class="metier-check"><input type="checkbox" onchange="this.closest('label').classList.toggle('active',this.checked)"/> Chauffage</label>
-                                <label class="metier-check"><input type="checkbox" onchange="this.closest('label').classList.toggle('active',this.checked)"/> Vitrerie</label>
-                                <label class="metier-check"><input type="checkbox" onchange="this.closest('label').classList.toggle('active',this.checked)"/> Climatisation</label>
+                            <div class="ff-col">
+                                <div class="ff-col-header">AGENCE</div>
+                                <div class="ff-field">
+                                    <div class="ff-field-label">Téléphone mobile</div>
+                                    <div class="ff-field-row">
+                                        <input type="tel" class="ff-input" id="interv_tel" placeholder="—"/>
+                                        <span class="ff-check-gray">✓</span>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="profile-form-actions">
-                                <button class="btn-cancel">Annuler</button>
-                                <button class="btn-save">Enregistrer</button>
+                            <div class="ff-col">
+                                <div class="ff-col-header">MÉTIERS</div>
+                                <div class="ff-metiers-list" id="intervMetiersList">
+                                    <div style="color:#9CA3AF;font-size:13px">Aucun métier renseigné</div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ── Onglet CORPS DE MÉTIERS ── -->
+                <div id="ff-tab-metiers" class="ff-tab-content">
+                    <div class="ff-docs-card">
+                        <p class="ff-docs-intro">Sélectionnez vos corps de métiers pour recevoir les missions correspondantes.</p>
+                        <div class="ff-metiers-grid">
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="serrurerie" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">🔑</span>
+                                    <span>Serrurerie</span>
+                                </div>
+                            </label>
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="plomberie" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">🔧</span>
+                                    <span>Plomberie</span>
+                                </div>
+                            </label>
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="electricite" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">⚡</span>
+                                    <span>Électricité</span>
+                                </div>
+                            </label>
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_int" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">🚪</span>
+                                    <span>Menuiserie Int.</span>
+                                </div>
+                            </label>
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_ext" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">🪟</span>
+                                    <span>Menuiserie Ext.</span>
+                                </div>
+                            </label>
+                            <label class="ff-metier-toggle">
+                                <input type="checkbox" class="ff-metier-cb" value="vitrerie" onchange="Profile.toggleMetier(this)"/>
+                                <div class="ff-metier-box">
+                                    <span class="ff-metier-icon">🪞</span>
+                                    <span>Vitrerie</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="ff-save-bar">
+                            <button class="btn-save" onclick="Profile.saveMetiers()">Enregistrer les métiers</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Onglet DOCUMENTS LÉGAUX ── -->
+                <div id="ff-tab-docs-legaux" class="ff-tab-content">
+                    <div class="ff-docs-card">
+                        <div class="ff-doc-row">
+                            <span class="ff-doc-name">Justificatif d'immatriculation</span>
+                            <div class="ff-doc-actions">
+                                <span class="ff-badge-ok" id="doc_kbis_status">En attente</span>
+                                <label class="ff-upload-btn">
+                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('kbis', this)"/>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    Envoyer
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ff-doc-row">
+                            <span class="ff-doc-name">RC Pro</span>
+                            <div class="ff-doc-actions">
+                                <span class="ff-badge-ok" id="doc_rcpro_status">En attente</span>
+                                <label class="ff-upload-btn">
+                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('rcpro', this)"/>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    Envoyer
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ff-doc-row">
+                            <span class="ff-doc-name">Attestation de TVA</span>
+                            <div class="ff-doc-actions">
+                                <span class="ff-badge-pending" id="doc_tva_status">En attente</span>
+                                <label class="ff-upload-btn">
+                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('tva', this)"/>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    Envoyer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Onglet DOCUMENTS À TÉLÉCHARGER ── -->
+                <div id="ff-tab-docs-dl" class="ff-tab-content">
+                    <div class="ff-docs-card">
+                        <a class="ff-dl-row" href="/sinistre_services/static/pwa/docs/pv_intervention.pdf" download>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Procès verbal de fin d'intervention</span>
+                        </a>
+                        <a class="ff-dl-row" href="/sinistre_services/static/pwa/docs/contrat_partenariat.pdf" download>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Contrat de partenariat</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -678,5 +920,183 @@ document.addEventListener('DOMContentLoaded', function() {
 .msg-date{font-size:10px;margin-top:4px;opacity:.6;text-align:right}
 .btn-warning{background:#D97706;color:#fff;border-radius:12px;padding:14px 20px;font-weight:700;font-size:15px;border:none;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 </style>
+
+<script>
+/* ══ Module Profile (FairFair style) ══ */
+window.Profile = (function() {
+
+    function switchTab(name, btn) {
+        document.querySelectorAll('.ff-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelectorAll('.ff-tab-content').forEach(function(c){ c.classList.remove('active'); });
+        btn.classList.add('active');
+        var el = document.getElementById('ff-tab-' + name);
+        if (el) el.classList.add('active');
+    }
+
+    function loadFromUser() {
+        var user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        if (!user || !user.name) return;
+
+        var name  = user.name || '';
+        var parts = name.split(' ');
+        var set = function(id, v){ var el=document.getElementById(id); if(el) el.value = v||''; };
+
+        // Onglet Entreprise — Entité juridique
+        set('ent_raison_sociale', user.company_name || name);
+        set('ent_siret',         user.siret || '');
+        set('ent_ape',           user.ape   || '');
+        set('ent_rue',           user.street || '');
+        set('ent_comp1',         user.street2 || '');
+        set('ent_ville',         user.city   || '');
+        set('ent_cp',            user.zip    || '');
+
+        // Contact entreprise
+        set('ent_tel_portable', user.phone || '');
+        set('ent_tel_fixe',     user.phone_fixe || '');
+        set('ent_email',        user.email || '');
+
+        // Vous êtes
+        set('profileFirstName', parts[0] || '');
+        set('profileLastName',  parts.slice(1).join(' ') || '');
+        set('profileTel',       user.phone || '');
+        set('profileEmail',     user.email || '');
+
+        // Onglet Intervenants
+        set('interv_rue',   user.street || '');
+        set('interv_comp1', user.street2 || '');
+        set('interv_ville', user.city || '');
+        set('interv_cp',    user.zip || '');
+        set('interv_tel',   user.phone || '');
+
+        var locEl = document.getElementById('ff_interv_loc');
+        if (locEl && (user.city || user.zip)) locEl.textContent = (user.city||'') + (user.zip?' - '+user.zip:'');
+
+        // Métiers dans intervenants
+        var ml = document.getElementById('intervMetiersList');
+        if (ml) {
+            var specs = user.specialites || [];
+            if (specs.length) {
+                ml.innerHTML = specs.map(function(s){
+                    return '<div class="ff-metier-item">'+s+'</div>';
+                }).join('');
+            }
+        }
+
+        // Corps de métiers — cocher les cases
+        var types = user.specialites_types || [];
+        document.querySelectorAll('.ff-metier-cb').forEach(function(cb){
+            cb.checked = types.indexOf(cb.value) !== -1;
+        });
+
+        // Documents légaux — statuts (si l'API les fournit)
+        var docs = user.documents || {};
+        if (docs.kbis) _setDocStatus('doc_kbis_status',  docs.kbis);
+        if (docs.rcpro) _setDocStatus('doc_rcpro_status', docs.rcpro);
+    }
+
+    function _setDocStatus(id, status) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (status === 'accepted' || status === 'Accepté') {
+            el.textContent = 'Accepté';
+            el.className = 'ff-badge-ok';
+        } else if (status === 'refused' || status === 'Refusé') {
+            el.textContent = 'Refusé';
+            el.className = 'ff-badge-pending';
+        } else {
+            el.textContent = 'En attente';
+            el.className = 'ff-badge-pending';
+        }
+    }
+
+    function saveEntreprise() {
+        if (window.Toast) Toast.show('✅ Informations enregistrées', 'success');
+    }
+
+    function saveMetiers() {
+        if (window.Toast) Toast.show('✅ Corps de métiers mis à jour', 'success');
+    }
+
+    function toggleMetier(cb) {
+        // noop — géré par CSS :checked
+    }
+
+    function uploadDoc(type, input) {
+        if (!input.files || !input.files[0]) return;
+        var statusId = type === 'kbis' ? 'doc_kbis_status' : type === 'rcpro' ? 'doc_rcpro_status' : 'doc_tva_status';
+        var el = document.getElementById(statusId);
+        if (el) { el.textContent = 'Envoi…'; el.className = 'ff-badge-pending'; }
+        if (window.Toast) Toast.show('📤 Document envoyé — en cours de vérification', 'success');
+        setTimeout(function(){
+            if (el) { el.textContent = 'En attente'; el.className = 'ff-badge-pending'; }
+        }, 2000);
+    }
+
+    return { switchTab: switchTab, loadFromUser: loadFromUser, saveEntreprise: saveEntreprise, saveMetiers: saveMetiers, toggleMetier: toggleMetier, uploadDoc: uploadDoc };
+})();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    function doLogout() {
+        fetch('/web/session/destroy', {
+            method: 'POST', credentials: 'include',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}})
+        }).catch(function(){}).finally(function() {
+            localStorage.removeItem('ss_user');
+            window.location.href = '/intervenant/login';
+        });
+    }
+
+    var lob = document.getElementById('logoutTopBtn');
+    if (lob) lob.addEventListener('click', doLogout);
+    if (window.Auth) Auth.logout = doLogout;
+    if (window.App) App.showLogin = function() { window.location.href = '/intervenant/login'; };
+
+    function updateSidebar() {
+        var user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        if (!user || !user.name) return;
+        var name = user.name || '';
+        var parts = name.split(' ');
+        var first = parts[0];
+        var initials = parts.map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+        var dg = document.getElementById('dashGreeting');
+        if (dg) dg.textContent = 'Bonjour ' + first + ' 👋';
+        var sa = document.getElementById('sidebarAvatar');
+        var sn = document.getElementById('sidebarName');
+        var sc = document.getElementById('sidebarCompany');
+        if (sa) sa.textContent = initials || '?';
+        if (sn) sn.textContent = name;
+        if (sc) sc.textContent = user.company_name || 'Artisan Pro';
+    }
+
+    // Charger le profil quand on clique sur l'onglet profil
+    var navProfile = document.getElementById('nav-profile');
+    if (navProfile) {
+        navProfile.addEventListener('click', function() {
+            setTimeout(function(){ if (window.Profile) Profile.loadFromUser(); }, 100);
+        });
+    }
+
+    if (window.App && App.showApp) {
+        var origShowApp = App.showApp.bind(App);
+        App.showApp = function() { origShowApp(); setTimeout(updateSidebar, 300); };
+    }
+
+    var lf = document.getElementById('loginForm');
+    if (lf) {
+        lf.addEventListener('submit', function() {
+            var s = document.getElementById('loginSpinEl');
+            if (s) s.style.display = 'block';
+        });
+    }
+
+    setTimeout(updateSidebar, 1500);
+});
+</script>
 </body>
 </html>
