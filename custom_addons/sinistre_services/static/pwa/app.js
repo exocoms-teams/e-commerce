@@ -331,7 +331,7 @@ window.Planning = (function() {
 
     function init() {
         // Charger depuis l'API ou utiliser des défauts
-        API.get('/sinistre_services/api/intervenant/planning')
+        API.get('/intervenant/planning')
             .then(function(data) {
                 _slots = data.slots || _defaultSlots();
                 _render();
@@ -384,7 +384,7 @@ window.Planning = (function() {
     }
 
     function save() {
-        API.post('/sinistre_services/api/intervenant/planning', { slots: _slots })
+        API.post('/intervenant/planning', { slots: _slots })
             .then(function() { Toast.show('Planning enregistré', 'success'); })
             .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
     }
@@ -394,7 +394,7 @@ window.Planning = (function() {
         var to   = document.getElementById('absenceTo')?.value;
         if (!from || !to) { Toast.show('Veuillez saisir les deux dates', 'error'); return; }
         if (to < from)    { Toast.show('La date de fin doit être après la date de début', 'error'); return; }
-        API.post('/sinistre_services/api/intervenant/absences', { date_debut: from, date_fin: to })
+        API.post('/intervenant/absences', { date_debut: from, date_fin: to })
             .then(function(data) {
                 Toast.show('Absence enregistrée', 'success');
                 document.getElementById('absenceFrom').value = '';
@@ -420,7 +420,7 @@ window.Planning = (function() {
     }
 
     function removeAbsence(id) {
-        API.post('/sinistre_services/api/intervenant/absences/delete', { id: id })
+        API.post('/intervenant/absences/delete', { id: id })
             .then(function(data) {
                 Toast.show('Absence supprimée', 'success');
                 _renderAbsences(data.absences || []);
