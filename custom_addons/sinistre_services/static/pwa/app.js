@@ -256,6 +256,11 @@ window.App = (() => {
                 else console.error('[App] CarteMap non défini !');
             }, 300);
         }
+        if (viewId === 'planning') {
+            setTimeout(function() {
+                if (window.Planning) Planning.init();
+            }, 100);
+        }
     }
 
     function goBack() {
@@ -301,4 +306,127 @@ window.App = (() => {
         goBack,
         get currentView() { return _currentView; },
     };
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   Module Planning — Heures d'ouverture + Absences
+══════════════════════════════════════════════════════════════ */
+window.Planning = (function() {
+    'use strict';
+
+    const DAYS   = ['DIM','LUN','MAR','MER','JEU','VEN','SAM'];
+    const HOURS  = Array.from({length: 24}, (_, i) => i); // 0h → 23h
+
+    // État local : slots[jour][heure] = true/false (jour 0=dim, 1=lun…)
+    let _slots = {};
+
+    function _defaultSlots() {
+        const s = {};
+        for (let d = 0; d < 7; d++) {
+            s[d] = {};
+            for (let h = 0; h < 24; h++) s[d][h] = true;
+        }
+        return s;
+    }
+
+    function init() {
+        // Charger depuis l'API ou utiliser des défauts
+        API.get('/sinistre_services/api/intervenant/planning')
+            .then(function(data) {
+                _slots = data.slots || _defaultSlots();
+                _render();
+                _renderAbsences(data.absences || []);
+            })
+            .catch(function() {
+                _slots = _defaultSlots();
+                _render();
+            });
+    }
+
+    function _render() {
+        const tbody = document.getElementById('planningBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        HOURS.forEach(function(h) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td style="padding:4px 8px;font-size:12px;color:#6B7280;white-space:nowrap;">' + h + ' H</td>';
+            // LUN=1, MAR=2 … SAM=6, DIM=0
+            [1,2,3,4,5,6,0].forEach(function(d) {
+                const checked = _slots[d] && _slots[d][h] ? 'checked' : '';
+                tr.innerHTML += '<td style="text-align:center;padding:3px;">'
+                    + '<input type="checkbox" ' + checked
+                    + ' onchange="Planning.toggleSlot(' + d + ',' + h + ',this.checked)"'
+                    + ' style="accent-color:#1E40AF;width:15px;height:15px;cursor:pointer;"/></td>';
+            });
+            tbody.appendChild(tr);
+        });
+
+        // Mettre à jour les checkboxes "Tout" selon l'état réel
+        document.querySelectorAll('.planning-day-all').forEach(function(cb) {
+            const d = parseInt(cb.dataset.day);
+            cb.checked = Object.values(_slots[d] || {}).every(Boolean);
+        });
+    }
+
+    function toggleSlot(day, hour, val) {
+        if (!_slots[day]) _slots[day] = {};
+        _slots[day][hour] = val;
+        // Mettre à jour la checkbox "Tout" pour ce jour
+        const allCb = document.querySelector('.planning-day-all[data-day="' + day + '"]');
+        if (allCb) allCb.checked = Object.values(_slots[day]).every(Boolean);
+    }
+
+    function toggleDay(day, val) {
+        if (!_slots[day]) _slots[day] = {};
+        for (let h = 0; h < 24; h++) _slots[day][h] = val;
+        _render();
+    }
+
+    function save() {
+        API.post('/sinistre_services/api/intervenant/planning', { slots: _slots })
+            .then(function() { Toast.show('Planning enregistré', 'success'); })
+            .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
+    }
+
+    function addAbsence() {
+        var from = document.getElementById('absenceFrom')?.value;
+        var to   = document.getElementById('absenceTo')?.value;
+        if (!from || !to) { Toast.show('Veuillez saisir les deux dates', 'error'); return; }
+        if (to < from)    { Toast.show('La date de fin doit être après la date de début', 'error'); return; }
+        API.post('/sinistre_services/api/intervenant/absences', { date_debut: from, date_fin: to })
+            .then(function(data) {
+                Toast.show('Absence enregistrée', 'success');
+                document.getElementById('absenceFrom').value = '';
+                document.getElementById('absenceTo').value   = '';
+                _renderAbsences(data.absences || []);
+            })
+            .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
+    }
+
+    function _renderAbsences(absences) {
+        var list = document.getElementById('absenceList');
+        if (!list) return;
+        if (!absences.length) {
+            list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;text-align:center;padding:16px 0;">Aucune absence en cours ou à venir</p>';
+            return;
+        }
+        list.innerHTML = absences.map(function(a) {
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;margin-bottom:8px;font-size:13px;">'
+                + '<span>Du <strong>' + a.date_debut + '</strong> au <strong>' + a.date_fin + '</strong></span>'
+                + '<button onclick="Planning.removeAbsence(' + a.id + ')" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:16px;" title="Supprimer">×</button>'
+                + '</div>';
+        }).join('');
+    }
+
+    function removeAbsence(id) {
+        API.post('/sinistre_services/api/intervenant/absences/delete', { id: id })
+            .then(function(data) {
+                Toast.show('Absence supprimée', 'success');
+                _renderAbsences(data.absences || []);
+            })
+            .catch(function() { Toast.show('Erreur lors de la suppression', 'error'); });
+    }
+
+    return { init, toggleSlot, toggleDay, save, addAbsence, removeAbsence };
 })();
