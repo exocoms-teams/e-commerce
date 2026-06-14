@@ -23,9 +23,8 @@ class ProductTemplateSpecLine(models.Model):
     sequence = fields.Integer(related='attribute_id.sequence', store=True, readonly=True)
     value = fields.Char(string="Valeur", required=True, translate=True)
 
-    _sql_constraints = [
-        (
-            'uniq_attribute_per_product',
+    _constraints = [
+        models.Constraint(
             'unique(product_tmpl_id, attribute_id)',
             "Cette caractéristique est déjà renseignée pour ce produit.",
         ),
