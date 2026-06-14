@@ -418,7 +418,7 @@ class SinistreAPIController(http.Controller):
     #  PLANNING — Heures d'ouverture
     # ══════════════════════════════════════════════════════════════════
 
-    @http.route('/sinistre_services/api/intervenant/planning',
+    @http.route('/api/sinistre/v1/intervenant/planning',
                 type='http', auth='user', methods=['GET'], csrf=False)
     def planning_get(self, **kw):
         try:
@@ -436,7 +436,7 @@ class SinistreAPIController(http.Controller):
             _logger.error(f"[sinistre] planning_get: {e}")
             return _err(500, str(e))
 
-    @http.route('/sinistre_services/api/intervenant/planning',
+    @http.route('/api/sinistre/v1/intervenant/planning',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def planning_save(self, **kw):
         try:
@@ -453,7 +453,7 @@ class SinistreAPIController(http.Controller):
     #  ABSENCES
     # ══════════════════════════════════════════════════════════════════
 
-    @http.route('/sinistre_services/api/intervenant/absences',
+    @http.route('/api/sinistre/v1/intervenant/absences',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def absence_add(self, **kw):
         try:
@@ -482,7 +482,7 @@ class SinistreAPIController(http.Controller):
             _logger.error(f"[sinistre] absence_add: {e}")
             return _err(500, str(e))
 
-    @http.route('/sinistre_services/api/intervenant/absences/delete',
+    @http.route('/api/sinistre/v1/intervenant/absences/delete',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def absence_delete(self, **kw):
         try:
@@ -509,7 +509,7 @@ class SinistreAPIController(http.Controller):
     #  COORDONNÉES BANCAIRES
     # ══════════════════════════════════════════════════════════════════
 
-    @http.route('/sinistre_services/api/intervenant/bancaire',
+    @http.route('/api/sinistre/v1/intervenant/bancaire',
                 type='http', auth='user', methods=['GET'], csrf=False)
     def bancaire_get(self, **kw):
         try:
@@ -523,7 +523,7 @@ class SinistreAPIController(http.Controller):
         except Exception as e:
             return _err(500, str(e))
 
-    @http.route('/sinistre_services/api/intervenant/bancaire',
+    @http.route('/api/sinistre/v1/intervenant/bancaire',
                 type='http', auth='user', methods=['POST'], csrf=False)
     def bancaire_save(self, **kw):
         try:
