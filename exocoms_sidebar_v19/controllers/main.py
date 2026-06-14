@@ -136,7 +136,7 @@ class ExoWebsiteSaleV19(WebsiteSale):
 
     @http.route(
         "/shop/sidebar/filter",
-        type="json",
+        type="jsonrpc",
         auth="public",
         website=True,
         methods=["POST"],
