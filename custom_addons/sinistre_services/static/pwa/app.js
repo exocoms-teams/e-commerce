@@ -114,8 +114,6 @@ window.App = (() => {
         const initials = parts.map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
         const company = user.company_name || name;
         const nbInterv = user.interventions || 0;
-        const note = nbInterv > 0 ? (user.note_moyenne || 0) : 0;
-        const caMois = user.ca_mois || 0;
 
         const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
         const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
@@ -129,16 +127,12 @@ window.App = (() => {
         // Stats dashboard
         const sA = document.getElementById('statActives');
         if (sA && sA.textContent === '–') sA.textContent = '0';
-        const sC = document.getElementById('statCA');
-        if (sC) sC.textContent = caMois.toLocaleString('fr-FR') + ' €';
-        set('statNote', nbInterv > 0 ? note.toFixed(1) : '0');
         set('statInterventions', nbInterv);
 
         // Profil
         set('profileAvatarLg', initials || '?');
         set('profileNameLg', name);
         set('profileCompanyLg', company);
-        set('profileRating', nbInterv > 0 ? note.toFixed(1) : '0');
         set('profileInterv', nbInterv);
         set('profileSince', user.membre_depuis || '—');
         setVal('profileEmail', user.email || '');
