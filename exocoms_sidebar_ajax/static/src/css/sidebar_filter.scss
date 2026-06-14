@@ -1,0 +1,429 @@
+/**
+ * EXOCOMS — Sidebar Filter AJAX
+ * Odoo 19 · Bootstrap 5.3
+ */
+
+$exo-primary:    #1D9E75;
+$exo-primary-dk: #0F6E56;
+$exo-primary-lt: #E1F5EE;
+$exo-purple:     #7F77DD;
+$exo-border:     rgba(0, 0, 0, 0.10);
+$exo-hover:      rgba(0, 0, 0, 0.04);
+$exo-radius:     10px;
+$exo-radius-sm:  6px;
+$exo-transition: 0.15s ease;
+
+// ── Layout /shop : sidebar + grille côte à côte ──────────────────────────────
+.o_wsale_layout > .container,
+.o_wsale_products_main_col {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+#exo-products-grid {
+    flex: 1;
+    min-width: 0;
+
+    // État chargement
+    &.exo-loading {
+        opacity: 0.45;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+}
+
+// ── Sidebar wrapper ──────────────────────────────────────────────────────────
+.exo-sidebar {
+    width: 260px;
+    min-width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;          // colle sous la navbar
+    background: #fff;
+    border: 0.5px solid $exo-border;
+    border-radius: $exo-radius;
+    padding: 14px 0 10px;
+    font-size: 13px;
+    font-family: var(--bs-body-font-family, inherit);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+
+    // Scrollbar discrète
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,.15) transparent;
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 2px; }
+
+    // ── En-tête ───────────────────────────────────────────────────────────
+    .exo-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px 10px;
+        border-bottom: 0.5px solid $exo-border;
+        margin-bottom: 4px;
+
+        h3 { font-size: 13px; font-weight: 500; color: #111827; margin: 0; }
+
+        .exo-clear-all {
+            font-size: 11px;
+            color: $exo-purple;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            &:hover { text-decoration: underline; }
+        }
+    }
+
+    // ── Tags actifs ───────────────────────────────────────────────────────
+    .exo-active-tags {
+        display: none;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 8px 16px;
+        border-bottom: 0.5px solid $exo-border;
+
+        &.visible { display: flex; }
+
+        .exo-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: $exo-primary-lt;
+            color: $exo-primary-dk;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            .fa { font-size: 9px; }
+            &:hover { background: darken($exo-primary-lt, 5%); }
+        }
+    }
+
+    // ── Compteur résultats live ───────────────────────────────────────────
+    .exo-result-count {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        font-size: 11px;
+        color: #6b7280;
+        border-bottom: 0.5px solid $exo-border;
+        min-height: 30px;
+
+        .exo-spinner { color: $exo-primary; }
+        .exo-count-text { flex: 1; }
+    }
+
+    // ── Recherche rapide ──────────────────────────────────────────────────
+    .exo-search-box {
+        position: relative;
+        padding: 8px 16px 6px;
+        border-bottom: 0.5px solid $exo-border;
+
+        .exo-search-icon {
+            position: absolute;
+            left: 26px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .exo-search-input {
+            width: 100%;
+            padding: 6px 10px 6px 30px;
+            font-size: 12px;
+            border: 0.5px solid $exo-border;
+            border-radius: $exo-radius-sm;
+            background: #f9f9f9;
+            color: #111827;
+            outline: none;
+            font-family: inherit;
+            transition: border-color $exo-transition;
+
+            &:focus {
+                border-color: $exo-primary;
+                background: #fff;
+                box-shadow: 0 0 0 2px rgba($exo-primary, .12);
+            }
+            &::placeholder { color: #9ca3af; }
+        }
+    }
+
+    // ── Tri ───────────────────────────────────────────────────────────────
+    .exo-sort-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px 8px;
+        border-bottom: 0.5px solid $exo-border;
+
+        .exo-sort-label {
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .exo-sort-select {
+            flex: 1;
+            font-size: 11px;
+            padding: 4px 6px;
+            border: 0.5px solid $exo-border;
+            border-radius: $exo-radius-sm;
+            background: #f9f9f9;
+            color: #111827;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+
+            &:focus { border-color: $exo-primary; }
+        }
+    }
+
+    // ── Bloc catégorie niveau 1 ───────────────────────────────────────────
+    .exo-cat-block { border-bottom: 0.5px solid $exo-border; }
+
+    .exo-cat-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        user-select: none;
+        transition: background $exo-transition;
+        outline: none;
+
+        &:hover, &:focus-visible { background: $exo-hover; }
+        &:focus-visible { outline: 2px solid $exo-primary; outline-offset: -2px; }
+
+        .exo-icon { font-size: 15px; color: #6b7280; flex-shrink: 0; width: 16px; text-align: center; }
+
+        input[type="checkbox"] {
+            accent-color: $exo-primary;
+            width: 13px; height: 13px;
+            cursor: pointer; flex-shrink: 0;
+        }
+
+        .exo-cat-label { font-size: 12px; font-weight: 500; color: #111827; flex: 1; }
+
+        .exo-count-badge {
+            font-size: 10px;
+            color: #9ca3af;
+            min-width: 18px;
+            text-align: right;
+            transition: color $exo-transition;
+
+            &.zero { opacity: 0.4; }      // catégorie sans résultat
+        }
+
+        .exo-chevron {
+            font-size: 11px;
+            color: #9ca3af;
+            transition: transform 0.18s ease;
+            flex-shrink: 0;
+        }
+        &.open .exo-chevron { transform: rotate(180deg); }
+
+        // Indicateur indéterminé (enfants partiellement cochés)
+        input[type="checkbox"]:indeterminate { opacity: 0.7; }
+    }
+
+    // ── Sous-catégories niveau 2 ──────────────────────────────────────────
+    .exo-subcats { display: none; padding-bottom: 4px; &.open { display: block; } }
+
+    .exo-subcat-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 16px 5px 34px;
+        cursor: pointer;
+        user-select: none;
+        transition: background $exo-transition;
+        outline: none;
+
+        &:hover, &:focus-visible { background: $exo-hover; }
+        &:focus-visible { outline: 2px solid $exo-primary; outline-offset: -2px; }
+
+        input[type="checkbox"] { accent-color: $exo-primary; width: 12px; height: 12px; cursor: pointer; flex-shrink: 0; }
+
+        .exo-subcat-label {
+            font-size: 12px;
+            color: #6b7280;
+            flex: 1;
+            &.checked { color: #111827; font-weight: 500; }
+        }
+
+        .exo-count-badge { font-size: 10px; color: #9ca3af; }
+        .exo-chevron { font-size: 11px; color: #9ca3af; transition: transform 0.15s; }
+        &.open .exo-chevron { transform: rotate(180deg); }
+    }
+
+    // ── Enfants niveau 3 ──────────────────────────────────────────────────
+    .exo-children { display: none; padding-bottom: 2px; &.open { display: block; } }
+
+    .exo-child-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 16px 4px 52px;
+        cursor: pointer;
+        transition: background $exo-transition;
+
+        &:hover { background: $exo-hover; }
+
+        input[type="checkbox"] { accent-color: $exo-primary; width: 12px; height: 12px; cursor: pointer; flex-shrink: 0; }
+        label { font-size: 11px; color: #6b7280; cursor: pointer; flex: 1; margin: 0; }
+        &:hover label { color: #111827; }
+        .exo-count-badge { font-size: 10px; color: #9ca3af; }
+    }
+
+    // ── Filtre prix ───────────────────────────────────────────────────────
+    .exo-price-block {
+        padding: 10px 16px;
+        border-top: 0.5px solid $exo-border;
+        margin-top: 4px;
+    }
+
+    .exo-price-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #111827;
+        margin-bottom: 8px;
+        .fa { font-size: 13px; color: #6b7280; }
+    }
+
+    .exo-price-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .exo-price-input {
+            flex: 1;
+            width: 0;
+            padding: 5px 8px;
+            font-size: 12px;
+            border: 0.5px solid $exo-border;
+            border-radius: $exo-radius-sm;
+            background: #f9f9f9;
+            color: #111827;
+            outline: none;
+            font-family: inherit;
+
+            &:focus {
+                border-color: $exo-primary;
+                background: #fff;
+                box-shadow: 0 0 0 2px rgba($exo-primary, .12);
+            }
+            &::placeholder { color: #9ca3af; }
+        }
+
+        .exo-price-sep { font-size: 12px; color: #9ca3af; }
+    }
+}
+
+// ── Grille produits : animation fade lors du rechargement AJAX ───────────────
+@keyframes exo-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#exo-products-grid {
+    transition: opacity 0.2s;
+
+    .o_product_item_card {
+        animation: exo-fadein 0.2s ease both;
+    }
+}
+
+// ── État vide ────────────────────────────────────────────────────────────────
+.exo-empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    color: #9ca3af;
+    text-align: center;
+
+    p { font-size: 14px; margin: 0; }
+
+    .exo-reset-btn {
+        font-size: 12px;
+        padding: 7px 16px;
+        border: 0.5px solid rgba($exo-primary, .4);
+        border-radius: $exo-radius-sm;
+        background: $exo-primary-lt;
+        color: $exo-primary-dk;
+        cursor: pointer;
+        font-family: inherit;
+        &:hover { background: darken($exo-primary-lt, 5%); }
+    }
+}
+
+// ── Bouton détail produit ────────────────────────────────────────────────────
+.exo-btn-detail {
+    font-size: 11px !important;
+    padding: 3px 10px !important;
+    border-color: rgba($exo-primary, .5) !important;
+    color: $exo-primary !important;
+    &:hover { background: $exo-primary !important; color: #fff !important; }
+}
+
+// ── Pagination AJAX ──────────────────────────────────────────────────────────
+#exo-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 0 8px;
+    flex-wrap: wrap;
+
+    .exo-page-btn {
+        min-width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        border: 0.5px solid $exo-border;
+        border-radius: $exo-radius-sm;
+        background: #fff;
+        color: #374151;
+        cursor: pointer;
+        padding: 0 8px;
+
+        &:hover { background: $exo-hover; }
+        &.active {
+            background: $exo-primary;
+            color: #fff;
+            border-color: $exo-primary;
+        }
+        &:disabled { opacity: 0.4; cursor: default; }
+    }
+
+    .exo-page-info { font-size: 11px; color: #9ca3af; padding: 0 6px; }
+}
+
+// ── Responsive Bootstrap 5 ───────────────────────────────────────────────────
+@include media-breakpoint-down(md) {
+    .o_wsale_layout > .container,
+    .o_wsale_products_main_col { flex-direction: column; }
+
+    .exo-sidebar {
+        width: 100%;
+        min-width: unset;
+        position: static;
+        max-height: none;
+    }
+}
