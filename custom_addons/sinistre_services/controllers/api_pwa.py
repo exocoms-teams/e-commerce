@@ -362,7 +362,7 @@ class SinistrePWAController(http.Controller):
                 'url': f'/web/image/sinistre.photo/{photo.id}/image',
             }, status=201)
         except Exception as e:
-            _logger.error(f"[sinistre] upload_photo: {e}")
+            _logger.error(f"[sinistre] upload_photo: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── NOTES ARTISAN ────────────────────────────────────────────────
@@ -422,7 +422,7 @@ class SinistrePWAController(http.Controller):
                 'montant_total': devis.montant_total,
             }, status=201)
         except Exception as e:
-            _logger.error(f"[sinistre] creer_devis: {e}")
+            _logger.error(f"[sinistre] creer_devis: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── MODIFIER DEVIS ───────────────────────────────────────────────
@@ -715,14 +715,14 @@ class SinistrePWAController(http.Controller):
             slots = intervenant.get_planning_slots()
             from odoo.fields import Date
             today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin >= today)
+            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
             return _ok({
                 'success':  True,
                 'slots':    slots,
                 'absences': [a._fmt() for a in absences.sorted('date_debut')],
             })
         except Exception as e:
-            _logger.error(f"[sinistre] planning_get: {e}")
+            _logger.error(f"[sinistre] planning_get: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── PLANNING : SAVE ──────────────────────────────────────────────
@@ -733,12 +733,12 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            data  = json.loads(request.httprequest.data or b'{}')
+            data  = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             slots = data.get('slots', {})
             intervenant.set_planning_slots(slots)
             return _ok({'success': True})
         except Exception as e:
-            _logger.error(f"[sinistre] planning_save: {e}")
+            _logger.error(f"[sinistre] planning_save: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── ABSENCES : AJOUTER ───────────────────────────────────────────
@@ -749,7 +749,7 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            data       = json.loads(request.httprequest.data or b'{}')
+            data       = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             date_debut = data.get('date_debut')
             date_fin   = data.get('date_fin')
             motif      = data.get('motif', '')
@@ -763,11 +763,11 @@ class SinistrePWAController(http.Controller):
             })
             from odoo.fields import Date
             today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin >= today)
+            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
             return _ok({'success': True,
                         'absences': [a._fmt() for a in absences.sorted('date_debut')]})
         except Exception as e:
-            _logger.error(f"[sinistre] absence_add: {e}")
+            _logger.error(f"[sinistre] absence_add: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── ABSENCES : SUPPRIMER ─────────────────────────────────────────
@@ -778,7 +778,7 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            data       = json.loads(request.httprequest.data or b'{}')
+            data       = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             absence_id = int(data.get('id', 0))
             absence    = request.env['sinistre.intervenant.absence'].sudo().browse(absence_id)
             if not absence.exists() or absence.intervenant_id.id != intervenant.id:
@@ -786,11 +786,11 @@ class SinistrePWAController(http.Controller):
             absence.unlink()
             from odoo.fields import Date
             today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin >= today)
+            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
             return _ok({'success': True,
                         'absences': [a._fmt() for a in absences.sorted('date_debut')]})
         except Exception as e:
-            _logger.error(f"[sinistre] absence_delete: {e}")
+            _logger.error(f"[sinistre] absence_delete: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── COORDONNÉES BANCAIRES : GET ──────────────────────────────────
@@ -818,7 +818,7 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            data = json.loads(request.httprequest.data or b'{}')
+            data = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             intervenant.sudo().write({
                 'iban':             data.get('iban',      '').strip().upper(),
                 'bic':              data.get('bic',       '').strip().upper(),
@@ -827,7 +827,7 @@ class SinistrePWAController(http.Controller):
             })
             return _ok({'success': True})
         except Exception as e:
-            _logger.error(f"[sinistre] bancaire_save: {e}")
+            _logger.error(f"[sinistre] bancaire_save: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── DEMANDE PUBLIQUE ─────────────────────────────────────────────
@@ -835,7 +835,7 @@ class SinistrePWAController(http.Controller):
                 methods=['POST'], csrf=False)
     def create_mission_public(self, **kw):
         try:
-            data    = json.loads(request.httprequest.data or b'{}')
+            data    = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             email   = data.get('email', '')
             partner = request.env['res.partner'].sudo().search(
                 [('email', '=', email)], limit=1
