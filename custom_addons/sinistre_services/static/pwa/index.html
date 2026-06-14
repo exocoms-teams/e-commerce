@@ -1149,7 +1149,7 @@ window.Profile = (function() {
         var titulaire = (document.getElementById('profileBancaireTitulaire')?.value || '').trim();
         var banque   = (document.getElementById('profileBancaireBanque')?.value || '').trim();
         if (!iban) { Toast.show('Veuillez saisir un IBAN', 'error'); return; }
-        API.post('/sinistre_services/api/intervenant/bancaire', { iban, bic, titulaire, banque })
+        API.post('/intervenant/bancaire', { iban, bic, titulaire, banque })
             .then(function() { Toast.show('Coordonnées bancaires enregistrées', 'success'); })
             .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
     }
