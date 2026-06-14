@@ -188,13 +188,12 @@
           name="EXOCOMS — Inject Sidebar v19">
 
     <!--
-        Odoo 19 : le div des produits a la classe "o_wsale_products_grid_wrapper"
-        On insère notre sidebar juste avant, dans le même conteneur flex.
-
-        Si ce XPath ne correspond pas à ton layout, inspecte la page /shop
-        en mode développeur et ajuste la classe cible.
+        XPath stable Odoo 19 : on cible le div#products_grid qui contient
+        la grille produits. Ce div est présent dans toutes les versions
+        récentes de website_sale.
+        Position "before" insère le sidebar juste avant la grille.
     -->
-    <xpath expr="//div[hasclass('o_wsale_products_grid_wrapper')]" position="before">
+    <xpath expr="//div[@id='products_grid']" position="before">
         <t t-if="exo_categories">
             <t t-call="exocoms_sidebar_v19.exo_sidebar_filter"/>
         </t>
