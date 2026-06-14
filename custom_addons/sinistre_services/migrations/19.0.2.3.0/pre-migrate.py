@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Migration 2.3.0 — Ajout :
-  - sinistre_intervenant : planning_slots, iban, bic, titulaire_compte, banque
-  - sinistre_intervenant_absence : nouvelle table
+Migration 2.3.0 — PRE-migrate
+Crée les colonnes et tables AVANT la validation des vues XML.
 """
 import logging
 _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    _logger.info("[sinistre 2.3.0] pre-migrate START")
+    _logger.info("[sinistre 2.3.0] pre-migrate START (version=%s)", version)
 
     # ── Colonnes sur sinistre_intervenant ────────────────────────────
     new_cols = [
@@ -18,17 +17,21 @@ def migrate(cr, version):
         ("bic",               "VARCHAR(16)"),
         ("titulaire_compte",  "VARCHAR(128)"),
         ("banque",            "VARCHAR(128)"),
+        ("fcm_token",         "VARCHAR(256)"),
     ]
     for col, col_type in new_cols:
         cr.execute("""
             SELECT 1 FROM information_schema.columns
-             WHERE table_name = 'sinistre_intervenant' AND column_name = %s
+             WHERE table_name   = 'sinistre_intervenant'
+               AND column_name  = %s
         """, (col,))
         if not cr.fetchone():
             cr.execute(
                 f"ALTER TABLE sinistre_intervenant ADD COLUMN {col} {col_type}"
             )
-            _logger.info(f"[sinistre 2.3.0] colonne {col} ajoutée")
+            _logger.info("[sinistre 2.3.0] colonne %s ajoutée", col)
+        else:
+            _logger.info("[sinistre 2.3.0] colonne %s déjà présente", col)
 
     # ── Table sinistre_intervenant_absence ───────────────────────────
     cr.execute("""
@@ -59,5 +62,7 @@ def migrate(cr, version):
                 ON sinistre_intervenant_absence(date_debut, date_fin)
         """)
         _logger.info("[sinistre 2.3.0] table sinistre_intervenant_absence créée")
+    else:
+        _logger.info("[sinistre 2.3.0] table sinistre_intervenant_absence déjà présente")
 
     _logger.info("[sinistre 2.3.0] pre-migrate END")
