@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!--
+    EXOCOMS — Sidebar Filter v19
+    Template QWeb principal
+    Compatible Odoo 19 uniquement
+
+    Variables injectées par le contrôleur :
+      - exo_categories      : list[dict]  (voir controllers/main.py)
+      - exo_active_cat_ids  : list[int]   IDs de catégories actives
+
+    Structure d'un dict catégorie :
+    {
+        'id':    12,
+        'name':  'Monétique',
+        'icon':  'fa-credit-card',
+        'count': 24,
+        'active': True/False,
+        'subcategories': [
+            {
+                'id': 34, 'name': 'Terminaux', 'count': 12, 'active': False,
+                'subcategories': [
+                    {'id': 56, 'name': 'Ingenico Desk 5000', 'count': 4, 'active': False, 'subcategories': []}
+                ]
+            }
+        ]
+    }
+-->
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Template principal du sidebar
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<template id="exo_sidebar_filter" name="EXOCOMS Sidebar Filter">
+
+    <aside class="exo-sidebar" role="search" aria-label="Filtrer par catégorie">
+
+        <!-- En-tête -->
+        <div class="exo-sidebar-header">
+            <h3>Filtres</h3>
+            <button type="button" class="exo-clear-all"
+                    aria-label="Effacer tous les filtres actifs">
+                Tout effacer
+            </button>
+        </div>
+
+        <!-- Zone tags actifs (peuplée dynamiquement par JS) -->
+        <div class="exo-active-tags" aria-live="polite" aria-label="Filtres actifs"></div>
+
+        <!-- ── Catégories niveau 1 ──────────────────────────────────────── -->
+        <t t-foreach="exo_categories or []" t-as="cat">
+
+            <div class="exo-cat-block"
+                 t-att-data-cat-id="cat['id']">
+
+                <!-- Titre catégorie + checkbox -->
+                <div t-att-class="'exo-cat-head' + (' open' if cat.get('active') else '')"
+                     t-att-data-subcats-id="'exo-sub-%d' % cat['id']"
+                     role="button"
+                     tabindex="0"
+                     t-att-aria-expanded="'true' if cat.get('active') else 'false'">
+
+                    <i t-att-class="'fa %s exo-icon' % cat.get('icon', 'fa-folder')"
+                       aria-hidden="true"/>
+
+                    <input type="checkbox"
+                           t-att-id="'cat-cb-%d' % cat['id']"
+                           t-att-name="'cat_%d' % cat['id']"
+                           t-att-value="cat['id']"
+                           t-att-data-cat-id="cat['id']"
+                           t-att-data-label="cat['name']"
+                           t-att-checked="'checked' if cat.get('active') else None"/>
+
+                    <span class="exo-cat-label">
+                        <t t-esc="cat['name']"/>
+                    </span>
+
+                    <t t-if="cat.get('count') is not None">
+                        <span class="exo-count">
+                            <t t-esc="cat['count']"/>
+                        </span>
+                    </t>
+
+                    <!-- Chevron uniquement si sous-catégories -->
+                    <t t-if="cat.get('subcategories')">
+                        <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
+                    </t>
+                </div>
+
+                <!-- ── Sous-catégories niveau 2 ─────────────────────────── -->
+                <t t-if="cat.get('subcategories')">
+                    <div t-att-class="'exo-subcats' + (' open' if cat.get('active') else '')"
+                         t-att-id="'exo-sub-%d' % cat['id']">
+
+                        <t t-foreach="cat['subcategories']" t-as="sub">
+                            <div class="exo-subcat-block"
+                                 t-att-data-sub-id="sub['id']">
+
+                                <!-- Titre sous-catégorie + checkbox -->
+                                <div t-att-class="'exo-subcat-head' + (' open' if sub.get('active') else '')"
+                                     t-att-data-has-children="'1' if sub.get('subcategories') else None"
+                                     t-att-data-children-id="'exo-ch-%d' % sub['id']"
+                                     role="button"
+                                     tabindex="0"
+                                     t-att-aria-expanded="'true' if sub.get('active') else 'false'">
+
+                                    <input type="checkbox"
+                                           t-att-id="'sub-cb-%d' % sub['id']"
+                                           t-att-name="'sub_%d' % sub['id']"
+                                           t-att-value="sub['id']"
+                                           t-att-data-cat-id="sub['id']"
+                                           t-att-data-label="sub['name']"
+                                           t-att-checked="'checked' if sub.get('active') else None"/>
+
+                                    <span t-att-class="'exo-subcat-label' + (' checked' if sub.get('active') else '')">
+                                        <t t-esc="sub['name']"/>
+                                    </span>
+
+                                    <t t-if="sub.get('count') is not None">
+                                        <span class="exo-count">
+                                            <t t-esc="sub['count']"/>
+                                        </span>
+                                    </t>
+
+                                    <t t-if="sub.get('subcategories')">
+                                        <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
+                                    </t>
+                                </div>
+
+                                <!-- ── Enfants niveau 3 ───────────────── -->
+                                <t t-if="sub.get('subcategories')">
+                                    <div t-att-class="'exo-children' + (' open' if sub.get('active') else '')"
+                                         t-att-id="'exo-ch-%d' % sub['id']">
+
+                                        <t t-foreach="sub['subcategories']" t-as="child">
+                                            <div class="exo-child-item">
+                                                <input type="checkbox"
+                                                       t-att-id="'ch-cb-%d' % child['id']"
+                                                       t-att-name="'ch_%d' % child['id']"
+                                                       t-att-value="child['id']"
+                                                       t-att-data-cat-id="child['id']"
+                                                       t-att-data-label="child['name']"
+                                                       t-att-checked="'checked' if child.get('active') else None"/>
+                                                <label t-att-for="'ch-cb-%d' % child['id']">
+                                                    <t t-esc="child['name']"/>
+                                                </label>
+                                                <t t-if="child.get('count') is not None">
+                                                    <span class="exo-count">
+                                                        <t t-esc="child['count']"/>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </t>
+
+                                    </div>
+                                </t>
+                                <!-- /niveau 3 -->
+
+                            </div>
+                        </t>
+
+                    </div>
+                </t>
+                <!-- /sous-catégories -->
+
+            </div>
+        </t>
+        <!-- /catégories -->
+
+        <button type="button" class="exo-apply-btn">
+            Appliquer les filtres
+        </button>
+
+    </aside>
+</template>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Injection dans la page /shop — Odoo 19
+     Le XPath cible le wrapper principal de la grille produits.
+
+     ⚠ En Odoo 19, le template parent s'appelle "website_sale.products"
+       mais la structure HTML interne a changé : le conteneur principal
+       est désormais <div class="o_wsale_layout"> ou <main id="wrapwrap">.
+       On injecte avant le div.container qui contient les produits.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<template id="exo_shop_sidebar_inject"
+          inherit_id="website_sale.products"
+          name="EXOCOMS — Inject Sidebar v19">
+
+    <!--
+        Odoo 19 : le div des produits a la classe "o_wsale_products_grid_wrapper"
+        On insère notre sidebar juste avant, dans le même conteneur flex.
+
+        Si ce XPath ne correspond pas à ton layout, inspecte la page /shop
+        en mode développeur et ajuste la classe cible.
+    -->
+    <xpath expr="//div[hasclass('o_wsale_products_grid_wrapper')]" position="before">
+        <t t-if="exo_categories">
+            <t t-call="exocoms_sidebar_v19.exo_sidebar_filter"/>
+        </t>
+    </xpath>
+
+</template>
+
+</odoo>

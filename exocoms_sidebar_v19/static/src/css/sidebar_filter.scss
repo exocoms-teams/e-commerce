@@ -1,0 +1,284 @@
+/**
+ * EXOCOMS — Sidebar Filter
+ * Odoo 19 — Compatible Bootstrap 5.3 (utilisé par Odoo 19)
+ * Les variables --bs-* de Bootstrap 5 sont disponibles nativement
+ */
+
+// ─── Variables EXOCOMS ────────────────────────────────────────────────────────
+$exo-primary:    #1D9E75;
+$exo-primary-dk: #0F6E56;
+$exo-primary-lt: #E1F5EE;
+$exo-purple:     #7F77DD;
+$exo-border:     rgba(0, 0, 0, 0.10);
+$exo-hover:      rgba(0, 0, 0, 0.04);
+$exo-radius:     10px;
+$exo-radius-sm:  6px;
+
+// ─── Layout page /shop : sidebar + grille côte à côte ─────────────────────────
+// Odoo 19 utilise flex sur le conteneur .o_wsale_layout ou .container
+.o_wsale_layout > .container,
+.o_wsale_products_main_col {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+// ─── Sidebar wrapper ──────────────────────────────────────────────────────────
+.exo-sidebar {
+    width: 260px;
+    min-width: 220px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 0.5px solid $exo-border;
+    border-radius: $exo-radius;
+    padding: 14px 0;
+    font-size: 13px;
+    font-family: var(--bs-body-font-family, inherit);
+
+    // ─── En-tête ──────────────────────────────────────────────────────────
+    .exo-sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px 10px;
+        border-bottom: 0.5px solid $exo-border;
+        margin-bottom: 4px;
+
+        h3 {
+            font-size: 13px;
+            font-weight: 500;
+            color: #222;
+            margin: 0;
+        }
+
+        .exo-clear-all {
+            font-size: 11px;
+            color: $exo-purple;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+
+            &:hover { text-decoration: underline; }
+        }
+    }
+
+    // ─── Tags actifs ──────────────────────────────────────────────────────
+    .exo-active-tags {
+        display: none;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 8px 16px;
+        border-bottom: 0.5px solid $exo-border;
+
+        &.visible { display: flex; }
+
+        .exo-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: $exo-primary-lt;
+            color: $exo-primary-dk;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            line-height: 1.6;
+
+            .fa { font-size: 9px; }
+            &:hover { background: darken($exo-primary-lt, 5%); }
+        }
+    }
+
+    // ─── Bloc catégorie niveau 1 ──────────────────────────────────────────
+    .exo-cat-block {
+        border-bottom: 0.5px solid $exo-border;
+    }
+
+    .exo-cat-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.12s;
+        outline: none;
+
+        &:hover,
+        &:focus-visible { background: $exo-hover; }
+
+        // Focus clavier accessible
+        &:focus-visible {
+            outline: 2px solid $exo-primary;
+            outline-offset: -2px;
+        }
+
+        .exo-icon {
+            font-size: 15px;
+            color: #6b7280;
+            flex-shrink: 0;
+            width: 16px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            accent-color: $exo-primary;
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .exo-cat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #111827;
+            flex: 1;
+        }
+
+        .exo-count {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+
+        .exo-chevron {
+            font-size: 11px;
+            color: #9ca3af;
+            transition: transform 0.18s ease;
+            flex-shrink: 0;
+        }
+
+        &.open .exo-chevron { transform: rotate(180deg); }
+    }
+
+    // ─── Sous-catégories (niveau 2) ───────────────────────────────────────
+    .exo-subcats {
+        display: none;
+        padding-bottom: 6px;
+
+        &.open { display: block; }
+    }
+
+    .exo-subcat-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px 6px 36px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.12s;
+        outline: none;
+
+        &:hover,
+        &:focus-visible { background: $exo-hover; }
+
+        &:focus-visible {
+            outline: 2px solid $exo-primary;
+            outline-offset: -2px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: $exo-primary;
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .exo-subcat-label {
+            font-size: 12px;
+            color: #6b7280;
+            flex: 1;
+
+            &.checked {
+                color: #111827;
+                font-weight: 500;
+            }
+        }
+
+        .exo-count { font-size: 10px; color: #9ca3af; }
+
+        .exo-chevron {
+            font-size: 11px;
+            color: #9ca3af;
+            transition: transform 0.15s ease;
+        }
+
+        &.open .exo-chevron { transform: rotate(180deg); }
+    }
+
+    // ─── Enfants (niveau 3) ───────────────────────────────────────────────
+    .exo-children {
+        display: none;
+        padding-bottom: 4px;
+
+        &.open { display: block; }
+    }
+
+    .exo-child-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 16px 5px 54px;
+        cursor: pointer;
+        transition: background 0.12s;
+
+        &:hover { background: $exo-hover; }
+
+        input[type="checkbox"] {
+            accent-color: $exo-primary;
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        label {
+            font-size: 11px;
+            color: #6b7280;
+            cursor: pointer;
+            flex: 1;
+            margin: 0;       // reset Bootstrap label margin
+        }
+
+        &:hover label { color: #111827; }
+
+        .exo-count { font-size: 10px; color: #9ca3af; }
+    }
+
+    // ─── Bouton Appliquer ─────────────────────────────────────────────────
+    .exo-apply-btn {
+        display: block;
+        margin: 10px 16px 2px;
+        padding: 8px;
+        width: calc(100% - 32px);
+        background: $exo-primary;
+        color: #fff;
+        border: none;
+        border-radius: $exo-radius-sm;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background 0.15s;
+
+        &:hover { background: $exo-primary-dk; }
+        &:active { transform: scale(0.99); }
+    }
+}
+
+// ─── Responsive Bootstrap 5 (Odoo 19) ────────────────────────────────────────
+@include media-breakpoint-down(md) {
+    .exo-sidebar {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .o_wsale_layout > .container,
+    .o_wsale_products_main_col {
+        flex-direction: column;
+    }
+}
