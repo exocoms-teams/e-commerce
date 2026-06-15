@@ -75,7 +75,16 @@ def post_init_hook(env):
         mods._update_translations('fr_FR')
     except Exception:
         pass
-
+    # === DÉSACTIVER REDIRECTION LANGUE ===
+    try:
+        if website:
+            website.write({
+                'default_lang_id': lang_fr.id,
+                # Empêche Odoo de rediriger vers /fr/
+                'user_lang_redirect': False,
+            })
+    except Exception:
+        pass
     # === MENUS — FR par défaut + traduction EN ===
     menus_update = {
         5: ('Accueil', '/',              'Home'),
