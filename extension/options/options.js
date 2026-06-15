@@ -1,4 +1,3 @@
-
 let allData = null;
 let charts = {};
 
@@ -43,6 +42,7 @@ function renderCurrentPage() {
   if (!active || !allData) return;
   const id = active.id;
   if (id === 'page-trending') renderTrending();
+  if (id === 'page-rising') renderRising();
   if (id === 'page-categories') renderCategories();
   if (id === 'page-domains') renderDomains();
   if (id === 'page-activity') renderActivity();
@@ -63,7 +63,6 @@ function updateSidebar() {
 function renderTrending() {
   const products = filterProducts(allData.products || []);
 
-  // KPIs
   const byViews = [...products].sort((a, b) => b.viewCount - a.viewCount)[0];
   const byPurchases = [...products].sort((a, b) => b.purchaseCount - a.purchaseCount)[0];
 
@@ -74,26 +73,70 @@ function renderTrending() {
   const topCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
   setText('kpiTopCat', topCat ? topCat[0] : '-');
 
-  const domains = allData.domains || {};
-  const topDomain = Object.entries(domains).sort((a, b) => b[1] - a[1])[0];
-  setText('kpiTopStore', topDomain ? topDomain[0] : '-');
+  const rising = (allData.risingProducts || []).length;
+  setText('kpiRising', rising > 0 ? `${rising} rising` : '-');
 
-  // Table
   const maxScore = products.length ? products[0].trendScore : 1;
   const body = document.getElementById('trendingBody');
 
   if (!products.length) {
-    body.innerHTML = '<tr><td colspan="8" class="empty-row">No products tracked yet. Browse shopping sites.</td></tr>';
+    body.innerHTML = '<tr><td colspan="9" class="empty-row">No products tracked yet. Browse shopping sites.</td></tr>';
     return;
   }
 
   body.innerHTML = products.slice(0, 100).map((p, i) => {
     const rClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
     const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '-';
+    const priceTrendHtml = renderPriceTrend(p.priceTrend);
+    const soldHtml = renderSoldDelta(p.soldDelta, p.latestSold);
+    const risingBadge = p.isRising ? '<span class="rising-badge">Rising</span>' : '';
     const pct = maxScore > 0 ? Math.round((p.trendScore / maxScore) * 100) : 0;
+
     return `
       <tr>
         <td><span class="rank-badge ${rClass}">${i + 1}</span></td>
+        <td>
+          <div class="product-cell">
+            <span class="product-name" title="${esc(p.title)}">${esc(truncate(p.title, 50))} ${risingBadge}</span>
+            <span class="product-url">${esc(p.domain)}</span>
+          </div>
+        </td>
+        <td><span class="cat-pill">${esc(p.category || 'General')}</span></td>
+        <td>${esc(p.domain)}</td>
+        <td>${price} ${priceTrendHtml}</td>
+        <td>${p.viewCount} <span class="meta-muted">(${p.views7d || 0} this week)</span></td>
+        <td>${p.purchaseCount > 0 ? `<strong style="color:var(--success)">${p.purchaseCount}</strong>` : '0'}</td>
+        <td>${soldHtml}</td>
+        <td>
+          <div class="score-bar-wrap">
+            <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+            <span class="score-val">${Math.round(p.trendScore)}</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ---- Rising Page ----
+
+function renderRising() {
+  const products = (allData.risingProducts || []);
+  const body = document.getElementById('risingBody');
+
+  if (!products.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-row">No breakout products detected yet. Check back after more browsing sessions.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = products.map((p, i) => {
+    const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '-';
+    const priceTrendHtml = renderPriceTrend(p.priceTrend);
+    const soldHtml = renderSoldDelta(p.soldDelta, p.latestSold);
+
+    return `
+      <tr>
+        <td><span class="rank-badge">${i + 1}</span></td>
         <td>
           <div class="product-cell">
             <span class="product-name" title="${esc(p.title)}">${esc(truncate(p.title, 50))}</span>
@@ -101,16 +144,9 @@ function renderTrending() {
           </div>
         </td>
         <td><span class="cat-pill">${esc(p.category || 'General')}</span></td>
-        <td>${esc(p.domain)}</td>
-        <td>${price}</td>
-        <td>${p.viewCount}</td>
-        <td>${p.purchaseCount > 0 ? `<strong style="color:var(--success)">${p.purchaseCount}</strong>` : '0'}</td>
-        <td>
-          <div class="score-bar-wrap">
-            <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
-            <span class="score-val">${Math.round(p.trendScore)}</span>
-          </div>
-        </td>
+        <td>${price} ${priceTrendHtml}</td>
+        <td><strong style="color:var(--success)">${p.views7d || 0}</strong> this week</td>
+        <td>${soldHtml}</td>
       </tr>
     `;
   }).join('');
@@ -127,7 +163,7 @@ function renderCategories() {
   destroyChart('catPie');
   destroyChart('catBar');
 
-  if (entries.length === 0) return;
+  if (!entries.length) return;
 
   charts.catPie = new Chart(document.getElementById('catPieChart'), {
     type: 'doughnut',
@@ -135,7 +171,11 @@ function renderCategories() {
       labels,
       datasets: [{ data: values, backgroundColor: COLORS, borderColor: '#13131a', borderWidth: 3 }]
     },
-    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'right', labels: { color: '#e4e4f0', font: { size: 11 } } } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'right', labels: { color: '#e4e4f0', font: { size: 11 } } } }
+    }
   });
 
   charts.catBar = new Chart(document.getElementById('catBarChart'), {
@@ -145,15 +185,33 @@ function renderCategories() {
       datasets: [{ label: 'Product Views', data: values, backgroundColor: COLORS.map(c => c + 'cc'), borderColor: COLORS, borderWidth: 1, borderRadius: 6 }]
     },
     options: {
-      responsive: true, indexAxis: 'y',
+      responsive: true,
+      indexAxis: 'y',
       plugins: { legend: { display: false } },
-      scales: { x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } }, y: { ticks: { color: '#e4e4f0' }, grid: { display: false } } }
+      scales: {
+        x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } },
+        y: { ticks: { color: '#e4e4f0' }, grid: { display: false } }
+      }
     }
   });
 
-  document.getElementById('catList').innerHTML = entries.map(([name, count], i) =>
-    `<div class="cat-tag">${name} <span>${count}</span></div>`
-  ).join('');
+  // Category momentum: show rising count per category
+  const products = allData.products || [];
+  const catRising = {};
+  products.forEach(p => {
+    if (p.isRising) {
+      const c = p.category || 'General';
+      catRising[c] = (catRising[c] || 0) + 1;
+    }
+  });
+
+  document.getElementById('catList').innerHTML = entries.map(([name, count]) => {
+    const risingCount = catRising[name] || 0;
+    const momentumBadge = risingCount > 0
+      ? `<span class="rising-badge">${risingCount} rising</span>`
+      : '';
+    return `<div class="cat-tag">${name} <span>${count}</span> ${momentumBadge}</div>`;
+  }).join('');
 }
 
 // ---- Domains Page ----
@@ -164,8 +222,7 @@ function renderDomains() {
   const max = entries.length ? entries[0][1] : 1;
 
   destroyChart('domain');
-
-  if (entries.length === 0) return;
+  if (!entries.length) return;
 
   charts.domain = new Chart(document.getElementById('domainChart'), {
     type: 'bar',
@@ -181,7 +238,8 @@ function renderDomains() {
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: '#e4e4f0' }, grid: { color: '#25253a' } },
@@ -190,11 +248,11 @@ function renderDomains() {
     }
   });
 
-  document.getElementById('domainList').innerHTML = entries.map(([domain, count], i) => `
+  document.getElementById('domainList').innerHTML = entries.map(([domain, count]) => `
     <div class="domain-card">
       <span class="domain-name">${domain}</span>
       <span class="domain-count">${count} product${count !== 1 ? 's' : ''} detected</span>
-      <div class="domain-bar"><div class="domain-fill" style="width:${Math.round((count/max)*100)}%"></div></div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${Math.round((count / max) * 100)}%"></div></div>
     </div>
   `).join('');
 }
@@ -204,10 +262,9 @@ function renderDomains() {
 function renderActivity() {
   const daily = allData.daily || {};
   const days = getLast14Days();
-
   const viewData = days.map(d => (daily[d] || {}).views || 0);
   const purchaseData = days.map(d => (daily[d] || {}).purchases || 0);
-  const labels = days.map(d => d.slice(5)); // MM-DD
+  const labels = days.map(d => d.slice(5));
 
   destroyChart('activity');
 
@@ -241,7 +298,8 @@ function renderActivity() {
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { labels: { color: '#e4e4f0' } } },
       scales: {
         x: { ticks: { color: '#6b7280' }, grid: { color: '#25253a' } },
@@ -250,17 +308,15 @@ function renderActivity() {
     }
   });
 
-  // Funnel
   const totalViews = allData.totalViews || 0;
   const totalPurchases = allData.totalPurchases || 0;
-  const viewPct = 100;
   const purchasePct = totalViews > 0 ? Math.round((totalPurchases / totalViews) * 100) : 0;
 
   document.getElementById('funnelWrap').innerHTML = `
     <div class="funnel-row">
       <span class="funnel-label">Product Views</span>
       <div class="funnel-bar-bg">
-        <div class="funnel-bar-fill views-fill" style="width:${viewPct}%">${totalViews}</div>
+        <div class="funnel-bar-fill views-fill" style="width:100%">${totalViews}</div>
       </div>
       <span class="funnel-num">${totalViews}</span>
     </div>
@@ -281,14 +337,11 @@ function renderActivity() {
 
 function setupControls() {
   document.getElementById('refreshBtn').addEventListener('click', refresh);
-
   document.getElementById('searchInput').addEventListener('input', () => renderTrending());
   document.getElementById('categoryFilter').addEventListener('change', () => renderTrending());
 
-  // Populate category filter
   const sel = document.getElementById('categoryFilter');
-  const cats = Object.keys(allData?.categories || {});
-  cats.forEach(c => {
+  Object.keys(allData?.categories || {}).forEach(c => {
     const opt = document.createElement('option');
     opt.value = c; opt.textContent = c;
     sel.appendChild(opt);
@@ -310,13 +363,32 @@ function filterProducts(products) {
   );
 }
 
+// ---- Render helpers ----
+
+function renderPriceTrend(priceTrend) {
+  if (priceTrend === null || priceTrend === undefined) return '';
+  if (priceTrend <= -5) return `<span class="price-down">-${Math.abs(priceTrend)}%</span>`;
+  if (priceTrend >= 5) return `<span class="price-up">+${priceTrend}%</span>`;
+  return '';
+}
+
+function renderSoldDelta(soldDelta, latestSold) {
+  if (soldDelta !== null && soldDelta !== undefined && soldDelta > 0) {
+    return `<span class="sold-delta">+${soldDelta}</span>`;
+  }
+  if (latestSold !== null && latestSold !== undefined) {
+    return `${latestSold}`;
+  }
+  return '-';
+}
+
 // ---- Export / Import ----
 
 function exportCSV() {
   const products = allData?.products || [];
-  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore,FirstSeen,LastSeen\n';
+  let csv = 'Rank,Title,Category,Domain,Price,PriceTrend,Views,Views7d,Purchases,SoldDelta,TrendScore,Rising,FirstSeen,LastSeen\n';
   products.forEach((p, i) => {
-    csv += `${i+1},"${esc2(p.title)}","${p.category}","${p.domain}","${p.latestPrice || ''}",${p.viewCount},${p.purchaseCount},${Math.round(p.trendScore)},"${p.firstSeen}","${p.lastSeen}"\n`;
+    csv += `${i+1},"${esc2(p.title)}","${p.category}","${p.domain}","${p.latestPrice || ''}","${p.priceTrend !== null ? p.priceTrend + '%' : ''}",${p.viewCount},${p.views7d || 0},${p.purchaseCount},"${p.soldDelta !== null ? '+' + p.soldDelta : ''}",${Math.round(p.trendScore)},${p.isRising ? 'Yes' : 'No'},"${p.firstSeen}","${p.lastSeen}"\n`;
   });
   downloadFile(csv, `tracker-${date()}.csv`, 'text/csv');
 }

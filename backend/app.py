@@ -2,10 +2,8 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json
 import os
-import re
-import time
+import math
 from datetime import datetime, timedelta
-from collections import defaultdict
 import hashlib
 
 app = Flask(__name__, static_folder='dashboard/static', template_folder='dashboard/templates')
@@ -34,12 +32,134 @@ def make_key(title: str, domain: str) -> str:
     return hashlib.md5(raw.encode()).hexdigest()[:20]
 
 
+def parse_rating(raw) -> float | None:
+    """Robust rating parser. Handles '4.5 out of 5 stars', '4.5/5', plain floats."""
+    if not raw:
+        return None
+    import re
+    match = re.search(r'[\d.]+', str(raw))
+    if not match:
+        return None
+    val = float(match.group())
+    if 0 < val <= 5:
+        return val
+    if 5 < val <= 10:
+        return val / 2  # normalize 10-point scale
+    return None
+
+
 def compute_trend_score(product: dict) -> float:
-    views = product.get('view_count', 0)
-    purchases = product.get('purchase_count', 0)
+    """
+    Multi-signal trend score with time decay, velocity, sold delta,
+    price drop bonus, and rating quality weight.
+    """
+    now = datetime.utcnow()
+    day = timedelta(days=1)
+
+    # Time-decayed view velocity from view_log timestamps
+    view_log = product.get('view_log', [])
+    views_7d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 7 * day)
+    views_30d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 30 * day)
+    velocity_score = views_7d * 3 + views_30d * 1
+
+    # Rising multiplier: last 3 days vs previous 3 days
+    views_3d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 3 * day)
+    views_3to6d = sum(
+        1 for t in view_log
+        if 3 * day <= now - datetime.fromisoformat(t) < 6 * day
+    )
+    rising_multiplier = 1.5 if views_3d > 0 and views_3d > views_3to6d * 1.5 else 1.0
+
+    # Purchase signal
+    purchase_score = product.get('purchase_count', 0) * 10
+
+    # Sold count delta (growth over time) rather than raw latest value
     sold_counts = product.get('sold_counts', [])
-    latest_sold = sold_counts[-1] if sold_counts else 0
-    return views * 1 + purchases * 10 + latest_sold * 0.1
+    sold_score = 0.0
+    if len(sold_counts) >= 2:
+        delta = sold_counts[-1]['value'] - sold_counts[0]['value']
+        sold_score = max(0, delta) * 0.5
+    elif len(sold_counts) == 1:
+        sold_score = sold_counts[0]['value'] * 0.05
+
+    # Price drop bonus
+    price_signal = 0.0
+    prices = product.get('prices', [])
+    if len(prices) >= 2:
+        values = [p['value'] for p in prices]
+        avg_price = sum(values) / len(values)
+        latest_price = values[-1]
+        drop_pct = (avg_price - latest_price) / avg_price if avg_price > 0 else 0
+        if drop_pct >= 0.05:
+            price_signal = 8.0
+        if drop_pct >= 0.15:
+            price_signal = 15.0
+
+    # Rating quality: Bayesian-style avg_rating * log(1 + review_count)
+    rating_signal = 0.0
+    ratings = product.get('ratings', [])
+    reviews = product.get('reviews', [])
+    if ratings:
+        avg_rating = sum(ratings) / len(ratings)
+        review_count = reviews[-1] if reviews else 1
+        try:
+            review_count = int(review_count)
+        except (ValueError, TypeError):
+            review_count = 1
+        rating_signal = avg_rating * math.log(1 + review_count) * 0.3
+
+    raw_score = velocity_score + purchase_score + sold_score + price_signal + rating_signal
+    return round(raw_score * rising_multiplier, 1)
+
+
+def enrich_product(p: dict) -> dict:
+    """Add computed fields to a product dict for API responses."""
+    prices = p.get('prices', [])
+    ratings = p.get('ratings', [])
+    reviews = p.get('reviews', [])
+    sold_counts = p.get('sold_counts', [])
+    view_log = p.get('view_log', [])
+
+    price_values = [x['value'] for x in prices]
+    avg_price = round(sum(price_values) / len(price_values), 2) if price_values else None
+    latest_price = price_values[-1] if price_values else None
+
+    # Price trend as percentage vs average
+    price_trend = None
+    if avg_price and latest_price:
+        price_trend = round((latest_price - avg_price) / avg_price * 100, 1)
+
+    avg_rating = round(sum(float(r) for r in ratings) / len(ratings), 1) if ratings else None
+    latest_sold = sold_counts[-1]['value'] if sold_counts else None
+
+    # Sold delta
+    sold_delta = None
+    if len(sold_counts) >= 2:
+        sold_delta = sold_counts[-1]['value'] - sold_counts[0]['value']
+
+    # 7-day views and rising flag
+    now = datetime.utcnow()
+    day = timedelta(days=1)
+    views_7d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 7 * day)
+    views_3d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 3 * day)
+    views_3to6d = sum(
+        1 for t in view_log
+        if 3 * day <= now - datetime.fromisoformat(t) < 6 * day
+    )
+    is_rising = views_3d > 0 and views_3d > views_3to6d * 1.5
+
+    return {
+        **p,
+        'avg_price': avg_price,
+        'latest_price': latest_price,
+        'price_trend': price_trend,
+        'avg_rating': avg_rating,
+        'latest_sold': latest_sold,
+        'sold_delta': sold_delta,
+        'views_7d': views_7d,
+        'is_rising': is_rising,
+        'trend_score': compute_trend_score(p),
+    }
 
 
 # ---- Routes ----
@@ -67,7 +187,6 @@ def dashboard(filename='index.html'):
 
 @app.route('/api/track', methods=['POST'])
 def track_product():
-    """Receive product data from the Chrome extension or web clients."""
     body = request.get_json(force=True, silent=True) or {}
     product = body.get('product')
     is_purchase = body.get('isPurchase', False)
@@ -75,50 +194,81 @@ def track_product():
     if not product or not product.get('title'):
         return jsonify({'error': 'Missing product title'}), 400
 
+    # Reject low-quality generic titles that match the domain name
+    domain = product.get('domain', 'unknown')
+    domain_root = domain.replace('www.', '').split('.')[0].lower()
+    title = product.get('title', '')
+    if domain_root in title.lower() and len(title) < 30:
+        return jsonify({'error': 'Low-quality title rejected'}), 400
+
     data = load_data()
-    key = make_key(product['title'], product.get('domain', 'unknown'))
+    key = make_key(title, domain)
     products = data['products']
+    now = datetime.utcnow().isoformat()
 
     if key not in products:
         products[key] = {
             'id': key,
-            'title': product['title'][:200],
-            'domain': product.get('domain', 'unknown'),
+            'title': title[:200],
+            'domain': domain,
             'category': product.get('category', 'General'),
             'image': product.get('image'),
             'url': product.get('url', ''),
-            'first_seen': product.get('timestamp', datetime.utcnow().isoformat()),
-            'last_seen': product.get('timestamp', datetime.utcnow().isoformat()),
+            'first_seen': product.get('timestamp', now),
+            'last_seen': product.get('timestamp', now),
             'view_count': 0,
             'purchase_count': 0,
             'prices': [],
             'ratings': [],
             'reviews': [],
             'sold_counts': [],
+            'view_log': [],
         }
 
     entry = products[key]
     entry['view_count'] += 1
-    entry['last_seen'] = product.get('timestamp', datetime.utcnow().isoformat())
+    entry['last_seen'] = now
+
+    # Timestamped view log for velocity
+    entry.setdefault('view_log', [])
+    entry['view_log'].append(now)
+    if len(entry['view_log']) > 60:
+        entry['view_log'] = entry['view_log'][-60:]
 
     if is_purchase:
         entry['purchase_count'] += 1
 
     if product.get('price') and float(product['price']) > 0:
-        entry['prices'].append({'value': float(product['price']), 'date': entry['last_seen']})
+        entry['prices'].append({'value': float(product['price']), 'date': now})
         entry['prices'] = entry['prices'][-50:]
 
-    for field, key_name in [('rating', 'ratings'), ('reviews', 'reviews'), ('soldCount', 'sold_counts')]:
-        val = product.get(field)
-        if val:
-            entry[key_name].append(val)
-            entry[key_name] = entry[key_name][-20:]
+    # Robust rating parsing
+    parsed_rating = parse_rating(product.get('rating'))
+    if parsed_rating is not None:
+        entry['ratings'].append(parsed_rating)
+        entry['ratings'] = entry['ratings'][-20:]
 
-    # Update aggregates
+    if product.get('reviews'):
+        try:
+            review_count = int(str(product['reviews']).replace(',', '').replace('.', '').split()[0])
+            entry['reviews'].append(review_count)
+            entry['reviews'] = entry['reviews'][-20:]
+        except (ValueError, IndexError):
+            pass
+
+    # Sold count with floor flag for "1000+" style values
+    if product.get('soldCount'):
+        raw = str(product['soldCount'])
+        is_floor = '+' in raw
+        try:
+            value = int(raw.replace('+', '').replace(',', '').strip().split()[0])
+            entry['sold_counts'].append({'value': value, 'is_floor': is_floor, 'date': now})
+            entry['sold_counts'] = entry['sold_counts'][-20:]
+        except (ValueError, IndexError):
+            pass
+
     cat = product.get('category', 'General')
     data['categories'][cat] = data['categories'].get(cat, 0) + 1
-
-    domain = product.get('domain', 'unknown')
     data['domains'][domain] = data['domains'].get(domain, 0) + 1
 
     today = datetime.utcnow().strftime('%Y-%m-%d')
@@ -128,7 +278,7 @@ def track_product():
     if is_purchase:
         data['daily'][today]['purchases'] += 1
 
-    data['last_updated'] = datetime.utcnow().isoformat()
+    data['last_updated'] = now
     save_data(data)
 
     return jsonify({'success': True, 'key': key})
@@ -136,31 +286,25 @@ def track_product():
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    """Return products sorted by trend score."""
     data = load_data()
     search = request.args.get('q', '').lower()
     category = request.args.get('category', '')
     limit = min(int(request.args.get('limit', 100)), 500)
+    rising_only = request.args.get('rising', '').lower() == 'true'
 
-    products = list(data['products'].values())
+    products = [enrich_product(p) for p in data['products'].values()]
 
-    # Enrich
-    for p in products:
-        prices = p.get('prices', [])
-        ratings = p.get('ratings', [])
-        p['avg_price'] = round(sum(x['value'] for x in prices) / len(prices), 2) if prices else None
-        p['latest_price'] = prices[-1]['value'] if prices else None
-        p['avg_rating'] = round(sum(float(r) for r in ratings) / len(ratings), 1) if ratings else None
-        p['latest_sold'] = p['sold_counts'][-1] if p.get('sold_counts') else None
-        p['trend_score'] = compute_trend_score(p)
-
-    # Filter
     if search:
         products = [p for p in products if search in p['title'].lower() or search in p['domain']]
     if category:
         products = [p for p in products if p.get('category') == category]
+    if rising_only:
+        products = [p for p in products if p.get('is_rising')]
 
     products.sort(key=lambda p: p['trend_score'], reverse=True)
+
+    total_views = sum(p['view_count'] for p in data['products'].values())
+    total_purchases = sum(p['purchase_count'] for p in data['products'].values())
 
     return jsonify({
         'products': products[:limit],
@@ -170,39 +314,36 @@ def get_products():
         'daily': data['daily'],
         'last_updated': data.get('last_updated'),
         'total_products': len(data['products']),
-        'total_views': sum(p['view_count'] for p in data['products'].values()),
-        'total_purchases': sum(p['purchase_count'] for p in data['products'].values()),
+        'total_views': total_views,
+        'total_purchases': total_purchases,
     })
 
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    """Summary statistics."""
     data = load_data()
-    products = list(data['products'].values())
+    products = [enrich_product(p) for p in data['products'].values()]
 
     total_views = sum(p['view_count'] for p in products)
     total_purchases = sum(p['purchase_count'] for p in products)
     all_prices = [pr['value'] for p in products for pr in p.get('prices', [])]
     avg_price = round(sum(all_prices) / len(all_prices), 2) if all_prices else 0
 
-    # Top product
-    top = sorted(products, key=compute_trend_score, reverse=True)
-    top_product = top[0]['title'] if top else None
+    sorted_products = sorted(products, key=lambda p: p['trend_score'], reverse=True)
+    top_product = sorted_products[0]['title'] if sorted_products else None
 
-    # Top category
     cats = data.get('categories', {})
     top_cat = max(cats, key=cats.get) if cats else None
 
-    # Top domain
     domains = data.get('domains', {})
     top_domain = max(domains, key=domains.get) if domains else None
 
-    # 7-day activity
     daily = data.get('daily', {})
     today = datetime.utcnow().date()
     week_views = sum(daily.get(str(today - timedelta(days=i)), {}).get('views', 0) for i in range(7))
     week_purchases = sum(daily.get(str(today - timedelta(days=i)), {}).get('purchases', 0) for i in range(7))
+
+    rising_count = sum(1 for p in products if p.get('is_rising'))
 
     return jsonify({
         'total_products': len(products),
@@ -215,38 +356,58 @@ def get_stats():
         'week_views': week_views,
         'week_purchases': week_purchases,
         'conversion_rate': round(total_purchases / total_views * 100, 1) if total_views > 0 else 0,
+        'rising_count': rising_count,
     })
 
 
 @app.route('/api/trending', methods=['GET'])
 def get_trending():
-    """Top N trending products."""
     data = load_data()
     n = min(int(request.args.get('n', 20)), 100)
-    products = list(data['products'].values())
-
-    for p in products:
-        p['trend_score'] = compute_trend_score(p)
-        prices = p.get('prices', [])
-        p['latest_price'] = prices[-1]['value'] if prices else None
-
+    products = [enrich_product(p) for p in data['products'].values()]
     products.sort(key=lambda p: p['trend_score'], reverse=True)
     return jsonify({'trending': products[:n]})
+
+
+@app.route('/api/rising', methods=['GET'])
+def get_rising():
+    """Products with significant view velocity increase in the last 3 days."""
+    data = load_data()
+    n = min(int(request.args.get('n', 20)), 100)
+    products = [enrich_product(p) for p in data['products'].values()]
+    rising = [p for p in products if p.get('is_rising') and p.get('views_7d', 0) >= 2]
+    rising.sort(key=lambda p: p['trend_score'], reverse=True)
+    return jsonify({'rising': rising[:n]})
 
 
 @app.route('/api/categories', methods=['GET'])
 def get_categories():
     data = load_data()
     cats = data.get('categories', {})
+
+    # Category momentum: rising products per category
+    products = [enrich_product(p) for p in data['products'].values()]
+    cat_rising = {}
+    for p in products:
+        if p.get('is_rising'):
+            c = p.get('category', 'General')
+            cat_rising[c] = cat_rising.get(c, 0) + 1
+
     return jsonify({
-        'categories': [{'name': k, 'count': v} for k, v in sorted(cats.items(), key=lambda x: -x[1])]
+        'categories': [
+            {
+                'name': k,
+                'count': v,
+                'rising_count': cat_rising.get(k, 0),
+            }
+            for k, v in sorted(cats.items(), key=lambda x: -x[1])
+        ]
     })
 
 
 @app.route('/api/export', methods=['GET'])
 def export_data():
-    data = load_data()
-    return jsonify(data)
+    return jsonify(load_data())
 
 
 @app.route('/api/import', methods=['POST'])
