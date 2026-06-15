@@ -1,5 +1,5 @@
 /**
- * EXOCOMS — Sidebar Filter AJAX  v19.0.3
+ * EXOCOMS — Sidebar Filter AJAX
  * Odoo 19 · Bootstrap 5.3
  */
 
@@ -13,30 +13,47 @@ $exo-radius:     10px;
 $exo-radius-sm:  6px;
 $exo-transition: 0.15s ease;
 
+// ── Layout /shop : sidebar + grille côte à côte ──────────────────────────────
+.o_wsale_layout > .container,
+.o_wsale_products_main_col {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+#exo-products-grid {
+    flex: 1;
+    min-width: 0;
+
+    // État chargement
+    &.exo-loading {
+        opacity: 0.45;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+}
+
 // ── Sidebar wrapper ──────────────────────────────────────────────────────────
-// NOTE: pas de position:sticky pour compatibilité avec l'éditeur Odoo
-#exo-sidebar.exo-sidebar {
+.exo-sidebar {
+    width: 260px;
+    min-width: 220px;
     flex-shrink: 0;
+    position: sticky;
+    top: 80px;          // colle sous la navbar
     background: #fff;
+    border: 0.5px solid $exo-border;
+    border-radius: $exo-radius;
+    padding: 14px 0 10px;
     font-size: 13px;
     font-family: var(--bs-body-font-family, inherit);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
 
     // Scrollbar discrète
     scrollbar-width: thin;
     scrollbar-color: rgba(0,0,0,.15) transparent;
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 2px; }
-
-    .exo-sidebar-inner {
-        background: #fff;
-        border: 0.5px solid $exo-border;
-        border-radius: $exo-radius;
-        padding: 14px 0 10px;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        position: sticky;
-        top: 80px;
-    }
 
     // ── En-tête ───────────────────────────────────────────────────────────
     .exo-sidebar-header {
@@ -82,7 +99,6 @@ $exo-transition: 0.15s ease;
             cursor: pointer;
             border: none;
             font-family: inherit;
-            line-height: 1.6;
             .fa { font-size: 9px; }
             &:hover { background: darken($exo-primary-lt, 5%); }
         }
@@ -148,7 +164,11 @@ $exo-transition: 0.15s ease;
         padding: 6px 16px 8px;
         border-bottom: 0.5px solid $exo-border;
 
-        .exo-sort-label { font-size: 11px; color: #6b7280; white-space: nowrap; }
+        .exo-sort-label {
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
 
         .exo-sort-select {
             flex: 1;
@@ -161,6 +181,7 @@ $exo-transition: 0.15s ease;
             outline: none;
             cursor: pointer;
             font-family: inherit;
+
             &:focus { border-color: $exo-primary; }
         }
     }
@@ -196,7 +217,9 @@ $exo-transition: 0.15s ease;
             color: #9ca3af;
             min-width: 18px;
             text-align: right;
-            &.zero { opacity: 0.4; }
+            transition: color $exo-transition;
+
+            &.zero { opacity: 0.4; }      // catégorie sans résultat
         }
 
         .exo-chevron {
@@ -206,6 +229,8 @@ $exo-transition: 0.15s ease;
             flex-shrink: 0;
         }
         &.open .exo-chevron { transform: rotate(180deg); }
+
+        // Indicateur indéterminé (enfants partiellement cochés)
         input[type="checkbox"]:indeterminate { opacity: 0.7; }
     }
 
@@ -226,7 +251,14 @@ $exo-transition: 0.15s ease;
         &:focus-visible { outline: 2px solid $exo-primary; outline-offset: -2px; }
 
         input[type="checkbox"] { accent-color: $exo-primary; width: 12px; height: 12px; cursor: pointer; flex-shrink: 0; }
-        .exo-subcat-label { font-size: 12px; color: #6b7280; flex: 1; &.checked { color: #111827; font-weight: 500; } }
+
+        .exo-subcat-label {
+            font-size: 12px;
+            color: #6b7280;
+            flex: 1;
+            &.checked { color: #111827; font-weight: 500; }
+        }
+
         .exo-count-badge { font-size: 10px; color: #9ca3af; }
         .exo-chevron { font-size: 11px; color: #9ca3af; transition: transform 0.15s; }
         &.open .exo-chevron { transform: rotate(180deg); }
@@ -293,33 +325,28 @@ $exo-transition: 0.15s ease;
             }
             &::placeholder { color: #9ca3af; }
         }
+
         .exo-price-sep { font-size: 12px; color: #9ca3af; }
     }
 }
 
-// ── Grille produits AJAX ─────────────────────────────────────────────────────
+// ── Grille produits : animation fade lors du rechargement AJAX ───────────────
 @keyframes exo-fadein {
-    from { opacity: 0; transform: translateY(4px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
 #exo-products-grid {
-    flex: 1;
-    min-width: 0;
     transition: opacity 0.2s;
 
-    &.exo-loading {
-        opacity: 0.4;
-        pointer-events: none;
-    }
-
     .o_product_item_card {
-        animation: exo-fadein 0.18s ease both;
+        animation: exo-fadein 0.2s ease both;
     }
 }
 
 // ── État vide ────────────────────────────────────────────────────────────────
 .exo-empty-state {
+    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -328,7 +355,29 @@ $exo-transition: 0.15s ease;
     padding: 60px 20px;
     color: #9ca3af;
     text-align: center;
+
     p { font-size: 14px; margin: 0; }
+
+    .exo-reset-btn {
+        font-size: 12px;
+        padding: 7px 16px;
+        border: 0.5px solid rgba($exo-primary, .4);
+        border-radius: $exo-radius-sm;
+        background: $exo-primary-lt;
+        color: $exo-primary-dk;
+        cursor: pointer;
+        font-family: inherit;
+        &:hover { background: darken($exo-primary-lt, 5%); }
+    }
+}
+
+// ── Bouton détail produit ────────────────────────────────────────────────────
+.exo-btn-detail {
+    font-size: 11px !important;
+    padding: 3px 10px !important;
+    border-color: rgba($exo-primary, .5) !important;
+    color: $exo-primary !important;
+    &:hover { background: $exo-primary !important; color: #fff !important; }
 }
 
 // ── Pagination AJAX ──────────────────────────────────────────────────────────
@@ -355,20 +404,26 @@ $exo-transition: 0.15s ease;
         padding: 0 8px;
 
         &:hover { background: $exo-hover; }
-        &.active { background: $exo-primary; color: #fff; border-color: $exo-primary; }
+        &.active {
+            background: $exo-primary;
+            color: #fff;
+            border-color: $exo-primary;
+        }
         &:disabled { opacity: 0.4; cursor: default; }
     }
 
     .exo-page-info { font-size: 11px; color: #9ca3af; padding: 0 6px; }
 }
 
-// ── Responsive ───────────────────────────────────────────────────────────────
-@include media-breakpoint-down(lg) {
-    #exo-sidebar.exo-sidebar {
+// ── Responsive Bootstrap 5 ───────────────────────────────────────────────────
+@include media-breakpoint-down(md) {
+    .o_wsale_layout > .container,
+    .o_wsale_products_main_col { flex-direction: column; }
+
+    .exo-sidebar {
         width: 100%;
-        .exo-sidebar-inner {
-            position: static;
-            max-height: none;
-        }
+        min-width: unset;
+        position: static;
+        max-height: none;
     }
 }

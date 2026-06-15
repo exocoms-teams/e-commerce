@@ -277,19 +277,7 @@ class ExoPagination {
 class ExoSidebarFilter {
     constructor(sidebar) {
         this.sidebar      = sidebar;
-
-        // Cible la grille native Odoo (o_wsale_products_list) ou notre wrapper
-        this.grid = (
-            document.querySelector("#exo-products-grid") ||
-            document.querySelector(".o_wsale_products_list") ||
-            document.querySelector(".o_wsale_products_grid_wrapper")?.parentElement ||
-            null
-        );
-
-        // Wrap la grille native dans un div qu'on peut remplacer
-        if (this.grid && !this.grid.id) {
-            this.grid.id = "exo-products-grid";
-        }
+        this.grid         = qs("#exo-products-grid");
         this.countEl      = qs("#exo-result-count",  sidebar);
         this.countText    = qs(".exo-count-text",     sidebar);
         this.spinner      = qs(".exo-spinner",        sidebar);
