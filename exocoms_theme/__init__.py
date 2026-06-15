@@ -2,6 +2,37 @@
 from . import controllers
 from . import models
 
+# Nom unique du site — utilisé partout pour identifier le bon website
+WEBSITE_NAME = 'Exocoms Group'
+
+# URLs gérées par ce module — utilisées pour cibler uniquement nos menus
+OUR_URLS = ['/', '/shop', '/services']
+
+
+def _get_website(env):
+    """Retourne le website Exocoms Group — par nom, jamais par ID.
+    Fallback sur le premier site si le nom n'est pas encore défini.
+    """
+    website = env['website'].search([('name', '=', WEBSITE_NAME)], limit=1)
+    if not website:
+        website = env['website'].search([], limit=1)
+    return website
+
+
+def _fix_orphan_menus(env, website):
+    """Rattache au site Exocoms les menus sans website_id
+    qui correspondent à NOS URLs uniquement.
+    Ne touche pas aux menus globaux d'autres modules.
+    """
+    if not website:
+        return
+    orphans = env['website.menu'].search([
+        ('website_id', '=', False),
+        ('url', 'in', OUR_URLS),
+    ])
+    if orphans:
+        orphans.write({'website_id': website.id})
+
 
 def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu, lang_en):
     """Crée ou met à jour un menu par URL — jamais par ID."""
@@ -19,10 +50,8 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
     else:
         menu.write({'url': url, 'sequence': sequence})
 
-    # IMPORTANT : écrire le nom SANS l'URL dans le contexte langue
-    # Si on fait with_context(lang=...).write({'name': ..., 'url': ...}),
-    # Odoo associe l'URL à la langue dans sa table de traduction,
-    # ce qui bloque le sélecteur de langue sur la page d'accueil.
+    # URL écrite SANS contexte langue — évite qu'Odoo associe l'URL
+    # à une langue et bloque le sélecteur sur la page d'accueil
     menu.write({'url': url})
     menu.with_context(lang='fr_FR').write({'name': name_fr})
     if lang_en:
@@ -33,6 +62,9 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
 def _setup_menus(env, website, lang_en):
     """Gestion complète des menus — création + traduction + suppression indésirables."""
 
+    # Corriger les menus orphelins qui nous appartiennent
+    _fix_orphan_menus(env, website)
+
     root_menu = None
     if website:
         root_menu = env['website.menu'].search([
@@ -41,13 +73,14 @@ def _setup_menus(env, website, lang_en):
         ], limit=1)
 
     menus = [
-        ('/',         'Accueil',      'Home',          1),
-        ('/shop',     'Boutique',     'Shop',          2),
-        ('/services', 'Nos services', 'Our Services',  3),
+        ('/',         'Accueil',      'Home',         1),
+        ('/shop',     'Boutique',     'Shop',         2),
+        ('/services', 'Nos services', 'Our Services', 3),
     ]
     for url, name_fr, name_en, seq in menus:
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
+    # Supprimer les menus natifs Odoo indésirables sur notre site uniquement
     unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
     domain = [('url', 'in', unwanted_urls)]
     if website:
@@ -71,10 +104,12 @@ def post_init_hook(env):
         })
 
     # === SITE WEB + RÉSEAUX SOCIAUX ===
+    # On récupère d'abord le premier site disponible, puis on lui donne
+    # le nom WEBSITE_NAME — après ça _get_website() le trouvera toujours par nom
     website = env['website'].search([], limit=1)
     if website:
         website.write({
-            'name': 'Exocoms Group',
+            'name': WEBSITE_NAME,
             'social_facebook': 'https://www.facebook.com/exocoms',
             'social_twitter': 'https://twitter.com/exocoms',
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
@@ -478,7 +513,8 @@ def post_init_hook(env):
 
 def post_migrate_hook(env):
     """S'exécute à chaque update du module"""
-    website = env['website'].search([], limit=1)
+    # Toujours retrouver le website par nom, jamais par ID
+    website = _get_website(env)
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     # === MENUS — maintenus à chaque update ===
