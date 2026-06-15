@@ -53,15 +53,6 @@ def post_init_hook(env):
     params = env['ir.config_parameter'].sudo()
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
-    params.set_param('website.lang_redirect_from_browser', False)
-
-    try:
-        if website:
-            website.sudo().write({
-                'user_lang_redirect': False,
-            })
-    except Exception:
-        pass
 
     # Charger les traductions françaises officielles Odoo
     try:
