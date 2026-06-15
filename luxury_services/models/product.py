@@ -34,6 +34,11 @@ class ProductTemplate(models.Model):
         ('jet', 'Jet Privé'),
         ('vip', 'Conciergerie VIP'),
     ], string='Catégorie Luxe', default='yacht')
+    
+    
+    localisation = fields.Char(
+        string='Localisation'
+    )
 
     # Caractéristiques yacht
     longueur = fields.Float(string='Longueur (m)')
