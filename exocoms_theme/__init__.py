@@ -66,6 +66,7 @@ def post_init_hook(env):
         mods._update_translations('fr_FR')
     except Exception:
         pass
+
     # === DÉSACTIVER REDIRECTION LANGUE ===
     try:
         if website:
@@ -76,30 +77,54 @@ def post_init_hook(env):
             })
     except Exception:
         pass
-    # === MENUS — FR par défaut + traduction EN ===
-    menus_update = {
-        5: ('Accueil', '/fr/',              'Home'),
-        7: ('Boutique', '/shop',         'Shop'),
-        6: ('Nos services', '/services', 'Our Services'),
-    }
-    for menu_id, (name_fr, url, name_en) in menus_update.items():
-        menu = env['website.menu'].browse(menu_id)
-        if not menu.exists():
+
+    # === MENUS — recherche par URL (robuste, indépendant des IDs) ===
+    # L'URL est écrite SANS contexte langue pour éviter qu'Odoo associe
+    # automatiquement l'URL à une langue et bascule la session au clic.
+    menus_update = [
+        ('/',         'Accueil',      'Home'),
+        ('/shop',     'Boutique',     'Shop'),
+        ('/services', 'Nos services', 'Our Services'),
+    ]
+    for url, name_fr, name_en in menus_update:
+        domain = [('url', '=', url)]
+        if website:
+            domain.append(('website_id', '=', website.id))
+        menu = env['website.menu'].search(domain, limit=1)
+        if not menu:
             continue
-        menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url})
+        # URL sans contexte langue — neutre, ne déclenche pas de changement de langue
+        menu.write({'url': url})
+        # Noms traduits séparément
+        menu.with_context(lang='fr_FR').write({'name': name_fr})
         if lang_en:
             menu.with_context(lang='en_US').write({'name': name_en})
 
-    # Supprimer les menus indésirables
-    menus_to_delete = [9, 10, 11, 12, 13]
-    for menu_id in menus_to_delete:
-        menu = env['website.menu'].browse(menu_id)
-        if menu.exists():
-            menu.unlink()
+    # === SUPPRIMER LES MENUS INDÉSIRABLES — par URL/nom, pas par ID ===
+    menus_to_delete_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
+    if website:
+        unwanted = env['website.menu'].search([
+            ('url', 'in', menus_to_delete_urls),
+            ('website_id', '=', website.id),
+        ])
+    else:
+        unwanted = env['website.menu'].search([
+            ('url', 'in', menus_to_delete_urls),
+        ])
+    if unwanted:
+        unwanted.unlink()
 
-    # === PROFIL DROPDOWN — Mon compte ===
-    account_view = env['ir.ui.view'].browse(637)
-    if account_view.exists():
+    # === PROFIL DROPDOWN — Mon compte (recherche par clé, pas par ID) ===
+    account_view = env['ir.ui.view'].search([
+        ('key', '=', 'portal.user_dropdown_link_account'),
+    ], limit=1)
+    # Fallback : recherche par nom si la clé n'existe pas
+    if not account_view:
+        account_view = env['ir.ui.view'].search([
+            ('name', 'ilike', 'Link to frontend portal'),
+            ('inherit_id.key', '=', 'portal.user_dropdown'),
+        ], limit=1)
+    if account_view and account_view.exists():
         account_view.write({'arch': """
 <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
     <xpath expr="//*[@id='o_logout_divider']" position="before">
