@@ -13,6 +13,11 @@
     'depends': [
         'base', 'mail', 'account', 'sale', 'hr',
         'contacts', 'web', 'website', 'portal',
+        # Dépendances pour débloquer les blocs du website builder
+        'website_sale',       # Blocs Catalog + blocs de base (Odoo 17+)
+        'website_blog',       # Blocs Blogs
+        'appointment',        # Blocs Appointments
+        'event',              # Blocs Events
     ],
     'data': [
         # Security
