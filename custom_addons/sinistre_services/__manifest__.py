@@ -46,14 +46,6 @@
     'assets': {
         'web.assets_frontend': [
             'monetique_theme/static/src/css/main.css',
-             # CSS complémentaires du design system sinistre_services
-            'sinistre_services/static/src/css/variables.css',
-            'sinistre_services/static/src/css/base.css',
-            'sinistre_services/static/src/css/layout.css',
-            'sinistre_services/static/src/css/homepage.css',
-            'sinistre_services/static/src/css/pages.css',
-            # JS frontend
-            'sinistre_services/static/src/js/main.js',
         ],
         'web.assets_backend': [
             'sinistre_services/static/src/css/backend.css',
