@@ -2,7 +2,6 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.osv.expression import AND
 from odoo.fields import Domain
 import json
 
