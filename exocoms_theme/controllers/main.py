@@ -10,7 +10,7 @@ class Exocoms(http.Controller):
         # Ne pas rediriger si on est dans l'éditeur Odoo (Website Builder)
         # L'éditeur charge la page dans un iframe et ne gère pas les redirections
         if request.env.user._is_internal():
-            return request.render('website.home', {})
+            return request.render('exocoms_theme.home', {})
 
         frontend_lang = request.httprequest.cookies.get('frontend_lang')
 
