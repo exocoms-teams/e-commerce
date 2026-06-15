@@ -10,10 +10,10 @@ class PaymentProviderMandat(models.Model):
         ondelete={'mandat_administratif': 'set default'},
     )
 
-    def _get_supported_currencies(self):
+    def _is_available_for_currency(self, currency):
         if self.code == 'mandat_administratif':
-            return self.env['res.currency'].search([])
-        return super()._get_supported_currencies()
+            return True  # accepte toutes les devises
+        return super()._is_available_for_currency(currency)
 
 
 class PaymentTransactionMandat(models.Model):
