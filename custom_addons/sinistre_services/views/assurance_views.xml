@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sinistre_assurance_form" model="ir.ui.view">
+        <field name="name">sinistre.assurance.form</field>
+        <field name="model">sinistre.assurance</field>
+        <field name="arch" type="xml">
+            <form string="Compagnie d'Assurance">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_voir_missions" type="object" class="oe_stat_button" icon="fa-tasks">
+                            <field name="mission_count" widget="statinfo" string="Missions"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name" placeholder="Nom assurance"/></h1></div>
+                    <group>
+                        <group string="Informations">
+                            <field name="code"/>
+                            <field name="partner_id" options="{'quick_create': false}"/>
+                            <field name="actif"/>
+                        </group>
+                        <group string="API">
+                            <field name="api_key" readonly="1" widget="char"
+                                style="font-family:monospace;font-size:12px;background:#F3F4F6;padding:6px 10px;border-radius:6px;"/>
+                            <field name="api_key_active"/>
+                            <button name="action_copier_api_key" string="📋 Copier la clé" type="object"
+                                class="btn-secondary" invisible="not api_key"/>
+                            <field name="format_api"/>
+                            <field name="webhook_url"/>
+                            <button name="action_generer_api_key" string="🔑 Générer Clé API" type="object" class="btn-primary"/>
+                            <button name="action_revoquer_api_key" string="🚫 Révoquer" type="object" class="btn-danger" invisible="not api_key"/>
+                        </group>
+                    </group>
+                    <group string="Conditions"><field name="delai_paiement"/></group>
+                    <group string="Notes"><field name="note" nolabel="1"/></group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_sinistre_assurance_list" model="ir.ui.view">
+        <field name="name">sinistre.assurance.list</field>
+        <field name="model">sinistre.assurance</field>
+        <field name="arch" type="xml">
+            <list string="Assurances">
+                <field name="name"/><field name="code"/><field name="format_api"/>
+                <field name="api_key_active" widget="boolean_toggle"/>
+                <field name="mission_count"/><field name="actif" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_sinistre_assurance" model="ir.actions.act_window">
+        <field name="name">Compagnies d'Assurance</field>
+        <field name="res_model">sinistre.assurance</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

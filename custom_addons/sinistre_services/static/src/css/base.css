@@ -1,0 +1,338 @@
+/* ============================================================
+   BASE — Reset, typographie, utilitaires globaux
+============================================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ss-gray-dark);
+    background: var(--ss-white);
+    -webkit-font-smoothing: antialiased;
+}
+
+body.website {
+    background: var(--ss-white) !important;
+}
+
+#wrapwrap {
+    background: var(--ss-white) !important;
+    /* padding-top supprimé — on utilise le header Odoo standard */
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: var(--ss-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--ss-blue-light);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ss-dark);
+}
+
+/* CONTAINER */
+.ss-container {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* SECTION HEADER */
+.ss-section-tag {
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ss-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.ss-section-title {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ss-dark);
+    margin-bottom: 10px;
+}
+
+.ss-section-underline {
+    width: 48px;
+    height: 3px;
+    background: var(--ss-blue);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+}
+
+.ss-section-sub {
+    font-size: 14px;
+    color: var(--ss-gray-mid);
+    margin-bottom: 0;
+}
+
+.ss-section-head {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+/* BOUTONS */
+.ss-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    background: var(--ss-blue);
+    color: var(--ss-white);
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--transition);
+}
+
+.ss-btn-primary:hover {
+    background: var(--ss-blue-mid);
+    color: var(--ss-white);
+    text-decoration: none;
+}
+
+.ss-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    background: transparent;
+    color: var(--ss-blue);
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 2px solid var(--ss-blue);
+    border-radius: var(--r-md);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.ss-btn-secondary:hover {
+    background: var(--ss-blue);
+    color: var(--ss-white);
+    text-decoration: none;
+}
+
+.ss-btn-white {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    background: var(--ss-white);
+    color: var(--ss-blue);
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.ss-btn-white:hover {
+    background: var(--ss-blue-pale);
+    color: var(--ss-blue);
+    text-decoration: none;
+}
+
+/* PLACEHOLDER IMAGE */
+.ss-img-placeholder {
+    background: var(--ss-blue-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ss-blue-light);
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px dashed rgba(13,71,161,0.2);
+}
+
+.ss-img-placeholder i {
+    font-size: 32px;
+    opacity: 0.3;
+    margin-bottom: 8px;
+}
+
+/* PAGE HERO INTERNE */
+.ss-page-hero {
+    background: linear-gradient(135deg, var(--ss-blue) 0%, var(--ss-blue-light) 100%);
+    padding: 52px 0 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ss-page-hero::before {
+    content: '';
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+}
+
+.ss-page-hero::after {
+    content: '';
+    position: absolute;
+    left: 10%;
+    bottom: -40px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+}
+
+.ss-page-hero .ss-container {
+    position: relative;
+    z-index: 1;
+}
+
+.ss-breadcrumb {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 14px;
+    font-family: var(--font-head);
+}
+
+.ss-breadcrumb a {
+    color: rgba(255,255,255,0.65);
+}
+
+.ss-breadcrumb a:hover {
+    color: rgba(255,255,255,0.9);
+}
+
+.ss-page-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ss-white);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.ss-page-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+}
+
+/* CTA BAND GLOBALE */
+.ss-cta-band {
+    background: var(--ss-blue);
+    padding: 40px 0;
+}
+
+.ss-cta-band .ss-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.ss-cta-band h3 {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ss-white);
+    margin-bottom: 6px;
+}
+
+.ss-cta-band p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin: 0;
+}
+
+/* CONSEIL BAND */
+.ss-conseil-band {
+    background: var(--ss-blue-pale);
+    border: 1px solid #BBDEFB;
+    border-radius: var(--r-lg);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.ss-conseil-band-title {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ss-blue);
+    margin-bottom: 4px;
+}
+
+.ss-conseil-band-sub {
+    font-size: 13px;
+    color: var(--ss-gray);
+    margin: 0;
+}
+
+/* TRUST / REASSURANCE ICONS */
+.ss-trust-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.ss-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ss-gray);
+}
+
+.ss-trust-item i {
+    font-size: 18px;
+    color: var(--ss-blue);
+}
+
+/* RESPONSIVE HELPERS */
+@media (max-width: 992px) {
+    .ss-section-title { font-size: 22px; }
+    .ss-page-title { font-size: 28px; }
+}
+
+@media (max-width: 768px) {
+    #wrapwrap { padding-top: calc(var(--topbar-h) + var(--header-h)); }
+    .ss-cta-band .ss-container { flex-direction: column; text-align: center; }
+    .ss-conseil-band { flex-direction: column; text-align: center; }
+}

@@ -1,8 +1,9 @@
 {
-    'name': 'monetiques.fr — Infrastructure de Paiement',
+    'name': 'Sinistre Services — Infrastructure de gestion d intervention',
     'version': '19.0.1.0.0',
     'category': 'Website',
-    'author': 'monetiques.fr',
+    'summary': 'Sinistre Services — urgence, artisans, assurances',
+    'author': 'exocoms',
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale'],
     'data': [

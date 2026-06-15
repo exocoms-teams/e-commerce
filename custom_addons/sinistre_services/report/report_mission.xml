@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_mission_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Ordre de Mission — <span t-esc="doc.reference"/></h2>
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Source :</strong> <span t-esc="doc.source"/><br/>
+                                <strong>Type :</strong> <span t-esc="doc.get_type_label()"/><br/>
+                                <strong>Urgence :</strong> <span t-esc="doc.urgence"/><br/>
+                                <strong>Date Réception :</strong> <span t-esc="doc.date_reception"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <t t-if="doc.assurance_id">
+                                    <strong>Assurance :</strong> <span t-esc="doc.assurance_id.name"/><br/>
+                                    <strong>Réf Assurance :</strong> <span t-esc="doc.ref_assurance"/><br/>
+                                    <strong>Montant Garanti :</strong> <span t-esc="doc.montant_garanti"/> €<br/>
+                                    <strong>Franchise :</strong> <span t-esc="doc.franchise"/> €<br/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4>Client / Assuré</h4>
+                                <strong><span t-esc="doc.client_id.name"/></strong><br/>
+                                <span t-esc="doc.adresse_intervention"/><br/>
+                                <t t-if="doc.contact_sur_place">
+                                    Contact : <span t-esc="doc.contact_sur_place"/> — <span t-esc="doc.tel_sur_place"/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4>Description</h4>
+                                <p t-esc="doc.description_sinistre"/>
+                            </div>
+                        </div>
+                        <t t-if="doc.intervenant_id">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h4>Intervenant</h4>
+                                    <span t-esc="doc.intervenant_id.name"/>
+                                    <t t-if="doc.date_rdv"> — RDV le <span t-esc="doc.date_rdv"/></t>
+                                </div>
+                            </div>
+                        </t>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4>Récapitulatif Financier</h4>
+                                <table class="table table-sm">
+                                    <tr><td>Montant Devis Accepté</td><td class="text-right"><span t-esc="'%.2f €' % doc.montant_devis"/></td></tr>
+                                    <t t-if="doc.assurance_id">
+                                        <tr><td>Prise en charge Assurance</td><td class="text-right"><span t-esc="'%.2f €' % doc.montant_garanti"/></td></tr>
+                                        <tr><td>Franchise</td><td class="text-right"><span t-esc="'%.2f €' % doc.franchise"/></td></tr>
+                                    </t>
+                                    <tr class="fw-bold"><td>Reste à Charge Client</td><td class="text-right"><span t-esc="'%.2f €' % doc.reste_a_charge"/></td></tr>
+                                    <tr><td>Commission Plateforme</td><td class="text-right"><span t-esc="'%.2f €' % doc.commission_plateforme"/></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p>Signature Client</p>
+                                <div style="border-top:1px solid black;width:80%;margin:0 auto"/>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p>Signature Intervenant</p>
+                                <div style="border-top:1px solid black;width:80%;margin:0 auto"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="report_sinistre_mission" model="ir.actions.report">
+        <field name="name">Fiche Mission</field>
+        <field name="model">sinistre.mission</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sinistre_services.report_mission_template</field>
+        <field name="binding_model_id" ref="model_sinistre_mission"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

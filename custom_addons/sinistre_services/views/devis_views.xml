@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sinistre_devis_form" model="ir.ui.view">
+        <field name="name">sinistre.devis.form</field>
+        <field name="model">sinistre.devis</field>
+        <field name="arch" type="xml">
+            <form string="Devis">
+                <header>
+                    <button name="action_envoyer" string="Envoyer" type="object" class="btn-primary" invisible="state != 'brouillon'"/>
+                    <button name="action_accepter" string="✅ Accepté" type="object" class="btn-success" invisible="state != 'envoye'"/>
+                    <button name="action_refuser" string="❌ Refusé" type="object" class="btn-danger" invisible="state != 'envoye'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,envoye,accepte,refuse"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="mission_id"/><field name="client_id" readonly="1"/>
+                            <field name="intervenant_id" readonly="1"/>
+                        </group>
+                        <group><field name="date_devis"/><field name="tva"/></group>
+                    </group>
+                    <field name="ligne_ids" widget="one2many">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="description"/><field name="quantite"/>
+                            <field name="unite"/><field name="prix_unitaire"/>
+                            <field name="montant_total" readonly="1"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="montant_ht"/><field name="montant_tva"/>
+                        <field name="montant_total" class="fw-bold"/>
+                    </group>
+                    <group string="Note client"><field name="note_client" nolabel="1"/></group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_sinistre_devis" model="ir.actions.act_window">
+        <field name="name">Devis</field>
+        <field name="res_model">sinistre.devis</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
