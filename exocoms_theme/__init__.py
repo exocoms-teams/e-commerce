@@ -145,7 +145,17 @@ def post_init_hook(env):
             'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
         })
 
-    # === LANGUE PAR DÉFAUT — via website uniquement, PAS via public_user ===
+    # === LANGUE PAR DÉFAUT — public_user + website ===
+    # Le public_user doit être en fr_FR pour qu'Odoo serve le français par défaut sur "/".
+    # Sans ça, Odoo détecte en_US sur le public_user et force l'anglais sur la page d'accueil.
+    public_user = env.ref('base.public_user', raise_if_not_found=False)
+    if public_user and lang_fr:
+        public_user.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
+    public_partner = env.ref('base.public_partner', raise_if_not_found=False)
+    if public_partner and lang_fr:
+        public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
     params = env['ir.config_parameter'].sudo()
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
@@ -160,18 +170,6 @@ def post_init_hook(env):
             ('state', '=', 'installed')
         ])
         mods._update_translations('fr_FR')
-    except Exception:
-        pass
-
-    # === DÉSACTIVER REDIRECTION LANGUE ===
-    try:
-        if website and lang_fr:
-            website.write({'default_lang_id': lang_fr.id})
-            redirects = env['website.redirect'].search([
-                ('url_from', 'in', ['/', '/fr', '/en']),
-            ])
-            if redirects:
-                redirects.unlink()
     except Exception:
         pass
 
