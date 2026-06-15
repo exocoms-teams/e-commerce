@@ -22,8 +22,8 @@ class LuxuryController(WebsiteSale):
         return request.website.id == vip.id
 
 
-    def _get_additional_shop_values(self, options):
-        values = super()._get_additional_shop_values(options)
+    def _get_additional_shop_values(self, options, **kwargs):
+        values = super()._get_additional_shop_values(options, **kwargs)
         
         if self._is_vip_website():
             destinations = request.env['luxury.destination'].sudo().search(
