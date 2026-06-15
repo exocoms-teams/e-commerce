@@ -7,6 +7,11 @@ class Exocoms(http.Controller):
 
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kw):
+        # Ne pas rediriger si on est dans l'éditeur Odoo (Website Builder)
+        # L'éditeur charge la page dans un iframe et ne gère pas les redirections
+        if request.env.user._is_internal():
+            return request.render('website.homepage', {})
+
         frontend_lang = request.httprequest.cookies.get('frontend_lang')
 
         if not frontend_lang:
