@@ -2,234 +2,210 @@
 <odoo>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     EXOCOMS — Sidebar Filter AJAX
-     Templates QWeb — Odoo 19
-     ═══════════════════════════════════════════════════════════════════════════
-
-     1. exo_sidebar_filter        — panneau latéral complet (3 niveaux)
-     2. exo_product_cards         — grille produits (rendu partiel pour AJAX)
-     3. exo_shop_layout_inject    — injection dans /shop via héritage
+     EXOCOMS — Sidebar Filter AJAX  v19.0.3
      ═══════════════════════════════════════════════════════════════════════════ -->
-
 
 <!-- ─────────────────────────────────────────────────────────────────────────
      1. PANNEAU LATÉRAL
      ───────────────────────────────────────────────────────────────────────── -->
 <template id="exo_sidebar_filter" name="EXOCOMS Sidebar Filter">
-    <aside id="exo-sidebar" class="exo-sidebar"
+    <aside id="exo-sidebar" class="exo-sidebar col-lg-3 col-xl-2 pe-3"
            role="search" aria-label="Filtrer les produits">
 
-        <!-- En-tête -->
-        <div class="exo-sidebar-header">
-            <h3>Filtres</h3>
-            <button type="button" class="exo-clear-all"
-                    aria-label="Effacer tous les filtres">
-                Tout effacer
-            </button>
-        </div>
+        <div class="exo-sidebar-inner">
+            <!-- En-tête -->
+            <div class="exo-sidebar-header">
+                <h3>Filtres</h3>
+                <button type="button" class="exo-clear-all"
+                        aria-label="Effacer tous les filtres">
+                    Tout effacer
+                </button>
+            </div>
 
-        <!-- Tags actifs (gérés par JS) -->
-        <div id="exo-active-tags" class="exo-active-tags" aria-live="polite"></div>
+            <!-- Tags actifs -->
+            <div id="exo-active-tags" class="exo-active-tags" aria-live="polite"></div>
 
-        <!-- Résultats live -->
-        <div id="exo-result-count" class="exo-result-count" aria-live="polite" style="display:none">
-            <i class="fa fa-circle-o-notch fa-spin exo-spinner" aria-hidden="true" style="display:none"></i>
-            <span class="exo-count-text"></span>
-        </div>
+            <!-- Compteur résultats live -->
+            <div id="exo-result-count" class="exo-result-count" aria-live="polite" style="display:none">
+                <i class="fa fa-circle-o-notch fa-spin exo-spinner" aria-hidden="true" style="display:none"></i>
+                <span class="exo-count-text"></span>
+            </div>
 
-        <!-- Recherche rapide -->
-        <div class="exo-search-box">
-            <i class="fa fa-search exo-search-icon" aria-hidden="true"></i>
-            <input type="text"
-                   id="exo-search-input"
-                   class="exo-search-input"
-                   placeholder="Rechercher un produit…"
-                   aria-label="Recherche produits"
-                   t-att-value="exo_search or ''"/>
-        </div>
+            <!-- Recherche rapide -->
+            <div class="exo-search-box">
+                <i class="fa fa-search exo-search-icon" aria-hidden="true"></i>
+                <input type="text"
+                       id="exo-search-input"
+                       class="exo-search-input"
+                       placeholder="Rechercher un produit…"
+                       aria-label="Recherche produits"
+                       t-att-value="exo_search or ''"/>
+            </div>
 
-        <!-- Tri -->
-        <div class="exo-sort-row">
-            <label class="exo-sort-label" for="exo-sort-select">
-                <i class="fa fa-sort-amount-asc" aria-hidden="true"></i> Trier
-            </label>
-            <select id="exo-sort-select" class="exo-sort-select" aria-label="Trier les produits">
-                <option value="">Par défaut</option>
-                <option value="price_asc">Prix croissant</option>
-                <option value="price_desc">Prix décroissant</option>
-                <option value="name_asc">Nom A→Z</option>
-                <option value="newest">Nouveautés</option>
-            </select>
-        </div>
+            <!-- Tri -->
+            <div class="exo-sort-row">
+                <label class="exo-sort-label" for="exo-sort-select">
+                    <i class="fa fa-sort-amount-asc" aria-hidden="true"></i> Trier
+                </label>
+                <select id="exo-sort-select" class="exo-sort-select" aria-label="Trier les produits">
+                    <option value="">Par défaut</option>
+                    <option value="price_asc">Prix croissant</option>
+                    <option value="price_desc">Prix décroissant</option>
+                    <option value="name_asc">Nom A→Z</option>
+                    <option value="newest">Nouveautés</option>
+                </select>
+            </div>
 
-        <!-- ── Catégories niveau 1 ── -->
-        <t t-foreach="exo_categories or []" t-as="cat">
-            <div class="exo-cat-block" t-att-data-cat-id="cat['id']">
+            <!-- Catégories niveau 1 -->
+            <t t-foreach="exo_categories or []" t-as="cat">
+                <div class="exo-cat-block" t-att-data-cat-id="cat['id']">
 
-                <div t-att-class="'exo-cat-head' + (' open' if cat.get('active') else '')"
-                     t-att-data-subcats-id="'exo-sub-%d' % cat['id']"
-                     role="button" tabindex="0"
-                     t-att-aria-expanded="'true' if cat.get('active') else 'false'">
+                    <div t-att-class="'exo-cat-head' + (' open' if cat.get('active') else '')"
+                         t-att-data-subcats-id="'exo-sub-%d' % cat['id']"
+                         role="button" tabindex="0"
+                         t-att-aria-expanded="'true' if cat.get('active') else 'false'">
 
-                    <i t-att-class="'fa %s exo-icon' % cat.get('icon','fa-folder')"
-                       aria-hidden="true"/>
+                        <i t-att-class="'fa %s exo-icon' % cat.get('icon','fa-folder')"
+                           aria-hidden="true"/>
 
-                    <input type="checkbox"
-                           t-att-id="'cat-cb-%d' % cat['id']"
-                           t-att-value="cat['id']"
-                           t-att-data-cat-id="cat['id']"
-                           t-att-data-label="cat['name']"
-                           t-att-checked="'checked' if cat.get('active') else None"/>
+                        <input type="checkbox"
+                               t-att-id="'cat-cb-%d' % cat['id']"
+                               t-att-value="cat['id']"
+                               t-att-data-cat-id="cat['id']"
+                               t-att-data-label="cat['name']"
+                               t-att-checked="'checked' if cat.get('active') else None"/>
 
-                    <span class="exo-cat-label">
-                        <t t-esc="cat['name']"/>
-                    </span>
+                        <span class="exo-cat-label"><t t-esc="cat['name']"/></span>
 
-                    <span class="exo-count-badge"
-                          t-att-data-cat-id="cat['id']">
-                        <t t-esc="cat.get('count', 0)"/>
-                    </span>
+                        <span class="exo-count-badge" t-att-data-cat-id="cat['id']">
+                            <t t-esc="cat.get('count', 0)"/>
+                        </span>
 
-                    <t t-if="cat.get('subcategories')">
-                        <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
-                    </t>
-                </div>
-
-                <!-- Sous-catégories niveau 2 -->
-                <t t-if="cat.get('subcategories')">
-                    <div t-att-class="'exo-subcats' + (' open' if cat.get('active') else '')"
-                         t-att-id="'exo-sub-%d' % cat['id']">
-
-                        <t t-foreach="cat['subcategories']" t-as="sub">
-                            <div class="exo-subcat-block">
-
-                                <div t-att-class="'exo-subcat-head' + (' open' if sub.get('active') else '')"
-                                     t-att-data-has-children="'1' if sub.get('subcategories') else None"
-                                     t-att-data-children-id="'exo-ch-%d' % sub['id']"
-                                     role="button" tabindex="0"
-                                     t-att-aria-expanded="'true' if sub.get('active') else 'false'">
-
-                                    <input type="checkbox"
-                                           t-att-id="'sub-cb-%d' % sub['id']"
-                                           t-att-value="sub['id']"
-                                           t-att-data-cat-id="sub['id']"
-                                           t-att-data-label="sub['name']"
-                                           t-att-checked="'checked' if sub.get('active') else None"/>
-
-                                    <span t-att-class="'exo-subcat-label' + (' checked' if sub.get('active') else '')">
-                                        <t t-esc="sub['name']"/>
-                                    </span>
-
-                                    <span class="exo-count-badge"
-                                          t-att-data-cat-id="sub['id']">
-                                        <t t-esc="sub.get('count', 0)"/>
-                                    </span>
-
-                                    <t t-if="sub.get('subcategories')">
-                                        <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
-                                    </t>
-                                </div>
-
-                                <!-- Enfants niveau 3 -->
-                                <t t-if="sub.get('subcategories')">
-                                    <div t-att-class="'exo-children' + (' open' if sub.get('active') else '')"
-                                         t-att-id="'exo-ch-%d' % sub['id']">
-
-                                        <t t-foreach="sub['subcategories']" t-as="child">
-                                            <div class="exo-child-item">
-                                                <input type="checkbox"
-                                                       t-att-id="'ch-cb-%d' % child['id']"
-                                                       t-att-value="child['id']"
-                                                       t-att-data-cat-id="child['id']"
-                                                       t-att-data-label="child['name']"
-                                                       t-att-checked="'checked' if child.get('active') else None"/>
-                                                <label t-att-for="'ch-cb-%d' % child['id']">
-                                                    <t t-esc="child['name']"/>
-                                                </label>
-                                                <span class="exo-count-badge"
-                                                      t-att-data-cat-id="child['id']">
-                                                    <t t-esc="child.get('count', 0)"/>
-                                                </span>
-                                            </div>
-                                        </t>
-
-                                    </div>
-                                </t>
-
-                            </div>
+                        <t t-if="cat.get('subcategories')">
+                            <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
                         </t>
-
                     </div>
-                </t>
 
-            </div>
-        </t>
+                    <!-- Sous-catégories niveau 2 -->
+                    <t t-if="cat.get('subcategories')">
+                        <div t-att-class="'exo-subcats' + (' open' if cat.get('active') else '')"
+                             t-att-id="'exo-sub-%d' % cat['id']">
 
-        <!-- Filtre prix -->
-        <div class="exo-price-block">
-            <div class="exo-price-head">
-                <i class="fa fa-tag" aria-hidden="true"></i>
-                <span>Prix (€)</span>
-            </div>
-            <div class="exo-price-inputs">
-                <input type="number" id="exo-min-price" class="exo-price-input"
-                       placeholder="Min" min="0" step="1"
-                       t-att-value="exo_min_price or ''"/>
-                <span class="exo-price-sep">–</span>
-                <input type="number" id="exo-max-price" class="exo-price-input"
-                       placeholder="Max" min="0" step="1"
-                       t-att-value="exo_max_price or ''"/>
+                            <t t-foreach="cat['subcategories']" t-as="sub">
+                                <div class="exo-subcat-block">
+
+                                    <div t-att-class="'exo-subcat-head' + (' open' if sub.get('active') else '')"
+                                         t-att-data-has-children="'1' if sub.get('subcategories') else None"
+                                         t-att-data-children-id="'exo-ch-%d' % sub['id']"
+                                         role="button" tabindex="0"
+                                         t-att-aria-expanded="'true' if sub.get('active') else 'false'">
+
+                                        <input type="checkbox"
+                                               t-att-id="'sub-cb-%d' % sub['id']"
+                                               t-att-value="sub['id']"
+                                               t-att-data-cat-id="sub['id']"
+                                               t-att-data-label="sub['name']"
+                                               t-att-checked="'checked' if sub.get('active') else None"/>
+
+                                        <span t-att-class="'exo-subcat-label' + (' checked' if sub.get('active') else '')">
+                                            <t t-esc="sub['name']"/>
+                                        </span>
+
+                                        <span class="exo-count-badge" t-att-data-cat-id="sub['id']">
+                                            <t t-esc="sub.get('count', 0)"/>
+                                        </span>
+
+                                        <t t-if="sub.get('subcategories')">
+                                            <i class="fa fa-chevron-down exo-chevron" aria-hidden="true"/>
+                                        </t>
+                                    </div>
+
+                                    <!-- Enfants niveau 3 -->
+                                    <t t-if="sub.get('subcategories')">
+                                        <div t-att-class="'exo-children' + (' open' if sub.get('active') else '')"
+                                             t-att-id="'exo-ch-%d' % sub['id']">
+                                            <t t-foreach="sub['subcategories']" t-as="child">
+                                                <div class="exo-child-item">
+                                                    <input type="checkbox"
+                                                           t-att-id="'ch-cb-%d' % child['id']"
+                                                           t-att-value="child['id']"
+                                                           t-att-data-cat-id="child['id']"
+                                                           t-att-data-label="child['name']"
+                                                           t-att-checked="'checked' if child.get('active') else None"/>
+                                                    <label t-att-for="'ch-cb-%d' % child['id']">
+                                                        <t t-esc="child['name']"/>
+                                                    </label>
+                                                    <span class="exo-count-badge" t-att-data-cat-id="child['id']">
+                                                        <t t-esc="child.get('count', 0)"/>
+                                                    </span>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </t>
+
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+
+                </div>
+            </t>
+
+            <!-- Filtre prix -->
+            <div class="exo-price-block">
+                <div class="exo-price-head">
+                    <i class="fa fa-tag" aria-hidden="true"></i>
+                    <span>Prix (€)</span>
+                </div>
+                <div class="exo-price-inputs">
+                    <input type="number" id="exo-min-price" class="exo-price-input"
+                           placeholder="Min" min="0" step="1"
+                           t-att-value="exo_min_price or ''"/>
+                    <span class="exo-price-sep">–</span>
+                    <input type="number" id="exo-max-price" class="exo-price-input"
+                           placeholder="Max" min="0" step="1"
+                           t-att-value="exo_max_price or ''"/>
+                </div>
             </div>
         </div>
-
     </aside>
 </template>
 
 
 <!-- ─────────────────────────────────────────────────────────────────────────
-     2. GRILLE PRODUITS (rendu partiel — appelé depuis Python via AJAX)
-        Ce template est rendu côté serveur et renvoyé en HTML dans la réponse JSON.
-        Il reproduit la structure minimale des cards produit Odoo 19.
+     2. GRILLE PRODUITS AJAX (rendu partiel côté serveur)
      ───────────────────────────────────────────────────────────────────────── -->
 <template id="exo_product_cards" name="EXOCOMS — Grille produits AJAX">
     <t t-if="not products">
-        <div class="exo-empty-state">
+        <div class="exo-empty-state col-12">
             <i class="fa fa-search fa-2x" aria-hidden="true"></i>
             <p>Aucun produit ne correspond à vos filtres.</p>
-            <button type="button" class="exo-reset-btn" onclick="ExoSidebar.reset()">
-                Réinitialiser les filtres
-            </button>
         </div>
     </t>
     <t t-if="products">
         <t t-foreach="products" t-as="product">
-            <div class="o_wsale_product_grid_wrapper">
-                <article class="o_product_item_card card h-100 border-0"
-                         t-att-data-product-id="product.id">
+            <div class="o_wsale_product_grid_wrapper col-6 col-md-4 col-xl-3 mb-3">
+                <article class="o_product_item_card card h-100 border-0 shadow-sm">
                     <a t-att-href="'/shop/%s' % product.id" class="card-img-top d-block overflow-hidden">
                         <img t-att-src="'/web/image/product.template/%d/image_512' % product.id"
                              t-att-alt="product.name"
                              class="o_product_image img-fluid"
-                             loading="lazy"/>
+                             loading="lazy"
+                             style="object-fit:cover;height:180px;width:100%"/>
                     </a>
-                    <div class="card-body d-flex flex-column p-2 pt-2">
-                        <h6 class="card-title o_product_name mb-1">
+                    <div class="card-body d-flex flex-column p-2">
+                        <h6 class="card-title o_product_name mb-1 small fw-semibold">
                             <a t-att-href="'/shop/%s' % product.id"
                                class="text-decoration-none text-reset">
                                 <t t-esc="product.name"/>
                             </a>
                         </h6>
-                        <t t-if="product.description_sale">
-                            <p class="card-text small text-muted mb-1" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
-                                <t t-esc="product.description_sale"/>
-                            </p>
-                        </t>
-                        <div class="mt-auto d-flex align-items-center justify-content-between">
-                            <span class="o_product_price fw-500 text-dark">
+                        <div class="mt-auto d-flex align-items-center justify-content-between pt-1">
+                            <span class="o_product_price fw-bold text-dark small">
                                 <t t-esc="'%.2f €' % product.list_price"/>
                             </span>
                             <a t-att-href="'/shop/%s' % product.id"
-                               class="btn btn-sm btn-outline-primary exo-btn-detail">
+                               class="btn btn-sm btn-outline-success exo-btn-detail py-0 px-2">
                                 Voir
                             </a>
                         </div>
@@ -242,23 +218,30 @@
 
 
 <!-- ─────────────────────────────────────────────────────────────────────────
-     3. INJECTION DANS /SHOP — héritage website_sale.products (Odoo 19)
-        Remplace le sidebar natif par le nôtre et enveloppe la grille
-        dans un conteneur cible pour le remplacement AJAX.
+     3. INJECTION — avant le sidebar natif Odoo (products_grid_before)
+        Structure réelle confirmée depuis Shell :
+          div.o_wsale_products_main_row
+            aside#products_grid_before  ← sidebar natif
+            div (grille produits)
+        On injecte notre sidebar AVANT le sidebar natif → il apparaît à gauche.
+        On enveloppe aussi la grille native dans #exo-products-grid.
      ───────────────────────────────────────────────────────────────────────── -->
 <template id="exo_shop_layout_inject"
           inherit_id="website_sale.products"
           name="EXOCOMS — Inject Sidebar AJAX">
 
-    <!--
-        XPath confirmé depuis le Shell Odoo.sh.
-        Le div flex qui contient sidebar + grille s'appelle "o_wsale_products_main_row".
-        On injecte notre sidebar comme premier enfant de ce div.
-    -->
-    <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="inside">
+    <!-- Injection AVANT le sidebar natif Odoo -->
+    <xpath expr="//aside[@id='products_grid_before']" position="before">
         <t t-if="exo_categories">
             <t t-call="exocoms_sidebar_ajax.exo_sidebar_filter"/>
         </t>
+    </xpath>
+
+    <!-- Masquer le sidebar natif quand notre sidebar est actif -->
+    <xpath expr="//aside[@id='products_grid_before']" position="attributes">
+        <attribute name="t-att-class">
+            'o_wsale_products_grid_before d-none d-lg-block position-sticky align-self-start col clearfix pt-2' + (' d-none' if exo_categories else '')
+        </attribute>
     </xpath>
 
 </template>
