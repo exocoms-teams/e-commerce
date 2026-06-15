@@ -2,30 +2,38 @@
 from . import controllers
 from . import models
 
-# Nom unique du site — utilisé partout pour identifier le bon website
 WEBSITE_NAME = 'Exocoms Group'
-
-# URLs gérées par ce module — utilisées pour cibler uniquement nos menus
 OUR_URLS = ['/', '/shop', '/services']
 
 
 def _get_website(env):
-    """Retourne le website Exocoms Group — par nom, jamais par ID.
-    Fallback sur le premier site si le nom n'est pas encore défini.
-    """
+    """Retourne le website Exocoms Group — par nom, jamais par ID."""
     website = env['website'].search([('name', '=', WEBSITE_NAME)], limit=1)
     if not website:
         website = env['website'].search([], limit=1)
     return website
 
 
-def _fix_orphan_menus(env, website):
-    """Rattache au site Exocoms les menus sans website_id
-    qui correspondent à NOS URLs uniquement.
-    Ne touche pas aux menus globaux d'autres modules.
+def _clean_demo_data(env, website):
+    """Nettoie les données de démo créées automatiquement par Odoo.
+    - Supprime "My Website 2" (site fantôme de démo)
+    - Supprime les doublons de menus sur notre site
+    Compatible avec tous les autres modules — cible uniquement les données de démo connues.
     """
     if not website:
         return
+
+    # 1. Supprimer le site fantôme de démo Odoo — ciblé par nom exact
+    ghost = env['website'].search([
+        ('name', '=', 'My Website 2'),
+        ('id', '!=', website.id),
+    ], limit=1)
+    if ghost:
+        env['website.menu'].search([('website_id', '=', ghost.id)]).unlink()
+        env['website.page'].search([('website_id', '=', ghost.id)]).unlink()
+        ghost.unlink()
+
+    # 2. Rattacher les menus orphelins (sans website_id) qui sont les nôtres
     orphans = env['website.menu'].search([
         ('website_id', '=', False),
         ('url', 'in', OUR_URLS),
@@ -33,26 +41,35 @@ def _fix_orphan_menus(env, website):
     if orphans:
         orphans.write({'website_id': website.id})
 
+    # 3. Supprimer les doublons de menus sur notre site
+    # Garder uniquement le menu avec la sequence la plus basse pour chaque URL
+    for url in OUR_URLS:
+        menus = env['website.menu'].search([
+            ('url', '=', url),
+            ('website_id', '=', website.id),
+        ], order='sequence asc')
+        if len(menus) > 1:
+            menus[1:].unlink()
+
 
 def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu, lang_en):
     """Crée ou met à jour un menu par URL — jamais par ID."""
-    domain = [('url', '=', url)]
-    if website:
-        domain.append(('website_id', '=', website.id))
+    domain = [('url', '=', url), ('website_id', '=', website.id)]
     menu = env['website.menu'].search(domain, limit=1)
     if not menu:
-        vals = {'url': url, 'name': name_fr, 'sequence': sequence}
+        vals = {
+            'url': url,
+            'name': name_fr,
+            'sequence': sequence,
+            'website_id': website.id,
+        }
         if root_menu:
             vals['parent_id'] = root_menu.id
-        if website:
-            vals['website_id'] = website.id
         menu = env['website.menu'].create(vals)
     else:
         menu.write({'url': url, 'sequence': sequence})
 
-    # URL écrite SANS contexte langue — évite qu'Odoo associe l'URL
-    # à une langue et bloque le sélecteur sur la page d'accueil
-    menu.write({'url': url})
+    # Nom traduit séparément — URL jamais dans un contexte langue
     menu.with_context(lang='fr_FR').write({'name': name_fr})
     if lang_en:
         menu.with_context(lang='en_US').write({'name': name_en})
@@ -60,17 +77,17 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
 
 
 def _setup_menus(env, website, lang_en):
-    """Gestion complète des menus — création + traduction + suppression indésirables."""
+    """Gestion complète des menus."""
+    if not website:
+        return
 
-    # Corriger les menus orphelins qui nous appartiennent
-    _fix_orphan_menus(env, website)
+    # Nettoyer d'abord les données de démo et doublons
+    _clean_demo_data(env, website)
 
-    root_menu = None
-    if website:
-        root_menu = env['website.menu'].search([
-            ('parent_id', '=', False),
-            ('website_id', '=', website.id),
-        ], limit=1)
+    root_menu = env['website.menu'].search([
+        ('parent_id', '=', False),
+        ('website_id', '=', website.id),
+    ], limit=1)
 
     menus = [
         ('/',         'Accueil',      'Home',         1),
@@ -80,12 +97,12 @@ def _setup_menus(env, website, lang_en):
     for url, name_fr, name_en, seq in menus:
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
-    # Supprimer les menus natifs Odoo indésirables sur notre site uniquement
+    # Supprimer les menus indésirables sur notre site uniquement
     unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
-    domain = [('url', 'in', unwanted_urls)]
-    if website:
-        domain.append(('website_id', '=', website.id))
-    unwanted = env['website.menu'].search(domain)
+    unwanted = env['website.menu'].search([
+        ('url', 'in', unwanted_urls),
+        ('website_id', '=', website.id),
+    ])
     if unwanted:
         unwanted.unlink()
 
@@ -103,9 +120,7 @@ def post_init_hook(env):
             'country_id': env.ref('base.fr').id,
         })
 
-    # === SITE WEB + RÉSEAUX SOCIAUX ===
-    # On récupère d'abord le premier site disponible, puis on lui donne
-    # le nom WEBSITE_NAME — après ça _get_website() le trouvera toujours par nom
+    # === SITE WEB — on nomme le site en premier pour que _get_website() fonctionne ===
     website = env['website'].search([], limit=1)
     if website:
         website.write({
@@ -513,14 +528,12 @@ def post_init_hook(env):
 
 def post_migrate_hook(env):
     """S'exécute à chaque update du module"""
-    # Toujours retrouver le website par nom, jamais par ID
     website = _get_website(env)
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
-    # === MENUS — maintenus à chaque update ===
+    # Menus maintenus + nettoyage démo à chaque update
     _setup_menus(env, website, lang_en)
 
-    # === DESIGN BOUTIQUE ===
     if website:
         try:
             website.write({
