@@ -3,7 +3,10 @@
 
     <template id="page_home" name="Sinistre Services — Accueil">
         <t t-call="website.layout">
-            <!-- Animations nécessaires (à ajouter dans le bloc style du layout ou en tête de page) -->
+            <t t-set="pageName" t-value="'home'"/>
+            <div id="wrap" class="oe_structure">
+
+            <!-- Animations CSS -->
             <style>
                 @keyframes heroFloat   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
                 @keyframes heroBounce  { 0%,100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-5px) scale(1.04); } 60% { transform: translateY(2px) scale(.98); } }
@@ -12,10 +15,13 @@
                 @keyframes heroSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
             </style>
 
+            <!-- Zone droppable AVANT le hero -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_top"/>
+
             <!-- ══════════════════════════════════════════
                  HERO
             ══════════════════════════════════════════ -->
-            <section class="mn-hero">
+            <section class="mn-hero" data-snippet="s_hero" data-name="Hero">
                 <div class="mn-container">
                     <div class="mn-hero__inner">
                         <div class="mn-hero__content">
@@ -43,57 +49,38 @@
                                 <span>&#10003; 24h/24 7j/7</span>
                             </div>
                         </div>
-                        <!-- Formulaire demande rapide -->
-                        <div class="mn-hero__visual" style="filter:none;">
-                            <div class="mn-hero__visual" style="filter:none;display:flex;align-items:center;justify-content:center;position:relative;">
-                                <!-- Cercles décoratifs animés derrière l'image -->
-                                <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(40,40,198,.08) 0%,transparent 70%);animation:heroFloat 6s ease-in-out infinite;z-index:0;"/>
-                                <div style="position:absolute;width:320px;height:320px;border-radius:50%;border:2px dashed rgba(40,40,198,.15);animation:heroSpin 20s linear infinite;z-index:0;"/>
-                             
-                                <!-- Badge urgence animé -->
-                                <div style="position:absolute;top:10px;right:10px;z-index:2;background:#10B981;color:white;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,.35);animation:heroBounce 3s ease-in-out infinite;">
-                                    <span style="width:7px;height:7px;background:white;border-radius:50%;animation:heroBlink 1.5s step-start infinite;display:inline-block;"/>
-                                    Disponible 24h/24
-                                </div>
-                             
-                                <!-- Badge délai -->
-                                <div style="position:absolute;bottom:20px;left:10px;z-index:2;background:white;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);animation:heroSlideIn .8s ease .4s both;">
-                                    <div style="font-size:11px;color:#6B7280;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Délai moyen</div>
-                                    <div style="font-size:22px;font-weight:800;color:#C62828;line-height:1.2;">Moins de 2h</div>
-                                </div>
-                             
-                                <!-- Badge artisans -->
-                                <div style="position:absolute;bottom:20px;right:10px;z-index:2;background:#C62828;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(198,40,40,.3);animation:heroSlideIn .8s ease .6s both;">
-                                    <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Artisans</div>
-                                    <div style="font-size:22px;font-weight:800;color:white;line-height:1.2;">+1 700</div>
-                                </div>
-                             
-                                <!-- Image principale avec animation -->
-                                <img
-                                    src="monetique_theme/static/src/img/sinistre.jfif"
-                                    alt="Intervention sinistre"
-                                    style="
-                                        width: 100%;
-                                        max-width: 460px;
-                                        height: auto;
-                                        border-radius: 24px;
-                                        box-shadow: 0 24px 60px rgba(40,40,198,.2), 0 8px 24px rgba(0,0,0,.1);
-                                        position: relative;
-                                        z-index: 1;
-                                        animation: heroFloat 5s ease-in-out infinite;
-                                        border: 3px solid rgba(40,40,198,.1);
-                                    "
-                                />
+                        <div class="mn-hero__visual" style="filter:none;display:flex;align-items:center;justify-content:center;position:relative;">
+                            <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(40,40,198,.08) 0%,transparent 70%);animation:heroFloat 6s ease-in-out infinite;z-index:0;"/>
+                            <div style="position:absolute;width:320px;height:320px;border-radius:50%;border:2px dashed rgba(40,40,198,.15);animation:heroSpin 20s linear infinite;z-index:0;"/>
+                            <div style="position:absolute;top:10px;right:10px;z-index:2;background:#10B981;color:white;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,.35);animation:heroBounce 3s ease-in-out infinite;">
+                                <span style="width:7px;height:7px;background:white;border-radius:50%;animation:heroBlink 1.5s step-start infinite;display:inline-block;"/>
+                                Disponible 24h/24
                             </div>
+                            <div style="position:absolute;bottom:20px;left:10px;z-index:2;background:white;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);animation:heroSlideIn .8s ease .4s both;">
+                                <div style="font-size:11px;color:#6B7280;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Délai moyen</div>
+                                <div style="font-size:22px;font-weight:800;color:#C62828;line-height:1.2;">Moins de 2h</div>
+                            </div>
+                            <div style="position:absolute;bottom:20px;right:10px;z-index:2;background:#C62828;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(198,40,40,.3);animation:heroSlideIn .8s ease .6s both;">
+                                <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Artisans</div>
+                                <div style="font-size:22px;font-weight:800;color:white;line-height:1.2;">+1 700</div>
+                            </div>
+                            <img
+                                src="/monetique_theme/static/src/img/sinistre.jfif"
+                                alt="Intervention sinistre"
+                                style="width:100%;max-width:460px;height:auto;border-radius:24px;box-shadow:0 24px 60px rgba(40,40,198,.2),0 8px 24px rgba(0,0,0,.1);position:relative;z-index:1;animation:heroFloat 5s ease-in-out infinite;border:3px solid rgba(40,40,198,.1);"
+                            />
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Zone droppable après hero -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_hero"/>
+
             <!-- ══════════════════════════════════════════
                  STATS
             ══════════════════════════════════════════ -->
-            <section class="mn-stats">
+            <section class="mn-stats" data-snippet="s_stats" data-name="Stats">
                 <div class="mn-container">
                     <div class="mn-stats__grid">
                         <div class="mn-stat">
@@ -116,10 +103,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après stats -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_stats"/>
+
             <!-- ══════════════════════════════════════════
                  SERVICES
             ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
+            <section class="mn-section mn-section--gray" data-snippet="s_services" data-name="Services">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Nos interventions</span>
@@ -170,10 +160,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après services -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_services"/>
+
             <!-- ══════════════════════════════════════════
                  COMMENT CA MARCHE
             ══════════════════════════════════════════ -->
-            <section class="mn-section">
+            <section class="mn-section" data-snippet="s_how" data-name="Comment ca marche">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Simple et rapide</span>
@@ -183,7 +176,6 @@
                     <div class="mn-grid mn-grid--3" style="gap:32px;">
                         <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;position:relative;">
                             <div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">1</div>
-                            <div style="position:absolute;top:56px;left:calc(50% + 36px);width:calc(50% - 36px + 32px);height:2px;background:linear-gradient(90deg,#FFEBEE,rgba(198,40,40,.15));display:none;" class="mn-step-line"/>
                             <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Contactez-nous</h3>
                             <p style="font-size:14px;color:#6B7280;line-height:1.7;">Appelez le 01 XX XX XX XX ou remplissez le formulaire en ligne. Disponible 24h/24, 7j/7, meme les jours feries.</p>
                         </div>
@@ -192,14 +184,12 @@
                             <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Recevez un devis</h3>
                             <p style="font-size:14px;color:#6B7280;line-height:1.7;">Fourchette tarifaire precise en moins de 10 minutes. Pas de surprise : le prix est fixe avant l'intervention.</p>
                         </div>
-                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid rgba(198,40,40,.15);background:linear-gradient(135deg,#FFF5F5,white);">
+                        <div style="text-align:center;padding:32px 24px;border-radius:16px;border:1px solid rgba(198,40,40,.15);background:linear-gradient(135deg,#FFF5F5,white);">
                             <div style="width:72px;height:72px;background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(198,40,40,.25);">3</div>
                             <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">L'artisan intervient</h3>
                             <p style="font-size:14px;color:#6B7280;line-height:1.7;">Artisan certifie chez vous en moins de 2h. Photos avant/apres, rapport d'intervention remis pour votre assurance.</p>
                         </div>
                     </div>
-
-                    <!-- Bande assurance -->
                     <div style="margin-top:48px;background:linear-gradient(135deg,#EFF6FF,#F0F4FF);border:1px solid #BFDBFE;border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
                         <div style="display:flex;align-items:center;gap:16px;">
                             <div style="width:48px;height:48px;background:#1E40AF;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;flex-shrink:0;">
@@ -215,10 +205,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après "comment ca marche" -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_how"/>
+
             <!-- ══════════════════════════════════════════
                  POURQUOI NOUS CHOISIR
             ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
+            <section class="mn-section mn-section--gray" data-snippet="s_why" data-name="Pourquoi nous choisir">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Nos engagements</span>
@@ -250,10 +243,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après engagements -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_why"/>
+
             <!-- ══════════════════════════════════════════
                  TEMOIGNAGES
             ══════════════════════════════════════════ -->
-            <section class="mn-reviews mn-section">
+            <section class="mn-reviews mn-section" data-snippet="s_reviews" data-name="Témoignages">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Temoignages</span>
@@ -292,10 +288,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après témoignages -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_reviews"/>
+
             <!-- ══════════════════════════════════════════
                  ESPACE ARTISAN
             ══════════════════════════════════════════ -->
-            <section class="mn-section" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);color:white;">
+            <section class="mn-section" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);color:white;" data-snippet="s_artisan" data-name="Espace Artisan">
                 <div class="mn-container">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
                         <div>
@@ -349,7 +348,6 @@
                                 </a>
                             </div>
                         </div>
-                        <!-- Stats artisan -->
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                             <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
                                 <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">+1 700</div>
@@ -372,10 +370,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après espace artisan -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_artisan"/>
+
             <!-- ══════════════════════════════════════════
                  ASSURANCES PARTENAIRES
             ══════════════════════════════════════════ -->
-            <section class="mn-section mn-section--gray">
+            <section class="mn-section mn-section--gray" data-snippet="s_partners" data-name="Partenaires">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">Partenaires</span>
@@ -390,7 +391,6 @@
                         <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MMA</div>
                         <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MACIF</div>
                     </div>
-                    <!-- API Box -->
                     <div style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
                         <div style="display:flex;align-items:flex-start;gap:20px;">
                             <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:22px;flex-shrink:0;">
@@ -406,10 +406,13 @@
                 </div>
             </section>
 
+            <!-- Zone droppable après partenaires -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_partners"/>
+
             <!-- ══════════════════════════════════════════
                  FAQ
             ══════════════════════════════════════════ -->
-            <section class="mn-section">
+            <section class="mn-section" data-snippet="s_faq" data-name="FAQ">
                 <div class="mn-container">
                     <div class="mn-section__header">
                         <span class="mn-eyebrow">FAQ</span>
@@ -417,7 +420,6 @@
                         <p>Tout ce que vous devez savoir avant de faire appel a nos services</p>
                     </div>
                     <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;">
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Quel est le delai d'intervention ?
@@ -427,7 +429,6 @@
                                 Pour les urgences (porte claquee, fuite d'eau, panne electrique), nous garantissons une intervention en moins de 2h. Pour les interventions planifiees, nous proposons des creneaux sous 48h. Nos artisans couvrent l'ensemble du territoire metropolitain.
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Est-ce que mon assurance prend en charge les frais ?
@@ -437,27 +438,24 @@
                                 Cela depend de votre contrat d'assurance. Beaucoup de contrats multirisques habitation couvrent les degats des eaux, les effractions et les bris de glace. Contactez d'abord votre assureur. Si votre assurance est partenaire de notre plateforme, la prise en charge est automatique et directe.
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Comment sont selectionnes vos artisans ?
                                 <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
                             </summary>
                             <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Chaque artisan passe par un processus de verification rigoureux : verification du Kbis, des assurances professionnelles, des certifications metier (Qualifelec pour les electriciens, etc.) et signature d'une charte qualite. Leurs interventions sont notees par les clients apres chaque mission. Tout artisan en dessous de 4/5 est suspendu.
+                                Chaque artisan passe par un processus de verification rigoureux : verification du Kbis, des assurances professionnelles, des certifications metier (Qualifelec pour les electriciens, etc.) et signature d'une charte qualite. Leurs interventions sont notees par les clients apres chaque mission.
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Quels sont vos tarifs ?
                                 <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
                             </summary>
                             <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Le devis est toujours gratuit et sans engagement. Les tarifs varient selon le type d'intervention, la complexite et l'heure (tarif de nuit ou weekend). Vous recevez une fourchette de prix precise avant toute intervention. Aucun frais supplementaire ne peut etre facture sans votre accord prealable.
+                                Le devis est toujours gratuit et sans engagement. Les tarifs varient selon le type d'intervention, la complexite et l'heure. Vous recevez une fourchette de prix precise avant toute intervention. Aucun frais supplementaire ne peut etre facture sans votre accord prealable.
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Intervenez-vous dans toute la France ?
@@ -467,17 +465,15 @@
                                 Oui, notre reseau couvre l'ensemble de la France metropolitaine et les DOM-TOM principaux. Nos 1 700+ artisans partenaires sont repartis dans toutes les regions. En zone rurale, le delai peut etre legerement superieur (3h maximum).
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Comment suivre l'avancement de mon dossier ?
                                 <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
                             </summary>
                             <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-                                Apres votre demande, vous recevez un SMS avec un lien de suivi unique. Vous pouvez suivre en temps reel : confirmation de l'artisan, heure d'arrivee estimee, photos de l'intervention, rapport final et facture. Tout est disponible sans creation de compte.
+                                Apres votre demande, vous recevez un SMS avec un lien de suivi unique. Vous pouvez suivre en temps reel : confirmation de l'artisan, heure d'arrivee estimee, photos de l'intervention, rapport final et facture.
                             </div>
                         </details>
-
                         <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
                             <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
                                 Je suis artisan, comment rejoindre votre reseau ?
@@ -487,15 +483,17 @@
                                 Remplissez le formulaire sur la page <a href="/rejoindre-le-reseau" style="color:#C62828;">Rejoindre le reseau</a>. Apres verification de votre dossier (48h), vous recevez acces a l'application mobile pour vos premieres missions.
                             </div>
                         </details>
-
                     </div>
                 </div>
             </section>
 
+            <!-- Zone droppable après FAQ -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_after_faq"/>
+
             <!-- ══════════════════════════════════════════
                  CTA FINAL
             ══════════════════════════════════════════ -->
-            <section class="mn-cta">
+            <section class="mn-cta" data-snippet="s_cta" data-name="CTA Final">
                 <div class="mn-container">
                     <div class="mn-cta__inner">
                         <h2>Urgence sinistre ? Appelez maintenant.</h2>
@@ -513,17 +511,23 @@
                 </div>
             </section>
 
+            <!-- Zone droppable en bas de page (principale) -->
+            <div class="oe_structure oe_empty" id="oe_structure_home_bottom"/>
+
             <!-- Script FAQ accordeon -->
             <script>
                 document.querySelectorAll('details').forEach(function(det) {
                     det.addEventListener('toggle', function() {
                         var icon = det.querySelector('.fa-chevron-down');
-                        if (icon) icon.style.transform = det.open ? 'rotate(180deg)' : 'rotate(0)';
-                        icon.style.transition = 'transform 0.2s';
+                        if (icon) {
+                            icon.style.transform = det.open ? 'rotate(180deg)' : 'rotate(0)';
+                            icon.style.transition = 'transform 0.2s';
+                        }
                     });
                 });
             </script>
 
+            </div><!-- /wrap -->
         </t>
     </template>
 
