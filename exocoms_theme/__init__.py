@@ -54,7 +54,6 @@ def post_init_hook(env):
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
     params.set_param('website.lang_redirect_from_browser', False)
-    params.set_param('website.default_lang_url_codes', 'fr')
 
     try:
         if website:
