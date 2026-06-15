@@ -11,10 +11,9 @@ class PaymentProviderMandat(models.Model):
     )
 
     def _get_supported_currencies(self):
-        supported = super()._get_supported_currencies()
         if self.code == 'mandat_administratif':
-            supported = supported.filtered(lambda c: c.name == 'EUR')
-        return supported
+            return self.env['res.currency'].search([])
+        return super()._get_supported_currencies()
 
 
 class PaymentTransactionMandat(models.Model):
