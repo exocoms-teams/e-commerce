@@ -54,10 +54,13 @@ def post_init_hook(env):
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
     params.set_param('website.lang_redirect_from_browser', False)
+    params.set_param('website.default_lang_url_codes', 'fr')
 
     try:
         if website:
-            website.sudo().write({'user_lang_redirect': False})
+            website.sudo().write({
+                'user_lang_redirect': False,
+            })
     except Exception:
         pass
 
@@ -109,7 +112,7 @@ def post_init_hook(env):
 </data>
 """})
 
-    # === DÉCONNEXION — supprimer la vue custom, Odoo gère nativement FR/EN ===
+    # === DÉCONNEXION — supprimer la vue custom ===
     existing = env['ir.ui.view'].search([
         ('name', '=', 'Exocoms Logout FR')
     ], limit=1)
@@ -125,34 +128,34 @@ def post_init_hook(env):
         for grid_view in grid_views:
             try:
                 arch = grid_view.arch
-                if 'o_wsale_products_grid' in arch and 'o_wsale_products_opt_design_chips' not in arch:
-                    # Essayer plusieurs points d'insertion
+                if 'o_wsale_products_grid' in arch and \
+                   'o_wsale_products_opt_design_chips' not in arch:
                     if 'o_wsale_products_opt_layout_catalog' in arch:
                         arch = arch.replace(
                             'o_wsale_products_opt_layout_catalog',
-                            'o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips'
+                            'o_wsale_products_opt_layout_catalog'
+                            ' o_wsale_products_opt_design_chips'
                         )
                     elif 'o_wsale_products_grid_table grid' in arch:
                         arch = arch.replace(
                             'o_wsale_products_grid_table grid',
-                            'o_wsale_products_grid_table grid o_wsale_products_opt_design_chips'
+                            'o_wsale_products_grid_table grid'
+                            ' o_wsale_products_opt_design_chips'
                         )
                     grid_view.write({'arch': arch})
             except Exception:
                 pass
     except Exception:
         pass
-    
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
-    # Archiver les catégories de démo
     demo_names = [
         'Desks', 'Furnitures', 'Boxes', 'Drawers',
         'Cabinets', 'Bins', 'Lamps', 'All',
         'Indoor', 'Outdoor', 'Multimedia',
     ]
-   # Par ça :
     cats_demo = cat.search([('name', 'in', demo_names)])
     if cats_demo:
         cats_demo.unlink()
@@ -171,29 +174,35 @@ def post_init_hook(env):
             c = cat.create(vals)
         return c
 
-    # === RACINES — filmstrip ===
     informatique = get_or_create('Informatique & Réseaux', seq=1)
     monetique_root = get_or_create('Monétique', seq=2)
     telecom = get_or_create('Télécom', seq=3)
 
-    # Mettre Monetique et Point de vente sous Monétique
-    monetique_sub = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', False)], limit=1)
+    monetique_sub = cat.search([
+        ('name', '=', 'Monetique'), ('parent_id', '=', False)
+    ], limit=1)
     if monetique_sub:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
 
-    pdv = cat.search([('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)], limit=1)
+    pdv = cat.search([
+        ('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)
+    ], limit=1)
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
 
-    # === INFORMATIQUE & RÉSEAUX ===
     get_or_create('Matériel & Informatique Générale', informatique, seq=1)
     get_or_create('Réseaux & Infrastructure', informatique, seq=2)
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
-    # === MONÉTIQUE — niveau 1 ===
-    monetique = cat.search([('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)], limit=1)
+    monetique = cat.search([
+        ('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)
+    ], limit=1)
     if not monetique:
-        monetique = cat.create({'name': 'Monetique', 'parent_id': monetique_root.id, 'sequence': 1})
+        monetique = cat.create({
+            'name': 'Monetique',
+            'parent_id': monetique_root.id,
+            'sequence': 1
+        })
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
@@ -203,7 +212,6 @@ def post_init_hook(env):
     consommables = get_or_create('Consommables', monetique_root, seq=8)
     services = get_or_create('Services', monetique_root, seq=9)
 
-    # === MONETIQUE — sous-catégories ===
     tpe_fixe = get_or_create('TPE Fixe', monetique, seq=1)
     get_or_create('INGENICO', tpe_fixe)
     get_or_create('PAX', tpe_fixe)
@@ -236,7 +244,6 @@ def post_init_hook(env):
     get_or_create('Passerelle IP', passerelles)
     get_or_create('Passerelle 3G/4G', passerelles)
 
-    # === CAISSE ENREGISTREUSE ===
     caisse_tactile = get_or_create('Caisse Tactile', caisse, seq=1)
     sunmi_cat = get_or_create('SUNMI', caisse_tactile)
     get_or_create('Sunmi D3 80mm', sunmi_cat)
@@ -256,7 +263,6 @@ def post_init_hook(env):
     get_or_create('Consommables', caisse, seq=6)
     get_or_create('Services', caisse, seq=7)
 
-    # === MONNAIE & CHÈQUE ===
     get_or_create('Scanner de Chèque', monnaie)
     get_or_create('Lecteur de Chèque', monnaie)
     detecteurs = get_or_create('Détecteurs et Compteuses', monnaie)
@@ -264,12 +270,10 @@ def post_init_hook(env):
     get_or_create('Compteuse de Billets', detecteurs)
     get_or_create('Détecteurs', detecteurs)
 
-    # === CRYPTO ===
     get_or_create('ATM', crypto)
     get_or_create('Logiciel ATM', crypto)
     get_or_create('Formation ATM', crypto)
 
-    # === ACCESSOIRES ===
     get_or_create('Batteries TPE', accessoires)
     chargeurs = get_or_create('Chargeurs & Alimentations', accessoires)
     get_or_create('INGENICO', chargeurs)
@@ -280,19 +284,16 @@ def post_init_hook(env):
     get_or_create('Housses & protections', accessoires)
     get_or_create('Pièces détachées', accessoires)
 
-    # === CONSOMMABLES ===
     get_or_create('Monetique', consommables)
     get_or_create('Pitney Bowes', consommables)
     get_or_create('Panini', consommables)
     get_or_create("DOC'UP", consommables)
     get_or_create('Autres', consommables)
 
-    # === SERVICES ===
     get_or_create('Monetique', services)
     get_or_create('Caisse Enregistreuse', services)
     get_or_create('Pièces Détachées', services)
 
-    # === TÉLÉCOM ===
     equip = get_or_create('Équipements Électriques', telecom)
     get_or_create('Onduleurs & électricité', equip)
     get_or_create('Câbles', equip)
@@ -309,7 +310,7 @@ def post_init_hook(env):
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
 
-    # === FOOTER CONTENT — compatible toutes versions Odoo ===
+    # === FOOTER CONTENT ===
     footer_content = """
         <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
             <div class="container">
@@ -385,7 +386,7 @@ def post_init_hook(env):
         try:
             footer_view.write({
                 'priority': 1000,
-                'active': True,  
+                'active': True,
                 'arch': """
 <data inherit_id="website.layout" name="Default" active="True">
     <xpath expr="//div[@id='footer']" position="replace">
@@ -413,7 +414,7 @@ def post_init_hook(env):
             except Exception:
                 pass
 
-    # === COPYRIGHT — clé robuste Odoo 19 ===
+    # === COPYRIGHT ===
     copyright_view = env['ir.ui.view'].search([
         ('key', '=', 'website.footer_copyright_company_name')
     ], limit=1)
@@ -436,13 +437,32 @@ def post_init_hook(env):
 """})
         except Exception:
             pass
+
+
 def post_migrate_hook(env):
     """S'exécute à chaque update du module"""
     website = env['website'].search([], limit=1)
     if website:
         try:
             website.write({
-                'shop_opt_products_design_classes': 'o_wsale_products_opt_name_color_regular o_wsale_products_opt_thumb_cover o_wsale_products_opt_img_secondary_show o_wsale_products_opt_img_hover_zoom_out_light o_wsale_products_opt_has_cta o_wsale_products_opt_has_wishlist o_wsale_products_opt_has_comparison o_wsale_products_opt_actions_inline o_wsale_products_opt_wishlist_inline o_wsale_products_opt_actions_promote o_wsale_products_opt_cc o_wsale_products_opt_cc1 o_wsale_products_opt_rounded_4 o_wsale_products_opt_thumb_6_5 o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips',
+                'shop_opt_products_design_classes': (
+                    'o_wsale_products_opt_name_color_regular '
+                    'o_wsale_products_opt_thumb_cover '
+                    'o_wsale_products_opt_img_secondary_show '
+                    'o_wsale_products_opt_img_hover_zoom_out_light '
+                    'o_wsale_products_opt_has_cta '
+                    'o_wsale_products_opt_has_wishlist '
+                    'o_wsale_products_opt_has_comparison '
+                    'o_wsale_products_opt_actions_inline '
+                    'o_wsale_products_opt_wishlist_inline '
+                    'o_wsale_products_opt_actions_promote '
+                    'o_wsale_products_opt_cc '
+                    'o_wsale_products_opt_cc1 '
+                    'o_wsale_products_opt_rounded_4 '
+                    'o_wsale_products_opt_thumb_6_5 '
+                    'o_wsale_products_opt_layout_catalog '
+                    'o_wsale_products_opt_design_chips'
+                ),
             })
         except Exception:
             pass
