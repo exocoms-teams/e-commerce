@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="dashboard_menu" name="Dashboard Accueil Carousels">
-        <!-- Requis par CartService._trackProducts -->
-    <div class="oe_website_sale" style="display:none;"/>
-        <!-- ── NOUVEAUTÉS ── -->
+        <div class="oe_website_sale" style="display:none;"/>
+
+        <!-- NOUVEAUTÉS -->
         <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level">
             <div>
-                <h2 class="h3">Nouveautés</h2>
-                <p class="lead">Découvrez nos derniers produits !</p>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <h2 class="h3">Nouveautés</h2>
+                    <p class="lead">Découvrez nos derniers produits !</p>
+                </t>
+                <t t-else="">
+                    <h2 class="h3">New arrivals</h2>
+                    <p class="lead">Discover our latest products!</p>
+                </t>
             </div>
             <div>
-                <a title="Voir plus" href="/shop">Voir plus
-                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <a title="Voir plus" href="/shop">Voir plus <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
+                <t t-else="">
+                    <a title="See more" href="/en/shop">See more <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
             </div>
         </section>
         <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
             <div class="dynamic_snippet_template">
-                <t t-set="new_products"
-                    t-value="request.env['product.template'].sudo().search([
-                        ('is_published', '=', True)
-                    ], limit=16, order='create_date desc')"/>
+                <t t-set="new_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=16, order='create_date desc')"/>
                 <t t-set="new_chunks" t-value="[new_products[i:i+4] for i in range(0, len(new_products), 4)]"/>
                 <div data-bs-ride="carousel" id="s_carousel_new" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
@@ -37,36 +42,42 @@
                             </div>
                         </t>
                     </div>
-                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_new">
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_new">
                         <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
-                        <span class="visually-hidden">Précédent</span>
+                        <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Précédent</t><t t-else="">Previous</t></span>
                     </a>
-                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_new">
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_new">
                         <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
-                        <span class="visually-hidden">Suivant</span>
+                        <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Suivant</t><t t-else="">Next</t></span>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- ── MEILLEURES VENTES ── -->
+        <!-- MEILLEURES VENTES -->
         <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
             <div>
-                <h2 class="h3">Meilleures ventes</h2>
-                <p class="lead">Les produits préférés de nos clients !</p>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <h2 class="h3">Meilleures ventes</h2>
+                    <p class="lead">Les produits préférés de nos clients !</p>
+                </t>
+                <t t-else="">
+                    <h2 class="h3">Best sellers</h2>
+                    <p class="lead">Our customers' favourite products!</p>
+                </t>
             </div>
             <div>
-                <a title="Voir plus" href="/shop">Voir plus
-                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <a title="Voir plus" href="/shop">Voir plus <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
+                <t t-else="">
+                    <a title="See more" href="/en/shop">See more <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
             </div>
         </section>
         <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
             <div class="dynamic_snippet_template">
-                <t t-set="best_products"
-                    t-value="request.env['product.template'].sudo().search([
-                        ('is_published', '=', True)
-                    ], limit=16, order='write_date desc')"/>
+                <t t-set="best_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=16, order='write_date desc')"/>
                 <t t-set="best_chunks" t-value="[best_products[i:i+4] for i in range(0, len(best_products), 4)]"/>
                 <div data-bs-ride="carousel" id="s_carousel_best" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
@@ -82,28 +93,37 @@
                             </div>
                         </t>
                     </div>
-                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_best">
+                    <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_best">
                         <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
-                        <span class="visually-hidden">Précédent</span>
+                        <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Précédent</t><t t-else="">Previous</t></span>
                     </a>
-                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_best">
+                    <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_best">
                         <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
-                        <span class="visually-hidden">Suivant</span>
+                        <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Suivant</t><t t-else="">Next</t></span>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- ── VUS RÉCEMMENT ── -->
+        <!-- VUS RÉCEMMENT -->
         <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
             <div>
-                <h2 class="h3">Vus récemment</h2>
-                <p class="lead">Les produits que vous avez consultés !</p>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <h2 class="h3">Vus récemment</h2>
+                    <p class="lead">Les produits que vous avez consultés !</p>
+                </t>
+                <t t-else="">
+                    <h2 class="h3">Recently viewed</h2>
+                    <p class="lead">Products you recently browsed!</p>
+                </t>
             </div>
             <div>
-                <a title="Voir plus" href="/shop">Voir plus
-                    <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/>
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <a title="Voir plus" href="/shop">Voir plus <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
+                <t t-else="">
+                    <a title="See more" href="/en/shop">See more <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                </t>
             </div>
         </section>
         <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
@@ -126,41 +146,36 @@
                                 </div>
                             </t>
                         </div>
-                        <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" aria-label="Précédent" title="Précédent" href="#s_carousel_recent">
+                        <a class="carousel-control-prev position-md-absolute w-auto" data-bs-slide="prev" role="button" href="#s_carousel_recent">
                             <span class="oi oi-chevron-left ms-md-n4 rounded-pill p-3 bg-700"/>
-                            <span class="visually-hidden">Précédent</span>
+                            <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Précédent</t><t t-else="">Previous</t></span>
                         </a>
-                        <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" aria-label="Suivant" title="Suivant" href="#s_carousel_recent">
+                        <a class="carousel-control-next position-md-absolute w-auto" data-bs-slide="next" role="button" href="#s_carousel_recent">
                             <span class="oi oi-chevron-right me-md-n4 rounded-pill p-3 bg-700"/>
-                            <span class="visually-hidden">Suivant</span>
+                            <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Suivant</t><t t-else="">Next</t></span>
                         </a>
                     </div>
                 </t>
                 <t t-else="">
-                    <p class="text-muted p-3">Aucun produit consulté récemment.</p>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <p class="text-muted p-3">Aucun produit consulté récemment.</p>
+                    </t>
+                    <t t-else="">
+                        <p class="text-muted p-3">No recently viewed products.</p>
+                    </t>
                 </t>
             </div>
         </section>
-
     </template>
 
-    <!-- ── CARTE PRODUIT ── -->
+    <!-- CARTE PRODUIT -->
     <template id="dashboard_product_card" name="Dashboard Product Card">
-        <div class="oe_product_cart o_carousel_product_card d-flex"
-             role="article"
-             t-att-aria-label="product.name">
-            <input type="hidden" name="product-id"
-                   t-att-data-product-id="product.product_variant_id.id"/>
+        <div class="oe_product_cart o_carousel_product_card d-flex" role="article" t-att-aria-label="product.name">
+            <input type="hidden" name="product-id" t-att-data-product-id="product.product_variant_id.id"/>
             <div class="oe_product_image position-relative flex-grow-0 overflow-hidden">
-                <a contenteditable="false"
-                   t-att-href="'/shop/' + slug(product)"
-                   class="oe_product_image_link position-relative"
-                   t-att-title="product.name">
-                    <span role="img"
-                          class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center"
-                          t-att-alt="product.name + ' image'">
-                        <span class="oe_product_image_img h-100 w-100"
-                              t-attf-style="background-image: url(/web/image/product.product/#{product.product_variant_id.id}/image_512);"/>
+                <a contenteditable="false" t-att-href="'/shop/' + slug(product)" class="oe_product_image_link position-relative" t-att-title="product.name">
+                    <span role="img" class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center" t-att-alt="product.name + ' image'">
+                        <span class="oe_product_image_img h-100 w-100" t-attf-style="background-image: url(/web/image/product.product/#{product.product_variant_id.id}/image_512);"/>
                     </span>
                 </a>
             </div>
@@ -168,10 +183,7 @@
                 <div class="o_wsale_product_info_attributes_wrapper">
                     <div class="o_wsale_product_information_text">
                         <h6 class="o_wsale_products_item_title text-break">
-                            <a class="text-decoration-none"
-                               t-att-href="'/shop/' + slug(product)"
-                               t-att-content="product.name"
-                               t-att-title="product.name">
+                            <a class="text-decoration-none" t-att-href="'/shop/' + slug(product)" t-att-content="product.name" t-att-title="product.name">
                                 <t t-esc="product.name"/>
                             </a>
                         </h6>
@@ -185,20 +197,17 @@
                     </div>
                 </div>
                 <div class="o_wsale_product_sub justify-content-between gap-2">
-                    <div class="product_price" aria-label="Informations sur le prix">
+                    <div class="product_price" aria-label="Prix">
                         <span class="mb-0 fw-bold">
-                            <span class="oe_currency_value">
-                                <t t-esc="'%.2f' % product.list_price"/>
-                            </span>&#160;<t t-esc="product.currency_id.symbol"/>
+                            <span class="oe_currency_value"><t t-esc="'%.2f' % product.list_price"/></span>&#160;<t t-esc="product.currency_id.symbol"/>
                         </span>
                     </div>
                     <div class="o_wsale_product_btn">
                         <div class="o_wsale_product_action_row">
-                            <!-- Tentative native Odoo -->
                             <t t-if="product.product_variant_id">
                                 <button type="button"
                                         class="btn o_wsale_product_btn_primary js_add_cart"
-                                        title="Ajouter au panier"
+                                        t-att-title="'Ajouter au panier' if request.env.lang == 'fr_FR' else 'Add to cart'"
                                         t-att-data-product-id="product.product_variant_id.id"
                                         data-product-selected="True"
                                         t-att-data-product-template-id="product.id"
@@ -206,15 +215,17 @@
                                         data-show-quantity="True"
                                         data-action="o_website_sale_main_product_cart_update">
                                     <i class="fa fa-shopping-cart fa-fw" role="presentation"/>
-                                    <span class="o_label small ms-1">Ajouter au panier</span>
+                                    <span class="o_label small ms-1">
+                                        <t t-if="request.env.lang == 'fr_FR'">Ajouter au panier</t>
+                                        <t t-else="">Add to cart</t>
+                                    </span>
                                 </button>
                             </t>
-                            <!-- Fallback si variante indisponible -->
                             <t t-else="">
-                                <a t-att-href="'/shop/' + slug(product)"
-                                class="btn btn-primary btn-sm">
+                                <a t-att-href="'/shop/' + slug(product)" class="btn btn-primary btn-sm">
                                     <i class="fa fa-eye fa-fw"/>
-                                    Voir le produit
+                                    <t t-if="request.env.lang == 'fr_FR'">Voir le produit</t>
+                                    <t t-else="">View product</t>
                                 </a>
                             </t>
                         </div>
@@ -223,5 +234,4 @@
             </div>
         </div>
     </template>
-
 </odoo>
