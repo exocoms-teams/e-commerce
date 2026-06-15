@@ -13,13 +13,6 @@
     'depends': [
         'base', 'mail', 'account', 'sale', 'hr',
         'contacts', 'web', 'website', 'portal',
-        # Thème graphique (CSS + templates layout/footer)
-        'monetique_theme',
-        # Dépendances pour débloquer les blocs du website builder
-        'website_sale',       # Blocs Catalog + blocs de base (Odoo 17+)
-        'website_blog',       # Blocs Blogs
-        'appointment',        # Blocs Appointments
-        'event',              # Blocs Events
     ],
     'data': [
         # Security
@@ -30,8 +23,7 @@
         'data/sequence_data.xml',
         'data/mission_type_data.xml',
         'data/website_data.xml',
-        # Website — homepage en premier
-        'views/website_homepage.xml',
+        # Website
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
         # Back-office views
@@ -47,14 +39,7 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            # CSS complémentaires du design system sinistre_services
-            'sinistre_services/static/src/css/variables.css',
-            'sinistre_services/static/src/css/base.css',
-            'sinistre_services/static/src/css/layout.css',
-            'sinistre_services/static/src/css/homepage.css',
-            'sinistre_services/static/src/css/pages.css',
-            # JS frontend
-            'sinistre_services/static/src/js/main.js',
+            'monetique_theme/static/src/css/main.css',
         ],
         'web.assets_backend': [
             'sinistre_services/static/src/css/backend.css',

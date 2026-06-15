@@ -1,3 +1,4 @@
+# EXOCOMS - Sinistre Services — Infrastructure de gestion d intervention
 {
     'name': 'Sinistre Services — Infrastructure de gestion d intervention',
     'version': '19.0.1.0.0',

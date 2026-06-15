@@ -1,503 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<template id="page_home" name="Sinistre Services — Accueil">
-<t t-call="website.layout">
-<!--  Animations nécessaires (à ajouter dans le bloc style du layout ou en tête de page)  -->
-<style> @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } } @keyframes heroBounce { 0%,100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-5px) scale(1.04); } 60% { transform: translateY(2px) scale(.98); } } @keyframes heroSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @keyframes heroBlink { 0%,100% { opacity: 1; } 40%,60% { opacity: 0; } } @keyframes heroSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } } </style>
-<!--  ══════════════════════════════════════════
+
+    <template id="page_home" name="Sinistre Services — Accueil">
+        <t t-call="website.layout">
+            <!-- Animations nécessaires (à ajouter dans le bloc style du layout ou en tête de page) -->
+            <style>
+                @keyframes heroFloat   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+                @keyframes heroBounce  { 0%,100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-5px) scale(1.04); } 60% { transform: translateY(2px) scale(.98); } }
+                @keyframes heroSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                @keyframes heroBlink   { 0%,100% { opacity: 1; } 40%,60% { opacity: 0; } }
+                @keyframes heroSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+            </style>
+
+            <!-- ══════════════════════════════════════════
                  HERO
-            ══════════════════════════════════════════  -->
-<section class="mn-hero">
-<div class="mn-container">
-<div class="mn-hero__inner">
-<div class="mn-hero__content">
-<div class="mn-hero__badge">
-<span class="mn-dot"/>
-Plateforme agreee assurances · Artisans certifies
-</div>
-<h1 class="mn-hero__title">
-Intervention rapide,
-<span class="mn-hero__accent">pour vos sinistres</span>
-</h1>
-<p class="mn-hero__desc">
-Serruriers, plombiers, menuisiers disponibles
-<strong>24h/24 — 7j/7</strong>
-partout en France. Intervention en moins de 2h, devis gratuit.
-</p>
-<div class="mn-hero__actions">
-<a href="/demande-intervention" class="mn-btn mn-btn--primary mn-btn--lg">
-<i class="fa fa-wrench" aria-hidden="true"/>
-Demander une intervention
-</a>
-<a href="tel:+33100000000" class="mn-btn mn-btn--outline mn-btn--lg">
-<i class="fa fa-phone" aria-hidden="true"/>
-01 XX XX XX XX
-</a>
-</div>
-<div class="mn-hero__trust">
-<span>✓ Intervention en 2h</span>
-<span>✓ Devis gratuit</span>
-<span>✓ Artisans certifies</span>
-<span>✓ 24h/24 7j/7</span>
-</div>
-</div>
-<!--  Formulaire demande rapide  -->
-<div class="mn-hero__visual" style="filter:none;">
-<div class="mn-hero__visual" style="filter:none;display:flex;align-items:center;justify-content:center;position:relative;">
-<!--  Cercles décoratifs animés derrière l'image  -->
-<div style="position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(40,40,198,.08) 0%,transparent 70%);animation:heroFloat 6s ease-in-out infinite;z-index:0;"/>
-<div style="position:absolute;width:320px;height:320px;border-radius:50%;border:2px dashed rgba(40,40,198,.15);animation:heroSpin 20s linear infinite;z-index:0;"/>
-<!--  Badge urgence animé  -->
-<div style="position:absolute;top:10px;right:10px;z-index:2;background:#10B981;color:white;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,.35);animation:heroBounce 3s ease-in-out infinite;">
-<span style="width:7px;height:7px;background:white;border-radius:50%;animation:heroBlink 1.5s step-start infinite;display:inline-block;"/>
-Disponible 24h/24
-</div>
-<!--  Badge délai  -->
-<div style="position:absolute;bottom:20px;left:10px;z-index:2;background:white;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);animation:heroSlideIn .8s ease .4s both;">
-<div style="font-size:11px;color:#6B7280;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Délai moyen</div>
-<div style="font-size:22px;font-weight:800;color:#C62828;line-height:1.2;">Moins de 2h</div>
-</div>
-<!--  Badge artisans  -->
-<div style="position:absolute;bottom:20px;right:10px;z-index:2;background:#C62828;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(198,40,40,.3);animation:heroSlideIn .8s ease .6s both;">
-<div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Artisans</div>
-<div style="font-size:22px;font-weight:800;color:white;line-height:1.2;">+1 700</div>
-</div>
-<!--  Image principale avec animation  -->
-<img src="monetique_theme/static/src/img/sinistre.jfif" alt="Intervention sinistre" style=" width: 100%; max-width: 460px; height: auto; border-radius: 24px; box-shadow: 0 24px 60px rgba(40,40,198,.2), 0 8px 24px rgba(0,0,0,.1); position: relative; z-index: 1; animation: heroFloat 5s ease-in-out infinite; border: 3px solid rgba(40,40,198,.1); "/>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-hero">
+                <div class="mn-container">
+                    <div class="mn-hero__inner">
+                        <div class="mn-hero__content">
+                            <div class="mn-hero__badge">
+                                <span class="mn-dot"></span>
+                                Plateforme agreee assurances · Artisans certifies
+                            </div>
+                            <h1 class="mn-hero__title">
+                                Intervention rapide,
+                                <span class="mn-hero__accent">pour vos sinistres</span>
+                            </h1>
+                            <p class="mn-hero__desc">Serruriers, plombiers, menuisiers disponibles <strong>24h/24 — 7j/7</strong> partout en France. Intervention en moins de 2h, devis gratuit.</p>
+                            <div class="mn-hero__actions">
+                                <a href="/demande-intervention" class="mn-btn mn-btn--primary mn-btn--lg">
+                                    <i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention
+                                </a>
+                                <a href="tel:+33100000000" class="mn-btn mn-btn--outline mn-btn--lg">
+                                    <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
+                                </a>
+                            </div>
+                            <div class="mn-hero__trust">
+                                <span>&#10003; Intervention en 2h</span>
+                                <span>&#10003; Devis gratuit</span>
+                                <span>&#10003; Artisans certifies</span>
+                                <span>&#10003; 24h/24 7j/7</span>
+                            </div>
+                        </div>
+                        <!-- Formulaire demande rapide -->
+                        <div class="mn-hero__visual" style="filter:none;">
+                            <div class="mn-hero__visual" style="filter:none;display:flex;align-items:center;justify-content:center;position:relative;">
+                                <!-- Cercles décoratifs animés derrière l'image -->
+                                <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(40,40,198,.08) 0%,transparent 70%);animation:heroFloat 6s ease-in-out infinite;z-index:0;"/>
+                                <div style="position:absolute;width:320px;height:320px;border-radius:50%;border:2px dashed rgba(40,40,198,.15);animation:heroSpin 20s linear infinite;z-index:0;"/>
+                             
+                                <!-- Badge urgence animé -->
+                                <div style="position:absolute;top:10px;right:10px;z-index:2;background:#10B981;color:white;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,.35);animation:heroBounce 3s ease-in-out infinite;">
+                                    <span style="width:7px;height:7px;background:white;border-radius:50%;animation:heroBlink 1.5s step-start infinite;display:inline-block;"/>
+                                    Disponible 24h/24
+                                </div>
+                             
+                                <!-- Badge délai -->
+                                <div style="position:absolute;bottom:20px;left:10px;z-index:2;background:white;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.12);border:1px solid rgba(198,40,40,.1);animation:heroSlideIn .8s ease .4s both;">
+                                    <div style="font-size:11px;color:#6B7280;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Délai moyen</div>
+                                    <div style="font-size:22px;font-weight:800;color:#C62828;line-height:1.2;">Moins de 2h</div>
+                                </div>
+                             
+                                <!-- Badge artisans -->
+                                <div style="position:absolute;bottom:20px;right:10px;z-index:2;background:#C62828;padding:10px 16px;border-radius:12px;font-family:'Inter',sans-serif;box-shadow:0 8px 24px rgba(198,40,40,.3);animation:heroSlideIn .8s ease .6s both;">
+                                    <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Artisans</div>
+                                    <div style="font-size:22px;font-weight:800;color:white;line-height:1.2;">+1 700</div>
+                                </div>
+                             
+                                <!-- Image principale avec animation -->
+                                <img
+                                    src="monetique_theme/static/src/img/sinistre.jfif"
+                                    alt="Intervention sinistre"
+                                    style="
+                                        width: 100%;
+                                        max-width: 460px;
+                                        height: auto;
+                                        border-radius: 24px;
+                                        box-shadow: 0 24px 60px rgba(40,40,198,.2), 0 8px 24px rgba(0,0,0,.1);
+                                        position: relative;
+                                        z-index: 1;
+                                        animation: heroFloat 5s ease-in-out infinite;
+                                        border: 3px solid rgba(40,40,198,.1);
+                                    "
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  STATS
-            ══════════════════════════════════════════  -->
-<section class="mn-stats">
-<div class="mn-container">
-<div class="mn-stats__grid">
-<div class="mn-stat">
-<span class="mn-stat__number">+15 000</span>
-<span class="mn-stat__label">Demandes par mois</span>
-</div>
-<div class="mn-stat">
-<span class="mn-stat__number">+1 700</span>
-<span class="mn-stat__label">Artisans certifies</span>
-</div>
-<div class="mn-stat">
-<span class="mn-stat__number">2h</span>
-<span class="mn-stat__label">Delai moyen</span>
-</div>
-<div class="mn-stat">
-<span class="mn-stat__number">98%</span>
-<span class="mn-stat__label">Clients satisfaits</span>
-</div>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-stats">
+                <div class="mn-container">
+                    <div class="mn-stats__grid">
+                        <div class="mn-stat">
+                            <span class="mn-stat__number">+15 000</span>
+                            <span class="mn-stat__label">Demandes par mois</span>
+                        </div>
+                        <div class="mn-stat">
+                            <span class="mn-stat__number">+1 700</span>
+                            <span class="mn-stat__label">Artisans certifies</span>
+                        </div>
+                        <div class="mn-stat">
+                            <span class="mn-stat__number">2h</span>
+                            <span class="mn-stat__label">Delai moyen</span>
+                        </div>
+                        <div class="mn-stat">
+                            <span class="mn-stat__number">98%</span>
+                            <span class="mn-stat__label">Clients satisfaits</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  SERVICES
-            ══════════════════════════════════════════  -->
-<section class="mn-section mn-section--gray">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">Nos interventions</span>
-<h2>Tous types de sinistres pris en charge</h2>
-<p>Artisans qualifies disponibles 24h/24 — Intervention garantie en moins de 2h</p>
-</div>
-<div class="mn-grid mn-grid--3">
-<a href="/demande-intervention" class="mn-card--solution">
-<div class="mn-card__icon">
-<i class="fa fa-lock" aria-hidden="true"/>
-</div>
-<h3>Serrurerie</h3>
-<p>Porte claquee, serrure forcee, cylindre a remplacer. Ouverture sans destruction garantie.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-<a href="/demande-intervention" class="mn-card--solution">
-<div class="mn-card__icon">
-<i class="fa fa-tint" aria-hidden="true"/>
-</div>
-<h3>Plomberie</h3>
-<p>Fuite d'eau, degat des eaux, canalisation bouchee. Intervention d'urgence 24h/24.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-<a href="/demande-intervention" class="mn-card--solution">
-<div class="mn-card__icon">
-<i class="fa fa-home" aria-hidden="true"/>
-</div>
-<h3>Menuiserie</h3>
-<p>Porte fracturee, fenetre endommagee, volet casse. Securisation immediate puis remplacement.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-<a href="/demande-intervention" class="mn-card--solution">
-<div class="mn-card__icon">
-<i class="fa fa-th-large" aria-hidden="true"/>
-</div>
-<h3>Vitrerie</h3>
-<p>Bris de glace, fenetre cassee, double vitrage. Bache provisoire disponible dans l'heure.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-<a href="/demande-intervention" class="mn-card--solution">
-<div class="mn-card__icon">
-<i class="fa fa-bolt" aria-hidden="true"/>
-</div>
-<h3>Electricite</h3>
-<p>Panne electrique, disjoncteur, court-circuit. Electriciens Qualifelec certifies.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-<a href="/urgence" class="mn-card--solution mn-card--featured">
-<div class="mn-card__icon">
-<i class="fa fa-exclamation-triangle" aria-hidden="true"/>
-</div>
-<h3>Urgence 24h/24</h3>
-<p>Toute intervention urgente, nuit et weekend. Un artisan chez vous en moins de 2h garantis.</p>
-<span class="mn-card__arrow">→</span>
-</a>
-</div>
-<div class="mn-section__footer">
-<a href="/nos-services" class="mn-btn mn-btn--outline">Voir tous nos services →</a>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section mn-section--gray">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Nos interventions</span>
+                        <h2>Tous types de sinistres pris en charge</h2>
+                        <p>Artisans qualifies disponibles 24h/24 — Intervention garantie en moins de 2h</p>
+                    </div>
+                    <div class="mn-grid mn-grid--3">
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-lock" aria-hidden="true"/></div>
+                            <h3>Serrurerie</h3>
+                            <p>Porte claquee, serrure forcee, cylindre a remplacer. Ouverture sans destruction garantie.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-tint" aria-hidden="true"/></div>
+                            <h3>Plomberie</h3>
+                            <p>Fuite d'eau, degat des eaux, canalisation bouchee. Intervention d'urgence 24h/24.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-home" aria-hidden="true"/></div>
+                            <h3>Menuiserie</h3>
+                            <p>Porte fracturee, fenetre endommagee, volet casse. Securisation immediate puis remplacement.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-th-large" aria-hidden="true"/></div>
+                            <h3>Vitrerie</h3>
+                            <p>Bris de glace, fenetre cassee, double vitrage. Bache provisoire disponible dans l'heure.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/demande-intervention" class="mn-card--solution">
+                            <div class="mn-card__icon"><i class="fa fa-bolt" aria-hidden="true"/></div>
+                            <h3>Electricite</h3>
+                            <p>Panne electrique, disjoncteur, court-circuit. Electriciens Qualifelec certifies.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                        <a href="/urgence" class="mn-card--solution mn-card--featured">
+                            <div class="mn-card__icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"/></div>
+                            <h3>Urgence 24h/24</h3>
+                            <p>Toute intervention urgente, nuit et weekend. Un artisan chez vous en moins de 2h garantis.</p>
+                            <span class="mn-card__arrow">&#8594;</span>
+                        </a>
+                    </div>
+                    <div class="mn-section__footer">
+                        <a href="/nos-services" class="mn-btn mn-btn--outline">Voir tous nos services &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  COMMENT CA MARCHE
-            ══════════════════════════════════════════  -->
-<section class="mn-section">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">Simple et rapide</span>
-<h2>Comment ca marche ?</h2>
-<p>De votre appel a l'intervention, tout se passe en 3 etapes simples</p>
-</div>
-<div class="mn-grid mn-grid--3" style="gap:32px;">
-<div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;position:relative;">
-<div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">1</div>
-<div style="position:absolute;top:56px;left:calc(50% + 36px);width:calc(50% - 36px + 32px);height:2px;background:linear-gradient(90deg,#FFEBEE,rgba(198,40,40,.15));display:none;" class="mn-step-line"/>
-<h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Contactez-nous</h3>
-<p style="font-size:14px;color:#6B7280;line-height:1.7;">Appelez le 01 XX XX XX XX ou remplissez le formulaire en ligne. Disponible 24h/24, 7j/7, meme les jours feries.</p>
-</div>
-<div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;">
-<div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">2</div>
-<h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Recevez un devis</h3>
-<p style="font-size:14px;color:#6B7280;line-height:1.7;">Fourchette tarifaire precise en moins de 10 minutes. Pas de surprise : le prix est fixe avant l'intervention.</p>
-</div>
-<div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid rgba(198,40,40,.15);background:linear-gradient(135deg,#FFF5F5,white);">
-<div style="width:72px;height:72px;background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(198,40,40,.25);">3</div>
-<h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">L'artisan intervient</h3>
-<p style="font-size:14px;color:#6B7280;line-height:1.7;">Artisan certifie chez vous en moins de 2h. Photos avant/apres, rapport d'intervention remis pour votre assurance.</p>
-</div>
-</div>
-<!--  Bande assurance  -->
-<div style="margin-top:48px;background:linear-gradient(135deg,#EFF6FF,#F0F4FF);border:1px solid #BFDBFE;border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-<div style="display:flex;align-items:center;gap:16px;">
-<div style="width:48px;height:48px;background:#1E40AF;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;flex-shrink:0;">
-<i class="fa fa-building" aria-hidden="true"/>
-</div>
-<div>
-<p style="font-size:15px;font-weight:700;color:#1E40AF;margin-bottom:2px;">Vous avez une assurance habitation ?</p>
-<p style="font-size:13px;color:#6B7280;">Contactez d'abord votre assureur — il peut nous mandater directement et prendre en charge une partie du cout.</p>
-</div>
-</div>
-<a href="/contact" class="mn-btn mn-btn--primary mn-btn--sm" style="background:#1E40AF;border-color:#1E40AF;white-space:nowrap;">En savoir plus</a>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Simple et rapide</span>
+                        <h2>Comment ca marche ?</h2>
+                        <p>De votre appel a l'intervention, tout se passe en 3 etapes simples</p>
+                    </div>
+                    <div class="mn-grid mn-grid--3" style="gap:32px;">
+                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;position:relative;">
+                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">1</div>
+                            <div style="position:absolute;top:56px;left:calc(50% + 36px);width:calc(50% - 36px + 32px);height:2px;background:linear-gradient(90deg,#FFEBEE,rgba(198,40,40,.15));display:none;" class="mn-step-line"/>
+                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Contactez-nous</h3>
+                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Appelez le 01 XX XX XX XX ou remplissez le formulaire en ligne. Disponible 24h/24, 7j/7, meme les jours feries.</p>
+                        </div>
+                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid #E5E7EB;">
+                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#1E3A8A,#1E40AF);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(30,64,175,.25);">2</div>
+                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">Recevez un devis</h3>
+                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Fourchette tarifaire precise en moins de 10 minutes. Pas de surprise : le prix est fixe avant l'intervention.</p>
+                        </div>
+                        <div style="text-align:center;padding:32px 24px;background:white;border-radius:16px;border:1px solid rgba(198,40,40,.15);background:linear-gradient(135deg,#FFF5F5,white);">
+                            <div style="width:72px;height:72px;background:linear-gradient(135deg,#B71C1C,#C62828);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;font-weight:800;color:white;box-shadow:0 8px 32px rgba(198,40,40,.25);">3</div>
+                            <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:10px;">L'artisan intervient</h3>
+                            <p style="font-size:14px;color:#6B7280;line-height:1.7;">Artisan certifie chez vous en moins de 2h. Photos avant/apres, rapport d'intervention remis pour votre assurance.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bande assurance -->
+                    <div style="margin-top:48px;background:linear-gradient(135deg,#EFF6FF,#F0F4FF);border:1px solid #BFDBFE;border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+                        <div style="display:flex;align-items:center;gap:16px;">
+                            <div style="width:48px;height:48px;background:#1E40AF;border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;flex-shrink:0;">
+                                <i class="fa fa-building" aria-hidden="true"/>
+                            </div>
+                            <div>
+                                <p style="font-size:15px;font-weight:700;color:#1E40AF;margin-bottom:2px;">Vous avez une assurance habitation ?</p>
+                                <p style="font-size:13px;color:#6B7280;">Contactez d'abord votre assureur — il peut nous mandater directement et prendre en charge une partie du cout.</p>
+                            </div>
+                        </div>
+                        <a href="/contact" class="mn-btn mn-btn--primary mn-btn--sm" style="background:#1E40AF;border-color:#1E40AF;white-space:nowrap;">En savoir plus</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  POURQUOI NOUS CHOISIR
-            ══════════════════════════════════════════  -->
-<section class="mn-section mn-section--gray">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">Nos engagements</span>
-<h2>Pourquoi choisir Sinistre Services ?</h2>
-<p>Des engagements concrets pour votre tranquillite d'esprit</p>
-</div>
-<div class="mn-grid mn-grid--4">
-<div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-<div style="font-size:28px;color:#C62828;margin-bottom:14px;">
-<i class="fa fa-shield" aria-hidden="true"/>
-</div>
-<h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Artisans verifies</h4>
-<p style="font-size:13px;color:#6B7280;line-height:1.6;">Chaque artisan signe une charte qualite et est verifie (assurance, Kbis, certifications) avant toute intervention.</p>
-</div>
-<div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-<div style="font-size:28px;color:#C62828;margin-bottom:14px;">
-<i class="fa fa-money" aria-hidden="true"/>
-</div>
-<h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Prix fixes garantis</h4>
-<p style="font-size:13px;color:#6B7280;line-height:1.6;">Devis gratuit, fourchette tarifaire fixee avant l'intervention. Zero frais cache. Paiement uniquement apres realisation.</p>
-</div>
-<div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-<div style="font-size:28px;color:#C62828;margin-bottom:14px;">
-<i class="fa fa-clock-o" aria-hidden="true"/>
-</div>
-<h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Disponible 24h/24</h4>
-<p style="font-size:13px;color:#6B7280;line-height:1.6;">Urgences la nuit, le weekend, les jours feries. Notre plateforme ne s'arrete jamais, partout en France metropolitaine.</p>
-</div>
-<div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
-<div style="font-size:28px;color:#C62828;margin-bottom:14px;">
-<i class="fa fa-file-text-o" aria-hidden="true"/>
-</div>
-<h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Rapport complet</h4>
-<p style="font-size:13px;color:#6B7280;line-height:1.6;">Photos avant/apres, rapport d'intervention detaille transmis directement a votre assurance pour faciliter le remboursement.</p>
-</div>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section mn-section--gray">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Nos engagements</span>
+                        <h2>Pourquoi choisir Sinistre Services ?</h2>
+                        <p>Des engagements concrets pour votre tranquillite d'esprit</p>
+                    </div>
+                    <div class="mn-grid mn-grid--4">
+                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-shield" aria-hidden="true"/></div>
+                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Artisans verifies</h4>
+                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Chaque artisan signe une charte qualite et est verifie (assurance, Kbis, certifications) avant toute intervention.</p>
+                        </div>
+                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-money" aria-hidden="true"/></div>
+                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Prix fixes garantis</h4>
+                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Devis gratuit, fourchette tarifaire fixee avant l'intervention. Zero frais cache. Paiement uniquement apres realisation.</p>
+                        </div>
+                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-clock-o" aria-hidden="true"/></div>
+                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Disponible 24h/24</h4>
+                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Urgences la nuit, le weekend, les jours feries. Notre plateforme ne s'arrete jamais, partout en France metropolitaine.</p>
+                        </div>
+                        <div style="background:white;border-radius:14px;padding:28px;border:1px solid #E5E7EB;border-top:4px solid #C62828;">
+                            <div style="font-size:28px;color:#C62828;margin-bottom:14px;"><i class="fa fa-file-text-o" aria-hidden="true"/></div>
+                            <h4 style="font-size:15px;font-weight:700;color:#0F172A;margin-bottom:8px;">Rapport complet</h4>
+                            <p style="font-size:13px;color:#6B7280;line-height:1.6;">Photos avant/apres, rapport d'intervention detaille transmis directement a votre assurance pour faciliter le remboursement.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  TEMOIGNAGES
-            ══════════════════════════════════════════  -->
-<section class="mn-reviews mn-section">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">Temoignages</span>
-<h2>Ce que disent nos clients</h2>
-</div>
-<div class="mn-grid mn-grid--3">
-<article class="mn-review">
-<div class="mn-review__stars">★★★★★</div>
-<blockquote>Serrurier arrive en 40 minutes, porte ouverte sans degat. Tres professionnel, prix conforme au devis.</blockquote>
-<footer class="mn-review__author">
-<div class="mn-avatar">ML</div>
-<div>
-<strong>Marie L.</strong>
-<span>Particulier, Paris 15e</span>
-</div>
-</footer>
-</article>
-<article class="mn-review">
-<div class="mn-review__stars">★★★★★</div>
-<blockquote>Fuite d'eau un dimanche soir, plombier sur place en 1h30. Degat maitrise rapidement. Merci pour la reactivite !</blockquote>
-<footer class="mn-review__author">
-<div class="mn-avatar">TB</div>
-<div>
-<strong>Thomas B.</strong>
-<span>Particulier, Lyon</span>
-</div>
-</footer>
-</article>
-<article class="mn-review">
-<div class="mn-review__stars">★★★★★</div>
-<blockquote>Prise en charge directe par notre assurance. Rapport d'intervention tres detaille, suivi parfait du dossier.</blockquote>
-<footer class="mn-review__author">
-<div class="mn-avatar">SM</div>
-<div>
-<strong>Sophie M.</strong>
-<span>Gestionnaire sinistres, AXA</span>
-</div>
-</footer>
-</article>
-</div>
-<div class="mn-reviews__score">
-<div class="mn-reviews__stars">★★★★★</div>
-<strong>4,8 / 5</strong>
-— 1 247 avis verifies
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-reviews mn-section">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Temoignages</span>
+                        <h2>Ce que disent nos clients</h2>
+                    </div>
+                    <div class="mn-grid mn-grid--3">
+                        <article class="mn-review">
+                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                            <blockquote>Serrurier arrive en 40 minutes, porte ouverte sans degat. Tres professionnel, prix conforme au devis.</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">ML</div>
+                                <div><strong>Marie L.</strong><span>Particulier, Paris 15e</span></div>
+                            </footer>
+                        </article>
+                        <article class="mn-review">
+                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                            <blockquote>Fuite d'eau un dimanche soir, plombier sur place en 1h30. Degat maitrise rapidement. Merci pour la reactivite !</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">TB</div>
+                                <div><strong>Thomas B.</strong><span>Particulier, Lyon</span></div>
+                            </footer>
+                        </article>
+                        <article class="mn-review">
+                            <div class="mn-review__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                            <blockquote>Prise en charge directe par notre assurance. Rapport d'intervention tres detaille, suivi parfait du dossier.</blockquote>
+                            <footer class="mn-review__author">
+                                <div class="mn-avatar">SM</div>
+                                <div><strong>Sophie M.</strong><span>Gestionnaire sinistres, AXA</span></div>
+                            </footer>
+                        </article>
+                    </div>
+                    <div class="mn-reviews__score">
+                        <div class="mn-reviews__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                        <strong>4,8 / 5</strong> &#8212; 1 247 avis verifies
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  ESPACE ARTISAN
-            ══════════════════════════════════════════  -->
-<section class="mn-section" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);color:white;">
-<div class="mn-container">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
-<div>
-<span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FCA5A5;background:rgba(198,40,40,.15);padding:4px 14px;border-radius:100px;border:1px solid rgba(198,40,40,.3);margin-bottom:20px;">Espace Artisan</span>
-<h2 style="font-size:36px;font-weight:800;letter-spacing:-.025em;color:white;margin-bottom:16px;line-height:1.2;">Vous etes artisan ? Rejoignez notre reseau</h2>
-<p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:32px;">Recevez des missions qualifiees directement sur votre smartphone. Gerez votre planning, vos devis et vos paiements depuis notre application mobile.</p>
-<div style="display:flex;flex-direction:column;gap:16px;margin-bottom:36px;">
-<div style="display:flex;align-items:center;gap:14px;">
-<div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-<i class="fa fa-mobile" aria-hidden="true"/>
-</div>
-<div>
-<p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Application mobile dediee</p>
-<p style="font-size:13px;color:rgba(255,255,255,.5);">Recevez et gerez vos missions en temps reel depuis votre telephone</p>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:14px;">
-<div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-<i class="fa fa-money" aria-hidden="true"/>
-</div>
-<div>
-<p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Paiement rapide garanti</p>
-<p style="font-size:13px;color:rgba(255,255,255,.5);">Virement sous 48h apres validation du client. Aucun impaye.</p>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:14px;">
-<div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-<i class="fa fa-map-marker" aria-hidden="true"/>
-</div>
-<div>
-<p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Missions dans votre zone</p>
-<p style="font-size:13px;color:rgba(255,255,255,.5);">Definissez votre perimetre d'intervention. Recevez uniquement les missions proches de vous.</p>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:14px;">
-<div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
-<i class="fa fa-star" aria-hidden="true"/>
-</div>
-<div>
-<p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Developpez votre reputation</p>
-<p style="font-size:13px;color:rgba(255,255,255,.5);">Avis clients verifies, badge certifie, visibilite aupres des assurances partenaires.</p>
-</div>
-</div>
-</div>
-<div style="display:flex;gap:12px;flex-wrap:wrap;">
-<a href="/intervenant/login" class="mn-btn mn-btn--primary mn-btn--lg">
-<i class="fa fa-sign-in" aria-hidden="true"/>
-Espace Artisan
-</a>
-<a href="/rejoindre-le-reseau" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.08);color:white;border:2px solid rgba(255,255,255,.2);"> Rejoindre le reseau </a>
-</div>
-</div>
-<!--  Stats artisan  -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">+1 700</div>
-<div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Artisans actifs</div>
-</div>
-<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">48h</div>
-<div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Delai de paiement</div>
-</div>
-<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">15%</div>
-<div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Commission plateforme</div>
-</div>
-<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
-<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">0</div>
-<div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Impaye garanti</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section" style="background:linear-gradient(135deg,#0F172A 0%,#1E2A4A 100%);color:white;">
+                <div class="mn-container">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+                        <div>
+                            <span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#FCA5A5;background:rgba(198,40,40,.15);padding:4px 14px;border-radius:100px;border:1px solid rgba(198,40,40,.3);margin-bottom:20px;">Espace Artisan</span>
+                            <h2 style="font-size:36px;font-weight:800;letter-spacing:-.025em;color:white;margin-bottom:16px;line-height:1.2;">Vous etes artisan ? Rejoignez notre reseau</h2>
+                            <p style="font-size:16px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:32px;">Recevez des missions qualifiees directement sur votre smartphone. Gerez votre planning, vos devis et vos paiements depuis notre application mobile.</p>
+                            <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:36px;">
+                                <div style="display:flex;align-items:center;gap:14px;">
+                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
+                                        <i class="fa fa-mobile" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Application mobile dediee</p>
+                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Recevez et gerez vos missions en temps reel depuis votre telephone</p>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:14px;">
+                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
+                                        <i class="fa fa-money" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Paiement rapide garanti</p>
+                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Virement sous 48h apres validation du client. Aucun impaye.</p>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:14px;">
+                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
+                                        <i class="fa fa-map-marker" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Missions dans votre zone</p>
+                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Definissez votre perimetre d'intervention. Recevez uniquement les missions proches de vous.</p>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:14px;">
+                                    <div style="width:40px;height:40px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FCA5A5;flex-shrink:0;">
+                                        <i class="fa fa-star" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <p style="font-size:14px;font-weight:600;color:white;margin-bottom:2px;">Developpez votre reputation</p>
+                                        <p style="font-size:13px;color:rgba(255,255,255,.5);">Avis clients verifies, badge certifie, visibilite aupres des assurances partenaires.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                                <a href="/intervenant/login" class="mn-btn mn-btn--primary mn-btn--lg">
+                                    <i class="fa fa-sign-in" aria-hidden="true"/> Espace Artisan
+                                </a>
+                                <a href="/rejoindre-le-reseau" class="mn-btn mn-btn--lg" style="background:rgba(255,255,255,.08);color:white;border:2px solid rgba(255,255,255,.2);">
+                                    Rejoindre le reseau
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Stats artisan -->
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
+                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">+1 700</div>
+                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Artisans actifs</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
+                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">48h</div>
+                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Delai de paiement</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
+                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">15%</div>
+                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Commission plateforme</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;text-align:center;">
+                                <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,#fff,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">0</div>
+                                <div style="font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;font-weight:500;">Impaye garanti</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  ASSURANCES PARTENAIRES
-            ══════════════════════════════════════════  -->
-<section class="mn-section mn-section--gray">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">Partenaires</span>
-<h2>Plateforme agreee par les assurances</h2>
-<p>Nous travaillons directement avec les principales compagnies d'assurance pour une prise en charge simplifiee</p>
-</div>
-<div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:48px;">
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">AXA</div>
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MAIF</div>
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Allianz</div>
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Groupama</div>
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MMA</div>
-<div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MACIF</div>
-</div>
-<!--  API Box  -->
-<div style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-<div style="display:flex;align-items:flex-start;gap:20px;">
-<div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:22px;flex-shrink:0;">
-<i class="fa fa-code" aria-hidden="true"/>
-</div>
-<div>
-<h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:6px;">API dediee pour assureurs</h3>
-<p style="font-size:14px;color:#6B7280;max-width:520px;line-height:1.6;">Integrez notre plateforme directement dans votre systeme de gestion de sinistres. Envoi automatique des ordres de mission, suivi en temps reel, rapports PDF.</p>
-</div>
-</div>
-<a href="/assurances/api-access" class="mn-btn mn-btn--primary" style="white-space:nowrap;">Demander un acces API</a>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section mn-section--gray">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">Partenaires</span>
+                        <h2>Plateforme agreee par les assurances</h2>
+                        <p>Nous travaillons directement avec les principales compagnies d'assurance pour une prise en charge simplifiee</p>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:48px;">
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">AXA</div>
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MAIF</div>
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Allianz</div>
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">Groupama</div>
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MMA</div>
+                        <div style="padding:16px 28px;background:white;border:1px solid #E5E7EB;border-radius:12px;font-size:15px;font-weight:700;color:#374151;">MACIF</div>
+                    </div>
+                    <!-- API Box -->
+                    <div style="background:white;border:1px solid #E5E7EB;border-radius:16px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+                        <div style="display:flex;align-items:flex-start;gap:20px;">
+                            <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:22px;flex-shrink:0;">
+                                <i class="fa fa-code" aria-hidden="true"/>
+                            </div>
+                            <div>
+                                <h3 style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:6px;">API dediee pour assureurs</h3>
+                                <p style="font-size:14px;color:#6B7280;max-width:520px;line-height:1.6;">Integrez notre plateforme directement dans votre systeme de gestion de sinistres. Envoi automatique des ordres de mission, suivi en temps reel, rapports PDF.</p>
+                            </div>
+                        </div>
+                        <a href="/assurances/api-access" class="mn-btn mn-btn--primary" style="white-space:nowrap;">Demander un acces API</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  FAQ
-            ══════════════════════════════════════════  -->
-<section class="mn-section">
-<div class="mn-container">
-<div class="mn-section__header">
-<span class="mn-eyebrow">FAQ</span>
-<h2>Questions frequentes</h2>
-<p>Tout ce que vous devez savoir avant de faire appel a nos services</p>
-</div>
-<div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;">
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Quel est le delai d'intervention ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Pour les urgences (porte claquee, fuite d'eau, panne electrique), nous garantissons une intervention en moins de 2h. Pour les interventions planifiees, nous proposons des creneaux sous 48h. Nos artisans couvrent l'ensemble du territoire metropolitain. </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Est-ce que mon assurance prend en charge les frais ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Cela depend de votre contrat d'assurance. Beaucoup de contrats multirisques habitation couvrent les degats des eaux, les effractions et les bris de glace. Contactez d'abord votre assureur. Si votre assurance est partenaire de notre plateforme, la prise en charge est automatique et directe. </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Comment sont selectionnes vos artisans ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Chaque artisan passe par un processus de verification rigoureux : verification du Kbis, des assurances professionnelles, des certifications metier (Qualifelec pour les electriciens, etc.) et signature d'une charte qualite. Leurs interventions sont notees par les clients apres chaque mission. Tout artisan en dessous de 4/5 est suspendu. </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Quels sont vos tarifs ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Le devis est toujours gratuit et sans engagement. Les tarifs varient selon le type d'intervention, la complexite et l'heure (tarif de nuit ou weekend). Vous recevez une fourchette de prix precise avant toute intervention. Aucun frais supplementaire ne peut etre facture sans votre accord prealable. </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Intervenez-vous dans toute la France ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Oui, notre reseau couvre l'ensemble de la France metropolitaine et les DOM-TOM principaux. Nos 1 700+ artisans partenaires sont repartis dans toutes les regions. En zone rurale, le delai peut etre legerement superieur (3h maximum). </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Comment suivre l'avancement de mon dossier ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;"> Apres votre demande, vous recevez un SMS avec un lien de suivi unique. Vous pouvez suivre en temps reel : confirmation de l'artisan, heure d'arrivee estimee, photos de l'intervention, rapport final et facture. Tout est disponible sans creation de compte. </div>
-</details>
-<details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
-<summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-Je suis artisan, comment rejoindre votre reseau ?
-<i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
-</summary>
-<div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
-Remplissez le formulaire sur la page
-<a href="/rejoindre-le-reseau" style="color:#C62828;">Rejoindre le reseau</a>
-. Apres verification de votre dossier (48h), vous recevez acces a l'application mobile pour vos premieres missions.
-</div>
-</details>
-</div>
-</div>
-</section>
-<!--  ══════════════════════════════════════════
+            ══════════════════════════════════════════ -->
+            <section class="mn-section">
+                <div class="mn-container">
+                    <div class="mn-section__header">
+                        <span class="mn-eyebrow">FAQ</span>
+                        <h2>Questions frequentes</h2>
+                        <p>Tout ce que vous devez savoir avant de faire appel a nos services</p>
+                    </div>
+                    <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px;">
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Quel est le delai d'intervention ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Pour les urgences (porte claquee, fuite d'eau, panne electrique), nous garantissons une intervention en moins de 2h. Pour les interventions planifiees, nous proposons des creneaux sous 48h. Nos artisans couvrent l'ensemble du territoire metropolitain.
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Est-ce que mon assurance prend en charge les frais ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Cela depend de votre contrat d'assurance. Beaucoup de contrats multirisques habitation couvrent les degats des eaux, les effractions et les bris de glace. Contactez d'abord votre assureur. Si votre assurance est partenaire de notre plateforme, la prise en charge est automatique et directe.
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Comment sont selectionnes vos artisans ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Chaque artisan passe par un processus de verification rigoureux : verification du Kbis, des assurances professionnelles, des certifications metier (Qualifelec pour les electriciens, etc.) et signature d'une charte qualite. Leurs interventions sont notees par les clients apres chaque mission. Tout artisan en dessous de 4/5 est suspendu.
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Quels sont vos tarifs ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Le devis est toujours gratuit et sans engagement. Les tarifs varient selon le type d'intervention, la complexite et l'heure (tarif de nuit ou weekend). Vous recevez une fourchette de prix precise avant toute intervention. Aucun frais supplementaire ne peut etre facture sans votre accord prealable.
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Intervenez-vous dans toute la France ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Oui, notre reseau couvre l'ensemble de la France metropolitaine et les DOM-TOM principaux. Nos 1 700+ artisans partenaires sont repartis dans toutes les regions. En zone rurale, le delai peut etre legerement superieur (3h maximum).
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Comment suivre l'avancement de mon dossier ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Apres votre demande, vous recevez un SMS avec un lien de suivi unique. Vous pouvez suivre en temps reel : confirmation de l'artisan, heure d'arrivee estimee, photos de l'intervention, rapport final et facture. Tout est disponible sans creation de compte.
+                            </div>
+                        </details>
+
+                        <details style="background:white;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">
+                            <summary style="padding:20px 24px;font-size:15px;font-weight:600;color:#0F172A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                                Je suis artisan, comment rejoindre votre reseau ?
+                                <i class="fa fa-chevron-down" style="color:#C62828;font-size:13px;flex-shrink:0;" aria-hidden="true"/>
+                            </summary>
+                            <div style="padding:0 24px 20px;font-size:14px;color:#6B7280;line-height:1.7;border-top:1px solid #F3F4F6;">
+                                Remplissez le formulaire sur la page <a href="/rejoindre-le-reseau" style="color:#C62828;">Rejoindre le reseau</a>. Apres verification de votre dossier (48h), vous recevez acces a l'application mobile pour vos premieres missions.
+                            </div>
+                        </details>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════════════
                  CTA FINAL
-            ══════════════════════════════════════════  -->
-<section class="mn-cta">
-<div class="mn-container">
-<div class="mn-cta__inner">
-<h2>Urgence sinistre ? Appelez maintenant.</h2>
-<p>Intervention sous 2h · Devis gratuit · Artisans certifies · Sans engagement</p>
-<div class="mn-cta__actions">
-<a href="tel:+33100000000" class="mn-btn mn-btn--white mn-btn--lg">
-<i class="fa fa-phone" aria-hidden="true"/>
-01 XX XX XX XX
-</a>
-<a href="/demande-intervention" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white;">
-<i class="fa fa-wrench" aria-hidden="true"/>
-Formulaire en ligne
-</a>
-</div>
-<p style="margin-top:20px;font-size:13px;opacity:.6;">Disponible 24h/24 — 7j/7 — Prix d'un appel local</p>
-</div>
-</div>
-</section>
-<!--  Script FAQ accordeon  -->
-<script> document.querySelectorAll('details').forEach(function(det) { det.addEventListener('toggle', function() { var icon = det.querySelector('.fa-chevron-down'); if (icon) icon.style.transform = det.open ? 'rotate(180deg)' : 'rotate(0)'; icon.style.transition = 'transform 0.2s'; }); }); </script>
-<!--  Zone éditable Website Builder — glissez-déposez des blocs ici  -->
-<div id="oe_structure_home_bottom" class="oe_structure oe_empty"/>
-</t>
-</template>
+            ══════════════════════════════════════════ -->
+            <section class="mn-cta">
+                <div class="mn-container">
+                    <div class="mn-cta__inner">
+                        <h2>Urgence sinistre ? Appelez maintenant.</h2>
+                        <p>Intervention sous 2h · Devis gratuit · Artisans certifies · Sans engagement</p>
+                        <div class="mn-cta__actions">
+                            <a href="tel:+33100000000" class="mn-btn mn-btn--white mn-btn--lg">
+                                <i class="fa fa-phone" aria-hidden="true"/> 01 XX XX XX XX
+                            </a>
+                            <a href="/demande-intervention" class="mn-btn mn-btn--lg" style="border:2px solid rgba(255,255,255,0.4);color:white;">
+                                <i class="fa fa-wrench" aria-hidden="true"/> Formulaire en ligne
+                            </a>
+                        </div>
+                        <p style="margin-top:20px;font-size:13px;opacity:.6;">Disponible 24h/24 — 7j/7 — Prix d'un appel local</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Script FAQ accordeon -->
+            <script>
+                document.querySelectorAll('details').forEach(function(det) {
+                    det.addEventListener('toggle', function() {
+                        var icon = det.querySelector('.fa-chevron-down');
+                        if (icon) icon.style.transform = det.open ? 'rotate(180deg)' : 'rotate(0)';
+                        icon.style.transition = 'transform 0.2s';
+                    });
+                });
+            </script>
+
+        </t>
+    </template>
+
 </odoo>
