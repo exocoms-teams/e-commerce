@@ -7,14 +7,24 @@ class Exocoms(http.Controller):
 
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kw):
-        # Ne pas rediriger si on est dans l'éditeur Website Builder
+        # Ne pas rediriger si :
+        # 1. La requête vient d'un iframe (Website Builder)
+        # 2. L'utilisateur est connecté en tant qu'admin/éditeur
+        # 3. On est en mode édition
+        sec_fetch_dest = request.httprequest.headers.get('Sec-Fetch-Dest', '')
         referrer = request.httprequest.referrer or ''
         in_editor = (
-            request.httprequest.args.get('enable_editor')
+            sec_fetch_dest == 'iframe'
+            or request.httprequest.args.get('enable_editor')
             or request.httprequest.args.get('with_loader')
-            or 'website_builder' in referrer
+            or '/web#' in referrer
+            or 'odoo.com/odoo' in referrer
         )
         if in_editor:
+            return request.render('exocoms_theme.home', {})
+
+        # Utilisateur interne (admin, éditeur) — afficher sans rediriger
+        if not request.env.user._is_public():
             return request.render('exocoms_theme.home', {})
 
         frontend_lang = request.httprequest.cookies.get('frontend_lang')
