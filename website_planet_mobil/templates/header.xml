@@ -1,10 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!--HEADER-->
+        <template id="header_default_replace" name="Planet Mobil - Header Default"
+            inherit_id="website.template_header_default">
+            <xpath expr="//t[@t-call='website.navbar']" position="replace">
+                <t t-call="website.navbar">
+                    <t t-set="_navbar_classes" t-valuef="d-none d-lg-block shadow-sm" />
+                    <div id="o_main_nav"
+                        t-attf-class="o_main_nav #{header_content_width} tsp-header-bar">
+
+                        <!-- Gauche : Logo -->
+                        <t t-call="website.placeholder_header_brand" _link_class.f="tsp-header-logo" />
+
+                        <!-- Centre : Barre de recherche -->
+                        <ul class="navbar-nav tsp-header-search-wrap">
+                            <t t-call="website.placeholder_header_search_box"
+                                _layout.f=""
+                                _item_class.f="tsp-header-search-item"
+                                _input_classes.f="tsp-search-input"
+                                _submit_classes.f="tsp-search-btn" />
+                        </ul>
+
+                        <!-- Droite : Sign In + Wishlist + Panier -->
+                        <ul
+                            class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end tsp-header-actions">
+                            <!-- Sign In / User -->
+                            <t t-call="portal.placeholder_user_sign_in"
+                                _link_class.f="o_nav_link_btn nav-link border px-3" />
+                            <t t-call="portal.user_dropdown"
+                                _user_name="True"
+                                _item_class.f="dropdown"
+                                _link_class.f="nav-link border-0"
+                                _dropdown_menu_class.f="dropdown-menu-end" />
+                            <!-- Wishlist -->
+                            <t t-call="website_sale_wishlist.header_wishlist_link"
+                                _item_class.f="nav-item"
+                                _link_class.f="nav-link"
+                                _icon.f="true"
+                                _icon_wrap_class.f="position-relative d-inline-block"
+                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
+                            <!-- Panier -->
+                            <t t-call="website_sale.header_cart_link"
+                                _item_class.f="nav-item"
+                                _link_class.f="nav-link"
+                                _icon.f="true"
+                                _icon_wrap_class.f="position-relative d-inline-block"
+                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
+                        </ul>
+                    </div>
+                </t>
+                <t t-call="website.template_header_mobile" />
+            </xpath>
+        </template>
+
+        <!--MENU
+        MOBILE-->
         <template id="header_mobile_links" name="Planet Mobil - Header Mobile Links"
             inherit_id="website.template_header_mobile">
 
-            <xpath expr="//t[@t-call='website.navbar_nav']" position="after">
+            <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="after">
                 <li class="nav-item border-top px-0 tsp-mobile-nav-item">
                     <a href="/shop?x_is_promotion=1" class="nav-link p-3 text-wrap">
                         <i class="fa fa-star-o me-2" /> Promotions </a>
