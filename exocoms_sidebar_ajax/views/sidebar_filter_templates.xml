@@ -251,14 +251,14 @@
           name="EXOCOMS — Inject Sidebar AJAX">
 
     <!--
-        XPath en attente d'inspection du template website_sale.products.
-        Exécuter dans le Shell Odoo.sh :
-            view = env.ref('website_sale.products')
-            print(view.arch[:5000])
-        Et communiquer le résultat pour corriger cet XPath.
+        XPath confirmé depuis le Shell Odoo.sh.
+        Le div flex qui contient sidebar + grille s'appelle "o_wsale_products_main_row".
+        On injecte notre sidebar comme premier enfant de ce div.
     -->
-    <xpath expr="//div[1]" position="attributes">
-        <attribute name="data-exo-sidebar-ready">1</attribute>
+    <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="inside">
+        <t t-if="exo_categories">
+            <t t-call="exocoms_sidebar_ajax.exo_sidebar_filter"/>
+        </t>
     </xpath>
 
 </template>

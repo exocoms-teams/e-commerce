@@ -188,13 +188,12 @@
           name="EXOCOMS — Inject Sidebar v19">
 
     <!--
-        XPath temporairement désactivé — en attente d'inspection du template
-        website_sale.products pour trouver l'ancrage correct.
-        Utiliser le module exocoms_sidebar_ajax à la place.
+        XPath confirmé depuis Shell Odoo.sh.
+        o_wsale_products_main_row est le div flex contenant sidebar + grille.
     -->
-    <xpath expr="//div[@id='wrap']" position="inside">
-        <t t-if="False">
-            <!-- Injection désactivée -->
+    <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="inside">
+        <t t-if="exo_categories">
+            <t t-call="exocoms_sidebar_v19.exo_sidebar_filter"/>
         </t>
     </xpath>
 
