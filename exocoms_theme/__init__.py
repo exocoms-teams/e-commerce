@@ -17,9 +17,13 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
             vals['website_id'] = website.id
         menu = env['website.menu'].create(vals)
     else:
-        # URL sans contexte langue — ne déclenche pas de basculement de langue au clic
         menu.write({'url': url, 'sequence': sequence})
-    # Noms traduits séparément, jamais l'URL
+
+    # IMPORTANT : écrire le nom SANS l'URL dans le contexte langue
+    # Si on fait with_context(lang=...).write({'name': ..., 'url': ...}),
+    # Odoo associe l'URL à la langue dans sa table de traduction,
+    # ce qui bloque le sélecteur de langue sur la page d'accueil.
+    menu.write({'url': url})
     menu.with_context(lang='fr_FR').write({'name': name_fr})
     if lang_en:
         menu.with_context(lang='en_US').write({'name': name_en})
@@ -29,7 +33,6 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
 def _setup_menus(env, website, lang_en):
     """Gestion complète des menus — création + traduction + suppression indésirables."""
 
-    # Menu racine du site (parent de tous les menus de navigation)
     root_menu = None
     if website:
         root_menu = env['website.menu'].search([
@@ -37,7 +40,6 @@ def _setup_menus(env, website, lang_en):
             ('website_id', '=', website.id),
         ], limit=1)
 
-    # Menus à maintenir — (url, nom_fr, nom_en, séquence)
     menus = [
         ('/',         'Accueil',      'Home',          1),
         ('/shop',     'Boutique',     'Shop',          2),
@@ -46,7 +48,6 @@ def _setup_menus(env, website, lang_en):
     for url, name_fr, name_en, seq in menus:
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
-    # Supprimer les menus natifs Odoo indésirables — par URL, jamais par ID
     unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
     domain = [('url', 'in', unwanted_urls)]
     if website:
@@ -94,11 +95,7 @@ def post_init_hook(env):
             'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
         })
 
-    # === LANGUE PAR DÉFAUT — uniquement via le website, PAS via public_user ===
-    # Ne pas modifier la langue du public_user ni du public_partner :
-    # cela verrouille la session en fr_FR et empêche le sélecteur de langue
-    # de fonctionner sur la page d'accueil ("/").
-    # Odoo utilise default_lang_id du website pour servir la bonne langue par défaut.
+    # === LANGUE PAR DÉFAUT — via website uniquement, PAS via public_user ===
     params = env['ir.config_parameter'].sudo()
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
@@ -120,8 +117,6 @@ def post_init_hook(env):
     try:
         if website and lang_fr:
             website.write({'default_lang_id': lang_fr.id})
-            # Supprimer les redirections automatiques sur "/" qui bloquent
-            # le sélecteur de langue sur la page d'accueil
             redirects = env['website.redirect'].search([
                 ('url_from', 'in', ['/', '/fr', '/en']),
             ])
@@ -144,15 +139,15 @@ def post_init_hook(env):
         ], limit=1)
     if account_view and account_view.exists():
         account_view.write({'arch': """
-    <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
-        <xpath expr="//*[@id='o_logout_divider']" position="before">
-            <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
-                <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
-                My Account
-            </a>
-        </xpath>
-    </data>
-    """})
+<data name="Link to frontend portal" inherit_id="portal.user_dropdown">
+    <xpath expr="//*[@id='o_logout_divider']" position="before">
+        <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
+            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
+            My Account
+        </a>
+    </xpath>
+</data>
+"""})
 
     # === DÉCONNEXION — supprimer la vue custom ===
     existing = env['ir.ui.view'].search([
@@ -487,8 +482,6 @@ def post_migrate_hook(env):
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     # === MENUS — maintenus à chaque update ===
-    # Odoo peut supprimer les menus custom lors d'un update.
-    # On les recrée systématiquement ici.
     _setup_menus(env, website, lang_en)
 
     # === DESIGN BOUTIQUE ===
