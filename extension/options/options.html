@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Tracker - Dashboard</title>
+  <title>Tracker - Dashboard</title>
   <link rel="stylesheet" href="options.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="../vendor/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="layout">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="brand">
         <span class="brand-dot"></span>
@@ -18,6 +17,7 @@
       </div>
       <nav class="nav">
         <button class="nav-btn active" data-page="trending">Trending Products</button>
+        <button class="nav-btn" data-page="rising">Rising Now</button>
         <button class="nav-btn" data-page="categories">By Category</button>
         <button class="nav-btn" data-page="domains">By Store</button>
         <button class="nav-btn" data-page="activity">Activity</button>
@@ -31,7 +31,6 @@
       </div>
     </aside>
 
-    <!-- Main -->
     <main class="main">
       <div class="topbar">
         <h1 id="pageTitle">Trending Products</h1>
@@ -61,8 +60,8 @@
             <span class="kpi-value" id="kpiTopCat">-</span>
           </div>
           <div class="kpi-card">
-            <span class="kpi-label">Top Store</span>
-            <span class="kpi-value" id="kpiTopStore">-</span>
+            <span class="kpi-label">Breakout Products</span>
+            <span class="kpi-value" id="kpiRising">-</span>
           </div>
         </div>
 
@@ -72,7 +71,7 @@
             <span class="badge-live">LIVE</span>
           </div>
           <div class="table-wrap">
-            <table class="data-table" id="trendingTable">
+            <table class="data-table">
               <thead>
                 <tr>
                   <th>#</th>
@@ -82,11 +81,42 @@
                   <th>Price</th>
                   <th>Views</th>
                   <th>Purchases</th>
+                  <th>Sold</th>
                   <th>Trend Score</th>
                 </tr>
               </thead>
               <tbody id="trendingBody">
-                <tr><td colspan="8" class="empty-row">No data yet. Browse shopping sites to start tracking.</td></tr>
+                <tr><td colspan="9" class="empty-row">No data yet. Browse shopping sites to start tracking.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rising Now Page -->
+      <section id="page-rising" class="page">
+        <div class="rising-intro">
+          Products whose view velocity increased significantly in the last 3 days compared to the 3 days before that.
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2>Breaking Out Now</h2>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Views This Week</th>
+                  <th>Sold</th>
+                </tr>
+              </thead>
+              <tbody id="risingBody">
+                <tr><td colspan="6" class="empty-row">No breakout products yet.</td></tr>
               </tbody>
             </table>
           </div>
@@ -148,11 +178,15 @@
           </div>
         </div>
         <div class="card settings-card">
+          <div class="card-head"><h2>Trend Score Method</h2></div>
+          <div class="settings-body">
+            <p>Scores are computed from time-decayed view velocity, purchase signals, sold count growth, price drop bonuses, and rating quality. Products viewed heavily in the last 3 days receive a 1.5x rising multiplier.</p>
+          </div>
+        </div>
+        <div class="card settings-card">
           <div class="card-head"><h2>About</h2></div>
           <div class="settings-body">
-            <p>Tracker v2.0.0 — Product intelligence for e-commerce.</p>
-            <p>Tracks product views, purchase signals, pricing, and trends across Amazon, eBay, Etsy, AliExpress, Walmart, and generic Shopify stores.</p>
-            <p>All data is stored locally in your browser. Nothing is sent to any server.</p>
+            <p>Tracker v2.1.0. All data is stored locally in your browser. Nothing is sent to any server.</p>
           </div>
         </div>
       </section>
