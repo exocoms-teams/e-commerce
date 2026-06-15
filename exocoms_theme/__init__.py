@@ -78,7 +78,7 @@ def post_init_hook(env):
         pass
     # === MENUS — FR par défaut + traduction EN ===
     menus_update = {
-        5: ('Accueil', '/',              'Home'),
+        5: ('Accueil', '/fr/',              'Home'),
         7: ('Boutique', '/shop',         'Shop'),
         6: ('Nos services', '/services', 'Our Services'),
     }
