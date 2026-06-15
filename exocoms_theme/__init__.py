@@ -233,6 +233,12 @@ def post_init_hook(env):
     except Exception:
         pass
 
+    # === PUBLIER TOUS LES PRODUITS ===
+    try:
+        env["product.template"].search([("is_published", "=", False)]).write({"is_published": True})
+    except Exception:
+        pass
+
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
 
