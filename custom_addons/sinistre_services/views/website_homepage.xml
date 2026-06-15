@@ -6,12 +6,14 @@
         <field name="name">Sinistre Services — Accueil</field>
         <field name="type">qweb</field>
         <field name="key">sinistre_services.ss_homepage</field>
+        <field name="mode">primary</field>
+        <field name="priority">16</field>
         <field name="arch" type="xml">
             <t t-name="sinistre_services.ss_homepage">
                 <t t-call="website.layout">
 
-                    <!-- ZONE ÉDITABLE TOPBAR -->
-                    <div id="oe_structure_ss_homepage_topbar" class="oe_structure">
+                    <!-- 1. ZONE ÉDITABLE TOPBAR -->
+                    <div id="sinistre_services.oe_structure_home_topbar" class="oe_structure">
                         <!-- ── TOPBAR URGENCE ── -->
                         <section class="s_text_block" style="background:#C62828;color:white;padding:8px 24px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:'Inter',sans-serif;">
@@ -26,9 +28,8 @@
                         </section>
                     </div>
 
-                    <!-- ZONE ÉDITABLE PRINCIPALE POUR LES BLOCS -->
-                    <div id="oe_structure_ss_homepage_content" class="oe_structure">
-
+                    <!-- 2. ZONE HERO ISOLÉE (Empêche le blocage des autres catégories) -->
+                    <div id="sinistre_services.oe_structure_home_hero" class="oe_structure">
                         <!-- ── HERO ── -->
                         <section class="s_text_image mn-hero" style="padding:80px 0 60px;background:linear-gradient(135deg,#EFF6FF 0%,#F0F4FF 40%,#F8FAFF 100%);position:relative;overflow:hidden;">
                             <div class="mn-container">
@@ -61,32 +62,33 @@
                                         </div>
                                     </div>
 
-                                    <!-- Formulaire demande rapide -->
+                                    <!-- Formulaire demande rapide converti au standard Odoo Form-Builder -->
                                     <div style="background:white;border-radius:20px;padding:32px;box-shadow:0 12px 48px rgba(0,0,0,0.12);border:1px solid rgba(198,40,40,0.1);">
                                         <h3 style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:4px;font-family:'Inter',sans-serif;">Demande rapide</h3>
                                         <p style="font-size:13px;color:#6B7280;margin-bottom:24px;">Reponse sous 15 minutes</p>
-                                        <form method="POST" action="/demande-intervention">
+                                        
+                                        <form action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="crm.lead">
                                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                             <div style="margin-bottom:14px;">
                                                 <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Type d'intervention</label>
-                                                <select name="type_intervention" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#111827;background:white;box-sizing:border-box;font-family:'Inter',sans-serif;">
-                                                    <option value="serrurerie">Serrurerie</option>
-                                                    <option value="plomberie">Plomberie</option>
-                                                    <option value="menuiserie_ext">Menuiserie</option>
-                                                    <option value="vitrerie">Vitrerie</option>
-                                                    <option value="electricite">Electricite</option>
-                                                    <option value="autre">Autre</option>
+                                                <select name="name" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;color:#111827;background:white;box-sizing:border-box;font-family:'Inter',sans-serif;">
+                                                    <option value="Serrurerie">Serrurerie</option>
+                                                    <option value="Plomberie">Plomberie</option>
+                                                    <option value="Menuiserie">Menuiserie</option>
+                                                    <option value="Vitrerie">Vitrerie</option>
+                                                    <option value="Electricite">Electricite</option>
+                                                    <option value="Autre">Autre</option>
                                                 </select>
                                             </div>
                                             <div style="margin-bottom:14px;">
                                                 <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Telephone</label>
-                                                <input type="tel" name="telephone" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
+                                                <input type="tel" name="phone" required="true" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
                                             </div>
                                             <div style="margin-bottom:20px;">
                                                 <label style="display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;">Code postal</label>
-                                                <input type="text" name="code_postal" placeholder="75001" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
+                                                <input type="text" name="street2" placeholder="75001" style="width:100%;padding:11px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:'Inter',sans-serif;"/>
                                             </div>
-                                            <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;background:#C62828;border-color:#C62828;padding:14px;font-size:15px;">
+                                            <button type="submit" class="mn-btn mn-btn--primary" style="width:100%;justify-content:center;background:#C62828;border-color:#C62828;padding:14px;font-size:15px;border:none;color:white;font-weight:600;border-radius:10px;">
                                                 Trouver un artisan
                                             </button>
                                             <p style="text-align:center;font-size:11px;color:#9CA3AF;margin-top:10px;">Sans engagement · Devis gratuit</p>
@@ -95,7 +97,13 @@
                                 </div>
                             </div>
                         </section>
+                    </div>
 
+                    <!-- POINT DE DÉPÔT CRUCIAL 1 (Débloque Catalog, Appointments, etc.) -->
+                    <div id="sinistre_services.oe_structure_home_dropzone_1" class="oe_structure oe_empty"/>
+
+                    <!-- 3. ZONE STATS ISOLÉE -->
+                    <div id="sinistre_services.oe_structure_home_stats" class="oe_structure">
                         <!-- ── STATS ── -->
                         <section class="s_numbers mn-stats">
                             <div class="mn-container">
@@ -119,7 +127,13 @@
                                 </div>
                             </div>
                         </section>
+                    </div>
 
+                    <!-- POINT DE DÉPÔT CRUCIAL 2 -->
+                    <div id="sinistre_services.oe_structure_home_dropzone_2" class="oe_structure oe_empty"/>
+
+                    <!-- 4. ZONE SERVICES ISOLÉE -->
+                    <div id="sinistre_services.oe_structure_home_services" class="oe_structure">
                         <!-- ── SERVICES ── -->
                         <section class="s_three_columns mn-section" style="background:#F9FAFB;">
                             <div class="mn-container">
@@ -180,7 +194,10 @@
                                 </div>
                             </div>
                         </section>
+                    </div>
 
+                    <!-- 5. ZONE PROCESSUS ISOLÉE -->
+                    <div id="sinistre_services.oe_structure_home_process" class="oe_structure">
                         <!-- ── COMMENT CA MARCHE ── -->
                         <section class="s_text_block mn-section">
                             <div class="mn-container">
@@ -208,7 +225,10 @@
                                 </div>
                             </div>
                         </section>
+                    </div>
 
+                    <!-- 6. ZONE CTA ISOLÉE -->
+                    <div id="sinistre_services.oe_structure_home_cta" class="oe_structure">
                         <!-- ── CTA URGENCE ── -->
                         <section class="s_call_to_action mn-cta" style="background:linear-gradient(135deg,#B71C1C 0%,#C62828 50%,#D32F2F 100%);">
                             <div class="mn-container">
@@ -227,11 +247,10 @@
                                 </div>
                             </div>
                         </section>
-
                     </div>
 
-                    <!-- Zone éditable additionnelle pour le Website Builder -->
-                    <div id="oe_structure_homepage_bottom" class="oe_structure oe_empty"/>
+                    <!-- Point de dépôt terminal libre -->
+                    <div id="sinistre_services.oe_structure_homepage_bottom" class="oe_structure oe_empty"/>
 
                 </t>
             </t>
