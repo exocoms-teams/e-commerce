@@ -3,33 +3,13 @@ from . import controllers
 from . import models
 
 
-def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu, lang_en):
-    """Crée ou met à jour un menu par URL — jamais par ID."""
-    domain = [('url', '=', url)]
-    if website:
-        domain.append(('website_id', '=', website.id))
-    menu = env['website.menu'].search(domain, limit=1)
-    if not menu:
-        vals = {'url': url, 'name': name_fr, 'sequence': sequence}
-        if root_menu:
-            vals['parent_id'] = root_menu.id
-        if website:
-            vals['website_id'] = website.id
-        menu = env['website.menu'].create(vals)
-    else:
-        # URL sans contexte langue — ne déclenche pas de basculement de langue au clic
-        menu.write({'url': url, 'sequence': sequence})
-    # Noms traduits séparément, jamais l'URL
-    menu.with_context(lang='fr_FR').write({'name': name_fr})
-    if lang_en:
-        menu.with_context(lang='en_US').write({'name': name_en})
-    return menu
-
-
 def _setup_menus(env, website, lang_en):
-    """Gestion complète des menus — création + traduction + suppression indésirables."""
+    """Gestion complète des menus — création + traduction par langue + suppression indésirables.
 
-    # Menu racine du site (parent de tous les menus de navigation)
+    Chaque menu a une URL par langue (/fr/ et /en/).
+    Cela permet à Odoo de naviguer dans la bonne langue sans écraser la session.
+    Le sélecteur de langue natif Odoo continue de fonctionner normalement sur toutes les pages.
+    """
     root_menu = None
     if website:
         root_menu = env['website.menu'].search([
@@ -37,17 +17,52 @@ def _setup_menus(env, website, lang_en):
             ('website_id', '=', website.id),
         ], limit=1)
 
-    # Menus à maintenir — (url, nom_fr, nom_en, séquence)
+    # (url_fr, url_en, nom_fr, nom_en, séquence)
     menus = [
-        ('/',         'Accueil',      'Home',          1),
-        ('/shop',     'Boutique',     'Shop',          2),
-        ('/services', 'Nos services', 'Our Services',  3),
+        ('/fr/',         '/en/',          'Accueil',      'Home',          1),
+        ('/fr/shop',     '/en/shop',      'Boutique',     'Shop',          2),
+        ('/fr/services', '/en/services',  'Nos services', 'Our Services',  3),
     ]
-    for url, name_fr, name_en, seq in menus:
-        _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
+
+    for url_fr, url_en, name_fr, name_en, seq in menus:
+        # Chercher le menu par toutes les URLs possibles (neutre, fr, en)
+        url_neutral = url_fr.replace('/fr', '', 1) or '/'
+        domain = [('url', 'in', [url_neutral, url_fr, url_en])]
+        if website:
+            domain.append(('website_id', '=', website.id))
+        menu = env['website.menu'].search(domain, limit=1)
+
+        if not menu:
+            # Créer le menu avec l'URL française par défaut
+            vals = {
+                'url': url_fr,
+                'name': name_fr,
+                'sequence': seq,
+            }
+            if root_menu:
+                vals['parent_id'] = root_menu.id
+            if website:
+                vals['website_id'] = website.id
+            menu = env['website.menu'].create(vals)
+
+        # URL + nom par langue
+        # → en fr_FR : pointe vers /fr/... donc reste en français au clic
+        # → en en_US : pointe vers /en/... donc reste en anglais au clic
+        menu.with_context(lang='fr_FR').write({'name': name_fr, 'url': url_fr})
+        if lang_en:
+            menu.with_context(lang='en_US').write({'name': name_en, 'url': url_en})
+        menu.write({'sequence': seq})
 
     # Supprimer les menus natifs Odoo indésirables — par URL, jamais par ID
-    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
+    unwanted_urls = [
+        '/contactus', '/blog', '/forum', '/event', '/jobs', '/slides',
+        '/fr/contactus', '/en/contactus',
+        '/fr/blog', '/en/blog',
+        '/fr/forum', '/en/forum',
+        '/fr/event', '/en/event',
+        '/fr/jobs', '/en/jobs',
+        '/fr/slides', '/en/slides',
+    ]
     domain = [('url', 'in', unwanted_urls)]
     if website:
         domain.append(('website_id', '=', website.id))
@@ -95,10 +110,9 @@ def post_init_hook(env):
         })
 
     # === LANGUE PAR DÉFAUT — uniquement via le website, PAS via public_user ===
-    # Ne pas modifier la langue du public_user ni du public_partner :
-    # cela verrouille la session en fr_FR et empêche le sélecteur de langue
-    # de fonctionner sur la page d'accueil ("/").
-    # Odoo utilise default_lang_id du website pour servir la bonne langue par défaut.
+    # Ne PAS modifier public_user.lang ni public_partner.lang :
+    # cela verrouille la session et empêche le sélecteur de langue de fonctionner.
+    # Odoo se base sur default_lang_id du website pour servir /fr/ par défaut.
     params = env['ir.config_parameter'].sudo()
     params.set_param('web.base.lang', 'fr_FR')
     params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
@@ -116,17 +130,10 @@ def post_init_hook(env):
     except Exception:
         pass
 
-    # === DÉSACTIVER REDIRECTION LANGUE ===
+    # === DÉSACTIVER REDIRECTION LANGUE FORCÉE ===
     try:
         if website and lang_fr:
             website.write({'default_lang_id': lang_fr.id})
-            # Supprimer les redirections automatiques sur "/" qui bloquent
-            # le sélecteur de langue sur la page d'accueil
-            redirects = env['website.redirect'].search([
-                ('url_from', 'in', ['/', '/fr', '/en']),
-            ])
-            if redirects:
-                redirects.unlink()
     except Exception:
         pass
 
@@ -365,9 +372,9 @@ def post_init_hook(env):
                         <div class="col-lg-2 pt24 pb24">
                             <h5>Liens utiles</h5>
                             <ul class="list-unstyled" style="font-size: 14px;">
-                                <li><a href="/" style="font-size: 14px;">Page d&#39;accueil</a></li>
-                                <li><a href="/services" style="font-size: 14px;">Nos services</a></li>
-                                <li><a href="/mentions-legales" style="font-size: 14px;">Mentions l&#233;gales</a></li>
+                                <li><a href="/fr/" style="font-size: 14px;">Page d&#39;accueil</a></li>
+                                <li><a href="/fr/services" style="font-size: 14px;">Nos services</a></li>
+                                <li><a href="/fr/mentions-legales" style="font-size: 14px;">Mentions l&#233;gales</a></li>
                             </ul>
                         </div>
                         <div class="col-lg-4 offset-lg-1 pt24 pb24">
@@ -382,7 +389,7 @@ def post_init_hook(env):
                                 <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
                                 <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
                                 <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
-                                <a href="/" aria-label="Accueil"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                                <a href="/fr/" aria-label="Accueil"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
                             </div>
                         </div>
                     </t>
@@ -394,9 +401,9 @@ def post_init_hook(env):
                         <div class="col-lg-2 pt24 pb24">
                             <h5>Useful links</h5>
                             <ul class="list-unstyled" style="font-size: 14px;">
-                                <li><a href="/" style="font-size: 14px;">Home</a></li>
-                                <li><a href="/services" style="font-size: 14px;">Our services</a></li>
-                                <li><a href="/mentions-legales" style="font-size: 14px;">Legal notice</a></li>
+                                <li><a href="/en/" style="font-size: 14px;">Home</a></li>
+                                <li><a href="/en/services" style="font-size: 14px;">Our services</a></li>
+                                <li><a href="/en/mentions-legales" style="font-size: 14px;">Legal notice</a></li>
                             </ul>
                         </div>
                         <div class="col-lg-4 offset-lg-1 pt24 pb24">
@@ -411,7 +418,7 @@ def post_init_hook(env):
                                 <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook"><i class="fa fa-facebook rounded-circle shadow-sm"></i></a>
                                 <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X"><i class="fa fa-twitter rounded-circle shadow-sm"></i></a>
                                 <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn"><i class="fa fa-linkedin rounded-circle shadow-sm"></i></a>
-                                <a href="/" aria-label="Home"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
+                                <a href="/en/" aria-label="Home"><i class="fa fa-home rounded-circle shadow-sm"></i></a>
                             </div>
                         </div>
                     </t>
@@ -487,8 +494,6 @@ def post_migrate_hook(env):
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     # === MENUS — maintenus à chaque update ===
-    # Odoo peut supprimer les menus custom lors d'un update.
-    # On les recrée systématiquement ici.
     _setup_menus(env, website, lang_en)
 
     # === DESIGN BOUTIQUE ===
