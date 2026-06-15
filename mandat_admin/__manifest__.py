@@ -34,7 +34,7 @@ Fonctionnalités
     'author': 'Exocoms',
     'website': 'https://www.exocoms.fr',
     'license': 'LGPL-3',
-    'depends': ['account', 'sale', 'sale_management', 'mail'],
+    'depends': ['account', 'sale', 'sale_management', 'mail', 'payment'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
@@ -52,6 +52,8 @@ Fonctionnalités
         'report/report_action.xml',
         'report/bca_template.xml',
         'report/bordereau_template.xml',
+        'data/payment_provider_data.xml',
+        'views/payment_provider_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

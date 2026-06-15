@@ -12,6 +12,17 @@ def post_init_hook(env):
     Journal = env['account.journal']
     company = env.company
 
+    provider = env['payment.provider'].search([
+        ('code', '=', 'mandat_administratif')
+    ], limit=1)
+    if not provider:
+        env['payment.provider'].create({
+            'name': 'Mandat Administratif',
+            'code': 'mandat_administratif',
+            'state': 'enabled',
+            'is_published': True,
+        })
+
     # Récupère la méthode de paiement créée par payment_method_data.xml
     method = PaymentMethod.search([('code', '=', 'mandat_administratif')], limit=1)
     if not method:
