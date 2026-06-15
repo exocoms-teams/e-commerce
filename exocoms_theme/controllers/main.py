@@ -7,6 +7,19 @@ class Exocoms(http.Controller):
 
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kw):
+        # Si pas de cookie frontend_lang — première visite
+        # On définit le français et on laisse Odoo gérer
+        frontend_lang = request.httprequest.cookies.get('frontend_lang')
+        if not frontend_lang:
+            response = request.render('exocoms_theme.home', {})
+            response.set_cookie(
+                'frontend_lang',
+                'fr_FR',
+                max_age=365 * 24 * 3600,
+                path='/'
+            )
+            return response
+        # Si cookie existe — respecter le choix du visiteur
         return request.render('exocoms_theme.home', {})
 
     @http.route('/services', type='http', auth='public', website=True, sitemap=True)
