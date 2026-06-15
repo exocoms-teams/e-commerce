@@ -315,11 +315,11 @@ class ExoSidebarFilter {
         this._bindPrice();
         this._tags.update(sidebar);
 
+        // L'accordéon fonctionne toujours, même sans grille AJAX
         // Si des filtres sont déjà actifs (restauration URL), lance une requête
-        if (this._state.catIds.length || this._state.search) {
+        if (this.grid && (this._state.catIds.length || this._state.search)) {
             this._fetch();
         } else {
-            // Affiche le compteur initial depuis le DOM
             this._showCount(null);
         }
     }
@@ -574,8 +574,28 @@ const ExoSidebar = {
 };
 
 // Point d'entrée — Odoo 19 SPA
-document.addEventListener("DOMContentLoaded", () => ExoSidebar.init());
-document.addEventListener("o_website_content_loaded", () => ExoSidebar.init());
+// On tente à DOMContentLoaded, puis au chargement Odoo, puis avec un délai de secours
+function _exoTryInit() { ExoSidebar.init(); }
+
+document.addEventListener("DOMContentLoaded", _exoTryInit);
+document.addEventListener("o_website_content_loaded", _exoTryInit);
+// Filet de sécurité : si le sidebar est injecté tardivement
+setTimeout(_exoTryInit, 300);
+setTimeout(_exoTryInit, 800);
+
+// Observer les mutations DOM pour détecter l'injection du sidebar
+if (typeof MutationObserver !== "undefined") {
+    const _exoObserver = new MutationObserver(() => {
+        if (document.querySelector("#exo-sidebar:not([data-exo-init])")) {
+            _exoTryInit();
+        }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        _exoObserver.observe(document.body, { childList: true, subtree: true });
+        // Arrête l'observation après 10s pour économiser les ressources
+        setTimeout(() => _exoObserver.disconnect(), 10000);
+    });
+}
 
 // Export global pour les boutons inline (exo-empty-state reset)
 window.ExoSidebar = ExoSidebar;

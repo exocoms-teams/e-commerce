@@ -251,17 +251,10 @@
           name="EXOCOMS — Inject Sidebar AJAX">
 
     <!-- Injection du sidebar AVANT la grille produits -->
-    <xpath expr="//div[@id='products_grid']" position="before">
+    <xpath expr="//div[hasclass('o_wsale_products_main_col')]" position="before">
         <t t-if="exo_categories">
             <t t-call="exocoms_sidebar_ajax.exo_sidebar_filter"/>
         </t>
-    </xpath>
-
-    <!-- Enveloppe la grille dans #exo-products-grid pour le remplacement AJAX -->
-    <xpath expr="//div[@id='products_grid']" position="replace">
-        <div id="exo-products-grid" class="o_wsale_products_grid_wrapper">
-            <t t-raw="0"/>
-        </div>
     </xpath>
 
 </template>
