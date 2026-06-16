@@ -8,6 +8,23 @@ def post_init_hook(env):
     Crée le journal 'Mandats Administratifs' et y rattache
     la méthode de paiement mandat_administratif à l'installation.
     """
+
+    # --- Nettoyage préventif des orphelins ir.model.data ---
+    # Si une désinstallation précédente a laissé des résidus dans ir.model.data
+    # sans supprimer les enregistrements réels, on nettoie.
+    env.cr.execute("""
+        DELETE FROM ir_model_data
+        WHERE module = 'mandat_admin'
+          AND model IN ('account.payment.method', 'payment.method')
+          AND res_id NOT IN (
+              SELECT id FROM account_payment_method
+              WHERE code = 'mandat_administratif'
+              UNION
+              SELECT id FROM payment_method
+              WHERE code = 'mandat_administratif'
+          )
+    """)
+
     PaymentMethod = env['account.payment.method']
     Journal = env['account.journal']
     company = env.company
