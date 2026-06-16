@@ -10,6 +10,7 @@
         'data/sequence.xml',
         'data/email_template.xml',
         'data/demo.xml',
+        'views/travel_dashboard.xml'
         'views/travel_product_views.xml',
         'views/travel_reservation_views.xml',
         'views/travel_hotel_views.xml',
