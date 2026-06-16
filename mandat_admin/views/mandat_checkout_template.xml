@@ -1,65 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <template id="mandat_checkout_form" name="Mandat Administratif - Formulaire checkout"
-              inherit_id="payment.payment_methods">
-        <xpath expr="//div[hasclass('o_payment_option_card')]" position="after">
-            <div id="mandat_administratif_form"
-                 class="card mt-3 p-3"
-                 style="display:none;">
-                <h5 class="card-title">
-                    🏛 Informations Mandat Administratif
-                </h5>
-                <p class="text-muted small">
-                    Renseignez les informations de votre collectivité pour le traitement du mandat.
-                    Les champs marqués * sont obligatoires.
-                </p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">SIRET acheteur public *</label>
-                        <input type="text" class="form-control" id="mandat_siret"
-                               placeholder="14 chiffres" maxlength="14"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">IBAN *</label>
-                        <input type="text" class="form-control" id="mandat_iban"
-                               placeholder="FR76..."/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Ordonnateur *</label>
-                        <input type="text" class="form-control" id="mandat_ordonnateur"
-                               placeholder="Nom et prénom"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Qualité de l'ordonnateur</label>
-                        <input type="text" class="form-control" id="mandat_qualite"
-                               placeholder="Ex: Maire, DGS..."/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Comptable public assignataire *</label>
-                        <input type="text" class="form-control" id="mandat_comptable"
-                               placeholder="Nom du comptable"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">N° engagement juridique (EJ)</label>
-                        <input type="text" class="form-control" id="mandat_ej"
-                               placeholder="N° EJ"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Service / Direction</label>
-                        <input type="text" class="form-control" id="mandat_service"
-                               placeholder="Ex: Direction des finances"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Référence bon de commande</label>
-                        <input type="text" class="form-control" id="mandat_reference"
-                               placeholder="Référence interne"/>
-                    </div>
+<template id="mandat_checkout_form" name="Mandat Administratif - Formulaire checkout"
+          inherit_id="payment.form">
+    <xpath expr="//div[@id='o_payment_form_options']" position="after">
+        <div id="mandat_administratif_form"
+             class="card mt-3 p-3"
+             style="display:none;">
+            <h5 class="card-title">🏛 Informations Mandat Administratif</h5>
+            <p class="text-muted small">
+                Renseignez les informations de votre collectivité pour le traitement du mandat.
+                Les champs marqués * sont obligatoires.
+            </p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">SIRET acheteur public *</label>
+                    <input type="text" class="form-control" id="mandat_siret"
+                           placeholder="14 chiffres" maxlength="14"/>
                 </div>
-                <div id="mandat_form_error" class="alert alert-danger mt-3" role="alert"
-                     style="display:none;">
-                    Veuillez remplir tous les champs obligatoires (*).
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">IBAN *</label>
+                    <input type="text" class="form-control" id="mandat_iban"
+                           placeholder="FR76..."/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Ordonnateur *</label>
+                    <input type="text" class="form-control" id="mandat_ordonnateur"
+                           placeholder="Nom et prénom"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Qualité de l'ordonnateur</label>
+                    <input type="text" class="form-control" id="mandat_qualite"
+                           placeholder="Ex: Maire, DGS..."/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Comptable public assignataire *</label>
+                    <input type="text" class="form-control" id="mandat_comptable"
+                           placeholder="Nom du comptable"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">N° engagement juridique (EJ)</label>
+                    <input type="text" class="form-control" id="mandat_ej"
+                           placeholder="N° EJ"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Service / Direction</label>
+                    <input type="text" class="form-control" id="mandat_service"
+                           placeholder="Ex: Direction des finances"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Référence bon de commande</label>
+                    <input type="text" class="form-control" id="mandat_reference"
+                           placeholder="Référence interne"/>
                 </div>
             </div>
-        </xpath>
-    </template>
-</odoo>
+            <div id="mandat_form_error" class="alert alert-danger mt-3" role="alert"
+                 style="display:none;">
+                Veuillez remplir tous les champs obligatoires (*).
+            </div>
+        </div>
+    </xpath>
+</template>
