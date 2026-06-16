@@ -17,14 +17,12 @@
         </record>
     </data>
 
-    <data>
-        <function model="payment.method" name="_load_payment_method_from_code">
-            <value eval="'mandat_administratif'"/>
-            <value eval="{
-                'name': 'Mandat Administratif',
-                'code': 'mandat_administratif',
-                'image': open('mandat_admin/static/description/mandat_logo.jpg', 'rb').read().encode(),
-            }"/>
-        </function>
+    <data noupdate="0">
+        <record id="payment_method_mandat_administratif" model="payment.method">
+            <field name="name">Mandat Administratif</field>
+            <field name="code">mandat_administratif</field>
+            <field name="provider_ids" eval="[(4, ref('payment_provider_mandat_administratif'))]"/>
+            <field name="image" type="base64" file="mandat_admin/static/description/mandat_logo.jpg"/>
+        </record>
     </data>
 </odoo>
