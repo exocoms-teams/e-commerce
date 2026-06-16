@@ -153,23 +153,21 @@
 <!-- ================================================================
      INJECTION dans la page /shop native d'Odoo
      On hérite de website_sale.products pour :
-     1) Ajouter la sidebar EXOCOMS à gauche de la grille
-     2) Envelopper la grille dans #exo-products (cible du JS AJAX)
-     3) Ajouter la topbar (tri, compteur, tags)
-     4) Masquer les filtres natifs Odoo (sidebar gauche native)
+     1) Masquer la sidebar native (aside#products_grid_before)
+     2) Avant la grille (#products_grid) : injecter topbar + sidebar EXOCOMS
+     3) Remplacer la section produits par #exo-products (cible JS AJAX)
 ================================================================ -->
 <template id="exo_shop_layout"
           inherit_id="website_sale.products"
           name="EXO – Injection Sidebar Shop">
 
-    <!-- 1. Masquer la sidebar native d'Odoo (attributs/catégories built-in) -->
-    <xpath expr="//div[hasclass('o_wsale_sidebar')]" position="attributes">
+    <!-- 1. Masquer la sidebar native d'Odoo -->
+    <xpath expr="//aside[@id='products_grid_before']" position="attributes">
         <attribute name="style">display:none !important</attribute>
     </xpath>
 
-    <!-- 2. Avant la grille produits : injecter topbar + sidebar EXOCOMS -->
-    <xpath expr="//div[@id='products']" position="before">
-        <!-- Topbar : tri, compteur, tags -->
+    <!-- 2. Avant la grille : topbar EXO + sidebar EXO -->
+    <xpath expr="//div[@id='products_grid']" position="before">
         <div class="exo-topbar" id="exo-topbar">
             <div class="exo-topbar__row">
                 <button class="exo-topbar__toggle"
@@ -196,27 +194,24 @@
             </div>
             <div class="exo-tags" id="exo-tags" aria-live="polite"></div>
         </div>
-
-        <!-- Layout sidebar + grille -->
-        <div class="exo-layout">
-            <t t-call="exocoms_filter_menu.sidebar_inner"/>
-            <!-- La grille AJAX sera injectée après ce div via l'xpath suivant -->
-        </div>
+        <t t-call="exocoms_filter_menu.sidebar_inner"/>
     </xpath>
 
-    <!-- 3. Envelopper #products dans #exo-products (cible JS AJAX) +
-            ajouter overlay de chargement + paginateur EXOCOMS -->
-    <xpath expr="//div[@id='products']" position="replace">
+    <!-- 3. Remplacer la section grille produits native par #exo-products -->
+    <xpath expr="//div[contains(@class,'o_wsale_products_grid_table_wrapper')]" position="replace">
         <div id="exo-main" class="exo-main">
             <div class="exo-overlay exo-hidden" id="exo-overlay" aria-hidden="true">
                 <span class="exo-spinner exo-spinner--lg" aria-hidden="true"></span>
                 <span class="exo-overlay__txt">Actualisation…</span>
             </div>
-            <div id="exo-products">
-                <!-- Contenu initial rendu côté serveur — remplacé par AJAX ensuite -->
-            </div>
+            <div id="exo-products"></div>
             <nav class="exo-pager" id="exo-pager" aria-label="Pagination"></nav>
         </div>
+    </xpath>
+
+    <!-- 4. Masquer la pagination native (on utilise la nôtre) -->
+    <xpath expr="//div[@id='o_wsale_pager']" position="attributes">
+        <attribute name="style">display:none !important</attribute>
     </xpath>
 
 </template>
