@@ -53,13 +53,14 @@ Fonctionnalités
         'report/bca_template.xml',
         'report/bordereau_template.xml',
         'data/payment_provider_data.xml',
+        'views/mandat_checkout_template.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'mandat_admin/static/src/css/mandat.css',
         ],
         'payment.assets_payment_form_content': [
-            'mandat_admin/static/src/js/payment_form.js',
+            'mandat_admin/static/src/js/mandat_checkout.js',
         ],
     },
     'installable': True,
