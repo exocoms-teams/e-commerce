@@ -197,13 +197,19 @@
 
 <!-- ================================================================
      SNIPPET — déclaration dans le panneau Website Builder Odoo 19
-     Odoo 19 : snippet_structure existe toujours, col-6 (Bootstrap 5)
 ================================================================ -->
 <template id="s_exo_filter_sidebar"
           name="EXO Filtre Sidebar"
           inherit_id="website.snippets"
           primary="True">
-    <xpath expr="//div[@id='snippet_structure']" position="before">
+    <!--
+        XPath à adapter selon la version Odoo 19.
+        Exécuter dans le Shell pour inspecter :
+            view = env.ref('website.snippets')
+            print(view.arch[:3000])
+        En attendant on injecte dans le premier div trouvé.
+    -->
+    <xpath expr="//div[@id='snippet_content']" position="before">
         <div class="o_panel_body">
             <div class="o_panel_header">EXOCOMS</div>
             <div class="row">
