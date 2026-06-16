@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="boat_list_page" name="Boat Services - Liste bateaux">
+        <t t-call="website.layout">
+            <div id="wrap" class="boat-page">
+                <section class="boat-hero">
+                    <div class="container">
+                        <div class="row align-items-center">
+                            <div class="col-lg-7">
+                                <p class="boat-kicker">Boat Services</p>
+                                <h1>Découvrez nos bateaux et solutions nautiques</h1>
+                                <p class="boat-hero-text">
+                                    Une sélection de bateaux pour le transport de passagers, les sorties touristiques,
+                                    les projets sur mesure et les expériences premium.
+                                </p>
+                                <div class="boat-hero-actions">
+                                    <a href="/boats/request-price" class="btn btn-primary btn-lg">Demander un prix</a>
+                                    <a href="/boats/catalog" class="btn btn-outline-light btn-lg">Recevoir le catalogue</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="boat-section">
+                    <div class="container">
+                        <div class="boat-section-title">
+                            <p class="boat-kicker">Catalogue</p>
+                            <h2>Nos bateaux</h2>
+                            <p>Ajoutez des produits Odoo avec la case “Produit bateau” pour les afficher ici.</p>
+                        </div>
+
+                        <t t-if="products">
+                            <div class="row g-4">
+                                <t t-foreach="products" t-as="product">
+                                    <div class="col-md-6 col-lg-4">
+                                        <article class="boat-card h-100">
+                                            <a t-att-href="'/boats/%s' % product.id" class="boat-card-image">
+                                                <img t-att-src="'/web/image/product.template/%s/image_512' % product.id" t-att-alt="product.name"/>
+                                            </a>
+                                            <div class="boat-card-body">
+                                                <span class="boat-badge" t-esc="dict(product._fields['boat_category'].selection).get(product.boat_category)"/>
+                                                <h3><a t-att-href="'/boats/%s' % product.id" t-esc="product.name"/></h3>
+                                                <p t-if="product.boat_short_description" t-esc="product.boat_short_description"/>
+                                                <ul class="boat-spec-list">
+                                                    <li t-if="product.boat_length"><strong>Longueur</strong><span><t t-esc="product.boat_length"/> m</span></li>
+                                                    <li t-if="product.boat_capacity"><strong>Capacité</strong><span><t t-esc="product.boat_capacity"/> pers.</span></li>
+                                                    <li t-if="product.boat_speed"><strong>Vitesse</strong><span><t t-esc="product.boat_speed"/> nœuds</span></li>
+                                                </ul>
+                                                <div class="boat-card-actions">
+                                                    <a t-att-href="'/boats/%s' % product.id" class="btn btn-outline-primary">Voir le détail</a>
+                                                    <a t-att-href="'/boats/request-price/%s' % product.id" class="btn btn-primary">Demander un prix</a>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="boat-empty">
+                                <h3>Aucun bateau publié pour le moment</h3>
+                                <p>Créez un produit dans Odoo, puis cochez “Produit bateau” dans l’onglet Boat Services.</p>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="boat_detail_page" name="Boat Services - Détail bateau">
+        <t t-call="website.layout">
+            <div id="wrap" class="boat-page boat-detail-page">
+                <section class="boat-detail-hero">
+                    <div class="container">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-lg-6">
+                                <img class="boat-detail-image" t-att-src="'/web/image/product.template/%s/image_1024' % product.id" t-att-alt="product.name"/>
+                            </div>
+                            <div class="col-lg-6">
+                                <p class="boat-kicker">Détail bateau</p>
+                                <h1 t-esc="product.name"/>
+                                <p class="boat-detail-intro" t-if="product.boat_short_description" t-esc="product.boat_short_description"/>
+                                <p class="boat-detail-intro" t-if="not product.boat_short_description" t-field="product.description_sale"/>
+                                <div class="boat-detail-actions">
+                                    <a t-att-href="'/boats/request-price/%s' % product.id" class="btn btn-primary btn-lg">Demander le prix</a>
+                                    <a href="/boats/catalog" class="btn btn-outline-primary btn-lg">Recevoir le catalogue</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="boat-section">
+                    <div class="container">
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="boat-panel">
+                                    <h2>Caractéristiques</h2>
+                                    <div class="boat-spec-grid">
+                                        <div t-if="product.boat_builder"><strong>Constructeur</strong><span t-esc="product.boat_builder"/></div>
+                                        <div t-if="product.boat_model"><strong>Modèle</strong><span t-esc="product.boat_model"/></div>
+                                        <div t-if="product.boat_year"><strong>Année</strong><span t-esc="product.boat_year"/></div>
+                                        <div t-if="product.boat_length"><strong>Longueur</strong><span><t t-esc="product.boat_length"/> m</span></div>
+                                        <div t-if="product.boat_width"><strong>Largeur</strong><span><t t-esc="product.boat_width"/> m</span></div>
+                                        <div t-if="product.boat_capacity"><strong>Capacité</strong><span><t t-esc="product.boat_capacity"/> passagers</span></div>
+                                        <div t-if="product.boat_cabins"><strong>Cabines</strong><span t-esc="product.boat_cabins"/></div>
+                                        <div t-if="product.boat_speed"><strong>Vitesse max</strong><span><t t-esc="product.boat_speed"/> nœuds</span></div>
+                                        <div t-if="product.boat_engine"><strong>Motorisation</strong><span t-esc="product.boat_engine"/></div>
+                                        <div t-if="product.boat_hull_material"><strong>Coque</strong><span t-esc="product.boat_hull_material"/></div>
+                                        <div t-if="product.boat_base_port"><strong>Port / zone</strong><span t-esc="product.boat_base_port"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="boat-contact-card">
+                                    <h3>Vous êtes intéressé ?</h3>
+                                    <p>Envoyez une demande et l’équipe pourra revenir vers vous avec les informations adaptées.</p>
+                                    <a t-att-href="'/boats/request-price/%s' % product.id" class="btn btn-primary w-100">Demander un prix</a>
+                                    <a href="/boats/contact" class="btn btn-outline-primary w-100 mt-2">Nous contacter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="boat_inquiry_form_page" name="Boat Services - Formulaire demande">
+        <t t-call="website.layout">
+            <div id="wrap" class="boat-page">
+                <section class="boat-form-hero">
+                    <div class="container">
+                        <p class="boat-kicker">Contact</p>
+                        <h1>
+                            <t t-if="inquiry_type == 'catalog'">Recevoir le catalogue</t>
+                            <t t-elif="inquiry_type == 'contact'">Contacter l’équipe</t>
+                            <t t-else="">Demander un prix</t>
+                        </h1>
+                        <p>Remplissez le formulaire, nous enregistrons votre demande dans Odoo.</p>
+                    </div>
+                </section>
+
+                <section class="boat-section">
+                    <div class="container">
+                        <form action="/boats/inquiry/submit" method="post" class="boat-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="inquiry_type" t-att-value="inquiry_type"/>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nom *</label>
+                                    <input type="text" name="customer_name" class="form-control" required="required"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" name="customer_email" class="form-control" required="required"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Téléphone</label>
+                                    <input type="text" name="customer_phone" class="form-control"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Société</label>
+                                    <input type="text" name="customer_company" class="form-control"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Pays</label>
+                                    <select name="country_id" class="form-select">
+                                        <option value="">Sélectionner un pays</option>
+                                        <t t-foreach="countries" t-as="country">
+                                            <option t-att-value="country.id" t-esc="country.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Bateau concerné</label>
+                                    <select name="product_id" class="form-select">
+                                        <option value="">Pas encore choisi</option>
+                                        <t t-foreach="products" t-as="boat">
+                                            <option t-att-value="boat.id" t-att-selected="product and boat.id == product.id" t-esc="boat.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date souhaitée</label>
+                                    <input type="date" name="expected_date" class="form-control"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre de passagers</label>
+                                    <input type="number" name="passenger_count" class="form-control" min="0"/>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Budget indicatif</label>
+                                    <input type="text" name="budget" class="form-control" placeholder="Exemple : 50 000 €, 200 000 €, à définir..."/>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Message</label>
+                                    <textarea name="message" rows="5" class="form-control" placeholder="Expliquez votre besoin : type de bateau, capacité, zone, projet, délai..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Envoyer la demande</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="boat_thank_you_page" name="Boat Services - Merci">
+        <t t-call="website.layout">
+            <div id="wrap" class="boat-page">
+                <section class="boat-thanks">
+                    <div class="container text-center">
+                        <p class="boat-kicker">Demande envoyée</p>
+                        <h1>Merci, votre demande a bien été enregistrée.</h1>
+                        <p>L’équipe peut maintenant la retrouver dans Odoo, menu Boat Services &gt; Demandes bateau.</p>
+                        <a href="/boats" class="btn btn-primary btn-lg">Retour aux bateaux</a>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="boat_product_extra_info" inherit_id="website_sale.product" name="Boat Services - Informations produit e-commerce">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="after">
+            <t t-if="product.is_boat_product">
+                <div class="boat-shop-info my-4 p-3">
+                    <h4>Informations bateau</h4>
+                    <div class="boat-shop-specs">
+                        <span t-if="product.boat_length"><strong>Longueur :</strong> <t t-esc="product.boat_length"/> m</span>
+                        <span t-if="product.boat_capacity"><strong>Capacité :</strong> <t t-esc="product.boat_capacity"/> passagers</span>
+                        <span t-if="product.boat_speed"><strong>Vitesse :</strong> <t t-esc="product.boat_speed"/> nœuds</span>
+                        <span t-if="product.boat_base_port"><strong>Zone :</strong> <t t-esc="product.boat_base_port"/></span>
+                    </div>
+                    <a t-att-href="'/boats/request-price/%s' % product.product_tmpl_id.id" class="btn btn-primary mt-3">Demander un prix</a>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

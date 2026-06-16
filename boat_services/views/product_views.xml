@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_boat_services" model="ir.ui.view">
+        <field name="name">product.template.form.boat.services</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Boat Services" name="boat_services">
+                    <group>
+                        <group string="Activation">
+                            <field name="is_boat_product"/>
+                            <field name="boat_category" invisible="not is_boat_product"/>
+                            <field name="boat_service_type" invisible="not is_boat_product"/>
+                            <field name="boat_available" invisible="not is_boat_product"/>
+                        </group>
+                        <group string="Identité" invisible="not is_boat_product">
+                            <field name="boat_builder"/>
+                            <field name="boat_model"/>
+                            <field name="boat_year"/>
+                            <field name="boat_base_port"/>
+                        </group>
+                    </group>
+
+                    <group string="Caractéristiques techniques" invisible="not is_boat_product">
+                        <group>
+                            <field name="boat_length"/>
+                            <field name="boat_width"/>
+                            <field name="boat_capacity"/>
+                            <field name="boat_cabins"/>
+                        </group>
+                        <group>
+                            <field name="boat_speed"/>
+                            <field name="boat_engine"/>
+                            <field name="boat_hull_material"/>
+                            <field name="boat_catalog_url"/>
+                        </group>
+                    </group>
+
+                    <group string="Présentation site web" invisible="not is_boat_product">
+                        <field name="boat_short_description" placeholder="Texte court affiché sur la page bateau..."/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

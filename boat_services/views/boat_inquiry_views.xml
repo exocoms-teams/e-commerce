@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_boat_inquiry_tree" model="ir.ui.view">
+        <field name="name">boat.inquiry.tree</field>
+        <field name="model">boat.inquiry</field>
+        <field name="arch" type="xml">
+            <tree string="Demandes bateau">
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="inquiry_type"/>
+                <field name="customer_name"/>
+                <field name="customer_email"/>
+                <field name="customer_phone"/>
+                <field name="product_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_boat_inquiry_form" model="ir.ui.view">
+        <field name="name">boat.inquiry.form</field>
+        <field name="model">boat.inquiry</field>
+        <field name="arch" type="xml">
+            <form string="Demande bateau">
+                <header>
+                    <button name="action_set_in_progress" string="En traitement" type="object" class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_done" string="Marquer traitée" type="object" class="btn-primary" invisible="state not in ('new', 'in_progress')"/>
+                    <button name="action_cancel" string="Annuler" type="object" invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Demande">
+                            <field name="inquiry_type"/>
+                            <field name="product_id"/>
+                            <field name="expected_date"/>
+                            <field name="passenger_count"/>
+                            <field name="budget"/>
+                        </group>
+                        <group string="Client">
+                            <field name="customer_name"/>
+                            <field name="customer_email"/>
+                            <field name="customer_phone"/>
+                            <field name="customer_company"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_boat_inquiry_search" model="ir.ui.view">
+        <field name="name">boat.inquiry.search</field>
+        <field name="model">boat.inquiry</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une demande bateau">
+                <field name="name"/>
+                <field name="customer_name"/>
+                <field name="customer_email"/>
+                <field name="product_id"/>
+                <filter string="Nouvelles" name="filter_new" domain="[('state', '=', 'new')]"/>
+                <filter string="En traitement" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Traitées" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Statut" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'inquiry_type'}"/>
+                    <filter string="Bateau" name="group_product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_boat_inquiry" model="ir.actions.act_window">
+        <field name="name">Demandes bateau</field>
+        <field name="res_model">boat.inquiry</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_boat_inquiry_search"/>
+        <field name="context">{'search_default_filter_new': 1}</field>
+    </record>
+
+    <menuitem id="menu_boat_services_root" name="Boat Services" sequence="30"/>
+    <menuitem id="menu_boat_inquiry" name="Demandes bateau" parent="menu_boat_services_root" action="action_boat_inquiry" sequence="10"/>
+</odoo>
