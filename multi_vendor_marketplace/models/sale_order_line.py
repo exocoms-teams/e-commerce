@@ -24,7 +24,7 @@ from odoo import fields, models
 
 
 class SaleOrder(models.Model):
-    """ Added seller information"""
+    """ Added seller information""" 
     _inherit = 'sale.order.line'
 
     seller_id = fields.Many2one('res.partner', readonly=True,
