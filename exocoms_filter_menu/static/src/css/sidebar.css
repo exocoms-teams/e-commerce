@@ -783,3 +783,35 @@
     color: var(--exo-muted);
     font-size: 12px;
 }
+
+/* ── Intégration page /shop native Odoo ─────────────────────── */
+/* La topbar EXO est injectée avant #products dans le layout natif */
+#exo-topbar {
+    margin-bottom: .5rem;
+}
+
+/* Le layout sidebar+main enveloppe #exo-main (anciennement #products) */
+.exo-layout {
+    margin-bottom: 0;
+}
+
+/* #exo-main prend toute la largeur disponible à droite de la sidebar */
+.exo-main {
+    flex: 1;
+    min-width: 0;
+    padding: 0 0 1rem 1.25rem;
+    position: relative;
+}
+
+/* Masquer la ligne de séparation entre sidebar native et contenu
+   quand la sidebar native est cachée */
+.o_wsale_sidebar[style*="display:none"] + .o_wsale_products_main_col {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+/* S'assurer que .exo-layout occupe bien toute la largeur du container */
+#o_wsale_products_main_col > .exo-layout,
+.o_wsale_products_main_col > .exo-layout {
+    width: 100%;
+}

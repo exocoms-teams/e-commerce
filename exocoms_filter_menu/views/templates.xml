@@ -151,57 +151,74 @@
 </template>
 
 <!-- ================================================================
-     PAGE SHOP COMPLÈTE (version module intégré)
+     INJECTION dans la page /shop native d'Odoo
+     On hérite de website_sale.products pour :
+     1) Ajouter la sidebar EXOCOMS à gauche de la grille
+     2) Envelopper la grille dans #exo-products (cible du JS AJAX)
+     3) Ajouter la topbar (tri, compteur, tags)
+     4) Masquer les filtres natifs Odoo (sidebar gauche native)
 ================================================================ -->
-<template id="shop_page" name="EXO – Boutique filtre sidebar">
-    <t t-call="website.layout">
-        <div id="wrap" class="exo-page">
+<template id="exo_shop_layout"
+          inherit_id="website_sale.products"
+          name="EXO – Injection Sidebar Shop">
 
-            <div class="exo-topbar" id="exo-topbar">
-                <div class="exo-topbar__row">
-                    <button class="exo-topbar__toggle"
-                            id="exo-sidebar-toggle"
-                            type="button"
-                            aria-label="Afficher / masquer les filtres"
-                            aria-expanded="false"
-                            aria-controls="exo-sidebar">
-                        <i class="fa fa-sliders" aria-hidden="true"></i> Filtres
-                    </button>
-                    <span class="exo-topbar__count">
-                        <span id="exo-count">0</span> produit(s)
-                    </span>
-                    <div class="exo-topbar__sort">
-                        <label class="exo-topbar__sort-lbl" for="exo-sort">Trier :</label>
-                        <select id="exo-sort" class="exo-select" aria-label="Trier les produits">
-                            <option value="name asc">Nom A→Z</option>
-                            <option value="name desc">Nom Z→A</option>
-                            <option value="list_price asc">Prix croissant</option>
-                            <option value="list_price desc">Prix décroissant</option>
-                            <option value="create_date desc">Nouveautés</option>
-                        </select>
-                    </div>
+    <!-- 1. Masquer la sidebar native d'Odoo (attributs/catégories built-in) -->
+    <xpath expr="//div[hasclass('o_wsale_sidebar')]" position="attributes">
+        <attribute name="style">display:none !important</attribute>
+    </xpath>
+
+    <!-- 2. Avant la grille produits : injecter topbar + sidebar EXOCOMS -->
+    <xpath expr="//div[@id='products']" position="before">
+        <!-- Topbar : tri, compteur, tags -->
+        <div class="exo-topbar" id="exo-topbar">
+            <div class="exo-topbar__row">
+                <button class="exo-topbar__toggle"
+                        id="exo-sidebar-toggle"
+                        type="button"
+                        aria-label="Afficher / masquer les filtres"
+                        aria-expanded="false"
+                        aria-controls="exo-sidebar">
+                    <i class="fa fa-sliders" aria-hidden="true"></i> Filtres
+                </button>
+                <span class="exo-topbar__count">
+                    <span id="exo-count">–</span> produit(s)
+                </span>
+                <div class="exo-topbar__sort">
+                    <label class="exo-topbar__sort-lbl" for="exo-sort">Trier :</label>
+                    <select id="exo-sort" class="exo-select" aria-label="Trier les produits">
+                        <option value="name asc">Nom A→Z</option>
+                        <option value="name desc">Nom Z→A</option>
+                        <option value="list_price asc">Prix croissant</option>
+                        <option value="list_price desc">Prix décroissant</option>
+                        <option value="create_date desc">Nouveautés</option>
+                    </select>
                 </div>
-                <div class="exo-tags" id="exo-tags" aria-live="polite"></div>
             </div>
-
-            <div class="exo-layout">
-                <t t-call="exocoms_filter_menu.sidebar_inner"/>
-                <main class="exo-main" id="exo-main">
-                    <div class="exo-overlay exo-hidden" id="exo-overlay" aria-hidden="true">
-                        <span class="exo-spinner exo-spinner--lg" aria-hidden="true"></span>
-                        <span class="exo-overlay__txt">Actualisation…</span>
-                    </div>
-                    <div id="exo-products">
-                        <t t-call="exocoms_filter_menu.products_partial">
-                            <t t-set="products" t-value="products or []"/>
-                        </t>
-                    </div>
-                    <nav class="exo-pager" id="exo-pager" aria-label="Pagination"></nav>
-                </main>
-            </div>
-
+            <div class="exo-tags" id="exo-tags" aria-live="polite"></div>
         </div>
-    </t>
+
+        <!-- Layout sidebar + grille -->
+        <div class="exo-layout">
+            <t t-call="exocoms_filter_menu.sidebar_inner"/>
+            <!-- La grille AJAX sera injectée après ce div via l'xpath suivant -->
+        </div>
+    </xpath>
+
+    <!-- 3. Envelopper #products dans #exo-products (cible JS AJAX) +
+            ajouter overlay de chargement + paginateur EXOCOMS -->
+    <xpath expr="//div[@id='products']" position="replace">
+        <div id="exo-main" class="exo-main">
+            <div class="exo-overlay exo-hidden" id="exo-overlay" aria-hidden="true">
+                <span class="exo-spinner exo-spinner--lg" aria-hidden="true"></span>
+                <span class="exo-overlay__txt">Actualisation…</span>
+            </div>
+            <div id="exo-products">
+                <!-- Contenu initial rendu côté serveur — remplacé par AJAX ensuite -->
+            </div>
+            <nav class="exo-pager" id="exo-pager" aria-label="Pagination"></nav>
+        </div>
+    </xpath>
+
 </template>
 
 <!-- ================================================================
