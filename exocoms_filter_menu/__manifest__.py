@@ -21,11 +21,15 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
+        'views/snippet_options.xml',
     ],
     'assets': {
         'web.assets_frontend': [
             'exocoms_filter_menu/static/src/css/sidebar.css',
             'exocoms_filter_menu/static/src/js/sidebar.js',
+        ],
+        'website.assets_wysiwyg': [
+            'exocoms_filter_menu/static/src/js/snippet_editor.js',
         ],
     },
     'installable': True,

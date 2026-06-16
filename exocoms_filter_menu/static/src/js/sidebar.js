@@ -22,6 +22,28 @@
     if (!document.getElementById("exo-sidebar")) return;
 
     /* ============================================================
+       GARDE : détecter les instances dupliquées sur la page
+       Ce widget utilise des id HTML fixes lus via getElementById.
+       Si le snippet est glissé plusieurs fois sur la même page (ou
+       coexiste avec la page /shop intégrée), seule la première
+       instance trouvée dans le DOM sera fonctionnelle. On avertit
+       clairement plutôt que de planter silencieusement.
+    ============================================================ */
+    (function warnIfDuplicateInstances() {
+        const trueDuplicates = document.querySelectorAll(
+            ".s_exo_filter_sidebar, .exo-page"
+        );
+        if (trueDuplicates.length > 1) {
+            console.warn(
+                "[ExoFilter] " + trueDuplicates.length + " instances du widget " +
+                "filtre sidebar détectées sur cette page. Ce widget ne supporte " +
+                "qu'une seule instance par page (id HTML fixes). Seule la " +
+                "première sera fonctionnelle ; les autres resteront inertes."
+            );
+        }
+    }());
+
+    /* ============================================================
        ÉTAT GLOBAL
     ============================================================ */
     const S = {
