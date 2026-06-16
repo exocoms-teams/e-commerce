@@ -206,31 +206,30 @@
 
 <!-- ================================================================
      SNIPPET — déclaration dans le panneau Website Builder Odoo 19
-     Odoo 19 : snippet_structure existe toujours, col-6 (Bootstrap 5)
+     Syntaxe Odoo 19 : deux xpath dans website.snippets
+       1) snippet_groups  → déclarer le groupe
+       2) snippet_structure → rattacher le snippet au groupe
 ================================================================ -->
 <template id="s_exo_filter_sidebar"
           name="EXO Filtre Sidebar"
           inherit_id="website.snippets"
           primary="True">
-    <xpath expr="//div[@id='snippet_structure']" position="before">
-        <div class="o_panel_body">
-            <div class="o_panel_header">EXOCOMS</div>
-            <div class="row">
-                <div class="col-6 o_snippet_thumbnail"
-                     data-oe-thumbnail="/exocoms_filter_menu/static/src/img/thumb.svg">
-                    <div class="s_exo_filter_sidebar o_snippet_drop_in_only"
-                         data-snippet="s_exo_filter_sidebar"
-                         data-name="Filtre Produits">
-                        <div class="exo-snippet-thumb">
-                            <i class="fa fa-sliders" aria-hidden="true"></i>
-                            <span>Filtre Produits</span>
-                        </div>
-                    </div>
-                    <div class="o_snippet_thumbnail_title">Filtre Produits</div>
-                </div>
-            </div>
-        </div>
+
+    <!-- Déclarer le groupe EXOCOMS dans la liste des groupes -->
+    <xpath expr="//snippets[@id='snippet_groups']/*[1]" position="before">
+        <t snippet-group="exo_filter_sidebar"
+           t-snippet="website.s_snippet_group"
+           string="EXOCOMS Filtres"/>
     </xpath>
+
+    <!-- Rattacher le snippet au groupe -->
+    <xpath expr="//snippets[@id='snippet_structure']/*[1]" position="before">
+        <t t-snippet="exocoms_filter_menu.s_exo_filter_sidebar_content"
+           string="Filtre Produits"
+           group="exo_filter_sidebar"
+           t-thumbnail="/exocoms_filter_menu/static/src/img/thumb.svg"/>
+    </xpath>
+
 </template>
 
 <!-- ================================================================

@@ -9,7 +9,7 @@ class ExoFilterSidebar(http.Controller):
     # /exo/filter/facets
     # Retourne l'arbre catégories 3 niveaux + attributs + bornes prix
     # ------------------------------------------------------------------
-    @http.route('/exo/filter/facets', type='json', auth='public', website=True)
+    @http.route('/exo/filter/facets', type='jsonrpc', auth='public', website=True)
     def facets(self, **kw):
         env = request.env
 
@@ -86,7 +86,7 @@ class ExoFilterSidebar(http.Controller):
     # /exo/filter/products
     # Retourne la grille produits filtrée (HTML) + metadata pagination
     # ------------------------------------------------------------------
-    @http.route('/exo/filter/products', type='json', auth='public', website=True)
+    @http.route('/exo/filter/products', type='jsonrpc', auth='public', website=True)
     def products(self, category_ids=None, attrib=None,
                  price_min=None, price_max=None,
                  search=None, order=None, page=0, **kw):
