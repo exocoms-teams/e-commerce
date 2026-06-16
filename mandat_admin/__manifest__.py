@@ -58,6 +58,9 @@ Fonctionnalités
         'web.assets_backend': [
             'mandat_admin/static/src/css/mandat.css',
         ],
+        'payment.assets_payment_form_content': [
+            'mandat_admin/static/src/js/payment_form.js',
+        ],
     },
     'installable': True,
     'application': False,
