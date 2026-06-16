@@ -3,19 +3,15 @@ import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
 
 patch(PaymentForm.prototype, {
-    _processTokenizedFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
-        if (providerCode === 'mandat_administratif') {
-            window.location = '/payment/status';
+    async _initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow) {
+        if (provider === 'mandat_administratif') {
+            const self = this;
+            const processingValues = await self._getProcessingValues(
+                provider, paymentOptionId, paymentMethodCode, flow
+            );
+            window.location.assign('/payment/status');
             return;
         }
-        return super._processTokenizedFlow(...arguments);
-    },
-
-    _processRedirectFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
-        if (providerCode === 'mandat_administratif') {
-            window.location = '/payment/status';
-            return;
-        }
-        return super._processRedirectFlow(...arguments);
+        return super._initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow);
     },
 });
