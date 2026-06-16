@@ -21,7 +21,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
-        'views/snippet_options.xml',
     ],
     'assets': {
         'web.assets_frontend': [
