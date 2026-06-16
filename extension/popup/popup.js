@@ -1,16 +1,41 @@
-// Popup logic
+// popup.js - Complete with theme support
+let allData = null;
+let isTracking = true;
+
+// ---- Theme ----
+
+function getStoredTheme() {
+  const saved = localStorage.getItem('tracker-theme');
+  if (saved === 'light' || saved === 'dark') return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('tracker-theme', theme);
+}
+
+// Initialize theme
+applyTheme(getStoredTheme());
+
+// ---- Init ----
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   setupListeners();
+  updateTrackingStatus();
 });
+
+// ---- Data Loading ----
 
 async function loadData() {
   const data = await sendMessage({ action: 'getData' });
   if (!data) return;
 
+  allData = data;
   document.getElementById('statProducts').textContent = data.totalProducts || 0;
-  document.getElementById('statViews').textContent = fmt(data.totalViews || 0);
-  document.getElementById('statPurchases').textContent = fmt(data.totalPurchases || 0);
+  document.getElementById('statViews').textContent = formatNumber(data.totalViews || 0);
+  document.getElementById('statPurchases').textContent = formatNumber(data.totalPurchases || 0);
 
   renderTrending(data.topProducts || []);
 }
@@ -18,31 +43,64 @@ async function loadData() {
 function renderTrending(products) {
   const list = document.getElementById('trendingList');
   if (!products.length) {
-    list.innerHTML = '<p class="empty">Browse shopping sites to collect data.</p>';
+    list.innerHTML = '<div class="empty-state">Browse shopping sites to collect data.</div>';
     return;
   }
 
-  list.innerHTML = products.slice(0, 8).map((p, i) => {
+  list.innerHTML = products.slice(0, 6).map((p, i) => {
     const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-    const fire = p.purchaseCount > 0 ? '🔥' : p.viewCount > 5 ? '📈' : '';
+    const score = p.purchaseCount > 0 ? '🔥 ' : '';
     const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '';
     const meta = [p.domain, price, p.category].filter(Boolean).join(' · ');
+
     return `
       <div class="trending-item">
-        <span class="rank ${rankClass}">#${i + 1}</span>
-        <div class="item-info">
-          <div class="item-title" title="${esc(p.title)}">${esc(p.title)}</div>
-          <div class="item-meta">${esc(meta)}</div>
+        <span class="trending-rank ${rankClass}">#${i + 1}</span>
+        <div class="trending-info">
+          <div class="trending-title" title="${escapeHtml(p.title)}">${escapeHtml(p.title)}</div>
+          <div class="trending-meta">${escapeHtml(meta)}</div>
         </div>
-        <span class="item-score">${fire} ${Math.round(p.trendScore)}</span>
+        <span class="trending-score">${score}${Math.round(p.trendScore)}</span>
       </div>
     `;
   }).join('');
 }
 
+// ---- Tracking Status ----
+
+async function updateTrackingStatus() {
+  const response = await sendMessage({ action: 'getTrackingStatus' });
+  if (!response) return;
+  
+  isTracking = response.tracking !== false;
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const btn = document.getElementById('toggleBtn');
+  
+  if (isTracking) {
+    dot.className = 'status-dot active';
+    text.textContent = 'Tracking: Active';
+    btn.textContent = 'Pause';
+    btn.className = 'toggle-btn';
+  } else {
+    dot.className = 'status-dot paused';
+    text.textContent = 'Tracking: Paused';
+    btn.textContent = 'Resume';
+    btn.className = 'toggle-btn paused';
+  }
+}
+
+// ---- Listeners ----
+
 function setupListeners() {
   document.getElementById('optionsBtn').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
+  });
+
+  document.getElementById('toggleBtn').addEventListener('click', async () => {
+    await sendMessage({ action: 'toggleTracking' });
+    updateTrackingStatus();
+    setTimeout(loadData, 500);
   });
 
   document.getElementById('openDashboard').addEventListener('click', () => {
@@ -79,6 +137,8 @@ function setupListeners() {
   });
 }
 
+// ---- Helpers ----
+
 function sendMessage(msg) {
   return new Promise(resolve => {
     chrome.runtime.sendMessage(msg, response => {
@@ -88,10 +148,10 @@ function sendMessage(msg) {
   });
 }
 
-function fmt(n) {
+function formatNumber(n) {
   return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
 }
 
-function esc(str) {
+function escapeHtml(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }

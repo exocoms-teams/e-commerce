@@ -5,13 +5,13 @@ import os
 import math
 from datetime import datetime, timedelta
 import hashlib
+import re
 
-app = Flask(__name__, static_folder='dashboard/static', template_folder='dashboard/templates')
-CORS(app, origins=['chrome-extension://*', 'http://localhost:*'])
+app = Flask(__name__, static_folder='../dashboard', template_folder='../dashboard')
+CORS(app, origins=['*'])  # Allow all origins for testing
 
 DATA_FILE = 'data/tracker_data.json'
 os.makedirs('data', exist_ok=True)
-
 
 # ---- Data helpers ----
 
@@ -33,10 +33,8 @@ def make_key(title: str, domain: str) -> str:
 
 
 def parse_rating(raw) -> float | None:
-    """Robust rating parser. Handles '4.5 out of 5 stars', '4.5/5', plain floats."""
     if not raw:
         return None
-    import re
     match = re.search(r'[\d.]+', str(raw))
     if not match:
         return None
@@ -44,25 +42,19 @@ def parse_rating(raw) -> float | None:
     if 0 < val <= 5:
         return val
     if 5 < val <= 10:
-        return val / 2  # normalize 10-point scale
+        return val / 2
     return None
 
 
 def compute_trend_score(product: dict) -> float:
-    """
-    Multi-signal trend score with time decay, velocity, sold delta,
-    price drop bonus, and rating quality weight.
-    """
     now = datetime.utcnow()
     day = timedelta(days=1)
 
-    # Time-decayed view velocity from view_log timestamps
     view_log = product.get('view_log', [])
     views_7d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 7 * day)
     views_30d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 30 * day)
     velocity_score = views_7d * 3 + views_30d * 1
 
-    # Rising multiplier: last 3 days vs previous 3 days
     views_3d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 3 * day)
     views_3to6d = sum(
         1 for t in view_log
@@ -70,10 +62,8 @@ def compute_trend_score(product: dict) -> float:
     )
     rising_multiplier = 1.5 if views_3d > 0 and views_3d > views_3to6d * 1.5 else 1.0
 
-    # Purchase signal
     purchase_score = product.get('purchase_count', 0) * 10
 
-    # Sold count delta (growth over time) rather than raw latest value
     sold_counts = product.get('sold_counts', [])
     sold_score = 0.0
     if len(sold_counts) >= 2:
@@ -82,7 +72,6 @@ def compute_trend_score(product: dict) -> float:
     elif len(sold_counts) == 1:
         sold_score = sold_counts[0]['value'] * 0.05
 
-    # Price drop bonus
     price_signal = 0.0
     prices = product.get('prices', [])
     if len(prices) >= 2:
@@ -95,7 +84,6 @@ def compute_trend_score(product: dict) -> float:
         if drop_pct >= 0.15:
             price_signal = 15.0
 
-    # Rating quality: Bayesian-style avg_rating * log(1 + review_count)
     rating_signal = 0.0
     ratings = product.get('ratings', [])
     reviews = product.get('reviews', [])
@@ -113,7 +101,6 @@ def compute_trend_score(product: dict) -> float:
 
 
 def enrich_product(p: dict) -> dict:
-    """Add computed fields to a product dict for API responses."""
     prices = p.get('prices', [])
     ratings = p.get('ratings', [])
     reviews = p.get('reviews', [])
@@ -124,7 +111,6 @@ def enrich_product(p: dict) -> dict:
     avg_price = round(sum(price_values) / len(price_values), 2) if price_values else None
     latest_price = price_values[-1] if price_values else None
 
-    # Price trend as percentage vs average
     price_trend = None
     if avg_price and latest_price:
         price_trend = round((latest_price - avg_price) / avg_price * 100, 1)
@@ -132,12 +118,10 @@ def enrich_product(p: dict) -> dict:
     avg_rating = round(sum(float(r) for r in ratings) / len(ratings), 1) if ratings else None
     latest_sold = sold_counts[-1]['value'] if sold_counts else None
 
-    # Sold delta
     sold_delta = None
     if len(sold_counts) >= 2:
         sold_delta = sold_counts[-1]['value'] - sold_counts[0]['value']
 
-    # 7-day views and rising flag
     now = datetime.utcnow()
     day = timedelta(days=1)
     views_7d = sum(1 for t in view_log if now - datetime.fromisoformat(t) < 7 * day)
@@ -166,23 +150,22 @@ def enrich_product(p: dict) -> dict:
 
 @app.route('/')
 def index():
-    return send_from_directory('website', 'index.html')
+    return send_from_directory('../website', 'index.html')
 
 
 @app.route('/website/<path:filename>')
 def website_files(filename):
-    return send_from_directory('website', filename)
-
-
-@app.route('/extension/<path:filename>')
-def extension_assets(filename):
-    return send_from_directory('extension', filename)
+    return send_from_directory('../website', filename)
 
 
 @app.route('/dashboard/')
+def dashboard_index():
+    return send_from_directory('../dashboard', 'index.html')
+
+
 @app.route('/dashboard/<path:filename>')
-def dashboard(filename='index.html'):
-    return send_from_directory('dashboard', filename)
+def dashboard_files(filename):
+    return send_from_directory('../dashboard', filename)
 
 
 @app.route('/api/track', methods=['POST'])
@@ -194,7 +177,6 @@ def track_product():
     if not product or not product.get('title'):
         return jsonify({'error': 'Missing product title'}), 400
 
-    # Reject low-quality generic titles that match the domain name
     domain = product.get('domain', 'unknown')
     domain_root = domain.replace('www.', '').split('.')[0].lower()
     title = product.get('title', '')
@@ -229,7 +211,6 @@ def track_product():
     entry['view_count'] += 1
     entry['last_seen'] = now
 
-    # Timestamped view log for velocity
     entry.setdefault('view_log', [])
     entry['view_log'].append(now)
     if len(entry['view_log']) > 60:
@@ -242,7 +223,6 @@ def track_product():
         entry['prices'].append({'value': float(product['price']), 'date': now})
         entry['prices'] = entry['prices'][-50:]
 
-    # Robust rating parsing
     parsed_rating = parse_rating(product.get('rating'))
     if parsed_rating is not None:
         entry['ratings'].append(parsed_rating)
@@ -256,7 +236,6 @@ def track_product():
         except (ValueError, IndexError):
             pass
 
-    # Sold count with floor flag for "1000+" style values
     if product.get('soldCount'):
         raw = str(product['soldCount'])
         is_floor = '+' in raw
@@ -281,6 +260,7 @@ def track_product():
     data['last_updated'] = now
     save_data(data)
 
+    print(f"[Tracker] ✅ Tracked: {title[:50]}... (views: {entry['view_count']})")
     return jsonify({'success': True, 'key': key})
 
 
@@ -360,51 +340,6 @@ def get_stats():
     })
 
 
-@app.route('/api/trending', methods=['GET'])
-def get_trending():
-    data = load_data()
-    n = min(int(request.args.get('n', 20)), 100)
-    products = [enrich_product(p) for p in data['products'].values()]
-    products.sort(key=lambda p: p['trend_score'], reverse=True)
-    return jsonify({'trending': products[:n]})
-
-
-@app.route('/api/rising', methods=['GET'])
-def get_rising():
-    """Products with significant view velocity increase in the last 3 days."""
-    data = load_data()
-    n = min(int(request.args.get('n', 20)), 100)
-    products = [enrich_product(p) for p in data['products'].values()]
-    rising = [p for p in products if p.get('is_rising') and p.get('views_7d', 0) >= 2]
-    rising.sort(key=lambda p: p['trend_score'], reverse=True)
-    return jsonify({'rising': rising[:n]})
-
-
-@app.route('/api/categories', methods=['GET'])
-def get_categories():
-    data = load_data()
-    cats = data.get('categories', {})
-
-    # Category momentum: rising products per category
-    products = [enrich_product(p) for p in data['products'].values()]
-    cat_rising = {}
-    for p in products:
-        if p.get('is_rising'):
-            c = p.get('category', 'General')
-            cat_rising[c] = cat_rising.get(c, 0) + 1
-
-    return jsonify({
-        'categories': [
-            {
-                'name': k,
-                'count': v,
-                'rising_count': cat_rising.get(k, 0),
-            }
-            for k, v in sorted(cats.items(), key=lambda x: -x[1])
-        ]
-    })
-
-
 @app.route('/api/export', methods=['GET'])
 def export_data():
     return jsonify(load_data())
@@ -426,8 +361,11 @@ def clear_data():
 
 
 if __name__ == '__main__':
-    print('Python Backend')
-    print('Running at http://localhost:5000')
-    print('Download page at http://localhost:5000/')
-    print('Dashboard at http://localhost:5000/dashboard/')
-    app.run(debug=True, port=5000)
+    print('=' * 50)
+    print('🔍 Tracker Backend')
+    print('=' * 50)
+    print(f'📍 Running at: http://localhost:5000')
+    print(f'📊 Dashboard: http://localhost:5000/dashboard/')
+    print(f'📥 Download: http://localhost:5000/')
+    print('=' * 50)
+    app.run(debug=True, port=5000, host='0.0.0.0')

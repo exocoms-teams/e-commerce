@@ -1,292 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tracker — Dashboard</title>
-  <script>(function(){var t=localStorage.getItem('tracker-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)})();</script>
-  <link rel="stylesheet" href="/dashboard/style.css">
+  <title>Tracker Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui; background: #0d1117; color: #e6edf3; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    h1 { color: #a78bfa; margin-bottom: 20px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-card .number { font-size: 28px; font-weight: bold; color: #a78bfa; }
+    .stat-card .label { color: #8b949e; font-size: 12px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+    .card h2 { margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #30363d; }
+    th { color: #8b949e; font-weight: 600; }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .chart-box { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
+    .chart-box canvas { max-height: 300px; width: 100% !important; }
+    .empty { text-align: center; color: #8b949e; padding: 40px; }
+    .badge { background: #2d1b69; color: #a78bfa; padding: 2px 10px; border-radius: 99px; font-size: 11px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .topbar input, .topbar select { background: #161b22; border: 1px solid #30363d; color: #e6edf3; padding: 8px 12px; border-radius: 6px; }
+    .topbar input { width: 200px; }
+    @media (max-width: 768px) { .stats { grid-template-columns: 1fr 1fr; } .charts-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">Tracker</div>
-    <nav class="nav">
-      <button class="nav-btn active" data-page="trending">Trending Products</button>
-      <button class="nav-btn" data-page="categories">By Category</button>
-      <button class="nav-btn" data-page="domains">By Store</button>
-      <button class="nav-btn" data-page="activity">Activity</button>
-    </nav>
-    <div class="api-status">
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusText">Connecting...</span>
-    </div>
-    <div class="sidebar-info">
-      <div class="info-row"><span>Products</span><strong id="sTotal">0</strong></div>
-      <div class="info-row"><span>Total Views</span><strong id="sViews">0</strong></div>
-      <div class="info-row"><span>Purchases</span><strong id="sPurchases">0</strong></div>
-      <div class="info-row"><span>Conv. Rate</span><strong id="sConv">0%</strong></div>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">Dark mode</button>
-      <a href="/website/" class="link-btn">Get extension</a>
-    </div>
-  </aside>
-
-  <main class="main">
+  <div class="container">
     <div class="topbar">
-      <h1 id="pageTitle">Trending Products</h1>
-      <div class="topbar-right">
-        <input type="search" id="searchInput" class="search" placeholder="Search products...">
-        <select id="categoryFilter" class="filter-select"><option value="">All Categories</option></select>
-        <button class="btn-icon" id="refreshBtn" title="Refresh">&#8635;</button>
-        <button type="button" class="theme-toggle theme-toggle-top" data-theme-toggle aria-pressed="false">Dark mode</button>
-        <button class="btn-outline" id="exportBtn">Export CSV</button>
+      <h1>📊 Tracker Dashboard</h1>
+      <div>
+        <input type="text" id="searchInput" placeholder="Search products...">
+        <select id="categoryFilter"><option value="">All Categories</option></select>
+        <button onclick="loadData()" style="background:#6c47ff;border:none;color:white;padding:8px 16px;border-radius:6px;cursor:pointer;">↻ Refresh</button>
       </div>
     </div>
 
-    <!-- Trending -->
-    <section id="page-trending" class="page active">
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <span class="kpi-label">Total Products</span>
-          <span class="kpi-value" id="kpiProducts">0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Total Views</span>
-          <span class="kpi-value" id="kpiViews">0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Purchases Tracked</span>
-          <span class="kpi-value" id="kpiPurchases">0</span>
-        </div>
-        <div class="kpi-card">
-          <span class="kpi-label">Conversion Rate</span>
-          <span class="kpi-value" id="kpiConv">0%</span>
-          <span class="kpi-sub" id="kpiTopProduct">-</span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h2>Product Leaderboard</h2></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Store</th><th>Price</th><th>Views</th><th>Purchases</th><th>Trend Score</th></tr></thead>
-            <tbody id="trendingBody"><tr><td colspan="8" class="empty-row">Connecting to Python backend...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    <div class="stats" id="statsRow">
+      <div class="stat-card"><div class="number" id="totalProducts">-</div><div class="label">Products</div></div>
+      <div class="stat-card"><div class="number" id="totalViews">-</div><div class="label">Views</div></div>
+      <div class="stat-card"><div class="number" id="totalPurchases">-</div><div class="label">Purchases</div></div>
+      <div class="stat-card"><div class="number" id="conversionRate">-</div><div class="label">Conversion Rate</div></div>
+    </div>
 
-    <!-- Categories -->
-    <section id="page-categories" class="page">
-      <div class="charts-grid">
-        <div class="card"><div class="card-head"><h2>Category Breakdown</h2></div><div class="chart-box"><canvas id="catPieChart"></canvas></div></div>
-        <div class="card"><div class="card-head"><h2>Views Per Category</h2></div><div class="chart-box"><canvas id="catBarChart"></canvas></div></div>
-      </div>
-    </section>
+    <div class="card">
+      <h2>📈 Trending Products</h2>
+      <div id="trendingTable"><div class="empty">Loading data...</div></div>
+    </div>
 
-    <!-- Domains -->
-    <section id="page-domains" class="page">
-      <div class="card"><div class="card-head"><h2>Store Intelligence</h2></div><div class="chart-box chart-box-wide"><canvas id="domainChart"></canvas></div></div>
-      <div class="card"><div class="card-head"><h2>All Stores</h2></div><div id="domainGrid" class="domain-grid"></div></div>
-    </section>
+    <div class="charts-grid">
+      <div class="chart-box"><h3>Categories</h3><canvas id="categoryChart"></canvas></div>
+      <div class="chart-box"><h3>Activity</h3><canvas id="activityChart"></canvas></div>
+    </div>
+  </div>
 
-    <!-- Activity -->
-    <section id="page-activity" class="page">
-      <div class="card"><div class="card-head"><h2>Daily Activity (Last 14 Days)</h2></div><div class="chart-box chart-box-wide"><canvas id="activityChart"></canvas></div></div>
-      <div class="card"><div class="card-head"><h2>Purchase Funnel</h2></div><div id="funnelWrap" class="funnel-wrap"></div></div>
-    </section>
-  </main>
-</div>
+  <script>
+    const API = 'http://localhost:5000/api';
+    let charts = {};
 
-<script src="/website/theme.js"></script>
-<script>
-const API = 'http://localhost:5000/api';
-let allData = null, charts = {};
+    async function loadData() {
+      try {
+        const response = await fetch(`${API}/products?limit=100`);
+        if (!response.ok) throw new Error('API error');
+        const data = await response.json();
+        renderDashboard(data);
+      } catch (e) {
+        document.getElementById('trendingTable').innerHTML = 
+          `<div class="empty">❌ Backend not running. Start with: python app.py</div>`;
+        console.error('Error loading data:', e);
+      }
+    }
 
-async function fetchData() {
-  try {
-    const [products, stats] = await Promise.all([
-      fetch(`${API}/products?limit=200`).then(r => r.json()),
-      fetch(`${API}/stats`).then(r => r.json()),
-    ]);
-    allData = { ...products, ...stats };
-    document.getElementById('statusDot').className = 'status-dot ok';
-    document.getElementById('statusText').textContent = 'Backend connected';
-    updateSidebar();
-    populateCategoryFilter();
-    renderCurrentPage();
-  } catch (e) {
-    document.getElementById('statusDot').className = 'status-dot err';
-    document.getElementById('statusText').textContent = 'Backend offline';
-    document.getElementById('trendingBody').innerHTML = '<tr><td colspan="8" class="empty-row">Backend not running. Start with: npm run server</td></tr>';
-  }
-}
+    function renderDashboard(data) {
+      const products = data.products || [];
+      
+      // Update stats
+      document.getElementById('totalProducts').textContent = data.total_products || 0;
+      document.getElementById('totalViews').textContent = data.total_views || 0;
+      document.getElementById('totalPurchases').textContent = data.total_purchases || 0;
+      document.getElementById('conversionRate').textContent = 
+        data.total_views > 0 ? Math.round((data.total_purchases / data.total_views) * 100) + '%' : '0%';
 
-function updateSidebar() {
-  if (!allData) return;
-  setText('sTotal', allData.total_products || 0);
-  setText('sViews', allData.total_views || 0);
-  setText('sPurchases', allData.total_purchases || 0);
-  setText('sConv', (allData.conversion_rate || 0) + '%');
-  setText('kpiProducts', allData.total_products || 0);
-  setText('kpiViews', allData.total_views || 0);
-  setText('kpiPurchases', allData.total_purchases || 0);
-  setText('kpiConv', (allData.conversion_rate || 0) + '%');
-  setText('kpiTopProduct', allData.top_product ? truncate(allData.top_product, 30) : '-');
-}
+      // Update categories filter
+      const filter = document.getElementById('categoryFilter');
+      const currentVal = filter.value;
+      filter.innerHTML = '<option value="">All Categories</option>';
+      Object.keys(data.categories || {}).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        filter.appendChild(opt);
+      });
+      filter.value = currentVal;
 
-function populateCategoryFilter() {
-  const sel = document.getElementById('categoryFilter');
-  sel.innerHTML = '<option value="">All Categories</option>';
-  Object.keys(allData?.categories || {}).forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    sel.appendChild(opt);
-  });
-}
+      // Render table
+      const table = document.getElementById('trendingTable');
+      if (!products.length) {
+        table.innerHTML = '<div class="empty">No products tracked yet. Browse shopping sites!</div>';
+        return;
+      }
 
-function renderCurrentPage() {
-  const active = document.querySelector('.page.active');
-  if (!active || !allData) return;
-  const id = active.id;
-  if (id === 'page-trending') renderTrending();
-  if (id === 'page-categories') renderCategories();
-  if (id === 'page-domains') renderDomains();
-  if (id === 'page-activity') renderActivity();
-}
+      table.innerHTML = `
+        <table>
+          <thead><tr>
+            <th>#</th><th>Product</th><th>Category</th><th>Store</th><th>Price</th>
+            <th>Views</th><th>Purchases</th><th>Score</th>
+          </tr></thead>
+          <tbody>
+            ${products.slice(0, 20).map((p, i) => `
+              <tr>
+                <td>${i + 1}</td>
+                <td><strong>${p.title}</strong><br><small style="color:#8b949e;">${p.domain}</small></td>
+                <td><span class="badge">${p.category || 'General'}</span></td>
+                <td>${p.domain}</td>
+                <td>${p.latest_price ? '$' + parseFloat(p.latest_price).toFixed(2) : '-'}</td>
+                <td>${p.view_count}</td>
+                <td>${p.purchase_count || 0}</td>
+                <td>${Math.round(p.trend_score || 0)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
 
-function filterProducts() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const cat = document.getElementById('categoryFilter').value;
-  return (allData?.products || []).filter(p =>
-    (!q || p.title.toLowerCase().includes(q) || p.domain.includes(q)) &&
-    (!cat || p.category === cat)
-  );
-}
+      // Render charts
+      renderCharts(data);
+    }
 
-function renderTrending() {
-  const products = filterProducts();
-  const maxScore = products.length ? products[0].trend_score : 1;
-  const body = document.getElementById('trendingBody');
-  if (!products.length) {
-    body.innerHTML = '<tr><td colspan="8" class="empty-row">No products tracked yet.</td></tr>';
-    return;
-  }
-  body.innerHTML = products.slice(0, 100).map((p, i) => {
-    const price = p.latest_price ? '$' + parseFloat(p.latest_price).toFixed(2) : '-';
-    const pct = maxScore > 0 ? Math.round((p.trend_score / maxScore) * 100) : 0;
-    return `<tr>
-      <td><span class="rank-badge">${i+1}</span></td>
-      <td><div class="product-cell"><span class="product-name" title="${esc(p.title)}">${esc(truncate(p.title,50))}</span><span class="product-url">${esc(p.domain)}</span></div></td>
-      <td><span class="cat-pill">${esc(p.category||'General')}</span></td>
-      <td>${esc(p.domain)}</td>
-      <td>${price}</td>
-      <td>${p.view_count}</td>
-      <td>${p.purchase_count > 0 ? '<strong class="text-success">'+p.purchase_count+'</strong>' : '0'}</td>
-      <td><div class="score-bar-wrap"><div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div><span class="score-val">${Math.round(p.trend_score)}</span></div></td>
-    </tr>`;
-  }).join('');
-}
+    function renderCharts(data) {
+      const cats = data.categories || {};
+      const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+      const labels = entries.map(e => e[0]);
+      const values = entries.map(e => e[1]);
 
-function renderCategories() {
-  const cats = allData?.categories || {};
-  const entries = Object.entries(cats).sort((a,b) => b[1]-a[1]);
-  const c = chartTheme();
-  destroyChart('catPie'); destroyChart('catBar');
-  if (!entries.length) return;
-  charts.catPie = new Chart(document.getElementById('catPieChart'), {
-    type: 'doughnut',
-    data: { labels: entries.map(e=>e[0]), datasets: [{ data: entries.map(e=>e[1]), backgroundColor: c.palette, borderColor: c.border, borderWidth: 2 }] },
-    options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: c.label, font: { size: 11 } } } } }
-  });
-  charts.catBar = new Chart(document.getElementById('catBarChart'), {
-    type: 'bar',
-    data: { labels: entries.map(e=>e[0]), datasets: [{ label: 'Views', data: entries.map(e=>e[1]), backgroundColor: c.secondary, borderColor: c.primary, borderWidth: 1, borderRadius: 4 }] },
-    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.label }, grid: { display: false } } } }
-  });
-}
+      // Category chart
+      if (charts.category) charts.category.destroy();
+      charts.category = new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+          labels: labels.slice(0, 10),
+          datasets: [{ 
+            data: values.slice(0, 10), 
+            backgroundColor: ['#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b','#f87171','#34d399','#60a5fa','#e879f9','#fb923c'],
+            borderColor: '#161b22',
+            borderWidth: 2
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#e6edf3', font: { size: 11 } } } } }
+      });
 
-function renderDomains() {
-  const domains = allData?.domains || {};
-  const entries = Object.entries(domains).sort((a,b) => b[1]-a[1]);
-  const max = entries.length ? entries[0][1] : 1;
-  const c = chartTheme();
-  destroyChart('domain');
-  if (!entries.length) return;
-  charts.domain = new Chart(document.getElementById('domainChart'), {
-    type: 'bar',
-    data: { labels: entries.slice(0,12).map(e=>e[0]), datasets: [{ label: 'Products', data: entries.slice(0,12).map(e=>e[1]), backgroundColor: c.secondary, borderColor: c.primary, borderWidth: 1, borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: c.label }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid }, beginAtZero: true } } }
-  });
-  document.getElementById('domainGrid').innerHTML = entries.map(([d, count]) =>
-    `<div class="domain-card"><span class="domain-name">${d}</span><span class="domain-count">${count} products</span><div class="domain-bar"><div class="domain-fill" style="width:${Math.round(count/max*100)}%"></div></div></div>`
-  ).join('');
-}
+      // Activity chart - sample data
+      if (charts.activity) charts.activity.destroy();
+      const daily = data.daily || {};
+      const days = Array.from({length: 14}, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (13 - i));
+        return d.toISOString().split('T')[0];
+      });
+      const viewData = days.map(d => (daily[d] || {}).views || 0);
+      
+      charts.activity = new Chart(document.getElementById('activityChart'), {
+        type: 'line',
+        data: {
+          labels: days.map(d => d.slice(5)),
+          datasets: [{
+            label: 'Views',
+            data: viewData,
+            borderColor: '#6c47ff',
+            backgroundColor: 'rgba(108,71,255,0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#e6edf3' } } },
+          scales: { 
+            x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
+            y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' }, beginAtZero: true }
+          }
+        }
+      });
+    }
 
-function renderActivity() {
-  const daily = allData?.daily || {};
-  const days = getLast14Days();
-  const labels = days.map(d => d.slice(5));
-  const views = days.map(d => (daily[d]||{}).views||0);
-  const purchases = days.map(d => (daily[d]||{}).purchases||0);
-  const c = chartTheme();
-  destroyChart('activity');
-  charts.activity = new Chart(document.getElementById('activityChart'), {
-    type: 'line',
-    data: { labels, datasets: [
-      { label: 'Views', data: views, borderColor: c.primary, backgroundColor: c.primary + '14', borderWidth: 1.5, fill: true, tension: 0.2, pointRadius: 3, pointBackgroundColor: c.primary },
-      { label: 'Purchases', data: purchases, borderColor: c.secondary, backgroundColor: c.secondary + '14', borderWidth: 1.5, fill: true, tension: 0.2, pointRadius: 3, pointBackgroundColor: c.secondary }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: c.label } } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid }, beginAtZero: true } } }
-  });
-  const tv = allData?.total_views || 0, tp = allData?.total_purchases || 0;
-  const pp = tv > 0 ? Math.round(tp/tv*100) : 0;
-  document.getElementById('funnelWrap').innerHTML = `
-    <div class="funnel-row"><span class="funnel-label">Product views</span><div class="funnel-bar-bg"><div class="funnel-bar-fill views-fill" style="width:100%">${tv}</div></div><span class="funnel-num">${tv}</span></div>
-    <div class="funnel-row"><span class="funnel-label">Purchases</span><div class="funnel-bar-bg"><div class="funnel-bar-fill purchases-fill" style="width:${Math.max(pp,tp>0?5:0)}%">${tp}</div></div><span class="funnel-num">${tp}</span></div>
-    <p class="funnel-note">Conversion rate: ${pp}%</p>`;
-}
+    // Search and filter
+    document.getElementById('searchInput').addEventListener('input', loadData);
+    document.getElementById('categoryFilter').addEventListener('change', loadData);
 
-// Controls
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    document.getElementById('pageTitle').textContent = btn.textContent;
-    renderCurrentPage();
-  });
-});
-
-document.getElementById('refreshBtn').addEventListener('click', fetchData);
-document.getElementById('searchInput').addEventListener('input', renderTrending);
-document.getElementById('categoryFilter').addEventListener('change', renderTrending);
-
-document.getElementById('exportBtn').addEventListener('click', () => {
-  if (!allData) return;
-  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore\n';
-  (allData.products || []).forEach((p, i) => {
-    csv += `${i+1},"${(p.title||'').replace(/"/g,'""')}","${p.category}","${p.domain}","${p.latest_price||''}",${p.view_count},${p.purchase_count},${Math.round(p.trend_score)}\n`;
-  });
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `tracker-${new Date().toISOString().split('T')[0]}.csv`; a.click();
-});
-
-// Helpers
-function destroyChart(k) { if (charts[k]) { charts[k].destroy(); delete charts[k]; } }
-function setText(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
-function truncate(s, n) { return s && s.length > n ? s.slice(0,n)+'...' : (s||''); }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function getLast14Days() {
-  return Array.from({length:14},(_,i) => { const d=new Date(); d.setDate(d.getDate()-(13-i)); return d.toISOString().split('T')[0]; });
-}
-
-// Boot
-fetchData();
-setInterval(fetchData, 30000);
-document.addEventListener('themechange', () => { if (allData) renderCurrentPage(); });
-</script>
+    // Load data on page load
+    loadData();
+  </script>
 </body>
 </html>

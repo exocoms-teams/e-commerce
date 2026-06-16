@@ -7,35 +7,49 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="popup-wrap">
-    <header class="header">
-      <div class="header-logo">
-        <span class="logo-dot"></span>
-        <span class="logo-text"></span>
+  <div class="popup">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="brand">
+        <span class="brand-icon">T</span>
+        <span>Tracker</span>
+        <span class="brand-version">v2.0</span>
       </div>
-      <button id="optionsBtn" class="icon-btn" title="Extension settings">&#9881;</button>
+      <div class="header-actions">
+        <button class="icon-btn" id="optionsBtn" title="Settings">⚙️</button>
+      </div>
     </header>
 
-    <div class="stats-row">
-      <div class="stat-pill">
-        <span class="stat-num" id="statProducts">0</span>
-        <span class="stat-lbl">Products</span>
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-dot active" id="statusDot"></span>
+      <span id="statusText">Tracking: Active</span>
+      <button class="toggle-btn" id="toggleBtn">Pause</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="statProducts">0</div>
+        <div class="stat-label">Products</div>
       </div>
-      <div class="stat-pill">
-        <span class="stat-num" id="statViews">0</span>
-        <span class="stat-lbl">Views</span>
+      <div class="stat-card">
+        <div class="stat-number" id="statViews">0</div>
+        <div class="stat-label">Views</div>
       </div>
-      <div class="stat-pill">
-        <span class="stat-num" id="statPurchases">0</span>
-        <span class="stat-lbl">Purchases</span>
+      <div class="stat-card">
+        <div class="stat-number" id="statPurchases">0</div>
+        <div class="stat-label">Purchases</div>
       </div>
     </div>
 
+    <!-- Trending -->
     <div class="section-label">Trending Now</div>
     <div id="trendingList" class="trending-list">
-      <p class="empty">Loading...</p>
+      <div class="empty-state">Loading...</div>
     </div>
 
+    <!-- Manual Log -->
     <div class="section-label">Log Product Manually</div>
     <div class="manual-form">
       <input id="manualTitle" type="text" placeholder="Product name" class="input">
@@ -43,11 +57,12 @@
         <input id="manualPrice" type="number" placeholder="Price $" class="input half" step="0.01">
         <input id="manualCategory" type="text" placeholder="Category" class="input half">
       </div>
-      <button id="manualSave" class="btn-save">Log Purchase</button>
+      <button id="manualSave" class="btn-primary">Log Purchase</button>
     </div>
 
-    <footer class="footer">
-      <button id="openDashboard" class="btn-dashboard">Open Web Dashboard</button>
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <button id="openDashboard" class="btn-outline">Open Dashboard</button>
     </footer>
   </div>
 
