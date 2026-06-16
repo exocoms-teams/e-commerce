@@ -131,6 +131,11 @@ window.API = (() => {
             return this.post('/intervenant/fcm-token', { token });
         },
 
+        /* ── Comptabilité ── */
+        async getComptabilite() {
+            return this.get('/intervenant/comptabilite');
+        },
+
         /* ── Auth Odoo ── */
         async login(email, password) {
             const url  = CONFIG.ODOO_BASE_URL + '/web/session/authenticate';
