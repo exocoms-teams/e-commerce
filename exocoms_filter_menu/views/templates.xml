@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ================================================================
+     PARTIAL — carte produit unique
+     Odoo 19 : t-esc remplacé par t-out pour le HTML safe
+================================================================ -->
+<template id="product_card" name="EXO – Carte produit">
+    <div class="exo-card">
+        <a t-att-href="product.website_url" class="exo-card__link">
+            <div class="exo-card__img-wrap">
+                <img t-att-src="'/web/image/product.template/%s/image_512' % product.id"
+                     t-att-alt="product.name"
+                     class="exo-card__img"
+                     loading="lazy"/>
+            </div>
+            <div class="exo-card__body">
+                <p class="exo-card__name" t-out="product.name"></p>
+                <p class="exo-card__price">
+                    <t t-out="'%.2f\u202f\u20ac' % product.list_price"/>
+                </p>
+            </div>
+        </a>
+        <div class="exo-card__footer">
+            <a t-attf-href="/shop/cart/update?product_id=#{product.id}&amp;add_qty=1"
+               class="exo-btn exo-btn--primary exo-btn--sm exo-btn--block">
+                Ajouter au panier
+            </a>
+        </div>
+    </div>
+</template>
+
+<!-- ================================================================
+     PARTIAL — grille produits (rendu serveur + réponse AJAX)
+     Odoo 19 : t-esc → t-out, t-else="" → t-else
+================================================================ -->
+<template id="products_partial" name="EXO – Grille produits">
+    <t t-if="products">
+        <div class="exo-grid">
+            <t t-foreach="products" t-as="product">
+                <t t-call="exocoms_filter_menu.product_card"/>
+            </t>
+        </div>
+    </t>
+    <t t-else="">
+        <div class="exo-empty">
+            <i class="fa fa-search-minus exo-empty__icon" aria-hidden="true"></i>
+            <p class="exo-empty__title">Aucun produit trouvé</p>
+            <p class="exo-empty__sub">Modifiez vos critères de recherche.</p>
+        </div>
+    </t>
+</template>
+
+<!-- ================================================================
+     SIDEBAR — structure partagée page shop + snippet
+     3 niveaux construits dynamiquement par sidebar.js
+================================================================ -->
+<template id="sidebar_inner" name="EXO – Sidebar intérieur">
+    <aside class="exo-sidebar" id="exo-sidebar" aria-label="Filtres produits">
+
+        <div class="exo-sidebar__search">
+            <i class="fa fa-search exo-sidebar__search-ico" aria-hidden="true"></i>
+            <input id="exo-search"
+                   type="search"
+                   class="exo-sidebar__search-input"
+                   placeholder="Rechercher un produit…"
+                   autocomplete="off"
+                   aria-label="Rechercher un produit"/>
+            <button class="exo-sidebar__search-clr exo-hidden"
+                    id="exo-search-clr"
+                    type="button"
+                    aria-label="Effacer la recherche">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <!-- Catégories injectées par sidebar.js via /exo/filter/facets -->
+        <div id="exo-services-container">
+            <div class="exo-loading" aria-live="polite">
+                <span class="exo-spinner" aria-hidden="true"></span>
+                Chargement des catégories…
+            </div>
+        </div>
+
+        <!-- Attributs injectés par sidebar.js -->
+        <div id="exo-attrs-container"></div>
+
+        <!-- Slider double curseur prix -->
+        <div class="exo-price-section" id="exo-price-section">
+            <button class="exo-price__head exo-price__head--open"
+                    type="button"
+                    id="exo-price-toggle"
+                    aria-expanded="true"
+                    aria-controls="exo-price-body">
+                <span class="exo-price__ico">
+                    <i class="fa fa-tag" aria-hidden="true"></i>
+                </span>
+                <span class="exo-price__label">
+                    Fourchette de prix
+                    <span class="exo-price__current" id="exo-price-current">0 € – 1 000 €</span>
+                </span>
+                <i class="fa fa-chevron-right exo-price__chev" aria-hidden="true"></i>
+            </button>
+            <div class="exo-price__body exo-price__body--open" id="exo-price-body">
+                <div class="exo-range">
+                    <div class="exo-range__vals">
+                        <span class="exo-range__val" id="exo-price-lo">0 €</span>
+                        <span class="exo-range__sep">–</span>
+                        <span class="exo-range__val" id="exo-price-hi">1 000 €</span>
+                    </div>
+                    <div class="exo-range__track">
+                        <div class="exo-range__fill" id="exo-range-fill"></div>
+                        <input class="exo-range__input"
+                               id="exo-range-lo"
+                               type="range"
+                               min="0" max="1000" value="0" step="5"
+                               aria-label="Prix minimum"/>
+                        <input class="exo-range__input"
+                               id="exo-range-hi"
+                               type="range"
+                               min="0" max="1000" value="1000" step="5"
+                               aria-label="Prix maximum"/>
+                    </div>
+                    <div class="exo-range__ticks">
+                        <span id="exo-tick-lo">0 €</span>
+                        <span id="exo-tick-mid">500 €</span>
+                        <span id="exo-tick-hi">1 000 €</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exo-sidebar__footer">
+            <button class="exo-btn exo-btn--ghost exo-btn--block"
+                    id="exo-reset"
+                    type="button">
+                <i class="fa fa-undo" aria-hidden="true"></i> Réinitialiser tous les filtres
+            </button>
+        </div>
+
+    </aside>
+</template>
+
+<!-- ================================================================
+     PAGE SHOP COMPLÈTE (version module intégré)
+================================================================ -->
+<template id="shop_page" name="EXO – Boutique filtre sidebar">
+    <t t-call="website.layout">
+        <div id="wrap" class="exo-page">
+
+            <div class="exo-topbar" id="exo-topbar">
+                <div class="exo-topbar__row">
+                    <button class="exo-topbar__toggle"
+                            id="exo-sidebar-toggle"
+                            type="button"
+                            aria-label="Afficher / masquer les filtres"
+                            aria-expanded="false"
+                            aria-controls="exo-sidebar">
+                        <i class="fa fa-sliders" aria-hidden="true"></i> Filtres
+                    </button>
+                    <span class="exo-topbar__count">
+                        <span id="exo-count">0</span> produit(s)
+                    </span>
+                    <div class="exo-topbar__sort">
+                        <label class="exo-topbar__sort-lbl" for="exo-sort">Trier :</label>
+                        <select id="exo-sort" class="exo-select" aria-label="Trier les produits">
+                            <option value="name asc">Nom A→Z</option>
+                            <option value="name desc">Nom Z→A</option>
+                            <option value="list_price asc">Prix croissant</option>
+                            <option value="list_price desc">Prix décroissant</option>
+                            <option value="create_date desc">Nouveautés</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="exo-tags" id="exo-tags" aria-live="polite"></div>
+            </div>
+
+            <div class="exo-layout">
+                <t t-call="exocoms_filter_menu.sidebar_inner"/>
+                <main class="exo-main" id="exo-main">
+                    <div class="exo-overlay exo-hidden" id="exo-overlay" aria-hidden="true">
+                        <span class="exo-spinner exo-spinner--lg" aria-hidden="true"></span>
+                        <span class="exo-overlay__txt">Actualisation…</span>
+                    </div>
+                    <div id="exo-products">
+                        <t t-call="exocoms_filter_menu.products_partial">
+                            <t t-set="products" t-value="products or []"/>
+                        </t>
+                    </div>
+                    <nav class="exo-pager" id="exo-pager" aria-label="Pagination"></nav>
+                </main>
+            </div>
+
+        </div>
+    </t>
+</template>
+
+<!-- ================================================================
+     SNIPPET — déclaration dans le panneau Website Builder Odoo 19
+     Odoo 19 : snippet_structure existe toujours, col-6 (Bootstrap 5)
+================================================================ -->
+<template id="s_exo_filter_sidebar"
+          name="EXO Filtre Sidebar"
+          inherit_id="website.snippets"
+          primary="True">
+    <xpath expr="//div[@id='snippet_structure']" position="before">
+        <div class="o_panel_body">
+            <div class="o_panel_header">EXOCOMS</div>
+            <div class="row">
+                <div class="col-6 o_snippet_thumbnail"
+                     data-oe-thumbnail="/exocoms_filter_menu/static/src/img/thumb.svg">
+                    <div class="s_exo_filter_sidebar o_snippet_drop_in_only"
+                         data-snippet="s_exo_filter_sidebar"
+                         data-name="Filtre Produits">
+                        <div class="exo-snippet-thumb">
+                            <i class="fa fa-sliders" aria-hidden="true"></i>
+                            <span>Filtre Produits</span>
+                        </div>
+                    </div>
+                    <div class="o_snippet_thumbnail_title">Filtre Produits</div>
+                </div>
+            </div>
+        </div>
+    </xpath>
+</template>
+
+<!-- ================================================================
+     SNIPPET — corps inséré sur la page quand glissé (drag & drop)
+     Odoo 19 : pas de t-name sur un template standard, on utilise
+     l'id XML directement depuis le JS si besoin
+================================================================ -->
+<template id="s_exo_filter_sidebar_content"
+          name="EXO Filtre Sidebar (contenu)">
+    <section class="s_exo_filter_sidebar pt-0 pb-5"
+             data-snippet="s_exo_filter_sidebar"
+             data-name="Filtre Produits"
+             data-products-per-page="12">
+
+        <div class="exo-topbar" id="exo-topbar">
+            <div class="exo-topbar__row">
+                <button class="exo-topbar__toggle"
+                        id="exo-sidebar-toggle"
+                        type="button"
+                        aria-label="Filtres"
+                        aria-expanded="false">
+                    <i class="fa fa-sliders" aria-hidden="true"></i> Filtres
+                </button>
+                <span class="exo-topbar__count">
+                    <span id="exo-count">0</span> produit(s)
+                </span>
+                <div class="exo-topbar__sort">
+                    <label class="exo-topbar__sort-lbl" for="exo-sort">Trier :</label>
+                    <select id="exo-sort" class="exo-select">
+                        <option value="name asc">Nom A→Z</option>
+                        <option value="name desc">Nom Z→A</option>
+                        <option value="list_price asc">Prix croissant</option>
+                        <option value="list_price desc">Prix décroissant</option>
+                        <option value="create_date desc">Nouveautés</option>
+                    </select>
+                </div>
+            </div>
+            <div class="exo-tags" id="exo-tags" aria-live="polite"></div>
+        </div>
+
+        <div class="exo-layout">
+            <t t-call="exocoms_filter_menu.sidebar_inner"/>
+            <main class="exo-main" id="exo-main">
+                <div class="exo-overlay exo-hidden" id="exo-overlay" aria-hidden="true">
+                    <span class="exo-spinner exo-spinner--lg" aria-hidden="true"></span>
+                    <span class="exo-overlay__txt">Actualisation…</span>
+                </div>
+                <div id="exo-products"></div>
+                <nav class="exo-pager" id="exo-pager" aria-label="Pagination"></nav>
+            </main>
+        </div>
+
+    </section>
+</template>
+
+</odoo>

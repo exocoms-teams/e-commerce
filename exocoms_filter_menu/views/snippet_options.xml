@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Options du snippet Website Builder — Odoo 19
+        ─────────────────────────────────────────────
+        data-js="ExoFilterSidebarOption" : nom de la classe JS dans snippet_editor.js
+        data-selector : sélecteur CSS du snippet ciblé
+        we-select / we-button / we-checkbox : widgets natifs Odoo website builder
+    -->
+    <template id="snippet_options"
+              inherit_id="website.snippet_options"
+              name="EXO – Options Filtre Sidebar">
+        <xpath expr="." position="inside">
+            <div data-js="ExoFilterSidebarOption"
+                 data-selector=".s_exo_filter_sidebar"
+                 data-no-check="true">
+
+                <we-title>Filtre Produits EXOCOMS</we-title>
+
+                <!-- Couleur accent -->
+                <we-colorpicker
+                    string="Couleur accent"
+                    data-css-property="--exo-accent"/>
+
+                <!-- Colonnes produits : data-set-class agit sur .exo-grid -->
+                <we-select string="Colonnes produits"
+                           data-selector=".exo-grid">
+                    <we-button data-set-class="exo-grid--2col">2 colonnes</we-button>
+                    <we-button data-set-class="exo-grid--3col"
+                               data-select-default="true">3 colonnes</we-button>
+                    <we-button data-set-class="exo-grid--4col">4 colonnes</we-button>
+                </we-select>
+
+                <!-- Produits par page : connecté à setProductsPerPage() -->
+                <we-select string="Produits / page"
+                           data-set-products-per-page="">
+                    <we-button data-set-products-per-page="8">8</we-button>
+                    <we-button data-set-products-per-page="12"
+                               data-select-default="true">12</we-button>
+                    <we-button data-set-products-per-page="24">24</we-button>
+                    <we-button data-set-products-per-page="48">48</we-button>
+                </we-select>
+
+                <!-- Largeur sidebar : data-set-class agit sur .exo-sidebar -->
+                <we-select string="Largeur sidebar"
+                           data-selector=".exo-sidebar">
+                    <we-button data-set-class="exo-sidebar--narrow">Étroite</we-button>
+                    <we-button data-set-class="exo-sidebar--default"
+                               data-select-default="true">Standard</we-button>
+                    <we-button data-set-class="exo-sidebar--wide">Large</we-button>
+                </we-select>
+
+                <!-- Barre de recherche : toggle visibilité -->
+                <we-checkbox string="Barre de recherche"
+                             data-toggle-class="exo-hidden"
+                             data-selector=".exo-sidebar__search"/>
+
+                <!-- Slider prix : toggle visibilité -->
+                <we-checkbox string="Filtre prix slider"
+                             data-toggle-class="exo-hidden"
+                             data-selector="#exo-price-section"/>
+
+            </div>
+        </xpath>
+    </template>
+</odoo>
