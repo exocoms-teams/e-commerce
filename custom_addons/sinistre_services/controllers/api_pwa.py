@@ -830,6 +830,140 @@ class SinistrePWAController(http.Controller):
             _logger.error(f"[sinistre] bancaire_save: {e}", exc_info=True)
             return _err(500, str(e))
 
+    # ── COMPTABILITÉ ─────────────────────────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/comptabilite',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def comptabilite_get(self, **kw):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        try:
+            from datetime import datetime
+            from collections import defaultdict
+
+            Mission = request.env['sinistre.mission'].sudo()
+            missions = Mission.search([
+                ('intervenant_id', '=', intervenant.id),
+            ], order='date_cloture desc, date_rdv desc')
+
+            taux = intervenant.taux_commission or 15.0
+            pct = f"{taux:g} %"
+
+            def _ville(adresse):
+                if not adresse:
+                    return ''
+                parts = adresse.split(',')
+                return (parts[-1] if parts else adresse).strip().upper()
+
+            def _statut(m):
+                if m.state == 'annule':
+                    return 'Annulée'
+                if m.state in ('termine', 'facture', 'clos'):
+                    return 'Succès'
+                return 'En cours'
+
+            def _facture_name(m):
+                inv = m.facture_assurance_id or m.facture_client_id
+                return inv.name if inv else ''
+
+            def _categorie(m):
+                if m.source in ('particulier', 'entreprise'):
+                    return 'b2c'
+                if m.urgence in ('urgente', 'tres_urgente'):
+                    return 'du'
+                return 'travaux'
+
+            factures = {'du': [], 'travaux': [], 'b2c': []}
+            detail_solde = {'du': [], 'travaux': []}
+            ca_par_annee = defaultdict(float)
+            virements_map = defaultdict(lambda: {
+                'montant_solde': 0.0, 'commission': 0.0,
+                'montant_paye': 0.0, 'rac_facture': 0.0, 'ca_genere': 0.0,
+            })
+
+            for m in missions:
+                cat = _categorie(m)
+                row = {
+                    'id':           m.id,
+                    'reference':    m.reference,
+                    'ville':        _ville(m.adresse_intervention),
+                    'statut':       _statut(m),
+                    'date_rdv':     str(m.date_rdv) if m.date_rdv else '',
+                    'facture':      _facture_name(m),
+                    'beneficiaire': (m.client_id.name or '').upper(),
+                    'dossier_du':   m.ref_assurance or m.reference or '',
+                }
+                if cat in factures:
+                    factures[cat].append(row)
+
+                if m.state in ('termine', 'facture', 'clos') and m.date_cloture:
+                    dt = m.date_cloture
+                    ca_par_annee[dt.year] += m.montant_devis or 0
+                    key = dt.strftime('%Y-%m')
+                    v = virements_map[key]
+                    montant = m.montant_devis or 0
+                    comm = m.commission_plateforme or (montant * taux / 100)
+                    v['montant_solde'] += montant
+                    v['commission'] += comm
+                    v['montant_paye'] += max(montant - comm, 0)
+                    v['rac_facture'] += m.reste_a_charge or 0
+                    v['ca_genere'] += montant
+
+                    if cat in ('du', 'travaux') and _facture_name(m):
+                        tva = 1.2
+                        detail_solde[cat].append({
+                            'dossier':          m.reference,
+                            'numero_facture':   _facture_name(m),
+                            'date_facturation': str(dt.date()) if dt else '',
+                            'montant_ht':       round(montant / tva, 2),
+                            'montant_ttc':      montant,
+                        })
+
+            terminees = missions.filtered(
+                lambda m: m.state in ('termine', 'facture', 'clos')
+            )
+            commission_due = sum(terminees.mapped('commission_plateforme'))
+            solde = -round(commission_due, 2)
+
+            current_year = datetime.now().year
+            ca_list = [
+                {'annee': y, 'montant': round(ca_par_annee.get(y, 0), 2)}
+                for y in range(current_year, current_year - 7, -1)
+            ]
+
+            virements = []
+            for key in sorted(virements_map.keys(), reverse=True):
+                dt = datetime.strptime(key + '-01', '%Y-%m-%d')
+                v = virements_map[key]
+                virements.append({
+                    'date':          dt.strftime('%d/%m/%Y') + ' à 01:00',
+                    'montant_solde': round(v['montant_solde'], 2),
+                    'commission':    round(v['commission'], 2),
+                    'montant_paye':  round(v['montant_paye'], 2),
+                    'rac_facture':   round(v['rac_facture'], 2),
+                    'ca_genere':     round(v['ca_genere'], 2),
+                })
+
+            commissions = [
+                {'type': 'Mesures conservatoires', 'intervention': pct, 'pieces': '—', 'total_ht': pct},
+                {'type': 'Travaux',                'intervention': pct, 'pieces': '—', 'total_ht': pct},
+                {'type': 'B2C',                    'intervention': pct, 'pieces': '—', 'total_ht': pct},
+            ]
+
+            return _ok({
+                'success':       True,
+                'taux_commission': taux,
+                'solde':         solde,
+                'commissions':   commissions,
+                'ca_par_annee':  ca_list,
+                'virements':     virements,
+                'factures':      factures,
+                'detail_solde':  detail_solde,
+            })
+        except Exception as e:
+            _logger.error(f"[sinistre] comptabilite_get: {e}", exc_info=True)
+            return _err(500, str(e))
+
     # ── DEMANDE PUBLIQUE ─────────────────────────────────────────────
     @http.route(f'{PREFIX}/mission', type='http', auth='public',
                 methods=['POST'], csrf=False)
