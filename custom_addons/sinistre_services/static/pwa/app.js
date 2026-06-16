@@ -261,6 +261,19 @@ window.App = (() => {
                 if (window.Planning) Planning.init();
             }, 100);
         }
+        if (viewId === 'comptabilite') {
+            setTimeout(function() {
+                if (window.Comptabilite) Comptabilite.init();
+            }, 100);
+        }
+    }
+
+    function showSubView(viewId) {
+        document.querySelectorAll('.view-page').forEach(function(v) { v.classList.remove('active'); });
+        var target = document.getElementById('view-' + viewId);
+        if (target) target.classList.add('active');
+        _history.push(_currentView);
+        _currentView = viewId;
     }
 
     function goBack() {
@@ -303,6 +316,7 @@ window.App = (() => {
         showLogin,
         showApp,
         showView,
+        showSubView,
         goBack,
         get currentView() { return _currentView; },
     };
