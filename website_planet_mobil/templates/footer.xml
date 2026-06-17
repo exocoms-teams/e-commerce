@@ -1,106 +1,143 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <template id="footer" name="Planet Mobil - Footer">
-
-        <style>
-            .o_footer { background: var(--white) !important; }
-            .o_footer .tsp-footer-links a { color: var(--muted) !important; }
-            .o_footer .tsp-footer-links a:hover { color: var(--blue) !important; }
-            .o_footer .tsp-link-blue { color: var(--blue) !important; }
-            .o_footer_copyright { display: none !important; }
-
-            /* Mise en page du formulaire newsletter Odoo */
-            .tsp-newsletter .js_subscribe_wrap { display: flex; gap: 8px; align-items: center; }
-            .tsp-newsletter .js_subscribe_value { flex: 1 1 auto; }
-            .tsp-newsletter .js_subscribed_wrap { color: #fff; }
-        </style>
-
-        <!-- NEWSLETTER -->
-        <div class="tsp-newsletter">
-            <div class="tsp-newsletter-text">
-                <h3>📧 Restez informé !</h3>
-                <p>Inscrivez-vous pour ne rater aucune offre exclusive Planet Mobil</p>
-            </div>
-
-            
-            <div class="tsp-newsletter-form s_newsletter_subscribe_form s_newsletter_list js_subscribe"
-                 data-list-id="3" data-name="Newsletter Form">
-                <div class="js_subscribed_wrap d-none">
-                    <p class="tsp-newsletter-thanks" style="margin:0;">
-                        <i class="fa fa-check-circle-o" role="img"/> Merci, vous êtes bien inscrit !
-                    </p>
-                </div>
-                <div class="js_subscribe_wrap">
-                    <input type="email" name="email"
-                           class="js_subscribe_value form-control"
-                           placeholder="Votre adresse email..."/>
-                    <button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
-                </div>
-            </div>
-        </div>
-
-        <footer class="tsp-footer">
-            <div class="tsp-footer-grid">
-
-                <div class="tsp-footer-col">
-                    <div class="tsp-footer-logo">🌍 PLANET <span>MOBIL</span></div>
-                    <p class="tsp-footer-desc">
-                        Chez <strong>Planet-mobil</strong>, nous sommes une équipe passionnée
-                        de tech-addicts et de conseillers experts, réunis par une mission commune :
-                        vous offrir la meilleure expérience d'achat tech en ligne.
-                    </p>
-                </div>
-
-                <div class="tsp-footer-col">
-                    <h4 class="tsp-footer-title">Liens utiles</h4>
-                    <ul class="tsp-footer-links">
-                        <li><a href="/">Page d'accueil</a></li>
-                        <li><a href="/about">À propos de nous</a></li>
-                        <li><a href="/shop">Produits</a></li>
-                        <li><a href="/mentions-legales">Mentions légales</a></li>
-                        <li><a href="/contact">Contactez-nous</a></li>
-                        
-                    </ul>
-                </div>
-
-                <div class="tsp-footer-col">
-                    <h4 class="tsp-footer-title">EXOCOMS Group</h4>
-                    <ul class="tsp-footer-links">
-                        <li><a href="/contact"><i class="fa fa-envelope"/> Contactez-nous</a></li>
-                        <li><a href="mailto:contact@planet-mobil.com"><i class="fa fa-at"/> contact@planet-mobil.com</a></li>
-                        <li><a href="tel:+33664978050"><i class="fa fa-phone"/> +33 (0)6 64 97 80 50</a></li>
-                    </ul>
-                </div>
-
-                <div class="tsp-footer-col">
-                    <h4 class="tsp-footer-title">Suivez-nous</h4>
-                    <ul class="tsp-footer-links">
-                        <li><a href="#"><i class="fa fa-facebook-square"/> Facebook</a></li>
-                        <li><a href="#"><i class="fa fa-twitter"/> Twitter</a></li>
-                        <li><a href="#"><i class="fa fa-instagram"/> Instagram</a></li>
-                        <li><a href="#"><i class="fa fa-youtube-play"/> YouTube</a></li>
-                    </ul>
-                    <div style="margin-top:16px;">
-                        <a href="/cookie-policy" class="tsp-link-blue" style="font-size:0.85rem;">Politique de cookies</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="tsp-footer-bottom">
-                <p>Copyright © 2025 - EXOCOMS Group | Tous droits réservés</p>
-            </div>
-        </footer>
-
-    </template>
-
-    <template id="footer_replace" inherit_id="website.layout" name="Planet Mobil - Remplacement du footer">
-        <xpath expr="//div[@id='footer']" position="replace">
-            <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
-                <t t-call="website_planet_mobil.footer"/>
-            </div>
-        </xpath>
-    </template>
-
+<template id="footer" name="Planet Mobil - Footer">
+<style> .o_footer { background: #ffffff !important; } .o_footer_copyright { display: none !important; } .tsp-footer { background: #ffffff; border-top: 0.5px solid rgba(0,0,0,0.15); font-family: sans-serif; padding: 48px 40px 0; width: 100%; box-sizing: border-box; } .tsp-footer-grid { display: grid; grid-template-columns: 1.8fr 1.2fr 1.6fr 1.2fr; gap: 32px; align-items: start; } .tsp-footer-col { display: flex; flex-direction: column; gap: 14px; } .tsp-footer-col:last-child { padding-right: 40px; } .tsp-footer-logo { font-size: 18px; font-weight: 500; color: #1e293b !important; white-space: nowrap; display: flex; align-items: center; gap: 6px; } .tsp-footer-logo .tsp-planet { color: #2563eb !important; } .tsp-footer-desc { font-size: 13px; color: #64748b !important; line-height: 1.75; margin: 0; } .tsp-footer-title { font-size: 11px; font-weight: 500; color: #1e293b !important; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.1); white-space: nowrap; margin: 0; } .tsp-footer-links { display: flex; flex-direction: column; gap: 11px; list-style: none; padding: 0; margin: 0; } .tsp-footer-links li a { font-size: 13px; color: #64748b !important; text-decoration: none !important; display: flex; align-items: center; gap: 8px; white-space: nowrap; } .tsp-footer-links li a:hover { color: #2563eb !important; } .tsp-footer-links li a .fa { width: 18px; font-size: 14px; flex-shrink: 0; text-align: center; color: inherit !important; } .tsp-link-blue, .tsp-link-blue:visited, .tsp-link-blue:hover, .tsp-link-blue:focus { font-size: 13px; color: #2563eb !important; text-decoration: none !important; margin-top: 6px; display: inline-block; white-space: nowrap; opacity: 1 !important; } .tsp-footer-bottom { margin-top: 40px; padding: 16px 0; border-top: 0.5px solid rgba(0,0,0,0.1); text-align: center; } .tsp-footer-bottom p { font-size: 12px; color: #94a3b8 !important; margin: 0; } /* Newsletter */ .tsp-newsletter { background: #1e40af; padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; box-sizing: border-box; } .tsp-newsletter-text h3 { color: #fff; font-size: 1.1rem; font-weight: 500; margin: 0 0 4px; } .tsp-newsletter-text p { color: rgba(255,255,255,0.8); font-size: 0.875rem; margin: 0; } .tsp-newsletter .js_subscribe_wrap { display: flex; gap: 8px; align-items: center; min-width: 360px; } .tsp-newsletter .js_subscribe_value { flex: 1 1 auto; padding: 10px 14px; border-radius: 6px; border: none; font-size: 0.875rem; } .tsp-newsletter-btn { padding: 10px 20px; background: #fff; color: #2563eb; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; white-space: nowrap; } .tsp-newsletter .js_subscribed_wrap { color: #fff; } </style>
+<!--  NEWSLETTER  -->
+<div class="tsp-newsletter">
+<div class="tsp-newsletter-text">
+<h3>📧 Restez informé !</h3>
+<p>Inscrivez-vous pour ne rater aucune offre exclusive Planet Mobil</p>
+</div>
+<div class="tsp-newsletter-form s_newsletter_subscribe_form s_newsletter_list js_subscribe" data-list-id="3" data-name="Newsletter Form">
+<div class="js_subscribed_wrap d-none">
+<p style="margin:0;">
+<i class="fa fa-check-circle-o" role="img"/>
+Merci, vous êtes bien inscrit !
+</p>
+</div>
+<div class="js_subscribe_wrap">
+<input type="email" name="email" class="js_subscribe_value form-control" placeholder="Votre adresse email..."/>
+<button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
+</div>
+</div>
+</div>
+<!--  FOOTER  -->
+<footer class="tsp-footer">
+<div class="tsp-footer-grid">
+<!--  Colonne 1 : Logo + description  -->
+<div class="tsp-footer-col">
+<div class="tsp-footer-logo">
+🌍
+<span class="tsp-planet">PLANET</span>
+ MOBIL
+</div>
+<p class="tsp-footer-desc">
+Chez
+<strong>Planet-mobil</strong>
+, nous sommes une équipe passionnée de tech-addicts et de conseillers experts, réunis par une mission commune : vous offrir la meilleure expérience d'achat tech en ligne.
+</p>
+</div>
+<!--  Colonne 2 : Liens utiles  -->
+<div class="tsp-footer-col">
+<h4 class="tsp-footer-title">Liens utiles</h4>
+<ul class="tsp-footer-links">
+<li>
+<a href="/">
+<i class="fa fa-home"/>
+Page d'accueil
+</a>
+</li>
+<li>
+<a href="/about">
+<i class="fa fa-info-circle"/>
+À propos de nous
+</a>
+</li>
+<li>
+<a href="/shop">
+<i class="fa fa-shopping-bag"/>
+Produits
+</a>
+</li>
+<li>
+<a href="/mentions-legales">
+<i class="fa fa-file-text"/>
+Mentions légales
+</a>
+</li>
+<li>
+<a href="/contact">
+<i class="fa fa-comment"/>
+Contactez-nous
+</a>
+</li>
+</ul>
+</div>
+<!--  Colonne 3 : Contact  -->
+<div class="tsp-footer-col">
+<h4 class="tsp-footer-title">EXOCOMS Group</h4>
+<ul class="tsp-footer-links">
+<li>
+<a href="/contact">
+<i class="fa fa-envelope"/>
+Contactez-nous
+</a>
+</li>
+<li>
+<a href="mailto:contact@planet-mobil.com">
+<i class="fa fa-at"/>
+contact@planet-mobil.com
+</a>
+</li>
+<li>
+<a href="tel:+33664978050">
+<i class="fa fa-phone"/>
++33 (0)6 64 97 80 50
+</a>
+</li>
+</ul>
+</div>
+<!--  Colonne 4 : Réseaux sociaux  -->
+<div class="tsp-footer-col">
+<h4 class="tsp-footer-title">Suivez-nous</h4>
+<ul class="tsp-footer-links">
+<li>
+<a href="#">
+<i class="fa fa-facebook-square"/>
+Facebook
+</a>
+</li>
+<li>
+<a href="#">
+<i class="fa fa-twitter"/>
+Twitter
+</a>
+</li>
+<li>
+<a href="#">
+<i class="fa fa-instagram"/>
+Instagram
+</a>
+</li>
+<li>
+<a href="#">
+<i class="fa fa-youtube-play"/>
+YouTube
+</a>
+</li>
+</ul>
+<a href="/cookie-policy" class="tsp-link-blue">Politique de cookies</a>
+</div>
+</div>
+<div class="tsp-footer-bottom">
+<p>Copyright © 2025 – EXOCOMS Group | Tous droits réservés</p>
+</div>
+</footer>
+</template>
+<template id="footer_replace" inherit_id="website.layout" name="Planet Mobil - Remplacement du footer">
+<xpath expr="//div[@id='footer']" position="replace">
+<div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+<t t-call="website_planet_mobil.footer"/>
+</div>
+</xpath>
+</template>
 </odoo>

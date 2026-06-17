@@ -26,6 +26,7 @@
         'data/product_detail_views.xml',
         'templates/page.xml',
         'templates/politiques_cookies.xml',
+        
     ],
     'assets': {
         'web.assets_frontend': [
