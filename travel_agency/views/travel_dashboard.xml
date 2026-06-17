@@ -1,44 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Action Dashboard -->
     <record id="action_travel_dashboard" model="ir.actions.act_window">
         <field name="name">Dashboard Travel Agency</field>
         <field name="res_model">travel.reservation</field>
         <field name="view_mode">graph,pivot,list</field>
-        <field name="context">{'search_default_group_by_month': 1}</field>
     </record>
 
-    <!-- Vue Graph -->
     <record id="view_travel_reservation_graph" model="ir.ui.view">
         <field name="name">travel.reservation.graph</field>
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
             <graph string="Réservations" type="bar">
-                <field name="date_reservation" interval="month" type="row"/>
-                <field name="price_total" type="measure"/>
+                <field name="date_depart" interval="month" type="row"/>
+                <field name="prix_total" type="measure"/>
             </graph>
         </field>
     </record>
 
-    <!-- Vue Pivot -->
     <record id="view_travel_reservation_pivot" model="ir.ui.view">
         <field name="name">travel.reservation.pivot</field>
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
             <pivot string="Analyse Réservations">
-                <field name="date_reservation" interval="month" type="row"/>
+                <field name="date_depart" interval="month" type="row"/>
                 <field name="state" type="col"/>
-                <field name="price_total" type="measure"/>
+                <field name="prix_total" type="measure"/>
             </pivot>
         </field>
     </record>
 
-    <!-- Menu Dashboard -->
     <menuitem
         id="menu_travel_dashboard"
         name="Dashboard"
-        parent="menu_travel_agency_root"
+        parent="travel_agency.menu_travel_root"
         action="action_travel_dashboard"
         sequence="1"/>
 
