@@ -49,6 +49,7 @@ Fonctionnalités :
         'report/report_action.xml',
         'report/bca_template.xml',
         'report/bordereau_template.xml',
+        'views/payment_mandat_form.xml',
     ],
     'assets': {
         'web.assets_backend': [

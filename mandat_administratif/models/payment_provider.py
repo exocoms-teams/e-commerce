@@ -18,6 +18,16 @@ class PaymentProviderMandat(models.Model):
         if self.code == 'mandat_administratif':
             return ['mandat_administratif']
         return super()._get_default_payment_method_codes()
+    
+    def _should_build_inline_form(self, is_validation=False):
+        if self.code == 'mandat_administratif':
+            return True  # pas de redirection, formulaire inline
+        return super()._should_build_inline_form(is_validation)
+    
+    def _get_redirect_form_view(self, is_validation=False):
+        if self.code == 'mandat_administratif':
+            return self.env.ref('mandat_administratif.mandat_inline_form')
+        return super()._get_redirect_form_view(is_validation)
 
 
 class PaymentTransactionMandat(models.Model):
