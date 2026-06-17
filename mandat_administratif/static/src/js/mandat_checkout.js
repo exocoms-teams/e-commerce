@@ -16,7 +16,11 @@ patch(PaymentForm.prototype, {
 
     async submitForm() {
         const data = this._getSelectedPaymentOptionData();
+
+        console.log("MANDAT DATA =", data);
+
         if (data?.provider_code === 'mandat_administratif') {
+            console.log("MANDAT DETECTE");
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
             const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
