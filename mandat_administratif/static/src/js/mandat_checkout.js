@@ -1,114 +1,115 @@
 /** @odoo-module **/
 
-// En Odoo 19, on cible directement l'alias du module de paiement officiel
-import paymentForm from '@payment/js/payment_form';
+import publicWidget from "@web/legacy/js/public/public_widget";
 
-paymentForm.include({
-    /**
-     * Surcharge de la soumission globale du formulaire en Odoo 19
-     * @override
-     */
-    async submitForm(ev) {
-        const mandatForm = document.getElementById('mandat_administratif_form');
-        // Détection propre : est-ce que le bloc de notre mandat est visible à l'écran ?
-        const isMandatSelected = mandatForm && mandatForm.offsetParent !== null;
+/**
+ * Applique la surcharge sur le formulaire de paiement d'Odoo
+ * @param {Class} PaymentFormClass 
+ */
+function patchPaymentForm(PaymentFormClass) {
+    if (PaymentFormClass.__mandatPatched) return;
+    PaymentFormClass.__mandatPatched = true;
 
-        if (isMandatSelected) {
-            if (ev) {
-                ev.preventDefault();
-                ev.stopPropagation();
-            }
+    console.log("⚡ [Mandat] Injection réussie dans le PaymentForm d'Odoo.");
 
-            console.log("🎯 Interception Odoo 19 : Traitement du Mandat Administratif.");
+    PaymentFormClass.include({
+        /**
+         * Surcharge de la soumission globale du formulaire
+         * @override
+         */
+        async submitForm(ev) {
+            const mandatForm = document.getElementById('mandat_administratif_form');
+            const isMandatSelected = mandatForm && mandatForm.offsetParent !== null;
 
-            const siret = document.getElementById('mandat_siret')?.value?.trim();
-            const iban = document.getElementById('mandat_iban')?.value?.trim();
-            const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
-            const comptable = document.getElementById('mandat_comptable')?.value?.trim();
-            const errorDiv = document.getElementById('mandat_form_error');
-
-            // 1. Validation de sécurité des entrées
-            if (!siret || !iban || !ordonnateur || !comptable) {
-                if (errorDiv) errorDiv.style.display = 'block';
-                
-                // Réactivation des boutons via les helpers natifs d'Odoo 19
-                this._enableButton?.();
-                const button = document.querySelector('.o_payment_submit_button, button[name="o_payment_submit_button"]');
-                if (button) {
-                    button.disabled = false;
-                    button.classList.remove('disabled');
+            if (isMandatSelected) {
+                if (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
                 }
-                return; // Bloque le paiement
-            }
 
-            if (errorDiv) errorDiv.style.display = 'none';
+                console.log("🎯 [Mandat] Flux intercepté avec succès.");
 
-            // 2. Gestion visuelle du Loader sur le bouton
-            const button = document.querySelector('.o_payment_submit_button, button[name="o_payment_submit_button"]');
-            let originalHtml = "";
-            if (button) {
-                originalHtml = button.innerHTML;
-                button.disabled = true;
-                button.classList.add('disabled');
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Traitement en cours...';
-            }
+                const siret = document.getElementById('mandat_siret')?.value?.trim();
+                const iban = document.getElementById('mandat_iban')?.value?.trim();
+                const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
+                const comptable = document.getElementById('mandat_comptable')?.value?.trim();
+                const errorDiv = document.getElementById('mandat_form_error');
 
-            // 3. Traitement Backend (Transmission JSON-RPC sécurisée vers ton contrôleur Python)
-            try {
-                const response = await fetch('/mandat/save_checkout_data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: "2.0",
-                        method: "call",
-                        params: {
-                            siret: siret,
-                            iban: iban,
-                            ordonnateur: ordonnateur,
-                            qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
-                            comptable: comptable,
-                            ej: document.getElementById('mandat_ej')?.value?.trim() || '',
-                            service: document.getElementById('mandat_service')?.value?.trim() || '',
-                            reference: document.getElementById('mandat_reference')?.value?.trim() || ''
-                        }
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.error) {
-                    console.error("Erreur serveur Odoo 19 :", result.error);
-                    alert("Une erreur est survenue sur le serveur : " + (result.error.data?.message || result.error.message));
-                    if (button) {
-                        button.disabled = false;
-                        button.classList.remove('disabled');
-                        button.innerHTML = originalHtml;
-                    }
-                    this._enableButton?.();
+                // Validation des champs obligatoires
+                if (!siret || !iban || !ordonnateur || !comptable) {
+                    if (errorDiv) errorDiv.style.display = 'block';
+                    if (typeof this._enableButton === 'function') this._enableButton();
                     return;
                 }
 
-                // 4. Succès -> Redirection standard Odoo 19
-                console.log("✅ Enregistrement validé. Transfert vers le statut final.");
-                window.location.assign('/payment/status');
+                if (errorDiv) errorDiv.style.display = 'none';
+                if (typeof this._disableButton === 'function') this._disableButton();
 
-            } catch (err) {
-                console.error("Échec de la communication réseau :", err);
-                alert("Impossible de joindre le serveur de validation.");
-                if (button) {
-                    button.disabled = false;
-                    button.classList.remove('disabled');
-                    button.innerHTML = originalHtml;
+                // Envoi des données au contrôleur Python
+                try {
+                    const response = await fetch('/mandat/save_checkout_data', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: "2.0",
+                            method: "call",
+                            params: {
+                                siret: siret,
+                                iban: iban,
+                                ordonnateur: ordonnateur,
+                                qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
+                                comptable: comptable,
+                                ej: document.getElementById('mandat_ej')?.value?.trim() || '',
+                                service: document.getElementById('mandat_service')?.value?.trim() || '',
+                                reference: document.getElementById('mandat_reference')?.value?.trim() || ''
+                            }
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.error) {
+                        console.error("Erreur backend:", result.error);
+                        alert("Erreur serveur : " + (result.error.data?.message || result.error.message));
+                        if (typeof this._enableButton === 'function') this._enableButton();
+                        return;
+                    }
+
+                    window.location.assign('/payment/status');
+
+                } catch (err) {
+                    console.error("Erreur réseau :", err);
+                    alert("Une erreur technique est survenue.");
+                    if (typeof this._enableButton === 'function') this._enableButton();
                 }
-                this._enableButton?.();
+                
+                // On coupe le flux ici pour empêcher la redirection native en échec d'Odoo
+                return;
             }
 
-            // Retenir le flux : on ne fait volontairement PAS appel à this._super()
-            // afin de neutraliser le déclenchement de la méthode _processRedirectFlow d'Odoo.
-            return;
+            // Si c'est un autre moyen de paiement (Stripe, Paypal...), on laisse Odoo agir
+            return this._super(...arguments);
         }
+    });
+}
 
-        // Si l'utilisateur a choisi Stripe, PayPal, etc., on redonne la main à l'implémentation standard
-        return this._super(...arguments);
-    }
-});
+// 🔥 LE PIÈGE SÉCURISÉ POUR LE LAZY-LOADING 🔥
+// Si le formulaire est déjà chargé, on le patche immédiatement
+if (publicWidget.registry.PaymentForm) {
+    patchPaymentForm(publicWidget.registry.PaymentForm);
+} else {
+    // Sinon, on intercepte dynamiquement le moment précis où Odoo va l'injecter dans son registre
+    Object.defineProperty(publicWidget.registry, 'PaymentForm', {
+        configurable: true,
+        enumerable: true,
+        get: function () {
+            return this._PaymentFormInstance;
+        },
+        set: function (val) {
+            this._PaymentFormInstance = val;
+            if (val) {
+                patchPaymentForm(val);
+            }
+        }
+    });
+}
