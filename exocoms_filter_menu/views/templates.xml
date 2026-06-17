@@ -218,27 +218,15 @@
 
 <!-- ================================================================
      SNIPPET — déclaration dans le panneau Website Builder Odoo 19
-     Syntaxe Odoo 19 : deux xpath dans website.snippets
-       1) snippet_groups  → déclarer le groupe
-       2) snippet_structure → rattacher le snippet au groupe
 ================================================================ -->
 <template id="s_exo_filter_sidebar"
           name="EXO Filtre Sidebar"
           inherit_id="website.snippets"
           primary="True">
 
-    <!-- Déclarer le groupe EXOCOMS dans la liste des groupes -->
-    <xpath expr="//snippets[@id='snippet_groups']/*[1]" position="before">
-        <t snippet-group="exo_filter_sidebar"
-           t-snippet="website.s_snippet_group"
-           string="EXOCOMS Filtres"/>
-    </xpath>
-
-    <!-- Rattacher le snippet au groupe -->
     <xpath expr="//snippets[@id='snippet_structure']/*[1]" position="before">
         <t t-snippet="exocoms_filter_menu.s_exo_filter_sidebar_content"
            string="Filtre Produits"
-           group="exo_filter_sidebar"
            t-thumbnail="/exocoms_filter_menu/static/src/img/thumb.svg"/>
     </xpath>
 
