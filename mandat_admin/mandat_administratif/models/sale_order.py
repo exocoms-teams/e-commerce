@@ -266,7 +266,7 @@ class SaleOrder(models.Model):
                 })
 
     def action_print_bca(self):
-        return self.env.ref('mandat_admin.report_bca').report_action(self)
+        return self.env.ref('mandat_administratif.action_report_bca').report_action(self)
 
     def action_export_facturx(self):
         """Génère un XML UBL 2.1 compatible Chorus Pro et propose le téléchargement."""

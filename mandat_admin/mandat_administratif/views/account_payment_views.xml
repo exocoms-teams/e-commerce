@@ -23,7 +23,7 @@
         <xpath expr="//field[@name='memo']" position="after">
 
             <!-- ── Bandeau d'information ──────────────────────────────── -->
-            <div class="alert alert-info mb-3" role="status" invisible="not is_mandat_administratif">
+            <div class="alert alert-info mb-3" invisible="not is_mandat_administratif">
                 🏛 <strong>Paiement par Mandat Administratif</strong> –
                 Conformément au décret n°2012-1246 (GBCP) et à l'art. L.1617-1 CGCT.
                 Tous les champs marqués * sont obligatoires avant validation.
@@ -109,7 +109,7 @@
             </group>
 
             <!-- ── Alerte intérêts moratoires ─────────────────────────── -->
-            <div class="alert alert-warning" role="status"
+            <div class="alert alert-warning"
                  invisible="not is_mandat_administratif or montant_interet_moratoire == 0">
                 ⚠️ <strong>Intérêts moratoires calculés :</strong>
                 <field name="montant_interet_moratoire" widget="monetary" nolabel="1" readonly="1"/>
@@ -131,9 +131,23 @@
     <field name="model">account.payment</field>
     <field name="inherit_id" ref="account.view_account_payment_tree"/>
     <field name="arch" type="xml">
-        <xpath expr="//list" position="inside">
-            <field name="mandat_numero"           optional="show" string="N° Mandat"/>
+        <xpath expr="//field[@name='amount']" position="after">
+            <field name="mandat_numero"          optional="show" string="N° Mandat"/>
             <field name="is_mandat_administratif" optional="show" string="MA" widget="boolean"/>
+        </xpath>
+    </field>
+</record>
+
+<!-- Filtre paiements MA -->
+<record id="view_account_payment_search_ma" model="ir.ui.view">
+    <field name="name">account.payment.search.mandat</field>
+    <field name="model">account.payment</field>
+    <field name="inherit_id" ref="account.view_account_payment_filter"/>
+    <field name="arch" type="xml">
+        <xpath expr="//search/filter[last()]" position="after">
+            <separator/>
+            <filter string="Mandats administratifs" name="paiement_ma"
+                    domain="[('is_mandat_administratif','=',True)]"/>
         </xpath>
     </field>
 </record>
