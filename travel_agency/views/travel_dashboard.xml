@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Menu principal Travel Agency -->
+    <menuitem id="menu_travel_agency_root" 
+              name="Travel Agency" 
+              sequence="10"/>
+
+    <!-- Action Dashboard - Utilise un modèle qui EXISTE TOUJOURS -->
     <record id="action_travel_dashboard" model="ir.actions.act_window">
-        <field name="name">Dashboard Travel Agency</field>
-        <field name="res_model">travel.reservation</field>
+        <field name="name">Dashboard</field>
+        <field name="res_model">product.template</field>
         <field name="view_mode">graph,pivot,list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                📊 Tableau de bord des produits voyages
+            </p>
+        </field>
     </record>
 
-    <record id="view_travel_reservation_graph" model="ir.ui.view">
-        <field name="name">travel.reservation.graph</field>
-        <field name="model">travel.reservation</field>
+    <!-- Vue Graphique - Utilise product.template -->
+    <record id="view_travel_dashboard_graph" model="ir.ui.view">
+        <field name="name">travel.dashboard.graph</field>
+        <field name="model">product.template</field>
         <field name="arch" type="xml">
-            <graph string="Réservations" type="bar">
-                <field name="date_depart" interval="month" type="row"/>
-                <field name="prix_total" type="measure"/>
+            <graph string="Produits par mois" type="bar">
+                <field name="create_date" interval="month" type="row"/>
+                <field name="id" type="count"/>
             </graph>
         </field>
     </record>
 
-    <record id="view_travel_reservation_pivot" model="ir.ui.view">
-        <field name="name">travel.reservation.pivot</field>
-        <field name="model">travel.reservation</field>
-        <field name="arch" type="xml">
-            <pivot string="Analyse Réservations">
-                <field name="date_depart" interval="month" type="row"/>
-                <field name="state" type="col"/>
-                <field name="prix_total" type="measure"/>
-            </pivot>
-        </field>
-    </record>
-
-    <menuitem
-        id="menu_travel_dashboard"
-        name="Dashboard"
-        parent="travel_agency.menu_travel_root"
-        action="action_travel_dashboard"
-        sequence="1"/>
+    <!-- Menu Dashboard -->
+    <menuitem id="menu_travel_dashboard"
+              name="Dashboard"
+              parent="menu_travel_agency_root"
+              action="action_travel_dashboard"
+              sequence="1"/>
 
 </odoo>
