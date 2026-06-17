@@ -32,6 +32,7 @@ Fonctionnalités :
     'depends': ['account', 'sale', 'sale_management', 'mail', 'payment', 'website_sale'],
     'data': [
         'security/ir.model.access.csv',
+        'views/mandat_checkout_template.xml',
         'data/sequence_data.xml',
         'data/payment_method_data.xml',
         'data/payment_provider_data.xml',
@@ -40,8 +41,8 @@ Fonctionnalités :
         'views/account_move_views.xml',
         'views/account_payment_views.xml',
         'views/mandat_bordereau_views.xml',
-        'views/mandat_checkout_template.xml',
         'views/menus.xml',
+        'views/payment_mandat_form.xml',
         'wizard/mandat_wizard_views.xml',
         'wizard/service_fait_wizard_views.xml',
         'wizard/pec_wizard_views.xml',
@@ -49,7 +50,6 @@ Fonctionnalités :
         'report/report_action.xml',
         'report/bca_template.xml',
         'report/bordereau_template.xml',
-        'views/payment_mandat_form.xml',
     ],
     'assets': {
         'web.assets_backend': [
