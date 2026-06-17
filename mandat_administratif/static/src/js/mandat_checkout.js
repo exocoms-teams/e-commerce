@@ -14,8 +14,9 @@ patch(PaymentForm.prototype, {
         }
     },
 
-    async _initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow) {
-        if (provider === 'mandat_administratif') {
+    async submitForm() {
+        const data = this._getSelectedPaymentOptionData();
+        if (data?.provider_code === 'mandat_administratif') {
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
             const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
@@ -28,7 +29,7 @@ patch(PaymentForm.prototype, {
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
-            const result = await rpc('/mandat/save_checkout_data', {
+            await rpc('/mandat/save_checkout_data', {
                 siret, iban, ordonnateur,
                 qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
                 comptable,
@@ -37,10 +38,9 @@ patch(PaymentForm.prototype, {
                 reference: document.getElementById('mandat_reference')?.value?.trim() || '',
             });
 
-            if (!result?.success) return;
             window.location.assign('/payment/status');
             return;
         }
-        return super._initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow);
+        return super.submitForm(...arguments);
     },
 });
