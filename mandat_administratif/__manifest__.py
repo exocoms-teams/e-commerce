@@ -54,7 +54,7 @@ Fonctionnalités :
         'web.assets_backend': [
             'mandat_administratif/static/src/css/mandat.css',
         ],
-        'web.assets_frontend': [
+        'payment.assets_payment_form_content': [
             'mandat_administratif/static/src/js/mandat_checkout.js',
         ],
     },
