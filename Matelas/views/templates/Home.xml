@@ -5,41 +5,72 @@
 
     <t t-call="website.layout">
 
-      <!-- ========== HERO SECTION ========== -->
-      <section class="hero d-flex align-items-center">
-        <div class="container">
-          <p class="label-top">LE SOMMEIL COMME PRIORITÉ</p>
-          <h1>Bienvenue chez Matelas</h1>
-          <p class="subtitle">
-            Dormir mieux, Vivez mieux.<br/>Des matelas conçus pour votre morphologie.
-          </p>
-          <div class="hero-buttons">
-            <a href="/shop" class="btn btn-primary">
-              Découvrir nos matelas →
-            </a>
-            <a href="/about" class="btn btn-outline">
-              Notre histoire
-            </a>
+      <!-- ========== HERO CARROUSEL ========== -->
+      <section class="hero-carousel position-relative">
+
+
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel"
+          data-bs-interval="4000">
+          <div class="carousel-inner">
+
+            <div class="carousel-item active">
+              <img
+                src="https://images.unsplash.com/photo-1560185128-e173042f79dd?q=80;w=1400;auto=format;fit=crop;ixlib=rb-4.1.0;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                class="d-block w-100 hero-img" alt="Matelas 1" />
+            </div>
+
+            <div class="carousel-item">
+              <img
+                src="https://www.anniversaire-40.com/wp-content/uploads/2025/06/292161-75ea08da-d93b-4055-b19b-23d6aee747f1_1.jpg?w=1400"
+                class="d-block w-100 hero-img" alt="Matelas 2" />
+            </div>
+
+            <div class="carousel-item">
+              <img
+                src="https://plus.unsplash.com/premium_photo-1744390860302-1a84d093bf6c?q=80;w=1400;auto=format;fit=crop;ixlib=rb-4.1.0;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                class="d-block w-100 hero-img" alt="Matelas 3" />
+            </div>
+
           </div>
         </div>
+
+
+        <div class="hero-overlay">
+          <div class="container">
+            <p class="label-top">LE SOMMEIL COMME PRIORITÉ</p>
+            <h1>Bienvenue chez Matelas</h1>
+            <p class="subtitle"> Dormez mieux, vivez mieux.<br /> Des matelas conçus pour votre
+              morphologie. </p>
+            <div class="hero-buttons">
+              <a href="/shop" class="btn btn-primary">Découvrir nos matelas →</a>
+              <a href="/about" class="btn btn-outline">Notre histoire</a>
+            </div>
+          </div>
+        </div>
+
       </section>
-      
 
       <!-- ========== AVANTAGES ========== -->
       <section class="avantages container">
         <div class="row">
           <div class="col-md-4 avantage-card">
-            <span class="icon">🚚</span>
+            <span class="icon">
+              <i class="bi bi-truck"></i>
+            </span>
             <h3>Livraison rapide</h3>
             <p>En 3 à 5 jours ouvrés, directement chez vous</p>
           </div>
           <div class="col-md-4 avantage-card">
-            <span class="icon">🌙</span>
+            <span class="icon">
+              <i class="bi bi-bullseye"></i>
+            </span>
             <h3>Conseil personnalisé</h3>
             <p>Nos experts vous guident pour choisir le matelas adapté à vos besoins</p>
           </div>
           <div class="col-md-4 avantage-card">
-            <span class="icon">🛡️</span>
+            <span class="icon">
+              <i class="bi bi-shield-check"></i>
+            </span>
             <h3>Garantie 5 ans</h3>
             <p>Investissez sereinement dans votre sommeil</p>
           </div>
@@ -54,37 +85,39 @@
           <h2>Nos best-sellers</h2>
           <a href="/shop" class="voir-tout">Voir tout →</a>
         </div>
-       
-        <div class="row bestseller-grid">
-          <div class="col-md-3 product-card">
-            <p class="product-type">Nom de l'entreprise</p>
-            <h4>Matelas SÉRÉNITÉ</h4>
-            <p class="price-container"><span class="price">599 €</span>
-            </p>
-            <a href="#" class="btn btn-add">Ajouter</a>
-          </div>
-        </div>
 
         <div class="row bestseller-grid">
-          <div class="col-md-3 product-card">
-            <p class="product-type">Nom de l'entreprise</p>
-            <h4>Matelas LE VERITABLE mi-ferme</h4>
-            <p class="price-container"><span class="price">1140 €</span>
-            </p>
-            <a href="#" class="btn btn-add">Ajouter</a>
-          </div>
+          <t t-foreach="products" t-as="product">
+            <div class="col-md-4">
+              <div class="product-card">
+                <a href="/shop">
+                  <img class="product-image"
+                    t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                    alt="Matelas" />
+                </a>
+
+                <h4
+                  t-esc="product.name" />
+                <p class="price">
+                  <span t-esc="product.list_price" /> € 
+                </p>
+
+                <a href="#" class="btn-add">Ajouter</a>
+              </div>
+            </div>
+          </t>
         </div>
 
-        
-        <div class="row bestseller-grid">
-          <div class="col-md-3 product-card">
-            <p class="product-type">Nom de l'entreprise</p>
-            <h4>Matelas RENAISSANCE</h4>
-            <p class="price-container"><span class="price">1500 €</span>
-            </p>
-            <a href="#" class="btn btn-add">Ajouter</a>
-          </div>
+      </section>
+
+      <!-- ========== BANNIÈRE PROMO ========== -->
+      <section class="promo-banner container">
+        <div class="promo-content">
+          <p class="section-label">OFFRE LIMITÉE</p>
+          <h2>-20 % sur votre première commande</h2>
+          <p>Code : <strong>SLEEP20</strong> — valable jusqu'au 31 août</p>
         </div>
+        <a href="/shop" class="btn btn-dark">En profiter →</a>
       </section>
 
 
@@ -97,32 +130,22 @@
             <div class="stars">★★★★★</div>
             <p>"Enfin un vrai sommeil réparateur ! Le matelas s'est
             adapté à ma morphologie en quelques nuits seulement."</p>
-            <strong>Sophie M.</strong> — il y a 3 jours
-          </div>
+            <strong>Sophie M.</strong> — il
+            y a 3 jours </div>
           <div class="col-md-4 temoignage-card">
             <div class="stars">★★★★★</div>
             <p>"Livraison express, installation facile.
-            Qualité premium pour un prix très raisonnable."</p>
-            <strong>Thomas L.</strong> — il y a 1 semaine
-          </div>
+              Qualité premium pour un prix très raisonnable."</p>
+            <strong>Thomas L.</strong> — il y a
+            1 semaine </div>
           <div class="col-md-4 temoignage-card">
             <div class="stars">★★★★☆</div>
             <p>"Après 2 semaines, je ne peux plus m'en passer."</p>
-            <strong>Camille D.</strong> — il y a 2 semaines
-          </div>
+            <strong>Camille
+            D.</strong> — il y a 2 semaines </div>
         </div>
       </section>
 
-
-      <!-- ========== BANNIÈRE PROMO ========== -->
-      <section class="promo-banner container">
-        <div class="promo-content">
-          <p class="section-label">OFFRE LIMITÉE</p>
-          <h2>-20 % sur votre première commande</h2>
-          <p>Code : <strong>SLEEP20</strong> — valable jusqu'au 31 août</p>
-        </div>
-        <a href="/shop" class="btn btn-dark">En profiter →</a>
-      </section>
 
     </t>
   </template>

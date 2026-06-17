@@ -14,30 +14,31 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* ===== HERO ===== */
-.hero {
-    background-color: var(--bleu-nuit); 
-    background-size: cover;
-    background-position: center;
-    min-height: 520px;
-    position: relative;
-    color: white;
+/* ===== HERO CARROUSEL ===== */
+.hero-carousel {
+    height: 520px;
+    overflow: hidden;
 }
 
-.hero::before {
-    content: '';
+.hero-img {
+    height: 520px;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.5); 
+}
+
+/* Le contenu fixe par-dessus */
+.hero-overlay {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    z-index: 10;
+    color: white;
 }
 
-.hero .container {
-    position: relative;
-    z-index: 1;
-}
-
-.label-top {
+.hero-overlay .label-top {
     color: var(--terracotta);
     font-size: 0.8rem;
     font-weight: 600;
@@ -45,14 +46,15 @@ body {
     text-transform: uppercase;
 }
 
-.hero h1 {
+.hero-overlay h1 {
     font-size: 3rem;
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 1rem;
+    color: white;
 }
 
-.hero .subtitle {
+.hero-overlay .subtitle {
     font-size: 1.1rem;
     opacity: 0.9;
     margin-bottom: 2rem;
@@ -63,29 +65,14 @@ body {
     gap: 1rem;
 }
 
-.btn-primary {
-    background-color: var(--terracotta);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.8rem;
-    border-radius: 50px;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.btn-outline {
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-    padding: 0.8rem 1.8rem;
-    border-radius: 50px;
-    font-weight: 600;
-    text-decoration: none;
-}
-
 /* ===== AVANTAGES ===== */
 .avantages {
     padding: 4rem 0;
+}
+
+.avantage-card,
+.temoignage-card{
+    margin-bottom: 20px;
 }
 
 .avantage-card {
@@ -94,6 +81,7 @@ body {
     padding: 2rem;
     text-align: center;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom:20px;
 }
 
 .avantage-card .icon {
@@ -111,6 +99,9 @@ body {
 /* ===== BEST-SELLERS ===== */
 .bestsellers {
     padding: 3rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .section-label {
@@ -126,18 +117,36 @@ body {
     font-weight: 700;
 }
 
+.bestseller-grid{
+    margin-top: 2rem;
+}
+
 .voir-tout {
     color: var(--terracotta);
     text-decoration: none;
     font-weight: 600;
 }
 
+.product-image{
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
 .product-card {
     background-color: white;
     border-radius: 16px;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: 0.3s ease;
+}
+
+.product-card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .product-card h4 {
@@ -170,6 +179,12 @@ body {
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-add:hover{
+    transform: scale(1.05);
+    transition: 0.3s;
 }
 
 /* ===== TÉMOIGNAGES ===== */
@@ -183,11 +198,16 @@ body {
     margin-bottom: 2rem;
 }
 
+.temoignages .row{
+    gap:20px;
+}
+
 .temoignage-card {
     background-color: white;
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom:20px;
 }
 
 .stars {
