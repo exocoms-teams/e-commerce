@@ -1,12 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
     //HEADER
-    const header = document.querySelector('#wrapwrap > header.o_header_standard');
-    if (header) {
-        const headerObserver = new MutationObserver(() => {
-            header.style.setProperty('transform', 'none', 'important');
-            header.style.setProperty('top', '0', 'important');
+    const wrapwrap = document.getElementById('wrapwrap');
+    if (wrapwrap) {
+        const observer = new MutationObserver(() => {
+            const current = wrapwrap.style.paddingTop;
+            if (current !== '72px') {
+                wrapwrap.style.setProperty('padding-top', '72px', 'important');
+            }
         });
-        headerObserver.observe(header, { attributes: true, attributeFilter: ['style'] });
+        observer.observe(wrapwrap, { attributes: true, attributeFilter: ['style'] });
+        
+        // Force aussi au scroll
+        window.addEventListener('scroll', () => {
+            wrapwrap.style.setProperty('padding-top', '72px', 'important');
+        });
     }
 
     // ── Dropdown menu sidebar
