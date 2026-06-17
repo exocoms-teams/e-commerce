@@ -2,8 +2,11 @@
 from odoo import http
 from odoo.http import request
 
-class DormirLux(http.Controller):
+class MatelasVente(http.Controller):
 
     @http.route('/', auth='public', website=True)
     def index(self, **kwargs):
-        return request.render('Matelas.home', {})
+        products = request.env['product.template'].sudo().search([
+            ('is_published', '=', True)
+        ], limit=3)
+        return request.render('Matelas.home', {'products': products})
