@@ -1,0 +1,134 @@
+// ============================================================
+// O&A BEAUTY — COMPONENT THEME
+// Re-skins native website_sale/website elements with the brand tokens
+// from primary_variables.scss, and styles the custom blocks added by
+// website_sale_product_templates.xml (o_oa_specs / o_oa_ingredients /
+// o_oa_trust_badges).
+//
+// Selectors prefixed `.oa-` or `.o_oa_` are ours and guaranteed stable.
+// Selectors targeting native Odoo classes (.o_wsale_product_grid,
+// .css_attribute_color, etc.) are believed-correct for Odoo 19 based on
+// long-standing website_sale conventions, but ALWAYS confirm against
+// your live instance's rendered DOM (right-click > Inspect) before
+// final sign-off — Odoo periodically renames presentational classes
+// even when template ids stay stable.
+// ============================================================
+
+body {
+    font-family: var(--oa-font-body);
+    color: var(--oa-text);
+    background: var(--oa-bg);
+}
+
+h1, h2, h3, .h1, .h2, .h3 {
+    font-family: var(--oa-font-display);
+}
+
+// ---- Shop grid / product cards (/shop page) ----
+// Mirrors the legacy .product-card / .product-img / .add-to-bag-overlay
+// hover treatment, applied to Odoo's native grid item markup.
+#products_grid,
+.o_wsale_products_grid_table_wrapper {
+    .oe_product {
+        border: 1px solid var(--oa-border);
+        transition: 0.4s ease;
+
+        &:hover {
+            box-shadow: 0 16px 48px rgba(176, 132, 151, 0.16); // mauve glow, was rgba(184,146,90,.14)
+            transform: translateY(-6px);
+        }
+    }
+
+    .o_wsale_product_btn,
+    .o_wsale_products_item_title {
+        font-family: var(--oa-font-display);
+    }
+
+    .o_wsale_ribbon,
+    .badge {
+        background: var(--oa-accent) !important;
+    }
+}
+
+// ---- Variant / shade color swatches ----
+// Odoo renders display_type="color" attribute values as small swatch
+// inputs (historically under a "css_attribute_color" label class).
+// Restyled to match the original 34px circle + outline-on-active look.
+.css_attribute_color {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    outline: 2px solid transparent;
+    outline-offset: 3px;
+    transition: 0.2s ease;
+
+    &:hover {
+        outline-color: var(--oa-border);
+    }
+}
+
+input:checked + .css_attribute_color,
+.css_attribute_color.active {
+    outline-color: var(--oa-accent);
+}
+
+// ---- Custom spec / ingredients / trust-badge blocks ----
+// Mirrors .detail-specs / .ing-label / .ing-value / .detail-meta
+.o_oa_specs {
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--oa-border);
+    border-bottom: 1px solid var(--oa-border);
+}
+
+.o_oa_spec_label {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.o_oa_spec_value {
+    font-family: var(--oa-font-display);
+    font-size: 1.6rem;
+    color: var(--oa-text);
+}
+
+.o_oa_ing_label {
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    color: var(--oa-text-muted);
+}
+
+.o_oa_ing_value {
+    font-size: 1.4rem;
+    color: var(--oa-text);
+}
+
+.o_oa_trust_badges {
+    p {
+        font-size: 1.3rem;
+        color: var(--oa-text-muted);
+        margin-bottom: 0.6rem;
+    }
+
+    i {
+        color: var(--oa-accent);
+    }
+}
+
+// ---- Buttons ----
+// Replaces .gradient-btn / .add-bag-btn / .btn-2 look-and-feel on the
+// native "Add to Cart" and primary CTA buttons.
+.btn-primary,
+#add_to_cart,
+.o_wsale_product_page #add_to_cart_wrap .btn {
+    background-color: var(--oa-text) !important;
+    border-color: var(--oa-text) !important;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-family: var(--oa-font-body);
+
+    &:hover {
+        background-color: var(--oa-accent) !important;
+        border-color: var(--oa-accent) !important;
+    }
+}

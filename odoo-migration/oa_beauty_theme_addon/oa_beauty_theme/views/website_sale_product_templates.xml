@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        IMPORTANT — verify before deploying:
+        The eCommerce product page template has been split into several
+        smaller reusable sub-templates across recent Odoo versions
+        (price block, variant selector, description, etc. are no longer
+        all inline in one giant template). The xpath below targets the
+        id="product_details" wrapper, which has been a stable anchor
+        around the description/specification area for many versions.
+
+        Before activating on your Odoo 19.0 instance:
+          1. Open a product page on the live site with ?debug=1
+          2. Website Builder > Edit > click the description area >
+             use "Edit in backend" / inspect the QWeb template name
+             shown in the dev-mode tooltip
+          3. If the id="product_details" anchor has moved, update the
+             xpath expr below to match (the rest of this file does not
+             need to change).
+    -->
+    <template id="product_oa_specs" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_details']" position="inside">
+
+            <!-- .detail-specs equivalent: Type / Finish / Best For -->
+            <div class="o_oa_specs row mt-3" t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                <div class="col-12 col-md-4" t-if="product.oa_type">
+                    <span class="o_oa_spec_label text-muted d-block">Type</span>
+                    <span class="o_oa_spec_value" t-esc="product.oa_type"/>
+                </div>
+                <div class="col-12 col-md-4" t-if="product.oa_finish">
+                    <span class="o_oa_spec_label text-muted d-block">Finish</span>
+                    <span class="o_oa_spec_value" t-esc="product.oa_finish"/>
+                </div>
+                <div class="col-12 col-md-4" t-if="product.oa_best_for">
+                    <span class="o_oa_spec_label text-muted d-block">Best For</span>
+                    <span class="o_oa_spec_value" t-esc="product.oa_best_for"/>
+                </div>
+            </div>
+
+            <!-- .detail-ingredients equivalent -->
+            <div class="o_oa_ingredients mt-3" t-if="product.oa_key_ingredients">
+                <span class="o_oa_ing_label text-uppercase text-muted d-block">Key Ingredients</span>
+                <p class="o_oa_ing_value mb-0" t-esc="product.oa_key_ingredients"/>
+            </div>
+
+            <!-- .detail-meta equivalent: trust badges. Static across all
+                 products in the original site, so hard-coded here rather
+                 than modeled as fields. Move to a Website > Theme
+                 "Trust Badges" snippet later if these need to vary by
+                 product or be editable without code. -->
+            <div class="o_oa_trust_badges mt-4">
+                <p><i class="fa fa-truck me-2"/>Free delivery on orders over $60</p>
+                <p><i class="fa fa-rotate-left me-2"/>30-day hassle-free returns</p>
+                <p><i class="fa fa-leaf me-2"/>Cruelty-free &amp; clean formula</p>
+            </div>
+
+        </xpath>
+    </template>
+
+</odoo>
