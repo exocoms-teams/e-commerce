@@ -1,64 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tracker Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker · Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui; background: #0d1117; color: #e6edf3; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    h1 { color: #a78bfa; margin-bottom: 20px; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 16px; text-align: center; }
-    .stat-card .number { font-size: 28px; font-weight: bold; color: #a78bfa; }
-    .stat-card .label { color: #8b949e; font-size: 12px; }
-    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-    .card h2 { margin-bottom: 16px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #30363d; }
-    th { color: #8b949e; font-weight: 600; }
-    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .chart-box { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
-    .chart-box canvas { max-height: 300px; width: 100% !important; }
-    .empty { text-align: center; color: #8b949e; padding: 40px; }
-    .badge { background: #2d1b69; color: #a78bfa; padding: 2px 10px; border-radius: 99px; font-size: 11px; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .topbar input, .topbar select { background: #161b22; border: 1px solid #30363d; color: #e6edf3; padding: 8px 12px; border-radius: 6px; }
-    .topbar input { width: 200px; }
-    @media (max-width: 768px) { .stats { grid-template-columns: 1fr 1fr; } .charts-grid { grid-template-columns: 1fr; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <h1>📊 Tracker Dashboard</h1>
-      <div>
-        <input type="text" id="searchInput" placeholder="Search products...">
-        <select id="categoryFilter"><option value="">All Categories</option></select>
-        <button onclick="loadData()" style="background:#6c47ff;border:none;color:white;padding:8px 16px;border-radius:6px;cursor:pointer;">↻ Refresh</button>
+  <div class="app">
+    <!-- sidebar (matches website style) -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">◆</span>
+        <span>Tracker</span>
+        <span class="brand-version">v2</span>
       </div>
-    </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active">📊 Dashboard</button>
+        <button class="nav-btn">📈 Trends</button>
+        <button class="nav-btn">⚙️ Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="stat-row"><span>Products</span><strong id="sideTotal">-</strong></div>
+        <div class="stat-row"><span>Views</span><strong id="sideViews">-</strong></div>
+        <div class="status"><span class="status-dot online"></span> Live</div>
+      </div>
+    </aside>
 
-    <div class="stats" id="statsRow">
-      <div class="stat-card"><div class="number" id="totalProducts">-</div><div class="label">Products</div></div>
-      <div class="stat-card"><div class="number" id="totalViews">-</div><div class="label">Views</div></div>
-      <div class="stat-card"><div class="number" id="totalPurchases">-</div><div class="label">Purchases</div></div>
-      <div class="stat-card"><div class="number" id="conversionRate">-</div><div class="label">Conversion Rate</div></div>
-    </div>
+    <!-- main -->
+    <main class="main">
+      <!-- topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1>📊 Dashboard</h1>
+        </div>
+        <div class="topbar-right">
+          <input type="text" class="search" id="searchInput" placeholder="Search products...">
+          <select class="filter-select" id="categoryFilter"><option value="">All Categories</option></select>
+          <button class="btn-outline" onclick="loadData()">↻ Refresh</button>
+        </div>
+      </header>
 
-    <div class="card">
-      <h2>📈 Trending Products</h2>
-      <div id="trendingTable"><div class="empty">Loading data...</div></div>
-    </div>
+      <!-- page content -->
+      <section class="page">
+        <!-- KPI row -->
+        <div class="kpi-row" id="statsRow">
+          <div class="kpi-card"><div class="label">Products</div><div class="value" id="totalProducts">-</div></div>
+          <div class="kpi-card"><div class="label">Views</div><div class="value" id="totalViews">-</div></div>
+          <div class="kpi-card"><div class="label">Purchases</div><div class="value" id="totalPurchases">-</div></div>
+          <div class="kpi-card"><div class="label">Conversion</div><div class="value" id="conversionRate">-</div><div class="sub">views → purchases</div></div>
+        </div>
 
-    <div class="charts-grid">
-      <div class="chart-box"><h3>Categories</h3><canvas id="categoryChart"></canvas></div>
-      <div class="chart-box"><h3>Activity</h3><canvas id="activityChart"></canvas></div>
-    </div>
+        <!-- table card -->
+        <div class="card">
+          <div class="card-header">
+            <h2>📈 Trending Products</h2>
+            <span class="badge-live">● live</span>
+          </div>
+          <div class="table-wrap" id="trendingTable">
+            <div class="empty-row">Loading data…</div>
+          </div>
+        </div>
+
+        <!-- charts -->
+        <div class="charts-grid">
+          <div class="chart-box"><h3>Categories</h3><canvas id="categoryChart"></canvas></div>
+          <div class="chart-box"><h3>Activity (14d)</h3><canvas id="activityChart"></canvas></div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
+    // ----- theme (matches website theme.js) -----
+    (function themeInit() {
+      const STORAGE_KEY = 'tracker-theme';
+      function getStoredTheme() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'light' || saved === 'dark') return saved;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(STORAGE_KEY, theme);
+      }
+      applyTheme(getStoredTheme());
+      // also listen to system changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    })();
+
+    // ----- dashboard logic -----
     const API = 'http://localhost:5000/api';
     let charts = {};
 
@@ -69,23 +105,26 @@
         const data = await response.json();
         renderDashboard(data);
       } catch (e) {
-        document.getElementById('trendingTable').innerHTML = 
-          `<div class="empty">❌ Backend not running. Start with: python app.py</div>`;
+        document.getElementById('trendingTable').innerHTML =
+          `<div class="empty-row">❌ Backend not running. Start with: python app.py</div>`;
         console.error('Error loading data:', e);
       }
     }
 
     function renderDashboard(data) {
       const products = data.products || [];
-      
-      // Update stats
+
+      // update KPI
       document.getElementById('totalProducts').textContent = data.total_products || 0;
       document.getElementById('totalViews').textContent = data.total_views || 0;
       document.getElementById('totalPurchases').textContent = data.total_purchases || 0;
-      document.getElementById('conversionRate').textContent = 
+      document.getElementById('conversionRate').textContent =
         data.total_views > 0 ? Math.round((data.total_purchases / data.total_views) * 100) + '%' : '0%';
+      // sidebar
+      document.getElementById('sideTotal').textContent = data.total_products || 0;
+      document.getElementById('sideViews').textContent = data.total_views || 0;
 
-      // Update categories filter
+      // category filter
       const filter = document.getElementById('categoryFilter');
       const currentVal = filter.value;
       filter.innerHTML = '<option value="">All Categories</option>';
@@ -96,15 +135,15 @@
       });
       filter.value = currentVal;
 
-      // Render table
+      // table
       const table = document.getElementById('trendingTable');
       if (!products.length) {
-        table.innerHTML = '<div class="empty">No products tracked yet. Browse shopping sites!</div>';
+        table.innerHTML = '<div class="empty-row">No products tracked yet. Browse shopping sites!</div>';
         return;
       }
 
       table.innerHTML = `
-        <table>
+        <table class="data-table">
           <thead><tr>
             <th>#</th><th>Product</th><th>Category</th><th>Store</th><th>Price</th>
             <th>Views</th><th>Purchases</th><th>Score</th>
@@ -113,20 +152,19 @@
             ${products.slice(0, 20).map((p, i) => `
               <tr>
                 <td>${i + 1}</td>
-                <td><strong>${p.title}</strong><br><small style="color:#8b949e;">${p.domain}</small></td>
-                <td><span class="badge">${p.category || 'General'}</span></td>
-                <td>${p.domain}</td>
+                <td><div class="product-cell"><span class="name">${p.title || 'Untitled'}</span><span class="domain">${p.domain || ''}</span></div></td>
+                <td><span class="cat-pill">${p.category || 'General'}</span></td>
+                <td>${p.domain || '-'}</td>
                 <td>${p.latest_price ? '$' + parseFloat(p.latest_price).toFixed(2) : '-'}</td>
-                <td>${p.view_count}</td>
+                <td>${p.view_count || 0}</td>
                 <td>${p.purchase_count || 0}</td>
-                <td>${Math.round(p.trend_score || 0)}</td>
+                <td><div class="score-bar-wrap"><div class="score-bar"><div class="fill" style="width:${Math.min(100, (p.trend_score || 0))}%"></div></div><span class="score-val">${Math.round(p.trend_score || 0)}</span></div></td>
               </tr>
             `).join('')}
           </tbody>
         </table>
       `;
 
-      // Render charts
       renderCharts(data);
     }
 
@@ -136,23 +174,34 @@
       const labels = entries.map(e => e[0]);
       const values = entries.map(e => e[1]);
 
-      // Category chart
+      // category chart
       if (charts.category) charts.category.destroy();
       charts.category = new Chart(document.getElementById('categoryChart'), {
         type: 'doughnut',
         data: {
           labels: labels.slice(0, 10),
-          datasets: [{ 
-            data: values.slice(0, 10), 
+          datasets: [{
+            data: values.slice(0, 10),
             backgroundColor: ['#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b','#f87171','#34d399','#60a5fa','#e879f9','#fb923c'],
-            borderColor: '#161b22',
+            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#111',
             borderWidth: 2
           }]
         },
-        options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#e6edf3', font: { size: 11 } } } } }
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#a3a3a3',
+                font: { size: 11 }
+              }
+            }
+          }
+        }
       });
 
-      // Activity chart - sample data
+      // activity chart
       if (charts.activity) charts.activity.destroy();
       const daily = data.daily || {};
       const days = Array.from({length: 14}, (_, i) => {
@@ -161,7 +210,7 @@
         return d.toISOString().split('T')[0];
       });
       const viewData = days.map(d => (daily[d] || {}).views || 0);
-      
+
       charts.activity = new Chart(document.getElementById('activityChart'), {
         type: 'line',
         data: {
@@ -169,7 +218,7 @@
           datasets: [{
             label: 'Views',
             data: viewData,
-            borderColor: '#6c47ff',
+            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#a78bfa',
             backgroundColor: 'rgba(108,71,255,0.1)',
             fill: true,
             tension: 0.4,
@@ -178,21 +227,42 @@
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: '#e6edf3' } } },
-          scales: { 
-            x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
-            y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' }, beginAtZero: true }
+          plugins: {
+            legend: {
+              labels: {
+                color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#a3a3a3'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#a3a3a3' },
+              grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#2a2a2a' }
+            },
+            y: {
+              ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() || '#a3a3a3' },
+              grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#2a2a2a' },
+              beginAtZero: true
+            }
           }
         }
       });
     }
 
-    // Search and filter
+    // search + filter
     document.getElementById('searchInput').addEventListener('input', loadData);
     document.getElementById('categoryFilter').addEventListener('change', loadData);
 
-    // Load data on page load
+    // initial load
     loadData();
+
+    // re-render charts on theme change (custom event from website theme)
+    document.addEventListener('themechange', () => {
+      if (charts.category || charts.activity) {
+        // just reload data to refresh chart colors
+        loadData();
+      }
+    });
   </script>
 </body>
 </html>
