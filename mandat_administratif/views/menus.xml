@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-<!-- ── Menus Ventes ─────────────────────────────────────── -->
+<!-- Actions déclarées EN PREMIER -->
+<record id="action_ma_payments" model="ir.actions.act_window">
+    <field name="name">Paiements par mandat administratif</field>
+    <field name="res_model">account.payment</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('is_mandat_administratif','=',True)]</field>
+</record>
+
+<record id="action_mandat_bordereau" model="ir.actions.act_window">
+    <field name="name">Bordereaux de mandats</field>
+    <field name="res_model">mandat.bordereau</field>
+    <field name="view_mode">list,form</field>
+</record>
+
+<record id="action_sale_ma" model="ir.actions.act_window">
+    <field name="name">Bons de Commande Administratifs</field>
+    <field name="res_model">sale.order</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('is_mandat_administratif','=',True)]</field>
+</record>
+
+<!-- Menus Ventes -->
 <menuitem id="menu_ma_root"
           name="🏛 Mandats Administratifs"
           parent="sale.sale_menu_root"
@@ -19,13 +40,7 @@
           action="action_mandat_bordereau"
           sequence="20"/>
 
-<menuitem id="menu_ma_bordereau_new"
-          name="Créer un bordereau"
-          parent="menu_ma_root"
-          action="action_bordereau_wizard"
-          sequence="30"/>
-
-<!-- ── Menus Comptabilité ───────────────────────────────── -->
+<!-- Menus Comptabilité -->
 <menuitem id="menu_ma_compta_root"
           name="🏛 Mandats Administratifs"
           parent="account.menu_finance"
@@ -42,13 +57,5 @@
           parent="menu_ma_compta_root"
           action="action_mandat_bordereau"
           sequence="20"/>
-
-<!-- Actions globales déclarées ici -->
-<record id="action_ma_payments" model="ir.actions.act_window">
-    <field name="name">Paiements par mandat administratif</field>
-    <field name="res_model">account.payment</field>
-    <field name="view_mode">list,form</field>
-    <field name="domain">[('is_mandat_administratif','=',True)]</field>
-</record>
 
 </odoo>
