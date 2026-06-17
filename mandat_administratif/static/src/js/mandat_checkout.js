@@ -6,18 +6,34 @@ import { rpc } from '@web/core/network/rpc';
 patch(PaymentForm.prototype, {
 
     async _updateSelectedPaymentOption() {
-        // On laisse Odoo afficher/masquer le formulaire inline de manière native
         await super._updateSelectedPaymentOption(...arguments);
     },
 
     async submitForm() {
-        // ATTENTION : Odoo 19 utilise le camelCase 'providerCode'
-        const data = this._getSelectedPaymentOptionData();
+        const data = this._getSelectedPaymentOptionData() || {};
+        
+        // Sécurité maximale : On va aussi chercher directement l'élément coché dans le DOM
+        const checkedRadio = document.querySelector('input[name="o_payment_radio"]:checked');
+        
+        // On teste toutes les propriétés possibles d'Odoo 19 (CamelCase vs SnakeCase, Provider vs Method)
+        const providerCode = data.providerCode 
+            || data.provider_code 
+            || checkedRadio?.dataset?.providerCode 
+            || checkedRadio?.dataset?.provider_code;
+            
+        const paymentMethodCode = data.paymentMethodCode 
+            || data.payment_method_code 
+            || checkedRadio?.dataset?.paymentMethodCode 
+            || checkedRadio?.dataset?.payment_method_code;
 
-        console.log("MANDAT DATA =", data);
+        console.log("--- DEBUG MANDAT ADMINISTRATIF ---");
+        console.log("Data Odoo:", data);
+        console.log("Provider Code détecté:", providerCode);
+        console.log("Payment Method Code détecté:", paymentMethodCode);
 
-        if (data?.providerCode === 'mandat_administratif') {
-            console.log("MANDAT DETECTE AVEC SUCCES");
+        // Si l'un des codes correspond à notre mandat, on prend le contrôle exclusif
+        if (providerCode === 'mandat_administratif' || paymentMethodCode === 'mandat_administratif') {
+            console.log("👉 MANDAT DÉTECTÉ : Blocage du flux natif d'Odoo");
             
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
@@ -28,10 +44,12 @@ patch(PaymentForm.prototype, {
             // Validation des champs obligatoires
             if (!siret || !iban || !ordonnateur || !comptable) {
                 if (errorDiv) errorDiv.style.display = 'block';
-                return; // Bloque la soumission
+                console.log("❌ Formulaire incomplet");
+                return; // On stoppe tout, on ne soumet rien
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
+            console.log("🚀 Envoi des données au contrôleur...");
             // Envoi des données au contrôleur backend
             await rpc('/mandat/save_checkout_data', {
                 siret, iban, ordonnateur,
@@ -42,12 +60,13 @@ patch(PaymentForm.prototype, {
                 reference: document.getElementById('mandat_reference')?.value?.trim() || '',
             });
 
-            // Redirection propre vers le statut du paiement / confirmation
+            console.log("✅ Données sauvegardées, redirection...");
+            // Redirection vers la page de statut/confirmation
             window.location.assign('/payment/status');
-            return; // On sort pour ÉVITER le super.submitForm() qui casserait le flux
+            return; // STRICTEMENT OBLIGATOIRE : évite de lancer le super.submitForm()
         }
         
-        // Pour tous les autres moyens de paiement (Stripe, Virement...), on utilise le comportement standard
+        // Si ce n'est pas le mandat (Stripe, Paypal, etc.), on laisse Odoo gérer normalement
         return super.submitForm(...arguments);
     },
 });
