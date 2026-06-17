@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Mandat Administratif',
-    'version': '19.0.4.0.0',
+    'version': '1.0.1',
     'category': 'Accounting/Payment',
     'summary': 'Mandat administratif public français : GBCP, service fait, PEC, Chorus Pro, bordereau',
     'description': """

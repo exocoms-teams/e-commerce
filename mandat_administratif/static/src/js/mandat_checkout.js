@@ -6,18 +6,11 @@ import { rpc } from '@web/core/network/rpc';
 patch(PaymentForm.prototype, {
 
     async submitForm() {
-        // On récupère directement notre bloc de formulaire dans le DOM
         const mandatForm = document.getElementById('mandat_administratif_form');
-        
-        // condition absolue : si le formulaire existe ET qu'il est visible à l'écran
         const isMandatSelected = mandatForm && mandatForm.offsetParent !== null;
 
-        console.log("=== CHECK LOGIQUE MANDAT ===");
-        console.log("Formulaire trouvé ?", !!mandatForm);
-        console.log("Le mandat est-il l'option cochée ?", isMandatSelected);
-
         if (isMandatSelected) {
-            console.log("🎯 Mandat détecté ! Interception complète du flux Odoo.");
+            console.log("🎯 Interception Mandat Administratif lancée");
             
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
@@ -25,30 +18,42 @@ patch(PaymentForm.prototype, {
             const comptable = document.getElementById('mandat_comptable')?.value?.trim();
             const errorDiv = document.getElementById('mandat_form_error');
 
-            // Validation des champs requis
             if (!siret || !iban || !ordonnateur || !comptable) {
                 if (errorDiv) errorDiv.style.display = 'block';
-                console.log("❌ Formulaire incomplet : arrêt du traitement.");
+                // Réactiver le bouton de soumission natif d'Odoo
+                this._enableSubmitButton?.(); 
                 return; 
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
-            // Envoi des données vers le serveur (Python)
-            await rpc('/mandat/save_checkout_data', {
-                siret, iban, ordonnateur,
-                qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
-                comptable,
-                ej: document.getElementById('mandat_ej')?.value?.trim() || '',
-                service: document.getElementById('mandat_service')?.value?.trim() || '',
-                reference: document.getElementById('mandat_reference')?.value?.trim() || '',
-            });
+            try {
+                console.log("🔗 Envoi de la requête RPC au serveur...");
+                
+                // Appel au contrôleur Python
+                const result = await rpc('/mandat/save_checkout_data', {
+                    siret, iban, ordonnateur,
+                    qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
+                    comptable,
+                    ej: document.getElementById('mandat_ej')?.value?.trim() || '',
+                    service: document.getElementById('mandat_service')?.value?.trim() || '',
+                    reference: document.getElementById('mandat_reference')?.value?.trim() || '',
+                });
 
-            console.log("🚀 Données sauvegardées avec succès. Redirection...");
-            window.location.assign('/payment/status');
-            return; // Bloque définitivement le traitement natif d'Odoo
+                console.log("✅ Réponse du serveur reçue :", result);
+                console.log("🔄 Redirection vers /payment/status...");
+                
+                window.location.assign('/payment/status');
+                return; // On coupe le flux Odoo définitivement
+
+            } catch (rpcError) {
+                console.error("❌ L'appel RPC ou la redirection a échoué :", rpcError);
+                alert("Erreur technique lors de la sauvegarde du mandat. Vérifiez la console du navigateur ou les logs d'Odoo.sh.");
+                this._enableSubmitButton?.(); // On redonne la main à l'utilisateur
+                return;
+            }
         }
         
-        // Si ce n'est pas le mandat, on laisse Odoo faire son travail habituel
+        // Si ce n'est pas notre mandat, exécuter le comportement standard d'Odoo
         return super.submitForm(...arguments);
     },
 });

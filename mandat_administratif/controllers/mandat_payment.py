@@ -4,7 +4,7 @@ from odoo.http import request
 
 class MandatPaymentController(http.Controller):
 
-    @http.route('/mandat/save_checkout_data', type='jsonrpc', auth='public', website=True)
+    @http.route('/mandat/save_checkout_data', type='json', auth='public', website=True)
     def save_mandat_checkout_data(self, **kwargs):
         order = request.website.sale_get_order()
         if not order:
