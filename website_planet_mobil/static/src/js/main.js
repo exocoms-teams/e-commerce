@@ -2,18 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
     //HEADER
     const wrapwrap = document.getElementById('wrapwrap');
     if (wrapwrap) {
-        const observer = new MutationObserver(() => {
-            const current = wrapwrap.style.paddingTop;
-            if (current !== '72px') {
-                wrapwrap.style.setProperty('padding-top', '72px', 'important');
-            }
-        });
-        observer.observe(wrapwrap, { attributes: true, attributeFilter: ['style'] });
+        wrapwrap.style.setProperty('padding-top', '72px', 'important');
         
-        // Force aussi au scroll
-        window.addEventListener('scroll', () => {
+        const observer = new MutationObserver(() => {
             wrapwrap.style.setProperty('padding-top', '72px', 'important');
         });
+        observer.observe(wrapwrap, { attributes: true, attributeFilter: ['style'] });
+
+        window.addEventListener('scroll', () => {
+            wrapwrap.style.setProperty('padding-top', '72px', 'important');
+        }, { passive: true });
     }
 
     // ── Dropdown menu sidebar
