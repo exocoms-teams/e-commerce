@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    //HEADER
+    const header = document.querySelector('#wrapwrap > header.o_header_standard');
+    if (header) {
+        const headerObserver = new MutationObserver(() => {
+            header.style.setProperty('transform', 'none', 'important');
+            header.style.setProperty('top', '0', 'important');
+        });
+        headerObserver.observe(header, { attributes: true, attributeFilter: ['style'] });
+    }
 
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
