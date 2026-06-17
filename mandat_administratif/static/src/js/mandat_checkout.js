@@ -1,36 +1,47 @@
 /** @odoo-module **/
-import { PaymentForm } from '@payment/js/payment_form';
-import { patch } from '@web/core/utils/patch';
+import publicWidget from '@web/legacy/js/public/public_widget';
 import { rpc } from '@web/core/network/rpc';
 
-patch(PaymentForm.prototype, {
+publicWidget.registry.MandatCheckoutInterception = publicWidget.Widget.extend({
+    selector: '.o_payment_form', // Cible directement le conteneur du formulaire de paiement d'Odoo
+    events: {
+        'click button[name="o_payment_submit_button"], click .o_payment_submit_button': '_onSubmitMandat',
+    },
 
-    async submitForm() {
+    async _onSubmitMandat(ev) {
         const mandatForm = document.getElementById('mandat_administratif_form');
+        // Vérifie si notre formulaire de mandat est présent et visible à l'écran
         const isMandatSelected = mandatForm && mandatForm.offsetParent !== null;
 
         if (isMandatSelected) {
-            console.log("🎯 Interception Mandat Administratif lancée");
-            
+            // ACTION CRUCIALE : On stoppe immédiatement le clic pour empêcher le JS natif d'Odoo de s'exécuter
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+
+            console.log("🎯 Mandat sélectionné : Interception du paiement réussie.");
+
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
             const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
             const comptable = document.getElementById('mandat_comptable')?.value?.trim();
             const errorDiv = document.getElementById('mandat_form_error');
 
+            // Validation des champs requis
             if (!siret || !iban || !ordonnateur || !comptable) {
                 if (errorDiv) errorDiv.style.display = 'block';
-                // Réactiver le bouton de soumission natif d'Odoo
-                this._enableSubmitButton?.(); 
-                return; 
+                console.log("❌ Formulaire incomplet.");
+                return;
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
+            // Effet visuel de chargement sur le bouton pour l'utilisateur
+            const $btn = $(ev.currentTarget);
+            const originalHtml = $btn.html();
+            $btn.attr('disabled', true).addClass('disabled').html('<i class="fa fa-spinner fa-spin"></i> Traitement en cours...');
+
             try {
-                console.log("🔗 Envoi de la requête RPC au serveur...");
-                
-                // Appel au contrôleur Python
-                const result = await rpc('/mandat/save_checkout_data', {
+                console.log("🔗 Envoi des données vers le contrôleur Python...");
+                await rpc('/mandat/save_checkout_data', {
                     siret, iban, ordonnateur,
                     qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
                     comptable,
@@ -39,21 +50,15 @@ patch(PaymentForm.prototype, {
                     reference: document.getElementById('mandat_reference')?.value?.trim() || '',
                 });
 
-                console.log("✅ Réponse du serveur reçue :", result);
-                console.log("🔄 Redirection vers /payment/status...");
-                
+                console.log("✅ Données sauvegardées. Redirection vers le statut de paiement.");
                 window.location.assign('/payment/status');
-                return; // On coupe le flux Odoo définitivement
 
             } catch (rpcError) {
-                console.error("❌ L'appel RPC ou la redirection a échoué :", rpcError);
-                alert("Erreur technique lors de la sauvegarde du mandat. Vérifiez la console du navigateur ou les logs d'Odoo.sh.");
-                this._enableSubmitButton?.(); // On redonne la main à l'utilisateur
-                return;
+                console.error("❌ Erreur lors de la communication avec le serveur :", rpcError);
+                alert("Une erreur technique est survenue lors de la validation de votre mandat. Veuillez réessayer.");
+                // En cas d'erreur, on réactive le bouton pour que l'utilisateur puisse recliquer
+                $btn.attr('disabled', false).removeClass('disabled').html(originalHtml);
             }
         }
-        
-        // Si ce n'est pas notre mandat, exécuter le comportement standard d'Odoo
-        return super.submitForm(...arguments);
-    },
+    }
 });
