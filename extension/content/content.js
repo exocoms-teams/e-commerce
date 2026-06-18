@@ -1,345 +1,394 @@
-// content.js - Silent Universal Detector (Works Everywhere, No Console Spam)
+// content.js - Smart Product Detector (E-commerce Only)
 console.log('[Tracker] Active on:', window.location.hostname);
+
+// ---- E-commerce domain list ----
+const ECOMMERCE_DOMAINS = [
+  'amazon', 'amzn', 'ebay', 'etsy', 'walmart', 'target', 'bestbuy',
+  'aliexpress', 'alibaba', 'shopify', 'etsy', 'zara', 'hm', 'nike',
+  'adidas', 'shein', 'temu', 'wish', 'newegg', 'costco', 'barnesandnoble',
+  'bookdepository', 'wayfair', 'homedepot', 'lowes', 'macys', 'kohl',
+  'sephora', 'ultra', 'shop', 'store', 'buy', 'product'
+];
 
 // ---- State ----
 let isTracking = true;
 let processedProducts = new Set();
 let detectionInterval = null;
 let isInitialized = false;
+let domainMatched = false;
 
-// ---- Universal Detection ----
+// ---- Check if current domain is e-commerce ----
+function isEcommerceDomain() {
+  const hostname = window.location.hostname.toLowerCase().replace('www.', '');
+  
+  // Check if it's a known e-commerce domain
+  for (const d of ECOMMERCE_DOMAINS) {
+    if (hostname.includes(d)) return true;
+  }
+  
+  // Check for shopping-related URL patterns
+  const url = window.location.href.toLowerCase();
+  const shoppingPaths = ['/product/', '/products/', '/item/', '/dp/', '/buy/', '/shop/', '/cart/', '/checkout/'];
+  for (const path of shoppingPaths) {
+    if (url.includes(path)) return true;
+  }
+  
+  return false;
+}
 
+// ---- Domain-specific extractors ----
+const extractors = {
+  // Amazon
+  amazon: function() {
+    const products = [];
+    const items = document.querySelectorAll('[data-asin]:not([data-asin=""])');
+    
+    for (const el of items) {
+      const asin = el.getAttribute('data-asin');
+      if (!asin || asin.length < 5) continue;
+      
+      const titleEl = el.querySelector('h2 a, .a-link-normal .a-text-normal, .s-title-instructions-style a, [data-cy="title"]');
+      const title = titleEl ? titleEl.textContent.trim() : null;
+      
+      if (!title || title.length < 5) continue;
+      
+      const priceEl = el.querySelector('.a-price .a-offscreen, .a-price-whole, .s-price, [data-a-size="xl"] .a-price');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img.s-image, img[data-image-latency]');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a.a-link-normal, a.s-no-outline');
+      const url = urlEl ? urlEl.href : '';
+      
+      const ratingEl = el.querySelector('.a-icon-alt, .a-row .a-icon-star');
+      let rating = null;
+      if (ratingEl) {
+        const match = ratingEl.textContent.match(/[\d.]+/);
+        if (match) rating = parseFloat(match[0]);
+      }
+      
+      const reviewEl = el.querySelector('.a-size-base, .a-size-small .a-text-normal');
+      let reviews = null;
+      if (reviewEl) {
+        const match = reviewEl.textContent.replace(/,/g, '').match(/\d+/);
+        if (match) reviews = parseInt(match[0]);
+      }
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: 'amazon.com',
+        category: 'General',
+        rating: rating,
+        reviews: reviews,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  },
+  
+  // eBay
+  ebay: function() {
+    const products = [];
+    const items = document.querySelectorAll('.s-item, .srp-results .s-item, .lv-item');
+    
+    for (const el of items) {
+      const titleEl = el.querySelector('.s-item__title, .lvtitle, .vip');
+      const title = titleEl ? titleEl.textContent.trim() : null;
+      if (!title || title.length < 5 || title.includes('Shop by')) continue;
+      
+      const priceEl = el.querySelector('.s-item__price, .lvprice, .vi-price, .notranslate');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img, .s-item__image-img');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a.s-item__link, a.lvtitle, a.vip');
+      const url = urlEl ? urlEl.href : '';
+      
+      const soldEl = el.querySelector('.s-item__hotness, .s-item__purchaseOptions, .lvformat');
+      let soldCount = null;
+      if (soldEl) {
+        const match = soldEl.textContent.match(/(\d+)\s*sold/i);
+        if (match) soldCount = parseInt(match[1]);
+      }
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: 'ebay.com',
+        category: 'General',
+        soldCount: soldCount,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  },
+  
+  // Etsy
+  etsy: function() {
+    const products = [];
+    const items = document.querySelectorAll('.listing-card, .wt-grid__item-xs-6, .wt-grid__item-xs-4, .listing-preview');
+    
+    for (const el of items) {
+      const titleEl = el.querySelector('.listing-card__title, .wt-text-caption, .text-body-small');
+      const title = titleEl ? titleEl.textContent.trim() : null;
+      if (!title || title.length < 5) continue;
+      
+      const priceEl = el.querySelector('.wt-text-price, .currency-value, .price');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img, .listing-card-image img');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a.listing-link, a.wt-display-block');
+      const url = urlEl ? urlEl.href : '';
+      
+      const ratingEl = el.querySelector('.star-rating, .wt-text-star-rating');
+      let rating = null;
+      if (ratingEl) {
+        const match = ratingEl.textContent.match(/[\d.]+/);
+        if (match) rating = parseFloat(match[0]);
+      }
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: 'etsy.com',
+        category: 'General',
+        rating: rating,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  },
+  
+  // Walmart
+  walmart: function() {
+    const products = [];
+    const items = document.querySelectorAll('[data-testid="list-view"], .search-result, .product-card');
+    
+    for (const el of items) {
+      const titleEl = el.querySelector('[data-testid="product-title"], .product-title, .w_font');
+      const title = titleEl ? titleEl.textContent.trim() : null;
+      if (!title || title.length < 5) continue;
+      
+      const priceEl = el.querySelector('[data-testid="price"], .price-now, .price-display');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img, .product-image');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a[data-testid="product-title-link"], a.product-link');
+      const url = urlEl ? urlEl.href : '';
+      
+      const ratingEl = el.querySelector('.rating-stars, .product-rating');
+      let rating = null;
+      if (ratingEl) {
+        const match = ratingEl.textContent.match(/[\d.]+/);
+        if (match) rating = parseFloat(match[0]);
+      }
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: 'walmart.com',
+        category: 'General',
+        rating: rating,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  },
+  
+  // Target
+  target: function() {
+    const products = [];
+    const items = document.querySelectorAll('[data-testid="product-card"], .product-card, .h-display-flex');
+    
+    for (const el of items) {
+      const titleEl = el.querySelector('[data-testid="product-title"], .product-title, .h-text');
+      const title = titleEl ? titleEl.textContent.trim() : null;
+      if (!title || title.length < 5) continue;
+      
+      const priceEl = el.querySelector('[data-testid="price"], .price, .h-text-price');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img, .product-image');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a[data-testid="product-link"], a.product-link');
+      const url = urlEl ? urlEl.href : '';
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: 'target.com',
+        category: 'General',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  },
+  
+  // General fallback extractor
+  general: function() {
+    const products = [];
+    const selectors = [
+      '[data-product]', '[data-product-id]', '[data-sku]', '[data-item-id]',
+      '.product-item', '.product-card', '.product-tile', '.listing-item',
+      '.item-card', '.search-result', '.product'
+    ];
+    
+    let elements = [];
+    for (const selector of selectors) {
+      try {
+        const found = document.querySelectorAll(selector);
+        if (found.length > 0) {
+          elements = [...elements, ...found];
+        }
+      } catch (e) {}
+    }
+    
+    elements = [...new Set(elements)];
+    
+    // Filter out navigation elements
+    for (const el of elements) {
+      // Skip if it's clearly not a product
+      if (el.closest('nav, header, footer, .nav, .menu, .sidebar, .footer')) continue;
+      
+      const title = el.getAttribute('data-title') || 
+                    el.getAttribute('aria-label') ||
+                    el.querySelector('h1, h2, h3, h4, .title, .name')?.textContent?.trim() ||
+                    el.textContent?.trim();
+      
+      if (!title || title.length < 5 || title.length > 200) continue;
+      
+      // Skip if title looks like navigation text
+      if (/^(home|menu|account|cart|checkout|login|register|search|filter|sort|page|next|prev)/i.test(title)) continue;
+      
+      const priceEl = el.querySelector('[class*="price"], [class*="cost"], [itemprop="price"]');
+      let price = null;
+      if (priceEl) {
+        const priceText = priceEl.textContent.replace(/[^0-9.]/g, '');
+        if (priceText) price = parseFloat(priceText);
+      }
+      
+      const img = el.querySelector('img:not(.icon):not(.logo)');
+      const image = img ? (img.src || img.getAttribute('data-src')) : null;
+      
+      const urlEl = el.querySelector('a[href*="/product/"], a[href*="/p/"], a[href*="/item/"]');
+      const url = urlEl ? urlEl.href : '';
+      
+      products.push({
+        title: title.substring(0, 200),
+        price: price,
+        image: image,
+        url: url || window.location.href,
+        domain: window.location.hostname.replace('www.', ''),
+        category: 'General',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return products;
+  }
+};
+
+// ---- Get domain-specific extractor ----
+function getExtractor() {
+  const hostname = window.location.hostname.toLowerCase();
+  
+  if (hostname.includes('amazon') || hostname.includes('amzn')) return extractors.amazon;
+  if (hostname.includes('ebay')) return extractors.ebay;
+  if (hostname.includes('etsy')) return extractors.etsy;
+  if (hostname.includes('walmart')) return extractors.walmart;
+  if (hostname.includes('target')) return extractors.target;
+  
+  // Check URL patterns
+  const url = window.location.href.toLowerCase();
+  if (url.includes('/product/') || url.includes('/products/') || url.includes('/item/')) {
+    return extractors.general;
+  }
+  
+  return extractors.general;
+}
+
+// ---- Detect products ----
 function detectProducts() {
-  if (!isTracking) return [];
+  if (!isTracking || !domainMatched) return [];
   
-  const products = [];
-  const found = new Set();
-  
-  // Look for common product indicators
-  const productIndicators = [
-    '[data-asin]', '[data-product]', '[data-product-id]', '[data-sku]', '[data-item-id]',
-    '.product', '.product-item', '.product-card', '.product-tile', '.product-cell',
-    '.item', '.listing', '.listing-card', '.s-item', '.search-result',
-    '.grid-item', '.card-item', '[class*="product"]', '[class*="item"]', '[class*="listing"]'
-  ];
-  
-  // Collect potential product elements
-  let potentialProducts = [];
-  for (const selector of productIndicators) {
-    try {
-      const elements = document.querySelectorAll(selector);
-      if (elements.length > 0) {
-        potentialProducts.push(...elements);
-      }
-    } catch (e) {}
-  }
-  
-  potentialProducts = [...new Set(potentialProducts)];
-  
-  // Process each potential product
-  potentialProducts.forEach((el) => {
-    if (el.innerText.length < 10) return;
-    
-    const id = el.getAttribute('data-asin') || 
-               el.getAttribute('data-product-id') ||
-               el.getAttribute('data-sku') ||
-               el.getAttribute('data-id') ||
-               el.getAttribute('id') ||
-               el.querySelector('a')?.href ||
-               el.innerText.substring(0, 30);
-    
-    if (found.has(id) || processedProducts.has(id)) return;
-    found.add(id);
-    processedProducts.add(id);
-    
-    const product = extractProductUniversal(el);
-    if (product && product.title && product.title.length > 2) {
-      products.push(product);
-    }
-  });
-  
-  // If no products found, look for product links
-  if (products.length === 0) {
-    const linkPatterns = [
-      'a[href*="/product/"]', 'a[href*="/products/"]',
-      'a[href*="/p/"]', 'a[href*="/item/"]',
-      'a[href*="/dp/"]', 'a[href*="/buy/"]', 'a[href*="/shop/"]'
-    ];
-    
-    for (const pattern of linkPatterns) {
-      try {
-        const links = document.querySelectorAll(pattern);
-        for (const link of links) {
-          const title = link.textContent?.trim() || link.getAttribute('aria-label') || link.getAttribute('title');
-          if (title && title.length > 5) {
-            const id = link.href || title;
-            if (!found.has(id) && !processedProducts.has(id)) {
-              found.add(id);
-              processedProducts.add(id);
-              products.push({
-                title: title.substring(0, 200),
-                price: null,
-                url: link.href || window.location.href,
-                domain: window.location.hostname.replace('www.', ''),
-                timestamp: new Date().toISOString(),
-                category: 'General'
-              });
-            }
-          }
-        }
-        if (products.length > 0) break;
-      } catch (e) {}
-    }
-  }
-  
-  // Look for structured data (JSON-LD)
-  if (products.length === 0) {
-    try {
-      const scripts = document.querySelectorAll('script[type="application/ld+json"]');
-      for (const script of scripts) {
-        try {
-          const data = JSON.parse(script.textContent);
-          const productData = findProductInJson(data);
-          if (productData && productData.name) {
-            const id = productData.name + (productData.sku || '');
-            if (!found.has(id) && !processedProducts.has(id)) {
-              found.add(id);
-              processedProducts.add(id);
-              products.push({
-                title: productData.name.substring(0, 200),
-                price: productData.price || null,
-                description: productData.description || null,
-                image: productData.image || null,
-                url: window.location.href,
-                domain: window.location.hostname.replace('www.', ''),
-                timestamp: new Date().toISOString(),
-                category: productData.category || 'General'
-              });
-            }
-          }
-        } catch (e) {}
-      }
-    } catch (e) {}
-  }
-  
-  return products;
-}
-
-// ---- Helper: Find Product in JSON-LD ----
-
-function findProductInJson(data) {
-  if (data['@type'] === 'Product' || data['@type'] === 'product') {
-    return data;
-  }
-  
-  if (data['@graph'] && Array.isArray(data['@graph'])) {
-    for (const item of data['@graph']) {
-      if (item['@type'] === 'Product' || item['@type'] === 'product') {
-        return item;
-      }
-    }
-  }
-  
-  if (Array.isArray(data)) {
-    for (const item of data) {
-      const result = findProductInJson(item);
-      if (result) return result;
-    }
-  }
-  
-  if (typeof data === 'object' && data !== null) {
-    for (const key of Object.keys(data)) {
-      if (typeof data[key] === 'object') {
-        const result = findProductInJson(data[key]);
-        if (result) return result;
-      }
-    }
-  }
-  
-  return null;
-}
-
-// ---- Universal Product Extraction ----
-
-function extractProductUniversal(el) {
   try {
-    // ---- Extract Title ----
-    let title = null;
-    const titleSelectors = [
-      'h1', 'h2', 'h3', 'h4',
-      '.product-title', '.product-name', '.item-title',
-      '.product-name', '.item-name', '.title',
-      '[class*="title"]', '[class*="name"]',
-      '[itemprop="name"]', '[property="og:title"]',
-      'meta[property="og:title"]'
-    ];
+    const extractor = getExtractor();
+    const products = extractor();
     
-    for (const selector of titleSelectors) {
-      try {
-        let el_title = null;
-        if (selector.startsWith('meta')) {
-          el_title = document.querySelector(selector);
-          if (el_title) {
-            title = el_title.getAttribute('content') || el_title.getAttribute('value');
-          }
-        } else {
-          el_title = el.querySelector(selector);
-          if (el_title) {
-            title = el_title.textContent?.trim() || el_title.getAttribute('aria-label') || el_title.getAttribute('title');
-          }
-        }
-        if (title && title.length > 3) break;
-      } catch (e) {}
-    }
+    // Filter out duplicates and low-quality results
+    const validProducts = [];
+    const seen = new Set();
     
-    if (!title) {
-      title = el.getAttribute('aria-label') || 
-              el.getAttribute('data-title') ||
-              el.getAttribute('title');
-    }
-    
-    if (!title) {
-      const heading = el.querySelector('h1, h2, h3, h4, h5, h6');
-      if (heading) {
-        title = heading.textContent?.trim() || '';
+    for (const p of products) {
+      if (!p || !p.title || p.title.length < 3) continue;
+      
+      const key = p.title.substring(0, 40).toLowerCase();
+      if (seen.has(key) || processedProducts.has(key)) continue;
+      
+      seen.add(key);
+      processedProducts.add(key);
+      
+      // Only include if it looks like a real product (has price or image or reasonable title)
+      if (p.price !== null && p.price > 0) {
+        validProducts.push(p);
+      } else if (p.image && p.image.startsWith('http')) {
+        validProducts.push(p);
+      } else if (p.title.length > 10 && !p.title.includes(' ')) {
+        validProducts.push(p);
       }
     }
     
-    if (!title) {
-      const text = el.textContent?.trim() || '';
-      if (text.length > 5 && text.length < 200) {
-        title = text;
-      }
-    }
-    
-    if (!title || title.length < 3) return null;
-    title = title.replace(/^New\s+/, '').replace(/^Details about\s+/, '').trim();
-    
-    // ---- Extract Price ----
-    let price = null;
-    const priceSelectors = [
-      '.price', '.product-price', '.item-price',
-      '[class*="price"]', '[class*="cost"]',
-      '[itemprop="price"]', '.a-price .a-offscreen', '.s-item__price'
-    ];
-    
-    for (const selector of priceSelectors) {
-      try {
-        const el_price = el.querySelector(selector);
-        if (el_price) {
-          const priceText = el_price.textContent?.trim() || el_price.getAttribute('content') || '';
-          const match = priceText.match(/\$?([\d,]+\.?[\d]*)/);
-          if (match) {
-            price = parseFloat(match[1].replace(/,/g, ''));
-            if (price > 0) break;
-          }
-        }
-      } catch (e) {}
-    }
-    
-    if (!price) {
-      const metaPrice = document.querySelector('meta[property="product:price:amount"]');
-      if (metaPrice) {
-        const priceText = metaPrice.getAttribute('content') || '';
-        const match = priceText.match(/\$?([\d,]+\.?[\d]*)/);
-        if (match) {
-          price = parseFloat(match[1].replace(/,/g, ''));
-        }
-      }
-    }
-    
-    // ---- Extract Image ----
-    let image = null;
-    const imageSelectors = [
-      'img:not([src*="icon"]):not([src*="logo"])',
-      '.product-image img', '.product-img',
-      '[itemprop="image"]', 'meta[property="og:image"]'
-    ];
-    
-    for (const selector of imageSelectors) {
-      try {
-        if (selector.startsWith('meta')) {
-          const meta = document.querySelector(selector);
-          if (meta) {
-            image = meta.getAttribute('content');
-            if (image && image.startsWith('http')) break;
-          }
-        } else {
-          const img = el.querySelector(selector);
-          if (img) {
-            image = img.src || img.getAttribute('data-src') || img.getAttribute('lazy-src');
-            if (image && image.startsWith('http')) break;
-          }
-        }
-      } catch (e) {}
-    }
-    
-    // ---- Extract Link ----
-    let url = '';
-    const linkSelectors = [
-      'a[href*="/product/"]', 'a[href*="/p/"]',
-      'a[href*="/item/"]', 'a[href*="/dp/"]',
-      'a:not([href*="#"]):not([href*="javascript"])'
-    ];
-    
-    for (const selector of linkSelectors) {
-      try {
-        const link = el.querySelector(selector);
-        if (link) {
-          url = link.href || link.getAttribute('href');
-          if (url && url.startsWith('http')) break;
-        }
-      } catch (e) {}
-    }
-    
-    if (!url) {
-      const link = el.querySelector('a');
-      if (link) url = link.href || '';
-    }
-    
-    // ---- Extract Category ----
-    let category = 'General';
-    const categorySelectors = [
-      '.category', '.breadcrumb', '.breadcrumbs',
-      '[class*="category"]', '[class*="breadcrumb"]'
-    ];
-    
-    for (const selector of categorySelectors) {
-      try {
-        const el_cat = document.querySelector(selector);
-        if (el_cat) {
-          const links = el_cat.querySelectorAll('a');
-          if (links.length > 0) {
-            category = links[links.length - 1].textContent.trim() || category;
-            break;
-          }
-          const items = el_cat.textContent.split(/[>/|]/).map(s => s.trim()).filter(Boolean);
-          if (items.length > 0) {
-            category = items[items.length - 1] || category;
-            break;
-          }
-        }
-      } catch (e) {}
-    }
-    
-    const hostname = window.location.hostname.replace('www.', '');
-    
-    return {
-      title: title.substring(0, 200),
-      price: price || null,
-      image: image || null,
-      category: category || 'General',
-      url: url || window.location.href,
-      domain: hostname,
-      timestamp: new Date().toISOString()
-    };
+    return validProducts.slice(0, 20); // Limit per scan
   } catch (e) {
-    return null;
+    console.warn('[Tracker] Detection error:', e);
+    return [];
   }
 }
 
-// ---- Send Product ----
-
+// ---- Send product to background ----
 function sendProduct(product) {
   if (!product || !product.title) return;
   
@@ -351,24 +400,36 @@ function sendProduct(product) {
   }, () => {});
 }
 
+// ---- Process detected products with debounce ----
+let processingTimeout = null;
+
 function processDetectedProducts() {
-  if (!isTracking) return;
-  const products = detectProducts();
+  if (!isTracking || !domainMatched) return;
   
-  if (products.length > 0) {
-    products.forEach((product, index) => {
-      setTimeout(() => sendProduct(product), index * 200);
-    });
+  if (processingTimeout) {
+    clearTimeout(processingTimeout);
   }
+  
+  processingTimeout = setTimeout(() => {
+    const products = detectProducts();
+    
+    if (products.length > 0) {
+      console.log(`[Tracker] Found ${products.length} products on page`);
+      products.forEach((product, index) => {
+        setTimeout(() => sendProduct(product), index * 300);
+      });
+    }
+    
+    processingTimeout = null;
+  }, 500);
 }
 
 // ---- Controls ----
-
 function startTracking() {
   if (isTracking) return;
   isTracking = true;
   if (detectionInterval) clearInterval(detectionInterval);
-  detectionInterval = setInterval(processDetectedProducts, 5000);
+  detectionInterval = setInterval(processDetectedProducts, 8000);
   processDetectedProducts();
 }
 
@@ -381,19 +442,20 @@ function stopTracking() {
   }
 }
 
-function toggleTracking() {
-  if (isTracking) {
-    stopTracking();
-  } else {
-    startTracking();
-  }
-}
-
 // ---- Init ----
-
 function init() {
   if (isInitialized) return;
   isInitialized = true;
+  
+  // Check if we're on an e-commerce site
+  domainMatched = isEcommerceDomain();
+  
+  if (!domainMatched) {
+    console.log('[Tracker] Not an e-commerce site. Tracking disabled.');
+    return;
+  }
+  
+  console.log('[Tracker] E-commerce domain detected. Starting tracker.');
   
   chrome.storage.local.get(['trackingEnabled'], (data) => {
     isTracking = data.trackingEnabled !== false;
@@ -402,6 +464,7 @@ function init() {
     }
   });
 
+  // Listen for messages
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'toggleTracking') {
       toggleTracking();
@@ -417,21 +480,16 @@ function init() {
       sendResponse({ success: true });
       return true;
     }
-    if (request.action === 'getPageProduct') {
-      const products = detectProducts();
-      sendResponse({ products: products });
-      return true;
-    }
   });
   
-  setTimeout(processDetectedProducts, 1500);
-  setTimeout(processDetectedProducts, 4000);
+  // Initial detection after page load
+  setTimeout(processDetectedProducts, 2000);
+  setTimeout(processDetectedProducts, 5000);
 }
 
 // ---- Start ----
-
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
+  document.addEventListener('DOMContentLoaded', () => setTimeout(init, 300));
 } else {
-  setTimeout(init, 500);
+  setTimeout(init, 300);
 }
