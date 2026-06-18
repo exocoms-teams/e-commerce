@@ -1,21 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    function adjustSidebarTop() {
-        const header = document.querySelector('header#top');
-        const sidebar = document.querySelector('.tsp-sidebar');
-        if (!sidebar) return;
-        
-        if (header) {
-            const rect = header.getBoundingClientRect();
-            const visibleHeight = Math.max(0, rect.bottom);
-            sidebar.style.top = visibleHeight + 'px';
-        } else {
-            sidebar.style.top = '0px';
-        }
-    }
-
-    adjustSidebarTop();
-    window.addEventListener('scroll', adjustSidebarTop, { passive: true });
-    window.addEventListener('resize', adjustSidebarTop, { passive: true });
 
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
@@ -425,4 +408,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     initFilters();
+
+    function adjustSidebarTop() {
+        const header = document.querySelector('header#top');
+        const sidebar = document.querySelector('.tsp-sidebar');
+        if (!sidebar) return;
+        
+        if (header) {
+            const rect = header.getBoundingClientRect();
+            const visibleHeight = Math.max(0, rect.bottom);
+            sidebar.style.top = visibleHeight + 'px';
+        } else {
+            sidebar.style.top = '0px';
+        }
+    }
+
+    adjustSidebarTop();
+    window.addEventListener('scroll', adjustSidebarTop, { passive: true });
+    window.addEventListener('resize', adjustSidebarTop, { passive: true });
 });
