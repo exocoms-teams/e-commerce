@@ -24,7 +24,6 @@
         'data/product_categories.xml',
         'data/homepage_views.xml',
         'data/product_detail_views.xml',
-        'data/header_views.xml',
         'templates/page.xml',
         'templates/politiques_cookies.xml',
         
