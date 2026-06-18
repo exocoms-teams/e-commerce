@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "O&A Beauty - Clean Luxury Cosmetics Theme",
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Website/Website',
     'summary': "Theme + product-page extensions migrated from the LUMIÈRE static frontend",
     'description': """

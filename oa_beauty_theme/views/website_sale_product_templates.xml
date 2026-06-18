@@ -2,33 +2,30 @@
 <odoo>
 
     <!--
-        These xpaths were verified against the real Odoo 19.0 source
-        (github.com/odoo/odoo, branch 19.0, addons/website_sale) and the
-        official odoo/tutorials "website_airproof" example, which patches
-        these exact same anchors. They are NOT guesses.
+        Single inheritance point, on purpose.
 
-        Odoo 19's product page specs are accordion-based (Bootstrap
-        accordion), not a single flat "product_details" block like older
-        versions. The two anchors used below:
+        The previous version of this file had TWO separate inherited
+        templates:
+          1. inherit_id="website_sale.product_accordion" -> #product_accordion
+          2. inherit_id="website_sale.product"            -> #add_to_cart_wrap
 
-          1. website_sale.product_accordion  -> div#product_accordion
-             We add our own <div class="accordion-item"> here, matching
-             the exact pattern Odoo's own tutorial uses to add a
-             "Specifications" item.
+        On the live instance, (1) installed cleanly but (2) failed with
+        "Element '' cannot be located in parent view" — meaning
+        #add_to_cart_wrap does not exist in this Odoo.sh database's actual
+        website_sale.product template (likely an Enterprise-vs-Community
+        markup difference, since the public Odoo source only confirms
+        Community markup).
 
-          2. website_sale.product            -> div#add_to_cart_wrap
-             We add the trust-badge row right after the Add to Cart
-             button, which is the natural reading position.
-
-        If a future Odoo 19.x point release renames either id, you will
-        get a clear ParseError naming the missing id at module
-        install/update time (not a silent failure) — open the page in
-        ?debug=1, inspect the DOM, and update the xpath expr accordingly.
+        Fix: drop the second, unconfirmed anchor entirely. Everything
+        (specs, ingredients, AND trust badges) now lives inside the one
+        anchor that is empirically proven to work on this exact database:
+        #product_accordion.
     -->
 
-    <!-- Specs + key ingredients, as a new accordion item -->
     <template id="product_accordion_oa_specs" inherit_id="website_sale.product_accordion">
         <xpath expr="//div[@id='product_accordion']" position="inside">
+
+            <!-- Item 1: Type / Finish / Best For / Key Ingredients -->
             <div class="accordion-item" t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
                 <div class="accordion-header my-0 h6">
                     <button class="accordion-button collapsed fw-medium" type="button"
@@ -65,22 +62,29 @@
                     </div>
                 </div>
             </div>
-        </xpath>
-    </template>
 
-    <!-- Trust badges, right after the Add to Cart button -->
-    <template id="product_oa_trust_badges" inherit_id="website_sale.product">
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
-            <!-- .detail-meta equivalent. Static across all products in the
-                 original site, so hard-coded here rather than modeled as
-                 fields. Move to a Website > Theme "Trust Badges" snippet
-                 later if these need to vary by product or be editable
-                 without code. -->
-            <div class="o_oa_trust_badges mt-3">
-                <p><i class="fa fa-truck me-2"/>Free delivery on orders over $60</p>
-                <p><i class="fa fa-rotate-left me-2"/>30-day hassle-free returns</p>
-                <p><i class="fa fa-leaf me-2"/>Cruelty-free &amp; clean formula</p>
+            <!-- Item 2: Trust badges (.detail-meta equivalent). Static
+                 across all products on the original site, so hard-coded
+                 here rather than modeled as fields. -->
+            <div class="accordion-item">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#oa_trust_badges"
+                            aria-expanded="false" aria-controls="oa_trust_badges">
+                        Delivery &amp; Returns
+                    </button>
+                </div>
+                <div id="oa_trust_badges" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="o_oa_trust_badges">
+                            <p><i class="fa fa-truck me-2"/>Free delivery on orders over $60</p>
+                            <p><i class="fa fa-rotate-left me-2"/>30-day hassle-free returns</p>
+                            <p><i class="fa fa-leaf me-2"/>Cruelty-free &amp; clean formula</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </xpath>
     </template>
 
