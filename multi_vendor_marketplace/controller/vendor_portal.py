@@ -30,9 +30,14 @@ class VendorPortal(http.Controller):
             return request.redirect('/shop')
 
         # Produits du vendeur
-        products = request.env['product.template'].sudo().search(
-            [('seller_id', '=', vendor.id)], order='name asc'
-        )
+        # Produits du vendeur (filtre multi-website)
+        website = request.website
+        products = request.env['product.template'].sudo().search([
+            ('seller_id', '=', vendor.id),
+            '|',
+            ('website_id', '=', website.id),
+            ('website_id', '=', False),
+        ], order='name asc')
 
         # Commandes du mois
         first_day = datetime.now().replace(
@@ -63,9 +68,13 @@ class VendorPortal(http.Controller):
         vendor = self._get_vendor_or_redirect()
         if not vendor:
             return request.redirect('/shop')
-        products = request.env['product.template'].sudo().search(
-            [('seller_id', '=', vendor.id)], order='name asc'
-        )
+        website = request.website
+        products = request.env['product.template'].sudo().search([
+            ('seller_id', '=', vendor.id),
+            '|',
+            ('website_id', '=', website.id),
+            ('website_id', '=', False),
+        ], order='name asc')
         return request.render(
             'multi_vendor_marketplace.vendor_portal_products',
             {'vendor': vendor, 'products': products}
