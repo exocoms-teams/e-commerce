@@ -1,18 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    //HEADER
-    const wrapwrap = document.getElementById('wrapwrap');
-    if (wrapwrap) {
-        wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        
-        const observer = new MutationObserver(() => {
-            wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        });
-        observer.observe(wrapwrap, { attributes: true, attributeFilter: ['style'] });
-
-        window.addEventListener('scroll', () => {
-            wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        }, { passive: true });
-    }
 
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
@@ -422,4 +408,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     initFilters();
+
 });
