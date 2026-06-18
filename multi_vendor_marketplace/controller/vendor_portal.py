@@ -31,9 +31,6 @@ class VendorPortal(http.Controller):
         website = request.website
         products = request.env['product.template'].sudo().search([
             ('seller_id', '=', vendor.id),
-            '|',
-            ('website_id', '=', website.id),
-            ('website_id', '=', False),
         ], order='name asc')
 
         # Commandes du mois
