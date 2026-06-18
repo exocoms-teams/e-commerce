@@ -10,9 +10,14 @@ class VendorPortal(http.Controller):
     def _get_vendor_or_redirect(self):
         """Recuperer le vendeur connecte ou None"""
         partner = request.env.user.partner_id
+        website = request.website
+        # Filtrer par site web actuel
         vendor = request.env['res.partner'].sudo().search([
             ('id', '=', partner.id),
             ('seller', '=', True),
+            '|',
+            ('website_id', '=', website.id),
+            ('website_id', '=', False),
         ], limit=1)
         return vendor if vendor else None
 
