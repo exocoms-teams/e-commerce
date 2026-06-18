@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        LUMIÈRE Homepage — replaces the default Odoo homepage.
+
+        Strategy (Odoo 19-safe):
+        - We define a new website.page (view_type="qweb") bound to URL "/".
+        - We set website_published=True so it is live immediately after install.
+        - We do NOT use xpath on website.homepage because that template's
+          internal structure is undocumented and changes between versions.
+        - The page inherits website.layout (nav + footer) via t-call.
+    -->
+
+    <!-- ─── 1. The actual QWeb view ─── -->
+    <record id="homepage_lumiere" model="ir.ui.view">
+        <field name="name">oa_beauty.homepage</field>
+        <field name="type">qweb</field>
+        <field name="key">oa_beauty_theme.homepage_lumiere</field>
+        <field name="arch" type="xml">
+<t t-name="oa_beauty_theme.homepage_lumiere">
+    <t t-call="website.layout">
+        <t t-set="pageName" t-value="'homepage'"/>
+        <t t-set="no_header_top_fixed" t-value="True"/>
+
+        <div id="oa_homepage" class="oa-page">
+
+            <!-- ══════════════════════════════════
+                 HERO SECTION
+                 Mirrors index.html #hero
+            ══════════════════════════════════ -->
+            <section id="oa_hero" class="oa-hero">
+                <div class="oa-hero__overlay"/>
+                <div class="container oa-hero__content">
+                    <p class="oa-hero__tagline">Luxury beauty, naturally refined</p>
+                    <h1 class="oa-hero__title">
+                        Éclat &amp; Beauté<br/>
+                        <em>Redefined</em>
+                    </h1>
+                    <p class="oa-hero__sub">
+                        Discover skincare and cosmetics crafted for the modern connoisseur —
+                        clean formulas, timeless elegance.
+                    </p>
+                    <div class="oa-hero__ctas">
+                        <a href="/shop" class="oa-btn oa-btn--primary">Explore Collection</a>
+                        <a href="#oa_about" class="oa-btn oa-btn--ghost">Our Story</a>
+                    </div>
+                </div>
+                <div class="oa-hero__scroll-hint">
+                    <span/>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 MARQUEE / TRUST BAR
+            ══════════════════════════════════ -->
+            <div class="oa-marquee-bar">
+                <div class="oa-marquee-track">
+                    <span>Free delivery over $60</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>30-day returns</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>Cruelty-free formulas</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>Clean &amp; vegan certified</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>Free delivery over $60</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>30-day returns</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>Cruelty-free formulas</span>
+                    <span class="oa-marquee-dot">·</span>
+                    <span>Clean &amp; vegan certified</span>
+                    <span class="oa-marquee-dot">·</span>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════
+                 ABOUT SECTION
+                 Mirrors index.html #about
+            ══════════════════════════════════ -->
+            <section id="oa_about" class="oa-about">
+                <div class="container">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6">
+                            <div class="oa-about__img-wrap">
+                                <div class="oa-about__img-frame"/>
+                                <div class="oa-about__img-placeholder">
+                                    <!-- Replace with /web/image/... once media is uploaded -->
+                                    <span class="oa-about__img-icon">✦</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <span class="oa-eyebrow">Notre Histoire</span>
+                            <h2 class="oa-section-title">Beauty born from<br/>nature's finest secrets</h2>
+                            <p class="oa-body-text">
+                                Founded on the belief that luxury and conscience can coexist,
+                                O&amp;A Beauty sources the world's most exquisite botanical
+                                ingredients — then delivers them in formulas so pure and
+                                effective, you'll forget what conventional beauty ever felt like.
+                            </p>
+                            <p class="oa-body-text">
+                                Every product is cruelty-free, dermatologist-tested and
+                                packed in recyclable packaging. Clean beauty shouldn't cost
+                                the earth — yours or ours.
+                            </p>
+                            <div class="oa-about__stats">
+                                <div class="oa-stat">
+                                    <span class="oa-stat__num">12+</span>
+                                    <span class="oa-stat__label">Years of expertise</span>
+                                </div>
+                                <div class="oa-stat">
+                                    <span class="oa-stat__num">100%</span>
+                                    <span class="oa-stat__label">Clean ingredients</span>
+                                </div>
+                                <div class="oa-stat">
+                                    <span class="oa-stat__num">50k+</span>
+                                    <span class="oa-stat__label">Happy customers</span>
+                                </div>
+                            </div>
+                            <a href="/page/about" class="oa-btn oa-btn--outline mt-3">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 SHOP PREVIEW — Live Odoo products
+                 Mirrors index.html #shop / .products-grid
+            ══════════════════════════════════ -->
+            <section id="oa_shop_preview" class="oa-shop-preview">
+                <div class="container">
+                    <div class="oa-section-header text-center">
+                        <span class="oa-eyebrow">La Boutique</span>
+                        <h2 class="oa-section-title">Featured Collection</h2>
+                        <p class="oa-body-text oa-section-sub">
+                            Handpicked bestsellers — luxurious, effective, irresistible.
+                        </p>
+                    </div>
+
+                    <!-- Category pills -->
+                    <div class="oa-cat-pills">
+                        <a href="/shop" class="oa-pill oa-pill--active">All</a>
+                        <a href="/shop?categ=skincare" class="oa-pill">Skincare</a>
+                        <a href="/shop?categ=makeup" class="oa-pill">Makeup</a>
+                        <a href="/shop?categ=fragrance" class="oa-pill">Fragrance</a>
+                        <a href="/shop?categ=bodycare" class="oa-pill">Body Care</a>
+                    </div>
+
+                    <!-- Live product grid: fetch up to 8 published products -->
+                    <div class="oa-products-grid" t-if="products">
+                        <t t-foreach="products[:8]" t-as="product">
+                            <div class="oa-product-card">
+                                <a t-attf-href="/shop/product/{{ slug(product) }}" class="oa-product-card__link">
+                                    <div class="oa-product-card__img-wrap">
+                                        <t t-if="product.image_512">
+                                            <img t-attf-src="/web/image/product.template/{{ product.id }}/image_512"
+                                                 t-att-alt="product.name"
+                                                 class="oa-product-card__img"
+                                                 loading="lazy"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="oa-product-card__img-placeholder">
+                                                <span>✦</span>
+                                            </div>
+                                        </t>
+                                        <div class="oa-product-card__overlay">
+                                            <span class="oa-product-card__cta">View Product</span>
+                                        </div>
+                                        <t t-if="product.is_published">
+                                            <span class="oa-product-card__badge" t-if="product_pricelist and product.list_price != product.lst_price">Sale</span>
+                                        </t>
+                                    </div>
+                                    <div class="oa-product-card__info">
+                                        <span class="oa-product-card__cat" t-if="product.categ_id">
+                                            <t t-esc="product.categ_id.name"/>
+                                        </span>
+                                        <h3 class="oa-product-card__name" t-esc="product.name"/>
+                                        <div class="oa-product-card__price">
+                                            <t t-call="website_sale.product_price">
+                                                <t t-set="product_price_update" t-value="True"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </a>
+                                <form action="/shop/cart/update" method="post" class="oa-product-card__form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                    <input type="hidden" name="add_qty" value="1"/>
+                                    <button type="submit" class="oa-product-card__bag-btn">
+                                        Add to Bag
+                                    </button>
+                                </form>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Fallback when no products yet -->
+                    <div class="oa-products-empty" t-if="not products">
+                        <p>Products coming soon — <a href="/shop">visit the shop</a>.</p>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="/shop" class="oa-btn oa-btn--primary">View All Products</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 GALLERY SECTION
+                 Mirrors index.html #gallery
+            ══════════════════════════════════ -->
+            <section id="oa_gallery" class="oa-gallery">
+                <div class="container">
+                    <div class="oa-section-header text-center">
+                        <span class="oa-eyebrow">L'Univers</span>
+                        <h2 class="oa-section-title">The O&amp;A Beauty World</h2>
+                    </div>
+                </div>
+                <div class="oa-gallery__grid">
+                    <div class="oa-gallery__item oa-gallery__item--tall">
+                        <div class="oa-gallery__placeholder oa-gallery__placeholder--1">
+                            <span class="oa-gallery__label">Skincare Ritual</span>
+                        </div>
+                    </div>
+                    <div class="oa-gallery__item">
+                        <div class="oa-gallery__placeholder oa-gallery__placeholder--2">
+                            <span class="oa-gallery__label">Lip Collection</span>
+                        </div>
+                    </div>
+                    <div class="oa-gallery__item">
+                        <div class="oa-gallery__placeholder oa-gallery__placeholder--3">
+                            <span class="oa-gallery__label">Eye Drama</span>
+                        </div>
+                    </div>
+                    <div class="oa-gallery__item oa-gallery__item--wide">
+                        <div class="oa-gallery__placeholder oa-gallery__placeholder--4">
+                            <span class="oa-gallery__label">Summer Glow</span>
+                        </div>
+                    </div>
+                    <div class="oa-gallery__item">
+                        <div class="oa-gallery__placeholder oa-gallery__placeholder--5">
+                            <span class="oa-gallery__label">Fragrance Garden</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="https://www.instagram.com" target="_blank" rel="noopener" class="oa-btn oa-btn--ghost">
+                        Follow on Instagram ↗
+                    </a>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 USP / FEATURES STRIP
+                 Mirrors the .features section
+            ══════════════════════════════════ -->
+            <section class="oa-features">
+                <div class="container">
+                    <div class="row g-4 text-center">
+                        <div class="col-6 col-md-3">
+                            <div class="oa-feature">
+                                <div class="oa-feature__icon">🌿</div>
+                                <h4 class="oa-feature__title">Clean Formula</h4>
+                                <p class="oa-feature__text">No parabens, no sulfates, no compromise.</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="oa-feature">
+                                <div class="oa-feature__icon">🐇</div>
+                                <h4 class="oa-feature__title">Cruelty-Free</h4>
+                                <p class="oa-feature__text">Leaping Bunny certified since day one.</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="oa-feature">
+                                <div class="oa-feature__icon">♻️</div>
+                                <h4 class="oa-feature__title">Sustainable</h4>
+                                <p class="oa-feature__text">Recycled packaging, carbon-neutral shipping.</p>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="oa-feature">
+                                <div class="oa-feature__icon">✦</div>
+                                <h4 class="oa-feature__title">Luxury Quality</h4>
+                                <p class="oa-feature__text">Dermatologist tested. Editor loved.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 TESTIMONIALS
+            ══════════════════════════════════ -->
+            <section class="oa-testimonials">
+                <div class="container">
+                    <div class="oa-section-header text-center">
+                        <span class="oa-eyebrow">Avis Clients</span>
+                        <h2 class="oa-section-title">What our clients say</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="oa-testimonial">
+                                <div class="oa-testimonial__stars">★★★★★</div>
+                                <p class="oa-testimonial__text">
+                                    "The Velvet Lip Elixir is unlike anything I've tried —
+                                    the colour payoff is extraordinary and it actually
+                                    conditions while you wear it."
+                                </p>
+                                <span class="oa-testimonial__author">— Sophia L., Paris</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="oa-testimonial">
+                                <div class="oa-testimonial__stars">★★★★★</div>
+                                <p class="oa-testimonial__text">
+                                    "My skin has never looked this dewy. I've recommended the
+                                    Lumière Serum to every single friend I own."
+                                </p>
+                                <span class="oa-testimonial__author">— Amara T., London</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="oa-testimonial">
+                                <div class="oa-testimonial__stars">★★★★★</div>
+                                <p class="oa-testimonial__text">
+                                    "Packaging so beautiful I keep it on my vanity, formula
+                                    so effective I can't sleep without it."
+                                </p>
+                                <span class="oa-testimonial__author">— Chloé M., Tunis</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 CONTACT SECTION
+                 Mirrors index.html #contact
+            ══════════════════════════════════ -->
+            <section id="oa_contact" class="oa-contact">
+                <div class="container">
+                    <div class="row g-5 align-items-start">
+                        <div class="col-lg-5">
+                            <span class="oa-eyebrow">Contact</span>
+                            <h2 class="oa-section-title">Get in touch</h2>
+                            <p class="oa-body-text">
+                                Questions about an order, a product, or just want to say hello?
+                                We love hearing from our community.
+                            </p>
+                            <ul class="oa-contact__info">
+                                <li>
+                                    <span class="oa-contact__icon">✉</span>
+                                    <a href="mailto:hello@oabeauty.com">hello@oabeauty.com</a>
+                                </li>
+                                <li>
+                                    <span class="oa-contact__icon">☎</span>
+                                    <span>+216 71 000 000</span>
+                                </li>
+                                <li>
+                                    <span class="oa-contact__icon">⊕</span>
+                                    <span>Mon – Fri, 9 am – 6 pm CET</span>
+                                </li>
+                            </ul>
+                            <div class="oa-contact__socials">
+                                <a href="#" class="oa-social" aria-label="Instagram">
+                                    <i class="fa fa-instagram"/>
+                                </a>
+                                <a href="#" class="oa-social" aria-label="TikTok">
+                                    <i class="fa fa-tiktok"/>
+                                </a>
+                                <a href="#" class="oa-social" aria-label="Pinterest">
+                                    <i class="fa fa-pinterest"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <!-- Native Odoo contact form via /contactus -->
+                            <div class="oa-contact-form-wrap">
+                                <iframe src="/contactus"
+                                        class="oa-contact-iframe"
+                                        title="Contact form"
+                                        scrolling="no"
+                                        id="oa_contact_iframe"/>
+                                <!-- Fallback link if iframe is not preferred -->
+                                <div class="oa-contact-form-fallback">
+                                    <a href="/contactus" class="oa-btn oa-btn--primary">Send us a message →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══════════════════════════════════
+                 NEWSLETTER BAR
+            ══════════════════════════════════ -->
+            <section class="oa-newsletter">
+                <div class="container">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-6">
+                            <h3 class="oa-newsletter__title">Join the inner circle</h3>
+                            <p class="oa-newsletter__sub">
+                                Early access, exclusive offers, beauty secrets. No spam, ever.
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <form t-attf-action="/website_mass_mailing/subscribe" method="post" class="oa-newsletter__form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="list_id" value="1"/>
+                                <div class="oa-newsletter__input-wrap">
+                                    <input type="email" name="email" placeholder="Your email address"
+                                           class="oa-newsletter__input" required="required"/>
+                                    <button type="submit" class="oa-btn oa-btn--primary oa-newsletter__submit">
+                                        Subscribe
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div><!-- #oa_homepage -->
+    </t>
+</t>
+        </field>
+    </record>
+
+    <!-- ─── 2. Bind the view to the "/" URL via website.page ─── -->
+    <record id="homepage_page" model="website.page">
+        <field name="name">O&amp;A Beauty — Homepage</field>
+        <field name="url">/</field>
+        <field name="view_id" ref="homepage_lumiere"/>
+        <field name="website_published">True</field>
+        <field name="is_homepage">True</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,1110 @@
+// ================================================================
+// O&A BEAUTY — LUMIÈRE COMPLETE THEME STYLESHEET
+// Odoo 19 · web.assets_frontend
+//
+// Structure:
+//   0. Google Fonts
+//   1. CSS Custom Properties (brand tokens)
+//   2. Global resets / typography
+//   3. Shared helpers (buttons, eyebrow, section headers)
+//   4. Navbar overrides
+//   5. Homepage — Hero
+//   6. Homepage — Marquee bar
+//   7. Homepage — About
+//   8. Homepage — Shop Preview (product cards)
+//   9. Homepage — Gallery
+//  10. Homepage — Features
+//  11. Homepage — Testimonials
+//  12. Homepage — Contact
+//  13. Homepage — Newsletter
+//  14. /shop page overrides
+//  15. /shop/product page overrides (product detail)
+//  16. Custom product accordion blocks (specs / trust badges)
+//  17. Cart / checkout light overrides
+//  18. Footer overrides
+//  19. Utilities
+//  20. Responsive
+// ================================================================
+
+// ── 0. Google Fonts ──────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+// ── 1. CSS Custom Properties ─────────────────────────────────────
+:root {
+    // Brand palette
+    --oa-mauve:          #b08497;
+    --oa-lilac:          #c9b6d6;
+    --oa-ivory:          #faf7f3;
+    --oa-prune:          #4a2c3a;
+    --oa-blush:          #f0e9ee;
+    --oa-rose-dark:      #8a5a6a;
+
+    // Functional roles
+    --oa-bg:             var(--oa-ivory);
+    --oa-bg-secondary:   #f0e9ee;
+    --oa-text:           var(--oa-prune);
+    --oa-text-muted:     #8a7480;
+    --oa-accent:         var(--oa-mauve);
+    --oa-accent-hover:   var(--oa-rose-dark);
+    --oa-border:         #e3d5dc;
+    --oa-shadow:         rgba(176, 132, 151, 0.18);
+
+    // Typography
+    --oa-font-display:   'Cormorant Garamond', Georgia, serif;
+    --oa-font-body:      'Jost', system-ui, sans-serif;
+
+    // Transitions
+    --oa-ease:           cubic-bezier(0.4, 0, 0.2, 1);
+    --oa-dur:            0.35s;
+}
+
+// ── 2. Global resets / typography ────────────────────────────────
+body {
+    font-family: var(--oa-font-body);
+    color: var(--oa-text);
+    background-color: var(--oa-bg);
+    line-height: 1.7;
+    font-size: 1.5rem;
+}
+
+h1, h2, h3, h4,
+.h1, .h2, .h3, .h4 {
+    font-family: var(--oa-font-display);
+    font-weight: 400;
+    color: var(--oa-text);
+    line-height: 1.15;
+}
+
+a {
+    color: var(--oa-accent);
+    text-decoration: none;
+    transition: color var(--oa-dur) var(--oa-ease);
+
+    &:hover { color: var(--oa-accent-hover); }
+}
+
+// ── 3. Shared helpers ────────────────────────────────────────────
+
+// Buttons
+.oa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.4rem 3.2rem;
+    font-family: var(--oa-font-body);
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--oa-dur) var(--oa-ease),
+                color var(--oa-dur) var(--oa-ease),
+                border-color var(--oa-dur) var(--oa-ease);
+    white-space: nowrap;
+
+    &--primary {
+        background: var(--oa-text);
+        color: var(--oa-ivory);
+        border-color: var(--oa-text);
+
+        &:hover {
+            background: var(--oa-accent);
+            border-color: var(--oa-accent);
+            color: #fff;
+        }
+    }
+
+    &--outline {
+        background: transparent;
+        color: var(--oa-text);
+        border-color: var(--oa-text);
+
+        &:hover {
+            background: var(--oa-text);
+            color: var(--oa-ivory);
+        }
+    }
+
+    &--ghost {
+        background: transparent;
+        color: var(--oa-ivory);
+        border-color: rgba(255,255,255,0.6);
+
+        &:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #fff;
+        }
+    }
+}
+
+// Eyebrow label
+.oa-eyebrow {
+    display: block;
+    font-family: var(--oa-font-body);
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--oa-accent);
+    margin-bottom: 1.2rem;
+}
+
+// Section title
+.oa-section-title {
+    font-family: var(--oa-font-display);
+    font-size: clamp(3rem, 5vw, 4.8rem);
+    font-weight: 300;
+    color: var(--oa-text);
+    margin-bottom: 1.6rem;
+    line-height: 1.1;
+}
+
+.oa-section-header {
+    margin-bottom: 5rem;
+}
+
+.oa-section-sub {
+    max-width: 52rem;
+    margin: 0 auto;
+    color: var(--oa-text-muted);
+}
+
+.oa-body-text {
+    font-size: 1.5rem;
+    color: var(--oa-text-muted);
+    line-height: 1.8;
+    margin-bottom: 1.6rem;
+}
+
+// ── 4. Navbar overrides ──────────────────────────────────────────
+#wrapwrap {
+    background: var(--oa-bg);
+}
+
+.o_main_navbar,
+.navbar {
+    background: rgba(250, 247, 243, 0.95) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--oa-border);
+
+    .navbar-brand {
+        font-family: var(--oa-font-display);
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: var(--oa-text) !important;
+        letter-spacing: 0.06em;
+    }
+
+    .nav-link {
+        font-family: var(--oa-font-body);
+        font-size: 1.2rem;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        color: var(--oa-text) !important;
+        text-transform: uppercase;
+        padding: 0.6rem 1.2rem;
+        transition: color var(--oa-dur) var(--oa-ease);
+
+        &:hover {
+            color: var(--oa-accent) !important;
+        }
+    }
+}
+
+// ── 5. Hero ──────────────────────────────────────────────────────
+.oa-hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+
+    // Rich gradient — replace with background-image once you upload a hero photo
+    background:
+        linear-gradient(
+            135deg,
+            var(--oa-prune) 0%,
+            #6d3f52 40%,
+            var(--oa-mauve) 75%,
+            var(--oa-lilac) 100%
+        );
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(74, 44, 58, 0.38);
+        pointer-events: none;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        color: #fff;
+        max-width: 70rem;
+        padding: 12rem 0 8rem;
+    }
+
+    &__tagline {
+        font-family: var(--oa-font-body);
+        font-size: 1.2rem;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.75);
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        font-family: var(--oa-font-display);
+        font-size: clamp(4.5rem, 9vw, 9rem);
+        font-weight: 300;
+        color: #fff;
+        line-height: 1.02;
+        margin-bottom: 2.4rem;
+
+        em {
+            font-style: italic;
+            font-weight: 300;
+            color: var(--oa-lilac);
+        }
+    }
+
+    &__sub {
+        font-size: 1.7rem;
+        color: rgba(255,255,255,0.8);
+        line-height: 1.7;
+        max-width: 50rem;
+        margin-bottom: 4rem;
+    }
+
+    &__ctas {
+        display: flex;
+        gap: 1.6rem;
+        flex-wrap: wrap;
+    }
+
+    &__scroll-hint {
+        position: absolute;
+        bottom: 3.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+
+        span {
+            display: block;
+            width: 2px;
+            height: 5rem;
+            background: rgba(255,255,255,0.45);
+            margin: 0 auto;
+            animation: oa-scroll-pulse 2s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes oa-scroll-pulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.6); transform-origin: top; }
+    50%       { opacity: 1;   transform: scaleY(1);   transform-origin: top; }
+}
+
+// ── 6. Marquee bar ───────────────────────────────────────────────
+.oa-marquee-bar {
+    background: var(--oa-prune);
+    color: rgba(255,255,255,0.85);
+    overflow: hidden;
+    padding: 1.1rem 0;
+    white-space: nowrap;
+}
+
+.oa-marquee-track {
+    display: inline-flex;
+    gap: 3.2rem;
+    font-family: var(--oa-font-body);
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    animation: oa-marquee 28s linear infinite;
+}
+
+.oa-marquee-dot {
+    color: var(--oa-mauve);
+}
+
+@keyframes oa-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+// ── 7. About section ─────────────────────────────────────────────
+.oa-about {
+    padding: 10rem 0;
+    background: var(--oa-bg);
+
+    &__img-wrap {
+        position: relative;
+        aspect-ratio: 4 / 5;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: -2rem;
+            left: -2rem;
+            right: 2rem;
+            bottom: 2rem;
+            border: 1px solid var(--oa-border);
+            pointer-events: none;
+        }
+    }
+
+    &__img-frame {
+        position: absolute;
+        inset: 0;
+        background: var(--oa-blush);
+    }
+
+    &__img-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, var(--oa-blush), var(--oa-lilac));
+    }
+
+    &__img-icon {
+        font-size: 6rem;
+        color: rgba(74,44,58,0.2);
+    }
+
+    &__stats {
+        display: flex;
+        gap: 3.2rem;
+        padding: 3.2rem 0;
+        border-top: 1px solid var(--oa-border);
+        margin-top: 3.2rem;
+    }
+}
+
+.oa-stat {
+    display: flex;
+    flex-direction: column;
+
+    &__num {
+        font-family: var(--oa-font-display);
+        font-size: 3.6rem;
+        font-weight: 300;
+        color: var(--oa-text);
+        line-height: 1;
+    }
+
+    &__label {
+        font-size: 1.15rem;
+        color: var(--oa-text-muted);
+        letter-spacing: 0.06em;
+        margin-top: 0.4rem;
+    }
+}
+
+// ── 8. Shop Preview / Product Cards ──────────────────────────────
+.oa-shop-preview {
+    padding: 10rem 0;
+    background: var(--oa-bg-secondary);
+}
+
+// Category pills
+.oa-cat-pills {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 5rem;
+}
+
+.oa-pill {
+    padding: 0.8rem 2.4rem;
+    border: 1px solid var(--oa-border);
+    border-radius: 10rem;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    color: var(--oa-text-muted);
+    transition: all var(--oa-dur) var(--oa-ease);
+    text-transform: uppercase;
+
+    &:hover,
+    &--active {
+        background: var(--oa-text);
+        color: var(--oa-ivory);
+        border-color: var(--oa-text);
+    }
+}
+
+// Product grid
+.oa-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: 2.8rem;
+}
+
+.oa-product-card {
+    background: #fff;
+    border: 1px solid var(--oa-border);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow var(--oa-dur) var(--oa-ease),
+                transform var(--oa-dur) var(--oa-ease);
+
+    &:hover {
+        box-shadow: 0 16px 48px var(--oa-shadow);
+        transform: translateY(-6px);
+    }
+
+    &__link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        flex: 1;
+    }
+
+    &__img-wrap {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        background: var(--oa-blush);
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s var(--oa-ease);
+
+        .oa-product-card:hover & {
+            transform: scale(1.06);
+        }
+    }
+
+    &__img-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, var(--oa-blush), #e8dce6);
+        font-size: 4rem;
+        color: rgba(74,44,58,0.2);
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(74,44,58,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity var(--oa-dur) var(--oa-ease);
+
+        .oa-product-card:hover & {
+            opacity: 1;
+        }
+    }
+
+    &__cta {
+        color: #fff;
+        font-size: 1.2rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255,255,255,0.6);
+        padding-bottom: 0.2rem;
+    }
+
+    &__badge {
+        position: absolute;
+        top: 1.6rem;
+        left: 1.6rem;
+        background: var(--oa-accent);
+        color: #fff;
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.4rem 1rem;
+    }
+
+    &__info {
+        padding: 2rem 2.4rem 1.6rem;
+    }
+
+    &__cat {
+        display: block;
+        font-size: 1.05rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--oa-accent);
+        margin-bottom: 0.6rem;
+    }
+
+    &__name {
+        font-family: var(--oa-font-display);
+        font-size: 2rem;
+        font-weight: 400;
+        color: var(--oa-text);
+        margin: 0 0 0.8rem;
+        line-height: 1.2;
+    }
+
+    &__price {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: var(--oa-text);
+    }
+
+    &__form {
+        padding: 0 2.4rem 2.4rem;
+    }
+
+    &__bag-btn {
+        width: 100%;
+        background: var(--oa-text);
+        color: var(--oa-ivory);
+        border: none;
+        padding: 1.2rem;
+        font-family: var(--oa-font-body);
+        font-size: 1.15rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background var(--oa-dur) var(--oa-ease);
+
+        &:hover {
+            background: var(--oa-accent);
+        }
+    }
+}
+
+// ── 9. Gallery ────────────────────────────────────────────────────
+.oa-gallery {
+    padding: 10rem 0;
+    background: var(--oa-bg);
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: 30rem 30rem;
+        gap: 1.2rem;
+        margin: 4rem 0 4rem;
+    }
+
+    &__item {
+        overflow: hidden;
+        position: relative;
+
+        &--tall {
+            grid-row: span 2;
+            grid-column: span 2;
+        }
+
+        &--wide {
+            grid-column: span 2;
+        }
+
+        &:not(&--tall):not(&--wide) {
+            grid-column: span 2;
+        }
+    }
+
+    &__placeholder {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.6s var(--oa-ease);
+
+        &:hover { transform: scale(1.04); }
+
+        &--1 { background: linear-gradient(145deg, #c9b6d6, #b08497); }
+        &--2 { background: linear-gradient(145deg, #f0e9ee, #c9b6d6); }
+        &--3 { background: linear-gradient(145deg, #b08497, #4a2c3a); }
+        &--4 { background: linear-gradient(145deg, #4a2c3a, #8a5a6a); }
+        &--5 { background: linear-gradient(145deg, #e3d5dc, #b08497); }
+    }
+
+    &__label {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+        color: #fff;
+        font-family: var(--oa-font-display);
+        font-size: 1.8rem;
+        font-weight: 300;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        pointer-events: none;
+    }
+}
+
+// ── 10. Features strip ────────────────────────────────────────────
+.oa-features {
+    padding: 8rem 0;
+    background: var(--oa-prune);
+}
+
+.oa-feature {
+    padding: 2rem;
+
+    &__icon {
+        font-size: 3.6rem;
+        margin-bottom: 1.6rem;
+        display: block;
+    }
+
+    &__title {
+        font-family: var(--oa-font-display);
+        font-size: 2.2rem;
+        color: var(--oa-ivory);
+        margin-bottom: 0.8rem;
+        font-weight: 400;
+    }
+
+    &__text {
+        font-size: 1.3rem;
+        color: rgba(250,247,243,0.65);
+        margin: 0;
+    }
+}
+
+// ── 11. Testimonials ─────────────────────────────────────────────
+.oa-testimonials {
+    padding: 10rem 0;
+    background: var(--oa-bg-secondary);
+}
+
+.oa-testimonial {
+    background: #fff;
+    padding: 3.2rem;
+    border: 1px solid var(--oa-border);
+    height: 100%;
+
+    &__stars {
+        color: var(--oa-mauve);
+        font-size: 1.6rem;
+        letter-spacing: 0.2em;
+        margin-bottom: 1.6rem;
+    }
+
+    &__text {
+        font-family: var(--oa-font-display);
+        font-size: 1.8rem;
+        font-style: italic;
+        font-weight: 300;
+        color: var(--oa-text);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    &__author {
+        font-size: 1.15rem;
+        letter-spacing: 0.1em;
+        color: var(--oa-text-muted);
+        text-transform: uppercase;
+    }
+}
+
+// ── 12. Contact section ───────────────────────────────────────────
+.oa-contact {
+    padding: 10rem 0;
+    background: var(--oa-bg);
+
+    &__info {
+        list-style: none;
+        padding: 0;
+        margin: 3.2rem 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid var(--oa-border);
+            font-size: 1.4rem;
+            color: var(--oa-text);
+
+            a {
+                color: var(--oa-text);
+                &:hover { color: var(--oa-accent); }
+            }
+        }
+    }
+
+    &__icon {
+        font-size: 2rem;
+        color: var(--oa-accent);
+        min-width: 2.8rem;
+    }
+
+    &__socials {
+        display: flex;
+        gap: 1.2rem;
+        margin-top: 3.2rem;
+    }
+}
+
+.oa-social {
+    width: 4.4rem;
+    height: 4.4rem;
+    border: 1px solid var(--oa-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--oa-text);
+    font-size: 1.6rem;
+    transition: all var(--oa-dur) var(--oa-ease);
+
+    &:hover {
+        background: var(--oa-accent);
+        border-color: var(--oa-accent);
+        color: #fff;
+    }
+}
+
+// Contact form wrap — direct link version (primary UX)
+.oa-contact-form-wrap {
+    background: var(--oa-blush);
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.oa-contact-iframe {
+    display: none; // hide iframe; use the link button below
+}
+
+.oa-contact-form-fallback {
+    width: 100%;
+}
+
+// ── 13. Newsletter ────────────────────────────────────────────────
+.oa-newsletter {
+    padding: 7rem 0;
+    background: var(--oa-prune);
+    color: #fff;
+
+    &__title {
+        font-family: var(--oa-font-display);
+        font-size: 3.2rem;
+        font-weight: 300;
+        color: var(--oa-ivory);
+        margin-bottom: 0.8rem;
+    }
+
+    &__sub {
+        font-size: 1.4rem;
+        color: rgba(250,247,243,0.65);
+        margin: 0;
+    }
+
+    &__form {
+        width: 100%;
+    }
+
+    &__input-wrap {
+        display: flex;
+        gap: 0;
+    }
+
+    &__input {
+        flex: 1;
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.07);
+        color: #fff;
+        padding: 1.4rem 2rem;
+        font-family: var(--oa-font-body);
+        font-size: 1.4rem;
+        outline: none;
+
+        &::placeholder { color: rgba(255,255,255,0.4); }
+        &:focus { border-color: var(--oa-lilac); }
+    }
+
+    &__submit {
+        border-radius: 0;
+        border-left: none;
+    }
+}
+
+// ── 14. /shop page overrides ─────────────────────────────────────
+#products_grid,
+.o_wsale_products_grid_table_wrapper {
+    .oe_product {
+        border: 1px solid var(--oa-border) !important;
+        transition: box-shadow var(--oa-dur) var(--oa-ease),
+                    transform var(--oa-dur) var(--oa-ease);
+
+        &:hover {
+            box-shadow: 0 16px 48px var(--oa-shadow) !important;
+            transform: translateY(-6px);
+        }
+    }
+
+    .o_wsale_product_btn,
+    .o_wsale_products_item_title,
+    .o_wsale_product_price {
+        font-family: var(--oa-font-display);
+    }
+
+    .o_wsale_ribbon,
+    .badge {
+        background: var(--oa-accent) !important;
+    }
+}
+
+// Shop page title / breadcrumb
+.o_shop_categories_header,
+.o_wsale_search_wrapper {
+    font-family: var(--oa-font-body);
+}
+
+#products_grid_before {
+    h1, .h1 {
+        font-family: var(--oa-font-display);
+        font-weight: 300;
+        color: var(--oa-text);
+    }
+}
+
+// Sidebar categories
+.o_wsale_category {
+    border-left: 3px solid transparent;
+    transition: border-color var(--oa-dur) var(--oa-ease);
+
+    &.active,
+    &:hover {
+        border-left-color: var(--oa-accent);
+        color: var(--oa-accent);
+    }
+}
+
+// ── 15. Product detail page ──────────────────────────────────────
+.o_wsale_product_page {
+    // Product name
+    .o_product_name,
+    h1 {
+        font-family: var(--oa-font-display);
+        font-weight: 300;
+        font-size: clamp(3.2rem, 5vw, 5rem);
+        color: var(--oa-text);
+    }
+
+    // Price
+    .product_price,
+    .oe_price {
+        font-size: 2.4rem;
+        font-weight: 500;
+        color: var(--oa-text);
+        font-family: var(--oa-font-body);
+    }
+
+    // Color / shade attribute swatches
+    .css_attribute_color {
+        width: 3.4rem;
+        height: 3.4rem;
+        border-radius: 50%;
+        outline: 2px solid transparent;
+        outline-offset: 3px;
+        transition: outline-color var(--oa-dur) var(--oa-ease);
+
+        &:hover { outline-color: var(--oa-border); }
+    }
+
+    input:checked + .css_attribute_color,
+    .css_attribute_color.active {
+        outline-color: var(--oa-accent);
+    }
+
+    // Add to cart area
+    #add_to_cart_wrap .btn,
+    #add_to_cart {
+        background-color: var(--oa-text) !important;
+        border-color: var(--oa-text) !important;
+        font-family: var(--oa-font-body);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        transition: background var(--oa-dur) var(--oa-ease);
+
+        &:hover {
+            background-color: var(--oa-accent) !important;
+            border-color: var(--oa-accent) !important;
+        }
+    }
+
+    // Accordion
+    .accordion-button {
+        font-family: var(--oa-font-body);
+        font-size: 1.3rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--oa-text);
+        background: transparent;
+
+        &:not(.collapsed) {
+            color: var(--oa-accent);
+            box-shadow: none;
+            background: transparent;
+        }
+
+        &::after {
+            filter: none;
+        }
+    }
+
+    .accordion-item {
+        border-color: var(--oa-border);
+    }
+}
+
+// ── 16. Custom accordion blocks (specs / trust badges) ───────────
+.o_oa_specs {
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--oa-border);
+    border-bottom: 1px solid var(--oa-border);
+}
+
+.o_oa_spec_label {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--oa-text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.o_oa_spec_value {
+    font-family: var(--oa-font-display);
+    font-size: 1.8rem;
+    color: var(--oa-text);
+}
+
+.o_oa_ing_label {
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    color: var(--oa-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+}
+
+.o_oa_ing_value {
+    font-size: 1.4rem;
+    color: var(--oa-text);
+    line-height: 1.8;
+}
+
+.o_oa_trust_badges {
+    p {
+        font-size: 1.3rem;
+        color: var(--oa-text-muted);
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    i { color: var(--oa-accent); }
+}
+
+// ── 17. Cart / checkout ───────────────────────────────────────────
+.btn-primary {
+    background-color: var(--oa-text) !important;
+    border-color: var(--oa-text) !important;
+    font-family: var(--oa-font-body);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    &:hover {
+        background-color: var(--oa-accent) !important;
+        border-color: var(--oa-accent) !important;
+    }
+}
+
+// ── 18. Footer overrides ─────────────────────────────────────────
+.o_footer_copyright_name,
+footer.o_footer,
+#footer {
+    background: var(--oa-prune) !important;
+    color: rgba(250,247,243,0.7);
+    font-family: var(--oa-font-body);
+    font-size: 1.3rem;
+
+    a {
+        color: rgba(250,247,243,0.7);
+        &:hover { color: var(--oa-lilac); }
+    }
+
+    h4, h5, .h4, .h5 {
+        font-family: var(--oa-font-display);
+        color: var(--oa-ivory);
+        font-weight: 400;
+    }
+
+    hr { border-color: rgba(255,255,255,0.1); }
+}
+
+// ── 19. Utilities ─────────────────────────────────────────────────
+.oa-page section {
+    scroll-margin-top: 7rem; // offset for fixed nav
+}
+
+// ── 20. Responsive ───────────────────────────────────────────────
+@media (max-width: 991px) {
+    .oa-hero {
+        &__title { font-size: clamp(4rem, 10vw, 6rem); }
+        &__content { padding: 14rem 0 8rem; }
+    }
+
+    .oa-about__img-wrap {
+        aspect-ratio: 4 / 3;
+        margin-bottom: 4rem;
+    }
+
+    .oa-gallery__grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+        grid-auto-rows: 22rem;
+
+        .oa-gallery__item--tall { grid-row: span 1; grid-column: span 1; }
+        .oa-gallery__item--wide { grid-column: span 1; }
+        .oa-gallery__item:not(.oa-gallery__item--tall):not(.oa-gallery__item--wide) { grid-column: span 1; }
+    }
+}
+
+@media (max-width: 767px) {
+    .oa-hero__ctas { flex-direction: column; align-items: flex-start; }
+
+    .oa-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.6rem;
+    }
+
+    .oa-about__stats {
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .oa-newsletter__input-wrap {
+        flex-direction: column;
+    }
+
+    .oa-newsletter__submit {
+        border-left: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .oa-gallery__grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 24rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .oa-products-grid {
+        grid-template-columns: 1fr;
+    }
+}
