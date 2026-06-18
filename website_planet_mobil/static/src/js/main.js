@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { passive: true });
     }
 
+    // Désactive le comportement natif Odoo du header au scroll
+    document.addEventListener('DOMContentLoaded', function () {
+        const header = document.querySelector('header#top');
+        if (header) {
+            header.classList.remove('o_header_affix');
+            header.removeAttribute('data-anchor');
+        }
+    });
+
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
     if (dropdown) {
