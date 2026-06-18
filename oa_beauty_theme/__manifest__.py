@@ -60,6 +60,7 @@ What this module delivers:
             # Main theme first (tokens + layout), then component overrides
             'oa_beauty_theme/static/src/scss/lumiere_theme.scss',
             'oa_beauty_theme/static/src/scss/components.scss',
+            'oa_beauty_theme/static/src/js/data.js',
         ],
     },
     'installable': True,
