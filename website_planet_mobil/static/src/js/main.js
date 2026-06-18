@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Ajuste le top de la sidebar selon presence du header
+    function adjustSidebarTop() {
+        const header = document.querySelector('header#top');
+        const sidebar = document.querySelector('.tsp-sidebar');
+        if (!sidebar) return;
+        
+        if (header) {
+            const headerHeight = header.offsetHeight;
+            sidebar.style.top = headerHeight + 'px';
+        } else {
+            sidebar.style.top = '0px';
+        }
+    }
 
+    adjustSidebarTop();
+    window.addEventListener('scroll', adjustSidebarTop, { passive: true });
+    window.addEventListener('resize', adjustSidebarTop, { passive: true });
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
     if (dropdown) {
