@@ -108,6 +108,11 @@ class ResPartner(models.Model):
                               help="For getting commission percentage")
     profile_url_value = fields.Char(string='Profile Url Value',
                                     help="profile url value")
+    website_id = fields.Many2one(
+    'website',
+    string='Site web principal',
+    help='Site web sur lequel ce vendeur est actif'
+    )
 
     def req_approve(self):
         """ New user requested for approve to sell products """
