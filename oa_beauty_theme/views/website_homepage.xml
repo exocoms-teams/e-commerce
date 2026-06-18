@@ -168,8 +168,8 @@
                                         <div class="oa-product-card__overlay">
                                             <span class="oa-product-card__cta">View Product</span>
                                         </div>
-                                        <t t-if="product.is_published">
-                                            <span class="oa-product-card__badge" t-if="product_pricelist and product.list_price != product.lst_price">Sale</span>
+                                        <t t-if="product.website_published">
+                                            <span class="oa-product-card__badge" t-if="product.list_price != product.lst_price">Sale</span>
                                         </t>
                                     </div>
                                     <div class="oa-product-card__info">
@@ -178,9 +178,8 @@
                                         </span>
                                         <h3 class="oa-product-card__name" t-esc="product.name"/>
                                         <div class="oa-product-card__price">
-                                            <t t-call="website_sale.product_price">
-                                                <t t-set="product_price_update" t-value="True"/>
-                                            </t>
+                                            <span class="oa-price"
+                                                  t-esc="'%.2f %s' % (product.list_price, request.env.company.currency_id.symbol)"/>
                                         </div>
                                     </div>
                                 </a>
