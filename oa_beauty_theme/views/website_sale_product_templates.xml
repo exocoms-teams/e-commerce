@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        These xpaths were verified against the real Odoo 19.0 source
+        (github.com/odoo/odoo, branch 19.0, addons/website_sale) and the
+        official odoo/tutorials "website_airproof" example, which patches
+        these exact same anchors. They are NOT guesses.
+
+        Odoo 19's product page specs are accordion-based (Bootstrap
+        accordion), not a single flat "product_details" block like older
+        versions. The two anchors used below:
+
+          1. website_sale.product_accordion  -> div#product_accordion
+             We add our own <div class="accordion-item"> here, matching
+             the exact pattern Odoo's own tutorial uses to add a
+             "Specifications" item.
+
+          2. website_sale.product            -> div#add_to_cart_wrap
+             We add the trust-badge row right after the Add to Cart
+             button, which is the natural reading position.
+
+        If a future Odoo 19.x point release renames either id, you will
+        get a clear ParseError naming the missing id at module
+        install/update time (not a silent failure) — open the page in
+        ?debug=1, inspect the DOM, and update the xpath expr accordingly.
+    -->
+
+    <!-- Specs + key ingredients, as a new accordion item -->
+    <template id="product_accordion_oa_specs" inherit_id="website_sale.product_accordion">
+        <xpath expr="//div[@id='product_accordion']" position="inside">
+            <div class="accordion-item" t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#oa_specifications"
+                            aria-expanded="false" aria-controls="oa_specifications">
+                        Product Details
+                    </button>
+                </div>
+                <div id="oa_specifications" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+
+                        <!-- .detail-specs equivalent: Type / Finish / Best For -->
+                        <div class="o_oa_specs row mt-2" t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                            <div class="col-12 col-md-4" t-if="product.oa_type">
+                                <span class="o_oa_spec_label text-muted d-block">Type</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_type"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_finish">
+                                <span class="o_oa_spec_label text-muted d-block">Finish</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_finish"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_best_for">
+                                <span class="o_oa_spec_label text-muted d-block">Best For</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_best_for"/>
+                            </div>
+                        </div>
+
+                        <!-- .detail-ingredients equivalent -->
+                        <div class="o_oa_ingredients mt-3" t-if="product.oa_key_ingredients">
+                            <span class="o_oa_ing_label text-uppercase text-muted d-block">Key Ingredients</span>
+                            <p class="o_oa_ing_value mb-0" t-esc="product.oa_key_ingredients"/>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Trust badges, right after the Add to Cart button -->
+    <template id="product_oa_trust_badges" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="after">
+            <!-- .detail-meta equivalent. Static across all products in the
+                 original site, so hard-coded here rather than modeled as
+                 fields. Move to a Website > Theme "Trust Badges" snippet
+                 later if these need to vary by product or be editable
+                 without code. -->
+            <div class="o_oa_trust_badges mt-3">
+                <p><i class="fa fa-truck me-2"/>Free delivery on orders over $60</p>
+                <p><i class="fa fa-rotate-left me-2"/>30-day hassle-free returns</p>
+                <p><i class="fa fa-leaf me-2"/>Cruelty-free &amp; clean formula</p>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
