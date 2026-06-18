@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LUMIÈRE - Haute Skincare & Advanced Organic Cosmetics">
+  <title>LUMIÈRE Beauty | Pure Minimalist Radiance</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Home-Specific Hero & Category Grid Layout Styles */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6rem;
+      background: linear-gradient(180deg, #fbfaf8 0%, var(--bg-color) 100%);
+      padding-top: 18rem;
+    }
+    .hero-content { max-width: 550px; }
+    .hero-content span {
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--main-color);
+      font-weight: 600;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+    .hero-content h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 7.5rem;
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 2.5rem;
+    }
+    .hero-content p {
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      margin-bottom: 4rem;
+      max-width: 460px;
+    }
+    .hero-image-pane {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .hero-image-pane img {
+      width: 42vw;
+      height: 520px;
+      object-fit: cover;
+      border-radius: 120px 4px 4px 4px;
+      box-shadow: 0 30px 70px rgba(184, 146, 90, 0.1);
+    }
+    
+    .categories { background-color: var(--white); padding: 10rem 8%; }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+    .cat-box {
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .cat-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s ease;
+    }
+    .cat-box:hover img { transform: scale(1.04); }
+    .cat-title-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26,23,20,0.15);
+      display: flex;
+      align-items: flex-end;
+      padding: 4rem;
+      transition: var(--transition);
+    }
+    .cat-box:hover .cat-title-overlay { background: rgba(26,23,20,0.3); }
+    .cat-title-overlay h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      color: var(--white);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+    }
+
+    .testimonials { background-color: var(--bg-color); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4rem;
+    }
+    .testimonial-card {
+      background-color: var(--white);
+      padding: 4rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+    .stars { color: var(--main-color); margin-bottom: 2rem; font-size: 1.2rem; }
+    .testimonial-card p { font-size: 1.5rem; font-style: italic; color: var(--text-muted); margin-bottom: 2.5rem; }
+    .testimonial-card h4 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+
+    @media(max-width: 991px) {
+      .hero { flex-direction: column-reverse; align-items: stretch; padding-top: 14rem; }
+      .hero-image-pane img { width: 100%; height: 400px; border-radius: 4px; }
+      .categories-grid, .testimonials-grid { grid-template-columns: 1fr; }
+      .cat-box { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">LUMIÈRE<span>.</span></a>
+    <i class="fa-solid fa-bars" id="menu-icon"></i>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" id="cart-btn">
+        <i class="fa-regular fa-bag-shopping"></i>
+        <span class="cart-count">0</span>
+      </button>
+      <a href="shop.html" class="btn-primary">Explore Collection</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <span>Scientifically Crafted, Nature Rooted</span>
+      <h1>Intelligent formulas for radiant skin.</h1>
+      <p>Clean skincare and high-fidelity cosmetic foundations structured around absolute minimalism, structural transparency, and biological harmony.</p>
+      <button class="btn-primary" onclick="window.location.href='shop.html'">Shop The Catalog</button>
+    </div>
+    <div class="hero-image-pane">
+      <img src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=1000&q=80" alt="Premium luxury cosmetics layout packaging">
+    </div>
+  </section>
+
+  <section class="categories">
+    <div class="section-header">
+      <h2>The Collections</h2>
+      <p>Targeted solutions engineered for specialized dermatological priorities.</p>
+    </div>
+    <div class="categories-grid">
+      <div class="cat-box" onclick="window.location.href='shop.html?category=Skincare'">
+        <img src="https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80" alt="Skincare routine products">
+        <div class="cat-title-overlay"><h3>Advanced Skincare</h3></div>
+      </div>
+      <div class="cat-box" onclick="window.location.href='shop.html?category=Lips'">
+        <img src="https://images.unsplash.com/photo-1503236823956-6c5fa579f137?auto=format&fit=crop&w=600&q=80" alt="Premium lips rouge wear">
+        <div class="cat-title-overlay"><h3>High-Pigment Lips</h3></div>
+      </div>
+      <div class="cat-box" onclick="window.location.href='shop.html?category=Face'">
+        <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80" alt="Flawless foundation face serum">
+        <div class="cat-title-overlay"><h3>Satin Face Base</h3></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="section-header">
+      <h2>Curated Bestsellers</h2>
+      <p>The core daily formulas most requested by our global community.</p>
+    </div>
+    <div class="products-grid" id="home-featured-grid">
+      </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="section-header">
+      <h2>The Proof of Efficacy</h2>
+      <p>Real dermatological feedback from unified skincare routines.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p>"The Radiance Serum transformed my texture in less than two weeks. The redness is visibly diminished, and it leaves an elegant velvet cushion finish."</p>
+        <h4>Elena Rostova</h4>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p>"Finding a non-comedogenic foundation that hydrates dry winter spots seemed impossible until the Silk Veil. Absolute absolute holy grail status."</p>
+        <h4>Chloe Vance</h4>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p>"The overnight repair cream is extraordinarily rich without causing any active congestion. I wake up with skin that feels intensely plumper."</p>
+        <h4>Marcus Thorne</h4>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <div class="newsletter-content">
+      <h2>Join the Circle</h2>
+      <p>Subscribe to access early chemical release notifications, exclusive product priority queues, and editorial skincare reports.</p>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Enter your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3>Your Bag</h3>
+      <button class="cart-close" id="cart-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty" id="sidebar-cart-empty">
+        <i class="fa-regular fa-bag-shopping"></i>
+        <p>Your luxury bag is empty.</p>
+      </div>
+      <div class="cart-items-list" id="sidebar-cart-list"></div>
+    </div>
+    <div class="cart-footer" id="sidebar-cart-footer">
+      <div class="cart-total-row">
+        <h4>Subtotal</h4>
+        <span id="sidebar-cart-total">$0.00</span>
+      </div>
+      <p>Complimentary premium priority shipping on all national cosmetics orders.</p>
+      <div class="cart-footer-btns">
+        <button class="btn-primary" style="width:100%" onclick="window.location.href='cart.html'">View Detailed Bag</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const featuredGrid = document.getElementById("home-featured-grid");
+      if (featuredGrid) {
+        // Render top 3 item nodes filtered by specific tag status or premium classification
+        const itemsToDisplay = products.slice(0, 3);
+        featuredGrid.innerHTML = itemsToDisplay.map(p => `
+          <div class="product-card">
+            <div class="product-image-wrap" onclick="window.location.href='product.html?id=${p.id}'">
+              ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+              <img src="${p.img}" alt="${p.name}">
+              <button class="add-to-cart-overlay" onclick="event.stopPropagation(); addProductToCart(${p.id}, 1, ${p.shades.length > 0 ? `'${p.shades[0].name}'` : 'null'})">
+                + Add To Bag
+              </button>
+            </div>
+            <div class="product-meta">
+              <span class="cat">${p.category}</span>
+              <h3 onclick="window.location.href='product.html?id=${p.id}'">${p.name}</h3>
+              <span class="price">$${p.price.toFixed(2)}</span>
+            </div>
+          </div>
+        `).join("");
+      }
+    });
+  </script>
+</body>
+</html>

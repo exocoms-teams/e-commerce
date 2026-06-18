@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reach out to the LUMIÈRE support laboratory concierge.">
+  <title>Contact Us | LUMIÈRE Cosmetics</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Premium Contact Us Layout Form Panels */
+    .contact-split-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 6rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .concierge-info-card {
+      background-color: var(--second-bg-color);
+      padding: 5rem;
+      border-radius: 4px;
+    }
+    .concierge-info-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+    .concierge-info-card p {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      margin-bottom: 4rem;
+    }
+    .channels-stack { display: flex; flex-direction: column; gap: 3rem; }
+    .channel-node { display: flex; gap: 2rem; align-items: flex-start; }
+    .channel-node i { font-size: 1.8rem; color: var(--main-color); margin-top: 0.3rem; }
+    .channel-node h5 { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; font-weight: 600; }
+    .channel-node span { font-size: 1.4rem; color: var(--text-muted); }
+
+    .interactive-message-form {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .form-input-group { display: flex; flex-direction: column; gap: 1rem; }
+    .form-input-group label {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+    .form-input-group input, .form-input-group textarea {
+      width: 100%;
+      background-color: var(--white);
+      border: 1px solid var(--border-color);
+      padding: 1.6rem 2rem;
+      font-family: 'Jost', sans-serif;
+      font-size: 1.5rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-input-group input:focus, .form-input-group textarea:focus {
+      border-color: var(--text-color);
+    }
+
+    @media(max-width: 768px) {
+      .contact-split-grid { grid-template-columns: 1fr; gap: 4rem; }
+      .concierge-info-card { padding: 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="index.html" class="logo">LUMIÈRE<span>.</span></a>
+    <i class="fa-solid fa-bars" id="menu-icon"></i>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="cart-btn" id="cart-btn">
+        <i class="fa-regular fa-bag-shopping"></i>
+        <span class="cart-count">0</span>
+      </button>
+      <a href="shop.html" class="btn-primary">Explore Collection</a>
+    </div>
+  </header>
+
+  <section class="contact-section">
+    <div class="section-header">
+      <h2>The Concierge Desk</h2>
+      <p>Have an inquiry about product scaling, dynamic formulations, or tracking records?</p>
+    </div>
+
+    <div class="contact-split-grid">
+      <div class="concierge-info-card">
+        <h3>Get In Touch</h3>
+        <p>Our clinical client specialists monitor requests around the clock to provide detailed answers within 24 business hours.</p>
+        
+        <div class="channels-stack">
+          <div class="channel-node">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <h5>HQ Laboratory Location</h5>
+              <span>75 Rue de la Toison d’Or, Paris, France</span>
+            </div>
+          </div>
+          <div class="channel-node">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <h5>Electronic Mail</h5>
+              <span>concierge@lumierecosmetics.com</span>
+            </div>
+          </div>
+          <div class="channel-node">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+              <h5>Direct Line Support</h5>
+              <span>+33 (0) 1 44 28 90 00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form class="interactive-message-form" id="contact-submission-form">
+        <div class="form-input-group">
+          <label for="contact-fullname">Full Name</label>
+          <input type="text" id="contact-fullname" placeholder="E.g., Jane Bennett" required>
+        </div>
+        <div class="form-input-group">
+          <label for="contact-email">Email Address</label>
+          <input type="email" id="contact-email" placeholder="E.g., jane@example.com" required>
+        </div>
+        <div class="form-input-group">
+          <label for="contact-body">Message Text</label>
+          <textarea id="contact-body" rows="6" placeholder="Describe your skin parameters or order request in detail..." required></textarea>
+        </div>
+        <button class="btn-primary" type="submit" style="padding:1.8rem 0; width:100%">Dispatch Correspondence</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3>Your Bag</h3>
+      <button class="cart-close" id="cart-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty" id="sidebar-cart-empty">
+        <i class="fa-regular fa-bag-shopping"></i>
+        <p>Your luxury bag is empty.</p>
+      </div>
+      <div class="cart-items-list" id="sidebar-cart-list"></div>
+    </div>
+    <div class="cart-footer" id="sidebar-cart-footer">
+      <div class="cart-total-row">
+        <h4>Subtotal</h4>
+        <span id="sidebar-cart-total">$0.00</span>
+      </div>
+      <div class="cart-footer-btns">
+        <button class="btn-primary" style="width:100%" onclick="window.location.href='cart.html'">View Detailed Bag</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const contactForm = document.getElementById("contact-submission-form");
+      if (contactForm) {
+        contactForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          triggerToastNotification("Message received. Concierge team notified.");
+          contactForm.reset();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
