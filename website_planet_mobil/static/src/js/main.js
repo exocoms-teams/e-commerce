@@ -1,27 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    //HEADER
-    const wrapwrap = document.getElementById('wrapwrap');
-    if (wrapwrap) {
-        wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        
-        const observer = new MutationObserver(() => {
-            wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        });
-        observer.observe(wrapwrap, { attributes: true, attributeFilter: ['style'] });
-
-        window.addEventListener('scroll', () => {
-            wrapwrap.style.setProperty('padding-top', '72px', 'important');
-        }, { passive: true });
-    }
-
-    // Désactive le comportement natif Odoo du header au scroll
-    document.addEventListener('DOMContentLoaded', function () {
-        const header = document.querySelector('header#top');
-        if (header) {
-            header.classList.remove('o_header_affix');
-            header.removeAttribute('data-anchor');
-        }
-    });
 
     // ── Dropdown menu sidebar
     var dropdown = document.querySelector('.tsp-nav-dropdown');
