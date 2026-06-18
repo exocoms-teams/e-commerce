@@ -63,11 +63,8 @@ class VendorPortal(http.Controller):
         if not vendor:
             return request.redirect('/shop')
         website = request.website
-        products = request.env['product.template'].sudo().search([ 
+        products = request.env['product.template'].sudo().search([
             ('seller_id', '=', vendor.id),
-            '|',
-            ('website_id', '=', website.id),
-            ('website_id', '=', False),
         ], order='name asc')
         return request.render(
             'multi_vendor_marketplace.vendor_portal_products',
