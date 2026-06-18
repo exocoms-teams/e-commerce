@@ -81,6 +81,7 @@
     }
 
     async function rpc(route, params) {
+        console.log("[ExoFilter] RPC →", route, params);
         try {
             const res = await fetch(route, {
                 method: "POST",
@@ -95,14 +96,20 @@
                     params:  params || {},
                 }),
             });
-            const data = await res.json();
-            if (data.error) {
-                console.error("[ExoFilter] RPC error:", data.error);
+            console.log("[ExoFilter] HTTP status:", res.status, res.statusText);
+            if (!res.ok) {
+                console.error("[ExoFilter] HTTP error:", res.status, res.statusText);
                 return null;
             }
+            const data = await res.json();
+            if (data.error) {
+                console.error("[ExoFilter] RPC error:", JSON.stringify(data.error));
+                return null;
+            }
+            console.log("[ExoFilter] RPC ← OK", route, data.result ? "(données reçues)" : "(résultat vide)");
             return data.result;
         } catch (e) {
-            console.error("[ExoFilter] fetch error:", e);
+            console.error("[ExoFilter] fetch EXCEPTION sur", route, ":", e.message, e);
             return null;
         }
     }
@@ -665,6 +672,26 @@
         const grid    = byId("exo-products");
         const countEl = byId("exo-count");
 
+        console.log("[ExoFilter] fetchProducts — #exo-products trouvé:", !!grid,
+                    "state:", JSON.stringify({
+                        catIds: Array.from(S.catIds),
+                        priceMin: S.priceMin,
+                        priceMax: S.priceMax,
+                        search: S.search,
+                        order: S.order,
+                        page: S.page,
+                    }));
+
+        if (!grid) {
+            console.error("[ExoFilter] ERREUR CRITIQUE: #exo-products introuvable dans le DOM !");
+            console.error("[ExoFilter] Le filtre ne peut pas afficher les résultats.");
+            console.error("[ExoFilter] Body classes:", document.body.className);
+            console.error("[ExoFilter] IDs présents:", ["exo-sidebar","exo-products","exo-main","exo-pager","exo-count","exo-sort"].map(function(id){
+                return id + "=" + !!document.getElementById(id);
+            }).join(", "));
+            return;
+        }
+
         if (overlay) overlay.classList.remove("exo-hidden");
 
         const result = await rpc("/exo/filter/products", {
@@ -678,7 +705,15 @@
         });
 
         if (overlay) overlay.classList.add("exo-hidden");
-        if (!result) return;
+
+        if (!result) {
+            console.error("[ExoFilter] /exo/filter/products a retourné null — vérifier les logs serveur Odoo");
+            return;
+        }
+
+        console.log("[ExoFilter] Résultat products — total:", result.total,
+                    "page:", result.page, "/", result.pages,
+                    "html size:", (result.html || "").length);
 
         if (grid)    grid.innerHTML       = result.html  || "";
         if (countEl) countEl.textContent  = result.total != null ? result.total : 0;
@@ -810,15 +845,34 @@
        INITIALISATION
     ============================================================ */
     async function init() {
+        console.log("[ExoFilter] === INIT START ===");
+        console.log("[ExoFilter] DOM: #exo-sidebar=", !!byId("exo-sidebar"),
+                    "#exo-products=", !!byId("exo-products"),
+                    "#exo-pager=", !!byId("exo-pager"),
+                    "#exo-sort=", !!byId("exo-sort"),
+                    "#exo-count=", !!byId("exo-count"));
+
         restoreUrl();
+        console.log("[ExoFilter] URL state restauré:", JSON.stringify({
+            catIds: Array.from(S.catIds),
+            search: S.search,
+            order: S.order,
+            page: S.page,
+        }));
+
         initSlider();
         initSearch();
         initSort();
         initReset();
         initMobileToggle();
 
+        console.log("[ExoFilter] Appel /exo/filter/facets...");
         const facets = await rpc("/exo/filter/facets", {});
         if (facets) {
+            console.log("[ExoFilter] facets OK — catégories:", (facets.categories || []).length,
+                        "attributs:", (facets.attributes || []).length,
+                        "prix:", facets.price_abs_min, "→", facets.price_abs_max);
+
             S.priceAbsMin = facets.price_abs_min != null ? facets.price_abs_min : 0;
             S.priceAbsMax = facets.price_abs_max != null ? facets.price_abs_max : 1000;
 
@@ -832,10 +886,14 @@
 
             renderCategories(facets.categories || []);
             renderAttributes(facets.attributes  || []);
+        } else {
+            console.error("[ExoFilter] /exo/filter/facets a retourné null — vérifier les logs serveur");
         }
 
+        console.log("[ExoFilter] Appel /exo/filter/products...");
         await fetchProducts();
         renderTags();
+        console.log("[ExoFilter] === INIT DONE ===");
     }
 
     /* Lancement après DOM ready */
