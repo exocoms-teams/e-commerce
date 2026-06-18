@@ -14,10 +14,7 @@ class VendorPortal(http.Controller):
         # Filtrer par site web actuel
         vendor = request.env['res.partner'].sudo().search([
             ('id', '=', partner.id),
-            ('seller', '=', True),
-            '|',
-            ('website_id', '=', website.id),
-            ('website_id', '=', False),
+            ('state', '=', 'Approved'),
         ], limit=1)
         return vendor if vendor else None
 
