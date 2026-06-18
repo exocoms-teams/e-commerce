@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="product_template_form_view_lumiere" model="ir.ui.view">
-        <name>product.template.form.lumiere.inherit</name>
-        <model>product.template</model>
-        <inherit_id ref="product.product_template_only_form_view"/>
-        <arch type="xml">
-            <notebook position="inside">
-                <page string="Spécificités LUMIÈRE">
-                    <group>
-                        <group string="Caractéristiques de la Gamme">
-                            <field name="cosmetic_type"/>
-                            <field name="finish"/>
-                            <field name="best_for"/>
+    <data>
+        <record id="product_template_form_view_lumiere" model="ir.ui.view">
+            <name>product.template.form.lumiere.inherit</name>
+            <model>product.template</model>
+            <inherit_id ref="product.product_template_only_form_view"/>
+            <arch type="xml">
+                <notebook position="inside">
+                    <page string="Spécificités LUMIÈRE">
+                        <group>
+                            <group string="Caractéristiques de la Gamme">
+                                <field name="cosmetic_type"/>
+                                <field name="finish"/>
+                                <field name="best_for"/>
+                            </group>
+                            <group string="Composition &amp; Formule">
+                                <field name="key_ingredients"/>
+                            </group>
                         </group>
-                        <group string="Composition &amp; Formule">
-                            <field name="key_ingredients"/>
+                        <group string="Nuancier de Teintes">
+                            <field name="shade_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="color_code" placeholder="ex: #c17e8a"/>
+                                </tree>
+                            </field>
                         </group>
-                    </group>
-                    <group string="Nuancier de Teintes">
-                        <field name="shade_ids">
-                            <tree editable="bottom">
-                                <field name="name"/>
-                                <field name="color_code" placeholder="ex: #c17e8a"/>
-                            </tree>
-                        </field>
-                    </group>
-                </page>
-            </notebook>
-        </arch>
-    </record>
+                    </page>
+                </notebook>
+            </arch>
+        </record>
+    </data>
 </odoo>
