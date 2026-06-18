@@ -79,6 +79,7 @@
         'views/multi_vendor_marketplace_menus.xml',
         'views/seller_shop_information_templates.xml',
         'views/seller_list_templates.xml',
+        'views/vendor_portal_templates.xml',
         'wizard/settings_view_views.xml',
     ],
     'assets': {
@@ -89,9 +90,15 @@
         'web.assets_frontend': [
             'multi_vendor_marketplace/static/src/js/rating.js',
             'multi_vendor_marketplace/static/src/scss/partner_rating.css',
+            'multi_vendor_marketplace/static/src/css/vendor_portal.css',
             'https://unpkg.com/sweetalert/dist/sweetalert.min.js',
         ],
     },
+
+    'demo': [
+    'data/demo_vendors.xml',
+    ],
+
     'images': [
         'static/description/banner.png',
     ],
