@@ -19,7 +19,8 @@
                             <a href="/shop?x_is_promotion=1"><i class="fa fa-star-o" /> Promotions</a>
                         </li>
                         <li class="tsp-nav-item">
-                            <a href="/shop?order=publish_date+desc"><i class="fa fa-star-o" /> Nouveautes</a>
+                            <a href="/shop?order=publish_date+desc"><i class="fa fa-star-o" />
+                                Nouveautes</a>
                         </li>
                         <li class="tsp-nav-item tsp-nav-dropdown">
                             <a href="/shop">
@@ -27,11 +28,13 @@
                                     class="fa fa-chevron-down tsp-chevron" />
                             </a>
                             <ul class="tsp-submenu">
-                                <t t-set="categories" t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False)])"/>
+                                <t t-set="categories"
+                                    t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False)])" />
                                 <t t-foreach="categories" t-as="cat">
                                     <li>
                                         <a t-att-href="'/shop/category/' + slug(cat)">
-                                            <i class="fa fa-tag"/> <t t-out="cat.name"/>
+                                            <i class="fa fa-tag" />
+                                            <t t-out="cat.name" />
                                         </a>
                                     </li>
                                 </t>
@@ -70,7 +73,8 @@
                                     class="fa fa-chevron-down" /></div>
                             <ul class="tsp-custom-options">
                                 <li data-value="">Toutes</li>
-                                <!--Peupler par js-->
+                                <!--Peupler
+                                par js-->
                             </ul>
                         </div>
                     </div>
@@ -82,19 +86,22 @@
                                     class="fa fa-chevron-down" /></div>
                             <ul class="tsp-custom-options">
                                 <li data-value="">Toutes</li>
-                                <!--peupler par js-->
+                                <!--peupler
+                                par js-->
                             </ul>
                         </div>
                     </div>
 
                     <div class="tsp-filter-group">
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <input type="checkbox" id="filter-promotion"/>
-                            <label for="filter-promotion" style="font-size:0.88rem; cursor:pointer;">En promotion</label>
+                            <input type="checkbox" id="filter-promotion" />
+                            <label for="filter-promotion" style="font-size:0.88rem; cursor:pointer;">En
+                                promotion</label>
                         </div>
                     </div>
 
-                    <!--filtres dynamiques par categorie injectés par JS-->
+                    <!--filtres
+                    dynamiques par categorie injectés par JS-->
                     <div id="tsp-category-filters"></div>
 
                     <button class="tsp-filter-btn" id="tsp-apply-filters">
@@ -104,6 +111,12 @@
             </xpath>
 
         </template>
+        <template id="shop_ppr" inherit_id="website_sale.products">
+            <xpath expr="//section[@id='o_wsale_products_grid']" position="attributes">
+                <attribute name="data-ppr">4</attribute>
+            </xpath>
+        </template>
+
 
     </data>
 </odoo>
