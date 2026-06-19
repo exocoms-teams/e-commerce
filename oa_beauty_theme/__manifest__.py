@@ -2,21 +2,8 @@
     'name': 'O&A Beauty — Clean Luxury Cosmetics Theme',
     'version': '19.0.2.0.0',
     'category': 'Website/Theme',
-    'summary': 'Complete LUMIÈRE frontend migrated to Odoo 19: homepage, shop, product page, brand SCSS',
-    'description': """
-        Full migration of the LUMIÈRE static cosmetics e-commerce frontend to Odoo 19.
-
-        What this module delivers:
-        - Custom branded homepage at / (Hero / About / Shop preview / Gallery / Contact)
-        - LUMIÈRE design system
-        - Shop page restyled
-        - Product page enhancements
-        - Shade selector
-        - Contact form
-        - Responsive layout
-        
-        Dependencies: website, website_sale, mail.
-    """,
+    'summary': 'Luxury cosmetics theme',
+    'description': 'Luxury cosmetics theme for Odoo 19.',
     'author': 'O&A Beauty / Migration Project',
     'website': 'https://www.oabeauty.example',
     'depends': [
