@@ -1,8 +1,66 @@
 /* ========================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - ENHANCED VERSION
    ======================================== */
 
-/* Tablette Paysage (1024px) */
+/* ========================================
+   CSS VARIABLES FOR FLUID RESPONSIVE DESIGN
+   ======================================== */
+:root {
+    /* Fluid typography scales */
+    --font-size-base: 16px;
+    --font-size-lg: clamp(18px, 4vw, 22px);
+    --font-size-xl: clamp(20px, 5vw, 26px);
+    --font-size-2xl: clamp(24px, 6vw, 32px);
+    --font-size-3xl: clamp(30px, 8vw, 40px);
+    --font-size-4xl: clamp(36px, 10vw, 48px);
+
+    /* Fluid spacing */
+    --spacing-xs: clamp(4px, 1vw, 8px);
+    --spacing-sm: clamp(8px, 1.5vw, 12px);
+    --spacing-md: clamp(12px, 2vw, 16px);
+    --spacing-lg: clamp(16px, 2.5vw, 24px);
+    --spacing-xl: clamp(24px, 3vw, 32px);
+    --spacing-2xl: clamp(32px, 4vw, 48px);
+    --spacing-3xl: clamp(48px, 5vw, 64px);
+
+    /* Fluid container max-width */
+    --container-width: 1400px;
+    --container-width-lg: 1200px;
+    --container-width-md: 992px;
+    --container-width-sm: 768px;
+}
+
+/* ========================================
+   BREAKPOINTS
+   ======================================== */
+/* Extra large screens (4K+) */
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1600px;
+    }
+
+    h1 { font-size: clamp(3.5rem, 5vw, 5rem); }
+    h2 { font-size: clamp(2.5rem, 4vw, 3.5rem); }
+}
+
+/* Large screens (desktop) */
+@media (max-width: 1400px) {
+    .container {
+        max-width: var(--container-width);
+        padding: 0 var(--spacing-xl);
+    }
+
+    :root {
+        --spacing-lg: 20px;
+        --spacing-xl: 24px;
+        --spacing-2xl: 40px;
+    }
+
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 1.875rem; }
+}
+
+/* Laptop & large tablets */
 @media (max-width: 1024px) {
     :root {
         --spacing-lg: 20px;
@@ -35,7 +93,7 @@
     }
 }
 
-/* Tablette Portrait (768px) */
+/* Tablets (portrait) */
 @media (max-width: 768px) {
     :root {
         --spacing-lg: 16px;
@@ -151,7 +209,28 @@
     }
 }
 
-/* Mobile (480px) */
+/* Small tablets & large phones (landscape) */
+@media (max-width: 600px) and (orientation: landscape) {
+    :root {
+        --spacing-lg: 14px;
+        --spacing-xl: 18px;
+        --spacing-2xl: 28px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.375rem;
+    }
+
+    .hero-section {
+        min-height: 65vh;
+    }
+}
+
+/* Mobile phones */
 @media (max-width: 480px) {
     :root {
         --spacing-lg: 12px;
@@ -277,7 +356,7 @@
     }
 }
 
-/* Très petit écran (320px) */
+/* Very small screens (old phones, narrow views) */
 @media (max-width: 320px) {
     h1 {
         font-size: 1.25rem;
@@ -309,9 +388,10 @@
 }
 
 /* ========================================
-   ORIENTATIONS
+   ORIENTATIONS & DEVICE FEATURES
    ======================================== */
 
+/* Landscape orientation on short screens */
 @media (orientation: landscape) and (max-height: 600px) {
     section {
         padding: var(--spacing-lg) 0;
@@ -327,43 +407,11 @@
     }
 }
 
-/* ========================================
-   ÉCRANS LARGES (4K)
-   ======================================== */
-
-@media (min-width: 1920px) {
-    .container {
-        max-width: 1600px;
-    }
-
-    .container-sm {
-        max-width: 1400px;
-    }
-
-    h1 {
-        font-size: 4.5rem;
-    }
-
-    h2 {
-        font-size: 3rem;
-    }
-
-    p {
-        font-size: 1.125rem;
-    }
-
-    .grid-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* ========================================
-   SUPPORT DES GESTES (TACTILE)
-   ======================================== */
-
+/* Touch device enhancements */
 @media (hover: none) and (pointer: coarse) {
     .btn {
         padding: var(--spacing-lg) var(--spacing-xl);
+        min-height: 48px; /* Minimum touch target */
     }
 
     .btn-primary:active {
@@ -374,17 +422,190 @@
         padding: var(--spacing-sm);
         margin: -var(--spacing-sm);
     }
+
+    /* Increase tap targets for navigation */
+    .exo-nav-link,
+    .exo-mobile-link,
+    .exo-icon-btn {
+        min-height: 48px;
+        min-width: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
-/* ========================================
-   PRÉFÉRENCE MOUVEMENT RÉDUIT
-   ======================================== */
-
+/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   FLUID CONTAINERS & GRID SYSTEMS
+   ======================================== */
+
+/* Fluid container width adjustments */
+@media (min-width: 1200px) {
+    .container {
+        max-width: var(--container-width-lg);
+    }
+
+    .container-fluid {
+        max-width: 100%;
+        padding: 0 var(--spacing-xl);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .container {
+        max-width: var(--container-width-md);
+    }
+}
+
+/* Enhanced grid systems for better responsiveness */
+.grid-2 {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.grid-3 {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.grid-4 {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1024px) {
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+/* Text utilities for responsive design */
+.text-responsive {
+    font-size: clamp(0.875rem, 2vw, 1.5rem);
+    line-height: 1.5;
+}
+
+.display-1 { font-size: clamp(3rem, 6vw, 5rem); }
+.display-2 { font-size: clamp(2.5rem, 5vw, 4rem); }
+.display-3 { font-size: clamp(2rem, 4vw, 3.5rem); }
+.display-4 { font-size: clamp(1.5rem, 3vw, 3rem); }
+
+/* Responsive spacing utilities */
+.p-responsive { padding: clamp(0.5rem, 2vw, 2rem); }
+.p-responsive-top { padding-top: clamp(0.5rem, 2vw, 2rem); }
+.p-responsive-bottom { padding-bottom: clamp(0.5rem, 2vw, 2rem); }
+.p-responsive-left { padding-left: clamp(0.5rem, 2vw, 2rem); }
+.p-responsive-right { padding-right: clamp(0.5rem, 2vw, 2rem); }
+
+.m-responsive { margin: clamp(0.5rem, 2vw, 2rem); }
+.m-responsive-top { margin-top: clamp(0.5rem, 2vw, 2rem); }
+.m-responsive-bottom { margin-bottom: clamp(0.5rem, 2vw, 2rem); }
+.m-responsive-left { margin-left: clamp(0.5rem, 2vw, 2rem); }
+.m-responsive-right { margin-right: clamp(0.5rem, 2vw, 2rem); }
+
+/* ========================================
+   FLEXIBLE IMAGES & MEDIA
+   ======================================== */
+
+/* Ensure images don't overflow containers */
+img,
+video,
+picture,
+svg,
+iframe,
+audio,
+canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Responsive object-fit for hero images */
+.hero-bg,
+.o_bg_img_opt_show {
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ========================================
+   DARK MODE SUPPORT (if applicable)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-dark: #0f172a;
+        --bg-light: #1e293b;
+        --surface-dark: #0f172a;
+        --surface: #1e293b;
+        --surface-light: #334155;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --border-light: #475569;
+    }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    h1 { font-size: 24pt; }
+    h2 { font-size: 18pt; }
+    h3 { font-size: 16pt; }
+    h4 { font-size: 14pt; }
+    h5 { font-size: 12pt; }
+    h6 { font-size: 10pt; }
+
+    .no-print,
+    .hero-section,
+    .exo-ticker-wrap,
+    .exo-chat-icon,
+    .exo-burger {
+        display: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    a {
+        color: #000 !important;
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
     }
 }
