@@ -8,16 +8,14 @@
 
         What this module delivers:
         - Custom branded homepage at / (Hero / About / Shop preview / Gallery / Contact)
-        - LUMIÈRE design system (Cormorant Garamond + Jost, mauve-lilac-ivory-prune palette)
-        - Shop page (/shop) restyled to match original product-card design
-        - Product page with Type / Finish / Best For / Key Ingredients accordion section
-        - Trust badges (delivery / returns / cruelty-free) in product accordion
-        - Shade colour-attribute with CSS circles (native website_sale variant selection)
-        - 4 public product categories: Lips / Face / Skincare / Eyes
-        - Contact form with server-side mail delivery (no EmailJS key required)
-        - Responsive layout (1285px / 1100px / 768px / 600px breakpoints from original)
-
-        Dependencies: website, website_sale, mail — nothing else.
+        - LUMIÈRE design system
+        - Shop page restyled
+        - Product page enhancements
+        - Shade selector
+        - Contact form
+        - Responsive layout
+        
+        Dependencies: website, website_sale, mail.
     """,
     'author': 'O&A Beauty / Migration Project',
     'website': 'https://www.oabeauty.example',

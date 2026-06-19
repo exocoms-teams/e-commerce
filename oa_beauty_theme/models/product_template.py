@@ -5,7 +5,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     oa_type = fields.Char(
-        string='Product Type',
+        string='Beauty Product Type',
         help='e.g. "Lip Colour", "Brightening Serum", "Liquid Foundation" — '
              'migrated from the type field in the original LUMIÈRE data.js',
     )
