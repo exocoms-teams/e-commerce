@@ -5,25 +5,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class OaBeautyHomepage(http.Controller):
-
-    @http.route('/', type='http', auth='public', website=True)
-    def homepage(self, **kw):
-        try:
-            products = request.env['product.template'].sudo().search(
-                [('is_published', '=', True), ('sale_ok', '=', True)],
-                order='website_sequence asc, id asc',
-                limit=3,
-            )
-        except Exception:
-            products = request.env['product.template'].sudo().browse()
-
-        return request.render(
-            'oa_beauty_theme.view_homepage_lumiere',
-            {'hp_products': products},
-        )
-
-
 class OaBeautyContact(http.Controller):
 
     @http.route(

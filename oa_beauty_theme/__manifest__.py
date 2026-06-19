@@ -1,6 +1,6 @@
 {
     'name': 'O&A Beauty Theme',
-    'version': '19.0.3.0.0',
+    'version': '19.0.5.0.0',
     'category': 'Website/Theme',
     'summary': 'LUMIERE frontend for Odoo 19: homepage, shop, product page, brand SCSS',
     'description': 'Full migration of the LUMIERE cosmetics frontend to Odoo 19.',

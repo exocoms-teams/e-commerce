@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!--
-        LUMIÈRE Homepage — QWeb view rendered by OaBeautyHomepage.homepage()
-        Products are passed as 'hp_products' by the Python controller.
-        No inline DB queries in the template (cleaner and safer).
-    -->
     <record id="view_homepage_lumiere" model="ir.ui.view">
         <field name="name">oa_beauty.homepage</field>
         <field name="type">qweb</field>
@@ -14,6 +9,8 @@
 <t t-name="oa_beauty_theme.view_homepage_lumiere">
 <t t-call="website.layout">
 <t t-set="additional_title">O&amp;A Beauty — Clean Luxury Cosmetics</t>
+
+<t t-set="hp_products" t-value="request.env['product.template'].sudo().search([('is_published','=',True),('sale_ok','=',True)], order='website_sequence asc, id asc', limit=3)"/>
 
 <div id="wrap" class="oe_structure oa-page">
 
@@ -82,7 +79,6 @@
             <a href="/shop" class="oa-pill">Eyes</a>
         </div>
 
-        <!-- hp_products injected by OaBeautyHomepage.homepage() controller -->
         <div t-if="hp_products" class="oa-products-preview">
             <t t-foreach="hp_products" t-as="hp_prod">
                 <a t-att-href="hp_prod.website_url" class="oa-product-card">
