@@ -1,4 +1,4 @@
-// options.js - Complete and fixed
+// options.js - Complete standalone version (no backend required)
 let allData = null;
 let charts = {};
 const COLORS = ['#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b','#f87171','#34d399','#60a5fa','#e879f9','#fb923c'];
@@ -11,6 +11,137 @@ document.addEventListener('DOMContentLoaded', () => {
   refresh();
   setInterval(refresh, 30000);
 });
+
+// ---- Get data from storage ----
+
+async function getDataFromStorage() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['products', 'categories', 'domains', 'daily', 'lastUpdated'], (data) => {
+      const store = {
+        products: data.products || {},
+        categories: data.categories || {},
+        domains: data.domains || {},
+        daily: data.daily || {},
+        lastUpdated: data.lastUpdated || null,
+      };
+      
+      // Enrich products with computed values
+      const products = Object.values(store.products);
+      const now = Date.now();
+      const dayMs = 86400000;
+
+      const enriched = products.map(p => {
+        const prices = p.prices || [];
+        const ratings = p.ratings || [];
+        const reviews = p.reviews || [];
+        const soldCounts = p.soldCounts || [];
+        const viewLog = p.viewLog || [];
+
+        const avgPrice = prices.length ? (prices.reduce((s, x) => s + x.value, 0) / prices.length).toFixed(2) : null;
+        const latestPrice = prices.length ? prices[prices.length - 1].value : null;
+        const avgRating = ratings.length ? (ratings.reduce((s, x) => s + x, 0) / ratings.length).toFixed(1) : null;
+        const latestSold = soldCounts.length ? soldCounts[soldCounts.length - 1].value : null;
+        const soldDelta = soldCounts.length >= 2 ? soldCounts[soldCounts.length - 1].value - soldCounts[0].value : null;
+
+        let priceTrend = null;
+        if (prices.length >= 2 && avgPrice) {
+          const diff = latestPrice - parseFloat(avgPrice);
+          priceTrend = Math.round((diff / parseFloat(avgPrice)) * 100);
+        }
+
+        const views7d = viewLog.filter(t => now - new Date(t).getTime() < 7 * dayMs).length;
+        const views3d = viewLog.filter(t => now - new Date(t).getTime() < 3 * dayMs).length;
+        const views3to6d = viewLog.filter(t => {
+          const age = now - new Date(t).getTime();
+          return age >= 3 * dayMs && age < 6 * dayMs;
+        }).length;
+        const isRising = views3d > 0 && views3d > views3to6d * 1.5;
+
+        // Compute trend score
+        const trendScore = computeTrendScore(p);
+
+        return {
+          ...p,
+          avgPrice,
+          latestPrice,
+          avgRating,
+          latestSold,
+          soldDelta,
+          priceTrend,
+          views7d,
+          isRising,
+          trendScore,
+          viewCount: p.viewCount || 0,
+          purchaseCount: p.purchaseCount || 0,
+        };
+      });
+
+      enriched.sort((a, b) => b.trendScore - a.trendScore);
+
+      resolve({
+        products: enriched,
+        categories: store.categories,
+        domains: store.domains,
+        daily: store.daily,
+        lastUpdated: store.lastUpdated,
+        totalProducts: products.length,
+        totalViews: products.reduce((s, p) => s + (p.viewCount || 0), 0),
+        totalPurchases: products.reduce((s, p) => s + (p.purchaseCount || 0), 0),
+      });
+    });
+  });
+}
+
+// ---- Trend Score (copied from background) ----
+
+function computeTrendScore(product) {
+  const now = Date.now();
+  const dayMs = 86400000;
+
+  const viewLog = product.viewLog || [];
+  const views7d = viewLog.filter(t => now - new Date(t).getTime() < 7 * dayMs).length;
+  const views30d = viewLog.filter(t => now - new Date(t).getTime() < 30 * dayMs).length;
+  const velocityScore = views7d * 3 + views30d * 1;
+
+  const views3d = viewLog.filter(t => now - new Date(t).getTime() < 3 * dayMs).length;
+  const views3to6d = viewLog.filter(t => {
+    const age = now - new Date(t).getTime();
+    return age >= 3 * dayMs && age < 6 * dayMs;
+  }).length;
+  const risingMultiplier = views3d > 0 && views3d > views3to6d * 1.5 ? 1.5 : 1.0;
+
+  const soldCounts = product.soldCounts || [];
+  let soldScore = 0;
+  if (soldCounts.length >= 2) {
+    const delta = soldCounts[soldCounts.length - 1].value - soldCounts[0].value;
+    soldScore = Math.max(0, delta) * 0.5;
+  } else if (soldCounts.length === 1) {
+    soldScore = soldCounts[0].value * 0.05;
+  }
+
+  const purchaseScore = (product.purchaseCount || 0) * 10;
+
+  let priceSignal = 0;
+  const prices = product.prices || [];
+  if (prices.length >= 2) {
+    const avgPrice = prices.reduce((s, p) => s + p.value, 0) / prices.length;
+    const latestPrice = prices[prices.length - 1].value;
+    if (latestPrice < avgPrice * 0.95) priceSignal = 8;
+    if (latestPrice < avgPrice * 0.85) priceSignal = 15;
+  }
+
+  let ratingSignal = 0;
+  const ratings = product.ratings || [];
+  const reviews = product.reviews || [];
+  if (ratings.length > 0) {
+    const avgRating = ratings.reduce((s, r) => s + r, 0) / ratings.length;
+    const latestReviewCount = reviews.length > 0 ? reviews[reviews.length - 1] : 1;
+    ratingSignal = avgRating * Math.log(1 + latestReviewCount) * 0.3;
+  }
+
+  const rawScore = velocityScore + soldScore + purchaseScore + priceSignal + ratingSignal;
+  return Math.round(rawScore * risingMultiplier);
+}
 
 // ---- Navigation ----
 
@@ -28,14 +159,6 @@ function setupNav() {
       renderCurrentPage();
     });
   });
-
-  const mobileToggle = document.getElementById('mobileToggle');
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar) sidebar.classList.toggle('open');
-    });
-  }
 }
 
 function renderCurrentPage() {
@@ -52,40 +175,32 @@ function renderCurrentPage() {
 // ---- Refresh ----
 
 async function refresh() {
-  const statusDot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-
   try {
-    const response = await fetch('http://localhost:5000/api/products?limit=200');
-    if (!response.ok) throw new Error('API error');
-    const data = await response.json();
+    const data = await getDataFromStorage();
     allData = data;
-
-    if (statusDot) statusDot.className = 'status-dot online';
-    if (statusText) statusText.textContent = 'Connected';
-
     updateSidebar();
     renderCurrentPage();
-
-    const risingCount = allData.products?.filter(p => p.is_rising).length || 0;
-    const badge = document.getElementById('risingBadge');
-    if (badge) badge.textContent = risingCount;
-
     populateCategoryFilter();
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    if (dot) dot.className = 'status-dot online';
+    if (text) text.textContent = 'Local storage';
   } catch (e) {
-    if (statusDot) statusDot.className = 'status-dot offline';
-    if (statusText) statusText.textContent = 'Backend offline — run: python app.py';
-    const body = document.getElementById('trendingBody');
-    if (body) {
-      body.innerHTML = '<tr><td colspan="9" class="empty-row">⚠️ Backend not running. Start with: python app.py</td></tr>';
-    }
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    if (dot) dot.className = 'status-dot offline';
+    if (text) text.textContent = 'Error loading data';
+    console.error('Error loading data:', e);
   }
 }
 
 function updateSidebar() {
-  setText('sTotal', allData?.total_products || 0);
-  setText('sViews', allData?.total_views || 0);
-  setText('sPurchases', allData?.total_purchases || 0);
+  setText('sTotal', allData?.totalProducts || 0);
+  setText('sViews', allData?.totalViews || 0);
+  setText('sPurchases', allData?.totalPurchases || 0);
+  if (allData?.lastUpdated) {
+    setText('sUpdated', new Date(allData.lastUpdated).toLocaleString());
+  }
 }
 
 function populateCategoryFilter() {
@@ -104,20 +219,35 @@ function populateCategoryFilter() {
   sel.value = currentVal;
 }
 
-// ---- Trending ----
+// ---- Filter products ----
+
+function filterProducts(products) {
+  const searchInput = document.getElementById('searchInput');
+  const categoryFilter = document.getElementById('categoryFilter');
+  
+  const search = searchInput?.value.toLowerCase() || '';
+  const cat = categoryFilter?.value || '';
+  
+  return products.filter(p =>
+    (!search || p.title.toLowerCase().includes(search) || p.domain.includes(search)) &&
+    (!cat || p.category === cat)
+  );
+}
+
+// ---- Trending Page ----
 
 function renderTrending() {
   const products = filterProducts(allData?.products || []);
-  const maxScore = products.length ? products[0].trend_score : 1;
+  const maxScore = products.length ? Math.max(...products.map(p => p.trendScore || 0)) : 1;
 
-  const byViews = [...products].sort((a, b) => b.view_count - a.view_count)[0];
-  const byPurchases = [...products].sort((a, b) => b.purchase_count - a.purchase_count)[0];
+  const byViews = [...products].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))[0];
+  const byPurchases = [...products].sort((a, b) => (b.purchaseCount || 0) - (a.purchaseCount || 0))[0];
   const cats = allData?.categories || {};
   const topCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
-  const rising = products.filter(p => p.is_rising);
+  const rising = products.filter(p => p.isRising);
 
   setText('kpiMostViewed', byViews ? truncate(byViews.title, 24) : '-');
-  setText('kpiMostPurchased', byPurchases && byPurchases.purchase_count > 0 ? truncate(byPurchases.title, 24) : '-');
+  setText('kpiMostPurchased', byPurchases && byPurchases.purchaseCount > 0 ? truncate(byPurchases.title, 24) : '-');
   setText('kpiTopCat', topCat ? topCat[0] : '-');
   setText('kpiRising', rising.length > 0 ? `${rising.length} rising` : '-');
 
@@ -131,11 +261,11 @@ function renderTrending() {
 
   body.innerHTML = products.slice(0, 100).map((p, i) => {
     const rClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-    const price = p.latest_price ? `$${parseFloat(p.latest_price).toFixed(2)}` : '-';
-    const priceTrend = renderPriceTrend(p.price_trend);
-    const soldHtml = renderSoldDelta(p.sold_delta, p.latest_sold);
-    const risingBadge = p.is_rising ? '<span class="rising-badge">Rising</span>' : '';
-    const pct = maxScore > 0 ? Math.round((p.trend_score / maxScore) * 100) : 0;
+    const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '-';
+    const priceTrend = renderPriceTrend(p.priceTrend);
+    const soldHtml = renderSoldDelta(p.soldDelta, p.latestSold);
+    const risingBadge = p.isRising ? '<span class="rising-badge">Rising</span>' : '';
+    const pct = maxScore > 0 ? Math.round(((p.trendScore || 0) / maxScore) * 100) : 0;
 
     return `
       <tr>
@@ -149,13 +279,13 @@ function renderTrending() {
         <td><span class="cat-pill">${escapeHtml(p.category || 'General')}</span></td>
         <td>${escapeHtml(p.domain)}</td>
         <td>${price} ${priceTrend}</td>
-        <td>${p.view_count} <span style="color:var(--text-muted);font-size:11px;">(${p.views_7d || 0} week)</span></td>
-        <td>${p.purchase_count > 0 ? `<strong style="color:var(--success)">${p.purchase_count}</strong>` : '0'}</td>
+        <td>${p.viewCount || 0} <span style="color:var(--text-muted);font-size:11px;">(${p.views7d || 0} week)</span></td>
+        <td>${p.purchaseCount > 0 ? `<strong style="color:var(--success)">${p.purchaseCount}</strong>` : '0'}</td>
         <td>${soldHtml}</td>
         <td>
           <div class="score-bar-wrap">
             <div class="score-bar"><div class="fill" style="width:${pct}%"></div></div>
-            <span class="score-val">${Math.round(p.trend_score)}</span>
+            <span class="score-val">${Math.round(p.trendScore || 0)}</span>
           </div>
         </td>
       </tr>
@@ -163,10 +293,10 @@ function renderTrending() {
   }).join('');
 }
 
-// ---- Rising ----
+// ---- Rising Page ----
 
 function renderRising() {
-  const products = allData?.products?.filter(p => p.is_rising && p.views_7d >= 2) || [];
+  const products = allData?.products?.filter(p => p.isRising && p.views7d >= 2) || [];
   const body = document.getElementById('risingBody');
   if (!body) return;
 
@@ -176,9 +306,9 @@ function renderRising() {
   }
 
   body.innerHTML = products.slice(0, 20).map((p, i) => {
-    const price = p.latest_price ? `$${parseFloat(p.latest_price).toFixed(2)}` : '-';
-    const priceTrend = renderPriceTrend(p.price_trend);
-    const soldHtml = renderSoldDelta(p.sold_delta, p.latest_sold);
+    const price = p.latestPrice ? `$${parseFloat(p.latestPrice).toFixed(2)}` : '-';
+    const priceTrend = renderPriceTrend(p.priceTrend);
+    const soldHtml = renderSoldDelta(p.soldDelta, p.latestSold);
 
     return `
       <tr>
@@ -191,14 +321,14 @@ function renderRising() {
         </td>
         <td><span class="cat-pill">${escapeHtml(p.category || 'General')}</span></td>
         <td>${price} ${priceTrend}</td>
-        <td><strong style="color:var(--success)">${p.views_7d || 0}</strong></td>
+        <td><strong style="color:var(--success)">${p.views7d || 0}</strong></td>
         <td>${soldHtml}</td>
       </tr>
     `;
   }).join('');
 }
 
-// ---- Categories ----
+// ---- Categories Page ----
 
 function renderCategories() {
   const cats = allData?.categories || {};
@@ -213,6 +343,7 @@ function renderCategories() {
   const barChart = document.getElementById('catBarChart');
 
   if (entries.length && pieChart && barChart) {
+    const c = getChartColors();
     charts.catPie = new Chart(pieChart, {
       type: 'doughnut',
       data: { 
@@ -220,7 +351,7 @@ function renderCategories() {
         datasets: [{ 
           data: values.slice(0, 10), 
           backgroundColor: COLORS, 
-          borderColor: '#161b22', 
+          borderColor: c.border, 
           borderWidth: 2 
         }] 
       },
@@ -230,7 +361,7 @@ function renderCategories() {
           legend: { 
             position: 'right', 
             labels: { 
-              color: getChartColors().label, 
+              color: c.label, 
               font: { size: 11 } 
             } 
           } 
@@ -256,8 +387,8 @@ function renderCategories() {
         indexAxis: 'y', 
         plugins: { legend: { display: false } }, 
         scales: { 
-          x: { ticks: { color: getChartColors().text }, grid: { color: getChartColors().grid } },
-          y: { ticks: { color: getChartColors().label }, grid: { display: false } }
+          x: { ticks: { color: c.text }, grid: { color: c.grid } },
+          y: { ticks: { color: c.label }, grid: { display: false } }
         }
       }
     });
@@ -266,7 +397,7 @@ function renderCategories() {
   const products = allData?.products || [];
   const catRising = {};
   products.forEach(p => { 
-    if (p.is_rising) { 
+    if (p.isRising) { 
       const c = p.category || 'General'; 
       catRising[c] = (catRising[c] || 0) + 1; 
     } 
@@ -277,12 +408,12 @@ function renderCategories() {
     catList.innerHTML = entries.map(([name, count]) => {
       const risingCount = catRising[name] || 0;
       const badge = risingCount > 0 ? `<span class="rising-badge">${risingCount} rising</span>` : '';
-      return `<div class="tag">${escapeHtml(name)} <span class="count">${count}</span> ${badge}</div>`;
+      return `<div class="cat-tag">${escapeHtml(name)} <span>${count}</span> ${badge}</div>`;
     }).join('');
   }
 }
 
-// ---- Domains ----
+// ---- Domains Page ----
 
 function renderDomains() {
   const domains = allData?.domains || {};
@@ -293,6 +424,7 @@ function renderDomains() {
 
   const domainChart = document.getElementById('domainChart');
   if (entries.length && domainChart) {
+    const c = getChartColors();
     charts.domain = new Chart(domainChart, {
       type: 'bar',
       data: {
@@ -311,8 +443,8 @@ function renderDomains() {
         maintainAspectRatio: false, 
         plugins: { legend: { display: false } }, 
         scales: { 
-          x: { ticks: { color: getChartColors().label }, grid: { color: getChartColors().grid } },
-          y: { ticks: { color: getChartColors().text }, grid: { color: getChartColors().grid }, beginAtZero: true }
+          x: { ticks: { color: c.label }, grid: { color: c.grid } },
+          y: { ticks: { color: c.text }, grid: { color: c.grid }, beginAtZero: true }
         }
       }
     });
@@ -322,15 +454,15 @@ function renderDomains() {
   if (domainList) {
     domainList.innerHTML = entries.map(([domain, count]) => `
       <div class="domain-card">
-        <div class="name">${escapeHtml(domain)}</div>
-        <div class="count">${count} product${count !== 1 ? 's' : ''}</div>
-        <div class="bar"><div class="fill" style="width:${Math.round((count / max) * 100)}%"></div></div>
+        <div class="domain-name">${escapeHtml(domain)}</div>
+        <div class="domain-count">${count} product${count !== 1 ? 's' : ''}</div>
+        <div class="domain-bar"><div class="domain-fill" style="width:${Math.round((count / max) * 100)}%"></div></div>
       </div>
     `).join('');
   }
 }
 
-// ---- Activity ----
+// ---- Activity Page ----
 
 function renderActivity() {
   const daily = allData?.daily || {};
@@ -385,24 +517,24 @@ function renderActivity() {
     });
   }
 
-  const totalViews = allData?.total_views || 0;
-  const totalPurchases = allData?.total_purchases || 0;
+  const totalViews = allData?.totalViews || 0;
+  const totalPurchases = allData?.totalPurchases || 0;
   const purchasePct = totalViews > 0 ? Math.round((totalPurchases / totalViews) * 100) : 0;
 
   const funnelWrap = document.getElementById('funnelWrap');
   if (funnelWrap) {
     funnelWrap.innerHTML = `
       <div class="funnel-row">
-        <span class="label">Product Views</span>
-        <div class="bar-bg"><div class="bar-fill views" style="width:100%">${totalViews}</div></div>
-        <span class="num">${totalViews}</span>
+        <span class="funnel-label">Product Views</span>
+        <div class="funnel-bar-bg"><div class="funnel-bar-fill views-fill" style="width:100%">${totalViews}</div></div>
+        <span class="funnel-num">${totalViews}</span>
       </div>
       <div class="funnel-row">
-        <span class="label">Purchases</span>
-        <div class="bar-bg"><div class="bar-fill purchases" style="width:${Math.max(purchasePct, totalPurchases > 0 ? 5 : 0)}%">${totalPurchases}</div></div>
-        <span class="num">${totalPurchases}</span>
+        <span class="funnel-label">Purchases</span>
+        <div class="funnel-bar-bg"><div class="funnel-bar-fill purchases-fill" style="width:${Math.max(purchasePct, totalPurchases > 0 ? 5 : 0)}%">${totalPurchases}</div></div>
+        <span class="funnel-num">${totalPurchases}</span>
       </div>
-      <div class="funnel-note">Conversion signal rate: <strong style="color:var(--success)">${purchasePct}%</strong></div>
+      <div class="funnel-note" style="margin-top:8px;font-size:13px;color:var(--text-muted);">Conversion signal rate: <strong style="color:var(--success)">${purchasePct}%</strong></div>
     `;
   }
 }
@@ -419,12 +551,15 @@ function setupControls() {
   const categoryFilter = document.getElementById('categoryFilter');
   if (categoryFilter) categoryFilter.addEventListener('change', renderTrending);
 
+  // Export CSV
   const exportBtn = document.getElementById('exportBtn');
   if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 
+  // Export JSON
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportJSON);
 
+  // Import JSON
   const importJsonBtn = document.getElementById('importJsonBtn');
   if (importJsonBtn) {
     importJsonBtn.addEventListener('click', () => {
@@ -436,26 +571,55 @@ function setupControls() {
   const fileInput = document.getElementById('fileInput');
   if (fileInput) fileInput.addEventListener('change', importJSON);
 
+  // Clear data
   const clearAllBtn = document.getElementById('clearAllBtn');
   if (clearAllBtn) clearAllBtn.addEventListener('click', clearData);
-
-  // Populate category filter
-  if (allData?.categories) {
-    populateCategoryFilter();
-  }
 }
 
-function filterProducts(products) {
-  const searchInput = document.getElementById('searchInput');
-  const categoryFilter = document.getElementById('categoryFilter');
-  
-  const search = searchInput?.value.toLowerCase() || '';
-  const cat = categoryFilter?.value || '';
-  
-  return products.filter(p =>
-    (!search || p.title.toLowerCase().includes(search) || p.domain.includes(search)) &&
-    (!cat || p.category === cat)
-  );
+// ---- Export / Import ----
+
+function exportCSV() {
+  const products = allData?.products || [];
+  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore,Rising\n';
+  products.forEach((p, i) => {
+    csv += `${i+1},"${escapeCsv(p.title)}","${p.category}","${p.domain}","${p.latestPrice || ''}",${p.viewCount || 0},${p.purchaseCount || 0},${Math.round(p.trendScore || 0)},${p.isRising ? 'Yes' : 'No'}\n`;
+  });
+  downloadFile(csv, `tracker-${date()}.csv`, 'text/csv');
+}
+
+function exportJSON() {
+  chrome.storage.local.get(null, (data) => {
+    const json = JSON.stringify(data, null, 2);
+    downloadFile(json, `tracker-${date()}.json`, 'application/json');
+  });
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      chrome.storage.local.set(data, () => {
+        alert('Data imported successfully! Refreshing...');
+        location.reload();
+      });
+    } catch (err) {
+      alert('Invalid JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  // Reset file input
+  event.target.value = '';
+}
+
+function clearData() {
+  if (!confirm('Delete ALL data? This cannot be undone.')) return;
+  chrome.storage.local.clear(() => {
+    alert('All data cleared.');
+    location.reload();
+  });
 }
 
 // ---- Helpers ----
@@ -493,6 +657,14 @@ function escapeHtml(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function escapeCsv(str) {
+  return String(str || '').replace(/"/g, '""');
+}
+
+function date() {
+  return new Date().toISOString().split('T')[0];
+}
+
 function getLast14Days() {
   return Array.from({ length: 14 }, (_, i) => {
     const d = new Date();
@@ -514,68 +686,15 @@ function getChartColors() {
   };
 }
 
-// ---- Export / Import ----
-
-function exportCSV() {
-  const products = allData?.products || [];
-  let csv = 'Rank,Title,Category,Domain,Price,Views,Purchases,TrendScore,Rising\n';
-  products.forEach((p, i) => {
-    csv += `${i+1},"${escapeCsv(p.title)}","${p.category}","${p.domain}","${p.latest_price || ''}",${p.view_count},${p.purchase_count},${Math.round(p.trend_score)},${p.is_rising ? 'Yes' : 'No'}\n`;
-  });
-  downloadFile(csv, `tracker-${date()}.csv`, 'text/csv');
-}
-
-function exportJSON() {
-  fetch('http://localhost:5000/api/export')
-    .then(r => r.json())
-    .then(data => downloadFile(JSON.stringify(data, null, 2), `tracker-${date()}.json`, 'application/json'))
-    .catch(() => alert('Backend not running. Start with: python app.py'));
-}
-
-function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      fetch('http://localhost:5000/api/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      }).then(() => {
-        alert('Data imported. Refreshing...');
-        location.reload();
-      }).catch(() => alert('Backend not running'));
-    } catch (err) {
-      alert('Invalid JSON: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-}
-
-function clearData() {
-  if (!confirm('Delete ALL data? This cannot be undone.')) return;
-  fetch('http://localhost:5000/api/clear', { method: 'DELETE' })
-    .then(() => location.reload())
-    .catch(() => alert('Backend not running'));
-}
-
-function escapeCsv(str) {
-  return String(str || '').replace(/"/g, '""');
-}
-
-function date() {
-  return new Date().toISOString().split('T')[0];
-}
-
 function downloadFile(content, filename, type) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; 
   a.download = filename;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 

@@ -1,4 +1,4 @@
-// popup.js - Complete with theme support
+// popup.js - Works without backend
 let allData = null;
 let isTracking = true;
 
@@ -103,8 +103,9 @@ function setupListeners() {
     setTimeout(loadData, 500);
   });
 
+  // Change: Open options page instead of localhost dashboard
   document.getElementById('openDashboard').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'http://localhost:5000/dashboard/' });
+    chrome.runtime.openOptionsPage();
   });
 
   document.getElementById('manualSave').addEventListener('click', () => {
