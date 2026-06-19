@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="avis_page" name="Avis clients">
+    <t t-call="website.layout">
+
+      <!-- Bannière -->
+      <section class="avis-hero">
+        <div class="avis-hero-overlay">
+          <div class="container text-center">
+            <p class="label-top">TÉMOIGNAGES</p>
+            <h1><i class="bi bi-star-fill"></i> Avis de nos clients</h1>
+            <p class="avis-hero-subtitle">
+              Des nuits meilleures, confirmées par nos clients.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Liste des avis -->
+      <section class="avis-liste container">
+
+        <div class="avis-empty text-center" id="avis-empty-msg">
+          <p class="text-muted">Aucun avis pour le moment.</p>
+        </div>
+
+        <!-- Les avis s'afficheront ici dynamiquement -->
+        <div class="row" id="avis-container">
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="#avis-form" class="btn btn-ecrire">
+            ✏️ Écrire un avis
+          </a>
+        </div>
+
+      </section>
+
+      <!-- Formulaire d'avis -->
+      <section class="avis-form-section container" id="avis-form">
+        <div class="avis-form-box">
+
+          <h2>Laisser un avis</h2>
+
+          <div id="avis-success" class="avis-success" style="display:none">
+            ✅ Merci ! Votre avis a bien été envoyé.
+          </div>
+
+          <!-- Nom -->
+          <div class="avis-field">
+            <label>Nom / Pseudonyme *</label>
+            <input type="text" id="avis-nom" class="avis-input"
+                   placeholder="Votre nom"/>
+          </div>
+
+          <!-- Note -->
+          <div class="avis-field">
+            <label>Note (sur 5) *</label>
+            <div class="star-rating" id="star-rating">
+              <span class="star" data-value="1">★</span>
+              <span class="star" data-value="2">★</span>
+              <span class="star" data-value="3">★</span>
+              <span class="star" data-value="4">★</span>
+              <span class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="avis-note" value="0"/>
+          </div>
+
+          <!-- Produit acheté -->
+          <div class="avis-field">
+            <label>Titre *</label>
+            <input type="text" id="avis-produit" class="avis-input"
+                   placeholder="Ex: Matelas SÉRÉNITÉ"/>
+          </div>
+
+          <!-- Commentaire -->
+          <div class="avis-field">
+            <label>Commentaire *</label>
+            <textarea id="avis-commentaire" class="avis-input avis-textarea"
+                      placeholder="Votre avis..."/>
+          </div>
+
+          <!-- Bouton -->
+          <button class="btn btn-send-avis" onclick="envoyerAvis()">
+            <i class="bi bi-send-fill"></i> Envoyer mon avis
+          </button>
+
+        </div>
+      </section>
+
+       <!-- Newsletter -->
+      <section class="newsletter-section">
+        <div class="container">
+          <div class="newsletter-box">
+            <div class="newsletter-text">
+              <p class="section-label"><i class="bi bi-envelope-fill"></i> RESTEZ INFORMÉ</p>
+              <h2>Ne ratez aucune offre exclusive !</h2>
+              <p>Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.</p>
+            </div>
+            <div class="newsletter-form">
+              <input type="email" class="newsletter-input" placeholder="Votre adresse email..." />
+              <a href="#" class="btn btn-newsletter">S'inscrire →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </t>
+  </template>
+
+</odoo>

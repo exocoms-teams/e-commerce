@@ -10,3 +10,7 @@ class MatelasVente(http.Controller):
             ('is_published', '=', True)
         ], limit=3)
         return request.render('Matelas.home', {'products': products})
+    
+    @http.route('/avis', auth='public', website=True)
+    def avis(self, **kwargs):
+       return request.render('Matelas.avis_page', {})

@@ -7,10 +7,13 @@
     'depends': ['website', 'website_sale'],
     'data': [
         'views/templates/Home.xml',
+        'views/templates/Avis.xml',
     ],
     'assets': {
         'web.assets_frontend': [
             'Matelas/static/src/css/Home.css',
+            'Matelas/static/src/css/Avis.css',
+            'Matelas/static/src/js/avis.js',  
         ],
     },
     'installable': True,
