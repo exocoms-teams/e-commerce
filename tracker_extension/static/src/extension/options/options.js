@@ -1,9 +1,7 @@
-// options.js - Complete standalone version (no backend required)
+// options.js - Complete standalone version
 let allData = null;
 let charts = {};
 const COLORS = ['#6c47ff','#a855f7','#06b6d4','#10b981','#f59e0b','#f87171','#34d399','#60a5fa','#e879f9','#fb923c'];
-
-// ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
   setupNav();
@@ -11,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   refresh();
   setInterval(refresh, 30000);
 });
-
-// ---- Get data from storage ----
 
 async function getDataFromStorage() {
   return new Promise((resolve) => {
@@ -25,7 +21,6 @@ async function getDataFromStorage() {
         lastUpdated: data.lastUpdated || null,
       };
       
-      // Enrich products with computed values
       const products = Object.values(store.products);
       const now = Date.now();
       const dayMs = 86400000;
@@ -57,7 +52,6 @@ async function getDataFromStorage() {
         }).length;
         const isRising = views3d > 0 && views3d > views3to6d * 1.5;
 
-        // Compute trend score
         const trendScore = computeTrendScore(p);
 
         return {
@@ -91,8 +85,6 @@ async function getDataFromStorage() {
     });
   });
 }
-
-// ---- Trend Score (copied from background) ----
 
 function computeTrendScore(product) {
   const now = Date.now();
@@ -143,8 +135,6 @@ function computeTrendScore(product) {
   return Math.round(rawScore * risingMultiplier);
 }
 
-// ---- Navigation ----
-
 function setupNav() {
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -172,8 +162,6 @@ function renderCurrentPage() {
   if (id === 'page-activity') renderActivity();
 }
 
-// ---- Refresh ----
-
 async function refresh() {
   try {
     const data = await getDataFromStorage();
@@ -181,15 +169,7 @@ async function refresh() {
     updateSidebar();
     renderCurrentPage();
     populateCategoryFilter();
-    const dot = document.getElementById('statusDot');
-    const text = document.getElementById('statusText');
-    if (dot) dot.className = 'status-dot online';
-    if (text) text.textContent = 'Local storage';
   } catch (e) {
-    const dot = document.getElementById('statusDot');
-    const text = document.getElementById('statusText');
-    if (dot) dot.className = 'status-dot offline';
-    if (text) text.textContent = 'Error loading data';
     console.error('Error loading data:', e);
   }
 }
@@ -219,8 +199,6 @@ function populateCategoryFilter() {
   sel.value = currentVal;
 }
 
-// ---- Filter products ----
-
 function filterProducts(products) {
   const searchInput = document.getElementById('searchInput');
   const categoryFilter = document.getElementById('categoryFilter');
@@ -233,8 +211,6 @@ function filterProducts(products) {
     (!cat || p.category === cat)
   );
 }
-
-// ---- Trending Page ----
 
 function renderTrending() {
   const products = filterProducts(allData?.products || []);
@@ -272,19 +248,19 @@ function renderTrending() {
         <td><span class="rank-badge ${rClass}">${i + 1}</span></td>
         <td>
           <div class="product-cell">
-            <span class="name" title="${escapeHtml(p.title)}">${escapeHtml(truncate(p.title, 50))} ${risingBadge}</span>
-            <span class="domain">${escapeHtml(p.domain)}</span>
+            <span class="product-name" title="${escapeHtml(p.title)}">${escapeHtml(truncate(p.title, 50))} ${risingBadge}</span>
+            <span class="product-url">${escapeHtml(p.domain)}</span>
           </div>
         </td>
         <td><span class="cat-pill">${escapeHtml(p.category || 'General')}</span></td>
         <td>${escapeHtml(p.domain)}</td>
         <td>${price} ${priceTrend}</td>
-        <td>${p.viewCount || 0} <span style="color:var(--text-muted);font-size:11px;">(${p.views7d || 0} week)</span></td>
+        <td>${p.viewCount || 0} <span style="color:var(--muted);font-size:11px;">(${p.views7d || 0} week)</span></td>
         <td>${p.purchaseCount > 0 ? `<strong style="color:var(--success)">${p.purchaseCount}</strong>` : '0'}</td>
         <td>${soldHtml}</td>
         <td>
           <div class="score-bar-wrap">
-            <div class="score-bar"><div class="fill" style="width:${pct}%"></div></div>
+            <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
             <span class="score-val">${Math.round(p.trendScore || 0)}</span>
           </div>
         </td>
@@ -292,8 +268,6 @@ function renderTrending() {
     `;
   }).join('');
 }
-
-// ---- Rising Page ----
 
 function renderRising() {
   const products = allData?.products?.filter(p => p.isRising && p.views7d >= 2) || [];
@@ -315,8 +289,8 @@ function renderRising() {
         <td><span class="rank-badge">${i + 1}</span></td>
         <td>
           <div class="product-cell">
-            <span class="name" title="${escapeHtml(p.title)}">${escapeHtml(truncate(p.title, 50))}</span>
-            <span class="domain">${escapeHtml(p.domain)}</span>
+            <span class="product-name" title="${escapeHtml(p.title)}">${escapeHtml(truncate(p.title, 50))}</span>
+            <span class="product-url">${escapeHtml(p.domain)}</span>
           </div>
         </td>
         <td><span class="cat-pill">${escapeHtml(p.category || 'General')}</span></td>
@@ -327,8 +301,6 @@ function renderRising() {
     `;
   }).join('');
 }
-
-// ---- Categories Page ----
 
 function renderCategories() {
   const cats = allData?.categories || {};
@@ -413,8 +385,6 @@ function renderCategories() {
   }
 }
 
-// ---- Domains Page ----
-
 function renderDomains() {
   const domains = allData?.domains || {};
   const entries = Object.entries(domains).sort((a, b) => b[1] - a[1]);
@@ -461,8 +431,6 @@ function renderDomains() {
     `).join('');
   }
 }
-
-// ---- Activity Page ----
 
 function renderActivity() {
   const daily = allData?.daily || {};
@@ -534,12 +502,10 @@ function renderActivity() {
         <div class="funnel-bar-bg"><div class="funnel-bar-fill purchases-fill" style="width:${Math.max(purchasePct, totalPurchases > 0 ? 5 : 0)}%">${totalPurchases}</div></div>
         <span class="funnel-num">${totalPurchases}</span>
       </div>
-      <div class="funnel-note" style="margin-top:8px;font-size:13px;color:var(--text-muted);">Conversion signal rate: <strong style="color:var(--success)">${purchasePct}%</strong></div>
+      <div style="margin-top:8px;font-size:13px;color:var(--muted);">Conversion signal rate: <strong style="color:var(--success)">${purchasePct}%</strong></div>
     `;
   }
 }
-
-// ---- Controls ----
 
 function setupControls() {
   const refreshBtn = document.getElementById('refreshBtn');
@@ -551,15 +517,12 @@ function setupControls() {
   const categoryFilter = document.getElementById('categoryFilter');
   if (categoryFilter) categoryFilter.addEventListener('change', renderTrending);
 
-  // Export CSV
   const exportBtn = document.getElementById('exportBtn');
   if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 
-  // Export JSON
   const exportJsonBtn = document.getElementById('exportJsonBtn');
   if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportJSON);
 
-  // Import JSON
   const importJsonBtn = document.getElementById('importJsonBtn');
   if (importJsonBtn) {
     importJsonBtn.addEventListener('click', () => {
@@ -571,12 +534,9 @@ function setupControls() {
   const fileInput = document.getElementById('fileInput');
   if (fileInput) fileInput.addEventListener('change', importJSON);
 
-  // Clear data
   const clearAllBtn = document.getElementById('clearAllBtn');
   if (clearAllBtn) clearAllBtn.addEventListener('click', clearData);
 }
-
-// ---- Export / Import ----
 
 function exportCSV() {
   const products = allData?.products || [];
@@ -610,7 +570,6 @@ function importJSON(event) {
     }
   };
   reader.readAsText(file);
-  // Reset file input
   event.target.value = '';
 }
 
@@ -621,8 +580,6 @@ function clearData() {
     location.reload();
   });
 }
-
-// ---- Helpers ----
 
 function renderPriceTrend(priceTrend) {
   if (priceTrend === null || priceTrend === undefined) return '';

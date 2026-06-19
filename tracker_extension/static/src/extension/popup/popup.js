@@ -1,9 +1,8 @@
-// popup.js - Works without backend
+// popup.js
 let allData = null;
 let isTracking = true;
 
-// ---- Theme ----
-
+// Theme
 function getStoredTheme() {
   const saved = localStorage.getItem('tracker-theme');
   if (saved === 'light' || saved === 'dark') return saved;
@@ -15,19 +14,16 @@ function applyTheme(theme) {
   localStorage.setItem('tracker-theme', theme);
 }
 
-// Initialize theme
 applyTheme(getStoredTheme());
 
-// ---- Init ----
-
+// Init
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   setupListeners();
   updateTrackingStatus();
 });
 
-// ---- Data Loading ----
-
+// Data Loading
 async function loadData() {
   const data = await sendMessage({ action: 'getData' });
   if (!data) return;
@@ -66,8 +62,7 @@ function renderTrending(products) {
   }).join('');
 }
 
-// ---- Tracking Status ----
-
+// Tracking Status
 async function updateTrackingStatus() {
   const response = await sendMessage({ action: 'getTrackingStatus' });
   if (!response) return;
@@ -90,8 +85,7 @@ async function updateTrackingStatus() {
   }
 }
 
-// ---- Listeners ----
-
+// Listeners
 function setupListeners() {
   document.getElementById('optionsBtn').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
@@ -103,7 +97,6 @@ function setupListeners() {
     setTimeout(loadData, 500);
   });
 
-  // Change: Open options page instead of localhost dashboard
   document.getElementById('openDashboard').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
   });
@@ -138,8 +131,7 @@ function setupListeners() {
   });
 }
 
-// ---- Helpers ----
-
+// Helpers
 function sendMessage(msg) {
   return new Promise(resolve => {
     chrome.runtime.sendMessage(msg, response => {
