@@ -25,9 +25,6 @@
         'views/website_templates.xml',
         'views/website_homepage.xml',
 
-        # website must exist before homepage
-        'data/website_data.xml',
-
         'views/product_template_backend_views.xml',
         'views/website_sale_product_templates.xml',
     ],
