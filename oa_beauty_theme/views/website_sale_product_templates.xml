@@ -2,60 +2,64 @@
 <odoo>
 
     <!--
-        Single inheritance point, on purpose.
+        Single inheritance point, on a single confirmed-working anchor.
 
-        The previous version of this file had TWO separate inherited
-        templates:
-          1. inherit_id="website_sale.product_accordion" -> #product_accordion
-          2. inherit_id="website_sale.product"            -> #add_to_cart_wrap
+        Empirically validated on this exact Odoo.sh database:
+          ✅  website_sale.product_accordion  →  div#product_accordion
+          ❌  website_sale.product            →  div#add_to_cart_wrap  (not found)
 
-        On the live instance, (1) installed cleanly but (2) failed with
-        "Element '' cannot be located in parent view" — meaning
-        #add_to_cart_wrap does not exist in this Odoo.sh database's actual
-        website_sale.product template (likely an Enterprise-vs-Community
-        markup difference, since the public Odoo source only confirms
-        Community markup).
+        Both the "Product Details" specs section (oa_type / oa_finish /
+        oa_best_for / oa_key_ingredients) AND the trust-badge row live
+        inside the accordion so we need only the one proven anchor.
 
-        Fix: drop the second, unconfirmed anchor entirely. Everything
-        (specs, ingredients, AND trust badges) now lives inside the one
-        anchor that is empirically proven to work on this exact database:
-        #product_accordion.
+        The o_oa_* classes are styled in static/src/scss/oa_beauty.scss.
     -->
+    <template id="product_accordion_oa_specs"
+              inherit_id="website_sale.product_accordion"
+              name="O&amp;A Beauty — Product Details Accordion">
 
-    <template id="product_accordion_oa_specs" inherit_id="website_sale.product_accordion">
         <xpath expr="//div[@id='product_accordion']" position="inside">
 
-            <!-- Item 1: Type / Finish / Best For / Key Ingredients -->
-            <div class="accordion-item" t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
+            <!-- ── ACCORDION ITEM 1: Cosmetic Specs + Key Ingredients ── -->
+            <div class="accordion-item"
+                 t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
+
                 <div class="accordion-header my-0 h6">
-                    <button class="accordion-button collapsed fw-medium" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#oa_specifications"
-                            aria-expanded="false" aria-controls="oa_specifications">
+                    <button class="accordion-button collapsed fw-medium"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#oa_specifications"
+                            aria-expanded="false"
+                            aria-controls="oa_specifications">
                         Product Details
                     </button>
                 </div>
-                <div id="oa_specifications" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+
+                <div id="oa_specifications"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#product_accordion">
                     <div class="accordion-body pt-0">
 
-                        <!-- .detail-specs equivalent: Type / Finish / Best For -->
-                        <div class="o_oa_specs row mt-2" t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                        <!-- Type / Finish / Best For row -->
+                        <div class="o_oa_specs row mt-2"
+                             t-if="product.oa_type or product.oa_finish or product.oa_best_for">
                             <div class="col-12 col-md-4" t-if="product.oa_type">
-                                <span class="o_oa_spec_label text-muted d-block">Type</span>
+                                <span class="o_oa_spec_label d-block">Type</span>
                                 <span class="o_oa_spec_value" t-esc="product.oa_type"/>
                             </div>
                             <div class="col-12 col-md-4" t-if="product.oa_finish">
-                                <span class="o_oa_spec_label text-muted d-block">Finish</span>
+                                <span class="o_oa_spec_label d-block">Finish</span>
                                 <span class="o_oa_spec_value" t-esc="product.oa_finish"/>
                             </div>
                             <div class="col-12 col-md-4" t-if="product.oa_best_for">
-                                <span class="o_oa_spec_label text-muted d-block">Best For</span>
+                                <span class="o_oa_spec_label d-block">Best For</span>
                                 <span class="o_oa_spec_value" t-esc="product.oa_best_for"/>
                             </div>
                         </div>
 
-                        <!-- .detail-ingredients equivalent -->
-                        <div class="o_oa_ingredients mt-3" t-if="product.oa_key_ingredients">
-                            <span class="o_oa_ing_label text-uppercase text-muted d-block">Key Ingredients</span>
+                        <!-- Key Ingredients -->
+                        <div class="o_oa_ingredients" t-if="product.oa_key_ingredients">
+                            <span class="o_oa_ing_label">Key Ingredients</span>
                             <p class="o_oa_ing_value mb-0" t-esc="product.oa_key_ingredients"/>
                         </div>
 
@@ -63,23 +67,26 @@
                 </div>
             </div>
 
-            <!-- Item 2: Trust badges (.detail-meta equivalent). Static
-                 across all products on the original site, so hard-coded
-                 here rather than modeled as fields. -->
+            <!-- ── ACCORDION ITEM 2: Trust Badges (delivery / returns / cruelty-free) ── -->
             <div class="accordion-item">
                 <div class="accordion-header my-0 h6">
-                    <button class="accordion-button collapsed fw-medium" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#oa_trust_badges"
-                            aria-expanded="false" aria-controls="oa_trust_badges">
+                    <button class="accordion-button collapsed fw-medium"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#oa_trust_badges"
+                            aria-expanded="false"
+                            aria-controls="oa_trust_badges">
                         Delivery &amp; Returns
                     </button>
                 </div>
-                <div id="oa_trust_badges" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                <div id="oa_trust_badges"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#product_accordion">
                     <div class="accordion-body pt-0">
                         <div class="o_oa_trust_badges">
-                            <p><i class="fa fa-truck me-2"/>Free delivery on orders over $60</p>
-                            <p><i class="fa fa-rotate-left me-2"/>30-day hassle-free returns</p>
-                            <p><i class="fa fa-leaf me-2"/>Cruelty-free &amp; clean formula</p>
+                            <p><i class="fa fa-truck"/>Free delivery on orders over $60</p>
+                            <p><i class="fa fa-rotate-left"/>30-day hassle-free returns</p>
+                            <p><i class="fa fa-leaf"/>Cruelty-free &amp; clean formula</p>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+        Deactivate the default Odoo empty homepage template so our custom
+        website.page record takes over. This is the officially documented
+        pattern from Odoo 19 developer/howtos/website_themes/pages.html.
+    -->
+    <record id="website.homepage" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!--
+        O&A Beauty Homepage
+        Recreates all sections from the original LUMIÈRE index.html:
+          1. Hero       — full-viewport headline + CTA + social links
+          2. About      — brand story + "Why Choose Us" text
+          3. Shop       — category pills + featured products preview → /shop
+          4. Gallery    — 3 editorial cards with brand gradient placeholders
+          5. Contact    — form (POST → /oa-beauty/contact/submit)
+        The header and footer are rendered by website.layout (native Odoo).
+        All custom CSS lives in static/src/scss/oa_beauty.scss.
+    -->
+    <record id="page_home" model="website.page">
+        <field name="name">Home</field>
+        <field name="is_published" eval="True"/>
+        <field name="is_homepage" eval="True"/>
+        <field name="key">oa_beauty_theme.page_home</field>
+        <field name="url">/</field>
+        <field name="type">qweb</field>
+        <field name="website_id" eval="1"/>
+        <field name="arch" type="xml">
+<t t-name="oa_beauty_theme.page_home">
+<t t-call="website.layout">
+<t t-set="additional_title">O&amp;A Beauty — Clean Luxury Cosmetics</t>
+<t t-set="meta_description">Discover O&amp;A Beauty's clean luxury cosmetics collection. Cruelty-free, premium ingredients, crafted for every skin tone.</t>
+
+<div id="wrap" class="oe_structure">
+
+    <!-- ═══════════════════════════════════════════════════
+         1. HERO
+         Mirrors: section.home in index.html
+    ═══════════════════════════════════════════════════ -->
+    <section class="oa-hero" id="home">
+        <div class="oa-hero-content">
+            <h1 class="oa-hero-h1">Feel <span class="oa-grad">Beautiful</span></h1>
+            <p class="oa-hero-sub">Your Glow Starts Here</p>
+            <p class="oa-hero-tagline">
+                Discover <span class="oa-grad">Luxury</span>,
+                Embrace <span class="oa-grad">You</span>
+            </p>
+            <div class="oa-social-icons">
+                <a href="#" aria-label="Instagram" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-instagram"/>
+                </a>
+                <a href="#" aria-label="TikTok" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-tiktok"/>
+                </a>
+                <a href="#" aria-label="Pinterest" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-pinterest"/>
+                </a>
+            </div>
+            <a href="/shop" class="oa-btn-primary mt-4 d-inline-block">Shop Collection</a>
+        </div>
+        <div class="oa-hero-visual" aria-hidden="true">
+            <div class="oa-blob oa-blob--hero"/>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         2. ABOUT
+         Mirrors: section.about in index.html
+    ═══════════════════════════════════════════════════ -->
+    <section class="oa-about" id="about">
+        <div class="oa-about-visual" aria-hidden="true">
+            <div class="oa-blob oa-blob--about"/>
+        </div>
+        <div class="oa-about-content">
+            <h2 class="oa-section-heading">Why Choose <span class="oa-grad">Us</span>?</h2>
+            <div class="oa-about-text">
+                <p>
+                    <strong><span class="oa-grad">Premium</span></strong> cosmetics crafted
+                    with the finest ingredients, sourced from nature and backed by science.
+                </p>
+                <p>
+                    We don't believe in one-size-fits-all. Every product is designed to
+                    celebrate your unique skin tone, texture, and beauty.
+                </p>
+                <p>
+                    Our promise is simple:
+                    <span class="oa-grad"><strong>clean</strong></span>,
+                    <span class="oa-grad"><strong>cruelty-free</strong></span> and
+                    <span class="oa-grad"><strong>radiant</strong></span> results.
+                </p>
+                <p>
+                    If you're ready to elevate your beauty routine, we'll guide you to the
+                    <span class="oa-grad">BEST</span> version of yourself.
+                </p>
+            </div>
+            <a href="/shop" class="oa-btn-accent">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         3. SHOP PREVIEW
+         Mirrors: section.shop in index.html
+         Category pills → /shop?categ=N
+         Featured products pulled live from the database.
+         Falls back gracefully when no products are published yet.
+    ═══════════════════════════════════════════════════ -->
+    <section class="oa-shop-preview" id="shop">
+        <h2 class="oa-heading">Our Collection</h2>
+
+        <!-- Category filter pills -->
+        <div class="oa-filter-pills">
+            <a href="/shop" class="oa-pill active">All</a>
+            <a t-attf-href="/shop?categ=#{request.env.ref('oa_beauty_theme.public_category_lips').id}"
+               class="oa-pill">Lips</a>
+            <a t-attf-href="/shop?categ=#{request.env.ref('oa_beauty_theme.public_category_face').id}"
+               class="oa-pill">Face</a>
+            <a t-attf-href="/shop?categ=#{request.env.ref('oa_beauty_theme.public_category_skincare').id}"
+               class="oa-pill">Skincare</a>
+            <a t-attf-href="/shop?categ=#{request.env.ref('oa_beauty_theme.public_category_eyes').id}"
+               class="oa-pill">Eyes</a>
+        </div>
+
+        <!-- Live product cards (max 3 featured) -->
+        <t t-set="hp_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('sale_ok', '=', True)], limit=3, order='website_sequence asc, id asc')"/>
+
+        <div t-if="hp_products" class="oa-products-preview">
+            <t t-foreach="hp_products" t-as="hp_prod">
+                <a t-att-href="hp_prod.website_url" class="oa-product-card">
+                    <div class="oa-product-img">
+                        <img t-attf-src="/web/image/product.template/#{hp_prod.id}/image_512"
+                             t-att-alt="hp_prod.name"
+                             loading="lazy"/>
+                    </div>
+                    <div class="oa-product-info">
+                        <span class="oa-product-cat" t-if="hp_prod.public_categ_ids"
+                              t-esc="hp_prod.public_categ_ids[0].name"/>
+                        <h3 class="oa-product-name" t-esc="hp_prod.name"/>
+                        <span class="oa-product-price"
+                              t-esc="hp_prod.list_price"
+                              t-options='{"widget": "monetary", "display_currency": website.currency_id}'/>
+                    </div>
+                </a>
+            </t>
+        </div>
+
+        <!-- Empty state — shown before product import -->
+        <div t-if="not hp_products" class="oa-products-empty">
+            <p>Products are on their way…</p>
+        </div>
+
+        <div class="oa-shop-cta">
+            <a href="/shop" class="oa-btn-primary">View All Products</a>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         4. GALLERY
+         Mirrors: section.gallery in index.html
+         Brand-gradient placeholder cards — replace backgrounds
+         with real images via the Website Builder once available.
+    ═══════════════════════════════════════════════════ -->
+    <section class="oa-gallery" id="gallery">
+        <h2 class="oa-heading">Gallery</h2>
+        <div class="oa-gallery-grid">
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--1" role="img"
+                     aria-label="Glow editorial photo"/>
+                <p class="oa-gallery-caption">Glow that lasts all day.</p>
+            </div>
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--2" role="img"
+                     aria-label="Beauty nature editorial"/>
+                <p class="oa-gallery-caption">Beauty, redefined by nature.</p>
+            </div>
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--3" role="img"
+                     aria-label="Skincare editorial"/>
+                <p class="oa-gallery-caption">Your skin deserves the best.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         5. CONTACT
+         Mirrors: section.contact in index.html
+         Replaces EmailJS with a proper Odoo controller POST.
+         CSRF token is included automatically via t-att-value.
+    ═══════════════════════════════════════════════════ -->
+    <section class="oa-contact" id="contact">
+        <h2 class="oa-heading">Contact <span class="oa-grad">Us</span></h2>
+
+        <!-- Success / error feedback (shown after form POST redirect) -->
+        <div t-if="request.params.get('contact_sent')" class="oa-form-feedback oa-form-success">
+            <i class="fa fa-check-circle me-2"/>
+            Message sent successfully! We'll be in touch soon.
+        </div>
+        <div t-if="request.params.get('contact_error')" class="oa-form-feedback oa-form-error">
+            <i class="fa fa-exclamation-circle me-2"/>
+            Something went wrong. Please try again or email us directly.
+        </div>
+
+        <form class="oa-contact-form"
+              method="POST"
+              action="/oa-beauty/contact/submit"
+              t-if="not request.params.get('contact_sent')">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <div class="oa-form-row">
+                <div class="oa-form-col">
+                    <input type="text"   name="from_name" placeholder="Full name"    required="required"/>
+                    <input type="email"  name="email"     placeholder="Email"         required="required"/>
+                </div>
+                <div class="oa-form-col">
+                    <input type="tel"    name="phone"     placeholder="Phone number"/>
+                    <input type="text"   name="subject"   placeholder="Subject"       required="required"/>
+                </div>
+            </div>
+
+            <div class="oa-form-bottom">
+                <textarea name="message" placeholder="Your Message" rows="8" required="required"/>
+                <button type="submit" class="oa-btn-accent">Send Message</button>
+            </div>
+        </form>
+    </section>
+
+</div><!-- /wrap -->
+</t>
+</t>
+        </field>
+    </record>
+
+</odoo>

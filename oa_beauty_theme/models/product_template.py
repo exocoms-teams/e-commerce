@@ -1,13 +1,26 @@
-# -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import fields, models
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    cosmetic_type = fields.Char(string="Type de Cosmétique", help="Ex: Lip Colour, Radiance Serum")
-    finish = fields.Char(string="Finition / Rendu", help="Ex: Matte Velvet, Satin, High Gloss")
-    best_for = fields.Char(string="Idéal pour", help="Ex: Hydratation, Volume & Longueur")
-    key_ingredients = fields.Text(string="Ingrédients Clés", help="Ex: Shea Butter, Vitamin E")
-    
-    # Relation vers un modèle personnalisé pour les nuances/teintes de couleurs
-    shade_ids = fields.One2many('lumiere.product.shade', 'product_tmpl_id', string="Teintes disponibles")
+    oa_type = fields.Char(
+        string='Product Type',
+        help='e.g. "Lip Colour", "Brightening Serum", "Liquid Foundation" — '
+             'migrated from the type field in the original LUMIÈRE data.js',
+    )
+    oa_finish = fields.Char(
+        string='Finish',
+        help='e.g. "Matte Velvet", "Natural Satin", "Mixed — Matte & Shimmer" — '
+             'migrated from the finish field in the original LUMIÈRE data.js',
+    )
+    oa_best_for = fields.Char(
+        string='Best For',
+        help='e.g. "Long-lasting wear", "Dull & uneven skin" — '
+             'migrated from the bestFor field in the original LUMIÈRE data.js',
+    )
+    oa_key_ingredients = fields.Char(
+        string='Key Ingredients',
+        help='Comma-separated list, e.g. "Shea Butter, Vitamin E, Jojoba Oil" — '
+             'migrated from the keyIngredients field in the original LUMIÈRE data.js',
+    )
