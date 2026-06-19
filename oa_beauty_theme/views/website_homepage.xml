@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        LUMIÈRE Homepage — QWeb view rendered by OaBeautyHomepage.homepage()
+        Products are passed as 'hp_products' by the Python controller.
+        No inline DB queries in the template (cleaner and safer).
+    -->
+    <record id="view_homepage_lumiere" model="ir.ui.view">
+        <field name="name">oa_beauty.homepage</field>
+        <field name="type">qweb</field>
+        <field name="key">oa_beauty_theme.view_homepage_lumiere</field>
+        <field name="arch" type="xml">
+<t t-name="oa_beauty_theme.view_homepage_lumiere">
+<t t-call="website.layout">
+<t t-set="additional_title">O&amp;A Beauty — Clean Luxury Cosmetics</t>
+
+<div id="wrap" class="oe_structure oa-page">
+
+    <!-- ═══ 1. HERO ═══════════════════════════════════════════════ -->
+    <section class="oa-hero" id="home">
+        <div class="oa-hero-content">
+            <h1 class="oa-hero-h1">Feel <span class="oa-grad">Beautiful</span></h1>
+            <p class="oa-hero-sub">Your Glow Starts Here</p>
+            <p class="oa-hero-tagline">
+                Discover <span class="oa-grad">Luxury</span>,
+                Embrace <span class="oa-grad">You</span>
+            </p>
+            <div class="oa-social-icons">
+                <a href="#" aria-label="Instagram" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-instagram"/>
+                </a>
+                <a href="#" aria-label="TikTok" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-tiktok"/>
+                </a>
+                <a href="#" aria-label="Pinterest" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-pinterest"/>
+                </a>
+            </div>
+            <a href="/shop" class="oa-btn-primary mt-4 d-inline-block">Shop Collection</a>
+        </div>
+        <div class="oa-hero-visual" aria-hidden="true">
+            <div class="oa-blob oa-blob--hero"/>
+        </div>
+    </section>
+
+    <!-- ═══ 2. ABOUT ══════════════════════════════════════════════ -->
+    <section class="oa-about" id="about">
+        <div class="oa-about-visual" aria-hidden="true">
+            <div class="oa-blob oa-blob--about"/>
+        </div>
+        <div class="oa-about-content">
+            <h2 class="oa-section-heading">Why Choose <span class="oa-grad">Us</span>?</h2>
+            <div class="oa-about-text">
+                <p>
+                    <strong><span class="oa-grad">Premium</span></strong> cosmetics crafted
+                    with the finest ingredients, sourced from nature and backed by science.
+                </p>
+                <p>
+                    We believe in celebrating your unique skin tone, texture, and beauty.
+                </p>
+                <p>
+                    Our promise:
+                    <span class="oa-grad"><strong>clean</strong></span>,
+                    <span class="oa-grad"><strong>cruelty-free</strong></span> and
+                    <span class="oa-grad"><strong>radiant</strong></span> results.
+                </p>
+            </div>
+            <a href="/shop" class="oa-btn-accent">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- ═══ 3. SHOP PREVIEW ═══════════════════════════════════════ -->
+    <section class="oa-shop-preview" id="shop">
+        <h2 class="oa-heading">Our Collection</h2>
+
+        <div class="oa-filter-pills">
+            <a href="/shop" class="oa-pill oa-pill--active">All</a>
+            <a href="/shop" class="oa-pill">Lips</a>
+            <a href="/shop" class="oa-pill">Face</a>
+            <a href="/shop" class="oa-pill">Skincare</a>
+            <a href="/shop" class="oa-pill">Eyes</a>
+        </div>
+
+        <!-- hp_products injected by OaBeautyHomepage.homepage() controller -->
+        <div t-if="hp_products" class="oa-products-preview">
+            <t t-foreach="hp_products" t-as="hp_prod">
+                <a t-att-href="hp_prod.website_url" class="oa-product-card">
+                    <div class="oa-product-img">
+                        <img
+                            t-attf-src="/web/image/product.template/#{hp_prod.id}/image_512"
+                            t-att-alt="hp_prod.name"
+                            loading="lazy"/>
+                    </div>
+                    <div class="oa-product-info">
+                        <span class="oa-product-cat"
+                              t-if="hp_prod.public_categ_ids"
+                              t-esc="hp_prod.public_categ_ids[0].name"/>
+                        <h3 class="oa-product-name" t-esc="hp_prod.name"/>
+                        <span class="oa-product-price"
+                              t-esc="hp_prod.list_price"
+                              t-options='{"widget": "monetary", "display_currency": website.currency_id}'/>
+                    </div>
+                </a>
+            </t>
+        </div>
+
+        <div t-if="not hp_products" class="oa-products-empty">
+            <p>Products are on their way…</p>
+        </div>
+
+        <div class="oa-shop-cta">
+            <a href="/shop" class="oa-btn-primary">View All Products</a>
+        </div>
+    </section>
+
+    <!-- ═══ 4. GALLERY ════════════════════════════════════════════ -->
+    <section class="oa-gallery" id="gallery">
+        <h2 class="oa-heading">Gallery</h2>
+        <div class="oa-gallery-grid">
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--1" role="img"
+                     aria-label="Glow editorial photo"/>
+                <p class="oa-gallery-caption">Glow that lasts all day.</p>
+            </div>
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--2" role="img"
+                     aria-label="Beauty nature editorial"/>
+                <p class="oa-gallery-caption">Beauty, redefined by nature.</p>
+            </div>
+            <div class="oa-gallery-card">
+                <div class="oa-gallery-img oa-gallery-img--3" role="img"
+                     aria-label="Skincare editorial"/>
+                <p class="oa-gallery-caption">Your skin deserves the best.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ 5. CONTACT ════════════════════════════════════════════ -->
+    <section class="oa-contact" id="contact">
+        <h2 class="oa-heading">Contact <span class="oa-grad">Us</span></h2>
+
+        <div t-if="request.params.get('contact_sent')" class="oa-form-feedback oa-form-success">
+            <i class="fa fa-check-circle me-2"/>
+            Message sent! We will be in touch soon.
+        </div>
+        <div t-if="request.params.get('contact_error')" class="oa-form-feedback oa-form-error">
+            <i class="fa fa-exclamation-circle me-2"/>
+            Something went wrong. Please try again or email us directly.
+        </div>
+
+        <form class="oa-contact-form"
+              method="POST"
+              action="/oa-beauty/contact/submit"
+              t-if="not request.params.get('contact_sent')">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="oa-form-row">
+                <div class="oa-form-col">
+                    <input type="text"  name="from_name" placeholder="Full name"    required="required"/>
+                    <input type="email" name="email"     placeholder="Email"         required="required"/>
+                </div>
+                <div class="oa-form-col">
+                    <input type="tel"   name="phone"     placeholder="Phone number"/>
+                    <input type="text"  name="subject"   placeholder="Subject"       required="required"/>
+                </div>
+            </div>
+            <div class="oa-form-bottom">
+                <textarea name="message" placeholder="Your Message" rows="8" required="required"/>
+                <button type="submit" class="oa-btn-accent">Send Message</button>
+            </div>
+        </form>
+    </section>
+
+</div>
+</t>
+</t>
+        </field>
+    </record>
+
+</odoo>

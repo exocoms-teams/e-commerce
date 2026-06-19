@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Single inheritance point, on a single confirmed-working anchor.
+
+        Empirically validated on this exact Odoo.sh database:
+          ✅  website_sale.product_accordion  →  div#product_accordion
+          ❌  website_sale.product            →  div#add_to_cart_wrap  (not found)
+
+        Both the "Product Details" specs section (oa_type / oa_finish /
+        oa_best_for / oa_key_ingredients) AND the trust-badge row live
+        inside the accordion so we need only the one proven anchor.
+
+        The o_oa_* classes are styled in static/src/scss/oa_beauty.scss.
+    -->
+    <template id="product_accordion_oa_specs"
+              inherit_id="website_sale.product_accordion"
+              name="O&amp;A Beauty — Product Details Accordion">
+
+        <xpath expr="//div[@id='product_accordion']" position="inside">
+
+            <!-- ── ACCORDION ITEM 1: Cosmetic Specs + Key Ingredients ── -->
+            <div class="accordion-item"
+                 t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
+
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#oa_specifications"
+                            aria-expanded="false"
+                            aria-controls="oa_specifications">
+                        Product Details
+                    </button>
+                </div>
+
+                <div id="oa_specifications"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+
+                        <!-- Type / Finish / Best For row -->
+                        <div class="o_oa_specs row mt-2"
+                             t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                            <div class="col-12 col-md-4" t-if="product.oa_type">
+                                <span class="o_oa_spec_label d-block">Type</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_type"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_finish">
+                                <span class="o_oa_spec_label d-block">Finish</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_finish"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_best_for">
+                                <span class="o_oa_spec_label d-block">Best For</span>
+                                <span class="o_oa_spec_value" t-esc="product.oa_best_for"/>
+                            </div>
+                        </div>
+
+                        <!-- Key Ingredients -->
+                        <div class="o_oa_ingredients" t-if="product.oa_key_ingredients">
+                            <span class="o_oa_ing_label">Key Ingredients</span>
+                            <p class="o_oa_ing_value mb-0" t-esc="product.oa_key_ingredients"/>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 2: Trust Badges (delivery / returns / cruelty-free) ── -->
+            <div class="accordion-item">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#oa_trust_badges"
+                            aria-expanded="false"
+                            aria-controls="oa_trust_badges">
+                        Delivery &amp; Returns
+                    </button>
+                </div>
+                <div id="oa_trust_badges"
+                     class="accordion-collapse collapse"
+                     data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="o_oa_trust_badges">
+                            <p><i class="fa fa-truck"/>Free delivery on orders over $60</p>
+                            <p><i class="fa fa-rotate-left"/>30-day hassle-free returns</p>
+                            <p><i class="fa fa-leaf"/>Cruelty-free &amp; clean formula</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+
+</odoo>
