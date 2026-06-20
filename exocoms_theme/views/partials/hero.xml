@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         HERO ACCUEIL — structure snippet native (options Layout/
-         Background/Image/Color Filter/Height dans l'éditeur)
-         + contenu textuel intégral de l'ancien hero
-         ═══════════════════════════════════════════════════════════ -->
-
     <template id="hero_section" name="Exocoms Hero">
         <section class="s_exocoms_hero o_colored_level pt64 pb64 oe_img_bg o_bg_img_center"
                  data-snippet="s_exocoms_hero"
                  data-name="Exocoms Hero"
                  style="background-image: url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg');">
 
-            <!-- Filtre de couleur — option native "Color Filter" -->
             <div class="o_we_bg_filter bg-black-50"/>
 
-            <!-- Grille de connexion SVG décorative -->
             <svg xmlns="http://www.w3.org/2000/svg" class="s_exocoms_hero_svg o_not_editable"
                  viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
                 <circle cx="700" cy="60" r="2.5" fill="#4d8aff"/>
@@ -109,8 +101,11 @@
 
             <div class="oe_structure oe_empty" id="oe_structure_hero_extra"/>
         </section>
+    </template>
 
-        <!-- ── BANDEAU DÉFILANT SERVICES — inchangé ── -->
+    <!-- Template séparé — racine unique distincte du hero, donc le hero
+         garde sa propre racine unique et son panneau d'options natif -->
+    <template id="hero_ticker" name="Exocoms Hero Ticker">
         <div class="exo-ticker-wrap">
             <div class="exo-ticker">
                 <t t-if="request.env.lang == 'fr_FR'">
