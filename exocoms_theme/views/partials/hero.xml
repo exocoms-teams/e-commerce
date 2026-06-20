@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="hero_section" name="Exocoms Hero">
+    <!-- Version française — section complète et autonome -->
+    <template id="hero_section_fr" name="Exocoms Hero FR">
         <section class="s_exocoms_hero o_colored_level pt64 pb64 oe_img_bg o_bg_img_center"
                  data-snippet="s_exocoms_hero"
                  data-name="Exocoms Hero"
@@ -36,7 +37,6 @@
             <div class="container s_allow_columns">
                 <div class="row">
                     <div class="col-lg-7 pt32 pb32">
-
                         <div class="s_exocoms_hero_badge oe_editable">
                             <span class="s_exocoms_hero_dot"/>
                             Partenaire technologique certifié · Depuis 2010
@@ -63,7 +63,6 @@
                             <span><i class="fa fa-check"/> Support 7j/7</span>
                             <span><i class="fa fa-check"/> +200 clients accompagnés</span>
                         </div>
-
                     </div>
                     <div class="col-lg-5 d-none d-lg-block"/>
                 </div>
@@ -73,57 +72,186 @@
         </section>
     </template>
 
+    <!-- Version anglaise — section complète et autonome, copie miroir -->
+    <template id="hero_section_en" name="Exocoms Hero EN">
+        <section class="s_exocoms_hero o_colored_level pt64 pb64 oe_img_bg o_bg_img_center"
+                 data-snippet="s_exocoms_hero"
+                 data-name="Exocoms Hero"
+                 style="background-image: url('/exocoms_theme/static/src/img/high-tech-view-futuristic-earth.jpg');">
+
+            <div class="o_we_bg_filter bg-black-50"/>
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="s_exocoms_hero_svg o_not_editable"
+                 viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <circle cx="700" cy="60" r="2.5" fill="#4d8aff"/>
+                <circle cx="820" cy="40" r="2.5" fill="#4d8aff"/>
+                <circle cx="900" cy="100" r="2.5" fill="#4d8aff"/>
+                <circle cx="760" cy="140" r="2.5" fill="#4d8aff"/>
+                <circle cx="660" cy="190" r="2.5" fill="#4d8aff"/>
+                <circle cx="850" cy="210" r="2.5" fill="#4d8aff"/>
+                <circle cx="950" cy="180" r="2.5" fill="#4d8aff"/>
+                <circle cx="730" cy="250" r="2.5" fill="#4d8aff"/>
+                <circle cx="880" cy="270" r="2.5" fill="#4d8aff"/>
+                <circle cx="980" cy="310" r="2.5" fill="#4d8aff"/>
+                <line x1="700" y1="60" x2="820" y2="40" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="820" y1="40" x2="900" y2="100" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="900" y1="100" x2="760" y2="140" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="760" y1="140" x2="660" y2="190" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="760" y1="140" x2="850" y2="210" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="850" y1="210" x2="950" y2="180" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="660" y1="190" x2="730" y2="250" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="850" y1="210" x2="880" y2="270" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="950" y1="180" x2="980" y2="310" stroke="#4d8aff" stroke-width="0.8" opacity="0.5"/>
+                <line x1="700" y1="60" x2="760" y2="140" stroke="#4d8aff" stroke-width="0.8" opacity="0.3"/>
+            </svg>
+
+            <div class="container s_allow_columns">
+                <div class="row">
+                    <div class="col-lg-7 pt32 pb32">
+                        <div class="s_exocoms_hero_badge oe_editable">
+                            <span class="s_exocoms_hero_dot"/>
+                            Certified technology partner · Since 2010
+                        </div>
+                        <h1 class="text-white oe_editable">
+                            Your everyday technology partner
+                        </h1>
+                        <p class="lead text-white-75 oe_editable">
+                            Exocoms Group supports individuals and businesses
+                            with comprehensive solutions in IT,
+                            telecommunications, security and infrastructure —
+                            to run your business without technical constraints.
+                        </p>
+                        <div class="s_exocoms_hero_buttons">
+                            <a href="/en/shop" class="btn btn-primary mb-2 oe_editable">
+                                <i class="fa fa-th-large"/> Discover our products
+                            </a>
+                            <a href="/en/contactus" class="btn btn-outline-light mb-2 oe_editable">
+                                <i class="fa fa-envelope"/> Contact us
+                            </a>
+                        </div>
+                        <div class="s_exocoms_hero_trust oe_editable">
+                            <span><i class="fa fa-check"/> Fast response</span>
+                            <span><i class="fa fa-check"/> Support 7/7</span>
+                            <span><i class="fa fa-check"/> +200 clients supported</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 d-none d-lg-block"/>
+                </div>
+            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_hero_extra"/>
+        </section>
+    </template>
+
+    <!-- Aiguilleur — choisit quel template complet appeler selon la langue -->
+    <template id="hero_section" name="Exocoms Hero">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="exocoms_theme.hero_section_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="exocoms_theme.hero_section_en"/>
+    </template>
+
     <template id="hero_ticker" name="Exocoms Hero Ticker">
         <div class="exo-ticker-wrap">
             <div class="exo-ticker">
-                <a href="/services#monetique" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
-                    Monétique
-                </a>
-                <a href="/services#encaissement" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
-                    Encaissement
-                </a>
-                <a href="/services#affichage" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
-                    Affichage dynamique
-                </a>
-                <a href="/services#informatique" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
-                    Informatique
-                </a>
-                <a href="/services#telecom" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
-                    Télécom
-                </a>
-                <a href="/services#distributeur" class="exo-ticker-item oe_editable">
-                    <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
-                    Distributeur
-                </a>
-                <a href="/services#monetique" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
-                    Monétique
-                </a>
-                <a href="/services#encaissement" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
-                    Encaissement
-                </a>
-                <a href="/services#affichage" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
-                    Affichage dynamique
-                </a>
-                <a href="/services#informatique" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
-                    Informatique
-                </a>
-                <a href="/services#telecom" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
-                    Télécom
-                </a>
-                <a href="/services#distributeur" class="exo-ticker-item">
-                    <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
-                    Distributeur
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <a href="/services#monetique" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
+                        Monétique
+                    </a>
+                    <a href="/services#encaissement" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
+                        Encaissement
+                    </a>
+                    <a href="/services#affichage" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
+                        Affichage dynamique
+                    </a>
+                    <a href="/services#informatique" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
+                        Informatique
+                    </a>
+                    <a href="/services#telecom" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
+                        Télécom
+                    </a>
+                    <a href="/services#distributeur" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
+                        Distributeur
+                    </a>
+                    <a href="/services#monetique" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
+                        Monétique
+                    </a>
+                    <a href="/services#encaissement" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
+                        Encaissement
+                    </a>
+                    <a href="/services#affichage" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
+                        Affichage dynamique
+                    </a>
+                    <a href="/services#informatique" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
+                        Informatique
+                    </a>
+                    <a href="/services#telecom" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
+                        Télécom
+                    </a>
+                    <a href="/services#distributeur" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
+                        Distributeur
+                    </a>
+                </t>
+                <t t-if="request.env.lang != 'fr_FR'">
+                    <a href="/en/services#monetique" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
+                        Payment
+                    </a>
+                    <a href="/en/services#encaissement" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
+                        Cash Register
+                    </a>
+                    <a href="/en/services#affichage" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
+                        Digital Signage
+                    </a>
+                    <a href="/en/services#informatique" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
+                        IT
+                    </a>
+                    <a href="/en/services#telecom" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
+                        Telecom
+                    </a>
+                    <a href="/en/services#distributeur" class="exo-ticker-item oe_editable">
+                        <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
+                        Distributor
+                    </a>
+                    <a href="/en/services#monetique" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-credit-card"/></span>
+                        Payment
+                    </a>
+                    <a href="/en/services#encaissement" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-money"/></span>
+                        Cash Register
+                    </a>
+                    <a href="/en/services#affichage" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-tv"/></span>
+                        Digital Signage
+                    </a>
+                    <a href="/en/services#informatique" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-desktop"/></span>
+                        IT
+                    </a>
+                    <a href="/en/services#telecom" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-phone"/></span>
+                        Telecom
+                    </a>
+                    <a href="/en/services#distributeur" class="exo-ticker-item">
+                        <span class="exo-ticker-icon"><i class="fa fa-cube"/></span>
+                        Distributor
+                    </a>
+                </t>
             </div>
         </div>
     </template>
