@@ -10,7 +10,7 @@ class VendorPortal(http.Controller):
     def _get_vendor_or_redirect(self):
         """Recuperer le vendeur connecte ou None"""
         partner = request.env.user.partner_id
-        website = request.website
+        #website = request.website
         # Filtrer par site web actuel
         vendor = request.env['res.partner'].sudo().search([
             ('id', '=', partner.id),
@@ -28,7 +28,7 @@ class VendorPortal(http.Controller):
 
         # Produits du vendeur
         # Produits du vendeur (filtre multi-website)
-        website = request.website
+        #website = request.website
         products = request.env['product.template'].sudo().search([
             ('seller_id', '=', vendor.id),
         ], order='name asc')
@@ -62,7 +62,7 @@ class VendorPortal(http.Controller):
         vendor = self._get_vendor_or_redirect()
         if not vendor:
             return request.redirect('/shop')
-        website = request.website
+        #website = request.website
         products = request.env['product.template'].sudo().search([
             ('seller_id', '=', vendor.id),
         ], order='name asc')
