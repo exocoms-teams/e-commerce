@@ -1,5 +1,9 @@
 /* =========================================================
    CAROUSELS — accueil uniquement
+   ⚠️ Les 4 blocs @media (responsive) de ce fichier ont été
+   déplacés dans responsive.css lors de la centralisation du
+   responsive. Ce fichier ne contient plus QUE le style desktop
+   de base — c'est normal et volontaire, rien n'a été perdu.
 ========================================================= */
 
 .s_dynamic_snippet_title.mt-5 {
@@ -21,6 +25,13 @@
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid #e8ecf4;
+}
+
+/* Conteneur de la grille de cartes — toujours en ligne, jamais empilé verticalement */
+.s_dynamic_snippet_row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
 }
 
 /* Zone image */
@@ -144,74 +155,16 @@
 ========================================================= */
 
 /* Grand écran 1200px+ — 4 produits */
-@media (min-width: 1200px) {
-    .s_dynamic_snippet_row .col-3 {
-        flex: 0 0 25% !important;
-        max-width: 25% !important;
-    }
-    .o_carousel_product_card .oe_product_image {
-        height: 280px !important;
-    }
-}
+
 
 /* Écran moyen 992px-1199px — 3 produits */
-@media (max-width: 1199px) and (min-width: 992px) {
-    .s_dynamic_snippet_row .col-3 {
-        flex: 0 0 33.33% !important;
-        max-width: 33.33% !important;
-    }
-    .o_carousel_product_card .oe_product_image {
-        height: 240px !important;
-    }
-}
+
 
 /* Tablette 576px-991px — 2 produits */
-@media (max-width: 991px) and (min-width: 576px) {
-    .s_dynamic_snippet_title,
-    .s_dynamic_snippet_content {
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-    }
-    .s_dynamic_snippet_row .col-3 {
-        flex: 0 0 50% !important;
-        max-width: 50% !important;
-    }
-    .o_carousel_product_card .oe_product_image {
-        height: 200px !important;
-    }
-    .o_carousel_product_card .o_wsale_products_item_title {
-        font-size: 14px !important;
-    }
-}
+
 
 /* Mobile 575px- — 1 produit */
-@media (max-width: 575px) {
-    .s_dynamic_snippet_title,
-    .s_dynamic_snippet_content {
-        padding-left: 16px !important;
-        padding-right: 16px !important;
-    }
-    .s_dynamic_snippet_title h2 {
-        font-size: 22px !important;
-    }
-    .s_dynamic_snippet_row .col-3 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-    .o_carousel_product_card .oe_product_image {
-        height: 200px !important;
-    }
-    .o_carousel_product_card .o_wsale_products_item_title {
-        font-size: 14px !important;
-    }
-    .s_dynamic_snippet_content .carousel-control-prev,
-    .s_dynamic_snippet_content .carousel-control-next {
-        top: 30% !important;
-    }
-    .s_dynamic_snippet_content .carousel-item {
-        min-height: 350px !important;
-    }
-}
+
 /* Bouton panier — couleur thème Odoo */
 .o_carousel_product_card .o_wsale_product_btn_primary {
     width: 100% !important;
