@@ -19,7 +19,7 @@ class VendorPortal(http.Controller):
         return vendor if vendor else None
 
     @http.route('/vendor/dashboard', type='http',
-                auth='user', website=True, sitemap=False)
+                auth='user', website=False, sitemap=False)
     def vendor_dashboard(self, **kw):
         """Tableau de bord du vendeur"""
         vendor = self._get_vendor_or_redirect()
@@ -56,7 +56,7 @@ class VendorPortal(http.Controller):
         )
 
     @http.route('/vendor/products', type='http',
-                auth='user', website=True, sitemap=False)
+                auth='user', website=False, sitemap=False)
     def vendor_products(self, **kw):
         """Liste des produits du vendeur"""
         vendor = self._get_vendor_or_redirect()
@@ -72,7 +72,7 @@ class VendorPortal(http.Controller):
         )
 
     @http.route('/vendor/product/<int:product_id>/edit',
-                type='http', auth='user', website=True, sitemap=False)
+                type='http', auth='user', website=False, sitemap=False)
     def vendor_product_edit(self, product_id, **kw):
         """Formulaire edition d'un produit"""
         vendor = self._get_vendor_or_redirect()
@@ -91,7 +91,7 @@ class VendorPortal(http.Controller):
         )
 
     @http.route('/vendor/product/<int:product_id>/save',
-                type='http', auth='user', website=True,
+                type='http', auth='user', website=False,
                 sitemap=False, methods=['POST'])
     def vendor_product_save(self, product_id, **kw):
         """Sauvegarder les modifications du produit"""
@@ -115,7 +115,7 @@ class VendorPortal(http.Controller):
             f'/vendor/product/{product_id}/edit?success=1')
 
     @http.route('/vendor/orders', type='http',
-                auth='user', website=True, sitemap=False)
+                auth='user', website=False, sitemap=False)
     def vendor_orders(self, page=1, status=None, **kw):
         """Commandes du vendeur avec filtre et pagination"""
         vendor = self._get_vendor_or_redirect()
