@@ -151,27 +151,6 @@
     }
 }
 
-/* Petits téléphones & tablettes en paysage */
-@media (max-width: 600px) and (orientation: landscape) {
-    :root {
-        --spacing-lg: 14px;
-        --spacing-xl: 18px;
-        --spacing-2xl: 28px;
-    }
-
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    h2 {
-        font-size: 1.375rem;
-    }
-
-    .hero-section {
-        min-height: 65vh;
-    }
-}
-
 /* Mobile (480px) */
 @media (max-width: 480px) {
     :root {
@@ -379,92 +358,12 @@
 }
 
 /* ========================================
-   GRILLES FLUIDES (AJOUT)
-   ======================================== */
-
-/* Ajustement fluide des conteneurs sur grands écrans */
-@media (min-width: 1200px) and (max-width: 1919px) {
-    .container {
-        max-width: 1200px;
-    }
-
-    .container-fluid {
-        max-width: 100%;
-        padding: 0 var(--spacing-xl);
-    }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-    .container {
-        max-width: 992px;
-    }
-}
-
-/* Grilles génériques réutilisables */
-.grid-2,
-.grid-3,
-.grid-4 {
-    display: grid;
-    gap: var(--spacing-lg);
-}
-
-@media (max-width: 1024px) {
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .grid-3 { grid-template-columns: repeat(2, 1fr); }
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ========================================
-   IMAGES ET MÉDIAS FLEXIBLES (AJOUT)
-   ======================================== */
-
-/* Empêche tout média de déborder de son conteneur — sécurité essentielle */
-img,
-video,
-picture,
-svg,
-iframe,
-audio,
-canvas {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* Comportement responsive des images de fond hero */
-.hero-bg,
-.o_bg_img_opt_show {
-    object-fit: cover;
-    object-position: center;
-}
-
-/* ========================================
-   UTILITAIRES RESPONSIFS (AJOUT)
-   ======================================== */
-
-/* Texte fluide réutilisable pour tout nouveau bloc */
-.text-responsive {
-    font-size: clamp(0.875rem, 2vw, 1.5rem);
-    line-height: 1.5;
-}
-
-.display-1 { font-size: clamp(3rem, 6vw, 5rem); }
-.display-2 { font-size: clamp(2.5rem, 5vw, 4rem); }
-.display-3 { font-size: clamp(2rem, 4vw, 3.5rem); }
-.display-4 { font-size: clamp(1.5rem, 3vw, 3rem); }
-
-/* Espacements fluides réutilisables */
-.p-responsive { padding: clamp(0.5rem, 2vw, 2rem); }
-.m-responsive { margin: clamp(0.5rem, 2vw, 2rem); }
-
-/* ========================================
    SUPPORT DES GESTES (TACTILE)
    ======================================== */
 
 @media (hover: none) and (pointer: coarse) {
     .btn {
         padding: var(--spacing-lg) var(--spacing-xl);
-        min-height: 48px; /* taille minimale recommandée pour le tactile */
     }
 
     .btn-primary:active {
@@ -474,17 +373,6 @@ canvas {
     a {
         padding: var(--spacing-sm);
         margin: -var(--spacing-sm);
-    }
-
-    /* Zones cliquables agrandies pour la navigation */
-    .exo-nav-link,
-    .exo-mobile-link,
-    .exo-icon-btn {
-        min-height: 48px;
-        min-width: 48px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
 }
 
@@ -498,58 +386,5 @@ canvas {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
-    }
-}
-
-/* ========================================
-   MODE SOMBRE (AJOUT — si applicable au thème)
-   ======================================== */
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-dark: #0f172a;
-        --bg-light: #1e293b;
-        --surface-dark: #0f172a;
-        --surface: #1e293b;
-        --surface-light: #334155;
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border: #334155;
-        --border-light: #475569;
-    }
-}
-
-/* ========================================
-   IMPRESSION (AJOUT)
-   ======================================== */
-
-@media print {
-    body {
-        font-size: 12pt;
-        line-height: 1.5;
-    }
-
-    h1 { font-size: 24pt; }
-    h2 { font-size: 18pt; }
-    h3 { font-size: 16pt; }
-
-    .no-print,
-    .hero-section,
-    .exo-ticker-wrap,
-    .exo-chat-icon,
-    .exo-burger {
-        display: none !important;
-    }
-
-    .container {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 0 !important;
-    }
-
-    a {
-        color: #000 !important;
-        text-decoration: underline;
     }
 }
