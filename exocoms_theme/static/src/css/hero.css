@@ -10,36 +10,21 @@
     align-items: center;
 }
 
-/* Overlay garanti — gradient qui assombrit le côté gauche (texte),
-   indépendant de l'option native "Color Filter" pour assurer la
-   lisibilité même si le filtre natif n'est pas réglé dans l'éditeur */
-.s_exocoms_hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg,
-        rgba(7, 18, 42, 0.78) 0%,
-        rgba(7, 18, 42, 0.50) 45%,
-        rgba(7, 18, 42, 0.15) 100%);
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* Grille SVG décorative, toujours au-dessus de l'overlay et du filtre natif */
+/* Grille SVG décorative, toujours au-dessus du filtre de couleur natif */
 .s_exocoms_hero_svg {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2;
+    z-index: 1;
     pointer-events: none;
 }
 
-/* Le contenu doit rester au-dessus de tout */
+/* Le contenu doit rester au-dessus du filtre (.o_we_bg_filter) et du SVG */
 .s_exocoms_hero .container {
     position: relative;
-    z-index: 3;
+    z-index: 2;
 }
 
 /* Badge — reprend le style validé précédemment */
@@ -104,19 +89,10 @@
 }
 
 .s_exocoms_hero_buttons .btn-outline-light {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: white !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-    backdrop-filter: blur(8px);
     border-radius: 50px;
     padding: 13px 32px;
     font-weight: 700;
-}
-
-.s_exocoms_hero_buttons .btn-outline-light:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    border-color: white !important;
-    color: white !important;
+    border-width: 1.5px;
 }
 
 /* Trust signals — repris de l'ancien hero */
@@ -143,87 +119,3 @@
 /* ═══════════════════════════════════════════════════════════ */
 /* RESPONSIVE — délégué à responsive.css selon ta convention   */
 /* ═══════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════ */
-/* TICKER — bandeau défilant services, repris de l'ancien hero  */
-/* ═══════════════════════════════════════════════════════════ */
-
-.exo-ticker-wrap {
-    width: 100%;
-    background: transparent !important;
-    overflow: hidden;
-    border-top: 3px solid #0d4dff;
-    border-bottom: 1px solid rgba(13, 77, 255, 0.15);
-    margin-top: 0;
-    margin-bottom: 45px;
-    padding: 0;
-    display: block;
-}
-
-.exo-ticker {
-    display: flex;
-    width: 200%;
-    animation: ticker-scroll 20s linear infinite;
-}
-
-.exo-ticker-wrap:hover .exo-ticker {
-    animation-play-state: paused;
-}
-
-.exo-ticker-item {
-    flex: 0 0 calc(100% / 12);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 16px 0;
-    color: #1a2340 !important;
-    text-decoration: none !important;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    border-right: 1px solid rgba(13, 77, 255, 0.1);
-    transition: all 0.2s ease;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    background: transparent !important;
-}
-
-.exo-ticker-item:hover {
-    background: rgba(13, 77, 255, 0.05) !important;
-    color: #0d4dff !important;
-}
-
-.exo-ticker-item:hover .exo-ticker-icon {
-    background: #0d4dff;
-    color: white;
-}
-
-.exo-ticker-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: #eef2ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #0d4dff;
-    font-size: 22px;
-    transition: all 0.2s ease;
-}
-
-@keyframes ticker-scroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-@media (max-width: 991px) {
-    .exo-ticker-item { flex: 0 0 calc(100% / 6); font-size: 11px; }
-    .exo-ticker-icon { width: 36px; height: 36px; font-size: 18px; }
-}
-
-@media (max-width: 575px) {
-    .exo-ticker-item { flex: 0 0 calc(100% / 4); font-size: 10px; padding: 12px 0; }
-    .exo-ticker-icon { width: 32px; height: 32px; font-size: 16px; }
-}
