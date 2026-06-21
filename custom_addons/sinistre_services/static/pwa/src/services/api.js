@@ -53,6 +53,7 @@ window.API = (() => {
 
         /* ── Missions ── */
         async getMissions()  { return this.get('/intervenant/missions'); },
+        async getMissionsHistorique() { return this.get('/intervenant/missions?historique=1'); },
         async getMission(id) { return this.get(`/mission/${id}`); },
 
         /* ── Workflow mission ── */
@@ -138,6 +139,14 @@ window.API = (() => {
 
         async getFacturesAFournir() {
             return this.get('/intervenant/factures-a-fournir');
+        },
+
+        async getBancaire() {
+            return this.get('/intervenant/bancaire');
+        },
+
+        async facturerMission(missionId) {
+            return this.post(`/intervenant/mission/${missionId}/facturer`, {});
         },
 
         /* ── Auth Odoo ── */
