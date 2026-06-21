@@ -1,167 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_header" name="Custom Header">
-        <header class="exo-header">
-            <div class="exo-header-container">
 
-                <!-- LOGO -->
-                <a href="/" class="exo-logo">
-                    <img src="/exocoms_theme/static/src/img/EXOCOMS.png" alt="Exocoms Group — Terminaux de paiement et caisses enregistreuses" />
-                </a>
+    <!-- ═══════════════════════════════════════════════════════════
+         HEADER — héritage déclaratif de website.layout
+         S'applique à TOUTES les pages du site (y compris les pages
+         natives Odoo : panier, paiement, 404, compte client...)
+         priority="1000" garantit la stabilité face à l'éditeur
+         visuel ou d'autres extensions de website.layout.
+         ═══════════════════════════════════════════════════════════ -->
 
-                <!-- NAVIGATION DESKTOP -->
-                <nav class="exo-nav" id="exo-nav" aria-label="Navigation principale">
-                    <a href="/" class="exo-nav-link">Accueil</a>
-                    <a href="/shop" class="exo-nav-link">Boutique</a>
-                    <a href="/services" class="exo-nav-link">Nos services</a>
-                </nav>
+    <template id="custom_header" inherit_id="website.layout" name="Exocoms Header" priority="1000">
+        <xpath expr="//div[@id='wrapwrap']/header" position="replace">
+            <header class="exo-header">
+                <div class="exo-header-container">
 
-                <!-- ICONES DROITE -->
-                <div class="exo-header-icons">
-                    <a href="/shop/cart" class="exo-icon-btn" title="Panier" aria-label="Panier">
-                        <i class="fa fa-shopping-cart" aria-hidden="true"/>
+                    <!-- LOGO -->
+                    <a href="/" class="exo-logo">
+                        <img src="/exocoms_theme/static/src/img/EXOCOMS.png"
+                             alt="Exocoms Group — Terminaux de paiement et caisses enregistreuses"/>
                     </a>
-                    <a href="/shop/wishlist" class="exo-icon-btn" title="Favoris" aria-label="Liste de souhaits">
-                        <i class="fa fa-heart" aria-hidden="true"/>
-                    </a>
-                    <div class="exo-search-wrapper">
-                        <button class="exo-icon-btn" id="exo-search-open" type="button" title="Rechercher" aria-label="Ouvrir la recherche">
-                            <i class="fa fa-search" aria-hidden="true"/>
-                        </button>
-                        <div class="exo-search-overlay" id="exo-search-overlay" role="dialog" aria-modal="true" aria-label="Recherche">
-                            <div class="exo-search-box">
-                                <form action="/shop" method="get" class="exo-search-form" role="search">
-                                    <i class="fa fa-search" aria-hidden="true"/>
-                                    <input type="text" name="search" id="exo-search-input"
-                                        placeholder="Rechercher un produit..." autocomplete="off"
-                                        aria-label="Rechercher un produit"/>
-                                    <button type="submit">Rechercher</button>
-                                </form>
-                                <button type="button" class="exo-search-close" id="exo-search-close" aria-label="Fermer la recherche">
-                                    <i class="fa fa-times" aria-hidden="true"/>
-                                </button>
+
+                    <!-- NAVIGATION DESKTOP -->
+                    <nav class="exo-nav" id="exo-nav" aria-label="Navigation principale">
+                        <a href="/" class="exo-nav-link">Accueil</a>
+                        <a href="/shop" class="exo-nav-link">Boutique</a>
+                        <a href="/services" class="exo-nav-link">Nos services</a>
+                    </nav>
+
+                    <!-- ICONES DROITE -->
+                    <div class="exo-header-icons">
+                        <a href="/shop/cart" class="exo-icon-btn" title="Panier" aria-label="Panier">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"/>
+                        </a>
+                        <a href="/shop/wishlist" class="exo-icon-btn" title="Favoris" aria-label="Liste de souhaits">
+                            <i class="fa fa-heart" aria-hidden="true"/>
+                        </a>
+                        <div class="exo-search-wrapper">
+                            <button class="exo-icon-btn" id="exo-search-open" type="button" title="Rechercher" aria-label="Ouvrir la recherche">
+                                <i class="fa fa-search" aria-hidden="true"/>
+                            </button>
+                            <div class="exo-search-overlay" id="exo-search-overlay" role="dialog" aria-modal="true" aria-label="Recherche">
+                                <div class="exo-search-box">
+                                    <form action="/shop" method="get" class="exo-search-form" role="search">
+                                        <i class="fa fa-search" aria-hidden="true"/>
+                                        <input type="text" name="search" id="exo-search-input"
+                                            placeholder="Rechercher un produit..." autocomplete="off"
+                                            aria-label="Rechercher un produit"/>
+                                        <button type="submit">Rechercher</button>
+                                    </form>
+                                    <button type="button" class="exo-search-close" id="exo-search-close" aria-label="Fermer la recherche">
+                                        <i class="fa fa-times" aria-hidden="true"/>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="exo-profile-dropdown">
-                        <button class="exo-icon-btn" aria-label="Mon compte" aria-expanded="false" aria-haspopup="true">
-                            <i class="fa fa-user" aria-hidden="true"/>
-                        </button>
-                        <div class="exo-profile-menu" role="menu">
-                            <t t-if="request.env.user._is_public()">
-                                <a href="/web/login" role="menuitem">
-                                    <i class="fa fa-sign-in" aria-hidden="true"/> Connexion
-                                </a>
-                            </t>
-                            <t t-else="">
-                                <a href="/my/home" role="menuitem">
-                                    <i class="fa fa-user-circle" aria-hidden="true"/>
-                                    <span>Mon compte</span>
-                                </a>
-                                <a href="/web/session/logout?redirect=/" role="menuitem">
-                                    <i class="fa fa-sign-out" aria-hidden="true"/>
-                                    <span>Déconnexion</span>
-                                </a>
-                            </t>
+                        <div class="exo-profile-dropdown">
+                            <button class="exo-icon-btn" aria-label="Mon compte" aria-expanded="false" aria-haspopup="true">
+                                <i class="fa fa-user" aria-hidden="true"/>
+                            </button>
+                            <div class="exo-profile-menu" role="menu">
+                                <t t-if="request.env.user._is_public()">
+                                    <a href="/web/login" role="menuitem">
+                                        <i class="fa fa-sign-in" aria-hidden="true"/> Connexion
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <a href="/my/home" role="menuitem">
+                                        <i class="fa fa-user-circle" aria-hidden="true"/>
+                                        <span>Mon compte</span>
+                                    </a>
+                                    <a href="/web/session/logout?redirect=/" role="menuitem">
+                                        <i class="fa fa-sign-out" aria-hidden="true"/>
+                                        <span>Déconnexion</span>
+                                    </a>
+                                </t>
+                            </div>
                         </div>
+
+                        <!-- BURGER MENU MOBILE -->
+                        <button class="exo-burger" id="exo-burger" type="button"
+                                aria-label="Menu" aria-expanded="false" aria-controls="exo-nav">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
                     </div>
 
-                    <!-- BURGER MENU MOBILE -->
-                    <button class="exo-burger" id="exo-burger" type="button"
-                            aria-label="Menu" aria-expanded="false" aria-controls="exo-nav">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
                 </div>
 
-            </div>
+                <!-- MENU MOBILE DRAWER -->
+                <div class="exo-mobile-nav" id="exo-mobile-nav" aria-hidden="true">
+                    <nav aria-label="Navigation mobile">
+                        <a href="/" class="exo-mobile-link">Accueil</a>
+                        <a href="/shop" class="exo-mobile-link">Boutique</a>
+                        <a href="/services" class="exo-mobile-link">Nos services</a>
+                    </nav>
+                </div>
 
-            <!-- MENU MOBILE DRAWER -->
-            <div class="exo-mobile-nav" id="exo-mobile-nav" aria-hidden="true">
-                <nav aria-label="Navigation mobile">
-                    <a href="/" class="exo-mobile-link">Accueil</a>
-                    <a href="/shop" class="exo-mobile-link">Boutique</a>
-                    <a href="/services" class="exo-mobile-link">Nos services</a>
-                </nav>
-            </div>
-
-        </header>
-
-        <script>
-        <![CDATA[
-        document.addEventListener('DOMContentLoaded', function () {
-
-            /* === SEARCH === */
-            var openBtn  = document.getElementById('exo-search-open');
-            var overlay  = document.getElementById('exo-search-overlay');
-            var closeBtn = document.getElementById('exo-search-close');
-            var input    = document.getElementById('exo-search-input');
-
-            if (openBtn && overlay) {
-                openBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    overlay.classList.add('open');
-                    setTimeout(function() { if (input) input.focus(); }, 50);
-                });
-            }
-            if (closeBtn && overlay) {
-                closeBtn.addEventListener('click', function() {
-                    overlay.classList.remove('open');
-                    if (input) input.value = '';
-                });
-            }
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && overlay) overlay.classList.remove('open');
-            });
-            document.addEventListener('click', function(e) {
-                if (overlay && overlay.classList.contains('open') && !overlay.contains(e.target)) {
-                    overlay.classList.remove('open');
-                }
-            });
-
-            /* === PROFIL DROPDOWN === */
-            var profileDropdown = document.querySelector('.exo-profile-dropdown');
-            if (profileDropdown) {
-                var profileTimeout;
-                profileDropdown.addEventListener('mouseenter', function() {
-                    clearTimeout(profileTimeout);
-                    profileDropdown.classList.add('active');
-                });
-                profileDropdown.addEventListener('mouseleave', function() {
-                    profileTimeout = setTimeout(function() {
-                        profileDropdown.classList.remove('active');
-                    }, 300);
-                });
-            }
-
-            /* === BURGER MENU === */
-            var burger    = document.getElementById('exo-burger');
-            var mobileNav = document.getElementById('exo-mobile-nav');
-
-            if (burger && mobileNav) {
-                burger.addEventListener('click', function() {
-                    var isOpen = mobileNav.classList.toggle('open');
-                    burger.classList.toggle('active');
-                    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                    mobileNav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-                    document.body.style.overflow = isOpen ? 'hidden' : '';
-                });
-
-                /* Ferme le menu mobile au clic sur un lien */
-                mobileNav.querySelectorAll('.exo-mobile-link').forEach(function(link) {
-                    link.addEventListener('click', function() {
-                        mobileNav.classList.remove('open');
-                        burger.classList.remove('active');
-                        burger.setAttribute('aria-expanded', 'false');
-                        mobileNav.setAttribute('aria-hidden', 'true');
-                        document.body.style.overflow = '';
-                    });
-                });
-            }
-
-        });
-        ]]>
-        </script>
+            </header>
+        </xpath>
     </template>
+
 </odoo>

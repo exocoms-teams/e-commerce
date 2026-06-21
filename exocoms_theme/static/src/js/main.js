@@ -88,11 +88,91 @@
         priceFilter.style.minWidth = '180px';
     }
 
+    /* ═══════════════════════════════════════════════════════════
+       HEADER — recherche overlay, dropdown profil, burger menu
+       mobile. Repris du custom_header.xml, déplacé ici pour rester
+       cohérent avec le chargement des assets via le manifest.
+       ═══════════════════════════════════════════════════════════ */
+
+    function initHeaderSearch() {
+        var openBtn  = document.getElementById('exo-search-open');
+        var overlay  = document.getElementById('exo-search-overlay');
+        var closeBtn = document.getElementById('exo-search-close');
+        var input    = document.getElementById('exo-search-input');
+
+        if (openBtn && overlay) {
+            openBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                overlay.classList.add('open');
+                setTimeout(function() { if (input) input.focus(); }, 50);
+            });
+        }
+        if (closeBtn && overlay) {
+            closeBtn.addEventListener('click', function() {
+                overlay.classList.remove('open');
+                if (input) input.value = '';
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay) overlay.classList.remove('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (overlay && overlay.classList.contains('open') && !overlay.contains(e.target)) {
+                overlay.classList.remove('open');
+            }
+        });
+    }
+
+    function initHeaderProfileDropdown() {
+        var profileDropdown = document.querySelector('.exo-profile-dropdown');
+        if (profileDropdown) {
+            var profileTimeout;
+            profileDropdown.addEventListener('mouseenter', function() {
+                clearTimeout(profileTimeout);
+                profileDropdown.classList.add('active');
+            });
+            profileDropdown.addEventListener('mouseleave', function() {
+                profileTimeout = setTimeout(function() {
+                    profileDropdown.classList.remove('active');
+                }, 300);
+            });
+        }
+    }
+
+    function initHeaderBurgerMenu() {
+        var headerBurger    = document.getElementById('exo-burger');
+        var headerMobileNav = document.getElementById('exo-mobile-nav');
+
+        if (headerBurger && headerMobileNav) {
+            headerBurger.addEventListener('click', function() {
+                var isOpen = headerMobileNav.classList.toggle('open');
+                headerBurger.classList.toggle('active');
+                headerBurger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                headerMobileNav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            });
+
+            /* Ferme le menu mobile au clic sur un lien */
+            headerMobileNav.querySelectorAll('.exo-mobile-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    headerMobileNav.classList.remove('open');
+                    headerBurger.classList.remove('active');
+                    headerBurger.setAttribute('aria-expanded', 'false');
+                    headerMobileNav.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                });
+            });
+        }
+    }
+
     function init() {
         initDropdowns();
         initBurgerMenu();
         initScrollReveal();
         initPriceFilter();
+        initHeaderSearch();
+        initHeaderProfileDropdown();
+        initHeaderBurgerMenu();
     }
 
     if (document.readyState === 'loading') {
