@@ -136,6 +136,10 @@ window.API = (() => {
             return this.get('/intervenant/comptabilite');
         },
 
+        async getFacturesAFournir() {
+            return this.get('/intervenant/factures-a-fournir');
+        },
+
         /* ── Auth Odoo ── */
         async login(email, password) {
             const url  = CONFIG.ODOO_BASE_URL + '/web/session/authenticate';
