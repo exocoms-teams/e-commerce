@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Désactive le footer natif d'Odoo (website.footer_custom) pour
+         éviter tout conflit/duplication avec notre propre footer
+         ci-dessous — sans cette désactivation, les deux structures
+         peuvent coexister et décaler l'alignement du copyright -->
+    <record id="website.footer_custom" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
     <!-- ═══════════════════════════════════════════════════════════
          FOOTER — héritage déclaratif de website.layout
          S'applique à TOUTES les pages du site (y compris les pages
