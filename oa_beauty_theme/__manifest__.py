@@ -1,12 +1,12 @@
 {
-    'name': 'O&A Beauty Theme',
+    'name': 'O.A.I Beauty Theme',
     'version': '19.0.5.0.1',
     'category': 'Website/Theme',
-    'summary': 'LUMIERE frontend for Odoo 19: homepage, shop, product page, brand SCSS',
-    'description': 'Full migration of the LUMIERE cosmetics frontend to Odoo 19.',
+    'summary': 'O.A.I Beauty frontend for Odoo 19: homepage, shop, product page, brand SCSS',
+    'description': 'Full migration of the O.A.I Beauty cosmetics frontend to Odoo 19. Clean Luxury positioning.',
 
-    'author': 'O&A Beauty',
-    'website': 'https://www.oabeauty.example',
+    'author': 'O.A.I Beauty',
+    'website': 'https://www.oaibeauty.example',
     'license': 'LGPL-3',
 
     'depends': [
