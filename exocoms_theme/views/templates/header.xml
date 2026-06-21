@@ -23,15 +23,18 @@
                     <!-- NAVIGATION DESKTOP -->
                     <nav class="exo-nav" id="exo-nav" aria-label="Navigation principale">
                         <t t-set="current_path" t-value="request.httprequest.path"/>
+                        <t t-set="is_shop" t-value="'/shop' in current_path"/>
+                        <t t-set="is_services" t-value="'/services' in current_path"/>
+                        <t t-set="is_home" t-value="not is_shop and not is_services"/>
                         <t t-if="request.env.lang == 'fr_FR'">
-                            <a href="/" t-attf-class="exo-nav-link #{'active' if current_path == '/' else ''}">Accueil</a>
-                            <a href="/shop" t-attf-class="exo-nav-link #{'active' if current_path.startswith('/shop') else ''}">Boutique</a>
-                            <a href="/services" t-attf-class="exo-nav-link #{'active' if current_path.startswith('/services') else ''}">Nos services</a>
+                            <a href="/" t-att-class="'exo-nav-link active' if is_home else 'exo-nav-link'">Accueil</a>
+                            <a href="/shop" t-att-class="'exo-nav-link active' if is_shop else 'exo-nav-link'">Boutique</a>
+                            <a href="/services" t-att-class="'exo-nav-link active' if is_services else 'exo-nav-link'">Nos services</a>
                         </t>
                         <t t-else="">
-                            <a href="/en" t-attf-class="exo-nav-link #{'active' if current_path in ('/en', '/') else ''}">Home</a>
-                            <a href="/en/shop" t-attf-class="exo-nav-link #{'active' if current_path.startswith('/en/shop') else ''}">Shop</a>
-                            <a href="/en/services" t-attf-class="exo-nav-link #{'active' if current_path.startswith('/en/services') else ''}">Our Services</a>
+                            <a href="/en" t-att-class="'exo-nav-link active' if is_home else 'exo-nav-link'">Home</a>
+                            <a href="/en/shop" t-att-class="'exo-nav-link active' if is_shop else 'exo-nav-link'">Shop</a>
+                            <a href="/en/services" t-att-class="'exo-nav-link active' if is_services else 'exo-nav-link'">Our Services</a>
                         </t>
                     </nav>
 
