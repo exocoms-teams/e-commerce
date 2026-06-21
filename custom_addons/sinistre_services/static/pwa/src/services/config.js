@@ -24,6 +24,9 @@ window.CONFIG = {
     },
     FIREBASE_VAPID_KEY: '__FIREBASE_VAPID_KEY__',
 
+    /* ── Contact administrateur ─────────────────────────────────── */
+    ADMIN_PHONE: '0X0X0X',
+
     /* ── PWA ──────────────────────────────────────────────────────── */
     SW_PATH:    '/sinistre_services/static/pwa/sw.js',
     CACHE_NAME: 'sinistre-pro-v1',
