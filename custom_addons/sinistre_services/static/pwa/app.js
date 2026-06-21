@@ -88,6 +88,9 @@ window.App = (() => {
                     interventions: u.interventions || 0,
                     ca_total: u.ca_total || 0,
                     ca_mois: u.ca_mois || 0,
+                    solde_comptabilite: u.solde_comptabilite ?? null,
+                    taux_acceptation: u.taux_acceptation ?? null,
+                    factures_a_fournir: u.factures_a_fournir ?? 0,
                     specialites: u.specialites || [],
                     specialites_types: u.specialites_types || [],
                     membre_depuis: u.membre_depuis || '',
@@ -128,6 +131,21 @@ window.App = (() => {
         const sA = document.getElementById('statActives');
         if (sA && sA.textContent === '–') sA.textContent = '0';
         set('statInterventions', nbInterv);
+
+        if (window.Dashboard && typeof Dashboard.updateExtendedStats === 'function') {
+            Dashboard.updateExtendedStats(user);
+        } else {
+            const soldeEl = document.getElementById('statSolde');
+            if (soldeEl && user.solde_comptabilite != null) {
+                const s = user.solde_comptabilite;
+                soldeEl.textContent = Math.abs(s).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+                soldeEl.className = 'stat-value ' + (s < 0 ? 'stat-solde-debit' : 'stat-solde-credit');
+            }
+            const tauxEl = document.getElementById('statTauxAccept');
+            if (tauxEl && user.taux_acceptation != null) tauxEl.textContent = user.taux_acceptation + ' %';
+            const factEl = document.getElementById('statFacturesAFournir');
+            if (factEl) factEl.textContent = user.factures_a_fournir ?? 0;
+        }
 
         // Profil
         set('profileAvatarLg', initials || '?');
