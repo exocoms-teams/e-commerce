@@ -48,6 +48,28 @@ window.FCM = (() => {
         return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    function _updateNotifButton() {
+        const btn = document.getElementById('notifEnableBtn');
+        if (!btn) return;
+        if (Notification.permission === 'granted') {
+            btn.textContent = 'Notifications activées';
+            btn.disabled = true;
+        } else if (Notification.permission === 'denied') {
+            btn.textContent = 'Notifications bloquées';
+            btn.title = 'Réinitialisez l\'autorisation via l\'icône à gauche de l\'URL du site';
+        } else {
+            btn.textContent = 'Activer les notifications';
+            btn.disabled = false;
+            btn.title = '';
+        }
+    }
+
+    function _permissionBlockedMessage() {
+        return 'Les notifications sont bloquées par votre navigateur. '
+            + 'Cliquez sur l\'icône à gauche de l\'adresse du site (cadenas ou réglages), '
+            + 'ouvrez « Autorisations » / « Paramètres du site », puis autorisez les notifications.';
+    }
+
     function _addNotification(title, body, data) {
         const items = _loadNotifications();
         items.unshift({
@@ -75,6 +97,7 @@ window.FCM = (() => {
                 this._onForegroundMessage();
                 _updateDot();
                 _renderPanel();
+                _updateNotifButton();
             } catch (err) {
                 console.warn('[FCM] Init error:', err);
             }
@@ -86,7 +109,10 @@ window.FCM = (() => {
             if (!panel) return;
             _panelOpen = !_panelOpen;
             panel.style.display = _panelOpen ? 'block' : 'none';
-            if (_panelOpen) _renderPanel();
+            if (_panelOpen) {
+                _renderPanel();
+                _updateNotifButton();
+            }
         },
 
         closePanel() {
@@ -121,9 +147,50 @@ window.FCM = (() => {
         async requestPermission() {
             if (!_messaging) { this.init(); }
 
-            const permission = await Notification.requestPermission();
+            if (Notification.permission === 'denied') {
+                Toast.show(_permissionBlockedMessage(), 'warning', 9000);
+                _updateNotifButton();
+                _updateDot();
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                _updateNotifButton();
+                try {
+                    _token = await _messaging.getToken({ vapidKey: CONFIG.FIREBASE_VAPID_KEY });
+                    if (_token) {
+                        await API.saveFCMToken(_token);
+                        localStorage.setItem('ss_fcm_token', _token);
+                        Toast.show('🔔 Notifications déjà activées', 'success');
+                    }
+                } catch (err) {
+                    console.error('[FCM] getToken error:', err);
+                    Toast.show('Erreur activation notifications', 'error');
+                }
+                return;
+            }
+
+            let permission;
+            try {
+                permission = await Notification.requestPermission();
+            } catch (err) {
+                console.warn('[FCM] requestPermission error:', err);
+                if (Notification.permission === 'denied') {
+                    Toast.show(_permissionBlockedMessage(), 'warning', 9000);
+                } else {
+                    Toast.show('Impossible d\'afficher la demande de notification', 'error');
+                }
+                _updateNotifButton();
+                _updateDot();
+                return;
+            }
+
             if (permission !== 'granted') {
-                Toast.show('Notifications refusées', 'warning');
+                const msg = permission === 'denied'
+                    ? _permissionBlockedMessage()
+                    : 'Notifications refusées';
+                Toast.show(msg, 'warning', permission === 'denied' ? 9000 : 5000);
+                _updateNotifButton();
                 _updateDot();
                 return;
             }
@@ -134,6 +201,7 @@ window.FCM = (() => {
                     await API.saveFCMToken(_token);
                     localStorage.setItem('ss_fcm_token', _token);
                     _updateDot();
+                    _updateNotifButton();
                     Toast.show('🔔 Notifications activées', 'success');
                 }
             } catch (err) {
@@ -175,6 +243,7 @@ window.FCM = (() => {
                 }
             }
             _updateDot();
+            _updateNotifButton();
         },
 
         getToken() { return _token; },
