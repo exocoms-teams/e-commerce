@@ -63,9 +63,9 @@ window.Comptabilite = (function() {
         var head = document.getElementById('acctFacturesHead');
         if (head) {
             if (tab === 'travaux') {
-                head.innerHTML = '<tr><th>ID</th><th>Dossier DU</th><th>BÉNÉFICIAIRE</th><th>VILLE</th><th>STATUT</th></tr>';
+                head.innerHTML = '<tr><th>ID</th><th>Dossier DU</th><th>BÉNÉFICIAIRE</th><th>VILLE</th><th>STATUT</th><th>Action</th></tr>';
             } else {
-                head.innerHTML = '<tr><th>ID</th><th>Ville</th><th>Statut</th><th>Date du RDV</th><th>Facture</th></tr>';
+                head.innerHTML = '<tr><th>ID</th><th>Ville</th><th>Statut</th><th>Date du RDV</th><th>Facture</th><th>Action</th></tr>';
             }
         }
         _renderFacturesTable();
@@ -99,24 +99,35 @@ window.Comptabilite = (function() {
 
         if (_facturesTab === 'travaux') {
             tbody.innerHTML = rows.map(function(r) {
+                var action = r.a_facturer
+                    ? '<button class="btn-start" style="padding:6px 12px;font-size:12px" onclick="Comptabilite.facturerMission(' + r.id + ')">Facturer</button>'
+                    : (r.facture ? '—' : '—');
                 return '<tr>'
                     + '<td>' + _esc(r.id) + '</td>'
                     + '<td>' + _esc(r.dossier_du) + '</td>'
                     + '<td>' + _esc(r.beneficiaire) + '</td>'
                     + '<td>' + _esc(r.ville) + '</td>'
                     + '<td>' + _badgeStatut(r.statut) + '</td>'
+                    + '<td>' + action + '</td>'
                     + '</tr>';
             }).join('');
             return;
         }
 
         tbody.innerHTML = rows.map(function(r) {
+            var factureCell = r.facture
+                ? _esc(r.facture)
+                : '<span style="color:#9CA3AF">À facturer</span>';
+            var action = r.a_facturer
+                ? '<button class="btn-start" style="padding:6px 12px;font-size:12px" onclick="Comptabilite.facturerMission(' + r.id + ')">Facturer</button>'
+                : '—';
             return '<tr>'
                 + '<td>' + _esc(r.id) + '</td>'
                 + '<td>' + _esc(r.ville) + '</td>'
                 + '<td>' + _badgeStatut(r.statut) + '</td>'
-                + '<td>' + _fmtDate(r.date_rdv) + '</td>'
-                + '<td>' + _esc(r.facture || '—') + '</td>'
+                + '<td>' + _fmtDate(r.date_rdv || r.date_cloture) + '</td>'
+                + '<td>' + factureCell + '</td>'
+                + '<td>' + action + '</td>'
                 + '</tr>';
         }).join('');
     }
@@ -131,9 +142,15 @@ window.Comptabilite = (function() {
             soldeEl.textContent = Math.abs(solde).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             soldeEl.className = 'acct-solde-value ' + (solde < 0 ? 'acct-solde-debit' : 'acct-solde-credit');
         }
-        if (soldeLbl) soldeLbl.textContent = solde < 0 ? 'Solde débiteur (TTC)' : 'Solde créditeur (TTC)';
+        if (soldeLbl) soldeLbl.textContent = solde < 0 ? 'Commission plateforme due (TTC)' : 'Solde créditeur (TTC)';
         if (soldePill) {
             soldePill.className = 'acct-solde-pill ' + (solde < 0 ? 'acct-solde-pill-debit' : 'acct-solde-pill-credit');
+        }
+        var soldeHint = document.getElementById('acctSoldeHint');
+        if (soldeHint) {
+            soldeHint.textContent = solde < 0
+                ? 'Montant de commission à régler à la plateforme sur vos interventions facturées.'
+                : 'Crédit disponible sur votre compte artisan.';
         }
 
         const caList = document.getElementById('acctCaList');
@@ -194,7 +211,24 @@ window.Comptabilite = (function() {
                     + '<td>' + _fmtMoney(r.montant_ttc) + '</td>'
                     + '</tr>';
             }).join('')
-            : '<tr><td colspan="5" class="acct-empty">Aucune donnée</td></tr>';
+            : '<tr><td colspan="5" class="acct-empty">Aucune facture émise — utilisez « Facturer » dans Gérer mes factures ou Interventions.</td></tr>';
+    }
+
+    function facturerMission(missionId) {
+        if (!missionId) {
+            Toast.show('Mission introuvable', 'error');
+            return;
+        }
+        if (!confirm('Générer la facture pour cette mission ?')) return;
+        API.facturerMission(missionId)
+            .then(function(data) {
+                var num = (data && data.facture_numero) ? data.facture_numero : '';
+                Toast.show(num ? ('Facture ' + num + ' créée') : 'Facture créée avec succès', 'success');
+                return init();
+            })
+            .catch(function(err) {
+                Toast.show(err.message || 'Erreur lors de la facturation', 'error');
+            });
     }
 
     function downloadCommissions() {
@@ -214,6 +248,7 @@ window.Comptabilite = (function() {
         showPaiements,
         setFacturesTab,
         setPaiementsTab,
+        facturerMission,
         downloadCommissions,
     };
 })();
