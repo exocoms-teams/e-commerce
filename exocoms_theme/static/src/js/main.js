@@ -88,63 +88,11 @@
         priceFilter.style.minWidth = '180px';
     }
 
-    /* ═══════════════════════════════════════════════════════════
-       HEADER — dropdown profil, burger menu mobile.
-       La recherche utilise désormais le modal natif Bootstrap
-       #o_search_modal (data-bs-toggle="modal"), géré entièrement
-       par Odoo — plus besoin de JS personnalisé pour l'ouverture/
-       fermeture, le clic extérieur ou la touche Escape.
-       ═══════════════════════════════════════════════════════════ */
-
-    function initHeaderProfileDropdown() {
-        var profileDropdown = document.querySelector('.exo-profile-dropdown');
-        if (profileDropdown) {
-            var profileTimeout;
-            profileDropdown.addEventListener('mouseenter', function() {
-                clearTimeout(profileTimeout);
-                profileDropdown.classList.add('active');
-            });
-            profileDropdown.addEventListener('mouseleave', function() {
-                profileTimeout = setTimeout(function() {
-                    profileDropdown.classList.remove('active');
-                }, 300);
-            });
-        }
-    }
-
-    function initHeaderBurgerMenu() {
-        var headerBurger    = document.getElementById('exo-burger');
-        var headerMobileNav = document.getElementById('exo-mobile-nav');
-
-        if (headerBurger && headerMobileNav) {
-            headerBurger.addEventListener('click', function() {
-                var isOpen = headerMobileNav.classList.toggle('open');
-                headerBurger.classList.toggle('active');
-                headerBurger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                headerMobileNav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-                document.body.style.overflow = isOpen ? 'hidden' : '';
-            });
-
-            /* Ferme le menu mobile au clic sur un lien */
-            headerMobileNav.querySelectorAll('.exo-mobile-link').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    headerMobileNav.classList.remove('open');
-                    headerBurger.classList.remove('active');
-                    headerBurger.setAttribute('aria-expanded', 'false');
-                    headerMobileNav.setAttribute('aria-hidden', 'true');
-                    document.body.style.overflow = '';
-                });
-            });
-        }
-    }
-
     function init() {
         initDropdowns();
         initBurgerMenu();
         initScrollReveal();
         initPriceFilter();
-        initHeaderProfileDropdown();
-        initHeaderBurgerMenu();
     }
 
     if (document.readyState === 'loading') {
