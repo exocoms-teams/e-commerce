@@ -144,7 +144,7 @@
                             <div class="notif-panel" id="notifPanel" style="display:none">
                                 <div class="notif-panel-header">
                                     <span class="notif-panel-title">Notifications</span>
-                                    <button class="notif-enable-btn" type="button" onclick="FCM.requestPermission()">Activer Firebase</button>
+                                    <button class="notif-enable-btn" id="notifEnableBtn" type="button" onclick="FCM.requestPermission()">Activer les notifications</button>
                                 </div>
                                 <div class="notif-panel-list" id="notifList">
                                     <div class="notif-empty">Aucune notification pour le moment</div>
@@ -883,7 +883,7 @@
                 <div id="ff-tab-intervenants" class="ff-tab-content">
                     <div class="ff-intervenant-block">
                         <div class="ff-intervenant-header">
-                            <span id="ff_interv_loc">—</span>
+                            <span id="ff_interv_name">—</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
                         </div>
                         <div class="ff-section-grid">
@@ -948,53 +948,53 @@
                 <!-- ── Onglet CORPS DE MÉTIERS ── -->
                 <div id="ff-tab-metiers" class="ff-tab-content">
                     <div class="ff-docs-card">
-                        <p class="ff-docs-intro">Sélectionnez vos corps de métiers pour recevoir les missions correspondantes.</p>
-                        <div class="ff-metiers-grid">
+                        <div class="ff-admin-notice" id="ffMetiersAdminNotice">
+                            Pour modifier vos spécialisations, veuillez contacter l'administrateur au <strong id="ffAdminPhone">0X0X0X</strong>.
+                        </div>
+                        <p class="ff-docs-intro">Vos corps de métiers actuels (modification réservée à l'administrateur).</p>
+                        <div class="ff-metiers-grid ff-metiers-readonly">
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="serrurerie" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="serrurerie" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">🔑</span>
                                     <span>Serrurerie</span>
                                 </div>
                             </label>
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="plomberie" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="plomberie" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">🔧</span>
                                     <span>Plomberie</span>
                                 </div>
                             </label>
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="electricite" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="electricite" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">⚡</span>
                                     <span>Électricité</span>
                                 </div>
                             </label>
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_int" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_int" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">🚪</span>
                                     <span>Menuiserie Int.</span>
                                 </div>
                             </label>
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_ext" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_ext" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">🪟</span>
                                     <span>Menuiserie Ext.</span>
                                 </div>
                             </label>
                             <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="vitrerie" onchange="Profile.toggleMetier(this)"/>
+                                <input type="checkbox" class="ff-metier-cb" value="vitrerie" disabled/>
                                 <div class="ff-metier-box">
                                     <span class="ff-metier-icon">🪞</span>
                                     <span>Vitrerie</span>
                                 </div>
                             </label>
-                        </div>
-                        <div class="ff-save-bar">
-                            <button class="btn-save" onclick="Profile.saveMetiers()">Enregistrer les métiers</button>
                         </div>
                     </div>
                 </div>
@@ -1364,8 +1364,13 @@ window.Profile = (function() {
         set('interv_cp',    user.zip || '');
         set('interv_tel',   user.phone || '');
 
-        var locEl = document.getElementById('ff_interv_loc');
-        if (locEl && (user.city || user.zip)) locEl.textContent = (user.city||'') + (user.zip?' - '+user.zip:'');
+        var locEl = document.getElementById('ff_interv_name');
+        if (locEl) locEl.textContent = name || '—';
+
+        var adminPhoneEl = document.getElementById('ffAdminPhone');
+        if (adminPhoneEl) {
+            adminPhoneEl.textContent = user.admin_phone || (window.CONFIG && CONFIG.ADMIN_PHONE) || '0X0X0X';
+        }
 
         // Métiers dans intervenants
         var ml = document.getElementById('intervMetiersList');
@@ -1378,10 +1383,11 @@ window.Profile = (function() {
             }
         }
 
-        // Corps de métiers — cocher les cases
+        // Corps de métiers — affichage lecture seule
         var types = user.specialites_types || [];
         document.querySelectorAll('.ff-metier-cb').forEach(function(cb){
             cb.checked = types.indexOf(cb.value) !== -1;
+            cb.disabled = true;
         });
 
         // Documents légaux — statuts (si l'API les fournit)
@@ -1410,11 +1416,12 @@ window.Profile = (function() {
     }
 
     function saveMetiers() {
-        if (window.Toast) Toast.show('✅ Corps de métiers mis à jour', 'success');
+        var phone = (document.getElementById('ffAdminPhone')?.textContent || '0X0X0X').trim();
+        if (window.Toast) Toast.show('Pour modifier vos spécialisations, contactez l\'administrateur au ' + phone, 'info');
     }
 
-    function toggleMetier(cb) {
-        // noop — géré par CSS :checked
+    function toggleMetier() {
+        // Lecture seule — modification réservée à l'administrateur
     }
 
     function uploadDoc(type, input) {
