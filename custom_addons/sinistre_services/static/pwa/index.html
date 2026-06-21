@@ -271,6 +271,7 @@
                                 <th>Statut</th>
                                 <th>Date du RDV</th>
                                 <th>Facture</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="acctFacturesBody">
@@ -317,6 +318,7 @@
                                 <span id="acctSoldeLabel">Solde débiteur (TTC)</span>
                                 <span class="acct-solde-pill"><span id="acctSoldeValue">—</span> €</span>
                             </div>
+                            <p id="acctSoldeHint" style="font-size:12px;color:var(--text-mid);margin-top:8px;line-height:1.4"></p>
                         </div>
                         <div class="acct-ca-block">
                             <div class="acct-ca-title">Votre CA / ANNEE</div>
@@ -1326,6 +1328,34 @@ window.Profile = (function() {
         btn.classList.add('active');
         var el = document.getElementById('ff-tab-' + name);
         if (el) el.classList.add('active');
+        if (name === 'bancaire') loadBancaire();
+    }
+
+    function loadBancaire() {
+        API.getBancaire()
+            .then(function(data) {
+                var b = (data && data.bancaire) || {};
+                var set = function(id, v){ var el=document.getElementById(id); if(el) el.value = v||''; };
+                set('profileIban', b.iban);
+                set('profileBic', b.bic);
+                set('profileBancaireTitulaire', b.titulaire_compte);
+                set('profileBancaireBanque', b.banque);
+            })
+            .catch(function() { /* champs vides si erreur */ });
+    }
+
+    function saveBancaire() {
+        var iban     = (document.getElementById('profileIban')?.value || '').trim();
+        var bic      = (document.getElementById('profileBic')?.value || '').trim();
+        var titulaire = (document.getElementById('profileBancaireTitulaire')?.value || '').trim();
+        var banque   = (document.getElementById('profileBancaireBanque')?.value || '').trim();
+        if (!iban) { Toast.show('Veuillez saisir un IBAN', 'error'); return; }
+        API.post('/intervenant/bancaire', { iban, bic, titulaire, banque })
+            .then(function() {
+                Toast.show('Coordonnées bancaires enregistrées', 'success');
+                loadBancaire();
+            })
+            .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
     }
 
     function loadFromUser() {
@@ -1394,6 +1424,8 @@ window.Profile = (function() {
         var docs = user.documents || {};
         if (docs.kbis) _setDocStatus('doc_kbis_status',  docs.kbis);
         if (docs.rcpro) _setDocStatus('doc_rcpro_status', docs.rcpro);
+
+        loadBancaire();
     }
 
     function _setDocStatus(id, status) {
@@ -1435,18 +1467,7 @@ window.Profile = (function() {
         }, 2000);
     }
 
-    return { switchTab: switchTab, loadFromUser: loadFromUser, saveEntreprise: saveEntreprise, saveMetiers: saveMetiers, toggleMetier: toggleMetier, uploadDoc: uploadDoc, saveBancaire: saveBancaire };
-
-    function saveBancaire() {
-        var iban     = (document.getElementById('profileIban')?.value || '').trim();
-        var bic      = (document.getElementById('profileBic')?.value || '').trim();
-        var titulaire = (document.getElementById('profileBancaireTitulaire')?.value || '').trim();
-        var banque   = (document.getElementById('profileBancaireBanque')?.value || '').trim();
-        if (!iban) { Toast.show('Veuillez saisir un IBAN', 'error'); return; }
-        API.post('/intervenant/bancaire', { iban, bic, titulaire, banque })
-            .then(function() { Toast.show('Coordonnées bancaires enregistrées', 'success'); })
-            .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
-    }
+    return { switchTab: switchTab, loadFromUser: loadFromUser, loadBancaire: loadBancaire, saveEntreprise: saveEntreprise, saveMetiers: saveMetiers, toggleMetier: toggleMetier, uploadDoc: uploadDoc, saveBancaire: saveBancaire };
 })();
 </script>
 
