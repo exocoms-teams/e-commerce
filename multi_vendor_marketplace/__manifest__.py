@@ -95,9 +95,9 @@
         ],
     },
 
-    'demo': [
-    'data/demo_vendors.xml',
-    ],
+    #'demo': [
+    #'data/demo_vendors.xml',
+    #],
 
     'images': [
         'static/description/banner.png',
