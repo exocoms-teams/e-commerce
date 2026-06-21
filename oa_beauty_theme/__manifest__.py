@@ -21,6 +21,7 @@
     'data': [
         'data/product_attribute_data.xml',
         'data/product_public_category_data.xml',
+        'data/product_data.xml',
 
         'views/website_templates.xml',
         'views/website_homepage.xml',
