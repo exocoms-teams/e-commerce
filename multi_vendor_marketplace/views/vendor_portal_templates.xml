@@ -274,4 +274,68 @@
       </body>
     </html>
   </template>
+  <!--Template — Liste des produits-->
+  <template id="vendor_portal_products"
+            name="Portail Vendeur - Mes produits">
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Mes produits</title>
+        <link rel="stylesheet" href="/multi_vendor_marketplace/static/src/css/vendor_portal.css"/>
+      </head>
+      <body>
+        <div class="mvp-portal">
+          <div class="mvp-header">
+            <div class="mvp-container">
+              <div class="mvp-header-inner">
+                <h1 class="mvp-vendor-name" t-esc="vendor.name"/>
+                <nav class="mvp-nav">
+                  <a href="/vendor/dashboard" class="mvp-nav-link">Tableau de bord</a>
+                  <a href="/vendor/products" class="mvp-nav-link mvp-nav-active">Mes produits</a>
+                  <a href="/vendor/orders" class="mvp-nav-link">Mes commandes</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="mvp-body">
+            <div class="mvp-container">
+              <h2 class="mvp-section-title">Mes produits</h2>
+              <t t-if="not products">
+                <p>Vous n'avez pas encore de produits.</p>
+              </t>
+              <t t-else="">
+                <div class="mvp-products">
+                  <t t-foreach="products" t-as="product">
+                    <div class="mvp-product-card">
+                      <div class="mvp-product-img">
+                        <t t-if="product.image_512">
+                          <img t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                               t-att-alt="product.name"/>
+                        </t>
+                      </div>
+                      <div class="mvp-product-body">
+                        <h3 t-esc="product.name"/>
+                        <p class="mvp-price">
+                          <t t-esc="'%.2f EUR HT' % product.list_price"/>
+                        </p>
+                        <span t-if="product.website_published"
+                              class="mvp-badge mvp-badge-green">Publie</span>
+                        <span t-else="" class="mvp-badge mvp-badge-gray">Non publie</span>
+                      </div>
+                      <div class="mvp-product-actions">
+                        <a t-attf-href="/vendor/product/#{product.id}/edit"
+                           class="mvp-btn mvp-btn-outline">Modifier</a>
+                        <a t-attf-href="/shop/product/#{product.id}"
+                           class="mvp-btn" target="_blank">Boutique</a>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </template>
 </odoo>
