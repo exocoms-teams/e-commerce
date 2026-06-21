@@ -108,7 +108,7 @@ window.Dashboard = (() => {
             soldeEl.className = 'stat-value ' + (solde < 0 ? 'stat-solde-debit' : 'stat-solde-credit');
         }
         if (soldeLbl && solde !== undefined && solde !== null) {
-            soldeLbl.textContent = solde < 0 ? 'Solde débiteur (TTC)' : 'Solde créditeur (TTC)';
+            soldeLbl.textContent = solde < 0 ? 'Commission plateforme due (TTC)' : 'Solde créditeur (TTC)';
         }
 
         const taux = user.taux_acceptation;
@@ -397,7 +397,7 @@ window.Dashboard = (() => {
     let _facturesAFournir = [];
 
     function loadInterventions() {
-        API.getMissions().then(function(data) {
+        API.getMissionsHistorique().then(function(data) {
             _missions = data.missions || [];
             localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
         }).catch(function() {
@@ -405,9 +405,9 @@ window.Dashboard = (() => {
             if (cached) { try { _missions = JSON.parse(cached); } catch(e) {} }
         }).finally(function() {
             const apiTerminees = _missions
-                .filter(m => m.state === 'termine' || m.state === 'clos')
+                .filter(m => ['termine', 'facture', 'clos'].includes(m.state))
                 .map(m => ({
-                    ref: m.reference, date: m.date_cloture, client: m.client,
+                    ref: m.reference, date: m.date_cloture || m.date_rdv, client: m.client,
                     type: m.type_intervention, prestation: m.description_sinistre,
                     addr: m.adresse_intervention,
                 }));
@@ -441,6 +441,38 @@ window.Dashboard = (() => {
             });
     }
 
+    function _facturerMission(missionId, reference) {
+        if (!missionId) {
+            Toast.show('Mission introuvable', 'error');
+            return;
+        }
+        const label = reference || missionId;
+        if (!confirm('Générer la facture pour la mission ' + label + ' ?')) return;
+        API.facturerMission(missionId)
+            .then(function(data) {
+                const num = (data && data.facture_numero) ? data.facture_numero : '';
+                Toast.show(num ? ('Facture ' + num + ' créée') : 'Facture créée avec succès', 'success');
+                _loadFacturesAFournir();
+                loadInterventions();
+                if (window.Comptabilite && Comptabilite.init) Comptabilite.init();
+                if (window.Dashboard && Dashboard.updateExtendedStats) {
+                    API.getComptabilite().then(function(acct) {
+                        if (acct && acct.solde !== undefined) {
+                            let user = {};
+                            try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+                            user.solde_comptabilite = acct.solde;
+                            user.factures_a_fournir = Math.max(0, (user.factures_a_fournir || 1) - 1);
+                            localStorage.setItem('ss_user', JSON.stringify(user));
+                            Dashboard.updateExtendedStats(user);
+                        }
+                    }).catch(function() {});
+                }
+            })
+            .catch(function(err) {
+                Toast.show(err.message || 'Erreur lors de la facturation', 'error');
+            });
+    }
+
     function _renderFacturesAFournir() {
         const tbody = document.getElementById('facturesAFournirBody');
         const badge = document.getElementById('facturesAFournirBadge');
@@ -463,7 +495,7 @@ window.Dashboard = (() => {
                 + '<td>' + _metierBadge(f.type_intervention) + '</td>'
                 + '<td><div style="font-weight:600;font-size:13.5px">' + (f.prestation || '—') + '</div><div style="font-size:12px;color:#9CA3AF">' + (f.adresse || '') + '</div></td>'
                 + '<td style="font-weight:700">' + montant + '</td>'
-                + '<td><button class="btn-start" style="padding:8px 14px;font-size:12px" onclick="App.showView(\'comptabilite\', document.getElementById(\'nav-comptabilite\')); setTimeout(function(){ Comptabilite.showFactures(); }, 150);">Facturer</button></td>'
+                + '<td><button class="btn-start" style="padding:8px 14px;font-size:12px" onclick="Dashboard.facturerMission(' + f.id + ', \'' + (f.reference || '').replace(/'/g, "\\'") + '\')">Facturer</button></td>'
                 + '</tr>';
         }).join('');
     }
@@ -528,6 +560,7 @@ window.Dashboard = (() => {
         accepterMission,
         refuserMission,
         scrollToFactures,
+        facturerMission: _facturerMission,
         updateExtendedStats: _updateExtendedStats,
         // Legacy
         acceptMission() {},
