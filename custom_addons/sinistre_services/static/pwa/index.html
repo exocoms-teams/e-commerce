@@ -135,10 +135,30 @@
                         <div class="page-greeting" id="dashGreeting">Bonjour 👋</div>
                         <h1 class="page-title">Votre tableau de bord</h1>
                     </div>
-                    <button class="btn-primary-dash" onclick="App.showView('missions', document.getElementById('nav-missions'))">
-                        Voir toutes mes missions
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </button>
+                    <div class="page-header-actions">
+                        <div class="notif-wrap">
+                            <button class="notif-bell-btn" id="notifBellBtn" type="button" onclick="FCM.togglePanel()" title="Notifications">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                <span class="notif-dot" id="notifDot" style="display:none"></span>
+                            </button>
+                            <div class="notif-panel" id="notifPanel" style="display:none">
+                                <div class="notif-panel-header">
+                                    <span class="notif-panel-title">Notifications</span>
+                                    <button class="notif-enable-btn" type="button" onclick="FCM.requestPermission()">Activer Firebase</button>
+                                </div>
+                                <div class="notif-panel-list" id="notifList">
+                                    <div class="notif-empty">Aucune notification pour le moment</div>
+                                </div>
+                                <div class="notif-panel-footer">
+                                    <button class="notif-clear-btn" type="button" onclick="FCM.clearAll()">Tout effacer</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary-dash" onclick="App.showView('missions', document.getElementById('nav-missions'))">
+                            Voir toutes mes missions
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Stats cards -->
@@ -152,6 +172,17 @@
                         <div class="stat-label">Interventions</div>
                         <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                         <div class="stat-value" id="statInterventions">–</div>
+                    </div>
+                    <div class="stat-card stat-card-clickable" onclick="App.showView('comptabilite', document.getElementById('nav-comptabilite')); setTimeout(function(){ Comptabilite.showPaiements(); }, 150);">
+                        <div class="stat-label">Solde comptabilité</div>
+                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5"><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <div class="stat-value" id="statSolde">–</div>
+                        <div class="stat-sub" id="statSoldeLabel">Solde débiteur (TTC)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Taux missions acceptées</div>
+                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <div class="stat-value" id="statTauxAccept">–</div>
                     </div>
                 </div>
 
@@ -455,6 +486,36 @@
                         <div class="stat-label">Interventions réalisées</div>
                         <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
                         <div class="stat-value" id="statIntervTotal">–</div>
+                    </div>
+                    <div class="stat-card stat-card-alert" onclick="Dashboard.scrollToFactures()" style="cursor:pointer">
+                        <div class="stat-label">Factures à fournir</div>
+                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <div class="stat-value" id="statFacturesAFournir">–</div>
+                    </div>
+                </div>
+
+                <div class="interv-section" id="intervFacturesSection">
+                    <div class="interv-section-header">
+                        <h2 class="dash-section-title">Factures à fournir</h2>
+                        <span id="facturesAFournirBadge" class="interv-section-badge"></span>
+                    </div>
+                    <div class="interv-table-wrap">
+                        <table class="interv-table">
+                            <thead>
+                                <tr>
+                                    <th>RÉFÉRENCE</th>
+                                    <th>DATE</th>
+                                    <th>CLIENT</th>
+                                    <th>MÉTIER</th>
+                                    <th>PRESTATION</th>
+                                    <th>MONTANT</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facturesAFournirBody">
+                                <tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Chargement…</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
