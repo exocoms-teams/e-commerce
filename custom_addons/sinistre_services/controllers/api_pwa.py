@@ -154,6 +154,33 @@ class SinistrePWAController(http.Controller):
         phone      = partner.phone or partner.mobile or ''
         entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
 
+        Mission = request.env['sinistre.mission'].sudo()
+        missions_assignees = Mission.search_count([
+            ('intervenant_id', '=', iv.id),
+        ])
+        missions_refusees = request.env['mail.message'].sudo().search_count([
+            ('body', 'ilike', f'Mission refusée par {iv.name}'),
+        ])
+        total_propositions = missions_assignees + missions_refusees
+        taux_acceptation = (
+            round(missions_assignees / total_propositions * 100, 1)
+            if total_propositions else 100.0
+        )
+
+        terminees_sans_facture = Mission.search([
+            ('intervenant_id', '=', iv.id),
+            ('state', 'in', ('termine', 'facture', 'clos')),
+        ]).filtered(
+            lambda m: not m.facture_assurance_id and not m.facture_client_id
+        )
+        commission_due = sum(
+            m.commission_plateforme or 0
+            for m in Mission.search([
+                ('intervenant_id', '=', iv.id),
+                ('state', 'in', ('termine', 'facture', 'clos')),
+            ])
+        )
+
         return _ok({'success': True, 'user': {
             'uid':               user.id,
             'name':              user.name,
@@ -171,6 +198,9 @@ class SinistrePWAController(http.Controller):
             'intervenant_id':    iv.id,
             'create_date':       str(user.create_date) if user.create_date else '',
             'certifications':    certifications,
+            'solde_comptabilite': -round(commission_due, 2),
+            'taux_acceptation':  taux_acceptation,
+            'factures_a_fournir': len(terminees_sans_facture),
         }})
 
     # ── MES MISSIONS ─────────────────────────────────────────────────
@@ -828,6 +858,36 @@ class SinistrePWAController(http.Controller):
             return _ok({'success': True})
         except Exception as e:
             _logger.error(f"[sinistre] bancaire_save: {e}", exc_info=True)
+            return _err(500, str(e))
+
+    # ── FACTURES À FOURNIR ───────────────────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/factures-a-fournir',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def factures_a_fournir(self, **kw):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        try:
+            missions = request.env['sinistre.mission'].sudo().search([
+                ('intervenant_id', '=', intervenant.id),
+                ('state', 'in', ('termine', 'facture', 'clos')),
+            ], order='date_cloture desc, date_rdv desc')
+            pending = missions.filtered(
+                lambda m: not m.facture_assurance_id and not m.facture_client_id
+            )
+            rows = [{
+                'id':                   m.id,
+                'reference':            m.reference,
+                'date':                 str(m.date_cloture or m.date_rdv or ''),
+                'client':               m.client_id.name if m.client_id else '',
+                'type_intervention':    m.type_intervention,
+                'prestation':           m.description_sinistre or '',
+                'adresse':              m.adresse_intervention or '',
+                'montant_devis':        m.montant_devis or 0,
+            } for m in pending]
+            return _ok({'success': True, 'factures': rows, 'count': len(rows)})
+        except Exception as e:
+            _logger.error(f"[sinistre] factures_a_fournir: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── COMPTABILITÉ ─────────────────────────────────────────────────
