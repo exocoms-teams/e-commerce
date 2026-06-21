@@ -54,6 +54,90 @@ def _check_mission(intervenant, mission_id):
         ('intervenant_id', '=', intervenant.id),
     ], limit=1)
 
+def _default_planning_slots():
+    return {str(d): {str(h): True for h in range(24)} for d in range(7)}
+
+def _db_column_exists(cr, table, column):
+    cr.execute("""
+        SELECT 1 FROM information_schema.columns
+         WHERE table_name = %s AND column_name = %s
+    """, (table, column))
+    return bool(cr.fetchone())
+
+def _db_table_exists(cr, table):
+    cr.execute("""
+        SELECT 1 FROM information_schema.tables WHERE table_name = %s
+    """, (table,))
+    return bool(cr.fetchone())
+
+def _safe_planning_slots(intervenant):
+    try:
+        return intervenant.get_planning_slots()
+    except Exception as e:
+        _logger.warning("[sinistre] get_planning_slots ORM: %s", e)
+    cr = intervenant.env.cr
+    if _db_column_exists(cr, 'sinistre_intervenant', 'planning_slots'):
+        try:
+            cr.execute(
+                "SELECT planning_slots FROM sinistre_intervenant WHERE id = %s",
+                (intervenant.id,),
+            )
+            row = cr.fetchone()
+            if row and row[0]:
+                return json.loads(row[0])
+        except Exception as e:
+            _logger.warning("[sinistre] get_planning_slots SQL: %s", e)
+    return _default_planning_slots()
+
+def _safe_save_planning_slots(intervenant, slots):
+    try:
+        intervenant.set_planning_slots(slots)
+        return
+    except Exception as e:
+        _logger.warning("[sinistre] set_planning_slots ORM: %s", e)
+    cr = intervenant.env.cr
+    if not _db_column_exists(cr, 'sinistre_intervenant', 'planning_slots'):
+        raise ValueError(
+            "Le module sinistre_services doit être mis à jour pour enregistrer le planning."
+        )
+    cr.execute(
+        "UPDATE sinistre_intervenant SET planning_slots = %s, write_date = NOW() WHERE id = %s",
+        (json.dumps(slots), intervenant.id),
+    )
+
+def _safe_absences(intervenant):
+    from odoo.fields import Date
+    today = Date.today()
+    try:
+        absences = intervenant.absence_ids.filtered(
+            lambda a: a.date_fin and a.date_fin >= today
+        )
+        return [a._fmt() for a in absences.sorted('date_debut')]
+    except Exception as e:
+        _logger.warning("[sinistre] absence_ids ORM: %s", e)
+    cr = intervenant.env.cr
+    if not _db_table_exists(cr, 'sinistre_intervenant_absence'):
+        return []
+    try:
+        cr.execute("""
+            SELECT id, date_debut, date_fin, COALESCE(motif, '')
+              FROM sinistre_intervenant_absence
+             WHERE intervenant_id = %s AND date_fin >= %s
+             ORDER BY date_debut
+        """, (intervenant.id, today))
+        return [
+            {
+                'id':         row[0],
+                'date_debut': str(row[1]),
+                'date_fin':   str(row[2]),
+                'motif':      row[3] or '',
+            }
+            for row in cr.fetchall()
+        ]
+    except Exception as e:
+        _logger.warning("[sinistre] absences SQL: %s", e)
+        return []
+
 def _fmt_mission(m):
     return {
         'id':                   m.id,
@@ -153,6 +237,9 @@ class SinistrePWAController(http.Controller):
         partner    = user.partner_id
         phone      = partner.phone or partner.mobile or ''
         entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
+        admin_phone = request.env['ir.config_parameter'].sudo().get_param(
+            'sinistre.admin_phone', '0X0X0X'
+        )
 
         Mission = request.env['sinistre.mission'].sudo()
         missions_assignees = Mission.search_count([
@@ -186,7 +273,12 @@ class SinistrePWAController(http.Controller):
             'name':              user.name,
             'email':             user.login,
             'phone':             phone,
+            'street':            partner.street or '',
+            'street2':           partner.street2 or '',
+            'city':              partner.city or '',
+            'zip':               partner.zip or '',
             'company_name':      entreprise,
+            'admin_phone':       admin_phone,
             'zone':              iv.zone_intervention or '',
             'note_moyenne':      note,
             'interventions':     nb_terminees,
@@ -742,14 +834,11 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            slots = intervenant.get_planning_slots()
-            from odoo.fields import Date
-            today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
+            slots = _safe_planning_slots(intervenant)
             return _ok({
                 'success':  True,
                 'slots':    slots,
-                'absences': [a._fmt() for a in absences.sorted('date_debut')],
+                'absences': _safe_absences(intervenant),
             })
         except Exception as e:
             _logger.error(f"[sinistre] planning_get: {e}", exc_info=True)
@@ -765,7 +854,7 @@ class SinistrePWAController(http.Controller):
         try:
             data  = json.loads((request.httprequest.data or b'{}').decode('utf-8'))
             slots = data.get('slots', {})
-            intervenant.set_planning_slots(slots)
+            _safe_save_planning_slots(intervenant, slots)
             return _ok({'success': True})
         except Exception as e:
             _logger.error(f"[sinistre] planning_save: {e}", exc_info=True)
@@ -785,17 +874,28 @@ class SinistrePWAController(http.Controller):
             motif      = data.get('motif', '')
             if not date_debut or not date_fin:
                 return _err(400, "date_debut et date_fin sont requis")
-            request.env['sinistre.intervenant.absence'].sudo().create({
-                'intervenant_id': intervenant.id,
-                'date_debut':     date_debut,
-                'date_fin':       date_fin,
-                'motif':          motif,
-            })
-            from odoo.fields import Date
-            today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
+            Absence = request.env['sinistre.intervenant.absence'].sudo()
+            try:
+                Absence.create({
+                    'intervenant_id': intervenant.id,
+                    'date_debut':     date_debut,
+                    'date_fin':       date_fin,
+                    'motif':          motif,
+                })
+            except Exception as orm_err:
+                _logger.warning("[sinistre] absence_add ORM: %s", orm_err)
+                cr = request.env.cr
+                if not _db_table_exists(cr, 'sinistre_intervenant_absence'):
+                    raise ValueError(
+                        "Le module sinistre_services doit être mis à jour pour enregistrer les absences."
+                    ) from orm_err
+                cr.execute("""
+                    INSERT INTO sinistre_intervenant_absence
+                        (intervenant_id, date_debut, date_fin, motif, create_date, write_date)
+                    VALUES (%s, %s, %s, %s, NOW(), NOW())
+                """, (intervenant.id, date_debut, date_fin, motif or ''))
             return _ok({'success': True,
-                        'absences': [a._fmt() for a in absences.sorted('date_debut')]})
+                        'absences': _safe_absences(intervenant)})
         except Exception as e:
             _logger.error(f"[sinistre] absence_add: {e}", exc_info=True)
             return _err(500, str(e))
@@ -813,12 +913,18 @@ class SinistrePWAController(http.Controller):
             absence    = request.env['sinistre.intervenant.absence'].sudo().browse(absence_id)
             if not absence.exists() or absence.intervenant_id.id != intervenant.id:
                 return _err(404, "Absence introuvable ou accès interdit")
-            absence.unlink()
-            from odoo.fields import Date
-            today    = Date.today()
-            absences = intervenant.absence_ids.filtered(lambda a: a.date_fin and a.date_fin >= today)
-            return _ok({'success': True,
-                        'absences': [a._fmt() for a in absences.sorted('date_debut')]})
+            try:
+                absence.unlink()
+            except Exception as orm_err:
+                _logger.warning("[sinistre] absence_delete ORM: %s", orm_err)
+                cr = request.env.cr
+                cr.execute("""
+                    DELETE FROM sinistre_intervenant_absence
+                     WHERE id = %s AND intervenant_id = %s
+                """, (absence_id, intervenant.id))
+                if not cr.rowcount:
+                    return _err(404, "Absence introuvable ou accès interdit")
+            return _ok({'success': True, 'absences': _safe_absences(intervenant)})
         except Exception as e:
             _logger.error(f"[sinistre] absence_delete: {e}", exc_info=True)
             return _err(500, str(e))
