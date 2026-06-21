@@ -82,6 +82,11 @@ window.App = (() => {
                     ...existing,
                     uid: u.uid, name: u.name, email: u.email,
                     phone: u.phone || '',
+                    street: u.street || '',
+                    street2: u.street2 || '',
+                    city: u.city || '',
+                    zip: u.zip || '',
+                    admin_phone: u.admin_phone || '',
                     company_name: u.company_name || u.name,
                     zone: u.zone || '',
                     note_moyenne: u.note_moyenne || 0,
@@ -177,6 +182,10 @@ window.App = (() => {
 
         // Certifications
         if (user.certifications && user.certifications.length) _updateCertifications(user.certifications);
+
+        if (window.Profile && typeof Profile.loadFromUser === 'function') {
+            Profile.loadFromUser();
+        }
     }
 
     async function _registerSW() {
@@ -361,11 +370,23 @@ window.Planning = (function() {
         return s;
     }
 
+    function _normalizeSlots(raw) {
+        const out = {};
+        for (let d = 0; d < 7; d++) {
+            const srcDay = (raw && (raw[d] || raw[String(d)])) || {};
+            out[d] = {};
+            for (let h = 0; h < 24; h++) {
+                out[d][h] = !!(srcDay[h] ?? srcDay[String(h)]);
+            }
+        }
+        return out;
+    }
+
     function init() {
         // Charger depuis l'API ou utiliser des défauts
         API.get('/intervenant/planning')
             .then(function(data) {
-                _slots = data.slots || _defaultSlots();
+                _slots = _normalizeSlots(data.slots || _defaultSlots());
                 _render();
                 _renderAbsences(data.absences || []);
             })
