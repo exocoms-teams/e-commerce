@@ -102,6 +102,7 @@
 
         if (openBtn && overlay) {
             openBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 e.stopPropagation();
                 overlay.classList.add('open');
                 setTimeout(function() { if (input) input.focus(); }, 50);
@@ -116,10 +117,14 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && overlay) overlay.classList.remove('open');
         });
+        /* Fermeture au clic extérieur — exclut explicitement le bouton
+           d'ouverture pour éviter que le même clic qui ouvre l'overlay
+           ne le referme immédiatement après (bug de fermeture instantanée) */
         document.addEventListener('click', function(e) {
-            if (overlay && overlay.classList.contains('open') && !overlay.contains(e.target)) {
-                overlay.classList.remove('open');
-            }
+            if (!overlay || !overlay.classList.contains('open')) return;
+            if (overlay.contains(e.target)) return;
+            if (openBtn && openBtn.contains(e.target)) return;
+            overlay.classList.remove('open');
         });
     }
 
