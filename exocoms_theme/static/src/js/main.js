@@ -89,44 +89,12 @@
     }
 
     /* ═══════════════════════════════════════════════════════════
-       HEADER — recherche overlay, dropdown profil, burger menu
-       mobile. Repris du custom_header.xml, déplacé ici pour rester
-       cohérent avec le chargement des assets via le manifest.
+       HEADER — dropdown profil, burger menu mobile.
+       La recherche utilise désormais le modal natif Bootstrap
+       #o_search_modal (data-bs-toggle="modal"), géré entièrement
+       par Odoo — plus besoin de JS personnalisé pour l'ouverture/
+       fermeture, le clic extérieur ou la touche Escape.
        ═══════════════════════════════════════════════════════════ */
-
-    function initHeaderSearch() {
-        var openBtn  = document.getElementById('exo-search-open');
-        var overlay  = document.getElementById('exo-search-overlay');
-        var closeBtn = document.getElementById('exo-search-close');
-        var input    = document.getElementById('exo-search-input');
-
-        if (openBtn && overlay) {
-            openBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                overlay.classList.add('open');
-                setTimeout(function() { if (input) input.focus(); }, 50);
-            });
-        }
-        if (closeBtn && overlay) {
-            closeBtn.addEventListener('click', function() {
-                overlay.classList.remove('open');
-                if (input) input.value = '';
-            });
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && overlay) overlay.classList.remove('open');
-        });
-        /* Fermeture au clic extérieur — exclut explicitement le bouton
-           d'ouverture pour éviter que le même clic qui ouvre l'overlay
-           ne le referme immédiatement après (bug de fermeture instantanée) */
-        document.addEventListener('click', function(e) {
-            if (!overlay || !overlay.classList.contains('open')) return;
-            if (overlay.contains(e.target)) return;
-            if (openBtn && openBtn.contains(e.target)) return;
-            overlay.classList.remove('open');
-        });
-    }
 
     function initHeaderProfileDropdown() {
         var profileDropdown = document.querySelector('.exo-profile-dropdown');
@@ -175,7 +143,6 @@
         initBurgerMenu();
         initScrollReveal();
         initPriceFilter();
-        initHeaderSearch();
         initHeaderProfileDropdown();
         initHeaderBurgerMenu();
     }
