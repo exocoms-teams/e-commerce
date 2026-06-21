@@ -76,6 +76,7 @@ window.Dashboard = (() => {
         _updateDashStats();
         _renderToday();
         await _loadProposees();
+        await _loadExtendedStats();
     }
 
     function _updateDashStats() {
@@ -89,6 +90,51 @@ window.Dashboard = (() => {
         if (el('statActives'))      el('statActives').textContent      = actives;
         if (el('statInterventions'))el('statInterventions').textContent = nbInterv;
         if (el('statIntervTotal'))  el('statIntervTotal').textContent  = nbInterv;
+
+        _updateExtendedStats(user);
+    }
+
+    function _fmtSolde(solde) {
+        const val = Math.abs(Number(solde) || 0);
+        return val.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function _updateExtendedStats(user) {
+        const solde = user.solde_comptabilite;
+        const soldeEl = document.getElementById('statSolde');
+        const soldeLbl = document.getElementById('statSoldeLabel');
+        if (soldeEl && solde !== undefined && solde !== null) {
+            soldeEl.textContent = _fmtSolde(solde);
+            soldeEl.className = 'stat-value ' + (solde < 0 ? 'stat-solde-debit' : 'stat-solde-credit');
+        }
+        if (soldeLbl && solde !== undefined && solde !== null) {
+            soldeLbl.textContent = solde < 0 ? 'Solde débiteur (TTC)' : 'Solde créditeur (TTC)';
+        }
+
+        const taux = user.taux_acceptation;
+        const tauxEl = document.getElementById('statTauxAccept');
+        if (tauxEl && taux !== undefined && taux !== null) {
+            tauxEl.textContent = taux + ' %';
+        }
+
+        const nbFactures = user.factures_a_fournir;
+        const factEl = document.getElementById('statFacturesAFournir');
+        if (factEl && nbFactures !== undefined && nbFactures !== null) {
+            factEl.textContent = nbFactures;
+        }
+    }
+
+    async function _loadExtendedStats() {
+        try {
+            const data = await API.getComptabilite();
+            if (data && data.solde !== undefined) {
+                let user = {};
+                try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+                user.solde_comptabilite = data.solde;
+                localStorage.setItem('ss_user', JSON.stringify(user));
+                _updateExtendedStats(user);
+            }
+        } catch (e) { /* fallback via /me */ }
     }
 
     function _renderToday() {
@@ -348,19 +394,83 @@ window.Dashboard = (() => {
     /* ══════════════════════════════════════════════════════
        INTERVENTIONS RÉALISÉES
     ══════════════════════════════════════════════════════ */
+    let _facturesAFournir = [];
+
     function loadInterventions() {
-        const apiTerminees = _missions
-            .filter(m => m.state === 'termine' || m.state === 'clos')
-            .map(m => ({
-                ref: m.reference, date: m.date_cloture, client: m.client,
-                type: m.type_intervention, prestation: m.description_sinistre,
-                addr: m.adresse_intervention,
-            }));
-        _interventions = apiTerminees;
-        _renderInterventions();
-        const total = _interventions.length;
-        const el = id => document.getElementById(id);
-        if (el('statIntervTotal')) el('statIntervTotal').textContent = total;
+        API.getMissions().then(function(data) {
+            _missions = data.missions || [];
+            localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
+        }).catch(function() {
+            const cached = localStorage.getItem('ss_missions_cache');
+            if (cached) { try { _missions = JSON.parse(cached); } catch(e) {} }
+        }).finally(function() {
+            const apiTerminees = _missions
+                .filter(m => m.state === 'termine' || m.state === 'clos')
+                .map(m => ({
+                    ref: m.reference, date: m.date_cloture, client: m.client,
+                    type: m.type_intervention, prestation: m.description_sinistre,
+                    addr: m.adresse_intervention,
+                }));
+            _interventions = apiTerminees;
+            _renderInterventions();
+            const total = _interventions.length;
+            const el = id => document.getElementById(id);
+            if (el('statIntervTotal')) el('statIntervTotal').textContent = total;
+            _loadFacturesAFournir();
+        });
+    }
+
+    function _loadFacturesAFournir() {
+        const tbody = document.getElementById('facturesAFournirBody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Chargement…</td></tr>';
+        }
+        API.getFacturesAFournir()
+            .then(function(data) {
+                _facturesAFournir = data.factures || [];
+                let user = {};
+                try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+                user.factures_a_fournir = data.count || _facturesAFournir.length;
+                localStorage.setItem('ss_user', JSON.stringify(user));
+                _updateExtendedStats(user);
+                _renderFacturesAFournir();
+            })
+            .catch(function() {
+                _facturesAFournir = [];
+                _renderFacturesAFournir();
+            });
+    }
+
+    function _renderFacturesAFournir() {
+        const tbody = document.getElementById('facturesAFournirBody');
+        const badge = document.getElementById('facturesAFournirBadge');
+        const count = _facturesAFournir.length;
+        if (badge) {
+            badge.textContent = count ? count + ' en attente' : '';
+            badge.style.display = count ? 'inline-block' : 'none';
+        }
+        if (!tbody) return;
+        if (!count) {
+            tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state-full" style="padding:40px 0"><div class="empty-state-icon">✅</div><div class="empty-state-title">Toutes vos factures sont à jour</div></div></td></tr>';
+            return;
+        }
+        tbody.innerHTML = _facturesAFournir.map(function(f) {
+            const montant = (Number(f.montant_devis) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+            return '<tr>'
+                + '<td class="interv-ref">' + (f.reference || '—') + '</td>'
+                + '<td class="interv-date">' + _fmtDate(f.date) + '</td>'
+                + '<td>' + (f.client || '—') + '</td>'
+                + '<td>' + _metierBadge(f.type_intervention) + '</td>'
+                + '<td><div style="font-weight:600;font-size:13.5px">' + (f.prestation || '—') + '</div><div style="font-size:12px;color:#9CA3AF">' + (f.adresse || '') + '</div></td>'
+                + '<td style="font-weight:700">' + montant + '</td>'
+                + '<td><button class="btn-start" style="padding:8px 14px;font-size:12px" onclick="App.showView(\'comptabilite\', document.getElementById(\'nav-comptabilite\')); setTimeout(function(){ Comptabilite.showFactures(); }, 150);">Facturer</button></td>'
+                + '</tr>';
+        }).join('');
+    }
+
+    function scrollToFactures() {
+        const section = document.getElementById('intervFacturesSection');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function _renderInterventions() {
@@ -417,6 +527,8 @@ window.Dashboard = (() => {
         initCarte,
         accepterMission,
         refuserMission,
+        scrollToFactures,
+        updateExtendedStats: _updateExtendedStats,
         // Legacy
         acceptMission() {},
         itineraireMission() {},
