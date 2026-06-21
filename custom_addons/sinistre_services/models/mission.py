@@ -291,7 +291,12 @@ class SinistreMission(models.Model):
     def action_facturer_assurance(self):
         self.ensure_one()
         if not self.assurance_id:
-            raise UserError("Pas de compagnie d'assurance liée à cette mission.")
+            raise UserError(_("Pas de compagnie d'assurance liée à cette mission."))
+        if self.facture_assurance_id:
+            return self.facture_assurance_id
+        montant = self.montant_garanti or self.montant_devis or 0
+        if montant <= 0:
+            raise UserError(_("Montant de facturation invalide."))
         facture = self.env['account.move'].sudo().create({
             'move_type':  'out_invoice',
             'partner_id': self.assurance_id.partner_id.id,
@@ -299,10 +304,45 @@ class SinistreMission(models.Model):
             'invoice_line_ids': [(0, 0, {
                 'name':      f"Prestation {self.reference} — {self.description_sinistre or ''}",
                 'quantity':  1,
-                'price_unit': self.montant_garanti or self.montant_devis,
+                'price_unit': montant,
             })],
         })
         self.write({'facture_assurance_id': facture.id, 'state': 'facture'})
+        self.message_post(body=_("Facture assurance créée : %s") % facture.name)
+        return facture
+
+    def action_generer_facture(self):
+        """Génère la facture adaptée à la source (assurance ou client B2C)."""
+        self.ensure_one()
+        if self.state not in ('termine', 'facture', 'clos'):
+            raise UserError(_("La mission doit être terminée avant facturation."))
+        if self.facture_assurance_id:
+            return self.facture_assurance_id
+        if self.facture_client_id:
+            return self.facture_client_id
+
+        if self.source == 'assurance' and self.assurance_id:
+            return self.action_facturer_assurance()
+
+        if self.client_id:
+            montant = self.montant_devis or self.reste_a_charge or 0
+            if montant <= 0:
+                raise UserError(_("Montant de facturation invalide."))
+            facture = self.env['account.move'].sudo().create({
+                'move_type':  'out_invoice',
+                'partner_id': self.client_id.id,
+                'ref':        f"Mission {self.reference}",
+                'invoice_line_ids': [(0, 0, {
+                    'name':       f"Prestation {self.reference} — {self.description_sinistre or ''}",
+                    'quantity':   1,
+                    'price_unit': montant,
+                })],
+            })
+            self.write({'facture_client_id': facture.id, 'state': 'facture'})
+            self.message_post(body=_("Facture client créée : %s") % facture.name)
+            return facture
+
+        raise UserError(_("Impossible de générer une facture pour cette mission."))
 
     def _notifier_artisans_zone(self):
         """Envoie une notification push aux artisans disponibles dans la zone."""
