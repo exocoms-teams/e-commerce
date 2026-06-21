@@ -7,6 +7,60 @@ window.FCM = (() => {
     let _messaging = null;
     let _token = null;
     let _initialized = false;
+    let _panelOpen = false;
+    const STORAGE_KEY = 'ss_notifications';
+
+    function _loadNotifications() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        catch (e) { return []; }
+    }
+
+    function _saveNotifications(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 50)));
+    }
+
+    function _updateDot() {
+        const nd = document.getElementById('notifDot');
+        if (!nd) return;
+        const unread = _loadNotifications().filter(n => !n.read).length;
+        const needsPermission = Notification.permission !== 'granted';
+        nd.style.display = (unread || needsPermission) ? 'block' : 'none';
+    }
+
+    function _renderPanel() {
+        const list = document.getElementById('notifList');
+        if (!list) return;
+        const items = _loadNotifications();
+        if (!items.length) {
+            list.innerHTML = '<div class="notif-empty">Aucune notification pour le moment</div>';
+            return;
+        }
+        list.innerHTML = items.map(function(n, i) {
+            return '<div class="notif-item' + (n.read ? '' : ' unread') + '" onclick="FCM.openNotification(' + i + ')">'
+                + '<div class="notif-item-title">' + _esc(n.title) + '</div>'
+                + '<div class="notif-item-body">' + _esc(n.body) + '</div>'
+                + '<div class="notif-item-time">' + _esc(n.time || '') + '</div>'
+                + '</div>';
+        }).join('');
+    }
+
+    function _esc(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function _addNotification(title, body, data) {
+        const items = _loadNotifications();
+        items.unshift({
+            title: title || 'Notification',
+            body:  body || '',
+            data:  data || {},
+            time:  new Date().toLocaleString('fr-FR'),
+            read:  false,
+        });
+        _saveNotifications(items);
+        _updateDot();
+        _renderPanel();
+    }
 
     return {
         /* ── Initialisation ── */
@@ -19,9 +73,48 @@ window.FCM = (() => {
                 _messaging = firebase.messaging();
                 _initialized = true;
                 this._onForegroundMessage();
+                _updateDot();
+                _renderPanel();
             } catch (err) {
                 console.warn('[FCM] Init error:', err);
             }
+        },
+
+        /* ── Panneau notifications ── */
+        togglePanel() {
+            const panel = document.getElementById('notifPanel');
+            if (!panel) return;
+            _panelOpen = !_panelOpen;
+            panel.style.display = _panelOpen ? 'block' : 'none';
+            if (_panelOpen) _renderPanel();
+        },
+
+        closePanel() {
+            const panel = document.getElementById('notifPanel');
+            if (panel) panel.style.display = 'none';
+            _panelOpen = false;
+        },
+
+        openNotification(index) {
+            const items = _loadNotifications();
+            const n = items[index];
+            if (!n) return;
+            n.read = true;
+            _saveNotifications(items);
+            _updateDot();
+            _renderPanel();
+            this.closePanel();
+            if (n.data && n.data.mission_id && window.MissionDetail) {
+                MissionDetail.open(n.data.mission_id);
+            } else if (App.currentView !== 'dashboard') {
+                App.showView('dashboard', document.getElementById('nav-dashboard'));
+            }
+        },
+
+        clearAll() {
+            _saveNotifications([]);
+            _updateDot();
+            _renderPanel();
         },
 
         /* ── Demander la permission push ── */
@@ -31,6 +124,7 @@ window.FCM = (() => {
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') {
                 Toast.show('Notifications refusées', 'warning');
+                _updateDot();
                 return;
             }
 
@@ -39,7 +133,7 @@ window.FCM = (() => {
                 if (_token) {
                     await API.saveFCMToken(_token);
                     localStorage.setItem('ss_fcm_token', _token);
-                    document.getElementById('notifDot').style.display = 'none';
+                    _updateDot();
                     Toast.show('🔔 Notifications activées', 'success');
                 }
             } catch (err) {
@@ -56,17 +150,14 @@ window.FCM = (() => {
                 const { title, body } = payload.notification || {};
                 const data = payload.data || {};
 
-                // Toast visible + vibration
                 Toast.show(`🔔 ${title}: ${body}`, 'info', 6000);
                 if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
-                // Rafraîchir la liste si on est sur le dashboard
-                if (App.currentView === 'dashboard') {
+                _addNotification(title, body, data);
+
+                if (App.currentView === 'dashboard' && window.Dashboard) {
                     Dashboard.refresh();
                 }
-
-                // Marquer qu'il y a une nouvelle notif
-                const nd = document.getElementById('notifDot'); if (nd) nd.style.display = 'block';
             });
         },
 
@@ -82,12 +173,16 @@ window.FCM = (() => {
                 } catch (err) {
                     console.warn('[FCM] autoInit token error:', err);
                 }
-            } else if (Notification.permission === 'default') {
-                // Montrer le bouton notification
-                const nd = document.getElementById('notifDot'); if (nd) nd.style.display = 'block';
             }
+            _updateDot();
         },
 
         getToken() { return _token; },
     };
 })();
+
+document.addEventListener('click', function(e) {
+    const wrap = document.querySelector('.notif-wrap');
+    if (!wrap || wrap.contains(e.target)) return;
+    if (window.FCM) FCM.closePanel();
+});
