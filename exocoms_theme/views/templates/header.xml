@@ -22,9 +22,16 @@
 
                     <!-- NAVIGATION DESKTOP -->
                     <nav class="exo-nav" id="exo-nav" aria-label="Navigation principale">
-                        <a href="/" class="exo-nav-link">Accueil</a>
-                        <a href="/shop" class="exo-nav-link">Boutique</a>
-                        <a href="/services" class="exo-nav-link">Nos services</a>
+                        <t t-if="request.env.lang == 'fr_FR'">
+                            <a href="/" class="exo-nav-link">Accueil</a>
+                            <a href="/shop" class="exo-nav-link">Boutique</a>
+                            <a href="/services" class="exo-nav-link">Nos services</a>
+                        </t>
+                        <t t-else="">
+                            <a href="/en" class="exo-nav-link">Home</a>
+                            <a href="/en/shop" class="exo-nav-link">Shop</a>
+                            <a href="/en/services" class="exo-nav-link">Our Services</a>
+                        </t>
                     </nav>
 
                     <!-- ICONES DROITE -->
@@ -66,17 +73,25 @@
                             <div class="exo-profile-menu" role="menu">
                                 <t t-if="request.env.user._is_public()">
                                     <a href="/web/login" role="menuitem">
-                                        <i class="fa fa-sign-in" aria-hidden="true"/> Connexion
+                                        <i class="fa fa-sign-in" aria-hidden="true"/>
+                                        <t t-if="request.env.lang == 'fr_FR'">Connexion</t>
+                                        <t t-else="">Sign in</t>
                                     </a>
                                 </t>
                                 <t t-else="">
                                     <a href="/my/home" role="menuitem">
                                         <i class="fa fa-user-circle" aria-hidden="true"/>
-                                        <span>Mon compte</span>
+                                        <span>
+                                            <t t-if="request.env.lang == 'fr_FR'">Mon compte</t>
+                                            <t t-else="">My account</t>
+                                        </span>
                                     </a>
                                     <a href="/web/session/logout?redirect=/" role="menuitem">
                                         <i class="fa fa-sign-out" aria-hidden="true"/>
-                                        <span>Déconnexion</span>
+                                        <span>
+                                            <t t-if="request.env.lang == 'fr_FR'">Déconnexion</t>
+                                            <t t-else="">Logout</t>
+                                        </span>
                                     </a>
                                 </t>
                             </div>
@@ -96,9 +111,16 @@
                 <!-- MENU MOBILE DRAWER -->
                 <div class="exo-mobile-nav" id="exo-mobile-nav" aria-hidden="true">
                     <nav aria-label="Navigation mobile">
-                        <a href="/" class="exo-mobile-link">Accueil</a>
-                        <a href="/shop" class="exo-mobile-link">Boutique</a>
-                        <a href="/services" class="exo-mobile-link">Nos services</a>
+                        <t t-if="request.env.lang == 'fr_FR'">
+                            <a href="/" class="exo-mobile-link">Accueil</a>
+                            <a href="/shop" class="exo-mobile-link">Boutique</a>
+                            <a href="/services" class="exo-mobile-link">Nos services</a>
+                        </t>
+                        <t t-else="">
+                            <a href="/en" class="exo-mobile-link">Home</a>
+                            <a href="/en/shop" class="exo-mobile-link">Shop</a>
+                            <a href="/en/services" class="exo-mobile-link">Our Services</a>
+                        </t>
                     </nav>
                 </div>
 
