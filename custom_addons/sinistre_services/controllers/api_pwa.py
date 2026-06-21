@@ -8,6 +8,7 @@ import logging
 
 from odoo import http, _
 from odoo.http import request, Response
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -138,7 +139,23 @@ def _safe_absences(intervenant):
         _logger.warning("[sinistre] absences SQL: %s", e)
         return []
 
+def _intervenant_specialite_types(intervenant):
+    """Retourne les types d'intervention couverts par les spécialités de l'intervenant."""
+    types = []
+    for s in (intervenant.specialites or []):
+        if hasattr(s, 'type_intervention') and s.type_intervention:
+            types.append(s.type_intervention)
+    return types
+
+def _mission_matches_specialites(mission, specialite_types):
+    """True si la mission correspond aux spécialités (ou si aucune spécialité définie)."""
+    if not specialite_types:
+        return True
+    return mission.type_intervention in specialite_types
+
+
 def _fmt_mission(m):
+    inv = m.facture_assurance_id or m.facture_client_id
     return {
         'id':                   m.id,
         'reference':            m.reference,
@@ -152,6 +169,7 @@ def _fmt_mission(m):
         'adresse':              m.adresse_intervention or '',
         'adresse_intervention': m.adresse_intervention or '',
         'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+        'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
         'description':          m.description_sinistre or '',
         'description_sinistre': m.description_sinistre or '',
         'montant_devis':        m.montant_devis or 0,
@@ -162,6 +180,12 @@ def _fmt_mission(m):
         'signature_avant':      bool(m.signature_avant),
         'signature_apres':      bool(m.signature_apres),
         'notes_artisan':        m.notes_artisan or '',
+        'facture_numero':       inv.name if inv else '',
+        'a_facturer':           (
+            m.state in ('termine', 'facture', 'clos')
+            and not m.facture_assurance_id
+            and not m.facture_client_id
+        ),
     }
 
 
@@ -302,10 +326,20 @@ class SinistrePWAController(http.Controller):
         iv = _get_intervenant()
         if not iv:
             return _err(403, "Accès non autorisé")
-        missions = request.env['sinistre.mission'].sudo().search([
-            ('intervenant_id', '=', iv.id),
-            ('state', 'not in', ('clos', 'annule')),
-        ], order='urgence desc, date_rdv asc')
+        historique = str(kw.get('historique', '')).lower() in ('1', 'true', 'yes')
+        if historique:
+            domain = [
+                ('intervenant_id', '=', iv.id),
+                ('state', 'in', ('termine', 'facture', 'clos')),
+            ]
+            order = 'date_cloture desc, date_rdv desc'
+        else:
+            domain = [
+                ('intervenant_id', '=', iv.id),
+                ('state', 'not in', ('clos', 'annule')),
+            ]
+            order = 'urgence desc, date_rdv asc'
+        missions = request.env['sinistre.mission'].sudo().search(domain, order=order)
         return _ok({'success': True, 'missions': [_fmt_mission(m) for m in missions],
                     'total': len(missions)})
 
@@ -439,13 +473,10 @@ class SinistrePWAController(http.Controller):
             return _err(400, "Signature requise")
         try:
             mission.sudo().write({'signature_apres': sig})
-            mission.message_post(body=_("✅ Signature après intervention enregistrée — génération facture."))
-            if hasattr(mission, 'action_generer_facture'):
-                try:
-                    mission.action_generer_facture()
-                except Exception as fe:
-                    _logger.warning(f"Facture auto échouée pour mission {mission.id}: {fe}")
-            return _ok({'success': True, 'facture': bool(mission.facture_client_id)})
+            mission.message_post(body=_("✅ Signature après intervention enregistrée."))
+            return _ok({'success': True, 'facture': bool(
+                mission.facture_assurance_id or mission.facture_client_id
+            )})
         except Exception as e:
             return _err(500, str(e))
 
@@ -752,7 +783,14 @@ class SinistrePWAController(http.Controller):
         missions = request.env['sinistre.mission'].sudo().search([
             ('state', '=', 'nouveau'),
             ('intervenant_id', '=', False),
-        ], order='urgence desc, date_reception asc', limit=20)
+        ], order='urgence desc, date_reception asc', limit=50)
+        specialite_types = _intervenant_specialite_types(intervenant)
+        if specialite_types:
+            missions = missions.filtered(
+                lambda m: _mission_matches_specialites(m, specialite_types)
+            )[:20]
+        else:
+            missions = missions[:20]
         result = [{
             'id':                 m.id,
             'reference':          m.reference,
@@ -783,6 +821,9 @@ class SinistrePWAController(http.Controller):
         ], limit=1)
         if not mission:
             return _err(404, "Mission introuvable ou déjà assignée")
+        specialite_types = _intervenant_specialite_types(intervenant)
+        if specialite_types and not _mission_matches_specialites(mission, specialite_types):
+            return _err(403, "Cette mission ne correspond pas à vos spécialités")
         try:
             mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
             mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
@@ -808,6 +849,30 @@ class SinistrePWAController(http.Controller):
             return _ok({'success': True})
         except Exception as e:
             return _err(500, str(e))
+
+    # ── FACTURER MISSION ─────────────────────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/facturer',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def facturer_mission(self, mission_id, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            facture = mission.sudo().action_generer_facture()
+            numero = facture.name if facture else _fmt_mission(mission)['facture_numero']
+            return _ok({
+                'success':        True,
+                'facture_numero': numero or '',
+                'mission':        _fmt_mission(mission),
+            })
+        except UserError as e:
+            return _err(400, e.args[0] if e.args else str(e))
+        except Exception as e:
+            _logger.error(f"[sinistre] facturer_mission: {e}", exc_info=True)
+            return _err(400, str(e))
 
     # ── FCM TOKEN ────────────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/fcm-token',
@@ -990,6 +1055,8 @@ class SinistrePWAController(http.Controller):
                 'prestation':           m.description_sinistre or '',
                 'adresse':              m.adresse_intervention or '',
                 'montant_devis':        m.montant_devis or 0,
+                'source':               m.source or '',
+                'a_facturer':           True,
             } for m in pending]
             return _ok({'success': True, 'factures': rows, 'count': len(rows)})
         except Exception as e:
@@ -1055,7 +1122,12 @@ class SinistrePWAController(http.Controller):
                     'ville':        _ville(m.adresse_intervention),
                     'statut':       _statut(m),
                     'date_rdv':     str(m.date_rdv) if m.date_rdv else '',
+                    'date_cloture': str(m.date_cloture) if m.date_cloture else '',
                     'facture':      _facture_name(m),
+                    'a_facturer':   (
+                        m.state in ('termine', 'facture', 'clos')
+                        and not _facture_name(m)
+                    ),
                     'beneficiaire': (m.client_id.name or '').upper(),
                     'dossier_du':   m.ref_assurance or m.reference or '',
                 }
