@@ -14,7 +14,6 @@
         'website_sale',
         'mail',
         'delivery',
-        'website_sale_delivery',
     ],
 
     # ---------------------------
