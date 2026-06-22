@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Epic 2: Premium Cart Experience
+        Inherit the cart page to inject luxury branding.
+    -->
+    <template id="oa_beauty_cart" inherit_id="website_sale.cart" name="O&amp;A Beauty — Cart">
+        <!-- Add a subtle header message above the cart -->
+        <xpath expr="//div[hasclass('oe_website_sale')]" position="before">
+            <div class="container mt-4 mb-2 text-center" style="font-family: var(--oa-font-display); color: var(--oa-prune);">
+                <h1 class="h3 fw-light mb-1">Votre Rituel Beauté</h1>
+                <p class="text-muted small text-uppercase" style="letter-spacing: 0.1em;">Finalisez votre sélection</p>
+            </div>
+        </xpath>
+    </template>
+
+    <!--
+        Inherit cart lines to style the table and product names
+    -->
+    <template id="oa_beauty_cart_lines" inherit_id="website_sale.cart_lines" name="O&amp;A Beauty — Cart Lines">
+        <xpath expr="//table[@id='cart_products']" position="attributes">
+            <attribute name="class" add="table-borderless" separator=" "/>
+            <attribute name="style">border-collapse: separate; border-spacing: 0 15px;</attribute>
+        </xpath>
+
+        <xpath expr="//table[@id='cart_products']//th" position="attributes">
+            <attribute name="class" add="text-uppercase small text-muted" separator=" "/>
+            <attribute name="style">font-family: var(--oa-font-body); letter-spacing: 0.05em; border-bottom: 1px solid var(--oa-border);</attribute>
+        </xpath>
+    </template>
+
+</odoo>

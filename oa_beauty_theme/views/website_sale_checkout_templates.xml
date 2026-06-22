@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Epic 3: Premium Checkout Experience
+        Inject trust badges and secure payment messages in the checkout flow.
+    -->
+    <template id="oa_beauty_checkout_payment" inherit_id="website_sale.payment" name="O&amp;A Beauty — Secure Payment">
+        <xpath expr="//div[@id='payment_method']" position="after">
+            <div class="mt-5 p-4 text-center rounded" style="background-color: var(--oa-ivory); border: 1px solid rgba(0,0,0,0.05);">
+                <h5 style="color: var(--oa-prune); font-family: var(--oa-font-display);">Paiement 100% Sécurisé</h5>
+                <p class="text-muted small mb-4">Vos transactions sont protégées par un cryptage SSL de niveau bancaire. O.A.I Beauty n'a jamais accès à vos coordonnées bancaires.</p>
+                
+                <div class="d-flex justify-content-center gap-4 text-muted">
+                    <!-- FontAwesome icons for payment methods -->
+                    <i class="fa-brands fa-cc-stripe fs-1" title="Stripe"></i>
+                    <i class="fa-brands fa-cc-visa fs-1" title="Visa"></i>
+                    <i class="fa-brands fa-cc-mastercard fs-1" title="Mastercard"></i>
+                    <i class="fa-brands fa-cc-amex fs-1" title="American Express"></i>
+                    <i class="fa-brands fa-cc-apple-pay fs-1" title="Apple Pay"></i>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!--
+        Style the address formatting to look more premium
+    -->
+    <template id="oa_beauty_checkout_address" inherit_id="website_sale.checkout_layout" name="O&amp;A Beauty — Checkout Layout">
+        <xpath expr="//div[hasclass('oe_website_sale')]" position="before">
+            <div class="container mt-4 mb-2 text-center" style="font-family: var(--oa-font-display); color: var(--oa-prune);">
+                <h1 class="h3 fw-light mb-1">Expédition &amp; Paiement</h1>
+                <p class="text-muted small text-uppercase" style="letter-spacing: 0.1em;">Finalisez votre commande en toute sécurité</p>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

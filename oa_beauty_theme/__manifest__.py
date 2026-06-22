@@ -13,12 +13,15 @@
         'website',
         'website_sale',
         'mail',
+        'delivery',
+        'website_sale_delivery',
     ],
 
     # ---------------------------
     # DATA (ORDER FIXED)
     # ---------------------------
     'data': [
+        'data/delivery_data.xml',
         'data/product_attribute_data.xml',
         'data/product_public_category_data.xml',
         'data/product_data.xml',
@@ -29,6 +32,8 @@
 
         'views/product_template_backend_views.xml',
         'views/website_sale_product_templates.xml',
+        'views/website_sale_cart_templates.xml',
+        'views/website_sale_checkout_templates.xml',
         'views/website_legal_pages.xml',
     ],
 
