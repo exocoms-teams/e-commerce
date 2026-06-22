@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Epic 1 & 2: Luxury Navigation & Mobile Bottom Bar
+        Injecting the mobile bottom bar safely into website.layout before the closing body tag.
+    -->
+    <template id="oa_beauty_mobile_bottom_bar" inherit_id="website.layout" name="O&amp;A Beauty — Mobile Bottom Bar">
+        <xpath expr="//body" position="inside">
+            
+            <!-- Logic to hide on checkout / backend -->
+            <t t-set="is_checkout" t-value="request.httprequest.path in ['/shop/checkout', '/shop/address', '/shop/payment', '/shop/confirm_order']"/>
+            
+            <nav id="oa_bottom_bar" class="oa-bottom-bar d-flex d-md-none justify-content-around align-items-center" t-if="not is_checkout">
+                
+                <!-- Home -->
+                <a href="/" t-attf-class="oa-nav-item #{'active' if request.httprequest.path == '/' else ''}">
+                    <i class="fa fa-home"></i>
+                    <span class="oa-nav-label">Accueil</span>
+                </a>
+                
+                <!-- Shop / Categories -->
+                <a href="/shop" t-attf-class="oa-nav-item #{'active' if request.httprequest.path.startswith('/shop') and not is_checkout else ''}">
+                    <i class="fa fa-th-large"></i>
+                    <span class="oa-nav-label">Shop</span>
+                </a>
+                
+                <!-- Search -->
+                <a href="#" class="oa-nav-item" data-bs-toggle="modal" data-bs-target="#o_search_modal">
+                    <i class="fa fa-search"></i>
+                    <span class="oa-nav-label">Recherche</span>
+                </a>
+                
+                <!-- Wishlist (Only if installed) -->
+                <t t-if="request.env['ir.module.module'].sudo().search([('name', '=', 'website_sale_wishlist'), ('state', '=', 'installed')])">
+                    <a href="/shop/wishlist" t-attf-class="oa-nav-item #{'active' if request.httprequest.path == '/shop/wishlist' else ''}">
+                        <div class="position-relative">
+                            <i class="fa fa-heart"></i>
+                            <t t-set="wishcount" t-value="request.env['product.wishlist'].sudo().search_count([('website_id', '=', website.id), ('partner_id', '=', request.env.user.partner_id.id)]) if not request.env.user._is_public() else 0"/>
+                            <sup t-esc="wishcount" class="my_wish_quantity badge oa-badge" style="display: none;" t-att-style="'' if wishcount else 'display: none;'"/>
+                        </div>
+                        <span class="oa-nav-label">Favoris</span>
+                    </a>
+                </t>
+                
+                <!-- Cart -->
+                <a href="/shop/cart" t-attf-class="oa-nav-item #{'active' if request.httprequest.path == '/shop/cart' else ''}">
+                    <div class="position-relative">
+                        <i class="fa fa-shopping-bag"></i>
+                        <t t-set="website_sale_order" t-value="website.sale_get_order()"/>
+                        <sup t-esc="website_sale_order and website_sale_order.cart_quantity or '0'" class="my_cart_quantity badge oa-badge" t-att-data-order-id="website_sale_order and website_sale_order.id or ''"/>
+                    </div>
+                    <span class="oa-nav-label">Panier</span>
+                </a>
+                
+            </nav>
+        </xpath>
+        
+        <!-- Injecting a wrapper class on the header to safely target it with SCSS without overwriting Odoo core classes -->
+        <xpath expr="//header" position="attributes">
+            <attribute name="class" add="oa-navbar" separator=" "/>
+        </xpath>
+    </template>
+
+</odoo>

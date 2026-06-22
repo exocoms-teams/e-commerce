@@ -27,6 +27,7 @@
         'data/mail_template_data.xml',
 
         'views/website_templates.xml',
+        'views/website_navigation_templates.xml',
         'views/website_homepage.xml',
 
         'views/product_template_backend_views.xml',
