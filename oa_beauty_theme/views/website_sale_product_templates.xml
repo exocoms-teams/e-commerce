@@ -20,74 +20,93 @@
 
         <xpath expr="//div[@id='product_accordion']" position="inside">
 
-            <!-- ── ACCORDION ITEM 1: Cosmetic Specs + Key Ingredients ── -->
-            <div class="accordion-item"
-                 t-if="product.oa_type or product.oa_finish or product.oa_best_for or product.oa_key_ingredients">
-
+            <!-- ── ACCORDION ITEM 1: Ingrédients ── -->
+            <div class="accordion-item" t-if="product.oa_key_ingredients">
                 <div class="accordion-header my-0 h6">
-                    <button class="accordion-button collapsed fw-medium"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#oa_specifications"
-                            aria-expanded="false"
-                            aria-controls="oa_specifications">
-                        Product Details
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_ingredients" aria-expanded="false" aria-controls="oa_ingredients">
+                        Ingrédients
                     </button>
                 </div>
-
-                <div id="oa_specifications"
-                     class="accordion-collapse collapse"
-                     data-bs-parent="#product_accordion">
+                <div id="oa_ingredients" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
                     <div class="accordion-body pt-0">
-
-                        <!-- Type / Finish / Best For row -->
-                        <div class="o_oa_specs row mt-2"
-                             t-if="product.oa_type or product.oa_finish or product.oa_best_for">
-                            <div class="col-12 col-md-4" t-if="product.oa_type">
-                                <span class="o_oa_spec_label d-block">Type</span>
-                                <span class="o_oa_spec_value" t-esc="product.oa_type"/>
-                            </div>
-                            <div class="col-12 col-md-4" t-if="product.oa_finish">
-                                <span class="o_oa_spec_label d-block">Finish</span>
-                                <span class="o_oa_spec_value" t-esc="product.oa_finish"/>
-                            </div>
-                            <div class="col-12 col-md-4" t-if="product.oa_best_for">
-                                <span class="o_oa_spec_label d-block">Best For</span>
-                                <span class="o_oa_spec_value" t-esc="product.oa_best_for"/>
-                            </div>
-                        </div>
-
-                        <!-- Key Ingredients -->
-                        <div class="o_oa_ingredients" t-if="product.oa_key_ingredients">
-                            <span class="o_oa_ing_label">Key Ingredients</span>
-                            <p class="o_oa_ing_value mb-0" t-esc="product.oa_key_ingredients"/>
-                        </div>
-
+                        <p class="mb-0" t-esc="product.oa_key_ingredients"/>
                     </div>
                 </div>
             </div>
 
-            <!-- ── ACCORDION ITEM 2: Trust Badges (delivery / returns / cruelty-free) ── -->
+            <!-- ── ACCORDION ITEM 2: Conseils d'utilisation ── -->
             <div class="accordion-item">
                 <div class="accordion-header my-0 h6">
-                    <button class="accordion-button collapsed fw-medium"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#oa_trust_badges"
-                            aria-expanded="false"
-                            aria-controls="oa_trust_badges">
-                        Delivery &amp; Returns
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_conseils" aria-expanded="false" aria-controls="oa_conseils">
+                        Conseils d'utilisation
                     </button>
                 </div>
-                <div id="oa_trust_badges"
-                     class="accordion-collapse collapse"
-                     data-bs-parent="#product_accordion">
+                <div id="oa_conseils" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
                     <div class="accordion-body pt-0">
-                        <div class="o_oa_trust_badges">
-                            <p><i class="fa fa-truck"/>Free delivery on orders over $60</p>
-                            <p><i class="fa fa-rotate-left"/>30-day hassle-free returns</p>
-                            <p><i class="fa fa-leaf"/>Cruelty-free &amp; clean formula</p>
+                        <p class="mb-0 text-muted">Référez-vous à la section "La gestuelle" ci-dessous pour découvrir le rituel d'application optimal pour ce produit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 3: Promesse de la marque ── -->
+            <div class="accordion-item">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_promesse" aria-expanded="false" aria-controls="oa_promesse">
+                        Promesse de la marque
+                    </button>
+                </div>
+                <div id="oa_promesse" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <p class="mb-0">"La beauté à deux voix. Révélée, jamais déguisée." Nos formules transparentes sont élaborées sans compromis, alliant efficacité clinique et sensorialité luxueuse.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 4: Informations complémentaires ── -->
+            <div class="accordion-item" t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_infos" aria-expanded="false" aria-controls="oa_infos">
+                        Informations complémentaires
+                    </button>
+                </div>
+                <div id="oa_infos" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="row mt-2">
+                            <div class="col-12 col-md-4" t-if="product.oa_type">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Type</span>
+                                <span t-esc="product.oa_type"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_finish">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Fini</span>
+                                <span t-esc="product.oa_finish"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_best_for">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Idéal pour</span>
+                                <span t-esc="product.oa_best_for"/>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TRUST BADGES ── -->
+            <div class="mt-4 pt-3 border-top">
+                <div class="d-flex flex-wrap justify-content-between text-center gap-2" style="font-size: 0.8rem; color: var(--oa-prune);">
+                    <div>
+                        <i class="fa fa-paw fs-5 mb-1 d-block" style="color: var(--oa-mauve);"/>
+                        Cruelty-Free
+                    </div>
+                    <div>
+                        <i class="fa fa-leaf fs-5 mb-1 d-block" style="color: var(--oa-mauve);"/>
+                        Vegan
+                    </div>
+                    <div>
+                        <i class="fa fa-droplet fs-5 mb-1 d-block" style="color: var(--oa-mauve);"/>
+                        Natural Ingredients
+                    </div>
+                    <div>
+                        <i class="fa fa-lock fs-5 mb-1 d-block" style="color: var(--oa-mauve);"/>
+                        Secure Payment
                     </div>
                 </div>
             </div>
