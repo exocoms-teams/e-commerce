@@ -43,114 +43,90 @@
 }
 
 // ── NAVBAR & HEADER (LUXURY REDESIGN) ───────────────────────────
-// High-specificity selectors using #wrapwrap to override Odoo defaults
 
-// Glassmorphism header background
-#wrapwrap header {
-    background-color: rgba(249, 246, 240, 0.92) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border-bottom: 1px solid rgba(226, 216, 204, 0.5) !important;
-    transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-}
+// 1. Desktop Navbar Styling (Visible only on lg and up to avoid breaking mobile toggle)
+@media (min-width: 992px) {
+    .oa-navbar {
+        background-color: rgba(249, 246, 240, 0.92) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-bottom: 1px solid rgba(226, 216, 204, 0.5) !important;
+        transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        
+        &.o_header_affixed {
+            background-color: var(--oa-ivory) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+            border-bottom-color: transparent !important;
+        }
 
-// Solid on scroll
-#wrapwrap header.o_header_affixed {
-    background-color: var(--oa-ivory) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-    border-bottom-color: transparent !important;
-}
+        .navbar-brand, .navbar-brand.logo {
+            font-family: var(--oa-font-display) !important;
+            color: var(--oa-prune) !important;
+            font-size: 28px !important;
+            letter-spacing: 0.12em;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            &:hover {
+                transform: scale(1.03);
+                opacity: 0.85;
+            }
+            span { color: var(--oa-mauve); }
+            img {
+                max-height: 45px;
+                transition: transform 0.3s ease;
+            }
+            &:hover img { transform: scale(1.03); }
+        }
 
-// Logo — luxury serif
-#wrapwrap header .navbar-brand,
-#wrapwrap header .navbar-brand.logo {
-    font-family: var(--oa-font-display) !important;
-    color: var(--oa-prune) !important;
-    font-size: 28px !important;
-    letter-spacing: 0.12em;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    text-decoration: none !important;
-    &:hover {
-        transform: scale(1.03);
-        opacity: 0.85;
-    }
-    span {
-        color: var(--oa-mauve);
-    }
-    img {
-        max-height: 45px;
-        transition: transform 0.3s ease;
-    }
-    &:hover img {
-        transform: scale(1.03);
-    }
-}
+        .navbar-nav .nav-link {
+            font-family: var(--oa-font-body) !important;
+            color: var(--oa-prune) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.14em !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            padding: 10px 18px !important;
+            transition: color 0.3s ease !important;
+            position: relative;
+            background: transparent !important;
 
-// Navigation links — uppercase, clean, with hover underline
-#wrapwrap header nav.navbar .nav-link,
-#wrapwrap header .navbar-nav .nav-link {
-    font-family: var(--oa-font-body) !important;
-    color: var(--oa-prune) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.14em !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    padding: 10px 18px !important;
-    transition: color 0.3s ease !important;
-    position: relative;
-    background: transparent !important;
+            &::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 1.5px;
+                bottom: 5px;
+                left: 50%;
+                background-color: var(--oa-mauve);
+                transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+                transform: translateX(-50%);
+            }
 
-    // Hover underline micro-animation
-    &::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 1.5px;
-        bottom: 5px;
-        left: 50%;
-        background-color: var(--oa-mauve);
-        transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform: translateX(-50%);
-    }
+            &:hover, &:focus, &.active {
+                color: var(--oa-mauve) !important;
+                &::after { width: 50%; }
+            }
+        }
 
-    &:hover,
-    &:focus,
-    &.active {
-        color: var(--oa-mauve) !important;
-        &::after {
-            width: 50%;
+        .navbar-nav .nav-item.active > .nav-link {
+            color: var(--oa-mauve) !important;
+            &::after { width: 50%; }
+        }
+
+        .o_wsale_my_cart, .o_wsale_my_wish, [data-bs-target="#o_search_modal"] {
+            transition: transform 0.3s ease, color 0.3s ease !important;
+            color: var(--oa-prune) !important;
+            &:hover {
+                transform: scale(1.1);
+                color: var(--oa-mauve) !important;
+            }
         }
     }
 }
 
-// Remove default Odoo blue active indicator
-#wrapwrap header .navbar-nav .nav-item.active > .nav-link,
-#wrapwrap header .navbar-nav .nav-link.active {
-    color: var(--oa-mauve) !important;
-    &::after {
-        width: 50%;
-    }
-}
-
-// Nav icons (Search, Cart, Wishlist) — scale on hover
-#wrapwrap header .o_wsale_my_cart,
-#wrapwrap header .o_wsale_my_wish,
-#wrapwrap header [data-bs-target="#o_search_modal"],
-#wrapwrap header .fa-search,
-#wrapwrap header a[href="/shop/cart"],
-#wrapwrap header a[href="/shop/wishlist"] {
-    transition: transform 0.3s ease, color 0.3s ease !important;
-    color: var(--oa-prune) !important;
-    &:hover {
-        transform: scale(1.1);
-        color: var(--oa-mauve) !important;
-    }
-}
-
-// Cart & Wishlist badge — mauve pill with pulse
-#wrapwrap header .badge,
-#wrapwrap header .my_cart_quantity,
-#wrapwrap header .my_wish_quantity {
+// 2. Global Badge & Buttons (Applies to both mobile & desktop headers)
+.oa-navbar .badge,
+.oa-navbar .my_cart_quantity,
+.oa-navbar .my_wish_quantity {
     background-color: var(--oa-mauve) !important;
     color: white !important;
     font-family: var(--oa-font-body);
@@ -160,23 +136,6 @@
     min-width: 18px;
     box-shadow: 0 2px 6px rgba(158, 123, 157, 0.35);
     animation: oaBadgePulse 0.35s ease;
-}
-
-// Remove any default Odoo button styles from header
-#wrapwrap header .btn-primary {
-    background-color: var(--oa-prune) !important;
-    border-color: var(--oa-prune) !important;
-    color: white !important;
-    border-radius: 0 !important;
-    font-family: var(--oa-font-body) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.1em !important;
-    font-size: 12px !important;
-    transition: all 0.3s ease !important;
-    &:hover {
-        background-color: transparent !important;
-        color: var(--oa-prune) !important;
-    }
 }
 
 @keyframes oaBadgePulse {
@@ -790,36 +749,64 @@
 }
 
 // ── FOOTER OVERRIDE ───────────────────────────────────────────────
-// Mirrors: .footer — no xpath required, pure CSS override of native #footer
-#footer {
-    background: var(--oa-prune) !important;
-    padding: 60px 0;
-    .o_footer_copyright_name,
-    .o_footer_copyright {
-        color: rgba(255, 255, 255, 0.25);
-        font-size: 12px;
-        letter-spacing: 0.1em;
-        background: transparent;
+// Completely redesigning the footer using .oa-footer
+.oa-footer {
+    background-color: white;
+
+    // Newsletter section
+    .oa-footer-newsletter {
+        border-bottom: 1px solid var(--oa-border);
+        input[type="email"] {
+            font-family: var(--oa-font-body);
+            transition: border-color 0.3s ease;
+            &:focus {
+                border-color: var(--oa-mauve) !important;
+                outline: none;
+                box-shadow: none;
+            }
+            &::placeholder {
+                color: #aaa;
+                letter-spacing: 0.05em;
+            }
+        }
+        button[type="submit"] {
+            transition: background-color 0.3s ease;
+            &:hover {
+                background-color: var(--oa-mauve) !important;
+            }
+        }
     }
-    // Footer links
-    a, p, li, span {
-        color: rgba(255, 255, 255, 0.5);
-        transition: 0.3s ease;
+
+    // Main Footer Links
+    .oa-footer-main {
+        .oa-footer-links a {
+            font-family: var(--oa-font-body);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+            &:hover {
+                color: var(--oa-mauve) !important;
+                transform: translateX(4px);
+            }
+            i {
+                transition: color 0.3s ease;
+            }
+            &:hover i {
+                color: var(--oa-mauve);
+            }
+        }
     }
-    a:hover {
-        color: white;
-        text-decoration: none;
-    }
-    // Footer nav list
-    ul.list-inline, ul {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        gap: 40px;
-        padding: 0;
-        font-size: 13px;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
+
+    // Bottom Row
+    .oa-footer-bottom {
+        border-top: 1px solid rgba(226, 216, 204, 0.4);
+        a {
+            transition: color 0.3s ease;
+            &:hover {
+                color: var(--oa-prune) !important;
+            }
+        }
     }
 }
 
