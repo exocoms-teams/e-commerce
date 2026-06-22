@@ -47,7 +47,7 @@
                 <a href="/shop/cart" t-attf-class="oa-nav-item #{'active' if request.httprequest.path == '/shop/cart' else ''}">
                     <div class="position-relative">
                         <i class="fa fa-shopping-bag"></i>
-                        <t t-set="website_sale_order" t-value="website.sale_get_order()"/>
+                        <t t-set="website_sale_order" t-value="website.sale_get_order() if hasattr(website, 'sale_get_order') else None"/>
                         <sup t-esc="website_sale_order and website_sale_order.cart_quantity or '0'" class="my_cart_quantity badge oa-badge" t-att-data-order-id="website_sale_order and website_sale_order.id or ''"/>
                     </div>
                     <span class="oa-nav-label">Panier</span>
