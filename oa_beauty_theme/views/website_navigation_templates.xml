@@ -55,9 +55,85 @@
             </nav>
         </xpath>
         
-        <!-- Injecting a wrapper class on the header to safely target it with SCSS without overwriting Odoo core classes -->
-        <xpath expr="//header" position="attributes">
-            <attribute name="class" add="oa-navbar" separator=" "/>
+        <!-- Epic 7: Top Header Redesign (Luxury Custom Navbar) -->
+        <xpath expr="//header" position="replace">
+            <header id="top" class="oa-header fixed-top">
+                <!-- Top Announcement Bar -->
+                <div class="oa-top-bar text-center py-2" style="background-color: var(--oa-prune); color: white; font-family: var(--oa-font-body); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                    Free shipping on all orders over $150
+                </div>
+                
+                <!-- Main Navbar -->
+                <nav class="navbar navbar-expand-lg oa-navbar-main px-4 py-3">
+                    <div class="container-fluid align-items-center">
+                        
+                        <!-- Left Links (Desktop) -->
+                        <div class="collapse navbar-collapse w-100 order-1 order-lg-0 dual-collapse2 d-none d-lg-flex">
+                            <ul class="navbar-nav me-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" style="font-family: var(--oa-font-body); font-size: 0.8rem; letter-spacing: 0.15em; font-weight: 500;" href="/shop/category/skincare">Skincare</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase ms-4" style="font-family: var(--oa-font-body); font-size: 0.8rem; letter-spacing: 0.15em; font-weight: 500;" href="/shop/category/makeup">Makeup</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Center Logo -->
+                        <div class="mx-auto order-0 w-100 text-center d-flex justify-content-between justify-content-lg-center align-items-center">
+                            <!-- Mobile Toggler -->
+                            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target=".dual-collapse2">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            
+                            <a class="navbar-brand logo mx-auto" href="/" style="font-family: var(--oa-font-display); font-size: 2rem; color: var(--oa-prune); text-decoration: none; letter-spacing: 0.12em;">
+                                O&amp;A <span style="color: var(--oa-mauve);">Beauty</span>
+                            </a>
+                            
+                            <!-- Mobile Right Icons Placeholder (to balance flex) -->
+                            <div class="d-lg-none" style="width: 56px;"></div>
+                        </div>
+
+                        <!-- Right Links -->
+                        <div class="collapse navbar-collapse w-100 order-2 dual-collapse2 d-none d-lg-flex">
+                            <ul class="navbar-nav ms-auto align-items-center">
+                                <li class="nav-item ms-4">
+                                    <a class="nav-link" href="#" data-bs-target="#o_search_modal" data-bs-toggle="modal">
+                                        <i class="fa fa-search fs-5 text-dark"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item ms-4 position-relative">
+                                    <a class="nav-link" href="/shop/wishlist">
+                                        <i class="fa fa-heart-o fs-5 text-dark"></i>
+                                        <sup class="my_wish_quantity badge rounded-circle position-absolute top-0 start-100 translate-middle" style="background-color: var(--oa-mauve); font-size: 0.6rem; padding: 3px 5px; display: none;">0</sup>
+                                    </a>
+                                </li>
+                                <li class="nav-item ms-4 position-relative">
+                                    <a class="nav-link" href="/shop/cart">
+                                        <i class="fa fa-shopping-bag fs-5 text-dark"></i>
+                                        <sup class="my_cart_quantity badge rounded-circle position-absolute top-0 start-100 translate-middle" style="background-color: var(--oa-mauve); font-size: 0.6rem; padding: 3px 5px;">0</sup>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                
+                <!-- Mobile Collapsed Menu (only visible when toggled) -->
+                <div class="collapse navbar-collapse dual-collapse2 d-lg-none bg-white w-100 border-top" style="position: absolute; top: 100%; left: 0; z-index: 1050; padding: 20px;">
+                    <ul class="navbar-nav text-center">
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/shop/category/skincare">Skincare</a>
+                        </li>
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/shop/category/makeup">Makeup</a>
+                        </li>
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/shop">Best Sellers</a>
+                        </li>
+                    </ul>
+                </div>
+            </header>
         </xpath>
     </template>
 

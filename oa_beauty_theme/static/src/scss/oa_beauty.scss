@@ -42,98 +42,84 @@
     font-family: var(--oa-font-body);
 }
 
-// ── NAVBAR & HEADER (LUXURY REDESIGN) ───────────────────────────
+// ── HEADER & NAVBAR (LUXURY REDESIGN) ───────────────────────────
 
-// 1. Desktop Navbar Styling (Visible only on lg and up to avoid breaking mobile toggle)
-@media (min-width: 992px) {
-    .oa-navbar {
-        background-color: rgba(249, 246, 240, 0.92) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border-bottom: 1px solid rgba(226, 216, 204, 0.5) !important;
-        transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-        
-        &.o_header_affixed {
-            background-color: var(--oa-ivory) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
-            border-bottom-color: transparent !important;
+.oa-header {
+    background-color: transparent;
+    transition: all 0.4s ease;
+    
+    // Glassmorphism background for the main navbar
+    .oa-navbar-main {
+        background-color: rgba(249, 246, 240, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(226, 216, 204, 0.4);
+        transition: all 0.4s ease;
+    }
+
+    // Sticky state applied via Odoo JS (.o_header_affixed) or default
+    &.o_header_affixed, &:hover {
+        .oa-navbar-main {
+            background-color: var(--oa-ivory);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border-bottom-color: transparent;
+        }
+    }
+
+    // Logo styling
+    .navbar-brand.logo {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        &:hover {
+            transform: scale(1.03);
+            opacity: 0.85;
+        }
+    }
+
+    // Links styling
+    .nav-link {
+        color: var(--oa-prune) !important;
+        position: relative;
+        background: transparent !important;
+        transition: color 0.3s ease !important;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1.5px;
+            bottom: 5px;
+            left: 50%;
+            background-color: var(--oa-mauve);
+            transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: translateX(-50%);
         }
 
-        .navbar-brand, .navbar-brand.logo {
-            font-family: var(--oa-font-display) !important;
-            color: var(--oa-prune) !important;
-            font-size: 28px !important;
-            letter-spacing: 0.12em;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            &:hover {
-                transform: scale(1.03);
-                opacity: 0.85;
-            }
-            span { color: var(--oa-mauve); }
-            img {
-                max-height: 45px;
-                transition: transform 0.3s ease;
-            }
-            &:hover img { transform: scale(1.03); }
-        }
-
-        .navbar-nav .nav-link {
-            font-family: var(--oa-font-body) !important;
-            color: var(--oa-prune) !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.14em !important;
-            font-size: 12px !important;
-            font-weight: 500 !important;
-            padding: 10px 18px !important;
-            transition: color 0.3s ease !important;
-            position: relative;
-            background: transparent !important;
-
-            &::after {
-                content: '';
-                position: absolute;
-                width: 0;
-                height: 1.5px;
-                bottom: 5px;
-                left: 50%;
-                background-color: var(--oa-mauve);
-                transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-                transform: translateX(-50%);
-            }
-
-            &:hover, &:focus, &.active {
-                color: var(--oa-mauve) !important;
-                &::after { width: 50%; }
-            }
-        }
-
-        .navbar-nav .nav-item.active > .nav-link {
+        &:hover, &:focus, &.active {
             color: var(--oa-mauve) !important;
             &::after { width: 50%; }
         }
+    }
 
-        .o_wsale_my_cart, .o_wsale_my_wish, [data-bs-target="#o_search_modal"] {
-            transition: transform 0.3s ease, color 0.3s ease !important;
-            color: var(--oa-prune) !important;
-            &:hover {
-                transform: scale(1.1);
-                color: var(--oa-mauve) !important;
-            }
-        }
+    // Right side icons hover
+    a[href="/shop/wishlist"] i, 
+    a[href="/shop/cart"] i, 
+    [data-bs-target="#o_search_modal"] i {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+    
+    a:hover i {
+        transform: scale(1.1);
+        color: var(--oa-mauve) !important;
     }
 }
 
-// 2. Global Badge & Buttons (Applies to both mobile & desktop headers)
-.oa-navbar .badge,
-.oa-navbar .my_cart_quantity,
-.oa-navbar .my_wish_quantity {
+// Global Badge & Buttons (Applies to both mobile & desktop headers)
+.my_cart_quantity,
+.my_wish_quantity {
     background-color: var(--oa-mauve) !important;
     color: white !important;
     font-family: var(--oa-font-body);
     font-size: 10px !important;
-    border-radius: 50% !important;
-    padding: 3px 6px !important;
-    min-width: 18px;
     box-shadow: 0 2px 6px rgba(158, 123, 157, 0.35);
     animation: oaBadgePulse 0.35s ease;
 }

@@ -23,6 +23,7 @@
         'data/delivery_data.xml',
         'data/product_attribute_data.xml',
         'data/product_public_category_data.xml',
+        'data/cleanup_data.xml',
         'data/product_data.xml',
         'data/mail_template_data.xml',
 
