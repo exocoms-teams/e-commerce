@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Refund Policy Page -->
-    <template id="page_refund_policy" name="Refund Policy" page="True">
+    <!-- Refund Policy Template -->
+    <template id="page_refund_policy_view" name="Refund Policy View">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
                 <section class="py-5" style="background-color: var(--oa-bg); color: var(--oa-text);">
@@ -42,4 +42,13 @@
             </div>
         </t>
     </template>
+
+    <!-- Refund Policy Website Page -->
+    <record id="page_refund_policy" model="website.page">
+        <field name="name">Refund Policy</field>
+        <field name="url">/refund-policy</field>
+        <field name="view_id" ref="page_refund_policy_view"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+    </record>
 </odoo>
