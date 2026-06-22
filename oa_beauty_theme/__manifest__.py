@@ -22,12 +22,14 @@
         'data/product_attribute_data.xml',
         'data/product_public_category_data.xml',
         'data/product_data.xml',
+        'data/mail_template_data.xml',
 
         'views/website_templates.xml',
         'views/website_homepage.xml',
 
         'views/product_template_backend_views.xml',
         'views/website_sale_product_templates.xml',
+        'views/website_legal_pages.xml',
     ],
 
     # ---------------------------

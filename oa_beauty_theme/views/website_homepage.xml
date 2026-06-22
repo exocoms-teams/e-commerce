@@ -67,12 +67,13 @@
                     <div t-if="hp_products" class="oa-products-preview">
                         <t t-foreach="hp_products" t-as="hp_prod">
                             <a t-att-href="hp_prod.website_url" class="oa-product-card">
-
-                                <img t-att-src="'/web/image/product.template/%s/image_512' % hp_prod.id"
-                                     t-att-alt="hp_prod.name"/>
-
-                                <h3 t-esc="hp_prod.name"/>
-
+                                <div class="oa-product-img">
+                                    <img t-att-src="'/web/image/product.template/%s/image_512' % hp_prod.id"
+                                         t-att-alt="hp_prod.name" loading="lazy"/>
+                                </div>
+                                <div class="oa-product-info text-center">
+                                    <h3 class="mb-0 fs-5" t-esc="hp_prod.name"/>
+                                </div>
                             </a>
                         </t>
                     </div>
