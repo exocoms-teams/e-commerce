@@ -8,12 +8,15 @@
     'data': [
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
+        'data/Footer.xml',
+        'data/Header.xml',
+
     ],
     'assets': {
         'web.assets_frontend': [
             'Matelas/static/src/css/Home.css',
             'Matelas/static/src/css/Avis.css',
-            'Matelas/static/src/js/avis.js',  
+            'Matelas/static/src/js/main.js',  
         ],
     },
     'installable': True,

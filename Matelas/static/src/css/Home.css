@@ -15,53 +15,146 @@ body {
 }
 
 /* ===== HEADER ===== */
-header#top {
-    background-color: white !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+.matelas-header {
+    background-color: white;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.5rem 0;
 }
 
-header#top .nav-link {
+/* Logo */
+.matelas-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: var(--terracotta);
+}
+
+.logo-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--bleu-nuit);
+    letter-spacing: -0.5px;
+}
+
+/* Liens nav */
+.matelas-header .nav-link {
     color: var(--bleu-nuit) !important;
     font-weight: 500;
-    transition: color 0.3s;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.2rem !important;
+    border-radius: 50px;
+    transition: all 0.3s;
 }
 
-header#top .nav-link:hover {
+.matelas-header .nav-link:hover {
+    background-color: var(--creme);
     color: var(--terracotta) !important;
 }
 
-.o_header_contacts,
-.o_wsale_header_phone {
-    display: none !important;
+/* Icônes droite */
+.header-icon {
+    font-size: 1.4rem;
+    color: var(--bleu-nuit);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s;
+    padding: 0.3rem;
 }
 
-.o_user_name,
-.o_account_nav_item span:not(.fa) {
-    display: none !important;
+.header-icon:hover {
+    color: var(--terracotta);
 }
 
-header#top .o_cart_btn {
-    background-color: var(--terracotta) !important;
-    color: white !important;
+/* Badge panier */
+.header-cart {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: var(--terracotta);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dropdown compte */
+.account-dropdown {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 0.5rem;
+    min-width: 180px;
+}
+
+.account-dropdown .dropdown-item {
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    color: var(--bleu-nuit);
+    transition: all 0.2s;
+}
+
+.account-dropdown .dropdown-item:hover {
+    background-color: var(--creme);
+    color: var(--terracotta);
+}
+
+.account-dropdown .dropdown-item.text-danger:hover {
+    background-color: #fff0f0;
+    color: #e74c3c !important;
+}
+
+/* Modal recherche */
+.search-modal-content {
+    background: rgba(44, 58, 75, 0.96);
+}
+
+.search-box {
+    width: 60%;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
     border-radius: 50px;
-    padding: 0.3rem 1rem;
-    transition: all 0.3s;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    color: var(--bleu-nuit);
 }
 
-header#top .o_cart_btn:hover {
-    background-color: #d4785e !important;
-}
-
-header#top .btn-primary {
-    background-color: var(--bleu-nuit) !important;
-    border-color: var(--bleu-nuit) !important;
+.btn-search {
+    background-color: var(--terracotta);
+    color: white;
     border-radius: 50px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    white-space: nowrap;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
-header#top .btn-primary:hover {
-    background-color: var(--terracotta) !important;
-    border-color: var(--terracotta) !important;
+.btn-search:hover {
+    background-color: #d4785e;
+    color: white;
 }
 
 /* ===== HERO CARROUSEL ===== */ 
@@ -184,37 +277,58 @@ header#top .btn-primary:hover {
 
 
 /* ===== TICKET ===== */ 
-.ticker-wrap {
-  overflow: hidden;
-  background: var(--terracotta);
-  padding: 12px 0;
-  white-space: nowrap;
+.ticker-section {
+    padding: 2rem 0;
 }
 
-.ticker-inner {
-  animation: ticker 20s linear infinite;
-  will-change: transform;
+.categories {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-.ticker-wrap:hover .ticker-inner {
-  animation-play-state: paused;
+.categorie-card {
+    flex: 1;
+    background-color: white;
+    border-radius: 16px;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
 }
 
-
-.ticker-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 2px;
-  padding: 0 40px;
+.categorie-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    background-color: var(--terracotta);
 }
 
-.ticker-sep {
-  color: rgba(255, 255, 255, 0.6);
+.categorie-card i {
+    font-size: 2.5rem;
+    color: var(--terracotta);
+    transition: color 0.3s;
+}
+
+.categorie-card:hover i {
+    color: white;
+}
+
+.categorie-card span {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--bleu-nuit);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s;
+}
+
+.categorie-card:hover span {
+    color: white;
 }
 
 @keyframes ticker {
@@ -225,8 +339,6 @@ header#top .btn-primary:hover {
     transform: translateX(-50%);
   }
 }
-
-
 /* ===== BEST-SELLERS ===== */
 .bestsellers {
     padding: 3rem 0;

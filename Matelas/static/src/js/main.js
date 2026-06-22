@@ -46,7 +46,6 @@ function envoyerAvis() {
     `;
 
     document.getElementById('avis-container').innerHTML += card;
-    document.getElementById('avis-empty-msg').style.display = 'none';
     document.getElementById('avis-success').style.display = 'block';
 
     // Reset
@@ -59,3 +58,20 @@ function envoyerAvis() {
     // Scroll vers les avis
     document.getElementById('avis-container').scrollIntoView({behavior: 'smooth'});
 }
+
+function lancerRecherche() {
+    const query = document.getElementById('search-input').value.trim();
+    if (query) {
+        window.location.href = '/shop?search=' + encodeURIComponent(query);
+    }
+}
+
+// Lancer recherche avec Entrée
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('search-input');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') lancerRecherche();
+        });
+    }
+});
