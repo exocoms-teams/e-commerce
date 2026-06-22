@@ -15,12 +15,18 @@
       <field name="sequence">20</field>
     </record>
 
+    <record id="menu_contact" model="website.menu">
+      <field name="name">Contactez-nous</field>
+      <field name="url">/contactus</field>
+      <field name="sequence">30</field>
+    </record>
+
     <!-- Header -->
     <record id="website_header" model="ir.ui.view">
       <field name="name">Matelas Header</field>
       <field name="type">qweb</field>
       <field name="key">Matelas.header_custom</field>
-      <field name="inherit_id" ref="website.layout"/>
+      <field name="inherit_id" ref="website.layout" />
       <field name="arch" type="xml">
 
         <xpath expr="//header[@id='top']" position="replace">
@@ -29,7 +35,7 @@
 
               <!-- Logo -->
               <a href="/" class="navbar-brand matelas-logo">
-                <i class="bi bi-moon-stars-fill logo-icon"/>
+                <i class="bi bi-moon-stars-fill logo-icon" />
                 <span class="logo-text">Matelas</span>
               </a>
 
@@ -42,6 +48,9 @@
                   <li class="nav-item">
                     <a href="/shop" class="nav-link">Boutique</a>
                   </li>
+                  <li class="nav-item">
+                    <a href="/contactus" class="nav-link">Contactez-nous</a>
+                  </li>
                 </ul>
               </div>
 
@@ -50,68 +59,48 @@
 
                 <!-- Recherche -->
                 <a href="#" class="header-icon"
-                   data-bs-toggle="modal"
-                   data-bs-target="#searchModal">
-                  <i class="bi bi-search"/>
+                  data-bs-toggle="modal"
+                  data-bs-target="#searchModal">
+                  <i class="bi bi-search" />
                 </a>
 
                 <!-- Panier -->
                 <a href="/shop/cart" class="header-icon header-cart">
-                  <i class="bi bi-bag"/>
+                  <i class="bi bi-bag" />
                   <span class="cart-badge">0</span>
                 </a>
 
                 <!-- Langue -->
                 <div class="dropdown">
                   <a href="#" class="header-icon"
-                     data-bs-toggle="dropdown">
-                    <i class="bi bi-globe"/>
+                    data-bs-toggle="dropdown">
+                    <i class="bi bi-globe" />
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end account-dropdown">
-                    <li>
-                      <a class="dropdown-item" href="/web?lang=fr_FR">
-                        🇫🇷 Français
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/web?lang=en_US">
-                        🇬🇧 English
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/web?lang=es_ES">
-                        🇪🇸 Español
-                      </a>
-                    </li>
-                  </ul>
+                  <t t-call="website.language_selector" />
                 </div>
 
                 <!-- Compte -->
                 <div class="dropdown">
                   <a href="#" class="header-icon"
-                     data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle"/>
+                    data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle" />
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end account-dropdown">
                     <li>
                       <a class="dropdown-item" href="/web/login">
-                        <i class="bi bi-box-arrow-in-right me-2"/>
-                        Se connecter
-                      </a>
+                        <i class="bi bi-box-arrow-in-right me-2" /> Se connecter </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="/my/home">
-                        <i class="bi bi-person me-2"/>
-                        Mon compte
-                      </a>
+                        <i class="bi bi-person me-2" /> Mon compte </a>
                     </li>
-                    <li><hr class="dropdown-divider"/></li>
+                    <li>
+                      <hr class="dropdown-divider" />
+                    </li>
                     <li>
                       <a class="dropdown-item text-danger"
-                         href="/web/session/logout">
-                        <i class="bi bi-box-arrow-right me-2"/>
-                        Se déconnecter
-                      </a>
+                        href="/web/session/logout">
+                        <i class="bi bi-box-arrow-right me-2" /> Se déconnecter </a>
                     </li>
                   </ul>
                 </div>
@@ -125,10 +114,11 @@
                 <div class="modal-content search-modal-content">
                   <div class="modal-header border-0">
                     <button type="button"
-                            class="btn-close btn-close-white ms-auto"
-                            data-bs-dismiss="modal"/>
+                      class="btn-close btn-close-white ms-auto"
+                      data-bs-dismiss="modal" />
                   </div>
-                  <div class="modal-body d-flex align-items-center
+                  <div
+                    class="modal-body d-flex align-items-center
                                justify-content-center">
                     <div class="search-box">
                       <h3 class="text-white text-center mb-4">
@@ -136,13 +126,12 @@
                       </h3>
                       <div class="d-flex gap-3">
                         <input type="text"
-                               id="search-input"
-                               class="search-input"
-                               placeholder="Ex: Matelas ferme, oreiller..."/>
+                          id="search-input"
+                          class="search-input"
+                          placeholder="Ex: Matelas ferme, oreiller..." />
                         <a href="#" class="btn btn-search"
-                           onclick="lancerRecherche()">
-                          <i class="bi bi-search"/> Rechercher
-                        </a>
+                          onclick="lancerRecherche()">
+                          <i class="bi bi-search" /> Rechercher </a>
                       </div>
                     </div>
                   </div>

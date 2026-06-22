@@ -277,61 +277,48 @@ body {
 
 
 /* ===== TICKET ===== */ 
-.ticker-section {
-    padding: 2rem 0;
+.ticker-wrapper {
+  overflow: hidden;
+  width: 100%;
+  padding: 20px 0;
+  background: white;
 }
 
-.categories {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
+.ticker {
+  display: flex;
+  gap: 40px;
+  width: max-content;
+  animation: scroll 18s linear infinite;
 }
 
-.categorie-card {
-    flex: 1;
-    background-color: white;
-    border-radius: 16px;
-    padding: 2rem 1rem;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
+.ticker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  text-align: center;
 }
 
-.categorie-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-    background-color: var(--terracotta);
+.ticker-item i {
+  font-size: 2.5rem;
+  color: var(--terracotta);
+  margin-bottom: 8px;
+  transition: transform 0.3s, color 0.3s;
 }
 
-.categorie-card i {
-    font-size: 2.5rem;
-    color: var(--terracotta);
-    transition: color 0.3s;
+.ticker-item:hover i {
+  transform: scale(1.15);
+  color: var(--bleu-nuit);
 }
 
-.categorie-card:hover i {
-    color: white;
+.ticker-item span {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--bleu-nuit);
+  text-transform: uppercase;
 }
 
-.categorie-card span {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--bleu-nuit);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: color 0.3s;
-}
-
-.categorie-card:hover span {
-    color: white;
-}
-
-@keyframes ticker {
+@keyframes scroll {
   0% {
     transform: translateX(0);
   }
