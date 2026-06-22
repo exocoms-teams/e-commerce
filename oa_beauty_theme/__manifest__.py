@@ -35,7 +35,7 @@
         'views/website_sale_product_templates.xml',
         'views/website_sale_cart_templates.xml',
         'views/website_sale_checkout_templates.xml',
-        'views/website_legal_pages.xml',
+        'views/website_core_pages.xml',
     ],
 
     # ---------------------------

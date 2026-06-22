@@ -1,0 +1,1067 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 1: EDITORIAL COLLECTIONS HUB (/collections)                        -->
+    <!-- ======================================================================= -->
+    <template id="page_collections_template" name="Collections Hub">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Discover Your Ritual</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Explore our curated collections of clean, luxury cosmetics designed to enhance your natural beauty.</p>
+                                <a href="/shop" class="oa-btn-primary">Explore All Products</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CATEGORIES CARDS -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Shop By Category</h2>
+                        <div class="row g-4">
+                            <!-- Skincare Category -->
+                            <div class="col-md-6">
+                                <a href="/shop/category/skincare" class="text-decoration-none">
+                                    <div class="oa-gallery-card text-center h-100 position-relative overflow-hidden">
+                                        <!-- Note: Real deployment would use an uploaded image via website builder -->
+                                        <div class="oa-gallery-img oa-gallery-img--1"></div>
+                                        <div class="p-4" style="background: white;">
+                                            <h3 class="oa-gallery-caption">Skincare</h3>
+                                            <span class="oa-btn-primary mt-2">Shop Skincare</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Makeup Category -->
+                            <div class="col-md-6">
+                                <a href="/shop/category/makeup" class="text-decoration-none">
+                                    <div class="oa-gallery-card text-center h-100 position-relative overflow-hidden">
+                                        <div class="oa-gallery-img oa-gallery-img--2"></div>
+                                        <div class="p-4" style="background: white;">
+                                            <h3 class="oa-gallery-caption">Makeup</h3>
+                                            <span class="oa-btn-primary mt-2">Shop Makeup</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC BEST SELLERS PREVIEW -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Featured Best Sellers</h2>
+                        
+                        <div class="oa-products-preview mx-auto">
+                            <!-- QWeb Dynamic Fetching (Limit 3) -->
+                            <t t-set="best_sellers" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=3, order='list_price desc')"/>
+                            <t t-if="best_sellers">
+                                <t t-foreach="best_sellers" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                        
+                        <div class="text-center mt-5">
+                            <a href="/best-sellers" class="oa-btn-accent">View All Best Sellers</a>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- DYNAMIC NEW ARRIVALS PREVIEW -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">New Arrivals</h2>
+                        
+                        <div class="oa-products-preview mx-auto">
+                            <!-- QWeb Dynamic Fetching (Limit 3, sorted by creation date) -->
+                            <t t-set="new_arrivals" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=3, order='create_date desc')"/>
+                            <t t-if="new_arrivals">
+                                <t t-foreach="new_arrivals" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge" style="background-color: var(--oa-prune); font-family: var(--oa-font-body); letter-spacing: 0.1em; text-transform: uppercase;">New</span>
+                                            </div>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                        
+                        <div class="text-center mt-5">
+                            <a href="/new-arrivals" class="oa-btn-primary">View All New Arrivals</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_collections" model="website.page">
+        <field name="name">Our Collections</field>
+        <field name="url">/collections</field>
+        <field name="view_id" ref="page_collections_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Our Collections | Luxury Skincare &amp; Makeup | O&amp;A Beauty</field>
+        <field name="website_meta_description">Explore our curated collections of clean, luxury cosmetics. Shop skincare, makeup, best sellers, and new arrivals designed to enhance your natural beauty.</field>
+        <field name="website_meta_keywords">luxury cosmetics, skincare collections, makeup collections, clean beauty</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 2: SKINCARE PAGE (/skincare)                                       -->
+    <!-- ======================================================================= -->
+    <template id="page_skincare_template" name="Skincare Collection">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative" style="background-color: var(--oa-bg-alt);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Healthy Skin Starts Here</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">A luxurious ritual tailored to your skin's unique needs. Discover our expertly crafted cleansers, serums, moisturizers, and treatments.</p>
+                                <a href="/shop/category/skincare" class="oa-btn-primary">Shop All Skincare</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PILLARS / SECTIONS -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <div class="row g-4 align-items-center mb-5">
+                            <div class="col-md-6 order-md-2">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Cleansers</h2>
+                                    <p class="oa-about-text">Purify and prep your skin with our gentle yet effective cleansing formulas. The first step to a flawless complexion.</p>
+                                    <a href="/shop/category/skincare-cleansers" class="oa-btn-primary mt-3">Explore Cleansers</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 order-md-1">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 align-items-center mb-5">
+                            <div class="col-md-6">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Serums</h2>
+                                    <p class="oa-about-text">Targeted treatments packed with potent active ingredients to brighten, firm, and rejuvenate.</p>
+                                    <a href="/shop/category/skincare-serums" class="oa-btn-primary mt-3">Explore Serums</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 align-items-center mb-5">
+                            <div class="col-md-6 order-md-2">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Moisturizers</h2>
+                                    <p class="oa-about-text">Lock in hydration and protect your skin's barrier with our rich, nourishing creams.</p>
+                                    <a href="/shop/category/skincare-moisturizers" class="oa-btn-primary mt-3">Explore Moisturizers</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 order-md-1">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-6">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Treatments</h2>
+                                    <p class="oa-about-text">Elevate your routine with specialized masks and targeted treatments for absolute radiance.</p>
+                                    <a href="/shop/category/skincare-treatments" class="oa-btn-primary mt-3">Explore Treatments</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EDUCATIONAL BLOCK -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h2 class="oa-section-heading mb-4">Why Skincare Matters</h2>
+                                <p class="oa-about-text fs-5">At O&amp;A Beauty, we believe that true luxury is taking the time to care for yourself. Your skin is a canvas, and a dedicated routine is the foundation of lasting radiance. Our formulas are meticulously crafted with clean, ethically sourced ingredients to nourish deeply and deliver visible results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_skincare" model="website.page">
+        <field name="name">Skincare Collection</field>
+        <field name="url">/skincare</field>
+        <field name="view_id" ref="page_skincare_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Luxury Skincare Collection | Cleansers, Serums &amp; Creams | O&amp;A Beauty</field>
+        <field name="website_meta_description">Healthy skin starts here. Discover our expertly crafted cleansers, serums, moisturizers, and treatments tailored to your unique beauty ritual.</field>
+        <field name="website_meta_keywords">skincare, facial care, beauty routine, clean skincare, serums, moisturizers</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 3: MAKEUP PAGE (/makeup)                                           -->
+    <!-- ======================================================================= -->
+    <template id="page_makeup_template" name="Makeup Collection">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Beauty That Enhances,<br/>Never Hides</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Elevate your everyday with our premium makeup collection. Clean, long-lasting formulas designed for effortless elegance.</p>
+                                <a href="/shop/category/makeup" class="oa-btn-primary">Shop All Makeup</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PILLARS / SECTIONS -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <div class="row g-4 align-items-center mb-5">
+                            <div class="col-md-6 order-md-2">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Face</h2>
+                                    <p class="oa-about-text">Flawless, breathable coverage. Discover our foundations, concealers, and setting powders for a luminous complexion.</p>
+                                    <a href="/shop/category/makeup-face" class="oa-btn-primary mt-3">Shop Face</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 order-md-1">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 align-items-center mb-5">
+                            <div class="col-md-6">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Eyes</h2>
+                                    <p class="oa-about-text">Captivate with striking precision. Explore rich palettes, volumizing mascaras, and long-wear eyeliners.</p>
+                                    <a href="/shop/category/makeup-eyes" class="oa-btn-primary mt-3">Shop Eyes</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-6 order-md-2">
+                                <div class="p-4">
+                                    <h2 class="oa-section-heading">Lips</h2>
+                                    <p class="oa-about-text">Bold color meets intense hydration. Find your perfect shade in our luxurious lipstick and gloss collections.</p>
+                                    <a href="/shop/category/makeup-lips" class="oa-btn-primary mt-3">Shop Lips</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 order-md-1">
+                                <div class="oa-gallery-card h-100 position-relative overflow-hidden">
+                                    <div class="oa-gallery-img oa-gallery-img--1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC FEATURED PRODUCTS PREVIEW -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Featured Makeup</h2>
+                        
+                        <div class="oa-products-preview mx-auto">
+                            <!-- QWeb Dynamic Fetching: Only products in Makeup category (limit 3) -->
+                            <!-- Note: Using a heuristic domain since category IDs vary; assuming name or a specific tag. We'll fetch latest published products as fallback -->
+                            <t t-set="makeup_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=3, order='create_date desc')"/>
+                            <t t-if="makeup_products">
+                                <t t-foreach="makeup_products" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'Makeup'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                        
+                        <div class="text-center mt-5">
+                            <a href="/shop/category/makeup" class="oa-btn-accent">Shop All Makeup</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_makeup" model="website.page">
+        <field name="name">Makeup Collection</field>
+        <field name="url">/makeup</field>
+        <field name="view_id" ref="page_makeup_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Luxury Makeup | Face, Eyes &amp; Lips | O&amp;A Beauty</field>
+        <field name="website_meta_description">Beauty that enhances, never hides. Discover our premium makeup collection featuring foundations, lipsticks, and palettes designed for effortless elegance.</field>
+        <field name="website_meta_keywords">makeup, luxury cosmetics, beauty products, face makeup, eye makeup, lip color</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 4: BEST SELLERS PAGE (/best-sellers)                               -->
+    <!-- ======================================================================= -->
+    <template id="page_best_sellers_template" name="Best Sellers">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative" style="background-color: var(--oa-ivory);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Customer Favorites</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Discover the iconic formulas and absolute must-haves that our community loves most.</p>
+                                <a href="#most-loved" class="oa-btn-primary">Shop Best Sellers</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC GRID: MOST LOVED PRODUCTS -->
+                <section id="most-loved" class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Most Loved Products</h2>
+                        
+                        <div class="oa-products-preview mx-auto" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                            <!-- QWeb Dynamic Fetching -->
+                            <t t-set="most_loved" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=6, order='list_price desc')"/>
+                            <t t-if="most_loved">
+                                <t t-foreach="most_loved" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge" style="background-color: var(--oa-mauve); font-family: var(--oa-font-body); letter-spacing: 0.1em; text-transform: uppercase;">Bestseller</span>
+                                            </div>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC GRID: TRENDING THIS MONTH -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Trending This Month</h2>
+                        
+                        <div class="oa-products-preview mx-auto" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                            <!-- Fetching different offset for visual variance -->
+                            <t t-set="trending" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], offset=6, limit=3, order='list_price desc')"/>
+                            <t t-if="trending">
+                                <t t-foreach="trending" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge" style="background-color: var(--oa-prune); font-family: var(--oa-font-body); letter-spacing: 0.1em; text-transform: uppercase;">Top Rated</span>
+                                            </div>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_best_sellers" model="website.page">
+        <field name="name">Best Sellers</field>
+        <field name="url">/best-sellers</field>
+        <field name="view_id" ref="page_best_sellers_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Best Sellers | Top Rated Beauty Products | O&amp;A Beauty</field>
+        <field name="website_meta_description">Discover our absolute must-haves. Shop the most loved and top-rated clean luxury cosmetics from O&amp;A Beauty.</field>
+        <field name="website_meta_keywords">best sellers, top rated cosmetics, popular makeup, favorite skincare</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 5: NEW ARRIVALS PAGE (/new-arrivals)                               -->
+    <!-- ======================================================================= -->
+    <template id="page_new_arrivals_template" name="New Arrivals">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative" style="background-color: var(--oa-bg-alt);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Discover What's New</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Be the first to experience our latest luxury formulas and seasonal innovations.</p>
+                                <a href="#latest" class="oa-btn-primary">Explore New Arrivals</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC GRID: LATEST PRODUCTS -->
+                <section id="latest" class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Latest Products</h2>
+                        
+                        <div class="oa-products-preview mx-auto" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                            <!-- QWeb Dynamic Fetching (Order by create_date) -->
+                            <t t-set="latest_products" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], limit=6, order='create_date desc')"/>
+                            <t t-if="latest_products">
+                                <t t-foreach="latest_products" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge" style="background-color: var(--oa-prune); font-family: var(--oa-font-body); letter-spacing: 0.1em; text-transform: uppercase;">New</span>
+                                            </div>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DYNAMIC GRID: SEASONAL HIGHLIGHTS -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <h2 class="oa-section-heading text-center mb-5">Seasonal Highlights</h2>
+                        
+                        <div class="oa-products-preview mx-auto" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                            <!-- Fetching different offset -->
+                            <t t-set="seasonal" t-value="request.env['product.template'].sudo().search([('is_published', '=', True)], offset=6, limit=3, order='create_date desc')"/>
+                            <t t-if="seasonal">
+                                <t t-foreach="seasonal" t-as="product">
+                                    <a t-attf-href="/shop/{{ slug(product) }}" class="oa-product-card">
+                                        <div class="oa-product-img">
+                                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'w-100 h-100', 'loading': 'lazy'}"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge" style="background-color: var(--oa-mauve); font-family: var(--oa-font-body); letter-spacing: 0.1em; text-transform: uppercase;">Just Arrived</span>
+                                            </div>
+                                        </div>
+                                        <div class="oa-product-info text-center">
+                                            <span class="oa-product-cat" t-esc="product.public_categ_ids and product.public_categ_ids[0].name or 'O&amp;A Beauty'"/>
+                                            <h3 class="oa-product-name fs-4 mt-2 mb-2" t-esc="product.name"/>
+                                            <div class="oa-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        </div>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="oa-products-empty col-12">No products available at the moment.</p>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_new_arrivals" model="website.page">
+        <field name="name">New Arrivals</field>
+        <field name="url">/new-arrivals</field>
+        <field name="view_id" ref="page_new_arrivals_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">New Arrivals | Latest Clean Cosmetics | O&amp;A Beauty</field>
+        <field name="website_meta_description">Be the first to discover our newest luxury formulas. Shop the latest skincare and makeup innovations from O&amp;A Beauty.</field>
+        <field name="website_meta_keywords">new arrivals, latest cosmetics, new makeup, new skincare</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 6: CONTACT US PAGE (/contact-us)                                   -->
+    <!-- ======================================================================= -->
+    <template id="page_contact_us_template" name="Contact Us">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-contact position-relative pb-0">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">We Would Love To Hear From You</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Whether you have a question about our formulas, an order inquiry, or simply want to connect, our conciergerie is at your service.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CONTACT FORM & DETAILS -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <div class="row g-5">
+                            <!-- Form Column -->
+                            <div class="col-md-7">
+                                <div class="bg-white p-5 shadow-sm" style="border: 1px solid var(--oa-border);">
+                                    <h2 class="oa-section-heading fs-3 mb-4 text-start">Send a Message</h2>
+                                    <!-- Odoo Native Form (s_website_form) -->
+                                    <form action="/website/form/" method="post" enctype="multipart/form-data" class="s_website_form oa-contact-form mt-0" data-model_name="mail.mail" data-success_page="/contact-us">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <input type="text" name="name" class="form-control rounded-0 p-3" placeholder="Your Name" required="1" style="border-color: var(--oa-border);"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="email" name="email_from" class="form-control rounded-0 p-3" placeholder="Your Email" required="1" style="border-color: var(--oa-border);"/>
+                                            </div>
+                                            <div class="col-12">
+                                                <input type="text" name="subject" class="form-control rounded-0 p-3" placeholder="Subject" required="1" style="border-color: var(--oa-border);"/>
+                                            </div>
+                                            <div class="col-12">
+                                                <textarea name="body_html" class="form-control rounded-0 p-3" rows="5" placeholder="Your Message" required="1" style="border-color: var(--oa-border); resize: none;"></textarea>
+                                            </div>
+                                            <div class="col-12 mt-4 text-center">
+                                                <button type="submit" class="oa-btn-primary w-100 border-0" style="padding: 15px;">Send Message</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Info Column -->
+                            <div class="col-md-5">
+                                <div class="h-100 p-5 d-flex flex-column justify-content-center" style="background-color: var(--oa-bg-alt); border: 1px solid var(--oa-border);">
+                                    <h3 class="oa-gallery-caption fs-4 mb-4 p-0">Our Conciergerie</h3>
+                                    
+                                    <div class="mb-4">
+                                        <h4 class="fs-6 text-uppercase" style="color: var(--oa-mauve); letter-spacing: 0.15em;">Business Hours</h4>
+                                        <p class="oa-about-text mb-0">Monday – Friday<br/>9:00 AM – 6:00 PM (EST)</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h4 class="fs-6 text-uppercase" style="color: var(--oa-mauve); letter-spacing: 0.15em;">Email</h4>
+                                        <p class="oa-about-text mb-0">concierge@oaibeauty.com</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h4 class="fs-6 text-uppercase" style="color: var(--oa-mauve); letter-spacing: 0.15em;">Phone</h4>
+                                        <p class="oa-about-text mb-0">+1 (800) 123-4567</p>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h4 class="fs-6 text-uppercase mb-3" style="color: var(--oa-mauve); letter-spacing: 0.15em;">Follow Us</h4>
+                                        <div class="oa-social-icons mt-0">
+                                            <a href="#" class="rounded-circle"><i class="fa fa-instagram"></i></a>
+                                            <a href="#" class="rounded-circle"><i class="fa fa-tiktok"></i></a>
+                                            <a href="#" class="rounded-circle"><i class="fa fa-pinterest"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_contact_us" model="website.page">
+        <field name="name">Contact Us</field>
+        <field name="url">/contact-us</field>
+        <field name="view_id" ref="page_contact_us_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Contact O&amp;A Beauty | Customer Support</field>
+        <field name="website_meta_description">We would love to hear from you. Contact O&amp;A Beauty for inquiries about our luxury skincare and makeup collections.</field>
+        <field name="website_meta_keywords">contact o&amp;a beauty, customer support, beauty concierge, reach out</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 7: FAQ PAGE (/faq)                                                 -->
+    <!-- ======================================================================= -->
+    <template id="page_faq_template" name="Frequently Asked Questions">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative pb-4" style="background-color: var(--oa-ivory);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Frequently Asked Questions</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Everything you need to know about our products, shipping, and returns.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ ACCORDION -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="accordion" id="oaFaqAccordion">
+                                    
+                                    <!-- TOPIC 1: ORDERS -->
+                                    <h3 class="oa-gallery-caption fs-3 mt-4 mb-3 p-0 text-start" style="color: var(--oa-prune);">Orders</h3>
+                                    
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingOne">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                How can I track my order?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Once your order ships, you will receive a confirmation email with a tracking link. You can also view the status from your Account page.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingTwo">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Can I modify or cancel my order?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                We process orders very quickly. If you need to make a change, please contact our conciergerie within 1 hour of placing the order.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingThree">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Do you offer gift wrapping?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Yes, all O&amp;A Beauty orders are beautifully packaged in our signature boxes. You can add a personalized gift message at checkout.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOPIC 2: SHIPPING -->
+                                    <h3 class="oa-gallery-caption fs-3 mt-5 mb-3 p-0 text-start" style="color: var(--oa-prune);">Shipping</h3>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingFour">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                How long does shipping take?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Standard shipping typically takes 3-5 business days. Express shipping delivers within 1-2 business days.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingFive">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Do you ship internationally?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Yes, we ship globally. International shipping times vary between 7-14 business days depending on customs.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingSix">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Will I have to pay customs duties?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                For international orders, customs duties and taxes are calculated and paid at checkout, so there are no hidden fees upon delivery.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOPIC 3: RETURNS -->
+                                    <h3 class="oa-gallery-caption fs-3 mt-5 mb-3 p-0 text-start" style="color: var(--oa-prune);">Returns</h3>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingSeven">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                What is your return policy?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                We accept returns on unopened products in their original packaging within 30 days of purchase. See our full Returns &amp; Refunds page for details.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingEight">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                How do I start a return?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingEight" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Simply log into your account, select the order, and click "Request Return". A prepaid label will be generated for you.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingNine">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                When will I receive my refund?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseNine" class="accordion-collapse collapse" aria-labelledby="headingNine" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Once we receive your returned item, refunds are processed within 3-5 business days to the original payment method.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOPIC 4: PAYMENTS -->
+                                    <h3 class="oa-gallery-caption fs-3 mt-5 mb-3 p-0 text-start" style="color: var(--oa-prune);">Payments</h3>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingTen">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                What payment methods do you accept?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                We accept Visa, MasterCard, American Express, PayPal, and Apple Pay.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingEleven">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Is my payment information secure?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseEleven" class="accordion-collapse collapse" aria-labelledby="headingEleven" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Absolutely. Our checkout uses industry-standard 256-bit encryption. We never store your full credit card details.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingTwelve">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Do you offer installment payments?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTwelve" class="accordion-collapse collapse" aria-labelledby="headingTwelve" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Yes, we partner with select payment providers at checkout to offer interest-free installments in eligible regions.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOPIC 5: PRODUCTS -->
+                                    <h3 class="oa-gallery-caption fs-3 mt-5 mb-3 p-0 text-start" style="color: var(--oa-prune);">Products</h3>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingThirteen">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThirteen" aria-expanded="false" aria-controls="collapseThirteen" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Are your products cruelty-free?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseThirteen" class="accordion-collapse collapse" aria-labelledby="headingThirteen" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Yes. We are unconditionally committed to cruelty-free practices. None of our ingredients or finished products are tested on animals.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingFourteen">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFourteen" aria-expanded="false" aria-controls="collapseFourteen" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Are the formulas suitable for sensitive skin?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseFourteen" class="accordion-collapse collapse" aria-labelledby="headingFourteen" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Yes, our entire line is dermatologist tested and formulated without harsh irritants, making it highly suitable for sensitive skin.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion-item border-0 mb-3" style="border-bottom: 1px solid var(--oa-border) !important; background: transparent;">
+                                        <h2 class="accordion-header" id="headingFifteen">
+                                            <button class="accordion-button collapsed bg-transparent shadow-none px-0 py-4 fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFifteen" aria-expanded="false" aria-controls="collapseFifteen" style="color: var(--oa-text); font-family: var(--oa-font-body);">
+                                                Where are your products manufactured?
+                                            </button>
+                                        </h2>
+                                        <div id="collapseFifteen" class="accordion-collapse collapse" aria-labelledby="headingFifteen" data-bs-parent="#oaFaqAccordion">
+                                            <div class="accordion-body px-0 pt-0 pb-4 oa-about-text">
+                                                Our products are proudly formulated and manufactured in France, adhering to the highest European cosmetic standards.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_faq" model="website.page">
+        <field name="name">Frequently Asked Questions</field>
+        <field name="url">/faq</field>
+        <field name="view_id" ref="page_faq_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">FAQ | Customer Service | O&amp;A Beauty</field>
+        <field name="website_meta_description">Find answers to frequently asked questions regarding our clean cosmetics, order tracking, shipping, and returns.</field>
+        <field name="website_meta_keywords">faq, customer service, beauty questions, shipping info, returns info</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 8: SHIPPING & DELIVERY PAGE (/shipping-delivery)                   -->
+    <!-- ======================================================================= -->
+    <template id="page_shipping_delivery_template" name="Shipping &amp; Delivery">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative pb-4" style="background-color: var(--oa-bg-alt);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Shipping &amp; Delivery</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Everything you need to know about how your luxury rituals reach your doorstep.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CONTENT SECTIONS -->
+                <section class="py-5" style="background-color: var(--oa-ivory);">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <div class="bg-white p-5 h-100" style="border: 1px solid var(--oa-border);">
+                                            <h2 class="oa-section-heading fs-3 text-start mb-3" style="color: var(--oa-mauve);">Processing Times</h2>
+                                            <p class="oa-about-text">At O&amp;A Beauty, each order is carefully prepared and beautifully packaged by our dedicated team. Orders placed before 1:00 PM (EST) are processed on the same business day. Orders placed after this time, or on weekends/holidays, will be processed the following business day.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="bg-white p-5 h-100" style="border: 1px solid var(--oa-border);">
+                                            <h2 class="oa-section-heading fs-3 text-start mb-3" style="color: var(--oa-mauve);">Standard Shipping</h2>
+                                            <p class="oa-about-text">Enjoy complimentary standard shipping on all domestic orders over $150. For orders under this amount, a flat rate of $10 applies. Standard delivery typically takes 3 to 5 business days from the date of dispatch.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <div class="bg-white p-5 h-100" style="border: 1px solid var(--oa-border);">
+                                            <h2 class="oa-section-heading fs-3 text-start mb-3" style="color: var(--oa-mauve);">Express Shipping</h2>
+                                            <p class="oa-about-text">For those who simply cannot wait, we offer Express Shipping (1-2 business days) for a flat fee of $25. Please note that Express Shipping is not available for P.O. boxes or APO/FPO addresses.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="bg-white p-5 h-100" style="border: 1px solid var(--oa-border);">
+                                            <h2 class="oa-section-heading fs-3 text-start mb-3" style="color: var(--oa-mauve);">International Delivery</h2>
+                                            <p class="oa-about-text">We proudly ship worldwide. International shipping rates are calculated at checkout based on the destination and parcel weight. Delivery times range from 7 to 14 business days. All duties and taxes are prepaid at checkout.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-5 text-center" style="border: 1px solid var(--oa-prune);">
+                                    <h2 class="oa-section-heading fs-2 mb-4">Tracking Your Order</h2>
+                                    <p class="oa-about-text mx-auto" style="max-width: 600px;">Once your beautifully packaged order leaves our atelier, you will receive a shipping confirmation email containing a tracking link. You can track your parcel's journey at any time.</p>
+                                    <a href="/my/orders" class="oa-btn-primary mt-4">Track My Order</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_shipping_delivery" model="website.page">
+        <field name="name">Shipping &amp; Delivery</field>
+        <field name="url">/shipping-delivery</field>
+        <field name="view_id" ref="page_shipping_delivery_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Shipping &amp; Delivery Information | O&amp;A Beauty</field>
+        <field name="website_meta_description">Learn about O&amp;A Beauty's shipping policies, processing times, standard and express delivery options, and international shipping rates.</field>
+        <field name="website_meta_keywords">shipping policy, delivery times, express shipping, international delivery, order tracking</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- PAGE 9: RETURNS & REFUNDS PAGE (/returns)                               -->
+    <!-- ======================================================================= -->
+    <template id="page_returns_template" name="Returns &amp; Refunds">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative pb-4" style="background-color: var(--oa-ivory);">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-4">Returns &amp; Refunds</h1>
+                                <p class="oa-hero-tagline fs-5 mb-5">Your absolute satisfaction is our highest priority.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CONTENT SECTIONS -->
+                <section class="py-5" style="background-color: var(--oa-bg-alt);">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                
+                                <div class="mb-5">
+                                    <h2 class="oa-section-heading fs-2 text-start mb-4" style="color: var(--oa-prune);">Return Eligibility</h2>
+                                    <p class="oa-about-text">At O&amp;A Beauty, we believe in the absolute quality of our products. However, if your ritual does not meet your expectations, we accept returns within <strong>30 days</strong> of the delivery date. To be eligible for a full refund, items must be unopened, unused, and in their original pristine packaging.</p>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h2 class="oa-section-heading fs-2 text-start mb-4" style="color: var(--oa-prune);">How To Request A Return</h2>
+                                    <ol class="oa-about-text" style="padding-left: 20px;">
+                                        <li class="mb-3">Log into your O&amp;A Beauty account and navigate to the <strong>Order History</strong> section.</li>
+                                        <li class="mb-3">Select the order containing the item you wish to return and click <strong>Request Return</strong>.</li>
+                                        <li class="mb-3">You will instantly receive an email containing a prepaid return shipping label.</li>
+                                        <li class="mb-3">Carefully package the items and affix the label before dropping it off at your nearest postal location.</li>
+                                    </ol>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h2 class="oa-section-heading fs-2 text-start mb-4" style="color: var(--oa-prune);">Refund Timeline</h2>
+                                    <p class="oa-about-text">Once your returned parcel arrives at our facility, our quality team will inspect the items. Refunds are processed within <strong>3 to 5 business days</strong> following inspection. The credit will be automatically applied to your original method of payment. Please note that it may take an additional 2-10 business days for your bank to post the refund to your account.</p>
+                                </div>
+
+                                <div class="mb-5">
+                                    <h2 class="oa-section-heading fs-2 text-start mb-4" style="color: var(--oa-prune);">Damaged Products</h2>
+                                    <p class="oa-about-text">If a product arrives damaged or defective, please accept our sincerest apologies. Contact our conciergerie within 48 hours of delivery, including your order number and photos of the damaged item. We will immediately arrange for a replacement to be expedited to you at no additional cost.</p>
+                                </div>
+
+                                <div class="bg-white p-5 text-center shadow-sm" style="border: 1px solid var(--oa-border); margin-top: 60px;">
+                                    <h2 class="oa-section-heading fs-3 mb-3">Need Assistance?</h2>
+                                    <p class="oa-about-text mx-auto mb-4" style="max-width: 500px;">Our dedicated customer care team is here to guide you through the return process.</p>
+                                    <a href="/contact-us" class="oa-btn-accent">Contact Customer Care</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="page_returns" model="website.page">
+        <field name="name">Returns &amp; Refunds</field>
+        <field name="url">/returns</field>
+        <field name="view_id" ref="page_returns_template"/>
+        <field name="is_published">True</field>
+        <field name="track">True</field>
+        <field name="website_meta_title">Returns &amp; Refunds Policy | O&amp;A Beauty</field>
+        <field name="website_meta_description">Learn how to easily request a return or refund. O&amp;A Beauty offers a 30-day return policy for unused luxury cosmetics.</field>
+        <field name="website_meta_keywords">returns policy, refund policy, damaged products, cosmetics returns</field>
+    </record>
+
+</odoo>
