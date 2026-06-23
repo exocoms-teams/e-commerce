@@ -294,13 +294,83 @@ def _mission_has_facture(mission):
 
 
 def _mission_facture_label(mission):
-    inv = mission.facture_assurance_id or mission.facture_client_id
-    if not inv:
+    try:
+        inv = mission.facture_assurance_id or mission.facture_client_id
+        if not inv or not inv.exists():
+            return ''
+        name = (inv.name or '').strip()
+        if name and name != '/':
+            return name
+        return f'Facture #{inv.id}'
+    except Exception:
         return ''
-    name = (inv.name or '').strip()
-    if name and name != '/':
-        return name
-    return f'Facture #{inv.id}'
+
+
+def _fmt_mission(m):
+    try:
+        return _fmt_mission_payload(m)
+    except Exception as e:
+        _logger.warning("[sinistre] _fmt_mission mission %s: %s", m.id, e)
+        return {
+            'id':                   m.id,
+            'reference':            m.reference or '',
+            'state':                m.state,
+            'source':               getattr(m, 'source', '') or '',
+            'type_intervention':    m.type_intervention,
+            'urgence':              m.urgence,
+            'client':               m.client_id.name if m.client_id else '',
+            'tel_sur_place':        m.tel_sur_place or '',
+            'contact_sur_place':    m.contact_sur_place or '',
+            'adresse':              m.adresse_intervention or '',
+            'adresse_intervention': m.adresse_intervention or '',
+            'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+            'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
+            'description':          m.description_sinistre or '',
+            'description_sinistre': m.description_sinistre or '',
+            'montant_devis':        m.montant_devis or 0,
+            'montant_garanti':      m.montant_garanti or 0,
+            'montant_estime':       m.montant_estime or 0,
+            'montant_estime_max':   m.montant_estime_max or 0,
+            'reste_a_charge':       m.reste_a_charge or 0,
+            'signature_avant':      bool(m.signature_avant),
+            'signature_apres':      bool(m.signature_apres),
+            'notes_artisan':        m.notes_artisan or '',
+            'facture_numero':       '',
+            'a_facturer':           False,
+        }
+
+
+def _fmt_mission_payload(m):
+    return {
+        'id':                   m.id,
+        'reference':            m.reference,
+        'state':                m.state,
+        'source':               m.source if hasattr(m, 'source') else '',
+        'type_intervention':    m.type_intervention,
+        'urgence':              m.urgence,
+        'client':               m.client_id.name if m.client_id else '',
+        'tel_sur_place':        m.tel_sur_place or '',
+        'contact_sur_place':    m.contact_sur_place or '',
+        'adresse':              m.adresse_intervention or '',
+        'adresse_intervention': m.adresse_intervention or '',
+        'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
+        'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
+        'description':          m.description_sinistre or '',
+        'description_sinistre': m.description_sinistre or '',
+        'montant_devis':        m.montant_devis or 0,
+        'montant_garanti':      m.montant_garanti or 0,
+        'montant_estime':       m.montant_estime or 0,
+        'montant_estime_max':   m.montant_estime_max or 0,
+        'reste_a_charge':       m.reste_a_charge or 0,
+        'signature_avant':      bool(m.signature_avant),
+        'signature_apres':      bool(m.signature_apres),
+        'notes_artisan':        m.notes_artisan or '',
+        'facture_numero':       _mission_facture_label(m),
+        'a_facturer':           (
+            m.state in ('termine', 'facture', 'clos')
+            and not _mission_has_facture(m)
+        ),
+    }
 
 
 def _comptabilite_payload(intervenant):
@@ -443,39 +513,6 @@ def _comptabilite_payload(intervenant):
         'factures':           factures,
         'detail_solde':       detail_solde,
         'factures_a_fournir': factures_a_fournir,
-    }
-
-
-def _fmt_mission(m):
-    return {
-        'id':                   m.id,
-        'reference':            m.reference,
-        'state':                m.state,
-        'source':               m.source if hasattr(m, 'source') else '',
-        'type_intervention':    m.type_intervention,
-        'urgence':              m.urgence,
-        'client':               m.client_id.name if m.client_id else '',
-        'tel_sur_place':        m.tel_sur_place or '',
-        'contact_sur_place':    m.contact_sur_place or '',
-        'adresse':              m.adresse_intervention or '',
-        'adresse_intervention': m.adresse_intervention or '',
-        'date_rdv':             str(m.date_rdv) if m.date_rdv else None,
-        'date_cloture':         str(m.date_cloture) if m.date_cloture else None,
-        'description':          m.description_sinistre or '',
-        'description_sinistre': m.description_sinistre or '',
-        'montant_devis':        m.montant_devis or 0,
-        'montant_garanti':      m.montant_garanti or 0,
-        'montant_estime':       m.montant_estime or 0,
-        'montant_estime_max':   m.montant_estime_max or 0,
-        'reste_a_charge':       m.reste_a_charge or 0,
-        'signature_avant':      bool(m.signature_avant),
-        'signature_apres':      bool(m.signature_apres),
-        'notes_artisan':        m.notes_artisan or '',
-        'facture_numero':       _mission_facture_label(m),
-        'a_facturer':           (
-            m.state in ('termine', 'facture', 'clos')
-            and not _mission_has_facture(m)
-        ),
     }
 
 
@@ -634,8 +671,15 @@ class SinistrePWAController(http.Controller):
             ]
             order = 'urgence desc, date_rdv asc'
         missions = request.env['sinistre.mission'].sudo().search(domain, order=order)
-        return _ok({'success': True, 'missions': [_fmt_mission(m) for m in missions],
-                    'total': len(missions)})
+        try:
+            return _ok({
+                'success': True,
+                'missions': [_fmt_mission(m) for m in missions],
+                'total': len(missions),
+            })
+        except Exception as e:
+            _logger.error("[sinistre] mes_missions: %s", e, exc_info=True)
+            return _err(500, str(e))
 
     # ── DÉTAIL MISSION ───────────────────────────────────────────────
     @http.route(f'{PREFIX}/mission/<string:reference>',
@@ -767,19 +811,6 @@ class SinistrePWAController(http.Controller):
             return _err(400, "Signature requise")
         try:
             mission.sudo().write({'signature_apres': sig})
-            if mission.state in ('en_cours', 'travaux_en_cours', 'devis_accepte'):
-                mission.action_terminer()
-            if (
-                mission.state in ('termine', 'facture', 'clos')
-                and not _mission_has_facture(mission)
-            ):
-                try:
-                    mission.sudo().action_generer_facture()
-                except UserError as inv_err:
-                    _logger.info(
-                        "[sinistre] signature_apres: facture non générée pour mission %s: %s",
-                        mission.id, inv_err,
-                    )
             mission.message_post(body=_("✅ Signature après intervention enregistrée."))
             return _ok({
                 'success':        True,
