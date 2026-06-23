@@ -61,13 +61,13 @@
          Sidebar complète : recherche + catégories + marques + prix
          ================================================================= -->
     <template id="exocoms_filter_sidebar" name="EXOCOMS - Sidebar de filtres">
-        <t t-set="website" t-value="website or request.website"/>
+        <t t-set="current_website" t-value="env['website'].get_current_website()"/>
         <t t-set="exo_tree"
-           t-value="website.env['product.public.category'].exocoms_get_tree(3, website.id)"/>
+           t-value="env['product.public.category'].exocoms_get_tree(3, current_website.id)"/>
         <t t-set="exo_brands"
-           t-value="website.env['product.brand'].exocoms_get_brands(website.id)"/>
+           t-value="env['product.brand'].exocoms_get_brands(current_website.id)"/>
         <t t-set="exo_prices"
-           t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])]).mapped('list_price')"/>
+           t-value="env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, current_website.id])]).mapped('list_price')"/>
         <t t-set="exo_pmin" t-value="int(min(exo_prices)) if exo_prices else 0"/>
         <t t-set="exo_pmax" t-value="int((max(exo_prices)//100 + 1) * 100) if exo_prices else 2000"/>
 
