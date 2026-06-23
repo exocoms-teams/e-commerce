@@ -12,7 +12,7 @@ export class ExocomsSidebar extends Interaction {
     static selector = ".s_exocoms_sidebar";
 
     dynamicContent = {
-        "[data-toggle-cat]": { "t-on-click.stop": "onToggleCategory" },
+        "[data-toggle-cat]": { "t-on-click": "onToggleCategory" },
         ".exo_facet_head": { "t-on-click": "onToggleFacet" },
         ".exo_cat_cb": { "t-on-change": "onFilterChange" },
         ".exo_brand_cb": { "t-on-change": "onFilterChange" },
@@ -58,6 +58,7 @@ export class ExocomsSidebar extends Interaction {
 
     // ---------------- Repli / dépli ----------------
     onToggleCategory(ev) {
+        ev.stopPropagation();
         const id = ev.currentTarget.dataset.toggleCat;
         const cat = this.root.querySelector(`.exo_cat[data-cat-id="${id}"]`);
         if (cat) { cat.classList.toggle("exo_open"); return; }
