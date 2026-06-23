@@ -16,8 +16,9 @@ patch(PaymentForm.prototype, {
     },
 
     // Intercepte le paiement pour sauvegarder les champs mandat d'abord
-    async _initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow) {
-        if (provider === 'mandat_administratif') {
+    async _initiatePaymentFlow(...args) {
+        const selectedProvider = this._getSelectedPaymentOptionData()?.provider_code;
+        if (selectedProvider === 'mandat_administratif') {
 
             // Validation des champs obligatoires
             const siret = document.getElementById('mandat_siret')?.value?.trim();
@@ -52,6 +53,6 @@ patch(PaymentForm.prototype, {
             window.location.assign('/payment/status');
             return;
         }
-        return super._initiatePaymentFlow(provider, paymentOptionId, paymentMethodCode, flow);
+        return super._initiatePaymentFlow(...args);
     },
 });
