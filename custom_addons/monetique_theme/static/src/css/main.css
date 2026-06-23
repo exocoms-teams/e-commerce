@@ -213,7 +213,82 @@ a{color:inherit;text-decoration:none}ul{list-style:none}img{max-width:100%;displ
     .mn-contact-grid { grid-template-columns: 1fr; }
     .mn-form-card { padding: 24px; }
     .mn-page-hero h1 { font-size: 30px; }
+    .mn-source-tabs { flex-direction: column; }
 }
+
+/* ── Sélecteur profil client (demande intervention) ── */
+.mn-source-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    padding: 6px;
+    background: #F3F4F6;
+    border-radius: 14px;
+}
+.mn-source-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 12px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    transition: all .2s ease;
+}
+.mn-source-tab i { font-size: 20px; }
+.mn-source-tab:hover { color: #1E40AF; background: rgba(255,255,255,.6); }
+.mn-source-tab.active {
+    background: white;
+    color: #1E40AF;
+    border-color: #1E40AF;
+    box-shadow: 0 2px 8px rgba(30,64,175,.12);
+}
+.mn-panel-desc {
+    font-size: 13px;
+    color: #6B7280;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #F9FAFB;
+    border-radius: 8px;
+    border-left: 3px solid #1E40AF;
+}
+
+/* ── Sélecteur urgence ── */
+.mn-urgence-check {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.mn-urgence-check-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: white;
+    border-radius: 10px;
+    border: 1.5px solid #E5E7EB;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+.mn-urgence-check-item:hover,
+.mn-urgence-check-item.selected {
+    border-color: #1E40AF;
+    background: #EFF6FF;
+}
+.mn-urgence-check-item.urgent:hover,
+.mn-urgence-check-item.urgent.selected {
+    border-color: #C62828;
+    background: #FFEBEE;
+}
+.mn-urgence-check-icon { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; }
+.mn-urgence-check-label { font-size: 14px; font-weight: 600; color: #0F172A; display: block; }
 
 @media(max-width:1024px){.mn-grid--4{grid-template-columns:repeat(2,1fr)}.mn-products__grid{grid-template-columns:repeat(2,1fr)}.mn-footer__grid{grid-template-columns:1fr 1fr}.mn-hero__title{font-size:42px}.mn-cta__inner h2{font-size:32px}}
 @media(max-width:768px){.mn-hero__inner{grid-template-columns:1fr}.mn-hero__visual{display:none}.mn-hero__title{font-size:34px}.mn-stats__grid{grid-template-columns:repeat(2,1fr)}.mn-stat{border-bottom:1px solid rgba(255,255,255,.08)}.mn-grid--3{grid-template-columns:1fr}.mn-grid--4{grid-template-columns:1fr}.mn-products__grid{grid-template-columns:1fr}.mn-footer__grid{grid-template-columns:1fr;gap:32px}.mn-cta__inner h2{font-size:26px}.mn-section__header h2{font-size:30px}}
