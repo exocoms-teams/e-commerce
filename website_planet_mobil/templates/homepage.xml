@@ -1,154 +1,152 @@
 <odoo>
-    <template id="homepage" name="Planet Mobil - Accueil">
-        <t t-call="website_planet_mobil.layout">
-            <div id="wrap" class="oe_structure">
-                <div id="oe_structure_homepage_hero" class="oe_structure oe_empty" />
-                <section class="tsp-hero">
-                    <div class="tsp-hero-slides">
-                        <div class="tsp-hero-slide"
-                            style="background-image: url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600'); background-size: cover;" />
-                        <div class="tsp-hero-slide"
-                            style="background-image: url('https://images.unsplash.com/photo-1603184017968-953f59cd2e37?w=1600'); background-size: cover;" />
-                        <div class="tsp-hero-slide"
-                            style="background-image: url('https://images.unsplash.com/photo-1480694313141-fce5e697ee25?w=1600'); background-size: cover;" />
-                    </div>
-                    <div class="tsp-hero-overlay" />
-                    <div class="tsp-hero-content">
-                        <h1 class="tsp-hero-title">Bienvenue chez PLANET MOBIL</h1>
-                        <p class="tsp-hero-subtitle">Decouvrez les dernieres technologies au
-                            meilleur prix</p>
-                        <a href="/catalogue" class="tsp-btn-hero">Decouvrir nos produits</a>
-                    </div>
-                </section>
-                <!--  AVANTAGES  -->
-                <section class="tsp-features">
-                    <style> .tsp-features { padding: 40px 36px; } .tsp-features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; } .tsp-feature-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 2px 12px rgba(44, 78, 203, 0.09); padding: 28px 24px; transition: transform 0.25s, box-shadow 0.25s; } .tsp-feature-card:hover { transform: translateY(-5px); box-shadow: 0 8px 28px rgba(44, 78, 203, 0.18); } .tsp-feature-icon { width: 52px; height: 52px; border-radius: 8px; background: #e8eeff; color: #2c4ecb; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 18px; } .tsp-feature-title { font-size: 1.05rem; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; } .tsp-feature-text { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0; } @media (max-width: 900px) { .tsp-features-grid { grid-template-columns: repeat(2, 1fr); } .tsp-features { padding: 28px 20px; } } @media (max-width: 600px) { .tsp-features-grid { grid-template-columns: 1fr; } } </style>
-                    <div class="tsp-features-grid">
-                        <div class="tsp-feature-card">
-                            <div class="tsp-feature-icon">
-                                <i class="fa fa-cube" />
-                            </div>
-                            <h3 class="tsp-feature-title">Retours faciles</h3>
-                            <p class="tsp-feature-text">Retours sous 30 jours avec remboursement
-                                rapide.</p>
-                        </div>
-                        <div class="tsp-feature-card">
-                            <div class="tsp-feature-icon">
-                                <i class="fa fa-truck" />
-                            </div>
-                            <h3 class="tsp-feature-title">Livraison rapide</h3>
-                            <p class="tsp-feature-text">Livraison en France et en Europe.</p>
-                        </div>
-                        <div class="tsp-feature-card">
-                            <div class="tsp-feature-icon">
-                                <i class="fa fa-lock" />
-                            </div>
-                            <h3 class="tsp-feature-title">Paiement sécurisé</h3>
-                            <p class="tsp-feature-text">Transactions 100% sécurisées et cryptées.</p>
-                        </div>
-                        <div class="tsp-feature-card">
-                            <div class="tsp-feature-icon">
-                                <i class="fa fa-shield" />
-                            </div>
-                            <h3 class="tsp-feature-title">Qualité garantie</h3>
-                            <p class="tsp-feature-text">Produits testés et certifiés par nos
-                                experts.</p>
-                        </div>
-                    </div>
-                </section>
-                <!--  NOUVEAUTES  -->
-                <div id="oe_structure_homepage_nouveautes" class="oe_structure oe_empty" />
-                <!--  VUE RECEMMENT  -->
-                <div id="oe_structure_homepage_vue_recemment" class="oe_structure oe_empty" />
-                <!--  PROMO  -->
-                <div id="oe_structure_homepage_bottom" class="oe_structure oe_empty" />
-                <section class="tsp-promo">
-                    <div class="tsp-promo-inner">
-                        <h2 class="tsp-promo-title">Offres exceptionnelles</h2>
-                        <p class="tsp-promo-subtitle">Jusqu'a -50% sur une selection de produits</p>
-                        <a href="/shop?x_is_promotion=1" class="tsp-btn-promo">Profiter des
-                            promotions</a>
-                    </div>
-                </section>
-                <!--  AVIS dynamique avec carrousel  -->
-                <div id="oe_structure_homepage_avis" class="oe_structure oe_empty" />
-                <section class="hp-avis-section">
-                    <div class="hp-avis-header">
-                        <div class="hp-avis-title-block">
-                            <h2>Avis de nos clients</h2>
-                            <t t-if="stats">
-                                <div class="hp-avis-note">
-                                    <span class="hp-note-big">
-                                        <t t-out="stats['avg']" />
-                                    </span>
-                                    <div>
-                                        <div class="hp-stars">
-                                            <t t-foreach="range(int(stats['avg']))" t-as="s">
-                                                <i class="fa fa-star" />
-                                            </t>
-                                            <t t-if="stats['avg'] % 1 >= 0.5">
-                                                <i class="fa fa-star-half-o" />
-                                            </t>
-                                        </div>
-                                        <span class="hp-avis-count"> Basé sur <t
-                                                t-out="stats['total']" /> avis </span>
-                                    </div>
-                                </div>
-                            </t>
-                        </div>
-                        <a href="/avis" class="hp-avis-voir-tout"> Tout voir <i
-                                class="fa fa-arrow-right" />
-                        </a>
-                    </div>
-                    <div class="hp-avis-carousel-wrap">
-                        <div class="hp-avis-carousel" id="hp-avis-carousel">
-                            <t t-foreach="reviews" t-as="avis">
-                                <div class="avis-card">
-                                    <div class="avis-card-header">
-                                        <div class="avis-avatar">
-                                            <t t-out="avis.name[0].upper()" />
-                                        </div>
-                                        <div class="avis-author-info">
-                                            <h4>
-                                                <t t-out="avis.name" />
-                                            </h4>
-                                            <span>
-                                                <t t-out="avis.date" />
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="avis-card-stars">
-                                        <t t-foreach="range(avis.rating)" t-as="s">
-                                            <i class="fa fa-star" />
-                                        </t>
-                                        <t t-foreach="range(5 - avis.rating)" t-as="s">
-                                            <i class="fa fa-star-o" style="color:#d1d5db" />
-                                        </t>
-                                    </div>
-                                    <p class="avis-card-text">
-                                        <t t-out="avis.comment" />
-                                    </p>
-                                    <t t-if="avis.product">
-                                        <div class="avis-card-product">
-                                            <i class="fa fa-tag" />
-                                            <t t-out="avis.product" />
-                                        </div>
-                                    </t>
-                                    <div class="avis-verified">
-                                        <i class="fa fa-check-circle" /> Achat vérifié </div>
-                                </div>
-                                
-                            </t>
-                        </div>
-                    </div>
-                    <div style="text-align:center; margin-top:24px;">
-                        <a href="/avis#avis-form" class="tsp-btn-hero">Écrire un avis</a>
-                    </div>
-                    <script> (function () { function initAvisTicker() { var carousel = document.getElementById('hp-avis-carousel'); if (!carousel || carousel.dataset.tickerInit) return; carousel.dataset.tickerInit = '1'; carousel.style.scrollSnapType = 'none'; carousel.style.scrollBehavior = 'auto'; var originals = Array.prototype.slice.call(carousel.children); originals.forEach(function (node) { carousel.appendChild(node.cloneNode(true)); }); var paused = false; carousel.addEventListener('mouseenter', function () { paused = true; }); carousel.addEventListener('mouseleave', function () { paused = false; }); var pos = 0; var speed = 0.7; function step() { if (!paused) { pos = pos + speed; var half = carousel.scrollWidth / 2; if (half > 0) { if (pos >= half) { pos = pos - half; } } carousel.scrollLeft = pos; } requestAnimationFrame(step); } requestAnimationFrame(step); } if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initAvisTicker); } else { initAvisTicker(); } })(); </script>
-                </section>
-                <div id="oe_structure_homepage_contact" class="oe_structure oe_empty" />
-                <div id="oe_structure_homepage_end" class="oe_structure oe_empty" />
-            </div>
-        </t>
-    </template>
+<template id="homepage" name="Planet Mobil - Accueil">
+<t t-call="website_planet_mobil.layout">
+<div id="wrap" class="oe_structure">
+<div id="oe_structure_homepage_hero" class="oe_structure oe_empty"/>
+<section class="tsp-hero" style="min-height: 70vh;">
+<div class="tsp-hero-slides">
+<div class="tsp-hero-slide" style="background-image: url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600'); background-size: cover;"/>
+<div class="tsp-hero-slide" style="background-image: url('https://images.unsplash.com/photo-1603184017968-953f59cd2e37?w=1600'); background-size: cover;"/>
+<div class="tsp-hero-slide" style="background-image: url('https://images.unsplash.com/photo-1480694313141-fce5e697ee25?w=1600'); background-size: cover;"/>
+</div>
+<div class="tsp-hero-overlay"/>
+<div class="tsp-hero-content">
+<h1 class="tsp-hero-title">Bienvenue chez PLANET MOBIL</h1>
+<p class="tsp-hero-subtitle">Decouvrez les dernieres technologies au meilleur prix</p>
+<a href="/catalogue" class="tsp-btn-hero">Decouvrir nos produits</a>
+</div>
+</section>
+<!--   AVANTAGES   -->
+<section class="tsp-features">
+<style> .tsp-features { padding: 40px 36px; } .tsp-features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; } .tsp-feature-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 2px 12px rgba(44, 78, 203, 0.09); padding: 28px 24px; transition: transform 0.25s, box-shadow 0.25s; } .tsp-feature-card:hover { transform: translateY(-5px); box-shadow: 0 8px 28px rgba(44, 78, 203, 0.18); } .tsp-feature-icon { width: 52px; height: 52px; border-radius: 8px; background: #e8eeff; color: #2c4ecb; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 18px; } .tsp-feature-title { font-size: 1.05rem; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; } .tsp-feature-text { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0; } @media (max-width: 900px) { .tsp-features-grid { grid-template-columns: repeat(2, 1fr); } .tsp-features { padding: 28px 20px; } } @media (max-width: 600px) { .tsp-features-grid { grid-template-columns: 1fr; } } </style>
+<div class="tsp-features-grid">
+<div class="tsp-feature-card">
+<div class="tsp-feature-icon">
+<i class="fa fa-cube"/>
+</div>
+<h3 class="tsp-feature-title">Retours faciles</h3>
+<p class="tsp-feature-text">Retours sous 30 jours avec remboursement rapide.</p>
+</div>
+<div class="tsp-feature-card">
+<div class="tsp-feature-icon">
+<i class="fa fa-truck"/>
+</div>
+<h3 class="tsp-feature-title">Livraison rapide</h3>
+<p class="tsp-feature-text">Livraison en France et en Europe.</p>
+</div>
+<div class="tsp-feature-card">
+<div class="tsp-feature-icon">
+<i class="fa fa-lock"/>
+</div>
+<h3 class="tsp-feature-title">Paiement sécurisé</h3>
+<p class="tsp-feature-text">Transactions 100% sécurisées et cryptées.</p>
+</div>
+<div class="tsp-feature-card">
+<div class="tsp-feature-icon">
+<i class="fa fa-shield"/>
+</div>
+<h3 class="tsp-feature-title">Qualité garantie</h3>
+<p class="tsp-feature-text">Produits testés et certifiés par nos experts.</p>
+</div>
+</div>
+</section>
+<!--   NOUVEAUTES   -->
+<div id="oe_structure_homepage_nouveautes" class="oe_structure oe_empty"/>
+<!--   VUE RECEMMENT   -->
+<div id="oe_structure_homepage_vue_recemment" class="oe_structure oe_empty"/>
+<!--   PROMO   -->
+<div id="oe_structure_homepage_bottom" class="oe_structure oe_empty"/>
+<section class="tsp-promo">
+<div class="tsp-promo-inner">
+<h2 class="tsp-promo-title">Offres exceptionnelles</h2>
+<p class="tsp-promo-subtitle">Jusqu'a -50% sur une selection de produits</p>
+<a href="/shop?x_is_promotion=1" class="tsp-btn-promo">Profiter des promotions</a>
+</div>
+</section>
+<!--   AVIS dynamique avec carrousel   -->
+<div id="oe_structure_homepage_avis" class="oe_structure oe_empty"/>
+<section class="hp-avis-section">
+<div class="hp-avis-header">
+<div class="hp-avis-title-block">
+<h2>Avis de nos clients</h2>
+<t t-if="stats">
+<div class="hp-avis-note">
+<span class="hp-note-big">
+<t t-out="stats['avg']"/>
+</span>
+<div>
+<div class="hp-stars">
+<t t-foreach="range(int(stats['avg']))" t-as="s">
+<i class="fa fa-star"/>
+</t>
+<t t-if="stats['avg'] % 1 >= 0.5">
+<i class="fa fa-star-half-o"/>
+</t>
+</div>
+<span class="hp-avis-count">
+Basé sur
+<t t-out="stats['total']"/>
+avis
+</span>
+</div>
+</div>
+</t>
+</div>
+<a href="/avis" class="hp-avis-voir-tout">
+Tout voir
+<i class="fa fa-arrow-right"/>
+</a>
+</div>
+<div class="hp-avis-carousel-wrap">
+<div class="hp-avis-carousel" id="hp-avis-carousel">
+<t t-foreach="reviews" t-as="avis">
+<div class="avis-card">
+<div class="avis-card-header">
+<div class="avis-avatar">
+<t t-out="avis.name[0].upper()"/>
+</div>
+<div class="avis-author-info">
+<h4>
+<t t-out="avis.name"/>
+</h4>
+<span>
+<t t-out="avis.date"/>
+</span>
+</div>
+</div>
+<div class="avis-card-stars">
+<t t-foreach="range(avis.rating)" t-as="s">
+<i class="fa fa-star"/>
+</t>
+<t t-foreach="range(5 - avis.rating)" t-as="s">
+<i class="fa fa-star-o" style="color:#d1d5db"/>
+</t>
+</div>
+<p class="avis-card-text">
+<t t-out="avis.comment"/>
+</p>
+<t t-if="avis.product">
+<div class="avis-card-product">
+<i class="fa fa-tag"/>
+<t t-out="avis.product"/>
+</div>
+</t>
+<div class="avis-verified">
+<i class="fa fa-check-circle"/>
+Achat vérifié
+</div>
+</div>
+</t>
+</div>
+</div>
+<div style="text-align:center; margin-top:24px;">
+<a href="/avis#avis-form" class="tsp-btn-hero">Écrire un avis</a>
+</div>
+<script> (function () { function initAvisTicker() { var carousel = document.getElementById('hp-avis-carousel'); if (!carousel || carousel.dataset.tickerInit) return; carousel.dataset.tickerInit = '1'; carousel.style.scrollSnapType = 'none'; carousel.style.scrollBehavior = 'auto'; var originals = Array.prototype.slice.call(carousel.children); originals.forEach(function (node) { carousel.appendChild(node.cloneNode(true)); }); var paused = false; carousel.addEventListener('mouseenter', function () { paused = true; }); carousel.addEventListener('mouseleave', function () { paused = false; }); var pos = 0; var speed = 0.7; function step() { if (!paused) { pos = pos + speed; var half = carousel.scrollWidth / 2; if (half > 0) { if (pos >= half) { pos = pos - half; } } carousel.scrollLeft = pos; } requestAnimationFrame(step); } requestAnimationFrame(step); } if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initAvisTicker); } else { initAvisTicker(); } })(); </script>
+</section>
+<div id="oe_structure_homepage_contact" class="oe_structure oe_empty"/>
+<div id="oe_structure_homepage_end" class="oe_structure oe_empty"/>
+</div>
+</t>
+</template>
 </odoo>
