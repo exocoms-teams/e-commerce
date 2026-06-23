@@ -1,95 +1,86 @@
-odoo.define('multi_vendor_marketplace.rating', function(require) {
-    "use strict";
-    var session = require('web.session')
-    var rpc = require('web.rpc')
-    $(document).ready(function() {
-        $('.prod_redirect').on('click', function() {
-            var url = $(this).attr("href");
-            var newUrl = url.replaceAll(' ', '-');
-            $(this).attr("href", newUrl);
-        });
-        $("#post").on('click', function() {
-            var seller_id = $("#seller").val()
-            var customer_id = $("#customer").val()
-            var message_id = $("#msg").val()
-            if (message_id == '') {
-                swal({
-                    text: "Please Fill Your Comments!",
-                    button: "Close!",
-                });
-            } else {
-                var rating = 0
-                if ($("#rating11").prop("checked")) {
-                    rating = $("#rating11").val()
-                }
-                if ($("#rating12").prop("checked")) {
-                    rating = $("#rating12").val()
-                }
-                if ($("#rating13").prop("checked")) {
-                    rating = $("#rating13").val()
-                }
-                if ($("#rating14").prop("checked")) {
-                    rating = $("#rating14").val()
-                }
-                if ($("#rating15").prop("checked")) {
-                    rating = $("#rating15").val()
-                }
-                rpc.query({
-                    model: 'seller.review',
-                    method: 'rate_review',
-                    args: [{
-                        'seller_id': seller_id,
-                        'customer_id': customer_id,
-                        'rating': rating,
-                        'message': message_id
-                    }],
-                }).then(function(data) {
-                });
-                swal({
-                    title: "Rated!",
-                    text: "Thank You For Your Rating!",
-                    icon: "success",
-                    button: "Close!"
-                }).then(function() {
-                    location.reload();
-                });
-            }
-        });
-        $("#post_yes").on('click', function() {
-            var seller_id = $("#seller").val();
-            var customer_id = $("#customer").val();
-            rpc.query({
-                model: 'seller.recommend',
-                method: 'recommend_func',
-                args: [{
-                    'seller_id': seller_id,
-                    'customer_id': customer_id,
-                    'recommend': 'yes',
-                }],
-            }).then(function(data) {
-                swal({
-                    text: "Thank You!",
-                    button: "Close!",
-                });
-            });
-        });
-        $("#post_no").on('click', function() {
-            var seller_id = $("#seller").val();
-            var customer_id = $("#customer").val();
-            rpc.query({
-                model: 'seller.recommend',
-                method: 'recommend_func',
-                args: [{
-                    'seller_id': seller_id,
-                    'customer_id': customer_id,
-                    'recommend': 'no',
-                }],
-            }).then(function(data) {
-                swal({
-                    text: "Thank You!",
-                    button: "Close!",
-                });
-            });
+/** @odoo-module **/
+
+import { rpc } from "@web/core/network/rpc";
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".prod_redirect").forEach(function (el) {
+        el.addEventListener("click", function () {
+            const url = el.getAttribute("href");
+            const newUrl = url.replaceAll(" ", "-");
+            el.setAttribute("href", newUrl);
         });
     });
+
+    const postBtn = document.getElementById("post");
+    if (postBtn) {
+        postBtn.addEventListener("click", async function () {
+            const sellerId = document.getElementById("seller")?.value;
+            const customerId = document.getElementById("customer")?.value;
+            const messageId = document.getElementById("msg")?.value;
+
+            if (!messageId) {
+                window.swal({ text: "Please Fill Your Comments!", button: "Close!" });
+                return;
+            }
+
+            let rating = 0;
+            for (let i = 11; i <= 15; i++) {
+                const input = document.getElementById("rating" + i);
+                if (input && input.checked) {
+                    rating = input.value;
+                }
+            }
+
+            await rpc("/web/dataset/call_kw", {
+                model: "seller.review",
+                method: "rate_review",
+                args: [{
+                    seller_id: sellerId,
+                    customer_id: customerId,
+                    rating: rating,
+                    message: messageId,
+                }],
+                kwargs: {},
+            });
+
+            window.swal({
+                title: "Rated!",
+                text: "Thank You For Your Rating!",
+                icon: "success",
+                button: "Close!",
+            }).then(function () {
+                location.reload();
+            });
+        });
+    }
+
+    const postYesBtn = document.getElementById("post_yes");
+    if (postYesBtn) {
+        postYesBtn.addEventListener("click", async function () {
+            const sellerId = document.getElementById("seller")?.value;
+            const customerId = document.getElementById("customer")?.value;
+            await rpc("/web/dataset/call_kw", {
+                model: "seller.recommend",
+                method: "recommend_func",
+                args: [{ seller_id: sellerId, customer_id: customerId, recommend: "yes" }],
+                kwargs: {},
+            });
+            window.swal({ text: "Thank You!", button: "Close!" });
+        });
+    }
+
+    const postNoBtn = document.getElementById("post_no");
+    if (postNoBtn) {
+        postNoBtn.addEventListener("click", async function () {
+            const sellerId = document.getElementById("seller")?.value;
+            const customerId = document.getElementById("customer")?.value;
+            await rpc("/web/dataset/call_kw", {
+                model: "seller.recommend",
+                method: "recommend_func",
+                args: [{ seller_id: sellerId, customer_id: customerId, recommend: "no" }],
+                kwargs: {},
+            });
+            window.swal({ text: "Thank You!", button: "Close!" });
+        });
+    }
 });
