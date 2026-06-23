@@ -3,12 +3,21 @@ import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
 import { jsonrpc } from '@web/core/network/rpc_service';
 
+function getMandatProviderCode(paymentForm) {
+    // Lit le provider code depuis le radio sélectionné (dataset camelCase ou snake_case selon version Odoo)
+    const radio = document.querySelector('input[name="o_payment_radio"]:checked');
+    const ds = radio?.dataset || {};
+    return ds.providerCode || ds.provider_code
+        || paymentForm._getSelectedPaymentOptionData?.()?.providerCode
+        || paymentForm._getSelectedPaymentOptionData?.()?.provider_code;
+}
+
 patch(PaymentForm.prototype, {
 
     // Affiche/masque le formulaire mandat selon le mode choisi
     async _updateSelectedPaymentOption() {
         await super._updateSelectedPaymentOption(...arguments);
-        const selectedProvider = this._getSelectedPaymentOptionData()?.provider_code;
+        const selectedProvider = getMandatProviderCode(this);
         const form = document.getElementById('mandat_administratif_form');
         if (form) {
             form.style.display = selectedProvider === 'mandat_administratif' ? 'block' : 'none';
@@ -17,7 +26,7 @@ patch(PaymentForm.prototype, {
 
     // Intercepte le paiement pour sauvegarder les champs mandat d'abord
     async _initiatePaymentFlow(...args) {
-        const selectedProvider = this._getSelectedPaymentOptionData()?.provider_code;
+        const selectedProvider = getMandatProviderCode(this);
         if (selectedProvider === 'mandat_administratif') {
 
             // Validation des champs obligatoires
