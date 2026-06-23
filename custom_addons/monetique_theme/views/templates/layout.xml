@@ -5,23 +5,20 @@
 
         <xpath expr="//head" position="inside">
             <style>
-                /* ── Recherche ── */
-                .o_searchbar_form,.o_header_search_btn,button[data-bs-target="#o_search_modal"],#o_search_modal,.o_header_mobile_search{display:none !important}
-                /* ── Panier ── */
-                .o_wsale_my_cart,a[href*="/shop/cart"]{display:none !important}
-                /* ── Telephone natif ── */
-                .o_header_phone,.js_phone,a[href^="tel:"].o_phone{display:none !important}
-                /* ── Contact Us + Shop Odoo ── */
-                .o_main_navbar a[href="/contactus"],.o_main_navbar li:has(> a[href="/contactus"]),a.btn[href="/contactus"],.o_main_navbar .btn[href="/contactus"],.o_main_navbar a[href="/shop"],.o_main_navbar li:has(> a[href="/shop"]),.o_extra_menu_items{display:none !important}
+                /* ── Menus masqués ── */
+                .o_searchbar_form,.o_header_search_btn,button[data-bs-target="#o_search_modal"],#o_search_modal,.o_header_mobile_search,.o_wsale_my_cart,a[href*="/shop/cart"],.o_header_phone,.js_phone,a[href^="tel:"].o_phone,.o_main_navbar a[href="/contactus"],.o_main_navbar li:has(> a[href="/contactus"]),a.btn[href="/contactus"],.o_main_navbar .btn[href="/contactus"],.o_main_navbar a[href="/shop"],.o_main_navbar li:has(> a[href="/shop"]),.o_extra_menu_items{display:none !important}
+                #top_menu a[href="/blog"],#top_menu a[href*="/blog/"],#top_menu a[href="/urgence"],#top_menu a[href*="/appointment"],#top_menu a[href="/appointment"],.o_main_navbar a[href="/blog"],.o_main_navbar a[href*="/blog/"],.o_main_navbar a[href="/urgence"],.o_main_navbar a[href*="/appointment"],.o_main_navbar a[href="/appointment"],#top_menu li:has(> a[href="/blog"]),#top_menu li:has(> a[href="/urgence"]),#top_menu li:has(> a[href*="/appointment"]),#top_menu li:has(> a[href="/appointment"]),.o_main_navbar li:has(> a[href="/blog"]),.o_main_navbar li:has(> a[href="/urgence"]),.o_main_navbar li:has(> a[href*="/appointment"]),.o_main_navbar li:has(> a[href="/appointment"]){display:none !important}
                 /* ── Navbar ── */
-                .o_main_navbar a.nav-link{position:relative;transition:color .2s}
-                .o_main_navbar a.nav-link::after{content:'';position:absolute;bottom:-2px;left:50%;right:50%;height:2px;background:#1E40AF;border-radius:2px;transition:left .2s,right .2s}
-                .o_main_navbar a.nav-link:hover{color:#1E40AF !important}
-                .o_main_navbar a.nav-link:hover::after{left:0;right:0}
-                .o_main_navbar a.nav-link.active{color:#1E40AF !important;font-weight:700 !important}
-                .o_main_navbar a.nav-link.active::after{left:0 !important;right:0 !important}
+                #top_menu .nav-link,.o_main_navbar a.nav-link{position:relative;transition:color .2s}
+                #top_menu .nav-link::after,.o_main_navbar a.nav-link::after{content:'';position:absolute;bottom:-2px;left:50%;right:50%;height:2px;background:#1E40AF;border-radius:2px;transition:left .2s,right .2s}
+                #top_menu .nav-link:hover,.o_main_navbar a.nav-link:hover{color:#1E40AF !important}
+                #top_menu .nav-link:hover::after,.o_main_navbar a.nav-link:hover::after{left:0;right:0}
+                #top_menu .nav-link.active,.o_main_navbar a.nav-link.active,#top_menu .nav-link[aria-current="page"],.o_main_navbar a.nav-link[aria-current="page"]{color:#1E40AF !important;font-weight:700 !important}
+                #top_menu .nav-link.active::after,.o_main_navbar a.nav-link.active::after,#top_menu .nav-link[aria-current="page"]::after,.o_main_navbar a.nav-link[aria-current="page"]::after{left:0 !important;right:0 !important}
                 /* ── Espace Artisan ── */
-                a.o_sign_in,a[href="/web/login"],.o_sign_in_sign_up a,a.o_nav_link_btn{background:#1E40AF !important;color:white !important;padding:7px 16px !important;border-radius:8px !important;font-weight:600 !important;font-family:'Inter',sans-serif !important;border:none !important;text-decoration:none !important;font-size:0 !important;cursor:pointer !important}
+                a.o_sign_in,a[href="/web/login"],.o_sign_in_sign_up a,a.o_nav_link_btn{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:7px !important;background:linear-gradient(135deg,#C62828,#D32F2F) !important;color:white !important;padding:8px 18px !important;border-radius:10px !important;font-weight:700 !important;font-family:'Inter',sans-serif !important;border:none !important;text-decoration:none !important;font-size:0 !important;cursor:pointer !important;box-shadow:0 4px 14px rgba(198,40,40,.35) !important;transition:transform .2s,box-shadow .2s !important;white-space:nowrap !important}
+                a.o_sign_in:hover,a[href="/web/login"]:hover,.o_sign_in_sign_up a:hover,a.o_nav_link_btn:hover{transform:translateY(-1px) !important;box-shadow:0 6px 20px rgba(198,40,40,.45) !important;color:white !important}
+                a.o_sign_in::before,a[href="/web/login"]::before,.o_sign_in_sign_up a::before,a.o_nav_link_btn::before{content:'\f0ad';font-family:FontAwesome;font-size:14px !important}
                 a.o_sign_in::after,a[href="/web/login"]::after,.o_sign_in_sign_up a::after,a.o_nav_link_btn::after{content:'Espace Artisan';font-size:13px !important}
 
                 /* ════ DESIGN SYSTEM ════ */
@@ -249,15 +246,29 @@
 
         <xpath expr="//head" position="inside">
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var selectors = ['a[href="/web/login"]','a.o_sign_in','a.o_nav_link_btn','.o_sign_in_sign_up a'];
-                    selectors.forEach(function(sel) {
-                        document.querySelectorAll(sel).forEach(function(el) {
+                function ssInitNav() {
+                    var path = window.location.pathname.replace(/\/+$/, '') || '/';
+                    document.querySelectorAll('#top_menu .nav-link, .o_main_navbar .nav-link, #top_menu a.nav-link').forEach(function (link) {
+                        var href = (link.getAttribute('href') || '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/';
+                        if (!href || href === '#') return;
+                        link.classList.remove('active');
+                        link.removeAttribute('aria-current');
+                        var isHome = href === '/' &amp;&amp; path === '/';
+                        var isMatch = href !== '/' &amp;&amp; (path === href || path.indexOf(href + '/') === 0);
+                        if (isHome || isMatch) {
+                            link.classList.add('active');
+                            link.setAttribute('aria-current', 'page');
+                        }
+                    });
+                    ['a[href="/web/login"]','a.o_sign_in','a.o_nav_link_btn','.o_sign_in_sign_up a'].forEach(function (sel) {
+                        document.querySelectorAll(sel).forEach(function (el) {
                             el.href = '/intervenant/login';
                             el.removeAttribute('data-action');
                         });
                     });
-                });
+                }
+                document.addEventListener('DOMContentLoaded', ssInitNav);
+                document.addEventListener('page:loaded', ssInitNav);
             </script>
         </xpath>
 
