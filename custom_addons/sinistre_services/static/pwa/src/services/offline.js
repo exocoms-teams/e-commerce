@@ -93,6 +93,8 @@ window.Offline = (() => {
                 return API.uploadPhoto(item.missionId, item.photoType, item.base64, item.description);
             case 'CREATE_DEVIS':
                 return API.createDevis(item.missionId, item.payload);
+            case 'UPDATE_DEVIS':
+                return API.updateDevis(item.devisId, item.payload);
             case 'ENVOYER_DEVIS':
                 return API.envoyerDevis(item.devisId);
             case 'ACCEPTER_DEVIS':
