@@ -39,7 +39,7 @@ def _get_intervenant():
     )
     if not iv:
         iv = request.env['sinistre.intervenant'].sudo().create({
-            'name':            user.name,
+            'name':            user.name or user.login or 'Artisan',
             'partner_id':      user.partner_id.id,
             'user_id':         user.id,
             'taux_commission': 15.0,
@@ -154,59 +154,91 @@ def _mission_matches_specialites(mission, specialite_types):
     return mission.type_intervention in specialite_types
 
 
+def _proposition_table_ready(env):
+    """True si le modèle proposition est installé et sa table SQL existe."""
+    try:
+        env['sinistre.proposition.reponse']
+    except KeyError:
+        return False
+    try:
+        return _db_table_exists(env.cr, 'sinistre_proposition_reponse')
+    except Exception:
+        return False
+
+
+def _today_start_str(env):
+    """Début de journée (serveur) au format datetime Odoo."""
+    from datetime import datetime, time
+    from odoo import fields
+    today = fields.Date.context_today(env)
+    return datetime.combine(today, time.min).strftime('%Y-%m-%d %H:%M:%S')
+
+
 def _enregistrer_proposition_reponse(intervenant, mission, reponse):
     """Enregistre la réponse d'un artisan à une proposition de mission."""
+    if not _proposition_table_ready(request.env):
+        return
     from odoo import fields
     try:
         Proposition = request.env['sinistre.proposition.reponse'].sudo()
-    except KeyError:
-        _logger.warning("[sinistre] sinistre.proposition.reponse indisponible — mettre à jour le module")
-        return
+        existing = Proposition.search([
+            ('intervenant_id', '=', intervenant.id),
+            ('mission_id', '=', mission.id),
+        ], limit=1)
+        vals = {
+            'intervenant_id': intervenant.id,
+            'mission_id':     mission.id,
+            'reponse':        reponse,
+            'date_reponse':   fields.Datetime.now(),
+        }
+        if existing:
+            existing.write(vals)
+        else:
+            Proposition.create(vals)
     except Exception as e:
         _logger.warning("[sinistre] proposition_reponse: %s", e)
-        return
-    existing = Proposition.search([
-        ('intervenant_id', '=', intervenant.id),
-        ('mission_id', '=', mission.id),
-    ], limit=1)
-    vals = {
-        'intervenant_id': intervenant.id,
-        'mission_id':     mission.id,
-        'reponse':        reponse,
-        'date_reponse':   fields.Datetime.now(),
-    }
-    if existing:
-        existing.write(vals)
-    else:
-        Proposition.create(vals)
 
 
 def _calc_taux_acceptation_jour(env, intervenant):
-    """Taux acceptées / (acceptées + refusées) sur la journée en cours (UTC serveur)."""
-    from datetime import datetime, time
-    from odoo import fields
+    """Taux acceptées / (acceptées + refusées) sur la journée en cours."""
+    today_start = _today_start_str(env)
+
+    if _proposition_table_ready(env):
+        try:
+            Proposition = env['sinistre.proposition.reponse'].sudo()
+            reponses = Proposition.search([
+                ('intervenant_id', '=', intervenant.id),
+                ('date_reponse', '>=', today_start),
+            ])
+            acceptes = len(reponses.filtered(lambda r: r.reponse == 'accepte'))
+            refuses = len(reponses.filtered(lambda r: r.reponse == 'refuse'))
+            total = acceptes + refuses
+            if total:
+                return round(acceptes / total * 100, 1)
+        except Exception as e:
+            _logger.warning("[sinistre] taux via proposition: %s", e)
 
     try:
-        Proposition = env['sinistre.proposition.reponse'].sudo()
-    except KeyError:
-        return None
+        MailMessage = env['mail.message'].sudo()
+        name = intervenant.name or ''
+        if not name:
+            return None
+        acceptes = MailMessage.search_count([
+            ('model', '=', 'sinistre.mission'),
+            ('body', 'ilike', f'Mission acceptée par {name}'),
+            ('date', '>=', today_start),
+        ])
+        refuses = MailMessage.search_count([
+            ('model', '=', 'sinistre.mission'),
+            ('body', 'ilike', f'Mission refusée par {name}'),
+            ('date', '>=', today_start),
+        ])
+        total = acceptes + refuses
+        if total:
+            return round(acceptes / total * 100, 1)
     except Exception as e:
-        _logger.warning("[sinistre] taux_acceptation_jour: %s", e)
-        return None
-
-    today = fields.Date.context_today(env)
-    today_start = datetime.combine(today, time.min)
-
-    reponses = Proposition.search([
-        ('intervenant_id', '=', intervenant.id),
-        ('date_reponse', '>=', fields.Datetime.to_string(today_start)),
-    ])
-    acceptes = len(reponses.filtered(lambda r: r.reponse == 'accepte'))
-    refuses = len(reponses.filtered(lambda r: r.reponse == 'refuse'))
-    total = acceptes + refuses
-    if not total:
-        return None
-    return round(acceptes / total * 100, 1)
+        _logger.warning("[sinistre] taux via mail.message: %s", e)
+    return None
 
 
 def _validate_devis_lignes(lignes):
@@ -520,13 +552,17 @@ class SinistrePWAController(http.Controller):
             ]).filtered(
                 lambda m: not m.facture_assurance_id and not m.facture_client_id
             )
-            commission_due = sum(
-                m.commission_plateforme or 0
-                for m in Mission.search([
-                    ('intervenant_id', '=', iv.id),
-                    ('state', 'in', ('termine', 'facture', 'clos')),
-                ])
-            )
+            commission_due = 0.0
+            try:
+                commission_due = sum(
+                    (m.commission_plateforme or 0)
+                    for m in Mission.search([
+                        ('intervenant_id', '=', iv.id),
+                        ('state', 'in', ('termine', 'facture', 'clos')),
+                    ])
+                )
+            except Exception as comm_err:
+                _logger.warning("[sinistre] me commission_due: %s", comm_err)
 
             return _ok({'success': True, 'user': {
                 'uid':               user.id,
@@ -1095,13 +1131,15 @@ class SinistrePWAController(http.Controller):
             mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
             mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
             _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
+            taux = _calc_taux_acceptation_jour(request.env, intervenant)
             return _ok({
                 'success': True,
                 'state': mission.state,
                 'mission_id': mission.id,
-                'taux_acceptation': _calc_taux_acceptation_jour(request.env, intervenant),
+                'taux_acceptation': taux,
             })
         except Exception as e:
+            _logger.error("[sinistre] accepter_mission: %s", e, exc_info=True)
             return _err(500, str(e))
 
     # ── REFUSER MISSION PROPOSÉE ─────────────────────────────────────
