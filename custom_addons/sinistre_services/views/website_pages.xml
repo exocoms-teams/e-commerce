@@ -1207,23 +1207,190 @@
 <template id="page_contact" name="Sinistre Services — Contact">
     <t t-call="website.layout">
         <div id="wrap">
+
             <div class="mn-page-hero">
                 <div class="mn-container">
+                    <p style="font-size:13px;margin-bottom:14px;position:relative;z-index:1;">
+                        <a href="/" style="color:rgba(255,255,255,.7);">Accueil</a>
+                        <span style="color:rgba(255,255,255,.4);"> › </span>
+                        <span style="color:white;">Contact</span>
+                    </p>
                     <h1>Contactez-nous</h1>
-                    <p>Notre equipe vous repond sous 24h ouvrees</p>
+                    <p>Notre équipe vous répond sous 24h ouvrées — urgence sinistre disponible 24h/24</p>
                 </div>
             </div>
 
-            <!-- Remplir l'espace avec une section par défaut pour donner de la matière à replaceChildren -->
-            <div id="oe_structure_ss_contact_main" class="oe_structure oe_empty">
-                <section class="s_text_block p-5">
-                    <div class="container">
-                        <p class="text-center text-muted">Utilisez le panneau de droite pour glisser un formulaire de contact ici.</p>
-                    </div>
-                </section>
-            </div>
+            <section class="mn-section mn-section--gray" style="padding-top:48px;padding-bottom:72px;">
+                <div class="mn-container">
+
+                    <t t-if="success">
+                        <div class="mn-form-card" style="max-width:640px;margin:0 auto;text-align:center;">
+                            <div style="width:72px;height:72px;border-radius:50%;background:#F0FDF4;border:2px solid #10B981;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:#10B981;">
+                                <i class="fa fa-check" aria-hidden="true"/>
+                            </div>
+                            <h2 style="font-size:26px;font-weight:800;color:#0F172A;margin-bottom:12px;">Message envoyé</h2>
+                            <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:24px;">
+                                Merci pour votre message. Un conseiller Sinistre Services vous répond sous <strong>24 heures ouvrées</strong>.
+                            </p>
+                            <p style="font-size:14px;color:#374151;margin-bottom:24px;">
+                                Urgence sinistre ?
+                                <a href="tel:+33100000000" style="color:#C62828;font-weight:700;">01 XX XX XX XX</a>
+                            </p>
+                            <a href="/" class="mn-btn mn-btn--primary">Retour à l'accueil</a>
+                        </div>
+                    </t>
+
+                    <t t-if="not success">
+                        <div class="mn-contact-grid">
+
+                            <div class="mn-form-card">
+                                <h2>Envoyez-nous un message</h2>
+                                <span class="mn-form-sub">Remplissez le formulaire ci-dessous — tous les champs marqués <span class="required">*</span> sont obligatoires.</span>
+
+                                <t t-if="error">
+                                    <div class="mn-form-alert mn-form-alert-error">
+                                        <i class="fa fa-exclamation-circle" style="margin-right:6px;" aria-hidden="true"/>
+                                        Veuillez remplir tous les champs obligatoires (nom, email, message).
+                                    </div>
+                                </t>
+
+                                <form action="/contact/send" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Nom complet <span class="required">*</span></label>
+                                            <input type="text" name="name" placeholder="Jean Dupont" required="required"
+                                                   t-att-value="form_data.get('name', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Email <span class="required">*</span></label>
+                                            <input type="email" name="email" placeholder="jean.dupont@email.fr" required="required"
+                                                   t-att-value="form_data.get('email', '')"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Téléphone</label>
+                                            <input type="tel" name="phone" placeholder="06 XX XX XX XX"
+                                                   t-att-value="form_data.get('phone', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Objet de votre demande</label>
+                                            <select name="sujet">
+                                                <option value="Demande d information" t-att-selected="form_data.get('sujet') == 'Demande d information'">Demande d'information</option>
+                                                <option value="Suivi de dossier" t-att-selected="form_data.get('sujet') == 'Suivi de dossier'">Suivi de dossier</option>
+                                                <option value="Partenariat assurance" t-att-selected="form_data.get('sujet') == 'Partenariat assurance'">Partenariat assurance</option>
+                                                <option value="Devenir artisan" t-att-selected="form_data.get('sujet') == 'Devenir artisan'">Devenir artisan partenaire</option>
+                                                <option value="Reclamation" t-att-selected="form_data.get('sujet') == 'Reclamation'">Réclamation</option>
+                                                <option value="Autre" t-att-selected="form_data.get('sujet') == 'Autre'">Autre</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Message <span class="required">*</span></label>
+                                        <textarea name="message" rows="6" placeholder="Décrivez votre demande en détail…" required="required"><t t-esc="form_data.get('message', '')"/></textarea>
+                                    </div>
+
+                                    <div class="mn-form-submit">
+                                        <button type="submit" class="mn-btn mn-btn--primary mn-btn--lg" style="width:100%;justify-content:center;">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer le message
+                                        </button>
+                                        <p style="text-align:center;font-size:12px;color:#9CA3AF;margin-top:12px;">
+                                            Réponse sous 24h ouvrées · Données traitées conformément à notre politique de confidentialité
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <aside class="mn-contact-sidebar">
+                                <div class="mn-contact-info-card" style="background:linear-gradient(135deg,#C62828,#D32F2F);border:none;color:white;">
+                                    <h3 style="color:white;margin-bottom:12px;">
+                                        <i class="fa fa-exclamation-triangle" style="margin-right:8px;" aria-hidden="true"/>Urgence sinistre ?
+                                    </h3>
+                                    <p style="font-size:14px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:16px;">
+                                        Pour une intervention urgente (fuite, porte bloquée, vitre brisée…), appelez notre ligne 24h/24.
+                                    </p>
+                                    <a href="tel:+33100000000" class="mn-btn mn-btn--white" style="width:100%;justify-content:center;font-size:18px;font-weight:800;">
+                                        01 XX XX XX XX
+                                    </a>
+                                    <a href="/demande-intervention" class="mn-btn mn-btn--lg" style="width:100%;justify-content:center;margin-top:10px;border:2px solid rgba(255,255,255,.4);color:white;background:transparent;">
+                                        Formulaire en ligne
+                                    </a>
+                                </div>
+
+                                <div class="mn-contact-info-card">
+                                    <h3>Nos coordonnées</h3>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-phone" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Téléphone</span>
+                                            <a href="tel:+33100000000" class="mn-contact-detail-val">01 XX XX XX XX</a>
+                                        </div>
+                                    </div>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-envelope" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Email</span>
+                                            <a href="mailto:contact@sinistre-services.fr" class="mn-contact-detail-val">contact@sinistre-services.fr</a>
+                                        </div>
+                                    </div>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-map-marker" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Adresse</span>
+                                            <span class="mn-contact-detail-val">Paris, France</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mn-contact-info-card">
+                                    <h3>Horaires</h3>
+                                    <div class="mn-contact-hours">
+                                        <div class="mn-contact-hour-row">
+                                            <span>Lundi — Vendredi</span>
+                                            <strong>8h — 19h</strong>
+                                        </div>
+                                        <div class="mn-contact-hour-row">
+                                            <span>Samedi</span>
+                                            <strong>9h — 17h</strong>
+                                        </div>
+                                        <div class="mn-contact-hour-row">
+                                            <span>Urgences sinistres</span>
+                                            <strong style="color:#C62828;">24h/24 · 7j/7</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mn-contact-info-card" style="background:#EFF6FF;border-color:#BFDBFE;">
+                                    <h3 style="color:#1E40AF;">Vous êtes…</h3>
+                                    <div style="display:flex;flex-direction:column;gap:8px;">
+                                        <a href="/demande-intervention" style="font-size:13px;color:#1E40AF;font-weight:600;">
+                                            <i class="fa fa-wrench" style="margin-right:6px;" aria-hidden="true"/>Particulier — demander une intervention
+                                        </a>
+                                        <a href="/assurances" style="font-size:13px;color:#1E40AF;font-weight:600;">
+                                            <i class="fa fa-shield" style="margin-right:6px;" aria-hidden="true"/>Assuré — prise en charge assurance
+                                        </a>
+                                        <a href="/rejoindre-le-reseau" style="font-size:13px;color:#1E40AF;font-weight:600;">
+                                            <i class="fa fa-user-plus" style="margin-right:6px;" aria-hidden="true"/>Artisan — rejoindre le réseau
+                                        </a>
+                                    </div>
+                                </div>
+                            </aside>
+
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <div id="oe_structure_ss_contact_bottom" class="oe_structure oe_empty"/>
+
         </div>
     </t>
 </template>
+
+<template id="ss_page_contact" inherit_id="sinistre_services.page_contact" name="Contact (alias)"/>
 
 </odoo>
