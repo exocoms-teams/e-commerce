@@ -76,7 +76,14 @@ window.Comptabilite = (function() {
 
     function showFactures() {
         App.showSubView('comptabilite-factures');
-        _renderFactures();
+        API.getComptabilite()
+            .then(function(data) {
+                _data = data;
+                _renderFactures();
+            })
+            .catch(function() {
+                _renderFactures();
+            });
     }
 
     function showPaiements() {
