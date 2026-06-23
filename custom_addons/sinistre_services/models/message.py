@@ -29,9 +29,8 @@ class SinistreMessage(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
-        # Notif push FCM à l'artisan si message de l'assurance
         for rec in records:
-            if rec.auteur_type == 'assurance' and rec.mission_id.intervenant_id:
+            if rec.auteur_type in ('assurance', 'plateforme') and rec.mission_id.intervenant_id:
                 rec._push_to_artisan()
         return records
 
