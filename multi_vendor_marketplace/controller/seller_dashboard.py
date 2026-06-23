@@ -38,7 +38,7 @@ class SellerDashboard(http.Controller):
                     [('state', '=', 'approved')]),
                 'rejected': request.env['product.template'].sudo().search_count(
                     [('state', '=', 'rejected')]),
-                'user_type': request.env['res.users'].has_group(
+                'user_type': request.env.user.has_group(
                     'multi_vendor_marketplace.multi_vendor_marketplace_admin'),
                 'seller_pending': request.env['res.partner'].sudo().search_count(
                     [('state', '=', 'Pending for Approval')]),
