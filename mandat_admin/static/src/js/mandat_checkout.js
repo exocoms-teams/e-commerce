@@ -3,33 +3,31 @@ import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
 import { jsonrpc } from '@web/core/network/rpc_service';
 
-function getMandatProviderCode(paymentForm) {
-    // Lit le provider code depuis le radio sélectionné (dataset camelCase ou snake_case selon version Odoo)
+// Détecte si le radio "mandat_administratif" est sélectionné
+// en cherchant la valeur dans TOUS les attributs data-* (indépendant du nommage camelCase/snake_case)
+function isMandatSelected() {
     const radio = document.querySelector('input[name="o_payment_radio"]:checked');
-    const ds = radio?.dataset || {};
-    return ds.providerCode || ds.provider_code
-        || paymentForm._getSelectedPaymentOptionData?.()?.providerCode
-        || paymentForm._getSelectedPaymentOptionData?.()?.provider_code;
+    if (!radio) return false;
+    return Array.from(radio.attributes).some(attr => attr.value === 'mandat_administratif');
 }
+
+// Flag : les données mandat ont été sauvegardées, on intercepte le redirect flow
+let _mandatPaymentPending = false;
 
 patch(PaymentForm.prototype, {
 
     // Affiche/masque le formulaire mandat selon le mode choisi
     async _updateSelectedPaymentOption() {
         await super._updateSelectedPaymentOption(...arguments);
-        const selectedProvider = getMandatProviderCode(this);
         const form = document.getElementById('mandat_administratif_form');
         if (form) {
-            form.style.display = selectedProvider === 'mandat_administratif' ? 'block' : 'none';
+            form.style.display = isMandatSelected() ? 'block' : 'none';
         }
     },
 
-    // Intercepte le paiement pour sauvegarder les champs mandat d'abord
+    // Valide et sauvegarde les données mandat avant de laisser Odoo créer la transaction
     async _initiatePaymentFlow(...args) {
-        const selectedProvider = getMandatProviderCode(this);
-        if (selectedProvider === 'mandat_administratif') {
-
-            // Validation des champs obligatoires
+        if (isMandatSelected()) {
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             const iban = document.getElementById('mandat_iban')?.value?.trim();
             const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
@@ -42,7 +40,6 @@ patch(PaymentForm.prototype, {
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
-            // Sauvegarde des données
             const result = await jsonrpc('/mandat/save_checkout_data', {
                 siret,
                 iban,
@@ -54,14 +51,22 @@ patch(PaymentForm.prototype, {
                 reference: document.getElementById('mandat_reference')?.value?.trim() || '',
             });
 
-            if (!result?.success) {
-                return;
-            }
+            if (!result?.success) return;
 
-            // Redirige vers la page de statut
+            // Données sauvegardées : on laisse Odoo créer la transaction normalement,
+            // puis on intercepte dans _processRedirectFlow avant le crash
+            _mandatPaymentPending = true;
+        }
+        return super._initiatePaymentFlow(...args);
+    },
+
+    // Intercepte le redirect flow pour mandat_administratif (évite null.setAttribute)
+    async _processRedirectFlow(...args) {
+        if (_mandatPaymentPending) {
+            _mandatPaymentPending = false;
             window.location.assign('/payment/status');
             return;
         }
-        return super._initiatePaymentFlow(...args);
+        return super._processRedirectFlow(...args);
     },
 });
