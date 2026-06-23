@@ -28,7 +28,6 @@
         'data/sequence_data.xml',
         'data/mission_type_data.xml',
         'data/website_data.xml',
-        'data/website_menus_cleanup.xml',
         # Website
         'views/website_homepage.xml',
         'views/page_intervenant_login.xml',
