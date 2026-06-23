@@ -76,7 +76,12 @@ window.App = (() => {
         try {
             const resp = await fetch('/api/sinistre/v1/me', { credentials: 'include' });
             if (!resp.ok) {
-                console.warn('[App] enrichUser HTTP', resp.status);
+                let errMsg = '';
+                try {
+                    const errBody = await resp.json();
+                    errMsg = errBody.error || JSON.stringify(errBody);
+                } catch (e) { errMsg = resp.statusText; }
+                console.warn('[App] enrichUser HTTP', resp.status, errMsg);
                 return false;
             }
             const data = await resp.json();
