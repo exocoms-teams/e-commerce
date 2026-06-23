@@ -45,6 +45,23 @@ window.DevisForm = (() => {
             banner.style.display = isAmendment ? 'block' : 'none';
         }
 
+        const actionsNormal = document.getElementById('devisActionsNormal');
+        const actionsAmendment = document.getElementById('devisActionsAmendment');
+        if (actionsNormal) actionsNormal.style.display = isAmendment ? 'none' : 'block';
+        if (actionsAmendment) actionsAmendment.style.display = isAmendment ? 'block' : 'none';
+
+        const noteEl = document.getElementById('devisNote');
+        if (noteEl) {
+            noteEl.value = existingDevis ? (existingDevis.note_client || '') : '';
+        }
+
+        const btnEnv = document.getElementById('btnEnvoyerDevis');
+        if (btnEnv) {
+            const canSend = existingDevis && !isAmendment
+                && ['brouillon', 'en_revision'].includes(existingDevis.state);
+            btnEnv.style.display = canSend ? 'flex' : 'none';
+        }
+
         renderLignes();
         updateTotaux();
     }
@@ -105,6 +122,7 @@ window.DevisForm = (() => {
         if (!_lignes.length) { Toast.show('Ajoutez au moins une ligne', 'warning'); return false; }
         for (const [i, l] of _lignes.entries()) {
             if (!l.description.trim()) { Toast.show(`Ligne ${i+1} : description manquante`, 'warning'); return false; }
+            if ((l.quantite || 0) <= 0)   { Toast.show(`Ligne ${i+1} : quantité invalide`, 'warning'); return false; }
             if (l.prix_unitaire <= 0)  { Toast.show(`Ligne ${i+1} : prix invalide`, 'warning'); return false; }
         }
         return true;
