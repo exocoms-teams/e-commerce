@@ -20,7 +20,7 @@ class TrackerExtensionController(http.Controller):
             
             # Try multiple possible paths for the extension directory
             possible_paths = [
-                os.path.join(module_dir, 'static', 'src', 'extension'),
+                os.path.join(module_dir, 'static', 'extension'),
                 os.path.join(module_dir, 'static', 'extension'),
                 os.path.join(module_dir, 'extension'),
             ]
@@ -85,7 +85,7 @@ class TrackerExtensionController(http.Controller):
                 else:
                     # Try to find manifest in common locations
                     manifest_locations = [
-                        os.path.join(module_dir, 'static', 'src', 'extension', 'manifest.json'),
+                        os.path.join(module_dir, 'static', 'extension', 'manifest.json'),
                         os.path.join(module_dir, 'static', 'extension', 'manifest.json'),
                         os.path.join(module_dir, 'extension', 'manifest.json'),
                         os.path.join(os.path.dirname(module_dir), 'extension', 'manifest.json'),

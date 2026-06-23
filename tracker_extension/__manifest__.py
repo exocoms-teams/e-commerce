@@ -1,26 +1,29 @@
 {
-    'name': 'Tracker Extension Download',
+    'name': 'Tracker Extension Module',
     'version': '2.1.0',
     'category': 'Website',
-    'license': 'LGPL-3',
-    'summary': 'Download the Tracker browser extension',
+    'summary': 'Extension download page with dashboard',
     'description': """
-        Provides the Tracker browser extension for download.
-        Track products automatically on e-commerce sites.
-        
-        Features:
-        - Auto-detection on Amazon, eBay, Etsy, Walmart
-        - Local data storage (no cloud sync)
-        - Full dashboard with charts
-        - CSV export functionality
+        Tracker Extension with:
+        - Green/White theme with dark mode toggle
+        - French/English language support
+        - Dashboard for extension data
     """,
     'author': 'Your Company',
-    'website': 'https://your-company.com',
-    'depends': ['website'],
+    'website': 'https://yourwebsite.com',
+    'depends': ['website', 'mail'],
     'data': [
         'views/templates.xml',
         'views/website_menu.xml',
+        'views/dashboard_template.xml',
+        'security/ir.model.access.csv',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'your_module_name/static/css/extension_style.css',
+            'your_module_name/static/js/extension_dashboard.js',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

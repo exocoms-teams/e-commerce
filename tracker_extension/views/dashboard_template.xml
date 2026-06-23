@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="extension_dashboard_page" name="Extension Dashboard">
+        <t t-call="website.layout">
+            <t t-set="title">Tracker Extension Dashboard</t>
+            
+            <div class="container mt-4">
+                <h1 class="mb-4">📊 Extension Dashboard</h1>
+                
+                <!-- Metrics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total_products">0</div>
+                            <div class="metric-label">Total Products Tracked</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value" id="active_users">0</div>
+                            <div class="metric-label">Active Users</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total_trackings">0</div>
+                            <div class="metric-label">Total Trackings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value" id="avg_trend">0</div>
+                            <div class="metric-label">Average Trend Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="card shadow">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Recent Tracking Data</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover" id="tracking_table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Website</th>
+                                    <th>Price</th>
+                                    <th>Trend Score</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tracking_data">
+                                <!-- Data will be loaded here via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Dashboard Menu Item -->
+    <record id="website_dashboard_menu" model="website.menu">
+        <field name="name">Dashboard</field>
+        <field name="url">/extension-dashboard</field>
+        <field name="parent_id" ref="your_module_name.website_extension_menu"/>
+        <field name="sequence" type="int">10</field>
+    </record>
+</odoo>
