@@ -50,74 +50,141 @@ class SinistreWebsite(http.Controller):
     @http.route('/demande-intervention', type='http', auth='public', website=True)
     def demande_intervention(self, **kwargs):
         """Formulaire de prise de contact / demande directe."""
-        success = kwargs.get('success', False)
-        return request.render('sinistre_services.ss_page_demande', {
+        return request.render('sinistre_services.page_demande', {
             'year': datetime.datetime.now().year,
             'error': False,
-            'success': success,
-            'form_data': {},
+            'success': False,
+            'reference': None,
+            'token': None,
+            'type_pre': kwargs.get('type', ''),
+            'urgence_pre': kwargs.get('urgence', ''),
+            'form_data': {'source': kwargs.get('source', 'particulier')},
         })
+
+    def _demande_render(self, **ctx):
+        defaults = {
+            'year': datetime.datetime.now().year,
+            'type_pre': '',
+            'urgence_pre': '',
+            'form_data': {},
+            'reference': None,
+            'token': None,
+            'error': False,
+            'success': False,
+        }
+        defaults.update(ctx)
+        return request.render('sinistre_services.page_demande', defaults)
+
+    def _demande_validate(self, post, source):
+        """Validation selon le profil demandeur."""
+        common = ['telephone', 'type_intervention', 'adresse', 'code_postal', 'ville', 'description']
+        if not all(post.get(f, '').strip() for f in common):
+            return False
+        if source == 'entreprise':
+            return bool(
+                post.get('entreprise_nom', '').strip()
+                and post.get('nom', '').strip()
+                and post.get('email', '').strip()
+            )
+        if source == 'assurance':
+            return bool(
+                post.get('assurance_nom', '').strip()
+                and post.get('ref_assurance', '').strip()
+                and post.get('nom', '').strip()
+                and post.get('email', '').strip()
+            )
+        return bool(post.get('nom', '').strip() and post.get('email', '').strip())
 
     @http.route('/demande-intervention/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def demande_send(self, **post):
         """Traitement du formulaire de demande d'intervention."""
-        # Validation basique
-        required = ['nom', 'email', 'telephone', 'type_intervention', 'adresse', 'description']
-        if not all(post.get(f, '').strip() for f in required):
-            return request.render('sinistre_services.ss_page_demande', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
-
         source = post.get('source', 'particulier')
-        if source not in ('particulier', 'entreprise'):
+        if source not in ('particulier', 'entreprise', 'assurance'):
             source = 'particulier'
 
-        # Créer ou trouver le partenaire
+        if not self._demande_validate(post, source):
+            return self._demande_render(
+                error=True, success=False, form_data=post,
+            )
+
         env = request.env(su=True)
         email = post.get('email', '').strip()
-        partner = env['res.partner'].search([('email', '=', email)], limit=1)
-        if not partner:
-            is_company = (source == 'entreprise')
-            name_parts = [post.get('prenom', '').strip(), post.get('nom', '').strip()]
-            if is_company and post.get('entreprise_nom', '').strip():
-                full_name = post.get('entreprise_nom', '').strip()
-            else:
-                full_name = ' '.join(p for p in name_parts if p) or post.get('nom', 'Client').strip()
-            partner = env['res.partner'].create({
-                'name': full_name,
-                'email': email,
-                'phone': post.get('telephone', '').strip(),
-                'is_company': is_company,
-            })
+        adresse_full = ', '.join(filter(None, [
+            post.get('adresse', '').strip(),
+            post.get('code_postal', '').strip(),
+            post.get('ville', '').strip(),
+        ]))
 
-        # Créer la mission
+        if source == 'assurance':
+            assure_name = ' '.join(filter(None, [
+                post.get('prenom', '').strip(),
+                post.get('nom', '').strip(),
+            ])) or 'Assuré'
+            tel = post.get('telephone', '').strip()
+            partner = env['res.partner'].search([
+                ('name', '=', assure_name),
+                ('phone', '=', tel),
+            ], limit=1)
+            if not partner:
+                partner = env['res.partner'].create({
+                    'name': assure_name,
+                    'phone': tel,
+                    'email': email,
+                })
+        else:
+            partner = env['res.partner'].search([('email', '=', email)], limit=1)
+            if not partner:
+                is_company = (source == 'entreprise')
+                if is_company and post.get('entreprise_nom', '').strip():
+                    full_name = post.get('entreprise_nom', '').strip()
+                else:
+                    name_parts = [post.get('prenom', '').strip(), post.get('nom', '').strip()]
+                    full_name = ' '.join(p for p in name_parts if p) or post.get('nom', 'Client').strip()
+                partner_vals = {
+                    'name': full_name,
+                    'email': email,
+                    'phone': post.get('telephone', '').strip(),
+                    'is_company': is_company,
+                }
+                if post.get('siret', '').strip():
+                    partner_vals['vat'] = post.get('siret', '').strip()
+                partner = env['res.partner'].create(partner_vals)
+
+        mission_vals = {
+            'source': source,
+            'client_id': partner.id,
+            'type_intervention': post.get('type_intervention', 'autre'),
+            'urgence': post.get('urgence', 'normale'),
+            'description_sinistre': post.get('description', ''),
+            'adresse_intervention': adresse_full,
+            'contact_sur_place': f"{post.get('prenom', '')} {post.get('nom', '')}".strip(),
+            'tel_sur_place': post.get('telephone', ''),
+            'commentaire_interne': post.get('commentaire', ''),
+        }
+
+        if source == 'assurance':
+            mission_vals['ref_assurance'] = post.get('ref_assurance', '').strip()
+            mission_vals['contrat_assurance'] = post.get('contrat_assurance', '').strip()
+            assurance_nom = post.get('assurance_nom', '').strip()
+            if assurance_nom:
+                assurance = env['sinistre.assurance'].search(
+                    [('name', 'ilike', assurance_nom)], limit=1,
+                )
+                if assurance:
+                    mission_vals['assurance_id'] = assurance.id
+                extra_lines = [f"Compagnie: {assurance_nom}", f"Gestionnaire: {email}"]
+                mission_vals['commentaire_interne'] = '\n'.join(filter(None, [
+                    post.get('commentaire', '').strip(), *extra_lines,
+                ]))
+
         try:
-            mission = env['sinistre.mission'].create({
-                'source': source,
-                'client_id': partner.id,
-                'type_intervention': post.get('type_intervention', 'autre'),
-                'urgence': post.get('urgence', 'normale'),
-                'description_sinistre': post.get('description', ''),
-                'adresse_intervention': post.get('adresse', ''),
-                'contact_sur_place': f"{post.get('prenom', '')} {post.get('nom', '')}".strip(),
-                'tel_sur_place': post.get('telephone', ''),
-                'commentaire_interne': post.get('commentaire', ''),
-            })
-            _logger.info(f"[WEBSITE] Nouvelle demande créée : {mission.reference} ({source})")
+            mission = env['sinistre.mission'].create(mission_vals)
+            _logger.info("[WEBSITE] Nouvelle demande créée : %s (%s)", mission.reference, source)
         except Exception as e:
-            _logger.error(f"[WEBSITE] Erreur création mission web: {e}")
-            return request.render('sinistre_services.ss_page_demande', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
+            _logger.error("[WEBSITE] Erreur création mission web: %s", e)
+            return self._demande_render(error=True, success=False, form_data=post)
 
-        # Notification email interne
         try:
             mail_vals = {
                 'subject': f'[Sinistre Services] Nouvelle demande {source} — {mission.reference}',
@@ -127,24 +194,28 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Type :</strong> {post.get('type_intervention', '')}</p>
                     <p><strong>Urgence :</strong> {post.get('urgence', 'normale')}</p>
                     <p><strong>Client :</strong> {partner.name} — {email} — {post.get('telephone', '')}</p>
-                    <p><strong>Adresse :</strong> {post.get('adresse', '')}</p>
+                    <p><strong>Adresse :</strong> {adresse_full}</p>
                     <p><strong>Description :</strong><br/>{post.get('description', '')}</p>
                 """,
                 'email_from': email,
                 'email_to': request.website.email or 'contact@sinistre-services.fr',
             }
+            if source == 'assurance':
+                mail_vals['body_html'] += f"""
+                    <p><strong>Assurance :</strong> {post.get('assurance_nom', '')}</p>
+                    <p><strong>Réf. sinistre :</strong> {post.get('ref_assurance', '')}</p>
+                """
             env['mail.mail'].create(mail_vals).send()
         except Exception as e:
-            _logger.warning(f"Email notification failed: {e}")
+            _logger.warning("Email notification failed: %s", e)
 
-        return request.render('sinistre_services.ss_page_demande', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': True,
-            'reference': mission.reference,
-            'token': mission.token_api,
-            'form_data': {},
-        })
+        return self._demande_render(
+            error=False,
+            success=True,
+            reference=mission.reference,
+            token=mission.token_api,
+            form_data={},
+        )
 
     # ─── CONTACT ────────────────────────────────────────────────────
     @http.route('/contact', type='http', auth='public', website=True)
