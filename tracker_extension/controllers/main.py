@@ -4,18 +4,20 @@ from odoo.http import request
 
 class ExtensionController(http.Controller):
 
+    @http.route('/tracker-extension', type='http', auth='public', website=True)
+    def download_page(self):
+        return request.render('tracker_extension.extension_download_page')
+
     @http.route('/extension-dashboard', type='http', auth='public', website=True)
     def dashboard_page(self):
         return request.render('tracker_extension.extension_dashboard_page')
 
-    # Changed from 'json' to 'jsonrpc' for Odoo 19
     @http.route('/extension/api/stats', type='jsonrpc', auth='public', methods=['POST'])
     def get_stats(self):
         tracking_model = request.env['extension.tracking']
         stats = tracking_model.get_dashboard_stats()
         return stats
 
-    # Changed from 'json' to 'jsonrpc' for Odoo 19
     @http.route('/extension/api/tracking-data', type='jsonrpc', auth='public', methods=['POST'])
     def get_tracking_data(self):
         tracking_model = request.env['extension.tracking']
