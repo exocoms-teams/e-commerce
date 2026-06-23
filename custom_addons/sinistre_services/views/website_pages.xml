@@ -52,6 +52,417 @@
 </template>
 
 <!-- ════════════════════════════════════════════════════════════
+     PAGE DEMANDE D'INTERVENTION
+════════════════════════════════════════════════════════════ -->
+<template id="page_demande" name="Sinistre Services — Demande d'intervention">
+    <t t-call="website.layout">
+        <div id="wrap">
+
+            <!-- Hero -->
+            <div class="mn-page-hero">
+                <div class="mn-container">
+                    <p style="font-size:13px;margin-bottom:14px;position:relative;z-index:1;">
+                        <a href="/" style="color:rgba(255,255,255,.7);">Accueil</a>
+                        <span style="color:rgba(255,255,255,.4);"> › </span>
+                        <span style="color:white;">Demande d'intervention</span>
+                    </p>
+                    <h1>Formulaire en ligne</h1>
+                    <p>Décrivez votre sinistre — intervention sous 2h, devis gratuit, sans engagement</p>
+                </div>
+            </div>
+
+            <section class="mn-section mn-section--gray" style="padding-top:48px;padding-bottom:72px;">
+                <div class="mn-container">
+
+                    <!-- Succès -->
+                    <t t-if="success">
+                        <div class="mn-form-card" style="max-width:640px;margin:0 auto;text-align:center;">
+                            <div style="width:72px;height:72px;border-radius:50%;background:#F0FDF4;border:2px solid #10B981;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:#10B981;">
+                                <i class="fa fa-check" aria-hidden="true"/>
+                            </div>
+                            <h2 style="font-size:26px;font-weight:800;color:#0F172A;margin-bottom:12px;">Demande enregistrée</h2>
+                            <p style="font-size:15px;color:#6B7280;margin-bottom:8px;">Votre demande a bien été transmise à notre équipe.</p>
+                            <t t-if="reference">
+                                <p style="font-size:14px;color:#374151;margin-bottom:24px;">
+                                    Référence dossier :
+                                    <strong style="color:#1E40AF;font-size:18px;" t-esc="reference"/>
+                                </p>
+                            </t>
+                            <t t-if="token">
+                                <a t-attf-href="/suivi/#{token}" class="mn-btn mn-btn--primary" style="margin-right:12px;">
+                                    <i class="fa fa-search" aria-hidden="true"/> Suivre mon dossier
+                                </a>
+                            </t>
+                            <a href="/" class="mn-btn mn-btn--outline">Retour à l'accueil</a>
+                            <p style="font-size:13px;color:#9CA3AF;margin-top:24px;">
+                                Un conseiller vous contacte sous 15 minutes · Urgence :
+                                <a href="tel:+33100000000" style="color:#C62828;font-weight:700;">01 XX XX XX XX</a>
+                            </p>
+                        </div>
+                    </t>
+
+                    <!-- Formulaire -->
+                    <t t-if="not success">
+                        <div class="mn-contact-grid">
+
+                            <div class="mn-form-card">
+                                <h2>Décrivez votre besoin</h2>
+                                <span class="mn-form-sub">Remplissez le formulaire adapté à votre profil. Tous les champs marqués <span class="required">*</span> sont obligatoires.</span>
+
+                                <t t-if="error">
+                                    <div class="mn-form-alert mn-form-alert-error">
+                                        <i class="fa fa-exclamation-circle" style="margin-right:6px;" aria-hidden="true"/>
+                                        Veuillez remplir tous les champs obligatoires avant de soumettre votre demande.
+                                    </div>
+                                </t>
+
+                                <form id="ssDemandeForm" action="/demande-intervention/send" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="source" id="ssSourceInput" t-att-value="form_data.get('source', 'particulier')"/>
+
+                                    <!-- Sélecteur profil client -->
+                                    <div class="mn-source-tabs" role="tablist" aria-label="Type de demandeur">
+                                        <button type="button" class="mn-source-tab" data-source="particulier" role="tab" aria-selected="true">
+                                            <i class="fa fa-user" aria-hidden="true"/>
+                                            <span>Particulier</span>
+                                        </button>
+                                        <button type="button" class="mn-source-tab" data-source="entreprise" role="tab" aria-selected="false">
+                                            <i class="fa fa-building" aria-hidden="true"/>
+                                            <span>Entreprise</span>
+                                        </button>
+                                        <button type="button" class="mn-source-tab" data-source="assurance" role="tab" aria-selected="false">
+                                            <i class="fa fa-shield" aria-hidden="true"/>
+                                            <span>Assurance</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- ── PARTICULIER ── -->
+                                    <div class="mn-source-panel" data-panel="particulier">
+                                        <p class="mn-panel-desc">Vous êtes un particulier et souhaitez une intervention à domicile ou sur votre bien.</p>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Prénom <span class="required">*</span></label>
+                                                <input type="text" name="prenom" placeholder="Jean"
+                                                       t-att-value="form_data.get('prenom', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Nom <span class="required">*</span></label>
+                                                <input type="text" name="nom" placeholder="Dupont"
+                                                       t-att-value="form_data.get('nom', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Email <span class="required">*</span></label>
+                                                <input type="email" name="email" placeholder="jean.dupont@email.fr"
+                                                       t-att-value="form_data.get('email', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Téléphone <span class="required">*</span></label>
+                                                <input type="tel" name="telephone" placeholder="06 XX XX XX XX"
+                                                       t-att-value="form_data.get('telephone', '')"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── ENTREPRISE ── -->
+                                    <div class="mn-source-panel" data-panel="entreprise" style="display:none;">
+                                        <p class="mn-panel-desc">Vous représentez une entreprise, un syndic ou un gestionnaire de biens.</p>
+                                        <div class="mn-form-group">
+                                            <label>Raison sociale <span class="required">*</span></label>
+                                            <input type="text" name="entreprise_nom" placeholder="SARL Exemple"
+                                                   t-att-value="form_data.get('entreprise_nom', '')"/>
+                                        </div>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Prénom du contact <span class="required">*</span></label>
+                                                <input type="text" name="prenom" placeholder="Marie"
+                                                       t-att-value="form_data.get('prenom', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Nom du contact <span class="required">*</span></label>
+                                                <input type="text" name="nom" placeholder="Martin"
+                                                       t-att-value="form_data.get('nom', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Email professionnel <span class="required">*</span></label>
+                                                <input type="email" name="email" placeholder="contact@entreprise.fr"
+                                                       t-att-value="form_data.get('email', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Téléphone <span class="required">*</span></label>
+                                                <input type="tel" name="telephone" placeholder="01 XX XX XX XX"
+                                                       t-att-value="form_data.get('telephone', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>SIRET <span style="color:#9CA3AF;font-weight:400;">(facultatif)</span></label>
+                                            <input type="text" name="siret" placeholder="123 456 789 00012"
+                                                   t-att-value="form_data.get('siret', '')"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── ASSURANCE ── -->
+                                    <div class="mn-source-panel" data-panel="assurance" style="display:none;">
+                                        <p class="mn-panel-desc">Ordre de mission assurance — renseignez les références du dossier sinistre et les coordonnées de l'assuré.</p>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Compagnie d'assurance <span class="required">*</span></label>
+                                                <input type="text" name="assurance_nom" placeholder="AXA, MAIF, Allianz…"
+                                                       t-att-value="form_data.get('assurance_nom', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Référence sinistre / dossier <span class="required">*</span></label>
+                                                <input type="text" name="ref_assurance" placeholder="REF-2026-12345"
+                                                       t-att-value="form_data.get('ref_assurance', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>N° contrat assuré <span style="color:#9CA3AF;font-weight:400;">(facultatif)</span></label>
+                                                <input type="text" name="contrat_assurance" placeholder="POL-123456789"
+                                                       t-att-value="form_data.get('contrat_assurance', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Email gestionnaire <span class="required">*</span></label>
+                                                <input type="email" name="email" placeholder="gestionnaire@assurance.fr"
+                                                       t-att-value="form_data.get('email', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-row-2">
+                                            <div class="mn-form-group">
+                                                <label>Prénom assuré <span class="required">*</span></label>
+                                                <input type="text" name="prenom" placeholder="Paul"
+                                                       t-att-value="form_data.get('prenom', '')"/>
+                                            </div>
+                                            <div class="mn-form-group">
+                                                <label>Nom assuré <span class="required">*</span></label>
+                                                <input type="text" name="nom" placeholder="Bernard"
+                                                       t-att-value="form_data.get('nom', '')"/>
+                                            </div>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Téléphone sur place <span class="required">*</span></label>
+                                            <input type="tel" name="telephone" placeholder="06 XX XX XX XX"
+                                                   t-att-value="form_data.get('telephone', '')"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── LIEU D'INTERVENTION ── -->
+                                    <div style="margin:28px 0 16px;padding-top:24px;border-top:1px solid #E5E7EB;">
+                                        <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:4px;">Lieu d'intervention</h3>
+                                        <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">Adresse exacte où l'artisan doit se rendre</p>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Adresse <span class="required">*</span></label>
+                                        <input type="text" name="adresse" placeholder="12 rue de la Paix"
+                                               t-att-value="form_data.get('adresse', '')"/>
+                                    </div>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Code postal <span class="required">*</span></label>
+                                            <input type="text" name="code_postal" placeholder="75001"
+                                                   t-att-value="form_data.get('code_postal', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Ville <span class="required">*</span></label>
+                                            <input type="text" name="ville" placeholder="Paris"
+                                                   t-att-value="form_data.get('ville', '')"/>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── TYPE & URGENCE ── -->
+                                    <div style="margin:28px 0 16px;padding-top:24px;border-top:1px solid #E5E7EB;">
+                                        <h3 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:4px;">Nature du sinistre</h3>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Type d'intervention <span class="required">*</span></label>
+                                        <select name="type_intervention" required="required">
+                                            <option value="">— Sélectionnez —</option>
+                                            <option value="serrurerie" t-att-selected="form_data.get('type_intervention') == 'serrurerie' or type_pre == 'serrurerie'">Serrurerie</option>
+                                            <option value="plomberie" t-att-selected="form_data.get('type_intervention') == 'plomberie' or type_pre == 'plomberie'">Plomberie</option>
+                                            <option value="menuiserie_int" t-att-selected="form_data.get('type_intervention') == 'menuiserie_int'">Menuiserie intérieure</option>
+                                            <option value="menuiserie_ext" t-att-selected="form_data.get('type_intervention') == 'menuiserie_ext'">Menuiserie extérieure</option>
+                                            <option value="vitrerie" t-att-selected="form_data.get('type_intervention') == 'vitrerie' or type_pre == 'vitrerie'">Vitrerie</option>
+                                            <option value="electricite" t-att-selected="form_data.get('type_intervention') == 'electricite' or type_pre == 'electricite'">Électricité</option>
+                                            <option value="autre" t-att-selected="form_data.get('type_intervention') == 'autre'">Autre</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Niveau d'urgence <span class="required">*</span></label>
+                                        <input type="hidden" name="urgence" id="ssUrgenceInput"
+                                               t-att-value="form_data.get('urgence', urgence_pre or 'normale')"/>
+                                        <div class="mn-urgence-check">
+                                            <div class="mn-urgence-check-item" data-value="normale"
+                                                 t-attf-class="mn-urgence-check-item #{form_data.get('urgence', urgence_pre or 'normale') == 'normale' and 'selected' or ''}">
+                                                <span class="mn-urgence-check-icon">📋</span>
+                                                <div>
+                                                    <span class="mn-urgence-check-label">Normale</span>
+                                                    <span style="display:block;font-size:12px;color:#6B7280;">Intervention sous 24h</span>
+                                                </div>
+                                            </div>
+                                            <div class="mn-urgence-check-item urgent" data-value="urgente"
+                                                 t-attf-class="mn-urgence-check-item urgent #{form_data.get('urgence', urgence_pre or '') == 'urgente' and 'selected' or ''}">
+                                                <span class="mn-urgence-check-icon">⚡</span>
+                                                <div>
+                                                    <span class="mn-urgence-check-label">Urgente</span>
+                                                    <span style="display:block;font-size:12px;color:#6B7280;">Intervention sous 2h</span>
+                                                </div>
+                                            </div>
+                                            <div class="mn-urgence-check-item urgent" data-value="tres_urgente"
+                                                 t-attf-class="mn-urgence-check-item urgent #{form_data.get('urgence', urgence_pre or '') == 'tres_urgente' and 'selected' or ''}">
+                                                <span class="mn-urgence-check-icon">🚨</span>
+                                                <div>
+                                                    <span class="mn-urgence-check-label">Très urgente</span>
+                                                    <span style="display:block;font-size:12px;color:#C62828;font-weight:600;">Immédiat — appelez le 01 XX XX XX XX</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Description du sinistre <span class="required">*</span></label>
+                                        <textarea name="description" rows="5" placeholder="Décrivez le problème rencontré : porte claquée, fuite d'eau, vitre brisée…"><t t-esc="form_data.get('description', '')"/></textarea>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Informations complémentaires <span style="color:#9CA3AF;font-weight:400;">(facultatif)</span></label>
+                                        <textarea name="commentaire" rows="2" placeholder="Code d'accès, étage, horaires de disponibilité…"><t t-esc="form_data.get('commentaire', '')"/></textarea>
+                                    </div>
+
+                                    <div class="mn-form-submit">
+                                        <button type="submit" class="mn-btn mn-btn--primary mn-btn--lg" style="width:100%;justify-content:center;background:#C62828;border-color:#C62828;">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma demande
+                                        </button>
+                                        <p style="text-align:center;font-size:12px;color:#9CA3AF;margin-top:12px;">
+                                            Sans engagement · Devis gratuit · Réponse sous 15 min
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Sidebar -->
+                            <aside class="mn-contact-sidebar">
+                                <div class="mn-contact-info-card" style="background:linear-gradient(135deg,#1E3A8A,#1E40AF);border:none;color:white;">
+                                    <h3 style="color:white;margin-bottom:16px;">
+                                        <i class="fa fa-phone" style="margin-right:8px;" aria-hidden="true"/>Urgence immédiate ?
+                                    </h3>
+                                    <p style="font-size:14px;color:rgba(255,255,255,.8);margin-bottom:16px;line-height:1.6;">
+                                        Pour une urgence vitale ou un sinistre en cours, appelez directement notre ligne 24h/24.
+                                    </p>
+                                    <a href="tel:+33100000000" class="mn-btn mn-btn--white" style="width:100%;justify-content:center;font-size:18px;font-weight:800;">
+                                        01 XX XX XX XX
+                                    </a>
+                                </div>
+
+                                <div class="mn-contact-info-card">
+                                    <h3>Nos engagements</h3>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-clock-o" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Délai</span>
+                                            <span class="mn-contact-detail-val">Intervention sous 2h</span>
+                                        </div>
+                                    </div>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-certificate" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Artisans</span>
+                                            <span class="mn-contact-detail-val">Certifiés et assurés</span>
+                                        </div>
+                                    </div>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-file-text-o" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Devis</span>
+                                            <span class="mn-contact-detail-val">Gratuit et sans engagement</span>
+                                        </div>
+                                    </div>
+                                    <div class="mn-contact-detail">
+                                        <div class="mn-contact-detail-icon"><i class="fa fa-shield" aria-hidden="true"/></div>
+                                        <div>
+                                            <span class="mn-contact-detail-label">Assurances</span>
+                                            <span class="mn-contact-detail-val">Plateforme agréée</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mn-contact-info-card" style="background:#FFEBEE;border-color:#FFCDD2;">
+                                    <h3 style="color:#C62828;">Types d'intervention</h3>
+                                    <ul style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:#374151;list-style:none;padding:0;margin:0;">
+                                        <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Serrurerie — ouverture de porte</li>
+                                        <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Plomberie — fuite, dégât des eaux</li>
+                                        <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Vitrerie — bris de glace</li>
+                                        <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Menuiserie — portes, fenêtres</li>
+                                        <li><i class="fa fa-check" style="color:#C62828;margin-right:8px;" aria-hidden="true"/>Électricité — panne, mise en sécurité</li>
+                                    </ul>
+                                </div>
+                            </aside>
+
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <div id="oe_structure_ss_demande_bottom" class="oe_structure oe_empty"/>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var sourceInput = document.getElementById('ssSourceInput');
+                    var tabs = document.querySelectorAll('.mn-source-tab');
+                    var panels = document.querySelectorAll('.mn-source-panel');
+
+                    function setSource(src) {
+                        if (!sourceInput) return;
+                        sourceInput.value = src;
+                        tabs.forEach(function (tab) {
+                            var active = tab.dataset.source === src;
+                            tab.classList.toggle('active', active);
+                            tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                        });
+                        panels.forEach(function (panel) {
+                            var visible = panel.dataset.panel === src;
+                            panel.style.display = visible ? 'block' : 'none';
+                            panel.querySelectorAll('input, select, textarea').forEach(function (el) {
+                                el.disabled = !visible;
+                            });
+                        });
+                    }
+
+                    tabs.forEach(function (tab) {
+                        tab.addEventListener('click', function () {
+                            setSource(tab.dataset.source);
+                        });
+                    });
+
+                    var initial = (sourceInput &amp;&amp; sourceInput.value) || 'particulier';
+                    setSource(initial);
+
+                    document.querySelectorAll('.mn-urgence-check-item').forEach(function (item) {
+                        item.addEventListener('click', function () {
+                            var group = item.closest('.mn-urgence-check');
+                            group.querySelectorAll('.mn-urgence-check-item').forEach(function (i) {
+                                i.classList.remove('selected');
+                            });
+                            item.classList.add('selected');
+                            var input = document.getElementById('ssUrgenceInput');
+                            if (input) input.value = item.dataset.value || 'normale';
+                        });
+                    });
+                });
+            </script>
+
+        </div>
+    </t>
+</template>
+
+<!-- Alias pour le contrôleur sinistre_services -->
+<template id="ss_page_demande" inherit_id="sinistre_services.page_demande" name="Demande intervention (alias)"/>
+
+<!-- ════════════════════════════════════════════════════════════
      PAGE CONTACT
 ════════════════════════════════════════════════════════════ -->
 <template id="page_contact" name="Sinistre Services — Contact">
