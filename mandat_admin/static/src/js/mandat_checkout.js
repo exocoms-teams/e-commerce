@@ -1,7 +1,7 @@
 /** @odoo-module **/
 import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
-import { jsonrpc } from '@web/core/network/rpc_service';
+import { rpc } from '@web/core/network/rpc';
 
 patch(PaymentForm.prototype, {
 
@@ -35,7 +35,7 @@ patch(PaymentForm.prototype, {
             }
             if (errorDiv) errorDiv.style.display = 'none';
 
-            const result = await jsonrpc('/mandat/save_checkout_data', {
+            const result = await rpc('/mandat/save_checkout_data', {
                 siret,
                 iban,
                 ordonnateur,
@@ -63,7 +63,7 @@ patch(PaymentForm.prototype, {
             const siret = document.getElementById('mandat_siret')?.value?.trim();
             if (siret) {
                 try {
-                    await jsonrpc('/mandat/save_checkout_data', {
+                    await rpc('/mandat/save_checkout_data', {
                         siret,
                         iban: document.getElementById('mandat_iban')?.value?.trim() || '',
                         ordonnateur: document.getElementById('mandat_ordonnateur')?.value?.trim() || '',
