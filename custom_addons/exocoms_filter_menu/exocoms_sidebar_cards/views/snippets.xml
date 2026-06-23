@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =================================================================
+         SNIPPET drag & drop : Modèle 1 (Cartes)
+         ================================================================= -->
+    <template id="s_exocoms_sidebar" name="EXOCOMS - Filtres &amp; catalogue">
+        <section class="s_exocoms_sidebar o_exocoms_root"
+                 data-exo-layout="cards" data-exo-ppg="24">
+            <div class="container-fluid">
+                <div class="row g-3">
+                    <aside class="col-12 col-lg-3 exo_aside">
+                        <t t-call="exocoms_sidebar_cards.exocoms_filter_sidebar"/>
+                    </aside>
+
+                    <div class="col-12 col-lg-9 exo_content">
+                        <div class="exo_card exo_toolbar">
+                            <span class="exo_count">
+                                <span class="exo_count_n">0</span> produit(s)
+                            </span>
+                            <select class="exo_sort form-select">
+                                <option value="name asc">Nom A→Z</option>
+                                <option value="name desc">Nom Z→A</option>
+                                <option value="price asc">Prix croissant</option>
+                                <option value="price desc">Prix décroissant</option>
+                            </select>
+                        </div>
+
+                        <div class="exo_card exo_active_filters">
+                            <span class="exo_active_empty">Aucun filtre actif</span>
+                        </div>
+
+                        <!-- Barre de comparaison (remplie dynamiquement) -->
+                        <div class="exo_compare_tray"></div>
+
+                        <div class="exo_card exo_products_wrap">
+                            <div class="exo_products">
+                                <t t-call="exocoms_sidebar_cards.products_grid">
+                                    <t t-set="products"
+                                       t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])], order='name asc', limit=24)"/>
+                                </t>
+                            </div>
+                            <div class="exo_pagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hôte de la modale de comparaison -->
+            <div class="exo_modal_host"></div>
+        </section>
+    </template>
+
+    <!-- =================================================================
+         Enregistrement dans le panneau Website Builder (catégorie Structure)
+         ================================================================= -->
+    <template id="exocoms_snippets" inherit_id="website.snippets"
+              name="EXOCOMS - Snippets">
+        <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+            <t t-snippet="exocoms_sidebar_cards.s_exocoms_sidebar"
+               t-thumbnail="/exocoms_sidebar_cards/static/description/thumb.svg"
+               string="Filtres &amp; catalogue">
+                <keywords>filtre, catégorie, marque, comparaison, sidebar, prix, boutique, exocoms</keywords>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

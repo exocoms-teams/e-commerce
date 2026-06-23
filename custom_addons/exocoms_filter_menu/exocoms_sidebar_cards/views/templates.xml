@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =================================================================
+         Noeud de catégorie récursif (3 niveaux)
+         Niveau 1 : entête repliable AVEC icône, SANS case à cocher
+         Niveaux 2 & 3 : ligne AVEC case à cocher + quantité disponible
+         ================================================================= -->
+    <template id="exocoms_category_node" name="EXOCOMS - Noeud catégorie">
+        <t t-foreach="nodes" t-as="node">
+            <t t-if="node['depth'] == 1">
+                <div class="exo_cat exo_catwrap" t-att-data-cat-id="node['id']">
+                    <div class="exo_cat_head" role="button" tabindex="0"
+                         t-att-data-toggle-cat="node['id']">
+                        <span class="exo_cat_ico"
+                              t-attf-style="#{node['color'] and ('background:%s1a;color:%s;' % (node['color'], node['color'])) or ''}">
+                            <i t-attf-class="fa #{node['icon']}" aria-hidden="true"/>
+                        </span>
+                        <span class="exo_cat_text">
+                            <span class="exo_cat_title"><t t-esc="node['name']"/></span>
+                        </span>
+                        <span class="exo_qty_badge" title="Quantité disponible">
+                            <t t-esc="node['qty_available']"/>
+                        </span>
+                        <i class="fa fa-chevron-right exo_chev" aria-hidden="true"/>
+                    </div>
+                    <div class="exo_cat_body">
+                        <t t-if="node['children']">
+                            <t t-call="exocoms_sidebar_cards.exocoms_category_node">
+                                <t t-set="nodes" t-value="node['children']"/>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <div t-attf-class="exo_leaf exo_leaf_l#{node['depth']}">
+                    <label class="exo_check">
+                        <input type="checkbox" class="exo_cat_cb"
+                               t-att-data-category-id="node['id']"/>
+                        <span class="exo_leaf_name"><t t-esc="node['name']"/></span>
+                        <span class="exo_qty_badge"><t t-esc="node['qty_available']"/></span>
+                        <t t-if="node['children']">
+                            <i class="fa fa-chevron-right exo_leaf_chev"
+                               aria-hidden="true" t-att-data-toggle-cat="node['id']"/>
+                        </t>
+                    </label>
+                    <t t-if="node['children']">
+                        <div class="exo_subleaf">
+                            <t t-call="exocoms_sidebar_cards.exocoms_category_node">
+                                <t t-set="nodes" t-value="node['children']"/>
+                            </t>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- =================================================================
+         Sidebar complète : recherche + catégories + marques + prix
+         ================================================================= -->
+    <template id="exocoms_filter_sidebar" name="EXOCOMS - Sidebar de filtres">
+        <t t-set="exo_tree"
+           t-value="website.env['product.public.category'].exocoms_get_tree(3, website.id)"/>
+        <t t-set="exo_brands"
+           t-value="website.env['product.brand'].exocoms_get_brands(website.id)"/>
+        <t t-set="exo_prices"
+           t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])]).mapped('list_price')"/>
+        <t t-set="exo_pmin" t-value="int(min(exo_prices)) if exo_prices else 0"/>
+        <t t-set="exo_pmax" t-value="int((max(exo_prices)//100 + 1) * 100) if exo_prices else 2000"/>
+
+        <div class="exo_filter_sidebar">
+
+            <div class="exo_card exo_search">
+                <i class="fa fa-search" aria-hidden="true"/>
+                <input type="text" class="exo_search_input"
+                       placeholder="Rechercher un produit…"/>
+            </div>
+
+            <div class="exo_categories">
+                <t t-call="exocoms_sidebar_cards.exocoms_category_node">
+                    <t t-set="nodes" t-value="exo_tree"/>
+                </t>
+            </div>
+
+            <!-- Facette Marques (repliable, cases à cocher) -->
+            <div class="exo_card exo_facet exo_open" t-if="exo_brands">
+                <div class="exo_facet_head" role="button" tabindex="0">
+                    <i class="fa fa-tag" aria-hidden="true"/>
+                    <span>Marques</span>
+                    <i class="fa fa-chevron-right exo_chev" aria-hidden="true"/>
+                </div>
+                <div class="exo_facet_body">
+                    <t t-foreach="exo_brands" t-as="brand">
+                        <label class="exo_check">
+                            <input type="checkbox" class="exo_brand_cb"
+                                   t-att-data-brand-id="brand['id']"/>
+                            <span class="exo_brand_dot"
+                                  t-attf-style="background:#{brand['color'] or '#888'}">
+                                <t t-esc="brand['name'][:1]"/>
+                            </span>
+                            <span class="exo_leaf_name"><t t-esc="brand['name']"/></span>
+                            <span class="exo_qty_badge"><t t-esc="brand['qty_available']"/></span>
+                        </label>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Curseur de prix double poignée -->
+            <div class="exo_card exo_price_card"
+                 t-att-data-min="exo_pmin" t-att-data-max="exo_pmax">
+                <div class="exo_price_head">
+                    <i class="fa fa-sliders" aria-hidden="true"/>
+                    <span>Prix</span>
+                    <span class="exo_price_sub"><t t-esc="exo_pmin"/>€ – <t t-esc="exo_pmax"/>€</span>
+                </div>
+                <div class="exo_price_values">
+                    <span class="exo_pmin_lbl"><t t-esc="exo_pmin"/>€</span>
+                    <span class="exo_pmax_lbl"><t t-esc="exo_pmax"/>€</span>
+                </div>
+                <div class="exo_slider">
+                    <div class="exo_slider_track"/>
+                    <div class="exo_slider_fill"/>
+                    <input type="range" class="exo_range exo_range_min"
+                           t-att-min="exo_pmin" t-att-max="exo_pmax" step="50"
+                           t-att-value="exo_pmin"/>
+                    <input type="range" class="exo_range exo_range_max"
+                           t-att-min="exo_pmin" t-att-max="exo_pmax" step="50"
+                           t-att-value="exo_pmax"/>
+                </div>
+            </div>
+
+            <div class="exo_card exo_reset" role="button" tabindex="0">
+                <i class="fa fa-refresh" aria-hidden="true"/>
+                <span>Réinitialiser tous les filtres</span>
+            </div>
+        </div>
+    </template>
+
+    <!-- =================================================================
+         Grille produits (chargement initial ET AJAX)
+         ================================================================= -->
+    <template id="products_grid" name="EXOCOMS - Grille produits">
+        <t t-if="not products">
+            <div class="exo_empty">
+                <i class="fa fa-inbox" aria-hidden="true"/>
+                <p>Aucun produit ne correspond aux filtres sélectionnés.</p>
+            </div>
+        </t>
+        <div class="exo_pgrid" t-else="">
+            <t t-foreach="products" t-as="product">
+                <t t-set="variant" t-value="product.product_variant_id"/>
+                <t t-set="qty" t-value="int(product.qty_available)"/>
+                <div class="exo_prod" t-att-data-product-id="product.id">
+                    <a t-att-href="product.website_url" class="exo_prod_img">
+                        <img t-att-src="website.image_url(product, 'image_512')"
+                             t-att-alt="product.name" loading="lazy"/>
+                        <span t-attf-class="exo_stock #{qty &lt;= 5 and 'low' or ''}">
+                            <t t-esc="qty"/> en stock
+                        </span>
+                    </a>
+                    <div class="exo_prod_body">
+                        <span class="exo_brandtag" t-if="product.brand_id">
+                            <t t-esc="product.brand_id.name"/>
+                        </span>
+                        <a t-att-href="product.website_url" class="exo_prod_name">
+                            <t t-esc="product.name"/>
+                        </a>
+                        <span class="exo_prod_price"
+                              t-field="product.list_price"
+                              t-options='{"widget": "monetary", "display_currency": website.currency_id}'/>
+                        <button type="button" class="exo_add_cart btn"
+                                t-att-data-product-id="variant.id">
+                            <i class="fa fa-plus" aria-hidden="true"/> Ajouter
+                        </button>
+                        <label class="exo_cmp">
+                            <input type="checkbox" class="exo_cmp_cb"
+                                   t-att-data-product-id="product.id"/>
+                            <span>Comparer</span>
+                        </label>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- =================================================================
+         Tableau comparatif (rendu via /exocoms/sidebar/compare)
+         ================================================================= -->
+    <template id="compare_table" name="EXOCOMS - Tableau comparatif">
+        <table class="exo_cmptable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <t t-foreach="products" t-as="product">
+                        <th>
+                            <div class="exo_cmp_img">
+                                <img t-att-src="website.image_url(product, 'image_256')"
+                                     t-att-alt="product.name"/>
+                            </div>
+                            <a t-att-href="product.website_url"><t t-esc="product.name"/></a>
+                        </th>
+                    </t>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="rowlbl">Prix</td>
+                    <t t-foreach="products" t-as="product">
+                        <td><strong t-field="product.list_price"
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'/></td>
+                    </t>
+                </tr>
+                <tr>
+                    <td class="rowlbl">Marque</td>
+                    <t t-foreach="products" t-as="product">
+                        <td><t t-esc="product.brand_id.name or '—'"/></td>
+                    </t>
+                </tr>
+                <tr>
+                    <td class="rowlbl">Catégorie</td>
+                    <t t-foreach="products" t-as="product">
+                        <td><t t-esc="', '.join(product.public_categ_ids.mapped('name')) or '—'"/></td>
+                    </t>
+                </tr>
+                <tr>
+                    <td class="rowlbl">Stock disponible</td>
+                    <t t-foreach="products" t-as="product">
+                        <td><t t-esc="int(product.qty_available)"/> u.</td>
+                    </t>
+                </tr>
+                <t t-foreach="attr_names" t-as="attr">
+                    <tr>
+                        <td class="rowlbl"><t t-esc="attr"/></td>
+                        <t t-foreach="products" t-as="product">
+                            <td><t t-esc="prod_attrs.get(product.id, {}).get(attr, '—')"/></td>
+                        </t>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+</odoo>
