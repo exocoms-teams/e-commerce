@@ -16,8 +16,8 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'tracker_extension/static/src/css/extension_style.css',
-            'tracker_extension/static/src/js/extension_dashboard.js',
+            'tracker_extension/static/css/extension_style.css',
+            'tracker_extension/static/js/extension_dashboard.js',
         ],
     },
     'installable': True,
