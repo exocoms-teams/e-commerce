@@ -154,6 +154,235 @@ def _mission_matches_specialites(mission, specialite_types):
     return mission.type_intervention in specialite_types
 
 
+def _enregistrer_proposition_reponse(intervenant, mission, reponse):
+    """Enregistre la réponse d'un artisan à une proposition de mission."""
+    from odoo import fields
+    Proposition = request.env['sinistre.proposition.reponse'].sudo()
+    existing = Proposition.search([
+        ('intervenant_id', '=', intervenant.id),
+        ('mission_id', '=', mission.id),
+    ], limit=1)
+    vals = {
+        'intervenant_id': intervenant.id,
+        'mission_id':     mission.id,
+        'reponse':        reponse,
+        'date_reponse':   fields.Datetime.now(),
+    }
+    if existing:
+        existing.write(vals)
+    else:
+        Proposition.create(vals)
+
+
+def _calc_taux_acceptation_jour(env, intervenant):
+    """Taux acceptées / (acceptées + refusées) sur la journée en cours (UTC serveur)."""
+    from datetime import datetime, time
+    from odoo import fields
+
+    today = fields.Date.context_today(env)
+    today_start = datetime.combine(today, time.min)
+
+    Proposition = env['sinistre.proposition.reponse'].sudo()
+    reponses = Proposition.search([
+        ('intervenant_id', '=', intervenant.id),
+        ('date_reponse', '>=', fields.Datetime.to_string(today_start)),
+    ])
+    acceptes = len(reponses.filtered(lambda r: r.reponse == 'accepte'))
+    refuses = len(reponses.filtered(lambda r: r.reponse == 'refuse'))
+    total = acceptes + refuses
+    if not total:
+        return None
+    return round(acceptes / total * 100, 1)
+
+
+def _validate_devis_lignes(lignes):
+    """Validation serveur des lignes de devis (description, quantité, prix)."""
+    if not lignes:
+        raise UserError(_("Au moins une ligne est requise"))
+    for i, l in enumerate(lignes, start=1):
+        desc = (l.get('description') or '').strip()
+        if not desc:
+            raise UserError(_("Ligne %s : description manquante") % i)
+        try:
+            prix = float(l.get('prix_unitaire', 0))
+        except (TypeError, ValueError):
+            raise UserError(_("Ligne %s : prix invalide") % i)
+        if prix <= 0:
+            raise UserError(_("Ligne %s : le prix doit être supérieur à 0") % i)
+        try:
+            qte = float(l.get('quantite', 1))
+        except (TypeError, ValueError):
+            raise UserError(_("Ligne %s : quantité invalide") % i)
+        if qte <= 0:
+            raise UserError(_("Ligne %s : la quantité doit être supérieure à 0") % i)
+
+
+def _csv_response(filename, rows, headers):
+    """Retourne une réponse HTTP CSV téléchargeable."""
+    import csv
+    import io
+    buf = io.StringIO()
+    writer = csv.writer(buf, delimiter=';')
+    writer.writerow(headers)
+    for row in rows:
+        writer.writerow(row)
+    return Response(
+        buf.getvalue(),
+        status=200,
+        headers={
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': f'attachment; filename="{filename}"',
+        },
+    )
+
+
+def _comptabilite_payload(intervenant):
+    """Construit le payload comptabilité partagé entre GET et export."""
+    from datetime import datetime
+    from collections import defaultdict
+
+    Mission = request.env['sinistre.mission'].sudo()
+    missions = Mission.search([
+        ('intervenant_id', '=', intervenant.id),
+    ], order='date_cloture desc, date_rdv desc')
+
+    taux = intervenant.taux_commission or 15.0
+    pct = f"{taux:g} %"
+
+    def _ville(adresse):
+        if not adresse:
+            return ''
+        parts = adresse.split(',')
+        return (parts[-1] if parts else adresse).strip().upper()
+
+    def _statut(m):
+        if m.state == 'annule':
+            return 'Annulée'
+        if m.state in ('termine', 'facture', 'clos'):
+            return 'Succès'
+        return 'En cours'
+
+    def _facture_name(m):
+        inv = m.facture_assurance_id or m.facture_client_id
+        return inv.name if inv else ''
+
+    def _categorie(m):
+        if m.source in ('particulier', 'entreprise'):
+            return 'b2c'
+        if m.urgence in ('urgente', 'tres_urgente'):
+            return 'du'
+        return 'travaux'
+
+    factures = {'du': [], 'travaux': [], 'b2c': []}
+    detail_solde = {'du': [], 'travaux': [], 'b2c': []}
+    ca_par_annee = defaultdict(float)
+    virements_map = defaultdict(lambda: {
+        'montant_solde': 0.0, 'commission': 0.0,
+        'montant_paye': 0.0, 'rac_facture': 0.0, 'ca_genere': 0.0,
+    })
+
+    for m in missions:
+        cat = _categorie(m)
+        row = {
+            'id':           m.id,
+            'reference':    m.reference,
+            'ville':        _ville(m.adresse_intervention),
+            'statut':       _statut(m),
+            'date_rdv':     str(m.date_rdv) if m.date_rdv else '',
+            'date_cloture': str(m.date_cloture) if m.date_cloture else '',
+            'facture':      _facture_name(m),
+            'a_facturer':   (
+                m.state in ('termine', 'facture', 'clos')
+                and not _facture_name(m)
+            ),
+            'beneficiaire': (m.client_id.name or '').upper(),
+            'dossier_du':   m.ref_assurance or m.reference or '',
+        }
+        if cat in factures:
+            factures[cat].append(row)
+
+        if m.state in ('termine', 'facture', 'clos') and m.date_cloture:
+            dt = m.date_cloture
+            ca_par_annee[dt.year] += m.montant_devis or 0
+            key = dt.strftime('%Y-%m')
+            v = virements_map[key]
+            montant = m.montant_devis or 0
+            comm = m.commission_plateforme or (montant * taux / 100)
+            v['montant_solde'] += montant
+            v['commission'] += comm
+            v['montant_paye'] += max(montant - comm, 0)
+            v['rac_facture'] += m.reste_a_charge or 0
+            v['ca_genere'] += montant
+
+            if cat in detail_solde and _facture_name(m):
+                tva = 1.2
+                detail_solde[cat].append({
+                    'dossier':          m.reference,
+                    'numero_facture':   _facture_name(m),
+                    'date_facturation': str(dt.date()) if dt else '',
+                    'montant_ht':       round(montant / tva, 2),
+                    'montant_ttc':      montant,
+                })
+
+    terminees = missions.filtered(
+        lambda m: m.state in ('termine', 'facture', 'clos')
+    )
+    commission_due = sum(terminees.mapped('commission_plateforme'))
+    solde = -round(commission_due, 2)
+
+    pending = terminees.filtered(
+        lambda m: not m.facture_assurance_id and not m.facture_client_id
+    )
+    factures_a_fournir = [{
+        'id':                m.id,
+        'reference':         m.reference,
+        'date':              str(m.date_cloture or m.date_rdv or ''),
+        'client':            m.client_id.name if m.client_id else '',
+        'type_intervention': m.type_intervention,
+        'prestation':        m.description_sinistre or '',
+        'adresse':           m.adresse_intervention or '',
+        'montant_devis':     m.montant_devis or 0,
+        'source':            m.source or '',
+        'a_facturer':        True,
+    } for m in pending]
+
+    current_year = datetime.now().year
+    ca_list = [
+        {'annee': y, 'montant': round(ca_par_annee.get(y, 0), 2)}
+        for y in range(current_year, current_year - 7, -1)
+    ]
+
+    virements = []
+    for key in sorted(virements_map.keys(), reverse=True):
+        dt = datetime.strptime(key + '-01', '%Y-%m-%d')
+        v = virements_map[key]
+        virements.append({
+            'date':          dt.strftime('%d/%m/%Y') + ' à 01:00',
+            'montant_solde': round(v['montant_solde'], 2),
+            'commission':    round(v['commission'], 2),
+            'montant_paye':  round(v['montant_paye'], 2),
+            'rac_facture':   round(v['rac_facture'], 2),
+            'ca_genere':     round(v['ca_genere'], 2),
+        })
+
+    commissions = [
+        {'type': 'Mesures conservatoires', 'intervention': pct, 'pieces': '—', 'total_ht': pct},
+        {'type': 'Travaux',                'intervention': pct, 'pieces': '—', 'total_ht': pct},
+        {'type': 'B2C',                    'intervention': pct, 'pieces': '—', 'total_ht': pct},
+    ]
+
+    return {
+        'taux_commission':    taux,
+        'solde':              solde,
+        'commissions':        commissions,
+        'ca_par_annee':       ca_list,
+        'virements':          virements,
+        'factures':           factures,
+        'detail_solde':       detail_solde,
+        'factures_a_fournir': factures_a_fournir,
+    }
+
+
 def _fmt_mission(m):
     inv = m.facture_assurance_id or m.facture_client_id
     return {
@@ -266,17 +495,7 @@ class SinistrePWAController(http.Controller):
         )
 
         Mission = request.env['sinistre.mission'].sudo()
-        missions_assignees = Mission.search_count([
-            ('intervenant_id', '=', iv.id),
-        ])
-        missions_refusees = request.env['mail.message'].sudo().search_count([
-            ('body', 'ilike', f'Mission refusée par {iv.name}'),
-        ])
-        total_propositions = missions_assignees + missions_refusees
-        taux_acceptation = (
-            round(missions_assignees / total_propositions * 100, 1)
-            if total_propositions else 100.0
-        )
+        taux_acceptation = _calc_taux_acceptation_jour(request.env, iv)
 
         terminees_sans_facture = Mission.search([
             ('intervenant_id', '=', iv.id),
@@ -553,8 +772,15 @@ class SinistrePWAController(http.Controller):
         except Exception:
             return _err(400, "Body JSON invalide")
         lignes = body.get('ligne_ids', [])
-        if not lignes:
-            return _err(400, "Au moins une ligne est requise")
+        try:
+            _validate_devis_lignes(lignes)
+        except UserError as e:
+            return _err(400, e.args[0] if e.args else str(e))
+        existing = request.env['sinistre.devis'].sudo().search([
+            ('mission_id', '=', mission.id),
+        ], limit=1)
+        if existing:
+            return _err(400, "Un devis existe déjà pour cette mission")
         try:
             devis = request.env['sinistre.devis'].sudo().create({
                 'mission_id':  mission.id,
@@ -596,8 +822,10 @@ class SinistrePWAController(http.Controller):
         except Exception:
             return _err(400, "Body JSON invalide")
         lignes = body.get('ligne_ids', [])
-        if not lignes:
-            return _err(400, "Au moins une ligne est requise")
+        try:
+            _validate_devis_lignes(lignes)
+        except UserError as e:
+            return _err(400, e.args[0] if e.args else str(e))
         is_amendment = body.get('is_amendment', False)
         try:
             devis.sudo().ligne_ids.unlink()
@@ -743,6 +971,25 @@ class SinistrePWAController(http.Controller):
                 'contenu':     contenu,
                 'lu_artisan':  True,
             })
+            # Accusé de réception plateforme (max 1 par 30 min)
+            from datetime import timedelta
+            from odoo import fields
+            recent_platform = request.env['sinistre.message'].sudo().search([
+                ('mission_id', '=', mission.id),
+                ('auteur_type', '=', 'plateforme'),
+                ('date_envoi', '>=', fields.Datetime.now() - timedelta(minutes=30)),
+            ], limit=1)
+            if not recent_platform:
+                request.env['sinistre.message'].sudo().create({
+                    'mission_id':  mission.id,
+                    'auteur_type': 'plateforme',
+                    'auteur_nom':  'Plateforme FairFair',
+                    'contenu':     _(
+                        "Votre message a bien été reçu. Un conseiller vous répondra "
+                        "dans les meilleurs délais."
+                    ),
+                    'lu_artisan':  False,
+                })
             return _ok({
                 'success': True,
                 'message': {
@@ -827,7 +1074,13 @@ class SinistrePWAController(http.Controller):
         try:
             mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
             mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
-            return _ok({'success': True, 'state': mission.state, 'mission_id': mission.id})
+            _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
+            return _ok({
+                'success': True,
+                'state': mission.state,
+                'mission_id': mission.id,
+                'taux_acceptation': _calc_taux_acceptation_jour(request.env, intervenant),
+            })
         except Exception as e:
             return _err(500, str(e))
 
@@ -846,7 +1099,11 @@ class SinistrePWAController(http.Controller):
             return _err(404, "Mission introuvable")
         try:
             mission.message_post(body=_(f"❌ Mission refusée par {intervenant.name}."))
-            return _ok({'success': True})
+            _enregistrer_proposition_reponse(intervenant, mission, 'refuse')
+            return _ok({
+                'success': True,
+                'taux_acceptation': _calc_taux_acceptation_jour(request.env, intervenant),
+            })
         except Exception as e:
             return _err(500, str(e))
 
@@ -1063,7 +1320,6 @@ class SinistrePWAController(http.Controller):
             _logger.error(f"[sinistre] factures_a_fournir: {e}", exc_info=True)
             return _err(500, str(e))
 
-    # ── COMPTABILITÉ ─────────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/comptabilite',
                 type='http', auth='user', methods=['GET'], csrf=False)
     def comptabilite_get(self, **kw):
@@ -1071,135 +1327,131 @@ class SinistrePWAController(http.Controller):
         if not intervenant:
             return _err(403, "Accès non autorisé")
         try:
-            from datetime import datetime
-            from collections import defaultdict
-
-            Mission = request.env['sinistre.mission'].sudo()
-            missions = Mission.search([
-                ('intervenant_id', '=', intervenant.id),
-            ], order='date_cloture desc, date_rdv desc')
-
-            taux = intervenant.taux_commission or 15.0
-            pct = f"{taux:g} %"
-
-            def _ville(adresse):
-                if not adresse:
-                    return ''
-                parts = adresse.split(',')
-                return (parts[-1] if parts else adresse).strip().upper()
-
-            def _statut(m):
-                if m.state == 'annule':
-                    return 'Annulée'
-                if m.state in ('termine', 'facture', 'clos'):
-                    return 'Succès'
-                return 'En cours'
-
-            def _facture_name(m):
-                inv = m.facture_assurance_id or m.facture_client_id
-                return inv.name if inv else ''
-
-            def _categorie(m):
-                if m.source in ('particulier', 'entreprise'):
-                    return 'b2c'
-                if m.urgence in ('urgente', 'tres_urgente'):
-                    return 'du'
-                return 'travaux'
-
-            factures = {'du': [], 'travaux': [], 'b2c': []}
-            detail_solde = {'du': [], 'travaux': []}
-            ca_par_annee = defaultdict(float)
-            virements_map = defaultdict(lambda: {
-                'montant_solde': 0.0, 'commission': 0.0,
-                'montant_paye': 0.0, 'rac_facture': 0.0, 'ca_genere': 0.0,
-            })
-
-            for m in missions:
-                cat = _categorie(m)
-                row = {
-                    'id':           m.id,
-                    'reference':    m.reference,
-                    'ville':        _ville(m.adresse_intervention),
-                    'statut':       _statut(m),
-                    'date_rdv':     str(m.date_rdv) if m.date_rdv else '',
-                    'date_cloture': str(m.date_cloture) if m.date_cloture else '',
-                    'facture':      _facture_name(m),
-                    'a_facturer':   (
-                        m.state in ('termine', 'facture', 'clos')
-                        and not _facture_name(m)
-                    ),
-                    'beneficiaire': (m.client_id.name or '').upper(),
-                    'dossier_du':   m.ref_assurance or m.reference or '',
-                }
-                if cat in factures:
-                    factures[cat].append(row)
-
-                if m.state in ('termine', 'facture', 'clos') and m.date_cloture:
-                    dt = m.date_cloture
-                    ca_par_annee[dt.year] += m.montant_devis or 0
-                    key = dt.strftime('%Y-%m')
-                    v = virements_map[key]
-                    montant = m.montant_devis or 0
-                    comm = m.commission_plateforme or (montant * taux / 100)
-                    v['montant_solde'] += montant
-                    v['commission'] += comm
-                    v['montant_paye'] += max(montant - comm, 0)
-                    v['rac_facture'] += m.reste_a_charge or 0
-                    v['ca_genere'] += montant
-
-                    if cat in ('du', 'travaux') and _facture_name(m):
-                        tva = 1.2
-                        detail_solde[cat].append({
-                            'dossier':          m.reference,
-                            'numero_facture':   _facture_name(m),
-                            'date_facturation': str(dt.date()) if dt else '',
-                            'montant_ht':       round(montant / tva, 2),
-                            'montant_ttc':      montant,
-                        })
-
-            terminees = missions.filtered(
-                lambda m: m.state in ('termine', 'facture', 'clos')
-            )
-            commission_due = sum(terminees.mapped('commission_plateforme'))
-            solde = -round(commission_due, 2)
-
-            current_year = datetime.now().year
-            ca_list = [
-                {'annee': y, 'montant': round(ca_par_annee.get(y, 0), 2)}
-                for y in range(current_year, current_year - 7, -1)
-            ]
-
-            virements = []
-            for key in sorted(virements_map.keys(), reverse=True):
-                dt = datetime.strptime(key + '-01', '%Y-%m-%d')
-                v = virements_map[key]
-                virements.append({
-                    'date':          dt.strftime('%d/%m/%Y') + ' à 01:00',
-                    'montant_solde': round(v['montant_solde'], 2),
-                    'commission':    round(v['commission'], 2),
-                    'montant_paye':  round(v['montant_paye'], 2),
-                    'rac_facture':   round(v['rac_facture'], 2),
-                    'ca_genere':     round(v['ca_genere'], 2),
-                })
-
-            commissions = [
-                {'type': 'Mesures conservatoires', 'intervention': pct, 'pieces': '—', 'total_ht': pct},
-                {'type': 'Travaux',                'intervention': pct, 'pieces': '—', 'total_ht': pct},
-                {'type': 'B2C',                    'intervention': pct, 'pieces': '—', 'total_ht': pct},
-            ]
-
-            return _ok({
-                'success':       True,
-                'taux_commission': taux,
-                'solde':         solde,
-                'commissions':   commissions,
-                'ca_par_annee':  ca_list,
-                'virements':     virements,
-                'factures':      factures,
-                'detail_solde':  detail_solde,
-            })
+            payload = _comptabilite_payload(intervenant)
+            return _ok({'success': True, **payload})
         except Exception as e:
             _logger.error(f"[sinistre] comptabilite_get: {e}", exc_info=True)
+            return _err(500, str(e))
+
+    @http.route(f'{PREFIX}/intervenant/comptabilite/export',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def comptabilite_export(self, **kw):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        try:
+            export_type = kw.get('type', 'factures')
+            tab = kw.get('tab', 'du')
+            payload = _comptabilite_payload(intervenant)
+
+            if export_type == 'virements':
+                rows = [
+                    [v['date'], v['montant_solde'], v['commission'],
+                     v['montant_paye'], v['rac_facture'], v['ca_genere']]
+                    for v in payload['virements']
+                ]
+                return _csv_response(
+                    'virements.csv',
+                    rows,
+                    ['Date', 'Montant soldé', 'Commission', 'Montant payé',
+                     'RAC facturé', 'CA généré'],
+                )
+
+            if export_type == 'detail':
+                rows = []
+                for cat in ('du', 'travaux', 'b2c'):
+                    for r in payload['detail_solde'].get(cat, []):
+                        rows.append([
+                            cat.upper(), r['dossier'], r['numero_facture'],
+                            r['date_facturation'], r['montant_ht'], r['montant_ttc'],
+                        ])
+                return _csv_response(
+                    'detail_solde.csv',
+                    rows,
+                    ['Catégorie', 'Dossier', 'N° facture', 'Date',
+                     'Montant HT', 'Montant TTC'],
+                )
+
+            if export_type == 'factures_a_fournir':
+                rows = [
+                    [f['reference'], f['date'], f['client'], f['type_intervention'],
+                     f['prestation'], f['montant_devis']]
+                    for f in payload['factures_a_fournir']
+                ]
+                return _csv_response(
+                    'factures_a_fournir.csv',
+                    rows,
+                    ['Référence', 'Date', 'Client', 'Type', 'Prestation', 'Montant devis'],
+                )
+
+            rows_data = payload['factures'].get(tab, [])
+            if tab == 'travaux':
+                rows = [
+                    [r['id'], r['dossier_du'], r['beneficiaire'], r['ville'],
+                     r['statut'], 'Oui' if r['a_facturer'] else 'Non']
+                    for r in rows_data
+                ]
+                headers = ['ID', 'Dossier DU', 'Bénéficiaire', 'Ville', 'Statut', 'À facturer']
+            else:
+                rows = [
+                    [r['id'], r['ville'], r['statut'],
+                     r['date_rdv'] or r['date_cloture'], r['facture'] or 'À facturer']
+                    for r in rows_data
+                ]
+                headers = ['ID', 'Ville', 'Statut', 'Date RDV', 'Facture']
+            return _csv_response(f'factures_{tab}.csv', rows, headers)
+        except Exception as e:
+            _logger.error(f"[sinistre] comptabilite_export: {e}", exc_info=True)
+            return _err(500, str(e))
+
+    @http.route(f'{PREFIX}/intervenant/comptabilite/commissions',
+                type='http', auth='user', methods=['GET'], csrf=False)
+    def comptabilite_commissions(self, **kw):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        try:
+            from datetime import datetime
+            annee = int(kw.get('annee', datetime.now().year))
+            trim = kw.get('trimestre', 'T1').upper()
+            trim_map = {
+                'T1': (1, 3), 'T2': (4, 6), 'T3': (7, 9), 'T4': (10, 12),
+            }
+            mois_debut, mois_fin = trim_map.get(trim, (1, 3))
+            taux = intervenant.taux_commission or 15.0
+
+            missions = request.env['sinistre.mission'].sudo().search([
+                ('intervenant_id', '=', intervenant.id),
+                ('state', 'in', ('termine', 'facture', 'clos')),
+            ])
+            rows = []
+            for m in missions:
+                if not m.date_cloture:
+                    continue
+                if m.date_cloture.year != annee:
+                    continue
+                if not (mois_debut <= m.date_cloture.month <= mois_fin):
+                    continue
+                montant = m.montant_devis or 0
+                comm = m.commission_plateforme or round(montant * taux / 100, 2)
+                inv = m.facture_assurance_id or m.facture_client_id
+                rows.append([
+                    m.reference,
+                    str(m.date_cloture.date()) if m.date_cloture else '',
+                    m.client_id.name if m.client_id else '',
+                    montant,
+                    comm,
+                    inv.name if inv else '',
+                ])
+
+            return _csv_response(
+                f'commissions_{trim}_{annee}.csv',
+                rows,
+                ['Référence mission', 'Date clôture', 'Client',
+                 'Montant TTC', 'Commission plateforme', 'N° facture'],
+            )
+        except Exception as e:
+            _logger.error(f"[sinistre] comptabilite_commissions: {e}", exc_info=True)
             return _err(500, str(e))
 
     # ── DEMANDE PUBLIQUE ─────────────────────────────────────────────
