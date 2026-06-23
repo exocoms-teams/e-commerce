@@ -10,6 +10,7 @@
         'views/templates/Avis.xml',
         'data/Footer.xml',
         'data/Header.xml',
+        'data/Contact.xml',
 
     ],
     'assets': {
@@ -17,6 +18,7 @@
             'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css',
             'Matelas/static/src/css/Home.css',
             'Matelas/static/src/css/Avis.css',
+            'Matelas/static/src/css/Contact.css',
             'Matelas/static/src/js/main.js',  
         ],
     },

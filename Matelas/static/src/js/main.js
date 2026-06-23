@@ -1,3 +1,5 @@
+// Page avis
+
 // Gestion des étoiles
 document.querySelectorAll('.star').forEach(star => {
     star.addEventListener('mouseover', function() {
@@ -59,6 +61,7 @@ function envoyerAvis() {
     document.getElementById('avis-container').scrollIntoView({behavior: 'smooth'});
 }
 
+
 function lancerRecherche() {
     const query = document.getElementById('search-input').value.trim();
     if (query) {
@@ -75,3 +78,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+//Pge Contact
+
+function envoyerContact() {
+    const prenom = document.getElementById('contact-prenom').value.trim();
+    const nom = document.getElementById('contact-nom').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const message = document.getElementById('contact-message').value.trim();
+
+    if (!prenom || !nom || !email || !message) {
+        alert('Merci de remplir tous les champs obligatoires (*)');
+        return;
+    }
+
+    document.getElementById('contact-success').style.display = 'block';
+
+    document.getElementById('contact-prenom').value = '';
+    document.getElementById('contact-nom').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-sujet').value = '';
+    document.getElementById('contact-message').value = '';
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
