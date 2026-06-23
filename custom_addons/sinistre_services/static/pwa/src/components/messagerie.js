@@ -44,10 +44,15 @@ window.Messagerie = (() => {
 
         _messages.forEach(msg => {
             const isMe = msg.auteur_type === 'artisan';
+            const authorLabel = isMe
+                ? 'Moi'
+                : (msg.auteur_type === 'assurance'
+                    ? '🛡 Assurance'
+                    : (msg.auteur_nom || '🏢 Plateforme'));
             const div  = document.createElement('div');
             div.className = `msg-bubble ${isMe ? 'msg-me' : 'msg-other'}`;
             div.innerHTML = `
-                <div class="msg-author">${isMe ? 'Moi' : '🏢 Plateforme'}</div>
+                <div class="msg-author">${authorLabel}</div>
                 <div class="msg-text">${_escapeHtml(msg.contenu)}</div>
                 <div class="msg-date">${_formatDate(msg.date_envoi)}</div>
             `;
