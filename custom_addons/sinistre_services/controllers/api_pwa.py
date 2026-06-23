@@ -166,11 +166,15 @@ def _proposition_table_ready(env):
         return False
 
 
-def _today_start_str(env):
-    """Début de journée (serveur) au format datetime Odoo."""
+def _today_start_str():
+    """Début de journée (fuseau utilisateur) au format datetime SQL."""
     from datetime import datetime, time
     from odoo import fields
-    today = fields.Date.context_today(env)
+    user = request.env.user
+    if user._is_public():
+        today = fields.Date.today()
+    else:
+        today = fields.Date.context_today(user)
     return datetime.combine(today, time.min).strftime('%Y-%m-%d %H:%M:%S')
 
 
@@ -199,30 +203,33 @@ def _enregistrer_proposition_reponse(intervenant, mission, reponse):
         _logger.warning("[sinistre] proposition_reponse: %s", e)
 
 
-def _calc_taux_acceptation_jour(env, intervenant):
+def _calc_taux_acceptation_jour(intervenant):
     """Taux acceptées / (acceptées + refusées) sur la journée en cours."""
-    today_start = _today_start_str(env)
-
-    if _proposition_table_ready(env):
-        try:
-            Proposition = env['sinistre.proposition.reponse'].sudo()
-            reponses = Proposition.search([
-                ('intervenant_id', '=', intervenant.id),
-                ('date_reponse', '>=', today_start),
-            ])
-            acceptes = len(reponses.filtered(lambda r: r.reponse == 'accepte'))
-            refuses = len(reponses.filtered(lambda r: r.reponse == 'refuse'))
-            total = acceptes + refuses
-            if total:
-                return round(acceptes / total * 100, 1)
-        except Exception as e:
-            _logger.warning("[sinistre] taux via proposition: %s", e)
-
+    if not intervenant:
+        return None
     try:
-        MailMessage = env['mail.message'].sudo()
-        name = intervenant.name or ''
+        env = intervenant.env
+        today_start = _today_start_str()
+        name = (intervenant.name or '').strip()
         if not name:
             return None
+
+        if _proposition_table_ready(env):
+            try:
+                Proposition = env['sinistre.proposition.reponse'].sudo()
+                reponses = Proposition.search([
+                    ('intervenant_id', '=', intervenant.id),
+                    ('date_reponse', '>=', today_start),
+                ])
+                acceptes = len(reponses.filtered(lambda r: r.reponse == 'accepte'))
+                refuses = len(reponses.filtered(lambda r: r.reponse == 'refuse'))
+                total = acceptes + refuses
+                if total:
+                    return round(acceptes / total * 100, 1)
+            except Exception as e:
+                _logger.warning("[sinistre] taux via proposition: %s", e)
+
+        MailMessage = env['mail.message'].sudo()
         acceptes = MailMessage.search_count([
             ('model', '=', 'sinistre.mission'),
             ('body', 'ilike', f'Mission acceptée par {name}'),
@@ -237,7 +244,7 @@ def _calc_taux_acceptation_jour(env, intervenant):
         if total:
             return round(acceptes / total * 100, 1)
     except Exception as e:
-        _logger.warning("[sinistre] taux via mail.message: %s", e)
+        _logger.warning("[sinistre] taux_acceptation_jour: %s", e)
     return None
 
 
@@ -544,7 +551,11 @@ class SinistrePWAController(http.Controller):
             )
 
             Mission = request.env['sinistre.mission'].sudo()
-            taux_acceptation = _calc_taux_acceptation_jour(request.env, iv)
+            try:
+                taux_acceptation = _calc_taux_acceptation_jour(iv)
+            except Exception as taux_err:
+                _logger.warning("[sinistre] me taux_acceptation: %s", taux_err)
+                taux_acceptation = None
 
             terminees_sans_facture = Mission.search([
                 ('intervenant_id', '=', iv.id),
@@ -1131,16 +1142,16 @@ class SinistrePWAController(http.Controller):
             mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
             mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
             _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
-            taux = _calc_taux_acceptation_jour(request.env, intervenant)
-            return _ok({
-                'success': True,
-                'state': mission.state,
-                'mission_id': mission.id,
-                'taux_acceptation': taux,
-            })
         except Exception as e:
             _logger.error("[sinistre] accepter_mission: %s", e, exc_info=True)
             return _err(500, str(e))
+        taux = _calc_taux_acceptation_jour(intervenant)
+        return _ok({
+            'success': True,
+            'state': mission.state,
+            'mission_id': mission.id,
+            'taux_acceptation': taux,
+        })
 
     # ── REFUSER MISSION PROPOSÉE ─────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/refuser-proposition',
@@ -1158,12 +1169,13 @@ class SinistrePWAController(http.Controller):
         try:
             mission.message_post(body=_(f"❌ Mission refusée par {intervenant.name}."))
             _enregistrer_proposition_reponse(intervenant, mission, 'refuse')
-            return _ok({
-                'success': True,
-                'taux_acceptation': _calc_taux_acceptation_jour(request.env, intervenant),
-            })
         except Exception as e:
+            _logger.error("[sinistre] refuser_proposition: %s", e, exc_info=True)
             return _err(500, str(e))
+        return _ok({
+            'success': True,
+            'taux_acceptation': _calc_taux_acceptation_jour(intervenant),
+        })
 
     # ── FACTURER MISSION ─────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/facturer',
