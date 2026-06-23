@@ -107,6 +107,121 @@ def _setup_menus(env, website, lang_en):
         unwanted.unlink()
 
 
+def _setup_monetique_attributes(env, lang_en):
+    """Crée les attributs/filtres boutique pour la gamme Monétique.
+
+    Idempotent — recherche par nom (en langue de base fr_FR) avant
+    création, ne touche jamais aux attributs déjà existants/personnalisés.
+
+    Traduction : chaque nom (attribut + valeur) est écrit explicitement
+    en fr_FR, puis en en_US si cette langue est active sur le site —
+    exactement la même logique que _get_or_create_menu. Comme ça, le
+    filtre change correctement de libellé quand le visiteur bascule la
+    langue du site (FR <-> EN), sans dépendre de la langue de session
+    de l'utilisateur qui exécute le hook.
+    """
+    attr_model = env['product.attribute']
+    value_model = env['product.attribute.value']
+
+    def get_or_create_attribute(name_fr, name_en, display_type='radio', sequence=10):
+        # Recherche toujours faite avec le nom fr_FR comme référence stable
+        attr = attr_model.with_context(lang='fr_FR').search(
+            [('name', '=', name_fr)], limit=1
+        )
+        if not attr:
+            attr = attr_model.with_context(lang='fr_FR').create({
+                'name': name_fr,
+                'display_type': display_type,   # 'radio', 'select', 'pills', 'color'
+                'create_variant': 'no_variant',  # n'affecte pas les variantes produit
+                'sequence': sequence,
+            })
+        else:
+            attr.with_context(lang='fr_FR').write({'sequence': sequence})
+
+        # Traduction explicite — jamais d'identifiant traduisible dans une recherche
+        attr.with_context(lang='fr_FR').write({'name': name_fr})
+        if lang_en and name_en:
+            attr.with_context(lang='en_US').write({'name': name_en})
+        return attr
+
+    def get_or_create_value(attribute, name_fr, name_en, sequence=10):
+        val = value_model.with_context(lang='fr_FR').search([
+            ('name', '=', name_fr),
+            ('attribute_id', '=', attribute.id),
+        ], limit=1)
+        if not val:
+            val = value_model.with_context(lang='fr_FR').create({
+                'name': name_fr,
+                'attribute_id': attribute.id,
+                'sequence': sequence,
+            })
+        else:
+            val.with_context(lang='fr_FR').write({'sequence': sequence})
+
+        val.with_context(lang='fr_FR').write({'name': name_fr})
+        if lang_en and name_en:
+            val.with_context(lang='en_US').write({'name': name_en})
+        return val
+
+    # --- Forfait DATA par TPE / TPE Data Plan ---
+    forfait = get_or_create_attribute(
+        'Forfait DATA par TPE', 'TPE Data Plan',
+        display_type='radio', sequence=1
+    )
+    for i, (fr, en) in enumerate([
+        ('5 Mo', '5 MB'),
+        ('50 Mo', '50 MB'),
+        ('100 Mo', '100 MB'),
+    ]):
+        get_or_create_value(forfait, fr, en, sequence=i)
+
+    # --- Nombre de chèques par mois / Cheques per month ---
+    # ⚠️ valeurs provisoires en attendant confirmation des vraies tranches
+    cheques = get_or_create_attribute(
+        'Nombre de chèques par mois', 'Cheques per month',
+        display_type='select', sequence=2
+    )
+    for i, (fr, en) in enumerate([
+        ('5', '5'), ('10', '10'), ('15', '15'),
+        ('20', '20'), ('30', '30'), ('50', '50'),
+    ]):
+        get_or_create_value(cheques, fr, en, sequence=i)
+
+    # --- Garantie / Warranty ---
+    garantie = get_or_create_attribute(
+        'Garantie', 'Warranty',
+        display_type='radio', sequence=3
+    )
+    for i, (fr, en) in enumerate([
+        ('1an', '1 year'),
+        ('2ans', '2 years'),
+        ('3ans', '3 years'),
+        ('4ans', '4 years'),
+    ]):
+        get_or_create_value(garantie, fr, en, sequence=i)
+
+    # --- Type de modèle / Model type ---
+    modele = get_or_create_attribute(
+        'Type de modèle', 'Model type',
+        display_type='select', sequence=4
+    )
+    for i, (fr, en) in enumerate([
+        ('1 x RS232', '1 x RS232'),
+        ('2 x RS232', '2 x RS232'),
+    ]):
+        get_or_create_value(modele, fr, en, sequence=i)
+
+    # --- Quantité / Quantity ---
+    quantite = get_or_create_attribute(
+        'Quantité', 'Quantity',
+        display_type='pills', sequence=5
+    )
+    for i, (fr, en) in enumerate([
+        ('5', '5'), ('15', '15'), ('20', '20'), ('50', '50'),
+    ]):
+        get_or_create_value(quantite, fr, en, sequence=i)
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -175,6 +290,9 @@ def post_init_hook(env):
 
     # === MENUS ===
     _setup_menus(env, website, lang_en)
+
+    # === ATTRIBUTS / FILTRES MONÉTIQUE ===
+    _setup_monetique_attributes(env, lang_en)
 
     # === PROFIL DROPDOWN — Mon compte (recherche par clé, pas par ID) ===
     account_view = env['ir.ui.view'].search([
@@ -416,6 +534,9 @@ def post_migrate_hook(env):
 
     # Menus maintenus + nettoyage démo à chaque update
     _setup_menus(env, website, lang_en)
+
+    # Attributs/filtres maintenus + traduction à chaque update
+    _setup_monetique_attributes(env, lang_en)
 
     if website:
         try:
