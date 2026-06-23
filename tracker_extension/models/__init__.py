@@ -1,1 +1,1 @@
-from ...models import extension_data
+from . import extension_data
