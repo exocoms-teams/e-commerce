@@ -4,11 +4,11 @@
     'category': 'Website',
     'summary': 'Extension download page with dashboard',
     'description': """
-        Tracker Extension with:
-        - Green/White theme with dark mode toggle
-        - French/English language support
-        - Dashboard for extension data
-    """,
+Tracker Extension with:
+- Green/White theme with dark mode toggle
+- French/English language support
+- Dashboard for extension data
+""",
     'author': 'Your Company',
     'website': 'https://yourwebsite.com',
     'license': 'LGPL-3',
