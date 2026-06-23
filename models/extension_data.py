@@ -1,5 +1,4 @@
-models/extension_data.py from odoo import models, fields, api
-from datetime import datetime 
+from odoo import models, fields, api
 
 class ExtensionTracking(models.Model):
     _name = 'extension.tracking'
@@ -26,15 +25,23 @@ class ExtensionTracking(models.Model):
     def get_dashboard_stats(self):
         """Get stats for dashboard"""
         total_products = self.search_count([])
-        active_users = self.search_read([], ['user_id']).mapped('user_id')
+        
+        # Get unique users - FIXED this line
+        users = self.search_read([], ['user_id'])
+        active_users = []
+        for user in users:
+            if user.get('user_id'):
+                active_users.append(user['user_id'][0])
         active_users_count = len(set(active_users))
+        
         total_trackings = self.search_count([])
         
         # Calculate average trend score
         trend_scores = self.search_read([], ['trend_score'])
         avg_trend = 0
         if trend_scores:
-            avg_trend = sum(t.get('trend_score', 0) for t in trend_scores) / len(trend_scores)
+            total_score = sum(t.get('trend_score', 0) for t in trend_scores)
+            avg_trend = total_score / len(trend_scores)
         
         return {
             'total_products': total_products,
