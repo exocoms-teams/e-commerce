@@ -11,7 +11,7 @@
     """,
     'author': 'Your Company',
     'website': 'https://yourwebsite.com',
-    'license': 'LGPL-3',  # <-- ADD THIS LINE
+    'license': 'LGPL-3',
     'depends': ['website', 'mail'],
     'data': [
         'views/templates.xml',
