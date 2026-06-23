@@ -22,10 +22,7 @@ class SinistrePropositionReponse(models.Model):
         string='Date', default=fields.Datetime.now, required=True, index=True,
     )
 
-    _sql_constraints = [
-        (
-            'unique_reponse_intervenant_mission',
-            'unique(intervenant_id, mission_id)',
-            'Une seule réponse par mission et intervenant.',
-        ),
-    ]
+    _unique_reponse_intervenant_mission = models.Constraint(
+        'UNIQUE(intervenant_id, mission_id)',
+        'Une seule réponse par mission et intervenant.',
+    )
