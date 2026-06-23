@@ -113,8 +113,12 @@ window.Dashboard = (() => {
 
         const taux = user.taux_acceptation;
         const tauxEl = document.getElementById('statTauxAccept');
-        if (tauxEl && taux !== undefined && taux !== null) {
-            tauxEl.textContent = taux + ' %';
+        if (tauxEl) {
+            if (taux === undefined || taux === null) {
+                tauxEl.textContent = '—';
+            } else {
+                tauxEl.textContent = taux + ' %';
+            }
         }
 
         const nbFactures = user.factures_a_fournir;
@@ -254,11 +258,32 @@ window.Dashboard = (() => {
         </div>`;
     }
 
+    async function _refreshTauxAcceptation(tauxFromResponse) {
+        if (tauxFromResponse !== undefined && tauxFromResponse !== null) {
+            let user = {};
+            try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+            user.taux_acceptation = tauxFromResponse;
+            localStorage.setItem('ss_user', JSON.stringify(user));
+            _updateExtendedStats(user);
+            return;
+        }
+        try {
+            const data = await API.getMe();
+            if (data && data.user) {
+                let user = {};
+                try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+                user.taux_acceptation = data.user.taux_acceptation ?? null;
+                localStorage.setItem('ss_user', JSON.stringify(user));
+                _updateExtendedStats(user);
+            }
+        } catch (e) { /* ignore */ }
+    }
+
     async function accepterMission(missionId, btn) {
         btn.disabled = true;
         btn.textContent = '…';
         try {
-            await API.accepterMissionProposee(missionId);
+            const result = await API.accepterMissionProposee(missionId);
             // Retirer la carte avec animation
             const card = document.getElementById(`proposee-${missionId}`);
             if (card) {
@@ -277,6 +302,7 @@ window.Dashboard = (() => {
             _proposees = _proposees.filter(m => m.id !== missionId);
             const badge = document.getElementById('proposeesBadge');
             if (badge) badge.textContent = _proposees.length ? `${_proposees.length} disponible${_proposees.length > 1 ? 's' : ''}` : '';
+            await _refreshTauxAcceptation(result && result.taux_acceptation);
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
             btn.disabled = false;
@@ -288,7 +314,7 @@ window.Dashboard = (() => {
         if (!confirm('Refuser cette mission ?')) return;
         btn.disabled = true;
         try {
-            await API.refuserMissionProposee(missionId);
+            const result = await API.refuserMissionProposee(missionId);
             const card = document.getElementById(`proposee-${missionId}`);
             if (card) {
                 card.style.transition = 'opacity .3s';
@@ -308,6 +334,7 @@ window.Dashboard = (() => {
                         <div style="font-size:13px">De nouvelles missions vous seront proposées prochainement</div>
                     </div>`;
             }
+            await _refreshTauxAcceptation(result && result.taux_acceptation);
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
             btn.disabled = false;
