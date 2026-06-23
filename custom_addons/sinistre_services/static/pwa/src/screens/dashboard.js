@@ -259,19 +259,20 @@ window.Dashboard = (() => {
     }
 
     async function _refreshTauxAcceptation(tauxFromResponse) {
-        if (tauxFromResponse !== undefined && tauxFromResponse !== null) {
-            let user = {};
-            try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+
+        /* null = aucune proposition aujourd'hui → afficher « — », ne pas rappeler /me */
+        if (tauxFromResponse !== undefined) {
             user.taux_acceptation = tauxFromResponse;
             localStorage.setItem('ss_user', JSON.stringify(user));
             _updateExtendedStats(user);
             return;
         }
+
         try {
             const data = await API.getMe();
             if (data && data.user) {
-                let user = {};
-                try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
                 user.taux_acceptation = data.user.taux_acceptation ?? null;
                 localStorage.setItem('ss_user', JSON.stringify(user));
                 _updateExtendedStats(user);
@@ -284,7 +285,7 @@ window.Dashboard = (() => {
         btn.textContent = '…';
         try {
             const result = await API.accepterMissionProposee(missionId);
-            // Retirer la carte avec animation
+
             const card = document.getElementById(`proposee-${missionId}`);
             if (card) {
                 card.style.transition = 'opacity .3s, transform .3s';
@@ -292,17 +293,25 @@ window.Dashboard = (() => {
                 card.style.transform = 'translateX(20px)';
                 setTimeout(() => card.remove(), 300);
             }
-            Toast.show('✅ Mission acceptée — elle est dans Mes Missions', 'success');
-            // Recharger les missions
-            const data = await API.getMissions();
-            _missions = data.missions || [];
-            _updateDashStats();
-            _renderToday();
-            // Mettre à jour badge
             _proposees = _proposees.filter(m => m.id !== missionId);
             const badge = document.getElementById('proposeesBadge');
             if (badge) badge.textContent = _proposees.length ? `${_proposees.length} disponible${_proposees.length > 1 ? 's' : ''}` : '';
-            await _refreshTauxAcceptation(result && result.taux_acceptation);
+
+            Toast.show('✅ Mission acceptée — elle est dans Mes Missions', 'success');
+
+            try {
+                const data = await API.getMissions();
+                _missions = data.missions || [];
+                localStorage.setItem('ss_missions_cache', JSON.stringify(_missions));
+                _updateDashStats();
+                _renderToday();
+            } catch (e) { /* cache local inchangé */ }
+
+            await _refreshTauxAcceptation(
+                result && Object.prototype.hasOwnProperty.call(result, 'taux_acceptation')
+                    ? result.taux_acceptation
+                    : undefined
+            );
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
             btn.disabled = false;
@@ -334,7 +343,11 @@ window.Dashboard = (() => {
                         <div style="font-size:13px">De nouvelles missions vous seront proposées prochainement</div>
                     </div>`;
             }
-            await _refreshTauxAcceptation(result && result.taux_acceptation);
+            await _refreshTauxAcceptation(
+                result && Object.prototype.hasOwnProperty.call(result, 'taux_acceptation')
+                    ? result.taux_acceptation
+                    : undefined
+            );
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
             btn.disabled = false;
