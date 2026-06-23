@@ -3,141 +3,91 @@
   <data noupdate="1">
 
     <record id="website_contact_custom" model="ir.ui.view">
-      <field name="name">Matelas Contact</field>
+      <field name="name">Matelas Contact Clean</field>
       <field name="type">qweb</field>
       <field name="key">Matelas.contact_custom</field>
       <field name="inherit_id" ref="website.contactus"/>
       <field name="arch" type="xml">
 
-       
-        <xpath expr="//div[@id='wrap']" position="before">
 
-          <!-- HERO -->
-          <section class="contact-hero">
-            <div class="contact-hero-overlay">
-              <div class="container text-center">
-                <p class="label-top">NOUS CONTACTER</p>
-                <h1>Nous sommes là pour vous 💬</h1>
-                <p class="contact-hero-sub">
-                  Une question, un conseil, une commande ?<br/>
-                  Notre équipe vous répond sous 24h.
-                </p>
+        <xpath expr="//div[@id='wrap']" position="replace">
+
+          <div id="wrap">
+
+            <!-- HERO -->
+            <section class="contact-hero">
+              <div class="contact-hero-overlay">
+                <div class="container text-center">
+                  <h1>Nous sommes là pour vous 💬</h1>
+                  <p class="contact-hero-sub">
+                    Une question, un conseil, une commande ?<br/>
+                    Réponse sous 24h.
+                  </p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <!-- INFOS + FAQ -->
-          <section class="contact-main container">
-            <div class="row g-5">
+            <!-- CONTENU PRINCIPAL -->
+            <section class="contact-main container">
+              <div class="row g-5">
 
-              <!-- INFOS GAUCHE -->
-              <div class="col-md-5">
-                <div class="contact-info-box">
+                <!-- GAUCHE : INFOS -->
+                <div class="col-md-5">
+
                   <h2>Parlons sommeil !</h2>
+
                   <p class="contact-intro">
-                    Nous sommes passionnés par le bien-être et le sommeil.
-                    Contactez-nous pour tout conseil personnalisé.
+                    Notre équipe est là pour vous accompagner dans le choix de votre matelas.
                   </p>
 
                   <div class="contact-info-card">
+
                     <div class="contact-info-item">
-                      <div class="contact-info-icon">
-                        <i class="bi bi-geo-alt-fill"/>
-                      </div>
+                      <i class="bi bi-geo-alt-fill contact-info-icon"/>
                       <div>
                         <p class="contact-info-label">Adresse</p>
-                        <p class="contact-info-value">
-                          123 Rue du Sommeil, 75001 Paris
-                        </p>
+                        <p>123 Rue du Sommeil, Paris</p>
                       </div>
                     </div>
+
                     <div class="contact-info-item">
-                      <div class="contact-info-icon">
-                        <i class="bi bi-telephone-fill"/>
-                      </div>
+                      <i class="bi bi-telephone-fill contact-info-icon"/>
                       <div>
                         <p class="contact-info-label">Téléphone</p>
-                        <p class="contact-info-value">
-                          +33 (0)6 00 00 00 00
-                        </p>
+                        <p>+33 6 00 00 00 00</p>
                       </div>
                     </div>
+
                     <div class="contact-info-item">
-                      <div class="contact-info-icon">
-                        <i class="bi bi-envelope-fill"/>
-                      </div>
+                      <i class="bi bi-envelope-fill contact-info-icon"/>
                       <div>
                         <p class="contact-info-label">Email</p>
-                        <p class="contact-info-value">
-                          contact@matelas.com
-                        </p>
+                        <p>contact@matelas.com</p>
                       </div>
                     </div>
-                    <div class="contact-info-item">
-                      <div class="contact-info-icon">
-                        <i class="bi bi-clock-fill"/>
-                      </div>
-                      <div>
-                        <p class="contact-info-label">Horaires</p>
-                        <p class="contact-info-value">
-                          Lun – Ven : 9h – 18h<br/>
-                          Sam : 10h – 16h
-                        </p>
-                      </div>
-                    </div>
+
                   </div>
 
-                  <div class="contact-socials">
-                    <p class="contact-info-label mb-2">Suivez-nous</p>
-                    <div class="d-flex gap-3">
-                      <a href="https://facebook.com" target="_blank"
-                         class="social-btn">
-                        <i class="bi bi-facebook"/>
-                      </a>
-                      <a href="https://instagram.com" target="_blank"
-                         class="social-btn">
-                        <i class="bi bi-instagram"/>
-                      </a>
-                      <a href="https://youtube.com" target="_blank"
-                         class="social-btn">
-                        <i class="bi bi-youtube"/>
-                      </a>
-                    </div>
+                </div>
+
+                
+                <div class="col-md-7">
+
+                  <div class="contact-form-box">
+
+                    <h2>Envoyez-nous un message</h2>
+
+                  
+                    <t t-call="website.contactus_form"/>
+
                   </div>
+
                 </div>
-              </div>
 
-              
-              <div class="col-md-7">
-                <div class="contact-form-box">
-                  <h2>Envoyez-nous un message</h2>
-                </div>
               </div>
+            </section>
 
-            </div>
-          </section>
-
-          <!-- FAQ -->
-          <section class="contact-faq container">
-            <h2 class="text-center mb-4">Questions fréquentes</h2>
-            <div class="row g-3">
-              <div class="col-md-4 faq-card">
-                <i class="bi bi-truck faq-icon"/>
-                <h5>Délai de livraison ?</h5>
-                <p>Livraison en 3 à 5 jours ouvrés directement chez vous.</p>
-              </div>
-              <div class="col-md-4 faq-card">
-                <i class="bi bi-arrow-counterclockwise faq-icon"/>
-                <h5>Politique de retour ?</h5>
-                <p>Vous disposez de 14 jours après la réception de votre commande pour demander un retour.</p>
-              </div>
-              <div class="col-md-4 faq-card">
-                <i class="bi bi-shield-check faq-icon"/>
-                <h5>Garantie produit ?</h5>
-                <p>Garantie 5 ans pièces et main d'œuvre.</p>
-              </div>
-            </div>
-          </section>
+          </div>
 
         </xpath>
 
