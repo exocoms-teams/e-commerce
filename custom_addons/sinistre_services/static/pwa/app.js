@@ -71,13 +71,17 @@ window.App = (() => {
 
     /* ── Enrichir depuis /api/sinistre/v1/me ── */
     async function _enrichUserFromAPI() {
+        let existing = {};
+        try { existing = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
         try {
             const resp = await fetch('/api/sinistre/v1/me', { credentials: 'include' });
-            if (!resp.ok) return;
+            if (!resp.ok) {
+                console.warn('[App] enrichUser HTTP', resp.status);
+                return false;
+            }
             const data = await resp.json();
             if (data.success && data.user) {
                 const u = data.user;
-                const existing = JSON.parse(localStorage.getItem('ss_user') || '{}');
                 const merged = {
                     ...existing,
                     uid: u.uid, name: u.name, email: u.email,
@@ -104,10 +108,10 @@ window.App = (() => {
                 };
                 localStorage.setItem('ss_user', JSON.stringify(merged));
                 Auth.loadFromStorage();
-                _updateUIFromUser();
-                if (merged.certifications.length) _updateCertifications(merged.certifications);
+                return true;
             }
         } catch(e) { console.warn('[App] enrichUser:', e); }
+        return false;
     }
 
     /* ── Mettre à jour l'UI ── */
@@ -147,7 +151,11 @@ window.App = (() => {
                 soldeEl.className = 'stat-value ' + (s < 0 ? 'stat-solde-debit' : 'stat-solde-credit');
             }
             const tauxEl = document.getElementById('statTauxAccept');
-            if (tauxEl && user.taux_acceptation != null) tauxEl.textContent = user.taux_acceptation + ' %';
+            if (tauxEl) {
+                tauxEl.textContent = user.taux_acceptation != null
+                    ? user.taux_acceptation + ' %'
+                    : '—';
+            }
             const factEl = document.getElementById('statFacturesAFournir');
             if (factEl) factEl.textContent = user.factures_a_fournir ?? 0;
         }
@@ -188,6 +196,17 @@ window.App = (() => {
         }
     }
 
+    function _restoreUserSession(fallbackUser) {
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        if (!user.name && fallbackUser && fallbackUser.name) {
+            const restored = { ...fallbackUser, ...user };
+            localStorage.setItem('ss_user', JSON.stringify(restored));
+            Auth.loadFromStorage();
+        }
+        _updateUIFromUser();
+    }
+
     async function _registerSW() {
         if (!('serviceWorker' in navigator)) return;
         try {
@@ -218,10 +237,11 @@ window.App = (() => {
         if (sl) sl.style.display = 'none';
         if (sa) sa.style.display = 'flex';
         FCM.autoInit();
-        // Vider le cache et recharger les données fraîches depuis /me à chaque connexion
-        localStorage.removeItem('ss_user');
-        _enrichUserFromAPI().then(() => {
-            _updateUIFromUser();
+        const fallbackUser = Auth.getUser() || (() => {
+            try { return JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) { return {}; }
+        })();
+        _enrichUserFromAPI().finally(() => {
+            _restoreUserSession(fallbackUser);
             showView('dashboard', document.getElementById('nav-dashboard'));
         });
 
@@ -270,8 +290,9 @@ window.App = (() => {
             _updateUIFromUser(); // Rafraîchir sidebar/greeting
         }
         if (viewId === 'profile') {
-            // Recharger les données fraîches depuis l'API à chaque visite
-            _enrichUserFromAPI().then(function() { _updateUIFromUser(); });
+            _enrichUserFromAPI().finally(() => {
+                _restoreUserSession(Auth.getUser());
+            });
         }
         if (viewId === 'missions')      Dashboard.loadMissions();
         if (viewId === 'interventions') Dashboard.loadInterventions();
