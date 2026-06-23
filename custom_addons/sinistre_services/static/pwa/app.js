@@ -291,16 +291,21 @@ window.App = (() => {
 
         // Charger les données de la vue
         if (viewId === 'dashboard') {
-            Dashboard.init();
-            _updateUIFromUser(); // Rafraîchir sidebar/greeting
+            if (window.Dashboard) Dashboard.init();
+            else console.error('[App] Dashboard non chargé — vérifiez dashboard.js (Network)');
+            _updateUIFromUser();
         }
         if (viewId === 'profile') {
             _enrichUserFromAPI().finally(() => {
                 _restoreUserSession(Auth.getUser());
             });
         }
-        if (viewId === 'missions')      Dashboard.loadMissions();
-        if (viewId === 'interventions') Dashboard.loadInterventions();
+        if (viewId === 'missions') {
+            if (window.Dashboard) Dashboard.loadMissions();
+        }
+        if (viewId === 'interventions') {
+            if (window.Dashboard) Dashboard.loadInterventions();
+        }
         if (viewId === 'carte') {
             // setTimeout 300ms pour laisser le DOM se mettre à jour
             setTimeout(function() {
@@ -354,7 +359,7 @@ window.App = (() => {
     /* ── Visibility change (rafraîchir si retour en premier plan) ── */
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && Auth.isLoggedIn() && _currentView === 'dashboard') {
-            Dashboard.refresh();
+            if (window.Dashboard) Dashboard.refresh();
         }
     });
 
