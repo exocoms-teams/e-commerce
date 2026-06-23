@@ -182,7 +182,8 @@ class SinistreMission(models.Model):
     def _compute_commission(self):
         for rec in self:
             taux = rec.intervenant_id.taux_commission if rec.intervenant_id else 0
-            rec.commission_plateforme = rec.montant_devis * (taux / 100)
+            montant = rec.montant_devis or 0
+            rec.commission_plateforme = montant * (taux / 100)
 
     @api.depends('photo_ids', 'photo_ids.type_photo')
     def _compute_photos_count(self):
