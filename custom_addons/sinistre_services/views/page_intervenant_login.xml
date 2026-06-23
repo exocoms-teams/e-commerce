@@ -187,7 +187,7 @@
                 font-size: 13px; margin-bottom: 20px;
                 align-items: center; gap: 8px;
             }
-            .a-error.show { display: flex; }
+            .a-error.show { display: flex; align-items: center; gap: 8px; }
 
             /* Séparateur */
             .a-divider {
@@ -247,49 +247,80 @@
             @media (max-width: 768px) {
                 .artisan-page { grid-template-columns: 1fr; }
                 .artisan-left { display: none; }
-                .artisan-right { padding: 40px 24px; }
+                .artisan-mobile-header {
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px 20px;
+                    background: white;
+                    border-bottom: 1px solid #E5E7EB;
+                }
+                .artisan-right { padding: 32px 20px 40px; justify-content: flex-start; }
             }
+            .artisan-mobile-header { display: none; }
+            .a-forgot {
+                display: block;
+                text-align: right;
+                font-size: 12px;
+                margin-top: -10px;
+                margin-bottom: 16px;
+            }
+            .a-forgot a { color: #1E40AF; font-weight: 600; text-decoration: none; }
+            .a-forgot a:hover { text-decoration: underline; }
+            .artisan-perk-icon i { color: white; font-size: 18px; }
         </style>
 
         <div class="artisan-page">
 
+            <div class="artisan-mobile-header">
+                <a href="/" class="artisan-logo" style="margin-bottom:0;">
+                    <div class="artisan-logo-icon" style="width:40px;height:40px;font-size:18px;background:#EFF6FF;border-color:#BFDBFE;">
+                        <i class="fa fa-wrench" style="color:#1E40AF;" aria-hidden="true"/>
+                    </div>
+                    <span class="artisan-logo-text" style="color:#0F172A;">Sinistre<span style="color:#C62828;">Services</span></span>
+                </a>
+                <a href="/" style="font-size:13px;color:#6B7280;text-decoration:none;font-weight:600;">Retour</a>
+            </div>
+
             <!-- ── Panneau gauche ── -->
             <div class="artisan-left">
                 <div class="artisan-logo">
-                    <div class="artisan-logo-icon">🔧</div>
+                    <div class="artisan-logo-icon">
+                        <i class="fa fa-wrench" aria-hidden="true"/>
+                    </div>
                     <span class="artisan-logo-text">Sinistre<span>Services</span></span>
                 </div>
 
-                <h1>Votre espace<br/><span>artisan certifie</span></h1>
-                <p>Gerez vos missions, vos devis et vos paiements depuis une seule interface. Disponible sur mobile et desktop.</p>
+                <h1>Votre espace<br/><span>artisan certifié</span></h1>
+                <p>Gérez vos missions, vos devis et vos paiements depuis une seule interface. Disponible sur mobile et desktop.</p>
 
                 <div class="artisan-perks">
                     <div class="artisan-perk">
-                        <div class="artisan-perk-icon">📱</div>
+                        <div class="artisan-perk-icon"><i class="fa fa-mobile" aria-hidden="true"/></div>
                         <div class="artisan-perk-content">
-                            <h4>Application mobile dediee</h4>
-                            <p>Recevez vos missions en temps reel, gerez votre planning depuis votre telephone.</p>
+                            <h4>Application mobile dédiée</h4>
+                            <p>Recevez vos missions en temps réel, gérez votre planning depuis votre téléphone.</p>
                         </div>
                     </div>
                     <div class="artisan-perk">
-                        <div class="artisan-perk-icon">💰</div>
+                        <div class="artisan-perk-icon"><i class="fa fa-money" aria-hidden="true"/></div>
                         <div class="artisan-perk-content">
                             <h4>Paiement garanti sous 48h</h4>
-                            <p>Virement automatique apres validation. Zero impaye, zero relance.</p>
+                            <p>Virement automatique après validation. Zéro impayé, zéro relance.</p>
                         </div>
                     </div>
                     <div class="artisan-perk">
-                        <div class="artisan-perk-icon">📍</div>
+                        <div class="artisan-perk-icon"><i class="fa fa-map-marker" aria-hidden="true"/></div>
                         <div class="artisan-perk-content">
                             <h4>Missions dans votre zone</h4>
-                            <p>Definissez votre perimetre et recevez uniquement les missions proches de vous.</p>
+                            <p>Définissez votre périmètre et recevez uniquement les missions proches de vous.</p>
                         </div>
                     </div>
                     <div class="artisan-perk">
-                        <div class="artisan-perk-icon">⭐</div>
+                        <div class="artisan-perk-icon"><i class="fa fa-star" aria-hidden="true"/></div>
                         <div class="artisan-perk-content">
-                            <h4>Badge artisan certifie</h4>
-                            <p>Visibilite aupres des assurances partenaires. Avis clients verifies.</p>
+                            <h4>Badge artisan certifié</h4>
+                            <p>Visibilité auprès des assurances partenaires. Avis clients vérifiés.</p>
                         </div>
                     </div>
                 </div>
@@ -315,11 +346,11 @@
                 <div class="artisan-form-wrap">
 
                     <h2 class="artisan-form-title">Connexion</h2>
-                    <p class="artisan-form-sub">Acces reserve aux artisans du reseau Sinistre Services</p>
+                    <p class="artisan-form-sub">Accès réservé aux artisans du réseau Sinistre Services</p>
 
                     <div id="aError" class="a-error">
-                        <span>⚠️</span>
-                        <span id="aErrorMsg">Identifiants incorrects. Verifiez votre email et mot de passe.</span>
+                        <i class="fa fa-exclamation-circle" aria-hidden="true"/>
+                        <span id="aErrorMsg">Identifiants incorrects. Vérifiez votre email et mot de passe.</span>
                     </div>
 
                     <form id="artisanLoginForm">
@@ -335,19 +366,22 @@
                                    placeholder="••••••••"
                                    autocomplete="current-password" required="required"/>
                         </div>
+                        <div class="a-forgot">
+                            <a href="/web/reset_password">Mot de passe oublié ?</a>
+                        </div>
                         <button type="submit" class="a-btn-primary" id="aSubmitBtn">
                             <div class="a-spinner" id="aSpinner"></div>
-                            <span id="aSubmitText">&#128274; Acceder a mon espace</span>
+                            <span id="aSubmitText"><i class="fa fa-lock" aria-hidden="true"/> Accéder à mon espace</span>
                         </button>
                     </form>
 
-                    <div class="a-divider"><span>Pas encore dans le reseau ?</span></div>
+                    <div class="a-divider"><span>Pas encore dans le réseau ?</span></div>
 
                     <div class="a-join-block">
-                        <h3>Rejoignez notre reseau d'artisans</h3>
-                        <p>Inscription gratuite. Verification du dossier sous 48h. Premieres missions immediatement apres validation.</p>
+                        <h3>Rejoignez notre réseau d'artisans</h3>
+                        <p>Inscription gratuite. Vérification du dossier sous 48h. Premières missions immédiatement après validation.</p>
                         <a href="/rejoindre-le-reseau" class="a-btn-outline">
-                            &#43; Devenir artisan partenaire
+                            <i class="fa fa-plus" aria-hidden="true"/> Devenir artisan partenaire
                         </a>
                     </div>
 
@@ -406,21 +440,21 @@
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     if (data.result && data.result.uid && data.result.uid > 0) {
-                        window.location.href = '/sinistre_services/static/pwa/index.html';
+                        window.location.href = '/pwa/';
                     } else {
-                        document.getElementById('aErrorMsg').textContent = 'Identifiants incorrects. Verifiez votre email et mot de passe.';
+                        document.getElementById('aErrorMsg').textContent = 'Identifiants incorrects. Vérifiez votre email et mot de passe.';
                         errorDiv.classList.add('show');
                         btn.disabled = false;
                         spinner.style.display = 'none';
-                        btnText.textContent = 'Acceder a mon espace';
+                        btnText.innerHTML = '<i class="fa fa-lock" aria-hidden="true"></i> Accéder à mon espace';
                     }
                 })
                 .catch(function() {
-                    document.getElementById('aErrorMsg').textContent = 'Erreur de connexion. Veuillez reessayer.';
+                    document.getElementById('aErrorMsg').textContent = 'Erreur de connexion. Veuillez réessayer.';
                     errorDiv.classList.add('show');
                     btn.disabled = false;
                     spinner.style.display = 'none';
-                    btnText.textContent = 'Acceder a mon espace';
+                    btnText.innerHTML = '<i class="fa fa-lock" aria-hidden="true"></i> Accéder à mon espace';
                 });
             });
         ]]></script>
