@@ -289,6 +289,20 @@ def _csv_response(filename, rows, headers):
     )
 
 
+def _mission_has_facture(mission):
+    return bool(mission.facture_assurance_id or mission.facture_client_id)
+
+
+def _mission_facture_label(mission):
+    inv = mission.facture_assurance_id or mission.facture_client_id
+    if not inv:
+        return ''
+    name = (inv.name or '').strip()
+    if name and name != '/':
+        return name
+    return f'Facture #{inv.id}'
+
+
 def _comptabilite_payload(intervenant):
     """Construit le payload comptabilité partagé entre GET et export."""
     from datetime import datetime
@@ -315,10 +329,6 @@ def _comptabilite_payload(intervenant):
             return 'Succès'
         return 'En cours'
 
-    def _facture_name(m):
-        inv = m.facture_assurance_id or m.facture_client_id
-        return inv.name if inv else ''
-
     def _categorie(m):
         if m.source in ('particulier', 'entreprise'):
             return 'b2c'
@@ -343,10 +353,10 @@ def _comptabilite_payload(intervenant):
             'statut':       _statut(m),
             'date_rdv':     str(m.date_rdv) if m.date_rdv else '',
             'date_cloture': str(m.date_cloture) if m.date_cloture else '',
-            'facture':      _facture_name(m),
+            'facture':      _mission_facture_label(m),
             'a_facturer':   (
                 m.state in ('termine', 'facture', 'clos')
-                and not _facture_name(m)
+                and not _mission_has_facture(m)
             ),
             'beneficiaire': (m.client_id.name or '').upper(),
             'dossier_du':   m.ref_assurance or m.reference or '',
@@ -367,11 +377,11 @@ def _comptabilite_payload(intervenant):
             v['rac_facture'] += m.reste_a_charge or 0
             v['ca_genere'] += montant
 
-            if cat in detail_solde and _facture_name(m):
+            if cat in detail_solde and _mission_has_facture(m):
                 tva = 1.2
                 detail_solde[cat].append({
                     'dossier':          m.reference,
-                    'numero_facture':   _facture_name(m),
+                    'numero_facture':   _mission_facture_label(m),
                     'date_facturation': str(dt.date()) if dt else '',
                     'montant_ht':       round(montant / tva, 2),
                     'montant_ttc':      montant,
@@ -437,7 +447,6 @@ def _comptabilite_payload(intervenant):
 
 
 def _fmt_mission(m):
-    inv = m.facture_assurance_id or m.facture_client_id
     return {
         'id':                   m.id,
         'reference':            m.reference,
@@ -462,11 +471,10 @@ def _fmt_mission(m):
         'signature_avant':      bool(m.signature_avant),
         'signature_apres':      bool(m.signature_apres),
         'notes_artisan':        m.notes_artisan or '',
-        'facture_numero':       inv.name if inv else '',
+        'facture_numero':       _mission_facture_label(m),
         'a_facturer':           (
             m.state in ('termine', 'facture', 'clos')
-            and not m.facture_assurance_id
-            and not m.facture_client_id
+            and not _mission_has_facture(m)
         ),
     }
 
@@ -759,10 +767,26 @@ class SinistrePWAController(http.Controller):
             return _err(400, "Signature requise")
         try:
             mission.sudo().write({'signature_apres': sig})
+            if mission.state in ('en_cours', 'travaux_en_cours', 'devis_accepte'):
+                mission.action_terminer()
+            if (
+                mission.state in ('termine', 'facture', 'clos')
+                and not _mission_has_facture(mission)
+            ):
+                try:
+                    mission.sudo().action_generer_facture()
+                except UserError as inv_err:
+                    _logger.info(
+                        "[sinistre] signature_apres: facture non générée pour mission %s: %s",
+                        mission.id, inv_err,
+                    )
             mission.message_post(body=_("✅ Signature après intervention enregistrée."))
-            return _ok({'success': True, 'facture': bool(
-                mission.facture_assurance_id or mission.facture_client_id
-            )})
+            return _ok({
+                'success':        True,
+                'facture':        _mission_has_facture(mission),
+                'facture_numero': _mission_facture_label(mission),
+                'state':          mission.state,
+            })
         except Exception as e:
             return _err(500, str(e))
 
