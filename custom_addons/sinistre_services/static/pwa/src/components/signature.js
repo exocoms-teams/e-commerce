@@ -5,7 +5,7 @@
  *   'devis'          → acceptation devis (signature initiale)
  *   'devis_modifie'  → re-signature après modification devis en cours d'intervention
  *   'avant'          → signature client AVANT démarrage intervention
- *   'apres'          → signature client APRÈS intervention (déclenche facturation)
+ *   'apres'          → signature client APRÈS intervention (validation travaux)
  */
 
 window.Signature = (() => {
@@ -157,13 +157,12 @@ window.Signature = (() => {
 
     async function _confirmApres(sig) {
         try {
-            const result = await Offline.tryOrQueue(
+            await Offline.tryOrQueue(
                 'SIGNATURE_APRES',
                 () => API.signerApres(_missionId, sig),
                 { missionId: _missionId, signature: sig }
             );
-            const num = result && !result.queued ? result.facture_numero : '';
-            Toast.show('✅ Intervention validée' + (num ? (' — ' + num) : ''), 'success');
+            Toast.show('✅ Signature après enregistrée — clôturez la mission puis facturez depuis Interventions', 'success');
             App.showView('mission', 'Mission');
             MissionDetail.reload();
         } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
