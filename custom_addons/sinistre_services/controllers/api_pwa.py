@@ -157,7 +157,14 @@ def _mission_matches_specialites(mission, specialite_types):
 def _enregistrer_proposition_reponse(intervenant, mission, reponse):
     """Enregistre la réponse d'un artisan à une proposition de mission."""
     from odoo import fields
-    Proposition = request.env['sinistre.proposition.reponse'].sudo()
+    try:
+        Proposition = request.env['sinistre.proposition.reponse'].sudo()
+    except KeyError:
+        _logger.warning("[sinistre] sinistre.proposition.reponse indisponible — mettre à jour le module")
+        return
+    except Exception as e:
+        _logger.warning("[sinistre] proposition_reponse: %s", e)
+        return
     existing = Proposition.search([
         ('intervenant_id', '=', intervenant.id),
         ('mission_id', '=', mission.id),
@@ -179,10 +186,17 @@ def _calc_taux_acceptation_jour(env, intervenant):
     from datetime import datetime, time
     from odoo import fields
 
+    try:
+        Proposition = env['sinistre.proposition.reponse'].sudo()
+    except KeyError:
+        return None
+    except Exception as e:
+        _logger.warning("[sinistre] taux_acceptation_jour: %s", e)
+        return None
+
     today = fields.Date.context_today(env)
     today_start = datetime.combine(today, time.min)
 
-    Proposition = env['sinistre.proposition.reponse'].sudo()
     reponses = Proposition.search([
         ('intervenant_id', '=', intervenant.id),
         ('date_reponse', '>=', fields.Datetime.to_string(today_start)),
@@ -436,107 +450,113 @@ class SinistrePWAController(http.Controller):
     def me(self, **kw):
         user = request.env.user
         iv   = _get_intervenant()
+        if not iv:
+            return _err(403, "Accès non autorisé")
 
-        terminees = request.env['sinistre.mission'].sudo().search([
-            ('intervenant_id', '=', iv.id),
-            ('state', 'in', ('termine', 'clos', 'facture')),
-        ])
-        nb_terminees = len(terminees)
-        ca_total = sum(m.montant_devis or 0 for m in terminees)
-
-        from datetime import datetime
-        now = datetime.now()
-        ca_mois = sum(
-            m.montant_devis or 0 for m in terminees
-            if m.date_cloture
-            and m.date_cloture.month == now.month
-            and m.date_cloture.year == now.year
-        )
-
-        note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
-        note = min(note, 5.0) if note else 0
-
-        certifications = []
         try:
-            for cert in (iv.certification_ids or []):
-                if cert.date_validite:
-                    date_label = f"Valide jusqu'en {cert.date_validite.strftime('%Y')}"
-                else:
-                    date_label = 'À jour'
-                certifications.append({'name': cert.name, 'date': date_label})
-        except Exception:
+            terminees = request.env['sinistre.mission'].sudo().search([
+                ('intervenant_id', '=', iv.id),
+                ('state', 'in', ('termine', 'clos', 'facture')),
+            ])
+            nb_terminees = len(terminees)
+            ca_total = sum(m.montant_devis or 0 for m in terminees)
+
+            from datetime import datetime
+            now = datetime.now()
+            ca_mois = sum(
+                m.montant_devis or 0 for m in terminees
+                if m.date_cloture
+                and m.date_cloture.month == now.month
+                and m.date_cloture.year == now.year
+            )
+
+            note = round(ca_total / nb_terminees / 100, 1) if nb_terminees else 0
+            note = min(note, 5.0) if note else 0
+
             certifications = []
+            try:
+                for cert in (iv.certification_ids or []):
+                    if cert.date_validite:
+                        date_label = f"Valide jusqu'en {cert.date_validite.strftime('%Y')}"
+                    else:
+                        date_label = 'À jour'
+                    certifications.append({'name': cert.name, 'date': date_label})
+            except Exception:
+                certifications = []
 
-        specialites       = []
-        specialites_types = []
-        for s in (iv.specialites or []):
-            specialites.append(s.name)
-            if hasattr(s, 'type_intervention') and s.type_intervention:
-                specialites_types.append(s.type_intervention)
+            specialites       = []
+            specialites_types = []
+            for s in (iv.specialites or []):
+                specialites.append(s.name)
+                if hasattr(s, 'type_intervention') and s.type_intervention:
+                    specialites_types.append(s.type_intervention)
 
-        membre_depuis = ''
-        try:
-            cd = user.create_date
-            if cd:
-                mois_fr = {
-                    1:'Janvier', 2:'Février', 3:'Mars', 4:'Avril',
-                    5:'Mai', 6:'Juin', 7:'Juillet', 8:'Août',
-                    9:'Septembre', 10:'Octobre', 11:'Novembre', 12:'Décembre',
-                }
-                membre_depuis = f"{mois_fr.get(cd.month, '')} {cd.year}"
-        except Exception:
             membre_depuis = ''
+            try:
+                cd = user.create_date
+                if cd:
+                    mois_fr = {
+                        1:'Janvier', 2:'Février', 3:'Mars', 4:'Avril',
+                        5:'Mai', 6:'Juin', 7:'Juillet', 8:'Août',
+                        9:'Septembre', 10:'Octobre', 11:'Novembre', 12:'Décembre',
+                    }
+                    membre_depuis = f"{mois_fr.get(cd.month, '')} {cd.year}"
+            except Exception:
+                membre_depuis = ''
 
-        partner    = user.partner_id
-        phone      = partner.phone or partner.mobile or ''
-        entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
-        admin_phone = request.env['ir.config_parameter'].sudo().get_param(
-            'sinistre.admin_phone', '0X0X0X'
-        )
+            partner    = user.partner_id
+            phone      = partner.phone or partner.mobile or ''
+            entreprise = iv.name or (partner.parent_id.name if partner.parent_id else '') or user.name
+            admin_phone = request.env['ir.config_parameter'].sudo().get_param(
+                'sinistre.admin_phone', '0X0X0X'
+            )
 
-        Mission = request.env['sinistre.mission'].sudo()
-        taux_acceptation = _calc_taux_acceptation_jour(request.env, iv)
+            Mission = request.env['sinistre.mission'].sudo()
+            taux_acceptation = _calc_taux_acceptation_jour(request.env, iv)
 
-        terminees_sans_facture = Mission.search([
-            ('intervenant_id', '=', iv.id),
-            ('state', 'in', ('termine', 'facture', 'clos')),
-        ]).filtered(
-            lambda m: not m.facture_assurance_id and not m.facture_client_id
-        )
-        commission_due = sum(
-            m.commission_plateforme or 0
-            for m in Mission.search([
+            terminees_sans_facture = Mission.search([
                 ('intervenant_id', '=', iv.id),
                 ('state', 'in', ('termine', 'facture', 'clos')),
-            ])
-        )
+            ]).filtered(
+                lambda m: not m.facture_assurance_id and not m.facture_client_id
+            )
+            commission_due = sum(
+                m.commission_plateforme or 0
+                for m in Mission.search([
+                    ('intervenant_id', '=', iv.id),
+                    ('state', 'in', ('termine', 'facture', 'clos')),
+                ])
+            )
 
-        return _ok({'success': True, 'user': {
-            'uid':               user.id,
-            'name':              user.name,
-            'email':             user.login,
-            'phone':             phone,
-            'street':            partner.street or '',
-            'street2':           partner.street2 or '',
-            'city':              partner.city or '',
-            'zip':               partner.zip or '',
-            'company_name':      entreprise,
-            'admin_phone':       admin_phone,
-            'zone':              iv.zone_intervention or '',
-            'note_moyenne':      note,
-            'interventions':     nb_terminees,
-            'ca_total':          ca_total,
-            'ca_mois':           ca_mois,
-            'specialites':       specialites,
-            'specialites_types': specialites_types,
-            'membre_depuis':     membre_depuis,
-            'intervenant_id':    iv.id,
-            'create_date':       str(user.create_date) if user.create_date else '',
-            'certifications':    certifications,
-            'solde_comptabilite': -round(commission_due, 2),
-            'taux_acceptation':  taux_acceptation,
-            'factures_a_fournir': len(terminees_sans_facture),
-        }})
+            return _ok({'success': True, 'user': {
+                'uid':               user.id,
+                'name':              user.name,
+                'email':             user.login,
+                'phone':             phone,
+                'street':            partner.street or '',
+                'street2':           partner.street2 or '',
+                'city':              partner.city or '',
+                'zip':               partner.zip or '',
+                'company_name':      entreprise,
+                'admin_phone':       admin_phone,
+                'zone':              iv.zone_intervention or '',
+                'note_moyenne':      note,
+                'interventions':     nb_terminees,
+                'ca_total':          ca_total,
+                'ca_mois':           ca_mois,
+                'specialites':       specialites,
+                'specialites_types': specialites_types,
+                'membre_depuis':     membre_depuis,
+                'intervenant_id':    iv.id,
+                'create_date':       str(user.create_date) if user.create_date else '',
+                'certifications':    certifications,
+                'solde_comptabilite': -round(commission_due, 2),
+                'taux_acceptation':  taux_acceptation,
+                'factures_a_fournir': len(terminees_sans_facture),
+            }})
+        except Exception as e:
+            _logger.error("[sinistre] me: %s", e, exc_info=True)
+            return _err(500, str(e))
 
     # ── MES MISSIONS ─────────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/missions', type='http',
