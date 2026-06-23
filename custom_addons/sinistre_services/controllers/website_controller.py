@@ -311,6 +311,68 @@ class SinistreWebsite(http.Controller):
                 _logger.warning(f"Rappel mail failed: {e}")
         return request.redirect('/?rappel=ok')
 
+    # ── REJOINDRE LE RÉSEAU ARTISAN ──────────────────────────────────
+    def _rejoindre_render(self, **ctx):
+        defaults = {
+            'year': datetime.datetime.now().year,
+            'error': False,
+            'success': False,
+            'form_data': {},
+        }
+        defaults.update(ctx)
+        return request.render('sinistre_services.page_rejoindre', defaults)
+
+    @http.route('/rejoindre-le-reseau', type='http', auth='public', website=True)
+    def rejoindre_reseau(self, **kwargs):
+        return self._rejoindre_render()
+
+    @http.route('/rejoindre-le-reseau/send', type='http', auth='public',
+                website=True, methods=['POST'], csrf=True)
+    def rejoindre_send(self, **post):
+        nom = post.get('nom', '').strip()
+        telephone = post.get('telephone', '').strip()
+        email = post.get('email', '').strip()
+        specialite = post.get('specialite', '').strip()
+        zone = post.get('zone', '').strip()
+
+        if not (nom and telephone and email and specialite and zone):
+            return self._rejoindre_render(error=True, form_data=post)
+
+        try:
+            full_name = ' '.join(filter(None, [
+                post.get('prenom', '').strip(), nom,
+            ]))
+            mail_vals = {
+                'subject': f'[Candidature Artisan] {full_name} — {specialite}',
+                'body_html': f"""
+                    <h3>Nouvelle candidature artisan</h3>
+                    <p><b>Nom :</b> {full_name}</p>
+                    <p><b>Email :</b> {email}</p>
+                    <p><b>Téléphone :</b> {telephone}</p>
+                    <p><b>Spécialité :</b> {specialite}</p>
+                    <p><b>Statut :</b> {post.get('statut_juridique', '')}</p>
+                    <p><b>Zone :</b> {zone}</p>
+                    <p><b>SIRET :</b> {post.get('siret', '')}</p>
+                    <p><b>Expérience :</b> {post.get('experience', '')}</p>
+                    <p><b>Certifications :</b> {post.get('certifications', '')}</p>
+                    <p><b>Message :</b> {post.get('message', '')}</p>
+                """,
+                'email_from': email,
+                'email_to': request.website.email or 'artisans@sinistre-services.fr',
+            }
+            request.env['mail.mail'].sudo().create(mail_vals).send()
+        except Exception as e:
+            _logger.warning("Rejoindre send failed: %s", e)
+
+        return self._rejoindre_render(success=True)
+
+    # ── ESPACE ARTISAN — LOGIN ───────────────────────────────────────
+    @http.route('/intervenant/login', type='http', auth='public', website=True, sitemap=False)
+    def intervenant_login(self, **kwargs):
+        return request.render('sinistre_services.page_intervenant_login', {
+            'year': datetime.datetime.now().year,
+        })
+
     # ── Demande d'accès API sandbox (formulaire assurance) ────────────
     def _api_access_render(self, **ctx):
         defaults = {
