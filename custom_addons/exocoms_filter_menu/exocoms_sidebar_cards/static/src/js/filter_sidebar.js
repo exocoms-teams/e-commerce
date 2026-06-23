@@ -11,27 +11,29 @@ import { rpc } from "@web/core/network/rpc";
 export class ExocomsSidebar extends Interaction {
     static selector = ".s_exocoms_sidebar";
 
-    dynamicContent = {
-        "[data-toggle-cat]": { "t-on-click": "onToggleCategory" },
-        ".exo_facet_head": { "t-on-click": "onToggleFacet" },
-        ".exo_cat_cb": { "t-on-change": "onFilterChange" },
-        ".exo_brand_cb": { "t-on-change": "onFilterChange" },
-        ".exo_sort": { "t-on-change": "onFilterChange" },
-        ".exo_search_input": { "t-on-input": "onSearchInput" },
-        ".exo_range": { "t-on-input": "onPriceInput" },
-        ".exo_reset": { "t-on-click": "onReset" },
-        ".exo_chip_remove": { "t-on-click": "onRemoveChip" },
-        ".exo_cmp_cb": { "t-on-change": "onToggleCompare" },
-        ".exo_cmp_go": { "t-on-click": "onOpenCompare" },
-        ".exo_cmp_remove": { "t-on-click": "onRemoveCompare" },
-        ".exo_cmp_clear": { "t-on-click": "onClearCompare" },
-        ".exo_modal_close": { "t-on-click": "onCloseModal" },
-        ".exo_modal": { "t-on-click": "onModalBackdrop" },
-        ".exo_add_cart": { "t-on-click": "onAddToCart" },
-        ".exo_page_prev": { "t-on-click": "onPagePrev" },
-        ".exo_page_next": { "t-on-click": "onPageNext" },
-        ".exo_page_num": { "t-on-click": "onPageNum" },
-    };
+    get dynamicContent() {
+        return {
+            "[data-toggle-cat]": { "t-on-click.stop": this.onToggleCategory.bind(this) },
+            ".exo_facet_head":   { "t-on-click":       this.onToggleFacet.bind(this) },
+            ".exo_cat_cb":       { "t-on-change":       this.onFilterChange.bind(this) },
+            ".exo_brand_cb":     { "t-on-change":       this.onFilterChange.bind(this) },
+            ".exo_sort":         { "t-on-change":       this.onFilterChange.bind(this) },
+            ".exo_search_input": { "t-on-input":        this.onSearchInput.bind(this) },
+            ".exo_range":        { "t-on-input":        this.onPriceInput.bind(this) },
+            ".exo_reset":        { "t-on-click":        this.onReset.bind(this) },
+            ".exo_chip_remove":  { "t-on-click":        this.onRemoveChip.bind(this) },
+            ".exo_cmp_cb":       { "t-on-change":       this.onToggleCompare.bind(this) },
+            ".exo_cmp_go":       { "t-on-click":        this.onOpenCompare.bind(this) },
+            ".exo_cmp_remove":   { "t-on-click":        this.onRemoveCompare.bind(this) },
+            ".exo_cmp_clear":    { "t-on-click":        this.onClearCompare.bind(this) },
+            ".exo_modal_close":  { "t-on-click":        this.onCloseModal.bind(this) },
+            ".exo_modal":        { "t-on-click":        this.onModalBackdrop.bind(this) },
+            ".exo_add_cart":     { "t-on-click":        this.onAddToCart.bind(this) },
+            ".exo_page_prev":    { "t-on-click":        this.onPagePrev.bind(this) },
+            ".exo_page_next":    { "t-on-click":        this.onPageNext.bind(this) },
+            ".exo_page_num":     { "t-on-click":        this.onPageNum.bind(this) },
+        };
+    }
 
     setup() {
         this.root = this.el;
