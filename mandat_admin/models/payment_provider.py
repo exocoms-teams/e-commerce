@@ -23,6 +23,7 @@ class PaymentTransactionMandat(models.Model):
         res = super()._get_specific_rendering_values(processing_values)
         if self.provider_code != 'mandat_administratif':
             return res
+        res['redirect_url'] = '/mandat/payment_confirm'
         return res
 
     def _process_notification_data(self, notification_data):

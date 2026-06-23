@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
-import json
 
 
 class MandatPaymentController(http.Controller):
@@ -11,7 +10,6 @@ class MandatPaymentController(http.Controller):
         order = request.website.sale_get_order()
         if not order:
             return {'success': False, 'error': 'Commande introuvable'}
-
         order.write({
             'acheteur_siret': kwargs.get('siret', ''),
             'fournisseur_iban': kwargs.get('iban', ''),
@@ -24,3 +22,15 @@ class MandatPaymentController(http.Controller):
             'payment_mode': 'mandat_administratif',
         })
         return {'success': True}
+
+    @http.route('/mandat/payment_confirm', type='http', auth='public', methods=['GET', 'POST'], website=True, csrf=False)
+    def payment_confirm(self, **kwargs):
+        """Confirme la transaction mandat et redirige vers /payment/status."""
+        order = request.website.sale_get_order()
+        if order:
+            tx = order.transaction_ids.filtered(
+                lambda t: t.provider_code == 'mandat_administratif' and t.state == 'draft'
+            ).sorted('create_date', reverse=True)
+            if tx:
+                tx[0]._set_pending()
+        return request.redirect('/payment/status')
