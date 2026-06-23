@@ -11,6 +11,7 @@
     """,
     'author': 'Your Company',
     'website': 'https://yourwebsite.com',
+    'license': 'LGPL-3',  # <-- ADD THIS LINE
     'depends': ['website', 'mail'],
     'data': [
         'views/templates.xml',
@@ -20,8 +21,8 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'your_module_name/static/css/extension_style.css',
-            'your_module_name/static/js/extension_dashboard.js',
+            'tracker_extension/static/src/css/extension_style.css',
+            'tracker_extension/static/src/js/extension_dashboard.js',
         ],
     },
     'installable': True,
