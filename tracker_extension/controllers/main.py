@@ -8,20 +8,21 @@ class ExtensionController(http.Controller):
     def dashboard_page(self):
         return request.render('tracker_extension.extension_dashboard_page')
 
-    @http.route('/extension/api/stats', type='json', auth='public', methods=['POST'])
+    # Changed from 'json' to 'jsonrpc' for Odoo 19
+    @http.route('/extension/api/stats', type='jsonrpc', auth='public', methods=['POST'])
     def get_stats(self):
         tracking_model = request.env['extension.tracking']
         stats = tracking_model.get_dashboard_stats()
         return stats
 
-    @http.route('/extension/api/tracking-data', type='json', auth='public', methods=['POST'])
+    # Changed from 'json' to 'jsonrpc' for Odoo 19
+    @http.route('/extension/api/tracking-data', type='jsonrpc', auth='public', methods=['POST'])
     def get_tracking_data(self):
         tracking_model = request.env['extension.tracking']
         records = tracking_model.search([], limit=50)
         
         data = []
         for record in records:
-            # Get the website selection dict
             website_selection = dict(record._fields['website'].selection)
             data.append({
                 'product_name': record.product_name,

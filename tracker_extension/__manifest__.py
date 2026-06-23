@@ -3,12 +3,7 @@
     'version': '2.1.0',
     'category': 'Website',
     'summary': 'Extension download page with dashboard',
-    'description': """
-Tracker Extension with:
-- Green/White theme with dark mode toggle
-- French/English language support
-- Dashboard for extension data
-""",
+    'description': 'Tracker Extension with dark mode, multi-language support, and dashboard',
     'author': 'Your Company',
     'website': 'https://yourwebsite.com',
     'license': 'LGPL-3',
