@@ -42,6 +42,34 @@ window.Comptabilite = (function() {
             });
     }
 
+    function _renderHub() {
+        const card = document.getElementById('acctFacturesAFournirCard');
+        const list = document.getElementById('acctFacturesAFournirList');
+        const pending = (_data && _data.factures_a_fournir) || [];
+        if (!card || !list) return;
+        if (!pending.length) {
+            card.style.display = 'none';
+            return;
+        }
+        card.style.display = 'block';
+        list.innerHTML = pending.slice(0, 5).map(function(f) {
+            const montant = _fmtMoney(f.montant_devis);
+            return '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #F3F4F6">'
+                + '<div><div style="font-weight:600;font-size:13px">' + _esc(f.reference) + ' — ' + _esc(f.prestation || 'Mission') + '</div>'
+                + '<div style="font-size:12px;color:#6B7280">' + _esc(f.client) + ' · ' + montant + '</div></div>'
+                + '<button class="btn-start" style="padding:6px 12px;font-size:12px;white-space:nowrap" onclick="Comptabilite.facturerMission(' + f.id + ')">Facturer</button>'
+                + '</div>';
+        }).join('');
+        if (pending.length > 5) {
+            list.innerHTML += '<p style="font-size:12px;color:#9CA3AF;margin-top:8px">+' + (pending.length - 5) + ' autre(s) — voir Interventions</p>';
+        }
+    }
+
+    function _downloadExport(path) {
+        const url = CONFIG.ODOO_BASE_URL + CONFIG.API_BASE + path;
+        window.open(url, '_blank');
+    }
+
     function showHub() {
         App.showSubView('comptabilite');
     }
@@ -77,10 +105,6 @@ window.Comptabilite = (function() {
         if (btn) btn.classList.add('active');
         document.getElementById('acctVirementsPanel').style.display = tab === 'virements' ? 'block' : 'none';
         document.getElementById('acctDetailPanel').style.display = tab === 'detail' ? 'block' : 'none';
-    }
-
-    function _renderHub() {
-        /* rien de dynamique sur le hub */
     }
 
     function _renderFactures() {
@@ -238,7 +262,24 @@ window.Comptabilite = (function() {
             Toast.show('Veuillez sélectionner une année et un trimestre', 'error');
             return;
         }
-        Toast.show('Téléchargement des factures de commission — ' + trim + ' ' + annee, 'success');
+        _downloadExport('/intervenant/comptabilite/commissions?annee=' + encodeURIComponent(annee) + '&trimestre=' + encodeURIComponent(trim));
+        Toast.show('Téléchargement commissions ' + trim + ' ' + annee, 'success');
+    }
+
+    function exportFactures() {
+        _downloadExport('/intervenant/comptabilite/export?type=factures&tab=' + encodeURIComponent(_facturesTab));
+    }
+
+    function exportVirements() {
+        _downloadExport('/intervenant/comptabilite/export?type=virements');
+    }
+
+    function exportDetail() {
+        _downloadExport('/intervenant/comptabilite/export?type=detail');
+    }
+
+    function exportFacturesAFournir() {
+        _downloadExport('/intervenant/comptabilite/export?type=factures_a_fournir');
     }
 
     return {
@@ -250,5 +291,9 @@ window.Comptabilite = (function() {
         setPaiementsTab,
         facturerMission,
         downloadCommissions,
+        exportFactures,
+        exportVirements,
+        exportDetail,
+        exportFacturesAFournir,
     };
 })();
