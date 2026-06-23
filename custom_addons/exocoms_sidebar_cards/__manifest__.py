@@ -20,7 +20,7 @@
         "views/snippets.xml",
     ],
     "assets": {
-        "web.assets_frontend_lazy": [
+        "web.assets_frontend": [
             "exocoms_sidebar_cards/static/src/scss/filter_sidebar.scss",
             "exocoms_sidebar_cards/static/src/js/filter_sidebar.js",
         ],
