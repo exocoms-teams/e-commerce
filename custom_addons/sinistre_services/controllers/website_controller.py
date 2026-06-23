@@ -35,7 +35,14 @@ class SinistreWebsite(http.Controller):
     # ─── NOS SERVICES ───────────────────────────────────────────────
     @http.route('/nos-services', type='http', auth='public', website=True)
     def nos_services(self, **kwargs):
-        return request.render('sinistre_services.ss_page_services', {
+        return request.render('sinistre_services.page_nos_services', {
+            'year': datetime.datetime.now().year,
+        })
+
+    # ─── ASSURANCES (particuliers) ──────────────────────────────────
+    @http.route('/assurances', type='http', auth='public', website=True)
+    def assurances(self, **kwargs):
+        return request.render('sinistre_services.page_assurances', {
             'year': datetime.datetime.now().year,
         })
 
