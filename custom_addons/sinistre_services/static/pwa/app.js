@@ -1,1550 +1,516 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-    <meta name="apple-mobile-web-app-title" content="ArtisanPro"/>
-    <meta name="theme-color" content="#0F1B33"/>
-    <meta name="description" content="ArtisanPro — Espace Intervenant"/>
-    <title>ArtisanPro — Espace Pro</title>
-    <link rel="manifest" href="/sinistre_services/static/pwa/manifest.json"/>
-    <link rel="apple-touch-icon" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
-    <link rel="icon" type="image/png" href="/sinistre_services/static/pwa/icons/icon-192.png"/>
-    <link rel="stylesheet" href="/sinistre_services/static/pwa/src/styles/main.css"/>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
-</head>
-<body>
+/**
+ * app.js — Orchestrateur principal de la PWA
+ * Gère : démarrage, routing, navigation, Service Worker
+ */
 
-<!-- ══ SPLASH ══ -->
-<div id="splash" class="splash">
-    <div class="splash-inner">
-        <div class="splash-logo">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <h1 class="splash-title">ArtisanPro</h1>
-        <p class="splash-sub">ESPACE PRO</p>
-        <div class="splash-loader"><div class="splash-bar"></div></div>
-    </div>
-</div>
+window.App = (() => {
+    let _history     = [];          // pile de navigation
+    let _currentView = 'dashboard';
 
-<div id="app" style="display:none">
+    /* ── Démarrage ── */
+    async function init() {
+    await _registerSW();
+    await _sleep(1400);
 
-    <!-- ══ LOGIN ══ -->
-    <div id="screen-login" class="screen" style="display:none">
-        <div class="login-wrap">
-            <div class="login-brand">
-                <div class="login-logo-wrap">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                </div>
-                <div>
-                    <div class="login-brand-name">ArtisanPro</div>
-                    <div class="login-brand-sub">ESPACE PRO</div>
-                </div>
-            </div>
-            <h2 class="login-title">Connexion</h2>
-            <div id="loginError" class="login-error" style="display:none"></div>
-            <form id="loginForm" class="login-form">
-                <div class="lf-grp">
-                    <label class="lf-lbl">Email</label>
-                    <input type="email" id="loginEmail" class="lf-inp" placeholder="votre@email.fr" autocomplete="email" required/>
-                </div>
-                <div class="lf-grp">
-                    <label class="lf-lbl">Mot de passe</label>
-                    <input type="password" id="loginPassword" class="lf-inp" placeholder="••••••••" autocomplete="current-password" required/>
-                </div>
-                <button type="submit" id="loginBtn" class="btn-login">
-                    <div class="spin" id="loginSpinEl" style="display:none"></div>
-                    <span>Se connecter</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ══ APP (Desktop layout) ══ -->
-    <div id="screen-app" class="screen" style="display:none">
-
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="sidebar-logo">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                </div>
-                <div>
-                    <div class="sidebar-brand-name">ArtisanPro</div>
-                    <div class="sidebar-brand-sub">ESPACE PRO</div>
-                </div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <button class="sidebar-item active" id="nav-dashboard" onclick="App.showView('dashboard', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V9.5z"/></svg>
-                    Accueil
-                </button>
-                <button class="sidebar-item" id="nav-comptabilite" onclick="App.showView('comptabilite', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    Comptabilité
-                </button>
-                <button class="sidebar-item" id="nav-missions" onclick="App.showView('missions', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-                    Mes missions
-                </button>
-                <button class="sidebar-item" id="nav-interventions" onclick="App.showView('interventions', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Interventions
-                </button>
-                <button class="sidebar-item" id="nav-carte" onclick="App.showView('carte', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-                    Carte temps réel
-                </button>
-                <button class="sidebar-item" id="nav-planning" onclick="App.showView('planning', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Planning
-                </button>
-                <button class="sidebar-item" id="nav-profile" onclick="App.showView('profile', this)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Mon profil
-                </button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="sidebar-user" id="sidebarUser">
-                    <div class="sidebar-avatar" id="sidebarAvatar">TM</div>
-                    <div class="sidebar-user-info">
-                        <div class="sidebar-user-name" id="sidebarName">—</div>
-                        <div class="sidebar-user-company" id="sidebarCompany">—</div>
-                    </div>
-                </div>
-                <button class="sidebar-logout" id="logoutTopBtn" title="Déconnexion">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Déconnexion
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main content -->
-        <main class="main-content">
-
-            <!-- ── Vue Tableau de bord ── -->
-            <div id="view-dashboard" class="view-page active">
-                <div class="page-header">
-                    <div>
-                        <div class="page-greeting" id="dashGreeting">Bonjour 👋</div>
-                        <h1 class="page-title">Votre tableau de bord</h1>
-                    </div>
-                    <div class="page-header-actions">
-                        <div class="notif-wrap">
-                            <button class="notif-bell-btn" id="notifBellBtn" type="button" onclick="FCM.togglePanel()" title="Notifications">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                                <span class="notif-dot" id="notifDot" style="display:none"></span>
-                            </button>
-                            <div class="notif-panel" id="notifPanel" style="display:none">
-                                <div class="notif-panel-header">
-                                    <span class="notif-panel-title">Notifications</span>
-                                    <button class="notif-enable-btn" id="notifEnableBtn" type="button" onclick="FCM.requestPermission()">Activer les notifications</button>
-                                </div>
-                                <div class="notif-panel-list" id="notifList">
-                                    <div class="notif-empty">Aucune notification pour le moment</div>
-                                </div>
-                                <div class="notif-panel-footer">
-                                    <button class="notif-clear-btn" type="button" onclick="FCM.clearAll()">Tout effacer</button>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn-primary-dash" onclick="App.showView('missions', document.getElementById('nav-missions'))">
-                            Voir toutes mes missions
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stats cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Missions actives</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-                        <div class="stat-value" id="statActives">–</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Interventions</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                        <div class="stat-value" id="statInterventions">–</div>
-                    </div>
-                    <div class="stat-card stat-card-clickable" onclick="App.showView('comptabilite', document.getElementById('nav-comptabilite')); setTimeout(function(){ Comptabilite.showPaiements(); }, 150);">
-                        <div class="stat-label">Solde comptabilité</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5"><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        <div class="stat-value" id="statSolde">–</div>
-                        <div class="stat-sub" id="statSoldeLabel">Solde débiteur (TTC)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Taux missions acceptées</div>
-                        <div class="stat-sub" style="font-size:11px;color:#9CA3AF;margin-top:-4px">Aujourd'hui</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        <div class="stat-value" id="statTauxAccept">–</div>
-                    </div>
-                </div>
-
-                <!-- Missions proposées + Today -->
-                <div class="dash-grid">
-                    <!-- Missions proposées -->
-                    <div class="dash-map-card">
-                        <div class="dash-map-header">
-                            <h2 class="dash-section-title">🆕 Missions disponibles</h2>
-                            <span id="proposeesBadge" style="background:#EFF6FF;color:#1D4ED8;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700"></span>
-                        </div>
-                        <div id="proposeesList" style="display:flex;flex-direction:column;gap:12px;padding:16px;max-height:480px;overflow-y:auto">
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                        </div>
-                    </div>
-
-                    <!-- Today missions -->
-                    <div class="today-card">
-                        <h2 class="dash-section-title">Aujourd'hui</h2>
-                        <div id="todayList" class="today-list">
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                            <div class="skeleton-item"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Vue Comptabilité (hub) ── -->
-            <div id="view-comptabilite" class="view-page">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Comptabilité</h1>
-                        <p class="page-subtitle">Gérez vos factures et consultez vos rapports</p>
-                    </div>
-                </div>
-                <div class="acct-hub-grid">
-                    <button class="acct-hub-card" onclick="Comptabilite.showFactures()">
-                        <div class="acct-hub-icon acct-hub-icon-euro">€</div>
-                        <div class="acct-hub-footer">
-                            <span>Gérer mes factures</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </div>
-                    </button>
-                    <button class="acct-hub-card" onclick="Comptabilite.showPaiements()">
-                        <div class="acct-hub-icon acct-hub-icon-grid">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                        </div>
-                        <div class="acct-hub-footer">
-                            <span>Rapports comptables</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </div>
-                    </button>
-                </div>
-                <div class="card" id="acctFacturesAFournirCard" style="margin-top:20px;display:none">
-                    <h3 class="card-title" style="margin-bottom:8px">Factures à fournir</h3>
-                    <p style="font-size:13px;color:#6B7280;margin-bottom:12px">Missions terminées en attente de facturation — cliquez « Facturer » pour générer la facture Odoo.</p>
-                    <div id="acctFacturesAFournirList"></div>
-                    <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="Comptabilite.exportFacturesAFournir()">Exporter la liste (CSV)</button>
-                </div>
-            </div>
-
-            <!-- ── Vue Comptabilité — Factures / Interventions ── -->
-            <div id="view-comptabilite-factures" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="Comptabilite.showHub(); App.showView('comptabilite', document.getElementById('nav-comptabilite'))">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                        Retour
-                    </button>
-                </div>
-                <div class="ff-tabs" id="acctFacturesTabs">
-                    <button class="ff-tab active" onclick="Comptabilite.setFacturesTab('du', this)">DÉPANNAGE D'URGENCE</button>
-                    <button class="ff-tab" onclick="Comptabilite.setFacturesTab('travaux', this)">TRAVAUX</button>
-                    <button class="ff-tab" onclick="Comptabilite.setFacturesTab('b2c', this)">B2C</button>
-                </div>
-                <div class="acct-toolbar">
-                    <span class="acct-toolbar-item">COLONNES</span>
-                    <span class="acct-toolbar-item">DENSITÉ</span>
-                    <span class="acct-toolbar-item">DIMENSIONS</span>
-                    <span class="acct-toolbar-item">FILTRES</span>
-                    <span class="acct-toolbar-item" onclick="Comptabilite.init()">ACTUALISER</span>
-                    <span class="acct-toolbar-item" onclick="Comptabilite.exportFactures()">EXPORTER</span>
-                </div>
-                <div class="interv-table-wrap">
-                    <table class="interv-table acct-table" id="acctFacturesTable">
-                        <thead id="acctFacturesHead">
-                            <tr>
-                                <th>ID</th>
-                                <th>Ville</th>
-                                <th>Statut</th>
-                                <th>Date du RDV</th>
-                                <th>Facture</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="acctFacturesBody">
-                            <tr><td colspan="5" class="acct-empty">Chargement…</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="acct-pagination">Lignes par page <strong>10</strong></div>
-            </div>
-
-            <!-- ── Vue Comptabilité — Paiements / Rapports ── -->
-            <div id="view-comptabilite-paiements" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="Comptabilite.showHub(); App.showView('comptabilite', document.getElementById('nav-comptabilite'))">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                        Retour
-                    </button>
-                </div>
-
-                <div class="acct-paiements-top">
-                    <div class="card acct-comm-card">
-                        <h3 class="card-title" style="margin-bottom:16px">Commissions appliquées par la plateforme</h3>
-                        <div class="interv-table-wrap">
-                            <table class="interv-table acct-table">
-                                <thead>
-                                    <tr>
-                                        <th>Type de mission</th>
-                                        <th>Commission sur Intervention</th>
-                                        <th>Commission sur pièces</th>
-                                        <th>Commission sur Total HT</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="acctCommissionsBody">
-                                    <tr><td colspan="4" class="acct-empty">Chargement…</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card acct-compte-card">
-                        <h3 class="card-title" style="margin-bottom:16px">Votre compte</h3>
-                        <div class="acct-solde-block">
-                            <div class="acct-solde-label">Solde de votre compte</div>
-                            <div class="acct-solde-row">
-                                <span id="acctSoldeLabel">Solde débiteur (TTC)</span>
-                                <span class="acct-solde-pill"><span id="acctSoldeValue">—</span> €</span>
-                            </div>
-                            <p id="acctSoldeHint" style="font-size:12px;color:var(--text-mid);margin-top:8px;line-height:1.4"></p>
-                        </div>
-                        <div class="acct-ca-block">
-                            <div class="acct-ca-title">Votre CA / ANNEE</div>
-                            <div id="acctCaList"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card acct-batch-card">
-                    <h3 class="card-title" style="margin-bottom:16px">Opération par lot</h3>
-                    <p style="font-size:13px;color:var(--text-mid);margin-bottom:16px">Téléchargez vos factures de commission par trimestre.</p>
-                    <div class="acct-batch-row">
-                        <select id="acctBatchAnnee" class="ff-input acct-select">
-                            <option value="">Selectionnez une année</option>
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                        </select>
-                        <select id="acctBatchTrim" class="ff-input acct-select">
-                            <option value="">Selectionnez un trimestre</option>
-                            <option value="T1">T1 — Janvier à Mars</option>
-                            <option value="T2">T2 — Avril à Juin</option>
-                            <option value="T3">T3 — Juillet à Septembre</option>
-                            <option value="T4">T4 — Octobre à Décembre</option>
-                        </select>
-                        <button class="btn-save" onclick="Comptabilite.downloadCommissions()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            TÉLÉCHARGER
-                        </button>
-                    </div>
-                </div>
-
-                <div class="ff-tabs" id="acctPaiementsTabs" style="margin-top:28px">
-                    <button class="ff-tab active" onclick="Comptabilite.setPaiementsTab('virements', this)">VIREMENTS</button>
-                    <button class="ff-tab" onclick="Comptabilite.setPaiementsTab('detail', this)">DÉTAIL DE VOTRE SOLDE</button>
-                </div>
-
-                <div id="acctVirementsPanel">
-                    <h3 class="acct-section-title">Récapitulatif des paiements par date</h3>
-                    <div class="acct-toolbar">
-                        <span class="acct-toolbar-item">COLONNES</span>
-                        <span class="acct-toolbar-item">DENSITÉ</span>
-                        <span class="acct-toolbar-item">DIMENSIONS</span>
-                        <span class="acct-toolbar-item">FILTRES</span>
-                        <span class="acct-toolbar-item" onclick="Comptabilite.init()">ACTUALISER</span>
-                        <span class="acct-toolbar-item" onclick="Comptabilite.exportVirements()">EXPORTER</span>
-                    </div>
-                    <div class="interv-table-wrap">
-                        <table class="interv-table acct-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Montant soldé</th>
-                                    <th>Commission</th>
-                                    <th>Montant payé</th>
-                                    <th>RAC facturé par votre entreprise</th>
-                                    <th>CA généré par la plateforme</th>
-                                </tr>
-                            </thead>
-                            <tbody id="acctVirementsBody">
-                                <tr><td colspan="6" class="acct-empty">Chargement…</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="acctDetailPanel" style="display:none">
-                    <div class="acct-detail-section">
-                        <h4 class="acct-detail-heading">[Dépannage d'urgence]</h4>
-                        <div class="acct-toolbar">
-                            <span class="acct-toolbar-item">COLONNES</span>
-                            <span class="acct-toolbar-item">DENSITÉ</span>
-                            <span class="acct-toolbar-item">DIMENSIONS</span>
-                            <span class="acct-toolbar-item">FILTRES</span>
-                            <span class="acct-toolbar-item" onclick="Comptabilite.init()">ACTUALISER</span>
-                            <span class="acct-toolbar-item" onclick="Comptabilite.exportDetail()">EXPORTER</span>
-                        </div>
-                        <div class="interv-table-wrap">
-                            <table class="interv-table acct-table">
-                                <thead>
-                                    <tr>
-                                        <th>Dossier</th>
-                                        <th>Numéro de facture</th>
-                                        <th>Date de facturation</th>
-                                        <th>Montant HT facture</th>
-                                        <th>Montant TTC facture</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="acctDetailDuBody">
-                                    <tr><td colspan="5" class="acct-empty">Chargement…</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="acct-detail-section">
-                        <h4 class="acct-detail-heading">[Travaux]</h4>
-                        <div class="interv-table-wrap">
-                            <table class="interv-table acct-table">
-                                <thead>
-                                    <tr>
-                                        <th>Dossier</th>
-                                        <th>Numéro de facture</th>
-                                        <th>Date de facturation</th>
-                                        <th>Montant HT facture</th>
-                                        <th>Montant TTC facture</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="acctDetailTravauxBody">
-                                    <tr><td colspan="5" class="acct-empty">Chargement…</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Vue Mes missions ── -->
-            <div id="view-missions" class="view-page">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Mes missions en cours</h1>
-                        <p class="page-subtitle" id="missionsSubtitle">0 mission(s) active(s)</p>
-                    </div>
-                </div>
-
-                <div class="missions-filters">
-                    <div class="search-bar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <input type="text" id="missionsSearch" placeholder="Rechercher par client, adresse, titre..." oninput="Dashboard.filterMissions()"/>
-                    </div>
-                    <div class="filter-row">
-                        <div class="filter-group" id="metierFilters">
-                            <button class="tag-btn active" data-filter="all" onclick="Dashboard.setMetierFilter('all', this)">Tous les métiers</button>
-                            <button class="tag-btn" data-filter="serrurerie" onclick="Dashboard.setMetierFilter('serrurerie', this)">Serrurerie</button>
-                            <button class="tag-btn" data-filter="plomberie" onclick="Dashboard.setMetierFilter('plomberie', this)">Plomberie</button>
-                            <button class="tag-btn" data-filter="electricite" onclick="Dashboard.setMetierFilter('electricite', this)">Électricité</button>
-                            <button class="tag-btn" data-filter="menuiserie_int" onclick="Dashboard.setMetierFilter('menuiserie_int', this)">Menuiserie</button>
-                            <button class="tag-btn" data-filter="vitrerie" onclick="Dashboard.setMetierFilter('vitrerie', this)">Vitrerie</button>
-                        </div>
-                        <div class="filter-group" id="statusFilters">
-                            <button class="tag-btn tag-active active" data-filter="all" onclick="Dashboard.setStatusFilter('all', this)">Tous statuts</button>
-                            <button class="tag-btn" data-filter="urgente" onclick="Dashboard.setStatusFilter('urgente', this)">Urgente</button>
-                            <button class="tag-btn" data-filter="en_cours" onclick="Dashboard.setStatusFilter('en_cours', this)">En cours</button>
-                            <button class="tag-btn" data-filter="planifiee" onclick="Dashboard.setStatusFilter('planifiee', this)">Planifiée</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="missionsList" class="missions-list">
-                    <div class="skeleton-card-h"></div>
-                    <div class="skeleton-card-h"></div>
-                </div>
-            </div>
-
-            <!-- ── Vue Interventions réalisées ── -->
-            <div id="view-interventions" class="view-page">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Interventions réalisées</h1>
-                        <p class="page-subtitle">Historique de vos chantiers terminés</p>
-                    </div>
-                </div>
-
-                <div class="stats-grid stats-grid-3">
-                    <div class="stat-card">
-                        <div class="stat-label">Interventions réalisées</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-                        <div class="stat-value" id="statIntervTotal">–</div>
-                    </div>
-                    <div class="stat-card stat-card-alert" onclick="Dashboard.scrollToFactures()" style="cursor:pointer">
-                        <div class="stat-label">Factures à fournir</div>
-                        <svg class="stat-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        <div class="stat-value" id="statFacturesAFournir">–</div>
-                    </div>
-                </div>
-
-                <div class="interv-section" id="intervFacturesSection">
-                    <div class="interv-section-header">
-                        <h2 class="dash-section-title">Factures à fournir</h2>
-                        <span id="facturesAFournirBadge" class="interv-section-badge"></span>
-                    </div>
-                    <div class="interv-table-wrap">
-                        <table class="interv-table">
-                            <thead>
-                                <tr>
-                                    <th>RÉFÉRENCE</th>
-                                    <th>DATE</th>
-                                    <th>CLIENT</th>
-                                    <th>MÉTIER</th>
-                                    <th>PRESTATION</th>
-                                    <th>MONTANT</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facturesAFournirBody">
-                                <tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Chargement…</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="interv-filters">
-                    <button class="tag-btn active" data-filter="all" onclick="Dashboard.setIntervFilter('all', this)">Tous les métiers</button>
-                    <button class="tag-btn" data-filter="serrurerie" onclick="Dashboard.setIntervFilter('serrurerie', this)">Serrurerie</button>
-                    <button class="tag-btn" data-filter="plomberie" onclick="Dashboard.setIntervFilter('plomberie', this)">Plomberie</button>
-                    <button class="tag-btn" data-filter="electricite" onclick="Dashboard.setIntervFilter('electricite', this)">Électricité</button>
-                    <button class="tag-btn" data-filter="menuiserie_int" onclick="Dashboard.setIntervFilter('menuiserie_int', this)">Menuiserie</button>
-                    <button class="tag-btn" data-filter="vitrerie" onclick="Dashboard.setIntervFilter('vitrerie', this)">Vitrerie</button>
-                </div>
-
-                <div class="interv-table-wrap">
-                    <table class="interv-table">
-                        <thead>
-                            <tr>
-                                <th>RÉFÉRENCE</th>
-                                <th>DATE</th>
-                                <th>CLIENT</th>
-                                <th>MÉTIER</th>
-                                <th>PRESTATION</th>
-                                <th>STATUT</th>
-                            </tr>
-                        </thead>
-                        <tbody id="intervTableBody">
-                            <tr><td colspan="7" style="text-align:center;padding:40px;color:#9CA3AF">Chargement…</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ── Vue Carte temps réel ── -->
-            <div id="view-carte" class="view-page">
-                <div class="carte-header">
-                    <div>
-                        <h1 class="page-title">Carte temps réel</h1>
-                        <p class="page-subtitle" id="carteSubtitle">Chargement de votre position…</p>
-                    </div>
-                    <div class="carte-header-actions">
-                        <button class="carte-btn-action" onclick="CarteMap.centerOnUser()" title="Ma position">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>
-                            Ma position
-                        </button>
-                        <button class="carte-btn-action" onclick="CarteMap.toggleTraffic()" id="btnTraffic" title="Trafic">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="7" r="2" fill="#EF4444" stroke="none"/><circle cx="12" cy="13" r="2" fill="#F59E0B" stroke="none"/><circle cx="12" cy="19" r="2" fill="#10B981" stroke="none"/></svg>
-                            Trafic
-                        </button>
-                    </div>
-                </div>
-
-                <div class="carte-layout">
-                    <!-- Carte Google Maps -->
-                    <div class="carte-map-wrap">
-                        <gmp-map id="googleMap" center="48.8566,2.3522" zoom="13" map-id="DEMO_MAP_ID" style="width:100%;height:560px;display:block;"></gmp-map>
-                        <!-- Panneau info mission sélectionnée -->
-                        <div id="carteInfoPanel" class="carte-info-panel" style="display:none">
-                            <button class="carte-info-close" onclick="CarteMap.closeInfoPanel()">✕</button>
-                            <div class="carte-info-badges" id="carteInfoBadges"></div>
-                            <div class="carte-info-title" id="carteInfoTitle"></div>
-                            <div class="carte-info-addr" id="carteInfoAddr"></div>
-                            <div class="carte-info-trajet" id="carteInfoTrajet">
-                                <div class="trajet-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    <span id="carteInfoDuree">Calcul…</span>
-                                </div>
-                                <div class="trajet-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
-                                    <span id="carteInfoDist">—</span>
-                                </div>
-                            </div>
-                            <div class="carte-info-actions">
-                                <button class="carte-btn-primary" id="carteInfoItineraire" onclick="CarteMap.launchRoute()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                    Itinéraire
-                                </button>
-                                <button class="carte-btn-secondary" onclick="CarteMap.callClient()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.86C1.6 3.82 2.4 3 3.44 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 6 6l.78-.78a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 18z"/></svg>
-                                    Appeler
-                                </button>
-                                <button class="carte-btn-secondary" onclick="CarteMap.openMission()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-                                    Détail
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sidebar -->
-                    <div class="carte-sidebar-new">
-                        <!-- GPS Status -->
-                        <div class="carte-widget">
-                            <div class="carte-widget-title">POSITION ACTUELLE</div>
-                            <div class="carte-gps-city" id="carteCityName">—</div>
-                            <div class="carte-gps-addr" id="carteAddrName">Localisation en cours…</div>
-                            <div class="carte-gps-row">
-                                <span class="gps-dot" id="gpsDot"></span>
-                                <span id="gpsStatus">En attente GPS…</span>
-                            </div>
-                            <div class="carte-gps-coords" id="gpsCoords"></div>
-                        </div>
-
-                        <!-- Prochaine mission -->
-                        <div class="carte-widget" id="carteNextWidget">
-                            <div class="carte-widget-title">PROCHAINE MISSION</div>
-                            <div id="carteNextContent">
-                                <div style="color:#9CA3AF;font-size:13px">Aucune mission active</div>
-                            </div>
-                        </div>
-
-                        <!-- Légende dynamique -->
-                        <div class="carte-widget">
-                            <div class="carte-widget-title">MISSIONS SUR LA CARTE</div>
-                            <div id="carteLegend" class="carte-legend-items">
-                                <div style="color:#9CA3AF;font-size:12px">Chargement…</div>
-                            </div>
-                        </div>
-
-                        <!-- Liste missions proches -->
-                        <div class="carte-widget">
-                            <div class="carte-widget-title">MISSIONS PROCHES</div>
-                            <div id="carteMissionsProches" class="carte-missions-list">
-                                <div style="color:#9CA3AF;font-size:12px">Chargement…</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Vue Planning ── -->
-            <div id="view-planning" class="view-page">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Planning</h1>
-                        <p class="page-sub">Gérez vos heures d'ouverture et vos absences</p>
-                    </div>
-                </div>
-
-                <div style="display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;">
-
-                    <!-- Heures d'ouverture -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">🕐</span>
-                            <h3 class="card-title">Heures d'ouverture</h3>
-                        </div>
-                        <div style="overflow-x:auto;">
-                            <table id="planningTable" style="width:100%;border-collapse:collapse;font-size:13px;">
-                                <thead>
-                                    <tr>
-                                        <th style="padding:8px;text-align:left;color:#6B7280;font-weight:600;width:60px;"></th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">LUN</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">MAR</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">MER</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">JEU</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">VEN</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">SAM</th>
-                                        <th style="padding:8px;text-align:center;color:#374151;font-weight:600;">DIM</th>
-                                    </tr>
-                                    <tr id="planningDayAll">
-                                        <td style="padding:6px 8px;font-size:11px;color:#9CA3AF;">Tout</td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="1" onchange="Planning.toggleDay(1,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="2" onchange="Planning.toggleDay(2,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="3" onchange="Planning.toggleDay(3,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="4" onchange="Planning.toggleDay(4,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="5" onchange="Planning.toggleDay(5,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="6" onchange="Planning.toggleDay(6,this.checked)" checked/></td>
-                                        <td style="text-align:center;"><input type="checkbox" class="planning-day-all" data-day="0" onchange="Planning.toggleDay(0,this.checked)" checked/></td>
-                                    </tr>
-                                </thead>
-                                <tbody id="planningBody"></tbody>
-                            </table>
-                        </div>
-                        <div style="margin-top:16px;">
-                            <button class="btn-save" onclick="Planning.save()">Enregistrer les horaires</button>
-                        </div>
-                    </div>
-
-                    <!-- Absences exceptionnelles -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-icon">🚫</span>
-                            <h3 class="card-title">Absences exceptionnelles</h3>
-                        </div>
-                        <div style="margin-bottom:16px;">
-                            <label class="ff-label">Je serai absent du</label>
-                            <div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
-                                <input type="date" id="absenceFrom" class="ff-input" style="flex:1;"/>
-                                <span style="color:#6B7280;font-size:13px;">au</span>
-                                <input type="date" id="absenceTo" class="ff-input" style="flex:1;"/>
-                            </div>
-                        </div>
-                        <button class="btn-save" onclick="Planning.addAbsence()" style="width:100%;justify-content:center;">Envoyer</button>
-
-                        <div style="margin-top:24px;">
-                            <div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9CA3AF;margin-bottom:12px;">Mes prochaines absences</div>
-                            <div id="absenceList">
-                                <p style="font-size:13px;color:#9CA3AF;text-align:center;padding:16px 0;">Aucune absence en cours ou à venir</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- ── Vue Profil ── -->
-            <div id="view-profile" class="view-page">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Mon profil</h1>
-                        <p class="page-subtitle">Gérez vos informations et documents</p>
-                    </div>
-                </div>
-
-                <!-- Onglets style FairFair -->
-                <div class="ff-tabs">
-                    <button class="ff-tab active" onclick="Profile.switchTab('entreprise', this)">ENTREPRISE</button>
-                    <button class="ff-tab" onclick="Profile.switchTab('intervenants', this)">INTERVENANTS</button>
-                    <button class="ff-tab" onclick="Profile.switchTab('metiers', this)">CORPS DE MÉTIERS</button>
-                    <button class="ff-tab" onclick="Profile.switchTab('docs-legaux', this)">DOCUMENTS LÉGAUX</button>
-                    <button class="ff-tab" onclick="Profile.switchTab('docs-dl', this)">DOCUMENTS À TÉLÉCHARGER</button>
-                    <button class="ff-tab" onclick="Profile.switchTab('bancaire', this)">COORDONNÉES BANCAIRES</button>
-                </div>
-
-                <!-- ── Onglet ENTREPRISE ── -->
-                <div id="ff-tab-entreprise" class="ff-tab-content active">
-                    <div class="ff-section-grid">
-                        <!-- Colonne Entité juridique -->
-                        <div class="ff-col">
-                            <div class="ff-col-header">Entité juridique</div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Raison sociale</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_raison_sociale" placeholder="—"/>
-                                    <span class="ff-check" id="ent_rs_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Siret</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_siret" placeholder="—"/>
-                                    <span class="ff-check" id="ent_siret_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Code APE</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_ape" placeholder="—"/>
-                                    <span class="ff-check" id="ent_ape_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Numéro &amp; Rue</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_rue" placeholder="—"/>
-                                    <span class="ff-check" id="ent_rue_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Complément 1</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_comp1" placeholder="—"/>
-                                    <span class="ff-check" id="ent_comp1_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Complément 2</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_comp2" placeholder="—"/>
-                                    <span class="ff-check" id="ent_comp2_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Ville</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_ville" placeholder="—"/>
-                                    <span class="ff-check" id="ent_ville_check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Code postal</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="ent_cp" placeholder="—"/>
-                                    <span class="ff-check" id="ent_cp_check">✓</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Colonne Contact de votre entreprise -->
-                        <div class="ff-col">
-                            <div class="ff-col-header">Contact de votre entreprise</div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Téléphone portable</div>
-                                <div class="ff-field-row">
-                                    <input type="tel" class="ff-input" id="ent_tel_portable" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Téléphone fixe</div>
-                                <div class="ff-field-row">
-                                    <input type="tel" class="ff-input" id="ent_tel_fixe" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Email</div>
-                                <div class="ff-field-row">
-                                    <input type="email" class="ff-input" id="ent_email" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-notif-box">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                <span>Vous recevrez les propositions de missions sur l'email et le numéro de téléphone ci-dessus</span>
-                            </div>
-                            <label class="ff-checkbox-row">
-                                <input type="checkbox" id="notif_email" checked/>
-                                <span>Recevoir un email lors de la suggestion d'une mission</span>
-                            </label>
-                            <label class="ff-checkbox-row">
-                                <input type="checkbox" id="notif_sms" checked/>
-                                <span>Recevoir un SMS lors de la suggestion d'une mission</span>
-                            </label>
-                        </div>
-
-                        <!-- Colonne Vous êtes -->
-                        <div class="ff-col">
-                            <div class="ff-col-header">Vous êtes</div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Prénom</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="profileFirstName" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Nom de famille</div>
-                                <div class="ff-field-row">
-                                    <input type="text" class="ff-input" id="profileLastName" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Téléphone</div>
-                                <div class="ff-field-row">
-                                    <input type="tel" class="ff-input" id="profileTel" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                            <div class="ff-field">
-                                <div class="ff-field-label">Email</div>
-                                <div class="ff-field-row">
-                                    <input type="email" class="ff-input" id="profileEmail" placeholder="—"/>
-                                    <span class="ff-check">✓</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ff-save-bar">
-                        <button class="btn-save" onclick="Profile.saveEntreprise()">Enregistrer les modifications</button>
-                    </div>
-                </div>
-
-                <!-- ── Onglet INTERVENANTS ── -->
-                <div id="ff-tab-intervenants" class="ff-tab-content">
-                    <div class="ff-intervenant-block">
-                        <div class="ff-intervenant-header">
-                            <span id="ff_interv_name">—</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-                        </div>
-                        <div class="ff-section-grid">
-                            <div class="ff-col">
-                                <div class="ff-col-header">ADRESSE</div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Numéro &amp; Rue</div>
-                                    <div class="ff-field-row">
-                                        <input type="text" class="ff-input" id="interv_rue" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Complément 1</div>
-                                    <div class="ff-field-row">
-                                        <input type="text" class="ff-input" id="interv_comp1" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Complément 2</div>
-                                    <div class="ff-field-row">
-                                        <input type="text" class="ff-input" id="interv_comp2" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Code postal</div>
-                                    <div class="ff-field-row">
-                                        <input type="text" class="ff-input" id="interv_cp" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Ville</div>
-                                    <div class="ff-field-row">
-                                        <input type="text" class="ff-input" id="interv_ville" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ff-col">
-                                <div class="ff-col-header">AGENCE</div>
-                                <div class="ff-field">
-                                    <div class="ff-field-label">Téléphone mobile</div>
-                                    <div class="ff-field-row">
-                                        <input type="tel" class="ff-input" id="interv_tel" placeholder="—"/>
-                                        <span class="ff-check-gray">✓</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ff-col">
-                                <div class="ff-col-header">MÉTIERS</div>
-                                <div class="ff-metiers-list" id="intervMetiersList">
-                                    <div style="color:#9CA3AF;font-size:13px">Aucun métier renseigné</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── Onglet CORPS DE MÉTIERS ── -->
-                <div id="ff-tab-metiers" class="ff-tab-content">
-                    <div class="ff-docs-card">
-                        <div class="ff-admin-notice" id="ffMetiersAdminNotice">
-                            Pour modifier vos spécialisations, veuillez contacter l'administrateur au <strong id="ffAdminPhone">0X0X0X</strong>.
-                        </div>
-                        <p class="ff-docs-intro">Vos corps de métiers actuels (modification réservée à l'administrateur).</p>
-                        <div class="ff-metiers-grid ff-metiers-readonly">
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="serrurerie" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">🔑</span>
-                                    <span>Serrurerie</span>
-                                </div>
-                            </label>
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="plomberie" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">🔧</span>
-                                    <span>Plomberie</span>
-                                </div>
-                            </label>
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="electricite" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">⚡</span>
-                                    <span>Électricité</span>
-                                </div>
-                            </label>
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_int" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">🚪</span>
-                                    <span>Menuiserie Int.</span>
-                                </div>
-                            </label>
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="menuiserie_ext" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">🪟</span>
-                                    <span>Menuiserie Ext.</span>
-                                </div>
-                            </label>
-                            <label class="ff-metier-toggle">
-                                <input type="checkbox" class="ff-metier-cb" value="vitrerie" disabled/>
-                                <div class="ff-metier-box">
-                                    <span class="ff-metier-icon">🪞</span>
-                                    <span>Vitrerie</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── Onglet DOCUMENTS LÉGAUX ── -->
-                <div id="ff-tab-docs-legaux" class="ff-tab-content">
-                    <div class="ff-docs-card">
-                        <div class="ff-doc-row">
-                            <span class="ff-doc-name">Justificatif d'immatriculation</span>
-                            <div class="ff-doc-actions">
-                                <span class="ff-badge-ok" id="doc_kbis_status">En attente</span>
-                                <label class="ff-upload-btn">
-                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('kbis', this)"/>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                    Envoyer
-                                </label>
-                            </div>
-                        </div>
-                        <div class="ff-doc-row">
-                            <span class="ff-doc-name">RC Pro</span>
-                            <div class="ff-doc-actions">
-                                <span class="ff-badge-ok" id="doc_rcpro_status">En attente</span>
-                                <label class="ff-upload-btn">
-                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('rcpro', this)"/>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                    Envoyer
-                                </label>
-                            </div>
-                        </div>
-                        <div class="ff-doc-row">
-                            <span class="ff-doc-name">Attestation de TVA</span>
-                            <div class="ff-doc-actions">
-                                <span class="ff-badge-pending" id="doc_tva_status">En attente</span>
-                                <label class="ff-upload-btn">
-                                    <input type="file" accept=".pdf,.jpg,.png" style="display:none" onchange="Profile.uploadDoc('tva', this)"/>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                    Envoyer
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ── Onglet DOCUMENTS À TÉLÉCHARGER ── -->
-                <div id="ff-tab-docs-dl" class="ff-tab-content">
-                    <div class="ff-docs-card">
-                        <a class="ff-dl-row" href="/sinistre_services/static/pwa/docs/pv_intervention.pdf" download>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Procès verbal de fin d'intervention</span>
-                        </a>
-                        <a class="ff-dl-row" href="/sinistre_services/static/pwa/docs/contrat_partenariat.pdf" download>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E40AF" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Contrat de partenariat</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- ── Onglet COORDONNÉES BANCAIRES ── -->
-                <div id="ff-tab-bancaire" class="ff-tab-content">
-                    <div class="ff-section-title">Coordonnées bancaires</div>
-                    <p style="font-size:13px;color:#6B7280;margin-bottom:20px;">Ces informations sont utilisées pour le virement de vos paiements sous 48h.</p>
-                    <div class="ff-field-row">
-                        <div class="ff-field">
-                            <label class="ff-label">IBAN</label>
-                            <input type="text" class="ff-input" id="profileIban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX"/>
-                        </div>
-                        <div class="ff-field">
-                            <label class="ff-label">BIC / SWIFT</label>
-                            <input type="text" class="ff-input" id="profileBic" placeholder="XXXXXXXX"/>
-                        </div>
-                    </div>
-                    <div class="ff-field-row">
-                        <div class="ff-field">
-                            <label class="ff-label">Titulaire du compte</label>
-                            <input type="text" class="ff-input" id="profileBancaireTitulaire" placeholder="Nom du titulaire"/>
-                        </div>
-                        <div class="ff-field">
-                            <label class="ff-label">Banque</label>
-                            <input type="text" class="ff-input" id="profileBancaireBanque" placeholder="Nom de la banque"/>
-                        </div>
-                    </div>
-                    <button class="btn-save" onclick="Profile.saveBancaire()">Enregistrer les coordonnées bancaires</button>
-                </div>
-            </div>
-
-            <!-- ── Vue Détail mission ── -->
-            <div id="view-mission" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="App.goBack()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                        Retour
-                    </button>
-                </div>
-                <div class="mission-detail-wrap">
-                    <div class="mission-status-banner" id="missionBanner"><span id="missionBannerIcon">⏳</span><span id="missionBannerText">Nouveau</span></div>
-                    <div class="detail-grid">
-                        <div class="card"><div class="card-header"><span class="card-icon">👤</span><h3 class="card-title">Client</h3></div><div class="info-grid" id="clientInfo"></div></div>
-                        <div class="card"><div class="card-header"><span class="card-icon">🔧</span><h3 class="card-title">Intervention</h3></div><div class="info-grid" id="interventionInfo"></div></div>
-                    </div>
-                    <div class="card"><div class="card-header"><span class="card-icon">📝</span><h3 class="card-title">Description</h3></div><p class="description-text" id="descriptionText"></p></div>
-                    <div class="card">
-                        <div class="card-header"><span class="card-icon">📷</span><h3 class="card-title">Photos</h3><span class="photo-counts" id="photoCounts"></span></div>
-                        <div class="photos-grid" id="photosGrid"></div>
-                        <div class="photos-actions">
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('avant')" id="btnPhotoAvant">📸 Photo AVANT</button>
-                            <button class="btn btn-outline btn-sm" onclick="Photos.capture('apres')" id="btnPhotoApres">📸 Photo APRÈS</button>
-                        </div>
-                    </div>
-                    <div class="card" id="devisCard">
-                        <div class="card-header"><span class="card-icon">💶</span><h3 class="card-title">Devis</h3><span class="devis-status-badge" id="devisStatusBadge"></span></div>
-                        <div id="devisContent"></div>
-                    </div>
-                    <div class="card" id="notesCard">
-                        <div class="card-header">
-                            <span class="card-icon">📝</span>
-                            <h3 class="card-title">Notes internes</h3>
-                            <button class="btn btn-outline btn-sm" style="margin-left:auto;padding:4px 10px" onclick="MissionDetail.saveNotes()">💾</button>
-                        </div>
-                        <textarea id="missionNotesText" class="field-input" rows="3" placeholder="Notes internes (non visibles du client)…" style="resize:vertical"></textarea>
-                    </div>
-                    <div class="card" id="messagerieCard" style="cursor:pointer" onclick="MissionDetail.openMessagerie()">
-                        <div class="card-header">
-                            <span class="card-icon">💬</span>
-                            <h3 class="card-title">Messages Plateforme</h3>
-                            <span id="msgBadge" style="display:none;background:#EF4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-left:auto;"></span>
-                            <svg style="margin-left:8px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                        </div>
-                    </div>
-                    <div class="actions-block" id="missionActions"></div>
-                </div>
-            </div>
-
-            <!-- ── Vue Devis ── -->
-            <div id="view-devis" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
-                </div>
-                <div id="devisAmendmentBanner" style="display:none;background:#FEF3C7;border-left:4px solid #D97706;padding:12px 16px;margin:0 0 12px;border-radius:8px">
-                    <p style="color:#92400E;font-weight:600;margin:0 0 4px">⚠️ Modification en cours d'intervention</p>
-                    <p style="color:#92400E;font-size:12px;margin:0">Le client devra signer à nouveau avant la reprise des travaux.</p>
-                </div>
-                <div class="card">
-                    <h3 class="section-title">Lignes du devis</h3>
-                    <div id="devisLignes" class="devis-lignes"></div>
-                    <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="DevisForm.addLigne()">+ Ajouter une ligne</button>
-                </div>
-                <div class="card devis-totaux">
-                    <div class="total-row"><span>Sous-total HT</span><span id="totalHT">0,00 €</span></div>
-                    <div class="total-row"><span>TVA (20%)</span><span id="totalTVA">0,00 €</span></div>
-                    <div class="total-row total-ttc"><span>Total TTC</span><span id="totalTTC">0,00 €</span></div>
-                </div>
-                <div class="card">
-                    <label class="field-label">Note pour le client</label>
-                    <textarea id="devisNote" class="field-input" rows="3" placeholder="Informations complémentaires…"></textarea>
-                </div>
-                <div id="devisActionsNormal" class="actions-block">
-                    <button class="btn btn-primary btn-block" onclick="DevisForm.save()"><span>💾 Enregistrer le devis</span></button>
-                    <button class="btn btn-block" id="btnEnvoyerDevis" style="background:var(--grn);display:none" onclick="DevisForm.envoyer()"><span>📤 Envoyer au client</span></button>
-                </div>
-                <div id="devisActionsAmendment" class="actions-block" style="display:none">
-                    <button class="btn-warning btn-block" onclick="DevisForm.saveAmendment()"><span>⚠️ Enregistrer &amp; demander re-signature</span></button>
-                </div>
-            </div>
-
-            <!-- ── Vue Signature ── -->
-            <div id="view-signature" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="App.goBack()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
-                </div>
-                <div class="card">
-                    <h3 class="section-title" id="signatureTitle">Signature</h3>
-                    <p class="field-sub" id="signatureSub" style="margin-bottom:12px;color:#6B7280;font-size:13px"></p>
-                    <div class="signature-wrap">
-                        <canvas id="signatureCanvas"></canvas>
-                        <div class="signature-placeholder" id="signPlaceholder">Faites signer ici ✍️</div>
-                    </div>
-                    <div class="signature-actions">
-                        <button class="btn btn-outline btn-sm" onclick="Signature.clear()">🗑 Effacer</button>
-                    </div>
-                </div>
-                <div class="actions-block">
-                    <button id="btnSignConfirm" class="btn-start" onclick="Signature.confirm()">✅ Confirmer</button>
-                    <button id="btnSignRefuse" class="btn-danger btn-block" onclick="Signature.refuse()" style="display:none">❌ Client refuse le devis</button>
-                </div>
-            </div>
-
-            <!-- ── Vue Messagerie ── -->
-            <div id="view-messagerie" class="view-page">
-                <div class="page-header">
-                    <button class="back-btn" onclick="App.goBack(); Messagerie.stopPolling()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Retour</button>
-                    <span style="font-weight:600;font-size:15px;margin-left:8px">💬 Messages Plateforme</span>
-                </div>
-                <div id="messagerieList" style="padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 200px);min-height:200px"></div>
-                <div style="position:sticky;bottom:0;background:var(--surface,#fff);border-top:1px solid #E5E7EB;padding:12px;display:flex;gap:8px;align-items:flex-end">
-                    <textarea id="messagerieInput" class="field-input" rows="2" placeholder="Écrire un message…" style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();Messagerie.send()}"></textarea>
-                    <button class="btn-start" style="padding:10px 16px" onclick="Messagerie.send()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </button>
-                </div>
-            </div>
-
-        </main>
-    </div><!-- /screen-app -->
-</div><!-- /app -->
-
-<!-- Toast -->
-<div id="toastContainer" class="toast-container"></div>
-<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"/>
-<input type="file" id="galleryInput" accept="image/*" style="display:none"/>
-
-<!-- Scripts — ordre important : config → modules → Google Maps en dernier -->
-<script src="/sinistre_services/static/pwa/src/services/config.js"></script>
-<script src="/sinistre_services/static/pwa/src/services/api.js"></script>
-<script src="/sinistre_services/static/pwa/src/services/auth.js"></script>
-<script src="/sinistre_services/static/pwa/src/services/fcm.js"></script>
-<script src="/sinistre_services/static/pwa/src/services/offline.js"></script>
-<script src="/sinistre_services/static/pwa/src/components/toast.js"></script>
-<script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
-<script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
-<script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
-<script src="/sinistre_services/static/pwa/src/components/messagerie.js"></script>
-<script src="/sinistre_services/static/pwa/src/screens/carte.js?v=20260624b"></script>
-<script src="/sinistre_services/static/pwa/src/screens/dashboard.js?v=20260624b"></script>
-<script src="/sinistre_services/static/pwa/src/screens/comptabilite.js?v=20260624b"></script>
-<script src="/sinistre_services/static/pwa/src/screens/mission_detail.js?v=20260624b"></script>
-<script>
-// Google Maps — méthode officielle avec defer + onload
-(function() {
-    var key = CONFIG.GOOGLE_MAPS_KEY;
-    if (!key || key === '__GOOGLE_MAPS_API_KEY__') return;
-    var s = document.createElement('script');
-    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=maps,marker,places,geometry&v=weekly';
-    s.defer = true;
-    s.onload = function() {
-        console.log('[Maps] ✓ chargé');
-        if (window.CarteMap) CarteMap.onGoogleMapsReady();
-    };
-    document.head.appendChild(s);
-})();
-</script>
-<script src="/sinistre_services/static/pwa/app.js?v=20260624b"></script>
-<script>
-(function() {
-    if (!window.Dashboard) {
-        console.error('[PWA] dashboard.js invalide ou absent — le fichier doit être du JavaScript, pas du Python.');
+    // 1. Vérifier session localStorage existante
+    const user = Auth.loadFromStorage();
+    if (user) {
+        const valid = await Auth.verify().catch(() => false);
+        if (valid) { await _enrichUserFromAPI(); showApp(); return; }
     }
-})();
-</script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    function doLogout() {
-        fetch('/web/session/destroy', {
-            method: 'POST', credentials: 'include',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}})
-        }).catch(function(){}).finally(function() {
-            localStorage.removeItem('ss_user');
-            window.location.href = '/intervenant/login';
+    // 2. Vérifier session Odoo cookie (venant de /intervenant/login)
+    try {
+        const resp = await fetch('/web/session/get_session_info', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} })
         });
+        const data = await resp.json();
+        if (data.result && data.result.uid > 0) {
+            // Session Odoo valide — sauvegarder et afficher l'app
+            const u = {
+                uid:   data.result.uid,
+                name:  data.result.name,
+                email: data.result.username,
+                lang:  data.result.lang,
+            };
+            localStorage.setItem('ss_user', JSON.stringify(u));
+            Auth.loadFromStorage();
+            await _enrichUserFromAPI();
+            showApp();
+            return;
+        }
+    } catch(e) {}
+
+    // 3. Aucune session → afficher login
+    showLogin();
+}
+
+
+    /* ── Mettre à jour les certifications ── */
+    function _updateCertifications(certifs) {
+        const list = document.getElementById('certifList');
+        if (!list) return;
+        if (!certifs || !certifs.length) {
+            list.innerHTML = '<p style="color:#9CA3AF;font-size:13px;padding:8px 0">Aucune certification renseignée</p>';
+            return;
+        }
+        const icons = [
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>',
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+        ];
+        list.innerHTML = certifs.map((cert, i) => `
+            <div class="certif-item">
+                ${icons[i % icons.length]}
+                <div><div class="certif-name">${cert.name}</div>${cert.date ? `<div class="certif-date">${cert.date}</div>` : ''}</div>
+            </div>`).join('');
     }
 
-    var lob = document.getElementById('logoutTopBtn');
-    if (lob) lob.addEventListener('click', doLogout);
-    if (window.Auth) Auth.logout = doLogout;
-    if (window.App) App.showLogin = function() { window.location.href = '/intervenant/login'; };
+    /* ── Enrichir depuis /api/sinistre/v1/me ── */
+    async function _enrichUserFromAPI() {
+        let existing = {};
+        try { existing = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        try {
+            const resp = await fetch('/api/sinistre/v1/me', { credentials: 'include' });
+            if (!resp.ok) {
+                let errMsg = '';
+                try {
+                    const errBody = await resp.json();
+                    errMsg = errBody.error || JSON.stringify(errBody);
+                } catch (e) { errMsg = resp.statusText; }
+                console.warn('[App] enrichUser HTTP', resp.status, errMsg);
+                return false;
+            }
+            const data = await resp.json();
+            if (data.success && data.user) {
+                const u = data.user;
+                const merged = {
+                    ...existing,
+                    uid: u.uid, name: u.name, email: u.email,
+                    phone: u.phone || '',
+                    street: u.street || '',
+                    street2: u.street2 || '',
+                    city: u.city || '',
+                    zip: u.zip || '',
+                    admin_phone: u.admin_phone || '',
+                    company_name: u.company_name || u.name,
+                    zone: u.zone || '',
+                    note_moyenne: u.note_moyenne || 0,
+                    interventions: u.interventions || 0,
+                    ca_total: u.ca_total || 0,
+                    ca_mois: u.ca_mois || 0,
+                    solde_comptabilite: u.solde_comptabilite ?? null,
+                    taux_acceptation: u.taux_acceptation ?? null,
+                    factures_a_fournir: u.factures_a_fournir ?? 0,
+                    specialites: u.specialites || [],
+                    specialites_types: u.specialites_types || [],
+                    membre_depuis: u.membre_depuis || '',
+                    certifications: u.certifications || [],
+                    intervenant_id: u.intervenant_id,
+                };
+                localStorage.setItem('ss_user', JSON.stringify(merged));
+                Auth.loadFromStorage();
+                return true;
+            }
+        } catch(e) { console.warn('[App] enrichUser:', e); }
+        return false;
+    }
 
-    function updateProfile() {
-        var user = (Auth && Auth.getUser) ? Auth.getUser() : null;
-        if (!user) { try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {} }
+    /* ── Mettre à jour l'UI ── */
+    function _updateUIFromUser() {
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
         if (!user || !user.name) return;
 
-        var name = user.name || '';
-        var parts = name.split(' ');
-        var first = parts[0];
-        var initials = parts.map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+        const name = user.name || '';
+        const parts = name.split(' ');
+        const first = parts[0] || '';
+        const initials = parts.map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
+        const company = user.company_name || name;
+        const nbInterv = user.interventions || 0;
 
-        // Greeting
-        var dg = document.getElementById('dashGreeting');
-        if (dg) dg.textContent = 'Bonjour ' + first + ' 👋';
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
 
-        // Sidebar
-        var sa = document.getElementById('sidebarAvatar');
-        var sn = document.getElementById('sidebarName');
-        var sc = document.getElementById('sidebarCompany');
-        if (sa) sa.textContent = initials || '?';
-        if (sn) sn.textContent = name;
-        if (sc) sc.textContent = user.company_name || 'Artisan Pro';
+        // Greeting + sidebar
+        set('dashGreeting', `Bonjour ${first} 👋`);
+        set('sidebarAvatar', initials || '?');
+        set('sidebarName', name);
+        set('sidebarCompany', company);
 
-        // Profile page
-        var pa = document.getElementById('profileAvatarLg');
-        var pn = document.getElementById('profileNameLg');
-        var pe = document.getElementById('profileEmail');
-        if (pa) pa.textContent = initials || '?';
-        if (pn) pn.textContent = name;
-        if (pe) pe.value = user.email || user.username || '';
+        // Stats dashboard
+        const sA = document.getElementById('statActives');
+        if (sA && sA.textContent === '–') sA.textContent = '0';
+        set('statInterventions', nbInterv);
+
+        if (window.Dashboard && typeof Dashboard.updateExtendedStats === 'function') {
+            Dashboard.updateExtendedStats(user);
+        } else {
+            const soldeEl = document.getElementById('statSolde');
+            if (soldeEl && user.solde_comptabilite != null) {
+                const s = user.solde_comptabilite;
+                soldeEl.textContent = Math.abs(s).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+                soldeEl.className = 'stat-value ' + (s < 0 ? 'stat-solde-debit' : 'stat-solde-credit');
+            }
+            const tauxEl = document.getElementById('statTauxAccept');
+            if (tauxEl) {
+                tauxEl.textContent = user.taux_acceptation != null
+                    ? user.taux_acceptation + ' %'
+                    : '—';
+            }
+            const factEl = document.getElementById('statFacturesAFournir');
+            if (factEl) factEl.textContent = user.factures_a_fournir ?? 0;
+        }
+
+        // Profil
+        set('profileAvatarLg', initials || '?');
+        set('profileNameLg', name);
+        set('profileCompanyLg', company);
+        set('profileInterv', nbInterv);
+        set('profileSince', user.membre_depuis || '—');
+        setVal('profileEmail', user.email || '');
+        setVal('profileTel', user.phone || '');
+        setVal('profileZone', user.zone || '');
+        setVal('profileEntreprise', company);
+
+        // Spécialités
+        const specs = user.specialites || [];
+        const sTypes = user.specialites_types || [];
+        const ptags = document.getElementById('profileMetiersTags');
+        if (ptags) ptags.innerHTML = specs.length
+            ? specs.map(s => `<span class="metier-tag">${s}</span>`).join('')
+            : '<span style="color:#9CA3AF;font-size:12px">Aucune spécialité renseignée</span>';
+
+        document.querySelectorAll('.metier-check').forEach(label => {
+            const cb = label.querySelector('input[type="checkbox"]');
+            const text = label.textContent.trim().toLowerCase();
+            const map = { serrurerie:['serrurerie'], plomberie:['plomberie'], 'électricité':['electricite'], electricite:['electricite'], menuiserie:['menuiserie_int','menuiserie_ext'], vitrerie:['vitrerie'] };
+            const matched = Object.keys(map).some(k => text.includes(k) && (sTypes.some(t => map[k].includes(t)) || specs.some(s => s.toLowerCase().includes(k))));
+            if (cb) cb.checked = matched;
+            label.classList.toggle('active', matched);
+        });
+
+        // Certifications
+        if (user.certifications && user.certifications.length) _updateCertifications(user.certifications);
+
+        if (window.Profile && typeof Profile.loadFromUser === 'function') {
+            Profile.loadFromUser();
+        }
     }
 
-    if (window.App && App.showApp) {
-        var origShowApp = App.showApp.bind(App);
-        App.showApp = function() { origShowApp(); setTimeout(updateProfile, 300); };
+    function _restoreUserSession(fallbackUser) {
+        let user = {};
+        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
+        if (!user.name && fallbackUser && fallbackUser.name) {
+            const restored = { ...fallbackUser, ...user };
+            localStorage.setItem('ss_user', JSON.stringify(restored));
+            Auth.loadFromStorage();
+        }
+        _updateUIFromUser();
     }
 
-    // Plus besoin d'écraser App.showView — app.js gère déjà tout correctement
-    // (CarteMap.init, Dashboard.init, etc.)
+    async function _registerSW() {
+        if (!('serviceWorker' in navigator)) return;
+        try {
+            const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, { scope: '/sinistre_services/static/pwa/' });
+            console.log('[SW] Enregistré:', reg.scope);
 
-    var lf = document.getElementById('loginForm');
-    if (lf) {
-        lf.addEventListener('submit', function() {
-            var s = document.getElementById('loginSpinEl');
-            if (s) s.style.display = 'block';
+            // Écouter les messages du SW
+            navigator.serviceWorker.addEventListener('message', (e) => {
+                if (e.data?.type === 'OPEN_MISSION') {
+                    MissionDetail.open(e.data.missionId);
+                }
+            });
+        } catch (err) {
+            console.warn('[SW] Erreur enregistrement:', err);
+        }
+    }
+    
+    function showLogin() {
+        _hideSplash();
+        // Rediriger vers la page login Odoo au lieu d'afficher l'écran PWA
+        window.location.href = '/intervenant/login';
+    }
+
+    function showApp() {
+        _hideSplash();
+        const sl = document.getElementById('screen-login');
+        const sa = document.getElementById('screen-app');
+        if (sl) sl.style.display = 'none';
+        if (sa) sa.style.display = 'flex';
+        FCM.autoInit();
+        const fallbackUser = Auth.getUser() || (() => {
+            try { return JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) { return {}; }
+        })();
+        _enrichUserFromAPI().finally(() => {
+            _restoreUserSession(fallbackUser);
+            showView('dashboard', document.getElementById('nav-dashboard'));
+        });
+
+        // Deep link : ouvrir une mission depuis push
+        const urlParams = new URLSearchParams(window.location.search);
+        const missionId = urlParams.get('mission');
+        if (missionId) {
+            MissionDetail.open(missionId);
+        }
+
+        // Rejouer queue offline si en ligne
+        if (Offline.isOnline()) Offline.processQueue();
+
+        // Nom dashboard
+        const u = Auth.getUser();
+        if (u && u.name) {
+            const el = document.getElementById('dashWelcome');
+            if (el) el.textContent = 'Bonjour, ' + u.name.split(' ')[0] + ' !';
+        }
+    }
+
+    function _hideSplash() {
+        const splash = document.getElementById('splash');
+        if (splash) { splash.classList.add('hidden'); setTimeout(() => { splash.style.display = 'none'; }, 400); }
+        const app = document.getElementById('app');
+        if (app) app.style.display = 'flex';
+    }
+
+    /* ── Navigation entre vues ── */
+    function showView(viewId, navEl) {
+        // Masquer toutes les vues
+        document.querySelectorAll('.view-page').forEach(v => v.classList.remove('active'));
+        const target = document.getElementById('view-' + viewId);
+        if (target) target.classList.add('active');
+
+        // Sidebar nav
+        document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+        if (navEl && navEl.classList) navEl.classList.add('active');
+
+        _history.push(_currentView);
+        _currentView = viewId;
+
+        // Charger les données de la vue
+        if (viewId === 'dashboard') {
+            if (window.Dashboard) Dashboard.init();
+            else console.error('[App] Dashboard non chargé — vérifiez dashboard.js (Network)');
+            _updateUIFromUser();
+        }
+        if (viewId === 'profile') {
+            _enrichUserFromAPI().finally(() => {
+                _restoreUserSession(Auth.getUser());
+            });
+        }
+        if (viewId === 'missions') {
+            if (window.Dashboard) Dashboard.loadMissions();
+        }
+        if (viewId === 'interventions') {
+            if (window.Dashboard) Dashboard.loadInterventions();
+        }
+        if (viewId === 'carte') {
+            // setTimeout 300ms pour laisser le DOM se mettre à jour
+            setTimeout(function() {
+                console.log('[App] Appel CarteMap.init()');
+                if (window.CarteMap) CarteMap.init();
+                else console.error('[App] CarteMap non défini !');
+            }, 300);
+        }
+        if (viewId === 'planning') {
+            setTimeout(function() {
+                if (window.Planning) Planning.init();
+            }, 100);
+        }
+        if (viewId === 'comptabilite') {
+            setTimeout(function() {
+                if (window.Comptabilite) Comptabilite.init();
+            }, 100);
+        }
+    }
+
+    function showSubView(viewId) {
+        document.querySelectorAll('.view-page').forEach(function(v) { v.classList.remove('active'); });
+        var target = document.getElementById('view-' + viewId);
+        if (target) target.classList.add('active');
+        _history.push(_currentView);
+        _currentView = viewId;
+    }
+
+    function goBack() {
+        const prev = _history.pop() || 'dashboard';
+        _currentView = 'dashboard';
+        showView(prev, document.getElementById('nav-' + prev));
+    }
+
+    /* ── Utilitaires ── */
+    function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    /* ── Gestionnaire install PWA ── */
+    let _deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        _deferredPrompt = e;
+        // On pourrait afficher un bouton "Installer l'app" ici
+    });
+
+    /* ── Back button Android ── */
+    window.addEventListener('popstate', () => {
+        if (_history.length) goBack();
+    });
+
+    /* ── Visibility change (rafraîchir si retour en premier plan) ── */
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && Auth.isLoggedIn() && _currentView === 'dashboard') {
+            if (window.Dashboard) Dashboard.refresh();
+        }
+    });
+
+    /* ── Start ── */
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    return {
+        showLogin,
+        showApp,
+        showView,
+        showSubView,
+        goBack,
+        get currentView() { return _currentView; },
+    };
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   Module Planning — Heures d'ouverture + Absences
+══════════════════════════════════════════════════════════════ */
+window.Planning = (function() {
+    'use strict';
+
+    const DAYS   = ['DIM','LUN','MAR','MER','JEU','VEN','SAM'];
+    const HOURS  = Array.from({length: 24}, (_, i) => i); // 0h → 23h
+
+    // État local : slots[jour][heure] = true/false (jour 0=dim, 1=lun…)
+    let _slots = {};
+
+    function _defaultSlots() {
+        const s = {};
+        for (let d = 0; d < 7; d++) {
+            s[d] = {};
+            for (let h = 0; h < 24; h++) s[d][h] = true;
+        }
+        return s;
+    }
+
+    function _normalizeSlots(raw) {
+        const out = {};
+        for (let d = 0; d < 7; d++) {
+            const srcDay = (raw && (raw[d] || raw[String(d)])) || {};
+            out[d] = {};
+            for (let h = 0; h < 24; h++) {
+                out[d][h] = !!(srcDay[h] ?? srcDay[String(h)]);
+            }
+        }
+        return out;
+    }
+
+    function init() {
+        // Charger depuis l'API ou utiliser des défauts
+        API.get('/intervenant/planning')
+            .then(function(data) {
+                _slots = _normalizeSlots(data.slots || _defaultSlots());
+                _render();
+                _renderAbsences(data.absences || []);
+            })
+            .catch(function() {
+                _slots = _defaultSlots();
+                _render();
+            });
+    }
+
+    function _render() {
+        const tbody = document.getElementById('planningBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        HOURS.forEach(function(h) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td style="padding:4px 8px;font-size:12px;color:#6B7280;white-space:nowrap;">' + h + ' H</td>';
+            // LUN=1, MAR=2 … SAM=6, DIM=0
+            [1,2,3,4,5,6,0].forEach(function(d) {
+                const checked = _slots[d] && _slots[d][h] ? 'checked' : '';
+                tr.innerHTML += '<td style="text-align:center;padding:3px;">'
+                    + '<input type="checkbox" ' + checked
+                    + ' onchange="Planning.toggleSlot(' + d + ',' + h + ',this.checked)"'
+                    + ' style="accent-color:#1E40AF;width:15px;height:15px;cursor:pointer;"/></td>';
+            });
+            tbody.appendChild(tr);
+        });
+
+        // Mettre à jour les checkboxes "Tout" selon l'état réel
+        document.querySelectorAll('.planning-day-all').forEach(function(cb) {
+            const d = parseInt(cb.dataset.day);
+            cb.checked = Object.values(_slots[d] || {}).every(Boolean);
         });
     }
 
-    setTimeout(updateProfile, 1500);
-});
-</script>
-
-<style>
-.msg-bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5}
-.msg-me{align-self:flex-end;background:#1E40AF;color:#fff;border-bottom-right-radius:4px}
-.msg-other{align-self:flex-start;background:#F3F4F6;color:#1F2937;border-bottom-left-radius:4px}
-.msg-author{font-size:11px;font-weight:700;margin-bottom:3px;opacity:.7}
-.msg-date{font-size:10px;margin-top:4px;opacity:.6;text-align:right}
-.btn-warning{background:#D97706;color:#fff;border-radius:12px;padding:14px 20px;font-weight:700;font-size:15px;border:none;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-</style>
-
-<script>
-/* ══ Module Profile (FairFair style) ══ */
-window.Profile = (function() {
-
-    function switchTab(name, btn) {
-        document.querySelectorAll('.ff-tab').forEach(function(t){ t.classList.remove('active'); });
-        document.querySelectorAll('.ff-tab-content').forEach(function(c){ c.classList.remove('active'); });
-        btn.classList.add('active');
-        var el = document.getElementById('ff-tab-' + name);
-        if (el) el.classList.add('active');
-        if (name === 'bancaire') loadBancaire();
+    function toggleSlot(day, hour, val) {
+        if (!_slots[day]) _slots[day] = {};
+        _slots[day][hour] = val;
+        // Mettre à jour la checkbox "Tout" pour ce jour
+        const allCb = document.querySelector('.planning-day-all[data-day="' + day + '"]');
+        if (allCb) allCb.checked = Object.values(_slots[day]).every(Boolean);
     }
 
-    function loadBancaire() {
-        API.getBancaire()
+    function toggleDay(day, val) {
+        if (!_slots[day]) _slots[day] = {};
+        for (let h = 0; h < 24; h++) _slots[day][h] = val;
+        _render();
+    }
+
+    function save() {
+        API.post('/intervenant/planning', { slots: _slots })
+            .then(function() { Toast.show('Planning enregistré', 'success'); })
+            .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
+    }
+
+    function addAbsence() {
+        var from = document.getElementById('absenceFrom')?.value;
+        var to   = document.getElementById('absenceTo')?.value;
+        if (!from || !to) { Toast.show('Veuillez saisir les deux dates', 'error'); return; }
+        if (to < from)    { Toast.show('La date de fin doit être après la date de début', 'error'); return; }
+        API.post('/intervenant/absences', { date_debut: from, date_fin: to })
             .then(function(data) {
-                var b = (data && data.bancaire) || {};
-                var set = function(id, v){ var el=document.getElementById(id); if(el) el.value = v||''; };
-                set('profileIban', b.iban);
-                set('profileBic', b.bic);
-                set('profileBancaireTitulaire', b.titulaire_compte);
-                set('profileBancaireBanque', b.banque);
-            })
-            .catch(function() { /* champs vides si erreur */ });
-    }
-
-    function saveBancaire() {
-        var iban     = (document.getElementById('profileIban')?.value || '').trim();
-        var bic      = (document.getElementById('profileBic')?.value || '').trim();
-        var titulaire = (document.getElementById('profileBancaireTitulaire')?.value || '').trim();
-        var banque   = (document.getElementById('profileBancaireBanque')?.value || '').trim();
-        if (!iban) { Toast.show('Veuillez saisir un IBAN', 'error'); return; }
-        API.post('/intervenant/bancaire', { iban, bic, titulaire, banque })
-            .then(function() {
-                Toast.show('Coordonnées bancaires enregistrées', 'success');
-                loadBancaire();
+                Toast.show('Absence enregistrée', 'success');
+                document.getElementById('absenceFrom').value = '';
+                document.getElementById('absenceTo').value   = '';
+                _renderAbsences(data.absences || []);
             })
             .catch(function() { Toast.show('Erreur lors de l\'enregistrement', 'error'); });
     }
 
-    function loadFromUser() {
-        var user = {};
-        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        if (!user || !user.name) return;
-
-        var name  = user.name || '';
-        var parts = name.split(' ');
-        var set = function(id, v){ var el=document.getElementById(id); if(el) el.value = v||''; };
-
-        // Onglet Entreprise — Entité juridique
-        set('ent_raison_sociale', user.company_name || name);
-        set('ent_siret',         user.siret || '');
-        set('ent_ape',           user.ape   || '');
-        set('ent_rue',           user.street || '');
-        set('ent_comp1',         user.street2 || '');
-        set('ent_ville',         user.city   || '');
-        set('ent_cp',            user.zip    || '');
-
-        // Contact entreprise
-        set('ent_tel_portable', user.phone || '');
-        set('ent_tel_fixe',     user.phone_fixe || '');
-        set('ent_email',        user.email || '');
-
-        // Vous êtes
-        set('profileFirstName', parts[0] || '');
-        set('profileLastName',  parts.slice(1).join(' ') || '');
-        set('profileTel',       user.phone || '');
-        set('profileEmail',     user.email || '');
-
-        // Onglet Intervenants
-        set('interv_rue',   user.street || '');
-        set('interv_comp1', user.street2 || '');
-        set('interv_ville', user.city || '');
-        set('interv_cp',    user.zip || '');
-        set('interv_tel',   user.phone || '');
-
-        var locEl = document.getElementById('ff_interv_name');
-        if (locEl) locEl.textContent = name || '—';
-
-        var adminPhoneEl = document.getElementById('ffAdminPhone');
-        if (adminPhoneEl) {
-            adminPhoneEl.textContent = user.admin_phone || (window.CONFIG && CONFIG.ADMIN_PHONE) || '0X0X0X';
+    function _renderAbsences(absences) {
+        var list = document.getElementById('absenceList');
+        if (!list) return;
+        if (!absences.length) {
+            list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;text-align:center;padding:16px 0;">Aucune absence en cours ou à venir</p>';
+            return;
         }
-
-        // Métiers dans intervenants
-        var ml = document.getElementById('intervMetiersList');
-        if (ml) {
-            var specs = user.specialites || [];
-            if (specs.length) {
-                ml.innerHTML = specs.map(function(s){
-                    return '<div class="ff-metier-item">'+s+'</div>';
-                }).join('');
-            }
-        }
-
-        // Corps de métiers — affichage lecture seule
-        var types = user.specialites_types || [];
-        document.querySelectorAll('.ff-metier-cb').forEach(function(cb){
-            cb.checked = types.indexOf(cb.value) !== -1;
-            cb.disabled = true;
-        });
-
-        // Documents légaux — statuts (si l'API les fournit)
-        var docs = user.documents || {};
-        if (docs.kbis) _setDocStatus('doc_kbis_status',  docs.kbis);
-        if (docs.rcpro) _setDocStatus('doc_rcpro_status', docs.rcpro);
-
-        loadBancaire();
+        list.innerHTML = absences.map(function(a) {
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;margin-bottom:8px;font-size:13px;">'
+                + '<span>Du <strong>' + a.date_debut + '</strong> au <strong>' + a.date_fin + '</strong></span>'
+                + '<button onclick="Planning.removeAbsence(' + a.id + ')" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:16px;" title="Supprimer">×</button>'
+                + '</div>';
+        }).join('');
     }
 
-    function _setDocStatus(id, status) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        if (status === 'accepted' || status === 'Accepté') {
-            el.textContent = 'Accepté';
-            el.className = 'ff-badge-ok';
-        } else if (status === 'refused' || status === 'Refusé') {
-            el.textContent = 'Refusé';
-            el.className = 'ff-badge-pending';
-        } else {
-            el.textContent = 'En attente';
-            el.className = 'ff-badge-pending';
-        }
+    function removeAbsence(id) {
+        API.post('/intervenant/absences/delete', { id: id })
+            .then(function(data) {
+                Toast.show('Absence supprimée', 'success');
+                _renderAbsences(data.absences || []);
+            })
+            .catch(function() { Toast.show('Erreur lors de la suppression', 'error'); });
     }
 
-    function saveEntreprise() {
-        if (window.Toast) Toast.show('✅ Informations enregistrées', 'success');
-    }
-
-    function saveMetiers() {
-        var phone = (document.getElementById('ffAdminPhone')?.textContent || '0X0X0X').trim();
-        if (window.Toast) Toast.show('Pour modifier vos spécialisations, contactez l\'administrateur au ' + phone, 'info');
-    }
-
-    function toggleMetier() {
-        // Lecture seule — modification réservée à l'administrateur
-    }
-
-    function uploadDoc(type, input) {
-        if (!input.files || !input.files[0]) return;
-        var statusId = type === 'kbis' ? 'doc_kbis_status' : type === 'rcpro' ? 'doc_rcpro_status' : 'doc_tva_status';
-        var el = document.getElementById(statusId);
-        if (el) { el.textContent = 'Envoi…'; el.className = 'ff-badge-pending'; }
-        if (window.Toast) Toast.show('📤 Document envoyé — en cours de vérification', 'success');
-        setTimeout(function(){
-            if (el) { el.textContent = 'En attente'; el.className = 'ff-badge-pending'; }
-        }, 2000);
-    }
-
-    return { switchTab: switchTab, loadFromUser: loadFromUser, loadBancaire: loadBancaire, saveEntreprise: saveEntreprise, saveMetiers: saveMetiers, toggleMetier: toggleMetier, uploadDoc: uploadDoc, saveBancaire: saveBancaire };
+    return { init, toggleSlot, toggleDay, save, addAbsence, removeAbsence };
 })();
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    function doLogout() {
-        fetch('/web/session/destroy', {
-            method: 'POST', credentials: 'include',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({jsonrpc:'2.0', method:'call', params:{}})
-        }).catch(function(){}).finally(function() {
-            localStorage.removeItem('ss_user');
-            window.location.href = '/intervenant/login';
-        });
-    }
-
-    var lob = document.getElementById('logoutTopBtn');
-    if (lob) lob.addEventListener('click', doLogout);
-    if (window.Auth) Auth.logout = doLogout;
-    if (window.App) App.showLogin = function() { window.location.href = '/intervenant/login'; };
-
-    function updateSidebar() {
-        var user = {};
-        try { user = JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) {}
-        if (!user || !user.name) return;
-        var name = user.name || '';
-        var parts = name.split(' ');
-        var first = parts[0];
-        var initials = parts.map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
-        var dg = document.getElementById('dashGreeting');
-        if (dg) dg.textContent = 'Bonjour ' + first + ' 👋';
-        var sa = document.getElementById('sidebarAvatar');
-        var sn = document.getElementById('sidebarName');
-        var sc = document.getElementById('sidebarCompany');
-        if (sa) sa.textContent = initials || '?';
-        if (sn) sn.textContent = name;
-        if (sc) sc.textContent = user.company_name || 'Artisan Pro';
-    }
-
-    // Charger le profil quand on clique sur l'onglet profil
-    var navProfile = document.getElementById('nav-profile');
-    if (navProfile) {
-        navProfile.addEventListener('click', function() {
-            setTimeout(function(){ if (window.Profile) Profile.loadFromUser(); }, 100);
-        });
-    }
-
-    if (window.App && App.showApp) {
-        var origShowApp = App.showApp.bind(App);
-        App.showApp = function() { origShowApp(); setTimeout(updateSidebar, 300); };
-    }
-
-    var lf = document.getElementById('loginForm');
-    if (lf) {
-        lf.addEventListener('submit', function() {
-            var s = document.getElementById('loginSpinEl');
-            if (s) s.style.display = 'block';
-        });
-    }
-
-    setTimeout(updateSidebar, 1500);
-});
-</script>
-</body>
-</html>
