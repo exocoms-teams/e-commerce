@@ -463,6 +463,289 @@
 <template id="ss_page_demande" inherit_id="sinistre_services.page_demande" name="Demande intervention (alias)"/>
 
 <!-- ════════════════════════════════════════════════════════════
+     PAGE DEMANDE ACCÈS API ASSUREURS
+════════════════════════════════════════════════════════════ -->
+<template id="page_api_access" name="Sinistre Services — Accès API Assureurs">
+    <t t-call="website.layout">
+        <div id="wrap">
+
+            <div class="mn-page-hero">
+                <div class="mn-container">
+                    <p style="font-size:13px;margin-bottom:14px;position:relative;z-index:1;">
+                        <a href="/" style="color:rgba(255,255,255,.7);">Accueil</a>
+                        <span style="color:rgba(255,255,255,.4);"> › </span>
+                        <span style="color:white;">API Assureurs</span>
+                    </p>
+                    <h1>Demander un accès API</h1>
+                    <p>Intégrez Sinistre Services à votre système de gestion de sinistres — sandbox gratuit, activation sous 48h</p>
+                </div>
+            </div>
+
+            <section class="mn-section mn-section--gray" style="padding-top:48px;padding-bottom:72px;">
+                <div class="mn-container">
+
+                    <!-- Succès -->
+                    <t t-if="success">
+                        <div class="mn-form-card" style="max-width:640px;margin:0 auto;text-align:center;">
+                            <div style="width:72px;height:72px;border-radius:50%;background:#F0FDF4;border:2px solid #10B981;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px;color:#10B981;">
+                                <i class="fa fa-check" aria-hidden="true"/>
+                            </div>
+                            <h2 style="font-size:26px;font-weight:800;color:#0F172A;margin-bottom:12px;">Demande enregistrée</h2>
+                            <p style="font-size:15px;color:#6B7280;margin-bottom:16px;line-height:1.7;">
+                                Votre demande d'accès API a bien été transmise. Notre équipe technique vous contacte sous <strong>48 heures ouvrées</strong> avec vos identifiants sandbox.
+                            </p>
+                            <div style="background:#EFF6FF;border-radius:12px;padding:20px;margin-bottom:24px;text-align:left;">
+                                <p style="font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:8px;">Prochaines étapes</p>
+                                <ol style="font-size:13px;color:#374151;line-height:1.8;padding-left:20px;margin:0;">
+                                    <li>Validation de votre compte par notre équipe</li>
+                                    <li>Envoi de votre clé API sandbox par email</li>
+                                    <li>Tests d'intégration sur l'environnement de recette</li>
+                                    <li>Passage en production après validation</li>
+                                </ol>
+                            </div>
+                            <a href="/" class="mn-btn mn-btn--primary">Retour à l'accueil</a>
+                        </div>
+                    </t>
+
+                    <!-- Formulaire -->
+                    <t t-if="not success">
+                        <div class="mn-contact-grid">
+
+                            <div class="mn-form-card">
+                                <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+                                    <div style="width:52px;height:52px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#C62828;font-size:22px;flex-shrink:0;">
+                                        <i class="fa fa-code" aria-hidden="true"/>
+                                    </div>
+                                    <div>
+                                        <h2 style="margin-bottom:4px;">Formulaire d'inscription API</h2>
+                                        <span class="mn-form-sub" style="margin-bottom:0;">Réservé aux compagnies d'assurance et gestionnaires de sinistres</span>
+                                    </div>
+                                </div>
+
+                                <t t-if="error">
+                                    <div class="mn-form-alert mn-form-alert-error">
+                                        <i class="fa fa-exclamation-circle" style="margin-right:6px;" aria-hidden="true"/>
+                                        Veuillez remplir tous les champs obligatoires (société, contact, email).
+                                    </div>
+                                </t>
+
+                                <form action="/assurances/api-access/send" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <h3 class="mn-form-section-title">Votre compagnie</h3>
+                                    <div class="mn-form-group">
+                                        <label>Nom de la compagnie d'assurance <span class="required">*</span></label>
+                                        <input type="text" name="societe" placeholder="AXA, MAIF, Allianz…" required="required"
+                                               t-att-value="form_data.get('societe', '')"/>
+                                    </div>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Code compagnie <span style="color:#9CA3AF;font-weight:400;">(facultatif)</span></label>
+                                            <input type="text" name="code_assurance" placeholder="AXA, MAIF…"
+                                                   t-att-value="form_data.get('code_assurance', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Volume mensuel estimé</label>
+                                            <select name="volume">
+                                                <option value="">— Sélectionnez —</option>
+                                                <option value="moins_100" t-att-selected="form_data.get('volume') == 'moins_100'">Moins de 100 sinistres/mois</option>
+                                                <option value="100_500" t-att-selected="form_data.get('volume') == '100_500'">100 à 500 sinistres/mois</option>
+                                                <option value="500_2000" t-att-selected="form_data.get('volume') == '500_2000'">500 à 2 000 sinistres/mois</option>
+                                                <option value="plus_2000" t-att-selected="form_data.get('volume') == 'plus_2000'">Plus de 2 000 sinistres/mois</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="mn-form-section-title">Contact technique</h3>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Nom du contact <span class="required">*</span></label>
+                                            <input type="text" name="nom" placeholder="Dupont" required="required"
+                                                   t-att-value="form_data.get('nom', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Prénom</label>
+                                            <input type="text" name="prenom" placeholder="Marie"
+                                                   t-att-value="form_data.get('prenom', '')"/>
+                                        </div>
+                                    </div>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Email professionnel <span class="required">*</span></label>
+                                            <input type="email" name="email" placeholder="contact@assurance.fr" required="required"
+                                                   t-att-value="form_data.get('email', '')"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Téléphone</label>
+                                            <input type="tel" name="telephone" placeholder="01 XX XX XX XX"
+                                                   t-att-value="form_data.get('telephone', '')"/>
+                                        </div>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Fonction / service</label>
+                                        <input type="text" name="fonction" placeholder="Responsable sinistres habitation"
+                                               t-att-value="form_data.get('fonction', '')"/>
+                                    </div>
+
+                                    <h3 class="mn-form-section-title">Intégration technique</h3>
+                                    <div class="mn-form-group">
+                                        <label>Système de gestion sinistres (SGS)</label>
+                                        <select name="systeme">
+                                            <option value="">— Sélectionnez —</option>
+                                            <option value="guidewire" t-att-selected="form_data.get('systeme') == 'guidewire'">Guidewire ClaimCenter</option>
+                                            <option value="euroinformation" t-att-selected="form_data.get('systeme') == 'euroinformation'">Euro Information</option>
+                                            <option value="sapiens" t-att-selected="form_data.get('systeme') == 'sapiens'">Sapiens</option>
+                                            <option value="internal" t-att-selected="form_data.get('systeme') == 'internal'">Développement interne</option>
+                                            <option value="autre" t-att-selected="form_data.get('systeme') == 'autre'">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Format d'intégration souhaité</label>
+                                        <select name="format_api">
+                                            <option value="json_rest" t-att-selected="form_data.get('format_api', 'json_rest') == 'json_rest'">JSON REST (recommandé)</option>
+                                            <option value="xml_soap" t-att-selected="form_data.get('format_api') == 'xml_soap'">XML SOAP</option>
+                                            <option value="csv_ftp" t-att-selected="form_data.get('format_api') == 'csv_ftp'">CSV / FTP</option>
+                                            <option value="custom" t-att-selected="form_data.get('format_api') == 'custom'">Personnalisé</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Types d'interventions à intégrer</label>
+                                        <div class="mn-checkbox-grid">
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="type_serrurerie" value="1"
+                                                       t-att-checked="form_data.get('type_serrurerie') and 'checked' or None"/>
+                                                <span>Serrurerie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="type_plomberie" value="1"
+                                                       t-att-checked="form_data.get('type_plomberie') and 'checked' or None"/>
+                                                <span>Plomberie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="type_vitrerie" value="1"
+                                                       t-att-checked="form_data.get('type_vitrerie') and 'checked' or None"/>
+                                                <span>Vitrerie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="type_menuiserie" value="1"
+                                                       t-att-checked="form_data.get('type_menuiserie') and 'checked' or None"/>
+                                                <span>Menuiserie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="type_electricite" value="1"
+                                                       t-att-checked="form_data.get('type_electricite') and 'checked' or None"/>
+                                                <span>Électricité</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="mn-form-group">
+                                        <label>Besoins spécifiques / commentaires</label>
+                                        <textarea name="besoins" rows="4" placeholder="Webhooks de retour, rapports PDF automatiques, SLA souhaités, environnement de recette…"><t t-esc="form_data.get('besoins', '')"/></textarea>
+                                    </div>
+
+                                    <div class="mn-form-group" style="margin-top:8px;">
+                                        <label class="mn-checkbox-item" style="align-items:flex-start;">
+                                            <input type="checkbox" name="accept_cgu" value="1" required="required"
+                                                   t-att-checked="form_data.get('accept_cgu') and 'checked' or None"/>
+                                            <span style="font-size:13px;font-weight:400;color:#374151;line-height:1.5;">
+                                                J'accepte que mes données soient traitées conformément à la politique de confidentialité de Sinistre Services, dans le cadre de la demande d'accès API. <span class="required">*</span>
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div class="mn-form-submit">
+                                        <button type="submit" class="mn-btn mn-btn--primary mn-btn--lg" style="width:100%;justify-content:center;">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"/> Envoyer ma demande d'accès
+                                        </button>
+                                        <p style="text-align:center;font-size:12px;color:#9CA3AF;margin-top:12px;">
+                                            Accès sandbox gratuit · Activation sous 48h · Support technique dédié
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Sidebar -->
+                            <aside class="mn-contact-sidebar">
+                                <div class="mn-contact-info-card mn-api-info-card">
+                                    <h3><i class="fa fa-plug" style="margin-right:8px;" aria-hidden="true"/>Fonctionnalités API</h3>
+                                    <ul class="mn-api-features">
+                                        <li>
+                                            <i class="fa fa-send" aria-hidden="true"/>
+                                            <div>
+                                                <strong>Ordres de mission</strong>
+                                                <span>POST automatique des demandes d'intervention</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-refresh" aria-hidden="true"/>
+                                            <div>
+                                                <strong>Suivi temps réel</strong>
+                                                <span>Statuts, RDV, devis et clôture en direct</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-file-pdf-o" aria-hidden="true"/>
+                                            <div>
+                                                <strong>Rapports PDF</strong>
+                                                <span>Comptes-rendus et photos d'intervention</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-bell" aria-hidden="true"/>
+                                            <div>
+                                                <strong>Webhooks</strong>
+                                                <span>Notifications push sur vos événements</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="mn-contact-info-card">
+                                    <h3>Endpoints principaux</h3>
+                                    <div class="mn-api-endpoint">
+                                        <span class="mn-api-method mn-api-method--get">GET</span>
+                                        <code>/api/assurance/v1/ping</code>
+                                    </div>
+                                    <div class="mn-api-endpoint">
+                                        <span class="mn-api-method mn-api-method--post">POST</span>
+                                        <code>/api/assurance/v1/mission</code>
+                                    </div>
+                                    <div class="mn-api-endpoint">
+                                        <span class="mn-api-method mn-api-method--get">GET</span>
+                                        <code>/api/assurance/v1/mission/{ref}</code>
+                                    </div>
+                                    <p style="font-size:12px;color:#6B7280;margin-top:12px;line-height:1.5;">
+                                        Authentification via header <code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;font-size:11px;">X-API-Key</code>
+                                    </p>
+                                </div>
+
+                                <div class="mn-contact-info-card" style="background:#EFF6FF;border-color:#BFDBFE;">
+                                    <h3 style="color:#1E40AF;">Besoin d'aide ?</h3>
+                                    <p style="font-size:13px;color:#374151;line-height:1.6;margin-bottom:16px;">
+                                        Notre équipe API est disponible pour vous accompagner dans l'intégration.
+                                    </p>
+                                    <a href="mailto:api@sinistre-services.fr" class="mn-btn mn-btn--outline" style="width:100%;justify-content:center;font-size:13px;">
+                                        <i class="fa fa-envelope" aria-hidden="true"/> api@sinistre-services.fr
+                                    </a>
+                                </div>
+                            </aside>
+
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <div id="oe_structure_ss_api_access_bottom" class="oe_structure oe_empty"/>
+
+        </div>
+    </t>
+</template>
+
+<template id="ss_page_api_access" inherit_id="sinistre_services.page_api_access" name="Accès API (alias)"/>
+
+<!-- ════════════════════════════════════════════════════════════
      PAGE CONTACT
 ════════════════════════════════════════════════════════════ -->
 <template id="page_contact" name="Sinistre Services — Contact">
