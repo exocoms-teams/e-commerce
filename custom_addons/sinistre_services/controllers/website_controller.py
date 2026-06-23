@@ -225,14 +225,19 @@ class SinistreWebsite(http.Controller):
         )
 
     # ─── CONTACT ────────────────────────────────────────────────────
-    @http.route('/contact', type='http', auth='public', website=True)
-    def contact(self, **kwargs):
-        return request.render('sinistre_services.ss_page_contact', {
+    def _contact_render(self, **ctx):
+        defaults = {
             'year': datetime.datetime.now().year,
             'error': False,
             'success': False,
             'form_data': {},
-        })
+        }
+        defaults.update(ctx)
+        return request.render('sinistre_services.page_contact', defaults)
+
+    @http.route('/contact', type='http', auth='public', website=True)
+    def contact(self, **kwargs):
+        return self._contact_render()
 
     @http.route('/contact/send', type='http', auth='public', website=True,
                 methods=['POST'], csrf=True)
@@ -242,12 +247,7 @@ class SinistreWebsite(http.Controller):
         message = post.get('message', '').strip()
 
         if not (name and email and message):
-            return request.render('sinistre_services.ss_page_contact', {
-                'year': datetime.datetime.now().year,
-                'error': True,
-                'success': False,
-                'form_data': post,
-            })
+            return self._contact_render(error=True, form_data=post)
 
         try:
             mail_vals = {
@@ -256,6 +256,7 @@ class SinistreWebsite(http.Controller):
                     <p><strong>Nom :</strong> {name}</p>
                     <p><strong>Email :</strong> {email}</p>
                     <p><strong>Téléphone :</strong> {post.get('phone', 'Non renseigné')}</p>
+                    <p><strong>Objet :</strong> {post.get('sujet', 'Non renseigné')}</p>
                     <p><strong>Message :</strong><br/>{message}</p>
                 """,
                 'email_from': email,
@@ -263,14 +264,9 @@ class SinistreWebsite(http.Controller):
             }
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:
-            _logger.warning(f"Contact send failed: {e}")
+            _logger.warning("Contact send failed: %s", e)
 
-        return request.render('sinistre_services.ss_page_contact', {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': True,
-            'form_data': {},
-        })
+        return self._contact_render(success=True)
 
     # ─── SUIVI DOSSIER (token public) ───────────────────────────────
     @http.route('/suivi/<string:token>', type='http', auth='public', website=True)
