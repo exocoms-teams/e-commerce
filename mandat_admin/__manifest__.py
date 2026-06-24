@@ -53,6 +53,7 @@ Fonctionnalités
         'report/bca_template.xml',
         'report/bordereau_template.xml',
         'data/payment_provider_data.xml',
+        'views/mandat_inline_form.xml',
         'views/mandat_checkout_template.xml',
     ],
     'assets': {
