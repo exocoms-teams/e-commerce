@@ -240,7 +240,7 @@ class ResPartner(models.Model):
             template = self.env['mail.template'].sudo().search(
                 [('name', '=', name)], limit=1)
             self.env['mail.template'].sudo().browse(
-                template.id).send_mail(self.id, force_send=True)
+                template.id).send_mail(self.id, force_send=True) 
 
     def approve_seller(self):
         """Approve the seller"""
