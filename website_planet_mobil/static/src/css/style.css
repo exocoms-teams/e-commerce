@@ -2308,63 +2308,78 @@ a[name="website_sale_main_button"] {
         min-width: 0 !important;
     }
 }
+
 @media (max-width: 575px) {
-    /* Supprimer le padding container natif */
-    .o_header_mobile .o_main_nav.container {
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+    /* Écraser le padding 28px natif d'Odoo qui crée l'espace vert */
+    .o_header_mobile.navbar {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Réduire padding pour ne pas couper le logo */
+    .o_header_mobile .o_main_nav {
+        padding-left: 8px !important;
+        padding-right: 4px !important;
     }
 
-    /* Conteneur ul boutons */
+    /* Conteneur ul des boutons */
     .o_header_mobile .o_header_mobile_buttons_wrap {
         gap: 4px !important;
+        margin-left: 0 !important;
         flex-shrink: 0 !important;
     }
 
-    /* Panier : écraser rounded-circle et p-1 natifs */
+    /* Bouton panier : forcer carré */
     .o_header_mobile .o_wsale_my_cart {
         position: relative !important;
         flex-shrink: 0 !important;
+        width: 38px !important;
+        height: 38px !important;
     }
 
     .o_header_mobile .o_wsale_my_cart a {
         width: 38px !important;
         height: 38px !important;
-        min-width: unset !important;
-        border-radius: 8px !important;
-        padding: 0 !important;
-        background: #e8eeff !important;
+        max-width: 38px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-    }
-
-    .o_header_mobile .o_wsale_my_cart a > div {
-        background: transparent !important;
         padding: 0 !important;
+        background: #e8eeff !important;
+        border-radius: 8px !important;
     }
 
-    /* Wishlist : même chose */
+    /* Neutraliser le div enfant du panier (pas de fond, pas de taille fixe) */
+    .o_header_mobile .o_wsale_my_cart a > div,
+    .o_header_mobile .o_wsale_my_cart a > span {
+        background: transparent !important;
+        width: auto !important;
+        height: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    /* Bouton wishlist */
     .o_header_mobile .o_wsale_my_wish {
         position: relative !important;
         flex-shrink: 0 !important;
+        width: 38px !important;
+        height: 38px !important;
     }
 
     .o_header_mobile .o_wsale_my_wish a {
         width: 38px !important;
         height: 38px !important;
-        min-width: unset !important;
-        border-radius: 8px !important;
-        padding: 0 !important;
-        background: #e8eeff !important;
+        max-width: 38px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-    }
-
-    .o_header_mobile .o_wsale_my_wish a > div {
-        background: transparent !important;
         padding: 0 !important;
+        background: #e8eeff !important;
+        border-radius: 8px !important;
     }
 
     /* Badges */
@@ -2378,12 +2393,14 @@ a[name="website_sale_main_button"] {
         pointer-events: none !important;
     }
 
-    /* Burger */
-    .o_header_mobile .btn.p-2.nav-link {
-        padding: 4px !important;
+    /* Burger : poussé à droite */
+    .o_header_mobile .navbar-toggler {
         flex-shrink: 0 !important;
+        padding: 4px !important;
+        margin-left: auto !important;
     }
 }
+
 
 #top_menu_collapse_mobile .navbar-nav > li:first-child {
     padding-top: 12px !important;
