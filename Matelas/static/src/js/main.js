@@ -2,19 +2,19 @@
 
 // Gestion des étoiles
 document.querySelectorAll('.star').forEach(star => {
-    star.addEventListener('mouseover', function() {
+    star.addEventListener('mouseover', function () {
         const val = this.dataset.value;
         document.querySelectorAll('.star').forEach(s => {
             s.classList.toggle('active', s.dataset.value <= val);
         });
     });
 
-    star.addEventListener('click', function() {
+    star.addEventListener('click', function () {
         document.getElementById('avis-note').value = this.dataset.value;
     });
 });
 
-document.getElementById('star-rating').addEventListener('mouseleave', function() {
+document.getElementById('star-rating').addEventListener('mouseleave', function () {
     const note = document.getElementById('avis-note').value;
     document.querySelectorAll('.star').forEach(s => {
         s.classList.toggle('active', s.dataset.value <= note);
@@ -58,7 +58,7 @@ function envoyerAvis() {
     document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
 
     // Scroll vers les avis
-    document.getElementById('avis-container').scrollIntoView({behavior: 'smooth'});
+    document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
 }
 
 
@@ -70,10 +70,10 @@ function lancerRecherche() {
 }
 
 // Lancer recherche avec Entrée
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('search-input');
     if (input) {
-        input.addEventListener('keypress', function(e) {
+        input.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') lancerRecherche();
         });
     }
@@ -100,5 +100,8 @@ function envoyerContact() {
     document.getElementById('c-sujet').value = '';
     document.getElementById('c-message').value = '';
 
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({
+        top: document.querySelector('.contact-form-box').offsetTop - 100,
+        behavior: 'smooth'
+    });
 }
