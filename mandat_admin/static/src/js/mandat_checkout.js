@@ -7,18 +7,25 @@ function isMandatSelected() {
         return checked.dataset.providerCode === 'mandat_administratif'
             || checked.dataset.paymentMethodCode === 'mandat_administratif';
     }
-    // Seul mode de paiement, pas de radio — on vérifie si le champ SIRET est présent
     return !!document.getElementById('mandat_siret');
 }
 
-async function handleMandatPayment(e) {
-    // On cible uniquement le bouton Pay Now de la page paiement
+let _mandatSaved = false;
+
+// Phase de capture : intercepte avant OWL
+document.addEventListener('click', async function (e) {
     const btn = e.target.closest('.o_payment_submit_button');
     if (!btn) return;
     if (!isMandatSelected()) return;
 
+    // Après avoir sauvegardé, on laisse passer le re-clic
+    if (_mandatSaved) {
+        _mandatSaved = false;
+        return;
+    }
+
+    e.stopImmediatePropagation();
     e.preventDefault();
-    e.stopPropagation();
 
     const siret = document.getElementById('mandat_siret')?.value?.trim();
     const iban = document.getElementById('mandat_iban')?.value?.trim();
@@ -31,11 +38,10 @@ async function handleMandatPayment(e) {
         return;
     }
     if (errorDiv) errorDiv.style.display = 'none';
-
     btn.disabled = true;
 
     try {
-        const resp = await fetch('/mandat/submit_payment', {
+        const resp = await fetch('/mandat/save_checkout_data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -51,16 +57,16 @@ async function handleMandatPayment(e) {
         });
         const data = await resp.json();
         if (data?.result?.success) {
-            window.location.assign('/shop/confirmation');
-        } else {
-            console.error('[mandat_admin] Erreur:', data?.result?.error);
+            _mandatSaved = true;
             btn.disabled = false;
+            // Re-déclenche le clic — cette fois _mandatSaved=true, donc on laisse passer
+            btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        } else {
+            btn.disabled = false;
+            console.error('[mandat_admin] Erreur save:', data?.result?.error);
         }
     } catch (err) {
-        console.error('[mandat_admin] Fetch error:', err);
         btn.disabled = false;
+        console.error('[mandat_admin] Fetch error:', err);
     }
-}
-
-// Phase de capture : on intercepte avant qu'OWL ne traite le clic
-document.addEventListener('click', handleMandatPayment, true);
+}, true);

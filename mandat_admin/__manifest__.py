@@ -52,6 +52,7 @@ Fonctionnalités
         'report/report_action.xml',
         'report/bca_template.xml',
         'report/bordereau_template.xml',
+        'views/mandat_redirect_form.xml',
         'views/mandat_inline_form.xml',
         'data/payment_provider_data.xml',
         'views/mandat_checkout_template.xml',
@@ -63,6 +64,7 @@ Fonctionnalités
         'web.assets_frontend': [
             'mandat_admin/static/src/css/mandat_payment.css',
             'mandat_admin/static/src/js/mandat_checkout.js',
+            'mandat_admin/static/src/js/mandat_post_processing.js',
         ],
     },
     'installable': True,
