@@ -61,13 +61,12 @@
          Sidebar complète : recherche + catégories + marques + prix
          ================================================================= -->
     <template id="exocoms_filter_sidebar" name="EXOCOMS - Sidebar de filtres">
-        <t t-set="current_website" t-value="env['website'].get_current_website()"/>
         <t t-set="exo_tree"
-           t-value="env['product.public.category'].exocoms_get_tree(3, current_website.id)"/>
+           t-value="website.env['product.public.category'].exocoms_get_tree(3, website.id)"/>
         <t t-set="exo_brands"
-           t-value="env['product.brand'].exocoms_get_brands(current_website.id)"/>
+           t-value="website.env['product.brand'].exocoms_get_brands(website.id)"/>
         <t t-set="exo_prices"
-           t-value="env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, current_website.id])]).mapped('list_price')"/>
+           t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])]).mapped('list_price')"/>
         <t t-set="exo_pmin" t-value="int(min(exo_prices)) if exo_prices else 0"/>
         <t t-set="exo_pmax" t-value="int((max(exo_prices)//100 + 1) * 100) if exo_prices else 2000"/>
 
@@ -143,7 +142,6 @@
          Grille produits (chargement initial ET AJAX)
          ================================================================= -->
     <template id="products_grid" name="EXOCOMS - Grille produits">
-        <t t-set="current_website" t-value="current_website or env['website'].get_current_website()"/>
         <t t-if="not products">
             <div class="exo_empty">
                 <i class="fa fa-inbox" aria-hidden="true"/>
@@ -156,7 +154,7 @@
                 <t t-set="qty" t-value="int(product.qty_available)"/>
                 <div class="exo_prod" t-att-data-product-id="product.id">
                     <a t-att-href="product.website_url" class="exo_prod_img">
-                        <img t-att-src="current_website.image_url(product, 'image_512')"
+                        <img t-att-src="website.image_url(product, 'image_512')"
                              t-att-alt="product.name" loading="lazy"/>
                         <span t-attf-class="exo_stock #{qty &lt;= 5 and 'low' or ''}">
                             <t t-esc="qty"/> en stock
@@ -171,7 +169,7 @@
                         </a>
                         <span class="exo_prod_price"
                               t-field="product.list_price"
-                              t-options='{"widget": "monetary", "display_currency": current_website.currency_id}'/>
+                              t-options='{"widget": "monetary", "display_currency": website.currency_id}'/>
                         <button type="button" class="exo_add_cart btn"
                                 t-att-data-product-id="variant.id">
                             <i class="fa fa-plus" aria-hidden="true"/> Ajouter
@@ -191,7 +189,6 @@
          Tableau comparatif (rendu via /exocoms/sidebar/compare)
          ================================================================= -->
     <template id="compare_table" name="EXOCOMS - Tableau comparatif">
-        <t t-set="current_website" t-value="current_website or env['website'].get_current_website()"/>
         <table class="exo_cmptable">
             <thead>
                 <tr>
@@ -199,7 +196,7 @@
                     <t t-foreach="products" t-as="product">
                         <th>
                             <div class="exo_cmp_img">
-                                <img t-att-src="current_website.image_url(product, 'image_256')"
+                                <img t-att-src="website.image_url(product, 'image_256')"
                                      t-att-alt="product.name"/>
                             </div>
                             <a t-att-href="product.website_url"><t t-esc="product.name"/></a>
@@ -212,7 +209,7 @@
                     <td class="rowlbl">Prix</td>
                     <t t-foreach="products" t-as="product">
                         <td><strong t-field="product.list_price"
-                            t-options='{"widget": "monetary", "display_currency": current_website.currency_id}'/></td>
+                            t-options='{"widget": "monetary", "display_currency": website.currency_id}'/></td>
                     </t>
                 </tr>
                 <tr>
@@ -243,6 +240,42 @@
                 </t>
             </tbody>
         </table>
+    </template>
+
+
+    <!-- =================================================================
+         Page de comparaison autonome (/exocoms/compare) : imprimable
+         et partageable via une URL encodant les produits comparés.
+         ================================================================= -->
+    <template id="compare_page" name="EXOCOMS - Page de comparaison">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container my-4 s_exocoms_sidebar o_exocoms_root">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h3 mb-0">Comparaison de produits</h1>
+                        <button type="button" class="btn btn-primary o_exo_print_btn"
+                                onclick="window.print()">
+                            <i class="fa fa-print"/> Imprimer
+                        </button>
+                    </div>
+                    <t t-if="products">
+                        <div class="exo_modal_body">
+                            <t t-call="exocoms_sidebar_cards.compare_table"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <p class="text-muted">Aucun produit à comparer.</p>
+                    </t>
+                </div>
+            </div>
+            <t t-if="auto_print">
+                <script type="text/javascript">
+                    window.addEventListener("load", function () {
+                        setTimeout(function () { window.print(); }, 350);
+                    });
+                </script>
+            </t>
+        </t>
     </template>
 
 </odoo>

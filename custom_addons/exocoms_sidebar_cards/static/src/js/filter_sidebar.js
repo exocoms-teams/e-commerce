@@ -11,29 +11,29 @@ import { rpc } from "@web/core/network/rpc";
 export class ExocomsSidebar extends Interaction {
     static selector = ".s_exocoms_sidebar";
 
-    get dynamicContent() {
-        return {
-            "[data-toggle-cat]": { "t-on-click.stop": this.onToggleCategory.bind(this) },
-            ".exo_facet_head":   { "t-on-click":       this.onToggleFacet.bind(this) },
-            ".exo_cat_cb":       { "t-on-change":       this.onFilterChange.bind(this) },
-            ".exo_brand_cb":     { "t-on-change":       this.onFilterChange.bind(this) },
-            ".exo_sort":         { "t-on-change":       this.onFilterChange.bind(this) },
-            ".exo_search_input": { "t-on-input":        this.onSearchInput.bind(this) },
-            ".exo_range":        { "t-on-input":        this.onPriceInput.bind(this) },
-            ".exo_reset":        { "t-on-click":        this.onReset.bind(this) },
-            ".exo_chip_remove":  { "t-on-click":        this.onRemoveChip.bind(this) },
-            ".exo_cmp_cb":       { "t-on-change":       this.onToggleCompare.bind(this) },
-            ".exo_cmp_go":       { "t-on-click":        this.onOpenCompare.bind(this) },
-            ".exo_cmp_remove":   { "t-on-click":        this.onRemoveCompare.bind(this) },
-            ".exo_cmp_clear":    { "t-on-click":        this.onClearCompare.bind(this) },
-            ".exo_modal_close":  { "t-on-click":        this.onCloseModal.bind(this) },
-            ".exo_modal":        { "t-on-click":        this.onModalBackdrop.bind(this) },
-            ".exo_add_cart":     { "t-on-click":        this.onAddToCart.bind(this) },
-            ".exo_page_prev":    { "t-on-click":        this.onPagePrev.bind(this) },
-            ".exo_page_next":    { "t-on-click":        this.onPageNext.bind(this) },
-            ".exo_page_num":     { "t-on-click":        this.onPageNum.bind(this) },
-        };
-    }
+    dynamicContent = {
+        "[data-toggle-cat]": { "t-on-click.stop": "onToggleCategory" },
+        ".exo_facet_head": { "t-on-click": "onToggleFacet" },
+        ".exo_cat_cb": { "t-on-change": "onFilterChange" },
+        ".exo_brand_cb": { "t-on-change": "onFilterChange" },
+        ".exo_sort": { "t-on-change": "onFilterChange" },
+        ".exo_search_input": { "t-on-input": "onSearchInput" },
+        ".exo_range": { "t-on-input": "onPriceInput" },
+        ".exo_reset": { "t-on-click": "onReset" },
+        ".exo_chip_remove": { "t-on-click": "onRemoveChip" },
+        ".exo_cmp_cb": { "t-on-change": "onToggleCompare" },
+        ".exo_cmp_go": { "t-on-click": "onOpenCompare" },
+        ".exo_cmp_remove": { "t-on-click": "onRemoveCompare" },
+        ".exo_cmp_clear": { "t-on-click": "onClearCompare" },
+        ".exo_modal_close": { "t-on-click": "onCloseModal" },
+        ".exo_modal": { "t-on-click": "onModalBackdrop" },
+        ".exo_cmp_print": { "t-on-click": "onPrintCompare" },
+        ".exo_cmp_share": { "t-on-click": "onShareCompare" },
+        ".exo_add_cart": { "t-on-click": "onAddToCart" },
+        ".exo_page_prev": { "t-on-click": "onPagePrev" },
+        ".exo_page_next": { "t-on-click": "onPageNext" },
+        ".exo_page_num": { "t-on-click": "onPageNum" },
+    };
 
     setup() {
         this.root = this.el;
@@ -60,7 +60,6 @@ export class ExocomsSidebar extends Interaction {
 
     // ---------------- Repli / dépli ----------------
     onToggleCategory(ev) {
-        ev.stopPropagation();
         const id = ev.currentTarget.dataset.toggleCat;
         const cat = this.root.querySelector(`.exo_cat[data-cat-id="${id}"]`);
         if (cat) { cat.classList.toggle("exo_open"); return; }
@@ -328,8 +327,40 @@ export class ExocomsSidebar extends Interaction {
         host.innerHTML =
             `<div class="exo_modal"><div class="exo_modal_panel">` +
             `<div class="exo_modal_head"><span class="exo_modal_title">Comparaison · ${this.compare.length} produits</span>` +
-            `<button type="button" class="exo_modal_close btn">&times;</button></div>` +
+            `<div class="exo_modal_actions">` +
+            `<button type="button" class="exo_cmp_print btn"><i class="fa fa-print"></i> Imprimer</button>` +
+            `<button type="button" class="exo_cmp_share btn"><i class="fa fa-share-alt"></i> Partager</button>` +
+            `<button type="button" class="exo_modal_close btn">&times;</button>` +
+            `</div></div>` +
             `<div class="exo_modal_body">${res.html}</div></div></div>`;
+    }
+
+    _compareUrl(print) {
+        const ids = this.compare.join(",");
+        let url = `${window.location.origin}/exocoms/compare?ids=${ids}`;
+        if (print) url += "&print=1";
+        return url;
+    }
+
+    onPrintCompare() {
+        window.open(this._compareUrl(true), "_blank");
+    }
+
+    async onShareCompare() {
+        const url = this._compareUrl(false);
+        const data = { title: "Comparaison de produits EXOCOMS", url };
+        if (navigator.share) {
+            try { await navigator.share(data); } catch (e) { /* annulé */ }
+        } else if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(url);
+                this._toast("Lien de comparaison copié");
+            } catch (e) {
+                this._toast("Copie impossible", true);
+            }
+        } else {
+            this._toast(url);
+        }
     }
 
     onCloseModal() {

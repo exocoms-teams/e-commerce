@@ -229,11 +229,20 @@ $exo-accent: #2b2a78;
         max-height: 88vh; overflow: auto; box-shadow: 0 18px 50px rgba(0,0,0,.3);
     }
     .exo_modal_head {
-        display: flex; align-items: center; justify-content: space-between;
+        display: flex; align-items: center; gap: 10px;
         padding: 14px 18px; border-bottom: 1px solid $exo-border;
         position: sticky; top: 0; background: #fff;
-        .exo_modal_title { font-weight: 600; font-size: 15px; }
-        .exo_modal_close { border: none; background: transparent; font-size: 22px; line-height: 1; cursor: pointer; color: $exo-muted; }
+        .exo_modal_title { font-weight: 600; font-size: 15px; flex: 1; }
+        .exo_modal_actions { display: flex; gap: 8px; align-items: center; }
+        .exo_cmp_print, .exo_cmp_share {
+            border: 1px solid $exo-border; background: #fff; color: #1a1a1a;
+            border-radius: $exo-radius-sm; padding: 7px 12px; font-size: 12.5px;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            &:hover { background: $exo-bg; }
+        }
+        .exo_cmp_share { background: $exo-accent; color: #fff; border-color: $exo-accent;
+            &:hover { opacity: .92; background: $exo-accent; } }
+        .exo_modal_close { border: none; background: transparent; font-size: 22px; line-height: 1; cursor: pointer; color: $exo-muted; padding: 0 4px; }
     }
     .exo_modal_body { padding: 16px 18px; overflow: auto; }
     .exo_cmptable {
@@ -272,6 +281,36 @@ $exo-accent: #2b2a78;
             .exo_cat_ico { width: 24px; height: 24px; font-size: 13px; border-radius: 6px; }
             .exo_cat_head:hover { background: $exo-bg; }
             &.exo_open .exo_cat_body { background: $exo-bg; padding-top: 6px; }
+        }
+    }
+
+    // ============================================================
+    //  MODÈLE 3 : Arborescence (lignes de liaison) — classe o_exo_tree
+    // ============================================================
+    &.o_exo_tree {
+        .exo_categories { background: transparent; }
+        .exo_cat {
+            border: none; background: transparent; border-radius: 0;
+            margin-bottom: 2px; overflow: visible;
+            .exo_cat_head { padding: 6px 4px; }
+            .exo_cat_ico {
+                width: 26px; height: 26px; font-size: 13px;
+                background: transparent !important;
+                border: 1.5px solid currentColor; border-radius: 50%;
+            }
+            .exo_cat_title { font-weight: 600; }
+            .exo_cat_body {
+                display: none;
+                margin-left: 14px; padding-left: 16px;
+                border-left: 1.5px solid $exo-border;
+            }
+            &.exo_open .exo_cat_body { display: block; }
+        }
+        .exo_leaf { position: relative;
+            &::before {
+                content: ""; position: absolute; left: -16px; top: 15px;
+                width: 12px; border-top: 1.5px solid $exo-border;
+            }
         }
     }
 
@@ -314,4 +353,14 @@ $exo-accent: #2b2a78;
         &.exo_toast_show { opacity: 1; transform: translate(-50%, 0); }
         &.exo_toast_err { background: #a32d2d; }
     }
+}
+
+// ============================================================
+//  Impression de la page de comparaison (/exocoms/compare)
+// ============================================================
+@media print {
+    header, footer,
+    .o_main_navbar, #top_menu, .o_footer,
+    .o_exo_print_btn { display: none !important; }
+    .s_exocoms_sidebar .exo_cmptable { font-size: 12px; }
 }

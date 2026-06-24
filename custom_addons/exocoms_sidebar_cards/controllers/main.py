@@ -53,7 +53,38 @@ class ExocomsSidebarController(http.Controller):
     def sidebar_compare(self, product_ids=None, **kw):
         ids = [int(i) for i in (product_ids or [])][:4]
         products = request.env["product.template"].sudo().browse(ids).exists()
+        attr_names, prod_attrs = self._compare_values(products)
+        html = request.env["ir.qweb"]._render(
+            "exocoms_sidebar_cards.compare_table",
+            {
+                "products": products,
+                "attr_names": attr_names,
+                "prod_attrs": prod_attrs,
+                "website": request.website,
+            },
+        )
+        return {"html": html}
 
+    # ------------------------------------------------------------------
+    #  Page de comparaison autonome (impression / partage)
+    # ------------------------------------------------------------------
+    @http.route("/exocoms/compare",
+                type="http", auth="public", website=True, sitemap=False)
+    def compare_page(self, ids="", print="", **kw):
+        id_list = [int(i) for i in str(ids).split(",")
+                   if i.strip().isdigit()][:4]
+        products = request.env["product.template"].sudo().browse(id_list).exists()
+        attr_names, prod_attrs = self._compare_values(products)
+        return request.render("exocoms_sidebar_cards.compare_page", {
+            "products": products,
+            "attr_names": attr_names,
+            "prod_attrs": prod_attrs,
+            "website": request.website,
+            "auto_print": bool(print),
+        })
+
+    @staticmethod
+    def _compare_values(products):
         attr_names = []
         prod_attrs = {}
         for product in products:
@@ -65,17 +96,7 @@ class ExocomsSidebarController(http.Controller):
                 if line.attribute_id.name not in attr_names:
                     attr_names.append(line.attribute_id.name)
             prod_attrs[product.id] = values
-
-        html = request.env["ir.qweb"]._render(
-            "exocoms_sidebar_cards.compare_table",
-            {
-                "products": products,
-                "attr_names": attr_names,
-                "prod_attrs": prod_attrs,
-                "website": request.website,
-            },
-        )
-        return {"html": html}
+        return attr_names, prod_attrs
 
     # ------------------------------------------------------------------
     #  Helpers

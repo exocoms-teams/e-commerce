@@ -36,9 +36,8 @@
                         <div class="exo_card exo_products_wrap">
                             <div class="exo_products">
                                 <t t-call="exocoms_sidebar_cards.products_grid">
-                                    <t t-set="current_website" t-value="env['website'].get_current_website()"/>
                                     <t t-set="products"
-                                       t-value="env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, current_website.id])], order='name asc', limit=24)"/>
+                                       t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])], order='name asc', limit=24)"/>
                                 </t>
                             </div>
                             <div class="exo_pagination"></div>
