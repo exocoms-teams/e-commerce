@@ -5,6 +5,9 @@
     'summary': 'Site e-commerce de vente de matelas',
     'category': 'Website',
     'depends': ['website', 'website_sale'],
+    'author': 'Equipe matelas',
+    'license': 'LGPL-3',
+
     'data': [
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
@@ -25,5 +28,5 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-    'licence': 'LGPL-3',
+
 }
