@@ -6,16 +6,20 @@ import { onMounted } from '@odoo/owl';
 console.log('[mandat_admin] module JS chargé ✓');
 
 function isMandatSelected() {
-    const radios = document.querySelectorAll('input[name="o_payment_radio"]');
-    if (radios.length === 0) return !!document.getElementById('mandat_administratif_form');
-    const radio = document.querySelector('input[name="o_payment_radio"]:checked');
-    if (!radio) return false;
-    return radio.dataset.providerCode === 'mandat_administratif'
-        || radio.dataset.paymentMethodCode === 'mandat_administratif';
+    // Si un radio est coché, on vérifie son provider code
+    const checkedRadio = document.querySelector('input[name="o_payment_radio"]:checked');
+    if (checkedRadio) {
+        return checkedRadio.dataset.providerCode === 'mandat_administratif'
+            || checkedRadio.dataset.paymentMethodCode === 'mandat_administratif';
+    }
+    // Pas de radio (un seul mode de paiement) → on vérifie si notre form existe dans le DOM
+    return !!document.getElementById('mandat_administratif_form');
 }
 
 function updateMandatVisibility() {
-    document.body.classList.toggle('o_mandat_active', isMandatSelected());
+    const active = isMandatSelected();
+    console.log('[mandat_admin] updateMandatVisibility, active:', active);
+    document.body.classList.toggle('o_mandat_active', active);
 }
 
 patch(PaymentForm.prototype, {
@@ -30,9 +34,21 @@ patch(PaymentForm.prototype, {
         updateMandatVisibility();
     },
 
+    // Intercepte le redirect flow AVANT qu'il cherche #o_payment_redirect_form
+    async _processRedirectFlow(providerCode, paymentOptionId, redirectUrl, processingValues) {
+        if (providerCode === 'mandat_administratif') {
+            console.log('[mandat_admin] _processRedirectFlow intercepté → /payment/status');
+            window.location.assign('/payment/status');
+            return;
+        }
+        return super._processRedirectFlow(...arguments);
+    },
+
     async submitForm(...args) {
         console.log('[mandat_admin] submitForm appelé, isMandatSelected:', isMandatSelected());
-        if (!isMandatSelected()) return super.submitForm(...args);
+        if (!isMandatSelected()) {
+            return super.submitForm(...args);
+        }
 
         const siret = document.getElementById('mandat_siret')?.value?.trim();
         const iban = document.getElementById('mandat_iban')?.value?.trim();
@@ -65,6 +81,8 @@ patch(PaymentForm.prototype, {
             const data = await resp.json();
             if (data?.result?.success) {
                 window.location.assign('/payment/status');
+            } else {
+                console.error('[mandat_admin] Erreur serveur:', data?.result?.error);
             }
         } catch (e) {
             console.error('[mandat_admin] Erreur paiement:', e);
