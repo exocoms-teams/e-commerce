@@ -1,23 +1,38 @@
 /** @odoo-module **/
 import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
+import { onMounted } from '@odoo/owl';
 
 function isMandatSelected() {
-    const radio = document.querySelector('input[name="o_payment_radio"]:checked');
-    if (!radio) {
-        // Pas de radio = provider unique, c'est le nôtre si notre form existe
+    const radios = document.querySelectorAll('input[name="o_payment_radio"]');
+    if (radios.length === 0) {
+        // Aucun radio = provider unique = c'est le nôtre
         return !!document.getElementById('mandat_administratif_form');
     }
-    // Vérifie tous les attributs data-* pour la valeur 'mandat_administratif'
+    const radio = document.querySelector('input[name="o_payment_radio"]:checked');
+    if (!radio) return false;
+
+    // Vérifie tous les attributs data-*
     for (const val of Object.values(radio.dataset)) {
         if (val === 'mandat_administratif') return true;
     }
-    // Fallback fiable : vérifie le texte visible de l'option sélectionnée
+    // Fallback : texte visible de l'option
     const container = radio.closest('li, label, .o_payment_option, [class*="payment"]') || radio.parentElement;
     return container?.textContent?.toLowerCase().includes('mandat') || false;
 }
 
-// Injecte #o_payment_redirect_form pointant vers notre contrôleur
+function updateMandatForm() {
+    const mandatForm = document.getElementById('mandat_administratif_form');
+    if (!mandatForm) return;
+    const selected = isMandatSelected();
+    mandatForm.style.display = selected ? 'block' : 'none';
+    if (selected) {
+        injectMandatRedirectForm();
+    } else {
+        removeMandatRedirectForm();
+    }
+}
+
 function injectMandatRedirectForm() {
     if (document.getElementById('o_payment_redirect_form')) return;
     const form = document.createElement('form');
@@ -36,21 +51,16 @@ function removeMandatRedirectForm() {
 
 patch(PaymentForm.prototype, {
 
-    // Affiche/masque le formulaire mandat selon le provider sélectionné
-    async _updateSelectedPaymentOption() {
-        await super._updateSelectedPaymentOption(...arguments);
-        const mandatForm = document.getElementById('mandat_administratif_form');
-        if (!mandatForm) return;
-        if (isMandatSelected()) {
-            mandatForm.style.display = 'block';
-            injectMandatRedirectForm();
-        } else {
-            mandatForm.style.display = 'none';
-            removeMandatRedirectForm();
-        }
+    setup() {
+        super.setup(...arguments);
+        onMounted(() => updateMandatForm());
     },
 
-    // Valide les champs et sauvegarde les données avant la transaction
+    async _updateSelectedPaymentOption() {
+        await super._updateSelectedPaymentOption(...arguments);
+        updateMandatForm();
+    },
+
     async _initiatePaymentFlow(...args) {
         if (isMandatSelected()) {
             const siret = document.getElementById('mandat_siret')?.value?.trim();
@@ -83,13 +93,11 @@ patch(PaymentForm.prototype, {
                 });
             } catch (e) {}
 
-            // Assure que le formulaire de redirection est injecté avant que super() ne le cherche
             injectMandatRedirectForm();
         }
         return super._initiatePaymentFlow(...args);
     },
 
-    // Filet de sécurité si le formulaire de redirection est absent
     async _processRedirectFlow(...args) {
         if (!document.getElementById('o_payment_redirect_form')) {
             window.location.assign('/mandat/payment_confirm');
