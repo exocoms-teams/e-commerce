@@ -19,6 +19,7 @@
         'web.assets_frontend': [
             'tracker_extension/static/css/extension_style.css',
             'tracker_extension/static/js/extension_dashboard.js',
+            'tracker_extension/static/js/homepage.js',
         ],
     },
     'installable': True,
