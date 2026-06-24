@@ -3,7 +3,8 @@ import { PaymentForm } from '@payment/js/payment_form';
 import { patch } from '@web/core/utils/patch';
 import { onMounted } from '@odoo/owl';
 
-// On connaît maintenant les noms exacts des attributs dataset Odoo 19
+console.log('[mandat_admin] module JS chargé ✓');
+
 function isMandatSelected() {
     const radios = document.querySelectorAll('input[name="o_payment_radio"]');
     if (radios.length === 0) return !!document.getElementById('mandat_administratif_form');
@@ -30,6 +31,7 @@ patch(PaymentForm.prototype, {
     },
 
     async submitForm(...args) {
+        console.log('[mandat_admin] submitForm appelé, isMandatSelected:', isMandatSelected());
         if (!isMandatSelected()) return super.submitForm(...args);
 
         const siret = document.getElementById('mandat_siret')?.value?.trim();
@@ -65,7 +67,7 @@ patch(PaymentForm.prototype, {
                 window.location.assign('/payment/status');
             }
         } catch (e) {
-            console.error('Mandat payment error:', e);
+            console.error('[mandat_admin] Erreur paiement:', e);
         }
     },
 });
