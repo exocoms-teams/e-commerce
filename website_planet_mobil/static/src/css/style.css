@@ -2311,9 +2311,15 @@ a[name="website_sale_main_button"] {
 
 /* ---- Fix téléphone : séparer bouton panier, wishlist et burger -------- */
 @media (max-width: 575px) {
+    /* Réduire padding droit pour ne pas couper le logo */
+    .o_header_mobile .o_main_nav {
+        padding-right: 6px !important;
+        padding-left: 10px !important;
+    }
+
     /* Conteneur des actions à droite */
     .o_header_mobile .d-flex.flex-grow-1 {
-        gap: 8px !important;
+        gap: 4px !important;
         justify-content: flex-end !important;
     }
 
@@ -2327,12 +2333,20 @@ a[name="website_sale_main_button"] {
     .o_header_mobile .o_wsale_my_cart a {
         background: #e8eeff !important;
         border-radius: 8px !important;
-        width: 42px !important;
-        height: 42px !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        overflow: hidden !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
+    }
+
+    /* Cacher les spans texte dans le panier (garde juste l'icône) */
+    .o_header_mobile .o_wsale_my_cart a span:not(.my_cart_quantity) {
+        display: none !important;
     }
 
     /* Bouton wishlist */
@@ -2345,15 +2359,18 @@ a[name="website_sale_main_button"] {
     .o_header_mobile .o_wsale_my_wish a {
         background: #e8eeff !important;
         border-radius: 8px !important;
-        width: 42px !important;
-        height: 42px !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        overflow: hidden !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
     }
 
-    /* Badges quantité : restent dans leur bouton, ne débordent pas */
+    /* Badges quantité : restent dans leur bouton */
     .o_header_mobile .my_cart_quantity,
     .o_header_mobile .my_wish_quantity {
         position: absolute !important;
@@ -2368,7 +2385,6 @@ a[name="website_sale_main_button"] {
         flex-shrink: 0 !important;
         background: transparent !important;
         border: none !important;
-        /*padding: 6px !important;*/
         margin-left: 0 !important;
         position: relative !important;
         z-index: 2 !important;
