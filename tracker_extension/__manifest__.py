@@ -9,6 +9,7 @@
     'license': 'LGPL-3',
     'depends': ['website', 'mail'],
     'data': [
+        'views/home_template.xml',
         'views/templates.xml',
         'views/website_menu.xml',
         'views/dashboard_template.xml',

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_homepage" name="Custom Homepage">
+        <t t-call="website.layout">
+            <t t-set="title">Home - Tracker Extension</t>
+            
+            <!-- Hero Section -->
+            <div class="container mt-4 mb-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold text-primary">Welcome to <br>Tracker Extension</h1>
+                        <p class="lead text-muted mt-3">
+                            The ultimate product intelligence tool for e-commerce shoppers. 
+                            Track products automatically across Amazon, eBay, Etsy, Walmart, 
+                            and hundreds of other stores.
+                        </p>
+                        <div class="mt-4">
+                            <a href="/tracker-extension" class="btn btn-success btn-lg me-3">
+                                <i class="fa fa-download me-2"></i>Download Now
+                            </a>
+                            <a href="/extension-dashboard" class="btn btn-outline-primary btn-lg">
+                                <i class="fa fa-dashboard me-2"></i>Dashboard
+                            </a>
+                        </div>
+                        <div class="mt-3">
+                            <span class="badge bg-success me-2">v2.1.0</span>
+                            <span class="badge bg-info text-dark">Free</span>
+                            <span class="badge bg-warning text-dark">Chrome Extension</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-center">
+                        <div class="bg-light rounded-4 p-5 shadow">
+                            <div style="font-size: 80px;">🛒</div>
+                            <h3 class="mt-3">Smart Product Tracking</h3>
+                            <p class="text-muted">Automatically detect and track products as you browse</p>
+                            <div class="mt-3">
+                                <span class="badge bg-primary me-2">Amazon</span>
+                                <span class="badge bg-primary me-2">eBay</span>
+                                <span class="badge bg-primary me-2">Etsy</span>
+                                <span class="badge bg-primary">Walmart</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="container mb-5">
+                <h2 class="text-center mb-4">Why Choose Tracker?</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div style="font-size: 48px;">🔍</div>
+                                <h5 class="card-title mt-3">Auto Detection</h5>
+                                <p class="card-text text-muted">
+                                    Automatically detects products on supported e-commerce sites 
+                                    without any manual input.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div style="font-size: 48px;">📊</div>
+                                <h5 class="card-title mt-3">Trend Intelligence</h5>
+                                <p class="card-text text-muted">
+                                    Get trend scores for products based on view velocity, 
+                                    purchase signals, and price changes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div style="font-size: 48px;">🔒</div>
+                                <h5 class="card-title mt-3">Privacy First</h5>
+                                <p class="card-text text-muted">
+                                    All data is stored locally in your browser. 
+                                    Nothing is sent to any server.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="container mb-5">
+                <div class="row g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded-3">
+                            <div style="font-size: 28px; font-weight: 700; color: #2e7d32;" id="statProducts">0</div>
+                            <div class="text-muted">Products Tracked</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded-3">
+                            <div style="font-size: 28px; font-weight: 700; color: #1976d2;" id="statViews">0</div>
+                            <div class="text-muted">Total Views</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded-3">
+                            <div style="font-size: 28px; font-weight: 700; color: #e65100;" id="statPurchases">0</div>
+                            <div class="text-muted">Purchases</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded-3">
+                            <div style="font-size: 28px; font-weight: 700; color: #7b1fa2;" id="statDomains">0</div>
+                            <div class="text-muted">Stores</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="container mb-5">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center p-5">
+                        <h3>Ready to start tracking?</h3>
+                        <p class="mb-4">Download the extension now and start collecting product intelligence.</p>
+                        <a href="/tracker-extension" class="btn btn-light btn-lg">
+                            <i class="fa fa-download me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Products -->
+            <div class="container mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Recently Tracked Products</h3>
+                    <a href="/extension-dashboard" class="btn btn-outline-primary btn-sm">View All →</a>
+                </div>
+                <div class="row g-3" id="recentProducts">
+                    <div class="col-12">
+                        <div class="text-center text-muted py-4">
+                            <p>Loading products...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Load stats from localStorage or Chrome extension
+                    function loadStats() {
+                        try {
+                            // Try Chrome extension data first
+                            if (typeof chrome !== 'undefined' && chrome.storage) {
+                                chrome.storage.local.get(['products', 'categories', 'domains', 'daily'], function(data) {
+                                    const products = data.products || {};
+                                    const domains = data.domains || {};
+                                    
+                                    const productList = Object.values(products);
+                                    const totalProducts = productList.length;
+                                    const totalViews = productList.reduce((sum, p) => sum + (p.viewCount || 0), 0);
+                                    const totalPurchases = productList.reduce((sum, p) => sum + (p.purchaseCount || 0), 0);
+                                    const totalDomains = Object.keys(domains).length;
+                                    
+                                    updateStats(totalProducts, totalViews, totalPurchases, totalDomains);
+                                    renderRecentProducts(productList);
+                                });
+                                return;
+                            }
+                            
+                            // Fallback: localStorage
+                            const stored = localStorage.getItem('purchaseTrackerData');
+                            if (stored) {
+                                const data = JSON.parse(stored);
+                                const purchases = data.purchases || [];
+                                const domains = new Set(purchases.map(p => p.domain));
+                                
+                                updateStats(purchases.length, purchases.length, purchases.length, domains.size);
+                                renderRecentProducts(purchases);
+                                return;
+                            }
+                            
+                            // No data
+                            updateStats(0, 0, 0, 0);
+                            document.getElementById('recentProducts').innerHTML = `
+                                <div class="col-12">
+                                    <div class="text-center text-muted py-4">
+                                        <p>No products tracked yet. Install the extension and start browsing!</p>
+                                    </div>
+                                </div>
+                            `;
+                        } catch (e) {
+                            console.warn('Could not load stats:', e);
+                        }
+                    }
+                    
+                    function updateStats(products, views, purchases, domains) {
+                        const prodEl = document.getElementById('statProducts');
+                        const viewsEl = document.getElementById('statViews');
+                        const purchEl = document.getElementById('statPurchases');
+                        const domEl = document.getElementById('statDomains');
+                        
+                        if (prodEl) prodEl.textContent = formatNumber(products);
+                        if (viewsEl) viewsEl.textContent = formatNumber(views);
+                        if (purchEl) purchEl.textContent = formatNumber(purchases);
+                        if (domEl) domEl.textContent = formatNumber(domains);
+                    }
+                    
+                    function formatNumber(n) {
+                        if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+                        if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+                        return n;
+                    }
+                    
+                    function renderRecentProducts(products) {
+                        const container = document.getElementById('recentProducts');
+                        if (!products || products.length === 0) {
+                            container.innerHTML = `
+                                <div class="col-12">
+                                    <div class="text-center text-muted py-4">
+                                        <p>No products tracked yet. Start browsing shopping sites!</p>
+                                    </div>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        // Sort by lastSeen or date
+                        const sorted = products.sort((a, b) => {
+                            const dateA = new Date(a.lastSeen || a.tracking_date || a.date || 0);
+                            const dateB = new Date(b.lastSeen || b.tracking_date || b.date || 0);
+                            return dateB - dateA;
+                        }).slice(0, 6);
+                        
+                        container.innerHTML = sorted.map(p => {
+                            const title = p.title || p.product_name || 'Unknown Product';
+                            const price = p.latestPrice || p.price || 0;
+                            const domain = p.domain || p.website || 'Unknown';
+                            const date = p.lastSeen || p.tracking_date || p.date || new Date().toISOString();
+                            
+                            return `
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h6>
+                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                <span class="badge bg-primary">${escapeHtml(domain)}</span>
+                                                <span class="fw-bold text-success">$${parseFloat(price).toFixed(2)}</span>
+                                            </div>
+                                            <small class="text-muted d-block mt-2">${new Date(date).toLocaleDateString()}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                    
+                    function escapeHtml(str) {
+                        if (!str) return '';
+                        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    }
+                    
+                    loadStats();
+                    
+                    // Refresh stats every 30 seconds
+                    setInterval(loadStats, 30000);
+                });
+            </script>
+        </t>
+    </template>
+</odoo>
