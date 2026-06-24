@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'planet Mobil- Website Planet Mobil',
-    'version': '19.0.1.0.10',
+    'version': '19.0.1.0.11',
     'category': 'Website/eCommerce',
     'summary': 'Page d\'accueil e-commerce Planet Mobil',
     'author': 'Planet Mobil',
@@ -38,6 +38,7 @@
             'website_planet_mobil/static/src/js/main.js',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
     'auto_install': False,
