@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- =================================================================
          SNIPPET drag & drop : Modèle 1 (Cartes)
          ================================================================= -->
@@ -37,7 +36,7 @@
                             <div class="exo_products">
                                 <t t-call="exocoms_sidebar_cards.products_grid">
                                     <t t-set="products"
-                                       t-value="website.env['product.template'].sudo().search([('is_published','=',True),('website_id','in',[False, website.id])], order='name asc', limit=24)"/>
+                                       t-value="request.env['product.template'].sudo().search([('is_published','=',True)], order='name asc', limit=24)"/>
                                 </t>
                             </div>
                             <div class="exo_pagination"></div>
@@ -64,5 +63,4 @@
             </t>
         </xpath>
     </template>
-
 </odoo>

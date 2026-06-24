@@ -12,27 +12,27 @@ export class ExocomsSidebar extends Interaction {
     static selector = ".s_exocoms_sidebar";
 
     dynamicContent = {
-        "[data-toggle-cat]": { "t-on-click.stop": "onToggleCategory" },
-        ".exo_facet_head": { "t-on-click": "onToggleFacet" },
-        ".exo_cat_cb": { "t-on-change": "onFilterChange" },
-        ".exo_brand_cb": { "t-on-change": "onFilterChange" },
-        ".exo_sort": { "t-on-change": "onFilterChange" },
-        ".exo_search_input": { "t-on-input": "onSearchInput" },
-        ".exo_range": { "t-on-input": "onPriceInput" },
-        ".exo_reset": { "t-on-click": "onReset" },
-        ".exo_chip_remove": { "t-on-click": "onRemoveChip" },
-        ".exo_cmp_cb": { "t-on-change": "onToggleCompare" },
-        ".exo_cmp_go": { "t-on-click": "onOpenCompare" },
-        ".exo_cmp_remove": { "t-on-click": "onRemoveCompare" },
-        ".exo_cmp_clear": { "t-on-click": "onClearCompare" },
-        ".exo_modal_close": { "t-on-click": "onCloseModal" },
-        ".exo_modal": { "t-on-click": "onModalBackdrop" },
-        ".exo_cmp_print": { "t-on-click": "onPrintCompare" },
-        ".exo_cmp_share": { "t-on-click": "onShareCompare" },
-        ".exo_add_cart": { "t-on-click": "onAddToCart" },
-        ".exo_page_prev": { "t-on-click": "onPagePrev" },
-        ".exo_page_next": { "t-on-click": "onPageNext" },
-        ".exo_page_num": { "t-on-click": "onPageNum" },
+        "[data-toggle-cat]": { "t-on-click": (ev) => this.onToggleCategory(ev) },
+        ".exo_facet_head":   { "t-on-click": (ev) => this.onToggleFacet(ev) },
+        ".exo_cat_cb":       { "t-on-change": (ev) => this.onFilterChange(ev) },
+        ".exo_brand_cb":     { "t-on-change": (ev) => this.onFilterChange(ev) },
+        ".exo_sort":         { "t-on-change": (ev) => this.onFilterChange(ev) },
+        ".exo_search_input": { "t-on-input":  (ev) => this.onSearchInput(ev) },
+        ".exo_range":        { "t-on-input":  (ev) => this.onPriceInput(ev) },
+        ".exo_reset":        { "t-on-click":  (ev) => this.onReset(ev) },
+        ".exo_chip_remove":  { "t-on-click":  (ev) => this.onRemoveChip(ev) },
+        ".exo_cmp_cb":       { "t-on-change": (ev) => this.onToggleCompare(ev) },
+        ".exo_cmp_go":       { "t-on-click":  (ev) => this.onOpenCompare(ev) },
+        ".exo_cmp_remove":   { "t-on-click":  (ev) => this.onRemoveCompare(ev) },
+        ".exo_cmp_clear":    { "t-on-click":  (ev) => this.onClearCompare(ev) },
+        ".exo_modal_close":  { "t-on-click":  (ev) => this.onCloseModal(ev) },
+        ".exo_modal":        { "t-on-click":  (ev) => this.onModalBackdrop(ev) },
+        ".exo_cmp_print":    { "t-on-click":  (ev) => this.onPrintCompare(ev) },
+        ".exo_cmp_share":    { "t-on-click":  (ev) => this.onShareCompare(ev) },
+        ".exo_add_cart":     { "t-on-click":  (ev) => this.onAddToCart(ev) },
+        ".exo_page_prev":    { "t-on-click":  (ev) => this.onPagePrev(ev) },
+        ".exo_page_next":    { "t-on-click":  (ev) => this.onPageNext(ev) },
+        ".exo_page_num":     { "t-on-click":  (ev) => this.onPageNum(ev) },
     };
 
     setup() {
@@ -60,6 +60,7 @@ export class ExocomsSidebar extends Interaction {
 
     // ---------------- Repli / dépli ----------------
     onToggleCategory(ev) {
+        ev.stopPropagation();
         const id = ev.currentTarget.dataset.toggleCat;
         const cat = this.root.querySelector(`.exo_cat[data-cat-id="${id}"]`);
         if (cat) { cat.classList.toggle("exo_open"); return; }
@@ -141,6 +142,7 @@ export class ExocomsSidebar extends Interaction {
         const ppg = parseInt(this.root.dataset.exoPpg || "24", 10);
 
         const wrap = this.root.querySelector(".exo_products");
+        if (!wrap) return;
         if (!silent) wrap.classList.add("exo_loading");
 
         const res = await this.waitFor(rpc("/exocoms/sidebar/filter", {
@@ -151,11 +153,16 @@ export class ExocomsSidebar extends Interaction {
             search, sort, ppg, page: this.page,
         }));
 
-        wrap.innerHTML = res.html;
-        wrap.classList.remove("exo_loading");
+        const wrapAfter = this.root.querySelector(".exo_products");
+        if (!wrapAfter) return;
+        wrapAfter.innerHTML = res.html;
+        wrapAfter.classList.remove("exo_loading");
         this.page = res.page;
         this.pageCount = res.page_count;
-        this.root.querySelector(".exo_count_n").textContent = res.count;
+
+        const countEl = this.root.querySelector(".exo_count_n");
+        if (countEl) countEl.textContent = res.count;
+
         this._renderChips(categoryIds, brandIds);
         this._renderPagination(res.page, res.page_count);
         this._syncCompareUI();
