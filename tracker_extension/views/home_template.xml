@@ -8,7 +8,7 @@
             <div class="container mt-4 mb-5">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
-                        <h1 class="display-4 fw-bold text-primary">Welcome to <br>Tracker Extension</h1>
+                        <h1 class="display-4 fw-bold text-primary">Welcome to Tracker Extension</h1>
                         <p class="lead text-muted mt-3">
                             The ultimate product intelligence tool for e-commerce shoppers. 
                             Track products automatically across Amazon, eBay, Etsy, Walmart, 
@@ -151,15 +151,15 @@
                     function loadStats() {
                         try {
                             // Try Chrome extension data first
-                            if (typeof chrome !== 'undefined' && chrome.storage) {
+                            if (typeof chrome !== 'undefined' &amp;&amp; chrome.storage) {
                                 chrome.storage.local.get(['products', 'categories', 'domains', 'daily'], function(data) {
                                     const products = data.products || {};
                                     const domains = data.domains || {};
                                     
                                     const productList = Object.values(products);
                                     const totalProducts = productList.length;
-                                    const totalViews = productList.reduce((sum, p) => sum + (p.viewCount || 0), 0);
-                                    const totalPurchases = productList.reduce((sum, p) => sum + (p.purchaseCount || 0), 0);
+                                    const totalViews = productList.reduce(function(sum, p) { return sum + (p.viewCount || 0); }, 0);
+                                    const totalPurchases = productList.reduce(function(sum, p) { return sum + (p.purchaseCount || 0); }, 0);
                                     const totalDomains = Object.keys(domains).length;
                                     
                                     updateStats(totalProducts, totalViews, totalPurchases, totalDomains);
@@ -173,7 +173,10 @@
                             if (stored) {
                                 const data = JSON.parse(stored);
                                 const purchases = data.purchases || [];
-                                const domains = new Set(purchases.map(p => p.domain));
+                                const domains = new Set();
+                                purchases.forEach(function(p) {
+                                    if (p.domain) domains.add(p.domain);
+                                });
                                 
                                 updateStats(purchases.length, purchases.length, purchases.length, domains.size);
                                 renderRecentProducts(purchases);
@@ -182,23 +185,22 @@
                             
                             // No data
                             updateStats(0, 0, 0, 0);
-                            document.getElementById('recentProducts').innerHTML = `
-                                <div class="col-12">
-                                    <div class="text-center text-muted py-4">
-                                        <p>No products tracked yet. Install the extension and start browsing!</p>
-                                    </div>
-                                </div>
-                            `;
+                            document.getElementById('recentProducts').innerHTML = 
+                                '<div class="col-12">' +
+                                    '<div class="text-center text-muted py-4">' +
+                                        '<p>No products tracked yet. Install the extension and start browsing!</p>' +
+                                    '</div>' +
+                                '</div>';
                         } catch (e) {
                             console.warn('Could not load stats:', e);
                         }
                     }
                     
                     function updateStats(products, views, purchases, domains) {
-                        const prodEl = document.getElementById('statProducts');
-                        const viewsEl = document.getElementById('statViews');
-                        const purchEl = document.getElementById('statPurchases');
-                        const domEl = document.getElementById('statDomains');
+                        var prodEl = document.getElementById('statProducts');
+                        var viewsEl = document.getElementById('statViews');
+                        var purchEl = document.getElementById('statPurchases');
+                        var domEl = document.getElementById('statDomains');
                         
                         if (prodEl) prodEl.textContent = formatNumber(products);
                         if (viewsEl) viewsEl.textContent = formatNumber(views);
@@ -213,46 +215,47 @@
                     }
                     
                     function renderRecentProducts(products) {
-                        const container = document.getElementById('recentProducts');
+                        var container = document.getElementById('recentProducts');
                         if (!products || products.length === 0) {
-                            container.innerHTML = `
-                                <div class="col-12">
-                                    <div class="text-center text-muted py-4">
-                                        <p>No products tracked yet. Start browsing shopping sites!</p>
-                                    </div>
-                                </div>
-                            `;
+                            container.innerHTML = 
+                                '<div class="col-12">' +
+                                    '<div class="text-center text-muted py-4">' +
+                                        '<p>No products tracked yet. Start browsing shopping sites!</p>' +
+                                    '</div>' +
+                                '</div>';
                             return;
                         }
                         
                         // Sort by lastSeen or date
-                        const sorted = products.sort((a, b) => {
-                            const dateA = new Date(a.lastSeen || a.tracking_date || a.date || 0);
-                            const dateB = new Date(b.lastSeen || b.tracking_date || b.date || 0);
+                        var sorted = products.sort(function(a, b) {
+                            var dateA = new Date(a.lastSeen || a.tracking_date || a.date || 0);
+                            var dateB = new Date(b.lastSeen || b.tracking_date || b.date || 0);
                             return dateB - dateA;
                         }).slice(0, 6);
                         
-                        container.innerHTML = sorted.map(p => {
-                            const title = p.title || p.product_name || 'Unknown Product';
-                            const price = p.latestPrice || p.price || 0;
-                            const domain = p.domain || p.website || 'Unknown';
-                            const date = p.lastSeen || p.tracking_date || p.date || new Date().toISOString();
+                        var html = '';
+                        sorted.forEach(function(p) {
+                            var title = p.title || p.product_name || 'Unknown Product';
+                            var price = p.latestPrice || p.price || 0;
+                            var domain = p.domain || p.website || 'Unknown';
+                            var date = p.lastSeen || p.tracking_date || p.date || new Date().toISOString();
                             
-                            return `
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="card h-100 shadow-sm">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h6>
-                                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                                <span class="badge bg-primary">${escapeHtml(domain)}</span>
-                                                <span class="fw-bold text-success">$${parseFloat(price).toFixed(2)}</span>
-                                            </div>
-                                            <small class="text-muted d-block mt-2">${new Date(date).toLocaleDateString()}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
+                            html += 
+                                '<div class="col-md-4 col-sm-6">' +
+                                    '<div class="card h-100 shadow-sm">' +
+                                        '<div class="card-body">' +
+                                            '<h6 class="card-title text-truncate" title="' + escapeHtml(title) + '">' + escapeHtml(title) + '</h6>' +
+                                            '<div class="d-flex justify-content-between align-items-center mt-2">' +
+                                                '<span class="badge bg-primary">' + escapeHtml(domain) + '</span>' +
+                                                '<span class="fw-bold text-success">$' + parseFloat(price).toFixed(2) + '</span>' +
+                                            '</div>' +
+                                            '<small class="text-muted d-block mt-2">' + new Date(date).toLocaleDateString() + '</small>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
+                        });
+                        
+                        container.innerHTML = html;
                     }
                     
                     function escapeHtml(str) {
