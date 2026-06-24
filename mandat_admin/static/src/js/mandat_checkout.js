@@ -7,18 +7,24 @@ function isMandatSelected() {
         return checked.dataset.providerCode === 'mandat_administratif'
             || checked.dataset.paymentMethodCode === 'mandat_administratif';
     }
-    // Seul mode de paiement : pas de radio, on vérifie si le champ est visible
     const siret = document.getElementById('mandat_siret');
     return !!(siret && siret.offsetParent !== null);
 }
 
-// Phase de capture : intercepte avant OWL
+// Quand true, le prochain clic est laissé passer à OWL sans interception
+let _dataAlreadySaved = false;
+
 document.addEventListener('click', async function (e) {
     const btn = e.target.closest('.o_payment_submit_button');
-    if (!btn) return;
-    if (!isMandatSelected()) return;
+    if (!btn || !isMandatSelected()) return;
 
-    // On stoppe TOUJOURS dès que mandat est sélectionné — qu'il y ait erreur ou non
+    // Deuxième clic (après sauvegarde) : on laisse OWL gérer
+    if (_dataAlreadySaved) {
+        _dataAlreadySaved = false;
+        return;
+    }
+
+    // On stoppe toujours avant de valider
     e.stopImmediatePropagation();
     e.preventDefault();
 
@@ -30,13 +36,13 @@ document.addEventListener('click', async function (e) {
 
     if (!siret || !iban || !ordonnateur || !comptable) {
         if (errorDiv) errorDiv.style.display = 'block';
-        return; // stoppé — OWL ne verra jamais ce clic
+        return;
     }
     if (errorDiv) errorDiv.style.display = 'none';
     btn.disabled = true;
 
     try {
-        const resp = await fetch('/mandat/submit_payment', {
+        const resp = await fetch('/mandat/save_checkout_data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -52,10 +58,13 @@ document.addEventListener('click', async function (e) {
         });
         const data = await resp.json();
         if (data?.result?.success) {
-            window.location.assign('/payment/status');
+            // Données sauvegardées — on laisse OWL créer la transaction et faire le redirect
+            _dataAlreadySaved = true;
+            btn.disabled = false;
+            btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
         } else {
             btn.disabled = false;
-            console.error('[mandat_admin] Erreur:', data?.result?.error);
+            console.error('[mandat_admin] Erreur save:', data?.result?.error);
         }
     } catch (err) {
         btn.disabled = false;

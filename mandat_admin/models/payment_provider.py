@@ -26,13 +26,18 @@ class PaymentProviderMandat(models.Model):
 class PaymentTransactionMandat(models.Model):
     _inherit = 'payment.transaction'
 
+    def _get_redirect_form_view(self, is_validation=False):
+        if self.provider_code == 'mandat_administratif':
+            return self.env.ref('mandat_admin.redirect_form')
+        return super()._get_redirect_form_view(is_validation)
+
     def _get_specific_rendering_values(self, processing_values):
         res = super()._get_specific_rendering_values(processing_values)
         if self.provider_code != 'mandat_administratif':
             return res
         return {
             'api_url': '/mandat/process',
-            'reference': self.reference,
+            'reference': processing_values.get('reference', ''),
         }
 
     def _extract_amount_data(self, payment_data):
