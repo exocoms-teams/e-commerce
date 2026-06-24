@@ -8,9 +8,9 @@
     'data': [
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
+        'views/templates/Contact.xml',
         'data/Footer.xml',
         'data/Header.xml',
-        'data/Contact.xml',
 
     ],
     'assets': {

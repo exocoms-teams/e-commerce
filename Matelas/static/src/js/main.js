@@ -79,3 +79,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Page contact
+function envoyerContact() {
+    const nom = document.getElementById('c-nom').value.trim();
+    const prenom = document.getElementById('c-prenom').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    const message = document.getElementById('c-message').value.trim();
+
+    if (!nom || !prenom || !email || !message) {
+        alert('Merci de remplir tous les champs obligatoires (*)');
+        return;
+    }
+
+    document.getElementById('contact-success').style.display = 'block';
+
+    document.getElementById('c-nom').value = '';
+    document.getElementById('c-prenom').value = '';
+    document.getElementById('c-email').value = '';
+    document.getElementById('c-tel').value = '';
+    document.getElementById('c-sujet').value = '';
+    document.getElementById('c-message').value = '';
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
