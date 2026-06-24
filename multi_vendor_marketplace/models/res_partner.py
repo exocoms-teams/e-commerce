@@ -244,26 +244,27 @@ class ResPartner(models.Model):
 
     def approve_seller(self):
         """Approve the seller"""
-        user1 = self.env["res.users"].search([("name", "=", self.name)])
+        user1 = self.env["res.users"].search([("partner_id", "=", self.id)])
         internal = self.env.ref('base.group_user')
         stock_group = self.env.ref('stock.group_stock_user')
         sale_group = self.env.ref('sales_team.group_sale_manager')
         seller_user = self.env.ref(
             "multi_vendor_marketplace.multi_vendor_marketplace_seller")
-        user1.sudo().write({'groups_ids': [(6, 0, [
-            internal.id,
-            seller_user.id,
-            stock_group.id,
-            sale_group.id
-        ])]})
-        result = self.env.ref('sales_team.group_sale_salesman')
-        result1 = self.env.ref('sales_team.group_sale_salesman_all_leads')
-        for user in result.users:
-            if user in user1:
-                result.write({'users': [(3, user.id, 0)]})
-        for user in result1.users:
-            if user in user1:
-                result1.write({'users': [(3, user.id, 0)]})
+        if user1:
+            user1.sudo().write({'group_ids': [(6, 0, [
+                internal.id,
+                seller_user.id,
+                stock_group.id,
+                sale_group.id
+            ])]})
+            salesman = self.env.ref('sales_team.group_sale_salesman')
+            salesman_all = self.env.ref(
+                'sales_team.group_sale_salesman_all_leads')
+            for user in user1:
+                if user in salesman.user_ids:
+                    salesman.write({'user_ids': [(3, user.id, 0)]})
+                if user in salesman_all.user_ids:
+                    salesman_all.write({'user_ids': [(3, user.id, 0)]})
         if self.state == 'Pending for Approval':
             self.state = 'Approved'
             self.send_seller_status_mail()
