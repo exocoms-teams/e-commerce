@@ -2316,7 +2316,7 @@ a[name="website_sale_main_button"] {
         padding-right: 4px !important;
     }
 
-    /* Conteneur ul des boutons panier + wishlist */
+    /* Conteneur ul des boutons */
     .o_header_mobile .o_header_mobile_buttons_wrap {
         gap: 4px !important;
         margin-left: 0 !important;
@@ -2331,11 +2331,9 @@ a[name="website_sale_main_button"] {
         height: 38px !important;
     }
 
-    .o_header_mobile .o_wsale_my_cart a,
-    .o_header_mobile .o_wsale_my_cart a > * {
+    .o_header_mobile .o_wsale_my_cart a {
         width: 38px !important;
         height: 38px !important;
-        min-width: unset !important;
         max-width: 38px !important;
         display: flex !important;
         align-items: center !important;
@@ -2345,7 +2343,20 @@ a[name="website_sale_main_button"] {
         border-radius: 8px !important;
     }
 
-    /* Bouton wishlist : même taille */
+    /* Neutraliser le div enfant du panier (pas de fond, pas de taille fixe) */
+    .o_header_mobile .o_wsale_my_cart a > div,
+    .o_header_mobile .o_wsale_my_cart a > span {
+        background: transparent !important;
+        width: auto !important;
+        height: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    /* Bouton wishlist */
     .o_header_mobile .o_wsale_my_wish {
         position: relative !important;
         flex-shrink: 0 !important;
@@ -2353,11 +2364,9 @@ a[name="website_sale_main_button"] {
         height: 38px !important;
     }
 
-    .o_header_mobile .o_wsale_my_wish a,
-    .o_header_mobile .o_wsale_my_wish a > * {
+    .o_header_mobile .o_wsale_my_wish a {
         width: 38px !important;
         height: 38px !important;
-        min-width: unset !important;
         max-width: 38px !important;
         display: flex !important;
         align-items: center !important;
@@ -2367,7 +2376,7 @@ a[name="website_sale_main_button"] {
         border-radius: 8px !important;
     }
 
-    /* Badges : position absolue par rapport au li */
+    /* Badges */
     .o_header_mobile .my_cart_quantity,
     .o_header_mobile .my_wish_quantity {
         position: absolute !important;
@@ -2378,11 +2387,11 @@ a[name="website_sale_main_button"] {
         pointer-events: none !important;
     }
 
-    /* Burger : juste à droite du ul */
+    /* Burger : poussé à droite */
     .o_header_mobile .navbar-toggler {
         flex-shrink: 0 !important;
         padding: 4px !important;
-        margin-left: 0 !important;
+        margin-left: auto !important;
     }
 }
 
