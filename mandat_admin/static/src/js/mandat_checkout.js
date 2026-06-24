@@ -6,27 +6,21 @@ import { onMounted } from '@odoo/owl';
 function isMandatSelected() {
     const radios = document.querySelectorAll('input[name="o_payment_radio"]');
     if (radios.length === 0) {
-        // Aucun radio = provider unique = c'est le nôtre
         return !!document.getElementById('mandat_administratif_form');
     }
     const radio = document.querySelector('input[name="o_payment_radio"]:checked');
     if (!radio) return false;
-
-    // Vérifie tous les attributs data-*
     for (const val of Object.values(radio.dataset)) {
         if (val === 'mandat_administratif') return true;
     }
-    // Fallback : texte visible de l'option
     const container = radio.closest('li, label, .o_payment_option, [class*="payment"]') || radio.parentElement;
     return container?.textContent?.toLowerCase().includes('mandat') || false;
 }
 
-function updateMandatForm() {
-    const mandatForm = document.getElementById('mandat_administratif_form');
-    if (!mandatForm) return;
-    const selected = isMandatSelected();
-    mandatForm.style.display = selected ? 'block' : 'none';
-    if (selected) {
+// Contrôle la visibilité via une classe CSS sur body (survit aux re-renders OWL)
+function updateMandatVisibility() {
+    document.body.classList.toggle('o_mandat_active', isMandatSelected());
+    if (isMandatSelected()) {
         injectMandatRedirectForm();
     } else {
         removeMandatRedirectForm();
@@ -53,12 +47,12 @@ patch(PaymentForm.prototype, {
 
     setup() {
         super.setup(...arguments);
-        onMounted(() => updateMandatForm());
+        onMounted(() => updateMandatVisibility());
     },
 
     async _updateSelectedPaymentOption() {
         await super._updateSelectedPaymentOption(...arguments);
-        updateMandatForm();
+        updateMandatVisibility();
     },
 
     async _initiatePaymentFlow(...args) {
