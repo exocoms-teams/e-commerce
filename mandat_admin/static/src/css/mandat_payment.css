@@ -1,10 +1,19 @@
-/* Cacher le bouton Pay Now d'Odoo quand Mandat Administratif est sélectionné */
-body:has(input[name="o_payment_radio"][data-provider-code="mandat_administratif"]:checked) .o_payment_submit_button,
-body:has(input[name="o_payment_radio"][data-payment-method-code="mandat_administratif"]:checked) .o_payment_submit_button {
-    display: none !important;
-}
-
-/* Si mandat est le seul mode de paiement (aucun radio) */
-body:not(:has(input[name="o_payment_radio"])) .o_payment_submit_button {
+/*
+ * Cacher le bouton Pay Now natif d'Odoo quand Mandat est sélectionné.
+ * On cible plusieurs sélecteurs possibles selon la version d'Odoo.
+ */
+body:has(input[name="o_payment_radio"][data-provider-code="mandat_administratif"]:checked)
+    .o_payment_submit_button,
+body:has(input[name="o_payment_radio"][data-provider-code="mandat_administratif"]:checked)
+    [name="o_payment_submit_button"],
+body:has(input[name="o_payment_radio"][data-payment-method-code="mandat_administratif"]:checked)
+    .o_payment_submit_button,
+body:has(input[name="o_payment_radio"][data-payment-method-code="mandat_administratif"]:checked)
+    [name="o_payment_submit_button"],
+/* Fallback si mandat est le seul mode (pas de radio) */
+body:not(:has(input[name="o_payment_radio"])):has(#mandat_administratif_form)
+    .o_payment_submit_button,
+body:not(:has(input[name="o_payment_radio"])):has(#mandat_administratif_form)
+    [name="o_payment_submit_button"] {
     display: none !important;
 }
