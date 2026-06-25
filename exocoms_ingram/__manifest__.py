@@ -4,7 +4,7 @@
     "summary": "Connecteur API Ingram Micro pour Exocoms",
     "author": "Exocoms",
     "category": "Inventory",
-    "depends": ["base_setup", "product", "sale_management", "website_sale"],
+    "depends": ["base_setup", "product", "sale_management"],
     "data": [
         "security/ir.model.access.csv",
         "views/res_config_settings_views.xml",
