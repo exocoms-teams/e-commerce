@@ -11,6 +11,13 @@ class MandatPaymentController(http.Controller):
     @http.route('/mandat/submit', type='jsonrpc', auth='public', website=True)
     def submit_mandat(self, **kwargs):
         """Valide, confirme la commande et crée la transaction mandat."""
+        try:
+            return self._submit_mandat_impl(**kwargs)
+        except Exception as e:
+            _logger.exception('Erreur dans submit_mandat')
+            return {'success': False, 'error': str(e)}
+
+    def _submit_mandat_impl(self, **kwargs):
         order = request.website.sale_get_order()
         if not order:
             return {'success': False, 'error': 'Commande introuvable'}
@@ -24,7 +31,7 @@ class MandatPaymentController(http.Controller):
             return {'success': False, 'error': 'Champs obligatoires manquants'}
 
         # 1. Sauvegarde des données mandat sur la commande
-        write_fields = {'payment_mode': 'mandat_administratif'}
+        write_fields = {}
         mapping = {
             'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
             'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',

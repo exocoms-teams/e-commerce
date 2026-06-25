@@ -40,12 +40,14 @@ document.addEventListener('click', async function (e) {
             }),
         });
         const data = await resp.json();
+        console.log('[mandat_admin] réponse serveur:', JSON.stringify(data));
         if (data?.result?.success) {
             window.location.assign(data.result.redirect || '/shop/confirmation');
         } else {
-            console.error('[mandat_admin] Erreur:', data?.result?.error);
+            const msg = data?.result?.error || data?.error?.data?.message || data?.error?.message || 'Erreur inconnue';
+            console.error('[mandat_admin] Erreur:', msg);
             if (errorDiv) {
-                errorDiv.textContent = data?.result?.error || 'Erreur lors du traitement.';
+                errorDiv.textContent = msg;
                 errorDiv.style.display = 'block';
             }
             btn.disabled = false;
