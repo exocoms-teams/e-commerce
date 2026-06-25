@@ -99,42 +99,38 @@
             </div>
         </t>
     </template>
-    <template id="seller_footer" inherit_id="website.footer_custom"
-              name="seller_footer" active="True">
-        <xpath expr="//ul[hasclass('list-unstyled')]" position="inside">
+    <template id="seller_footer" inherit_id="monetique_theme.footer"
+            name="seller_footer" active="True">
+        <xpath expr="//div[hasclass('mn-footer__col')][1]/ul" position="inside">
             <t t-set="sell"
-               t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.show_sell_menu_footer')"/>
+                t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.show_sell_menu_footer')"/>
             <t t-set="seller_list"
-               t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.show_sellers_list')"/>
+                t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.show_sellers_list')"/>
             <t t-set="seller_label"
-               t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.sell_link_label')"/>
+                t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.sell_link_label')"/>
             <t t-set="seller_list_label"
-               t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.seller_list_link_label')"/>
+                t-value="request.env['ir.config_parameter'].sudo().get_param('multi_vendor_marketplace.seller_list_link_label')"/>
             <t t-if="sell">
                 <t t-if="seller_label">
-                    <li>
-                        <a href="/sell">
-                            <t t-esc="seller_label"/>
-                        </a>
-                    </li>
+                    <li><a href="/sell"><t t-esc="seller_label"/></a></li>
                 </t>
                 <t t-else="">
-                    <a href="/sell">
-                        Sell
-                    </a>
+                    <li>
+                        <a href="/sell">
+                            Sell
+                        </a>
+                    </li>
                 </t>
             </t>
             <t t-if="seller_list">
                 <t t-if="seller_list_label">
-                    <li>
-                        <a href="/seller/list">
-                            <t t-esc="seller_list_label"/>
-                        </a>
-                    </li>
+                    <li><a href="/seller/list"><t t-esc="seller_list_label"/></a></li>
                 </t>
                 <t t-else="">
                     <li>
-                        <a href="/seller/list">Seller List</a>
+                        <a href="/seller/list">
+                            Seller List
+                        </a>
                     </li>
                 </t>
             </t>
