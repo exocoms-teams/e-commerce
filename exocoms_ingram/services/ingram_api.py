@@ -12,7 +12,7 @@ class IngramApiClient:
         country_code="US",
         sender_id="Exocoms",
     ):
-        self.base_url = "https://api.ingrammicro.com:443"
+        self.base_url = "https://api.ingrammicro.com:443/sandbox"
         self.client_id = client_id
         self.client_secret = client_secret
         self.customer_number = customer_number
