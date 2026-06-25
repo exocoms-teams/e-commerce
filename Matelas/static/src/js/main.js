@@ -3,31 +3,25 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ===== ÉTOILES =====
-    const stars = document.querySelectorAll('.star');
-    const starRating = document.getElementById('star-rating');
-
-    if (stars.length > 0) {
-        stars.forEach(star => {
-            star.addEventListener('mouseover', function () {
-                const val = this.dataset.value;
-                stars.forEach(s => {
-                    s.classList.toggle('active', s.dataset.value <= val);
-                });
-            });
-
-            star.addEventListener('click', function () {
-                document.getElementById('avis-note').value = this.dataset.value;
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('mouseover', function () {
+            const val = this.dataset.value;
+            document.querySelectorAll('.star').forEach(s => {
+                s.classList.toggle('active', s.dataset.value <= val);
             });
         });
 
-        starRating.addEventListener('mouseleave', function () {
-            const note = document.getElementById('avis-note').value;
-            stars.forEach(s => {
-                s.classList.toggle('active', s.dataset.value <= note);
-            });
+        star.addEventListener('click', function () {
+            document.getElementById('avis-note').value = this.dataset.value;
         });
-    }
+    });
 
+    document.getElementById('star-rating').addEventListener('mouseleave', function () {
+        const note = document.getElementById('avis-note').value;
+        document.querySelectorAll('.star').forEach(s => {
+            s.classList.toggle('active', s.dataset.value <= note);
+        });
+    });
     // ===== RECHERCHE =====
     const searchInput = document.getElementById('search-input');
     if (searchInput) {

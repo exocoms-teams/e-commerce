@@ -8,7 +8,7 @@ class MatelasVente(http.Controller):
     def index(self, **kwargs):
         products = request.env['product.template'].sudo().search([
             ('is_published', '=', True)
-        ], limit=4)
+        ], limit=6)
         return request.render('Matelas.home', {'products': products})
     
     @http.route('/avis', auth='public', website=True)
