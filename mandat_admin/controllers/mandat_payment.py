@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import uuid
 from odoo import http
 from odoo.http import request
 
@@ -63,22 +64,25 @@ class MandatPaymentController(http.Controller):
             )
             if provider:
                 existing_tx = order.transaction_ids.filtered(
-                    lambda t: t.provider_code == 'mandat_administratif' and t.state == 'draft'
+                    lambda t: t.provider_code == 'mandat_administratif' and t.state != 'cancel'
                 ).sorted('create_date', reverse=True)
 
                 if existing_tx:
                     tx = existing_tx[0]
                 else:
-                    tx = request.env['payment.transaction'].sudo().with_context(
-                        sale_order_id=order.id
-                    )._create_payment_transaction({
+                    reference = f"MANDAT-{order.name}-{uuid.uuid4().hex[:6].upper()}"
+                    partner_id = order.partner_invoice_id.id or order.partner_id.id
+                    tx = request.env['payment.transaction'].sudo().create({
                         'provider_id': provider.id,
                         'amount': order.amount_total,
                         'currency_id': order.currency_id.id,
-                        'partner_id': order.partner_invoice_id.id or order.partner_id.id,
+                        'partner_id': partner_id,
+                        'reference': reference,
                         'operation': 'online_redirect',
+                        'sale_order_ids': [(4, order.id)],
                     })
-                tx.sudo()._set_pending()
+                if tx.state not in ('pending', 'done', 'cancel'):
+                    tx.sudo()._set_pending()
                 request.session['__payment_monitored_tx_id__'] = tx.id
                 _logger.info('Transaction mandat %s mise en pending', tx.reference)
         except Exception:
