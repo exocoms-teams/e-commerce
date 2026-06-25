@@ -1,0 +1,18 @@
+<odoo>
+    <record id="product_category_list_inherit_sequence" model="ir.ui.view">
+        <field name="name">product.category.list.sequence</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_list_view" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">sequence,name</attribute>
+            </xpath>
+
+            <xpath expr="//list" position="inside">
+                <field name="sequence" widget="handle" />
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
