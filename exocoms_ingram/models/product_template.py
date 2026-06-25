@@ -13,6 +13,20 @@ class ProductTemplate(models.Model):
     ingram_last_price = fields.Float(string="Dernier prix Ingram")
     ingram_currency = fields.Char(string="Devise Ingram")
 
+    @api.model
+    def _get_ingram_public_category(self):
+        category = self.env["product.public.category"].search(
+            [("name", "=", "Informatique & Réseaux")],
+            limit=1,
+        )
+        if not category:
+            raise UserError(
+                _(
+                    "La categorie eCommerce 'Informatique & Réseaux' est introuvable."
+                )
+            )
+        return category
+
     def _extract_first_result(self, payload):
         if isinstance(payload, list) and payload:
             return payload[0]
@@ -89,6 +103,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _prepare_vals_from_ingram_product(self, payload):
+        category = self._get_ingram_public_category()
         name = (
             payload.get("description")
             or payload.get("productDescription")
@@ -117,6 +132,7 @@ class ProductTemplate(models.Model):
             or payload.get("manufacturerName")
             or payload.get("brand"),
             "ingram_last_sync": fields.Datetime.now(),
+            "public_categ_ids": [(6, 0, [category.id])],
         }
 
     @api.model
