@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_exocoms_ingram" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.exocoms.ingram</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Ingram Micro" name="exocoms_ingram_settings">
+                    <block title="Connexion API Ingram">
+                        <setting string="Client ID">
+                            <field name="exocoms_ingram_client_id"/>
+                        </setting>
+                        <setting string="Client Secret">
+                            <field name="exocoms_ingram_client_secret" password="True"/>
+                        </setting>
+                        <setting string="Customer Number">
+                            <field name="exocoms_ingram_customer_number"/>
+                        </setting>
+                        <setting string="Country Code">
+                            <field name="exocoms_ingram_country_code"/>
+                        </setting>
+                        <setting string="Sender ID">
+                            <field name="exocoms_ingram_sender_id"/>
+                        </setting>
+                        <setting string="Test de connexion">
+                            <button
+                                name="action_test_ingram_connection"
+                                type="object"
+                                string="Tester la connexion"
+                                class="btn-primary"
+                            />
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

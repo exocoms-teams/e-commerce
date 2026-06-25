@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_exocoms_ingram_search_wizard_form" model="ir.ui.view">
+        <field name="name">exocoms.ingram.search.wizard.form</field>
+        <field name="model">exocoms.ingram.search.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Recherche produits Ingram">
+                <group>
+                    <group>
+                        <field name="keyword"/>
+                        <field name="page_size"/>
+                    </group>
+                    <group>
+                        <field name="page_number"/>
+                    </group>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="selected"/>
+                        <field name="product_name" readonly="1"/>
+                        <field name="ingram_part_number" readonly="1"/>
+                        <field name="vendor_part_number" readonly="1"/>
+                        <field name="vendor_name" readonly="1"/>
+                        <field name="description" readonly="1"/>
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_search"
+                        type="object"
+                        string="Rechercher"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="action_import_selected"
+                        type="object"
+                        string="Importer la selection"
+                        class="btn-secondary"
+                    />
+                    <button string="Fermer" class="btn-link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_exocoms_ingram_search_wizard" model="ir.actions.act_window">
+        <field name="name">Import Ingram</field>
+        <field name="res_model">exocoms.ingram.search.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_exocoms_ingram_root"
+        name="Ingram"
+        parent="sale.sale_menu_root"
+        sequence="90"
+    />
+
+    <menuitem
+        id="menu_exocoms_ingram_search"
+        name="Recherche produits"
+        parent="menu_exocoms_ingram_root"
+        action="action_exocoms_ingram_search_wizard"
+        sequence="10"
+    />
+</odoo>
