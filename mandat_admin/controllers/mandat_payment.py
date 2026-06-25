@@ -59,32 +59,33 @@ class MandatPaymentController(http.Controller):
 
         # 3. Création de la transaction (pour suivi backend)
         try:
-            provider = request.env['payment.provider'].sudo().search(
-                [('code', '=', 'mandat_administratif'), ('state', '!=', 'disabled')], limit=1
-            )
-            if provider:
-                existing_tx = order.transaction_ids.filtered(
-                    lambda t: t.provider_code == 'mandat_administratif' and t.state != 'cancel'
-                ).sorted('create_date', reverse=True)
+            with request.env.cr.savepoint():
+                provider = request.env['payment.provider'].sudo().search(
+                    [('code', '=', 'mandat_administratif'), ('state', '!=', 'disabled')], limit=1
+                )
+                if provider:
+                    existing_tx = order.transaction_ids.filtered(
+                        lambda t: t.provider_code == 'mandat_administratif' and t.state != 'cancel'
+                    ).sorted('create_date', reverse=True)
 
-                if existing_tx:
-                    tx = existing_tx[0]
-                else:
-                    reference = f"MANDAT-{order.name}-{uuid.uuid4().hex[:6].upper()}"
-                    partner_id = order.partner_invoice_id.id or order.partner_id.id
-                    tx = request.env['payment.transaction'].sudo().create({
-                        'provider_id': provider.id,
-                        'amount': order.amount_total,
-                        'currency_id': order.currency_id.id,
-                        'partner_id': partner_id,
-                        'reference': reference,
-                        'operation': 'online_redirect',
-                        'sale_order_ids': [(4, order.id)],
-                    })
-                if tx.state not in ('pending', 'done', 'cancel'):
-                    tx.sudo()._set_pending()
-                request.session['__payment_monitored_tx_id__'] = tx.id
-                _logger.info('Transaction mandat %s mise en pending', tx.reference)
+                    if existing_tx:
+                        tx = existing_tx[0]
+                    else:
+                        reference = f"MANDAT-{order.name}-{uuid.uuid4().hex[:6].upper()}"
+                        partner_id = order.partner_invoice_id.id or order.partner_id.id
+                        tx = request.env['payment.transaction'].sudo().create({
+                            'provider_id': provider.id,
+                            'amount': order.amount_total,
+                            'currency_id': order.currency_id.id,
+                            'partner_id': partner_id,
+                            'reference': reference,
+                            'operation': 'online_redirect',
+                            'sale_order_ids': [(4, order.id)],
+                        })
+                    if tx.state not in ('pending', 'done', 'cancel'):
+                        tx.sudo()._set_pending()
+                    request.session['__payment_monitored_tx_id__'] = tx.id
+                    _logger.info('Transaction mandat %s mise en pending', tx.reference)
         except Exception:
             _logger.exception('Erreur création transaction mandat (non bloquante)')
 
