@@ -31,15 +31,31 @@ class SellerDashboard(http.Controller):
     def seller_dashboard(self):
         """Load the dashboard information"""
         try:
+            is_admin = request.env.user.has_group(
+                'multi_vendor_marketplace.multi_vendor_marketplace_admin')
+            partner_id = request.env.user.partner_id.id
+
+            # Filtre produits par vendeur si non-admin
+            product_domain = [] if is_admin else \
+                [('seller_id', '=', partner_id)]
+            # Filtre commandes par vendeur si non-admin
+            order_domain = [] if is_admin else \
+                [('seller_id', '=', partner_id)]
+            # Filtre paiements par vendeur si non-admin
+            payment_domain = [] if is_admin else \
+                [('seller_id', '=', partner_id)]
+            # Filtre demandes de stock par vendeur si non-admin
+            inventory_domain = [] if is_admin else \
+                [('seller_id', '=', partner_id)]
+
             return {
                 'pending': request.env['product.template'].sudo().search_count(
-                    [('state', '=', 'pending')]),
+                    product_domain + [('state', '=', 'pending')]),
                 'approved': request.env['product.template'].sudo().search_count(
-                    [('state', '=', 'approved')]),
+                    product_domain + [('state', '=', 'approved')]),
                 'rejected': request.env['product.template'].sudo().search_count(
-                    [('state', '=', 'rejected')]),
-                'user_type': request.env.user.has_group(
-                    'multi_vendor_marketplace.multi_vendor_marketplace_admin'),
+                    product_domain + [('state', '=', 'rejected')]),
+                'user_type': is_admin,
                 'seller_pending': request.env['res.partner'].sudo().search_count(
                     [('state', '=', 'Pending for Approval')]),
                 'seller_approved': request.env['res.partner'].sudo().search_count(
@@ -47,25 +63,25 @@ class SellerDashboard(http.Controller):
                 'seller_rejected': request.env['res.partner'].sudo().search_count(
                     [('state', '=', 'Denied')]),
                 'inventory_pending': request.env['inventory.request'].sudo().search_count(
-                    [('state', '=', 'Requested')]),
+                    inventory_domain + [('state', '=', 'Requested')]),
                 'inventory_approved': request.env['inventory.request'].sudo().search_count(
-                    [('state', '=', 'Approved')]),
+                    inventory_domain + [('state', '=', 'Approved')]),
                 'inventory_rejected': request.env['inventory.request'].sudo().search_count(
-                    [('state', '=', 'Rejected')]),
+                    inventory_domain + [('state', '=', 'Rejected')]),
                 'payment_pending': request.env['seller.payment'].sudo().search_count(
-                    [('state', '=', 'Requested')]),
+                    payment_domain + [('state', '=', 'Requested')]),
                 'payment_approved': request.env['seller.payment'].sudo().search_count(
-                    [('state', '=', 'Validated')]),
+                    payment_domain + [('state', '=', 'Validated')]),
                 'payment_rejected': request.env['seller.payment'].sudo().search_count(
-                    [('state', '=', 'Rejected')]),
+                    payment_domain + [('state', '=', 'Rejected')]),
                 'order_pending': request.env['sale.order.line'].sudo().search_count(
-                    [('state', '=', 'pending')]),
+                    order_domain + [('state', '=', 'pending')]),
                 'order_approved': request.env['sale.order.line'].sudo().search_count(
-                    [('state', '=', 'approved')]),
+                    order_domain + [('state', '=', 'approved')]),
                 'order_shipped': request.env['sale.order.line'].sudo().search_count(
-                    [('state', '=', 'shipped')]),
+                    order_domain + [('state', '=', 'shipped')]),
                 'order_cancel': request.env['sale.order.line'].sudo().search_count(
-                    [('state', '=', 'cancel')]),
+                    order_domain + [('state', '=', 'cancel')]),
                 'sale_order_kanban_id': request.env['ir.ui.view'].sudo().search(
                     [('name', '=', 'multi.vendor.sale.order.line.kanban')]).id,
                 'product_kanban_id': request.env['ir.ui.view'].sudo().search(
