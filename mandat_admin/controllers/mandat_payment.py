@@ -8,6 +8,14 @@ _logger = logging.getLogger(__name__)
 
 class MandatPaymentController(http.Controller):
 
+    def _get_current_order(self):
+        """Récupère la commande courante depuis la session."""
+        order_id = request.session.get('sale_order_id')
+        if not order_id:
+            return None
+        order = request.env['sale.order'].sudo().browse(order_id)
+        return order if order.exists() else None
+
     @http.route('/mandat/submit', type='jsonrpc', auth='public', website=True)
     def submit_mandat(self, **kwargs):
         """Valide, confirme la commande et crée la transaction mandat."""
@@ -18,7 +26,7 @@ class MandatPaymentController(http.Controller):
             return {'success': False, 'error': str(e)}
 
     def _submit_mandat_impl(self, **kwargs):
-        order = request.website.sale_get_order()
+        order = self._get_current_order()
         if not order:
             return {'success': False, 'error': 'Commande introuvable'}
 
@@ -83,7 +91,7 @@ class MandatPaymentController(http.Controller):
 
     @http.route('/mandat/save_checkout_data', type='jsonrpc', auth='public', website=True)
     def save_mandat_checkout_data(self, **kwargs):
-        order = request.website.sale_get_order()
+        order = self._get_current_order()
         if not order:
             return {'success': False, 'error': 'Commande introuvable'}
         write_fields = {'payment_mode': 'mandat_administratif'}
