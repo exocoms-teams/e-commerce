@@ -39,7 +39,7 @@ class MandatPaymentController(http.Controller):
             return {'success': False, 'error': 'Champs obligatoires manquants'}
 
         # 1. Sauvegarde des données mandat sur la commande
-        write_fields = {}
+        write_fields = {'payment_mode': 'mandat_administratif'}
         mapping = {
             'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
             'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
