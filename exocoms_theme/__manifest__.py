@@ -1,6 +1,6 @@
 {
     'name': 'Exocoms Theme',
-    'version': '1.0',
+    'version': '19.0.1.0.1',
     'summary': 'Custom website theme for Exocoms Group',
     'author': 'Exocoms Group',
     'license': 'LGPL-3',
