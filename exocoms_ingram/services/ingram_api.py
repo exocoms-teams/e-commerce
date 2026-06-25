@@ -20,6 +20,12 @@ class IngramApiClient:
         self.sender_id = sender_id
         self.access_token = None
 
+    def _raise_http_error(self, response):
+        if not response.ok:
+            raise Exception(
+                f"HTTP {response.status_code}\n{response.text}"
+            )
+
     def get_token(self):
         url = f"{self.base_url}/oauth/oauth30/token"
 
@@ -30,7 +36,7 @@ class IngramApiClient:
         }
 
         response = requests.post(url, data=data, timeout=30)
-        response.raise_for_status()
+        self._raise_http_error(response)
 
         self.access_token = response.json()["access_token"]
         return self.access_token
@@ -65,7 +71,7 @@ class IngramApiClient:
             return self._request(
                 method, url, retry_on_unauthorized=False, **kwargs
             )
-        response.raise_for_status()
+        self._raise_http_error(response)
         return response.json()
 
     def search_products(self, keyword, page_size=10, page_number=1):
