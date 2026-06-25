@@ -1,0 +1,46 @@
+// =============================================================================
+// MÉGA-MENU TÉLÉCOM — ouverture au survol (desktop uniquement)
+// =============================================================================
+//
+// ⚠️ SÉLECTEURS À VÉRIFIER EN DEVTOOLS avant de considérer ceci comme définitif.
+//    Le DOM exact du header varie selon la version du module website Odoo 19.
+//    Inspecter le <li> du menu Télécom dans l'inspecteur navigateur pour
+//    confirmer les classes appliquées par Odoo (ex. : .nav-item, .dropdown,
+//    la présence de .o_mega_menu_telecom via le champ mega_menu_classes).
+//
+// Activation uniquement sur vrais pointeurs (hover:hover) + écran ≥ 992 px.
+// Respect de prefers-reduced-motion : l'animation est désactivée si l'utilisateur
+// a demandé une réduction des mouvements dans ses préférences système.
+// =============================================================================
+
+@media (hover: hover) and (min-width: 992px) {
+
+    // Sélecteur principal : scoped via mega_menu_classes = 'o_mega_menu_telecom'.
+    // ⚠️ À vérifier : le champ mega_menu_classes existe-t-il en Odoo 19 ?
+    //    Si non, utiliser le sélecteur fallback ci-dessous uniquement.
+    #top .nav-item.dropdown.o_mega_menu_telecom:hover > .dropdown-menu,
+
+    // Sélecteur fallback générique si mega_menu_classes n'est pas supporté.
+    // ⚠️ Ce sélecteur s'applique à TOUS les dropdowns du header au survol ;
+    //    le remplacer par un sélecteur plus ciblé après inspection devtools.
+    #top .nav-item.dropdown.o_mega_menu:hover > .dropdown-menu {
+        display: block;
+
+        // Animation d'apparition
+        @media (prefers-reduced-motion: no-preference) {
+            animation: o_telecom_mega_fadein 0.15s ease forwards;
+        }
+    }
+
+}
+
+@keyframes o_telecom_mega_fadein {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

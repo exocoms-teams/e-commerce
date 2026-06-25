@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="telecom_page" name="Télécom — Catalogue des solutions">
+        <t t-call="website.layout">
+            <div id="wrap" class="o_colored_level">
+
+                <!-- En-tête éditable via website builder -->
+                <section class="o_colored_level o_cc o_cc2 py-5 text-center">
+                    <div class="oe_structure" id="oe_structure_telecom_header"/>
+                    <div class="container">
+                        <h1 class="display-5 fw-bold">Solutions Télécom</h1>
+                        <p class="lead mt-2">
+                            Voix · Intelligence · Teams · Connectivité · Cloud · Cybersécurité
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Catalogue par univers -->
+                <div class="container py-5">
+
+                    <t t-if="universes">
+                        <t t-foreach="universes" t-as="universe">
+                            <section class="mb-5">
+                                <h2 class="h4 fw-bold border-bottom pb-2 mb-4">
+                                    <t t-out="universe['category'].name"/>
+                                </h2>
+                                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                    <t t-foreach="universe['products']" t-as="product">
+                                        <div class="col">
+                                            <!--
+                                                product.website_url : fourni par website_sale,
+                                                renvoie vers la fiche produit standard Odoo
+                                                (/shop/product/<slug>) avec ajout au panier.
+                                            -->
+                                            <a t-att-href="product.website_url"
+                                               class="card h-100 text-decoration-none shadow-sm border-0 o_colored_level o_cc o_cc1">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h3 class="h6 fw-bold card-title">
+                                                        <t t-out="product.name"/>
+                                                    </h3>
+                                                    <p t-if="product.description_sale"
+                                                       class="card-text small flex-grow-1"
+                                                       t-out="product.description_sale"/>
+                                                </div>
+                                                <div class="card-footer bg-transparent border-0 pt-0">
+                                                    <span class="btn btn-sm btn-outline-primary">
+                                                        Voir la fiche →
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </section>
+                        </t>
+                    </t>
+
+                    <t t-else="">
+                        <div class="text-center py-5">
+                            <p class="text-muted">Catalogue en cours de mise à jour.</p>
+                        </div>
+                    </t>
+
+                </div>
+
+                <!-- Zone éditable bas de page -->
+                <div class="oe_structure" id="oe_structure_telecom_footer"/>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>
