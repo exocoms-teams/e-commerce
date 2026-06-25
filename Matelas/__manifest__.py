@@ -12,6 +12,7 @@
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
+        'views/templates/Mentions_légales.xml',
         'data/Footer.xml',
         'data/Header.xml',
 
@@ -22,6 +23,7 @@
             'Matelas/static/src/css/Home.css',
             'Matelas/static/src/css/Avis.css',
             'Matelas/static/src/css/Contact.css',
+            'Matelas/static/src/css/Mentions.css',
             'Matelas/static/src/js/main.js',  
         ],
     },

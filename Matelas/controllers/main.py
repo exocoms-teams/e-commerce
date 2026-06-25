@@ -18,3 +18,7 @@ class MatelasVente(http.Controller):
     @http.route('/contact', auth='public', website=True)
     def contact(self, **kwargs):
        return request.render('Matelas.contact_page', {})
+    
+    @http.route('/mentions-legales', auth='public', website=True)
+    def mentions_legales(self, **kwargs):
+       return request.render('Matelas.mentions_legales', {})
