@@ -70,9 +70,8 @@
                   <span class="cart-badge">0</span>
                 </a>
 
-                <a href="/shop/wishlist" class="exo-icon-btn" title="Favoris"
-                  aria-label="Liste de souhaits">
-                  <i class="fa fa-heart" aria-hidden="true" />
+                <a href="/shop/wishlist" class="header-icon exo-icon-btn">
+                  <i class="bi bi-heart-fill"></i>
                 </a>
 
                 <!-- Langue -->
@@ -130,25 +129,31 @@
             </nav>
 
             <!-- Modal Recherche -->
-            <div class="exo-search-wrapper">
-              <button class="exo-icon-btn" id="exo-search-open" type="button" title="Rechercher"
-                aria-label="Ouvrir la recherche">
-                <i class="fa fa-search" aria-hidden="true" />
-              </button>
-              <div class="exo-search-overlay" id="exo-search-overlay" role="dialog"
-                aria-modal="true" aria-label="Recherche">
-                <div class="exo-search-box">
-                  <form action="/shop" method="get" class="exo-search-form" role="search">
-                    <i class="fa fa-search" aria-hidden="true" />
-                    <input type="text" name="search" id="exo-search-input"
-                      placeholder="Rechercher un produit..." autocomplete="off"
-                      aria-label="Rechercher un produit" />
-                    <button type="submit">Rechercher</button>
-                  </form>
-                  <button type="button" class="exo-search-close" id="exo-search-close"
-                    aria-label="Fermer la recherche">
-                    <i class="fa fa-times" aria-hidden="true" />
-                  </button>
+            <div class="modal fade" id="searchModal" tabindex="-1">
+              <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content search-modal-content">
+                  <div class="modal-header border-0">
+                    <button type="button"
+                      class="btn-close btn-close-white ms-auto"
+                      data-bs-dismiss="modal" />
+                  </div>
+                  <div
+                    class="modal-body d-flex align-items-center
+                               justify-content-center">
+                    <div class="search-box">
+                      <h3 class="text-white text-center mb-4">
+                        Que recherchez-vous ?
+                      </h3>
+                      <div class="d-flex gap-3">
+                        <input type="text"
+                          id="search-input"
+                          class="search-input"
+                          placeholder="Ex: Matelas ferme, oreiller..." />
+                        <a href="/shop?search=" class="btn btn-search" id="btn-search">
+                          <i class="bi bi-search" /> Rechercher </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
