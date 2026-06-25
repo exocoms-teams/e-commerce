@@ -14,14 +14,13 @@ class ResConfigSettings(models.TransientModel):
     exocoms_ingram_client_secret = fields.Char(
         string="Client Secret",
         config_parameter="exocoms_ingram.client_secret",
-        password=True,
     )
     exocoms_ingram_customer_number = fields.Char(
         string="Customer Number",
         config_parameter="exocoms_ingram.customer_number",
     )
     exocoms_ingram_country_code = fields.Char(
-        string="Country Code",
+        string="Ingram Country Code",
         config_parameter="exocoms_ingram.country_code",
         default="US",
     )
