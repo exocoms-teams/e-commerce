@@ -1,46 +1,59 @@
 // =============================================================================
-// MÉGA-MENU TÉLÉCOM — ouverture au survol (desktop uniquement)
+// MÉGA-MENU TÉLÉCOM — fond opaque + ouverture au survol
 // =============================================================================
 //
-// ⚠️ SÉLECTEURS À VÉRIFIER EN DEVTOOLS avant de considérer ceci comme définitif.
-//    Le DOM exact du header varie selon la version du module website Odoo 19.
-//    Inspecter le <li> du menu Télécom dans l'inspecteur navigateur pour
-//    confirmer les classes appliquées par Odoo (ex. : .nav-item, .dropdown,
-//    la présence de .o_mega_menu_telecom via le champ mega_menu_classes).
+// DOM Odoo 19 observé :
+//   <li class="nav-item [o_mega_menu_telecom?]">
+//     <a class="dropdown-toggle nav-link o_mega_menu_toggle" data-bs-toggle="dropdown" data-bs-display="static">
+//     <div class="o_mega_menu [dropdown-menu?]">  ← à confirmer via devtools
 //
-// Activation uniquement sur vrais pointeurs (hover:hover) + écran ≥ 992 px.
-// Respect de prefers-reduced-motion : l'animation est désactivée si l'utilisateur
-// a demandé une réduction des mouvements dans ses préférences système.
+// Sélecteur hover : on remonte du <a class="o_mega_menu_toggle"> au <li> parent
+// via :has() (supporté Chrome 105+, Firefox 121+, Safari 15.4+).
+// ⚠️ Vérifier la classe du <div> contenu (.o_mega_menu ou .dropdown-menu).
 // =============================================================================
+
+
+// ── FOND OPAQUE ──────────────────────────────────────────────────────────────
+// Sans background le hero transparaît derrière le bandeau.
+// Utilise les variables Bootstrap/Odoo pour respecter l'identité du thème.
+#top .o_mega_menu {
+    background-color: var(--bs-body-bg, #fff);
+    border-top: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.08));
+    border-bottom: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.08));
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+// Contenu plus compact (réduit le py-4 du container)
+#top .o_mega_menu > .container-fluid {
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+}
+
+
+// ── OUVERTURE AU SURVOL — desktop uniquement ─────────────────────────────────
+// Activé uniquement pour les vrais dispositifs pointeurs (pas tactile)
+// et pour les écrans ≥ 992 px (breakpoint lg Bootstrap).
 
 @media (hover: hover) and (min-width: 992px) {
 
-    // Sélecteur principal : scoped via mega_menu_classes = 'o_mega_menu_telecom'.
-    // ⚠️ À vérifier : le champ mega_menu_classes existe-t-il en Odoo 19 ?
-    //    Si non, utiliser le sélecteur fallback ci-dessous uniquement.
-    #top .nav-item.dropdown.o_mega_menu_telecom:hover > .dropdown-menu,
+    // :has(> .o_mega_menu_toggle) cible le <li> parent du bouton méga-menu.
+    // > .o_mega_menu cible le conteneur direct du bandeau (sibling de <a>).
+    // ⚠️ Si le conteneur porte la classe .dropdown-menu et non .o_mega_menu,
+    //    adapter le second sélecteur ci-dessous.
+    #top .nav-item:has(> .o_mega_menu_toggle):hover > .o_mega_menu,
+    #top .nav-item:has(> .o_mega_menu_toggle):hover > .dropdown-menu {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
 
-    // Sélecteur fallback générique si mega_menu_classes n'est pas supporté.
-    // ⚠️ Ce sélecteur s'applique à TOUS les dropdowns du header au survol ;
-    //    le remplacer par un sélecteur plus ciblé après inspection devtools.
-    #top .nav-item.dropdown.o_mega_menu:hover > .dropdown-menu {
-        display: block;
-
-        // Animation d'apparition
         @media (prefers-reduced-motion: no-preference) {
-            animation: o_telecom_mega_fadein 0.15s ease forwards;
+            animation: o_telecom_fadein 0.15s ease forwards;
         }
     }
 
 }
 
-@keyframes o_telecom_mega_fadein {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes o_telecom_fadein {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
