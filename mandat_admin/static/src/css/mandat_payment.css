@@ -1,4 +1,10 @@
-/* Styles pour le formulaire inline mandat administratif */
-#mandat_administratif_form .form-label {
-    font-size: 0.9rem;
+/* Cacher le bouton Pay Now d'Odoo quand Mandat Administratif est sélectionné */
+body:has(input[name="o_payment_radio"][data-provider-code="mandat_administratif"]:checked) .o_payment_submit_button,
+body:has(input[name="o_payment_radio"][data-payment-method-code="mandat_administratif"]:checked) .o_payment_submit_button {
+    display: none !important;
+}
+
+/* Si mandat est le seul mode de paiement (aucun radio) */
+body:not(:has(input[name="o_payment_radio"])) .o_payment_submit_button {
+    display: none !important;
 }

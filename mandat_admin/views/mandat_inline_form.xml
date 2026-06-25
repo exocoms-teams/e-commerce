@@ -10,43 +10,45 @@
                     Renseignez les informations de votre collectivité.
                     Les champs marqués * sont obligatoires.
                 </p>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">SIRET acheteur public *</label>
-                        <input type="text" class="form-control" id="mandat_siret" placeholder="14 chiffres" maxlength="14"/>
+                <form action="/mandat/submit" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">SIRET acheteur public *</label>
+                            <input type="text" class="form-control" name="siret" placeholder="14 chiffres" maxlength="14" required="required"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">IBAN *</label>
+                            <input type="text" class="form-control" name="iban" placeholder="FR76..." required="required"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ordonnateur *</label>
+                            <input type="text" class="form-control" name="ordonnateur" placeholder="Nom et prénom" required="required"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Qualité de l'ordonnateur</label>
+                            <input type="text" class="form-control" name="qualite" placeholder="Ex: Maire, DGS..."/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Comptable public assignataire *</label>
+                            <input type="text" class="form-control" name="comptable" placeholder="Nom du comptable" required="required"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">N° engagement juridique (EJ)</label>
+                            <input type="text" class="form-control" name="ej" placeholder="N° EJ"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Service / Direction</label>
+                            <input type="text" class="form-control" name="service" placeholder="Ex: Direction des finances"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Référence bon de commande</label>
+                            <input type="text" class="form-control" name="reference" placeholder="Référence interne"/>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">IBAN *</label>
-                        <input type="text" class="form-control" id="mandat_iban" placeholder="FR76..."/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Ordonnateur *</label>
-                        <input type="text" class="form-control" id="mandat_ordonnateur" placeholder="Nom et prénom"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Qualité de l'ordonnateur</label>
-                        <input type="text" class="form-control" id="mandat_qualite" placeholder="Ex: Maire, DGS..."/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Comptable public assignataire *</label>
-                        <input type="text" class="form-control" id="mandat_comptable" placeholder="Nom du comptable"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">N° engagement juridique (EJ)</label>
-                        <input type="text" class="form-control" id="mandat_ej" placeholder="N° EJ"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Service / Direction</label>
-                        <input type="text" class="form-control" id="mandat_service" placeholder="Ex: Direction des finances"/>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Référence bon de commande</label>
-                        <input type="text" class="form-control" id="mandat_reference" placeholder="Référence interne"/>
-                    </div>
-                </div>
-                <div id="mandat_form_error" class="alert alert-danger mt-3" role="alert" style="display:none;">
-                    Veuillez remplir tous les champs obligatoires (*).
-                </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-3">
+                        &#x1F3DB; Confirmer le paiement par Mandat Administratif
+                    </button>
+                </form>
             </div>
         </field>
     </record>
