@@ -1,6 +1,6 @@
 {
     'name': 'Telecom Services',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'summary': 'Offre Télécom Dstny — méga-menu, catalogue /telecom, produits services',
     'author': 'Exocoms Group',
     'license': 'LGPL-3',
@@ -18,6 +18,7 @@
     'assets': {
         'web.assets_frontend': [
             'telecom_services/static/src/scss/telecom_mega_menu.scss',
+            'telecom_services/static/src/js/telecom_mega_menu.js',
         ],
     },
     'post_init_hook': 'post_init_hook',

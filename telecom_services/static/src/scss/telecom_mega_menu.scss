@@ -1,21 +1,10 @@
 // =============================================================================
-// MÉGA-MENU TÉLÉCOM — fond opaque + ouverture au survol
-// =============================================================================
-//
-// DOM Odoo 19 observé :
-//   <li class="nav-item [o_mega_menu_telecom?]">
-//     <a class="dropdown-toggle nav-link o_mega_menu_toggle" data-bs-toggle="dropdown" data-bs-display="static">
-//     <div class="o_mega_menu [dropdown-menu?]">  ← à confirmer via devtools
-//
-// Sélecteur hover : on remonte du <a class="o_mega_menu_toggle"> au <li> parent
-// via :has() (supporté Chrome 105+, Firefox 121+, Safari 15.4+).
-// ⚠️ Vérifier la classe du <div> contenu (.o_mega_menu ou .dropdown-menu).
+// MÉGA-MENU TÉLÉCOM — styles visuels
+// L'ouverture au survol est gérée par telecom_mega_menu.js via l'API Bootstrap
+// Dropdown, pour un comportement identique entre survol et clic.
 // =============================================================================
 
-
-// ── FOND OPAQUE ──────────────────────────────────────────────────────────────
-// Sans background le hero transparaît derrière le bandeau.
-// Utilise les variables Bootstrap/Odoo pour respecter l'identité du thème.
+// Fond opaque — sans background le hero transparaît derrière le bandeau.
 #top .o_mega_menu {
     background-color: var(--bs-body-bg, #fff);
     border-top: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.08));
@@ -23,37 +12,8 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-// Contenu plus compact (réduit le py-4 du container)
+// Contenu plus compact
 #top .o_mega_menu > .container-fluid {
     padding-top: 0.875rem;
     padding-bottom: 0.875rem;
-}
-
-
-// ── OUVERTURE AU SURVOL — desktop uniquement ─────────────────────────────────
-// Activé uniquement pour les vrais dispositifs pointeurs (pas tactile)
-// et pour les écrans ≥ 992 px (breakpoint lg Bootstrap).
-
-@media (hover: hover) and (min-width: 992px) {
-
-    // :has(> .o_mega_menu_toggle) cible le <li> parent du bouton méga-menu.
-    // > .o_mega_menu cible le conteneur direct du bandeau (sibling de <a>).
-    // ⚠️ Si le conteneur porte la classe .dropdown-menu et non .o_mega_menu,
-    //    adapter le second sélecteur ci-dessous.
-    #top .nav-item:has(> .o_mega_menu_toggle):hover > .o_mega_menu,
-    #top .nav-item:has(> .o_mega_menu_toggle):hover > .dropdown-menu {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-
-        @media (prefers-reduced-motion: no-preference) {
-            animation: o_telecom_fadein 0.15s ease forwards;
-        }
-    }
-
-}
-
-@keyframes o_telecom_fadein {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
 }
