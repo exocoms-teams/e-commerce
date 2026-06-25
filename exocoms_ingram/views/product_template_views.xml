@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_only_form_view_exocoms_ingram" model="ir.ui.view">
+        <field name="name">product.template.only.form.exocoms.ingram</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Ingram">
+                    <group>
+                        <group>
+                            <field name="ingram_part_number"/>
+                            <field name="vendor_part_number"/>
+                            <field name="vendor_name"/>
+                            <field name="ingram_last_sync" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="ingram_last_price" readonly="1"/>
+                            <field name="ingram_currency" readonly="1"/>
+                            <field name="ingram_available_qty" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" name="ingram_product_button_box">
+                        <button
+                            name="action_sync_ingram_data"
+                            type="object"
+                            string="Synchroniser prix et stock"
+                            class="btn-primary"
+                        />
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

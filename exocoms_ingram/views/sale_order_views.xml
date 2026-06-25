@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_form_view_exocoms_ingram" model="ir.ui.view">
+        <field name="name">sale.order.form.exocoms.ingram</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Ingram">
+                    <group>
+                        <group>
+                            <field name="ingram_order_number" readonly="1"/>
+                            <field name="ingram_confirmation_number" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="ingram_order_status" readonly="1"/>
+                            <field name="ingram_last_sync" readonly="1"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" name="ingram_button_box">
+                        <button
+                            name="action_create_ingram_order"
+                            type="object"
+                            string="Envoyer a Ingram"
+                            class="btn-primary"
+                        />
+                        <button
+                            name="action_sync_ingram_order_status"
+                            type="object"
+                            string="Mettre a jour le statut"
+                            class="btn-secondary"
+                        />
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
