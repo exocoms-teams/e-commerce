@@ -3,7 +3,7 @@ from . import controllers
 from . import models
 
 WEBSITE_NAME = 'Exocoms Group'
-OUR_URLS = ['/', '/shop', '/services']
+OUR_URLS = ['/', '/shop', '/event', '/jobs', '/forum', '/slides', '/appointment']
 
 
 def _get_website(env):
@@ -90,15 +90,19 @@ def _setup_menus(env, website, lang_en):
     ], limit=1)
 
     menus = [
-        ('/',         'Accueil',      'Home',         1),
-        ('/shop',     'Boutique',     'Shop',         2),
-        ('/services', 'Nos services', 'Our Services', 3),
+        ('/',            'Accueil',     'Home',         1),
+        ('/shop',        'Boutique',    'Shop',         2),
+        ('/event',       'Événements',  'Events',       3),
+        ('/jobs',        'Postes',      'Jobs',         4),
+        ('/forum',       'Aide',        'Help',         5),
+        ('/slides',      'Cours',       'Courses',      6),
+        ('/appointment', 'Rendez-vous', 'Appointments', 7),
     ]
     for url, name_fr, name_en, seq in menus:
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
     # Supprimer les menus indésirables sur notre site uniquement
-    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
+    unwanted_urls = ['/contactus', '/blog', '/services']
     unwanted = env['website.menu'].search([
         ('url', 'in', unwanted_urls),
         ('website_id', '=', website.id),
