@@ -8,38 +8,40 @@ _logger = logging.getLogger(__name__)
 
 class MandatPaymentController(http.Controller):
 
-    @http.route('/mandat/submit', type='http', auth='public', methods=['POST'],
-                website=True, csrf=False)
-    def submit_mandat(self, **post):
+    @http.route('/mandat/submit', type='jsonrpc', auth='public', website=True)
+    def submit_mandat(self, **kwargs):
+        """Valide, confirme la commande et crée la transaction mandat."""
         order = request.website.sale_get_order()
         if not order:
-            _logger.warning('Mandat submit: pas de commande en session')
-            return request.redirect('/shop')
+            return {'success': False, 'error': 'Commande introuvable'}
 
-        siret = post.get('siret', '').strip()
-        iban = post.get('iban', '').strip()
-        ordonnateur = post.get('ordonnateur', '').strip()
-        comptable = post.get('comptable', '').strip()
+        siret = kwargs.get('siret', '').strip()
+        iban = kwargs.get('iban', '').strip()
+        ordonnateur = kwargs.get('ordonnateur', '').strip()
+        comptable = kwargs.get('comptable', '').strip()
 
         if not siret or not iban or not ordonnateur or not comptable:
-            return request.redirect('/shop/payment?mandat_error=1')
+            return {'success': False, 'error': 'Champs obligatoires manquants'}
 
-        # 1. Sauvegarde des données mandat
+        # 1. Sauvegarde des données mandat sur la commande
         write_fields = {'payment_mode': 'mandat_administratif'}
-        for src, dst in [('siret', 'acheteur_siret'), ('iban', 'fournisseur_iban'),
-                         ('ordonnateur', 'ordonnateur'), ('qualite', 'qualite_ordonnateur'),
-                         ('comptable', 'comptable_public'), ('ej', 'numero_engagement'),
-                         ('service', 'acheteur_service'), ('reference', 'reference_bon_commande')]:
+        mapping = {
+            'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
+            'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
+            'comptable': 'comptable_public', 'ej': 'numero_engagement',
+            'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+        }
+        for src, dst in mapping.items():
             if hasattr(order, dst):
-                write_fields[dst] = post.get(src, '').strip()
+                write_fields[dst] = kwargs.get(src, '').strip()
         order.write(write_fields)
 
-        # 2. Confirmation de la commande (obligatoire, en dehors du try/except)
+        # 2. Confirmation de la commande
         if order.state in ('draft', 'sent'):
             order.sudo().action_confirm()
-        _logger.info('Commande %s confirmée (mandat administratif)', order.name)
+        _logger.info('Commande %s confirmée via mandat administratif', order.name)
 
-        # 3. Création de la transaction (optionnel — pour le suivi backend)
+        # 3. Création de la transaction (pour suivi backend)
         try:
             provider = request.env['payment.provider'].sudo().search(
                 [('code', '=', 'mandat_administratif'), ('state', '!=', 'disabled')], limit=1
@@ -61,16 +63,16 @@ class MandatPaymentController(http.Controller):
                         'partner_id': order.partner_invoice_id.id or order.partner_id.id,
                         'operation': 'online_redirect',
                     })
-
                 tx.sudo()._set_pending()
                 request.session['__payment_monitored_tx_id__'] = tx.id
-                _logger.info('Transaction mandat %s créée et mise en pending', tx.reference)
+                _logger.info('Transaction mandat %s mise en pending', tx.reference)
         except Exception:
-            _logger.exception('Erreur création transaction mandat (non critique)')
+            _logger.exception('Erreur création transaction mandat (non bloquante)')
 
-        # 4. Réinitialise le panier et redirige vers la confirmation
-        request.session.pop('sale_order_id', None)
-        return request.redirect('/shop/confirmation')
+        # 4. Prépare la session pour la page de confirmation
+        request.session['sale_last_order_id'] = order.id
+
+        return {'success': True, 'redirect': '/shop/confirmation'}
 
     @http.route('/mandat/save_checkout_data', type='jsonrpc', auth='public', website=True)
     def save_mandat_checkout_data(self, **kwargs):
@@ -78,10 +80,13 @@ class MandatPaymentController(http.Controller):
         if not order:
             return {'success': False, 'error': 'Commande introuvable'}
         write_fields = {'payment_mode': 'mandat_administratif'}
-        for src, dst in [('siret', 'acheteur_siret'), ('iban', 'fournisseur_iban'),
-                         ('ordonnateur', 'ordonnateur'), ('qualite', 'qualite_ordonnateur'),
-                         ('comptable', 'comptable_public'), ('ej', 'numero_engagement'),
-                         ('service', 'acheteur_service'), ('reference', 'reference_bon_commande')]:
+        mapping = {
+            'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
+            'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
+            'comptable': 'comptable_public', 'ej': 'numero_engagement',
+            'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+        }
+        for src, dst in mapping.items():
             if hasattr(order, dst):
                 write_fields[dst] = kwargs.get(src, '')
         order.write(write_fields)

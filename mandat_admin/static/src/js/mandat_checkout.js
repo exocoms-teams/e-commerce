@@ -1,32 +1,13 @@
 /** @odoo-module **/
 console.log('[mandat_admin] JS chargé ✓');
 
-function isMandatSelected() {
-    const checked = document.querySelector('input[name="o_payment_radio"]:checked');
-    if (checked) {
-        return checked.dataset.providerCode === 'mandat_administratif'
-            || checked.dataset.paymentMethodCode === 'mandat_administratif';
-    }
-    const siret = document.getElementById('mandat_siret');
-    return !!(siret && siret.offsetParent !== null);
-}
-
-// Quand true, le prochain clic est laissé passer à OWL sans interception
-let _dataAlreadySaved = false;
-
+// Délégation d'événement : fonctionne même si le bouton est rendu après le chargement
 document.addEventListener('click', async function (e) {
-    const btn = e.target.closest('.o_payment_submit_button');
-    if (!btn || !isMandatSelected()) return;
+    const btn = e.target.closest('#mandat_confirm_btn');
+    if (!btn) return;
 
-    // Deuxième clic (après sauvegarde) : on laisse OWL gérer
-    if (_dataAlreadySaved) {
-        _dataAlreadySaved = false;
-        return;
-    }
-
-    // On stoppe toujours avant de valider
-    e.stopImmediatePropagation();
     e.preventDefault();
+    e.stopImmediatePropagation();
 
     const siret = document.getElementById('mandat_siret')?.value?.trim();
     const iban = document.getElementById('mandat_iban')?.value?.trim();
@@ -39,10 +20,12 @@ document.addEventListener('click', async function (e) {
         return;
     }
     if (errorDiv) errorDiv.style.display = 'none';
+
     btn.disabled = true;
+    btn.textContent = 'Traitement en cours...';
 
     try {
-        const resp = await fetch('/mandat/save_checkout_data', {
+        const resp = await fetch('/mandat/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -58,16 +41,19 @@ document.addEventListener('click', async function (e) {
         });
         const data = await resp.json();
         if (data?.result?.success) {
-            // Données sauvegardées — on laisse OWL créer la transaction et faire le redirect
-            _dataAlreadySaved = true;
-            btn.disabled = false;
-            btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+            window.location.assign(data.result.redirect || '/shop/confirmation');
         } else {
+            console.error('[mandat_admin] Erreur:', data?.result?.error);
+            if (errorDiv) {
+                errorDiv.textContent = data?.result?.error || 'Erreur lors du traitement.';
+                errorDiv.style.display = 'block';
+            }
             btn.disabled = false;
-            console.error('[mandat_admin] Erreur save:', data?.result?.error);
+            btn.textContent = '🏛 Confirmer le paiement par Mandat Administratif';
         }
     } catch (err) {
-        btn.disabled = false;
         console.error('[mandat_admin] Fetch error:', err);
+        btn.disabled = false;
+        btn.textContent = '🏛 Confirmer le paiement par Mandat Administratif';
     }
-}, true);
+});
