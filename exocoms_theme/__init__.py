@@ -2,7 +2,7 @@
 from . import controllers
 from . import models
 
-WEBSITE_NAME = 'exocoms'
+WEBSITE_NAME = 'Exocoms Group'
 OUR_URLS = ['/', '/shop', '/services']
 
 
