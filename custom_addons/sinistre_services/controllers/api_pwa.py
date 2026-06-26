@@ -10,6 +10,8 @@ from odoo import http, _
 from odoo.http import request, Response
 from odoo.exceptions import UserError
 
+from .pwa_controller import _firebase_configured, _firebase_params
+
 _logger = logging.getLogger(__name__)
 
 PREFIX = '/api/sinistre/v1'
@@ -574,6 +576,23 @@ def _comptabilite_payload(intervenant):
 class SinistrePWAController(http.Controller):
 
     # ── PING ─────────────────────────────────────────────────────────
+    @http.route(f'{PREFIX}/pwa/firebase-config', type='http', auth='public', methods=['GET'], csrf=False)
+    def pwa_firebase_config(self, **kwargs):
+        params = _firebase_params(request.env)
+        return _ok({
+            'success':    True,
+            'configured': _firebase_configured(params),
+            'firebase': {
+                'apiKey':            params['apiKey'],
+                'authDomain':        params['authDomain'],
+                'projectId':         params['projectId'],
+                'storageBucket':     params['storageBucket'],
+                'messagingSenderId': params['messagingSenderId'],
+                'appId':             params['appId'],
+            },
+            'vapid_key': params['vapidKey'],
+        })
+
     @http.route(f'{PREFIX}/ping', type='http', auth='public',
                 methods=['GET'], csrf=False)
     def ping(self, **kw):
