@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo.modules.module import get_module_resource
+from odoo.tools import file_path
 
 from . import controllers
 from . import models
@@ -45,10 +45,12 @@ def _set_logo(env, website):
     if not website:
         return
     try:
-        logo_path = get_module_resource(MODULE_NAME, *LOGO_PATH)
+        logo_path = file_path(f'{MODULE_NAME}/{"/".join(LOGO_PATH)}', filter_ext=('.png',))
         if logo_path:
             with open(logo_path, 'rb') as f:
                 website.write({'logo': base64.b64encode(f.read())})
+    except FileNotFoundError:
+        _logger.warning("Logo Exocoms introuvable à static/src/img/EXOCOMS.png — site %s non modifié", website.name)
     except Exception:
         _logger.exception("Impossible d'appliquer le logo Exocoms sur le site %s", website.name)
 
