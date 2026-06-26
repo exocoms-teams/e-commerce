@@ -20,6 +20,8 @@ function bindMegaMenuHover() {
                 menu.classList.add('show');
                 ['transform', 'left', 'right', 'top', 'position', 'will-change']
                     .forEach(p => menu.style.removeProperty(p));
+                const header = document.querySelector('#top');
+                if (header) menu.style.top = header.getBoundingClientRect().bottom + 'px';
             }
         };
         const doHide = () => {
