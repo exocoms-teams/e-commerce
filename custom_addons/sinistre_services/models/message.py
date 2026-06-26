@@ -35,20 +35,30 @@ class SinistreMessage(models.Model):
         return records
 
     @api.model
-    def _push_notification(self, token, title, body, data=None):
+    def _push_notification(self, token, title, body, data=None, data_only=False):
         """Envoie une notification FCM à un token donné."""
         try:
             import requests
             server_key = self.env['ir.config_parameter'].sudo().get_param('sinistre.fcm_server_key', '')
             if not server_key or not token:
                 return
+            payload = {
+                'to': token,
+                'data': {k: str(v) for k, v in (data or {}).items()},
+            }
+            if data_only:
+                payload['data']['title'] = title or ''
+                payload['data']['body'] = body or ''
+                payload['priority'] = 'high'
+            else:
+                payload['notification'] = {'title': title, 'body': body}
             requests.post(
                 'https://fcm.googleapis.com/fcm/send',
-                json={'to': token, 'notification': {'title': title, 'body': body}, 'data': data or {}},
+                json=payload,
                 headers={'Authorization': f'key={server_key}'},
                 timeout=5,
             )
-        except Exception as e:
+        except Exception:
             pass
 
     def _push_to_artisan(self):
