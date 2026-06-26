@@ -9,9 +9,8 @@ class TelecomController(http.Controller):
         ProductCateg = request.env['product.public.category'].sudo()
         ProductTemplate = request.env['product.template'].sudo()
 
-        root_categ = ProductCateg.search(
-            [('name', '=', 'Télécom'), ('parent_id', '=', False)],
-            limit=1
+        root_categ = request.env.ref(
+            'telecom_services.categ_telecom', raise_if_not_found=False
         )
 
         universes = []
