@@ -175,7 +175,12 @@ class SinistreMission(models.Model):
         for vals in vals_list:
             if vals.get('reference', 'Nouveau') == 'Nouveau':
                 vals['reference'] = self.env['ir.sequence'].next_by_code('sinistre.mission') or 'MSN-????'
-        return super().create(vals_list)
+        missions = super().create(vals_list)
+        if not self.env.context.get('skip_mission_push'):
+            for mission in missions:
+                if mission.state == 'nouveau' and not mission.intervenant_id:
+                    mission._notifier_artisans_zone()
+        return missions
 
     # ── Compute ──────────────────────────────────────────────────────
     @api.depends('montant_devis', 'intervenant_id', 'intervenant_id.taux_commission')
@@ -346,29 +351,43 @@ class SinistreMission(models.Model):
         raise UserError(_("Impossible de générer une facture pour cette mission."))
 
     def _notifier_artisans_zone(self):
-        """Envoie une notification push aux artisans disponibles dans la zone."""
+        """Envoie une notification push aux artisans disponibles dans le secteur."""
+        self.ensure_one()
+        adresse = self.adresse_intervention or ''
+
         intervenants = self.env['sinistre.intervenant'].sudo().search([
             ('disponible', '=', True),
             ('actif',      '=', True),
         ])
-        # Filtrer par spécialité
+        intervenants = intervenants.filtered(lambda iv: iv.couvre_adresse(adresse))
+
         if self.type_intervention:
-            intervenants = intervenants.filtered(
+            by_specialite = intervenants.filtered(
                 lambda iv: any(
                     s.type_intervention == self.type_intervention
                     for s in iv.specialites
                 )
-            ) or intervenants  # Si aucun spécialiste, notifier tous
+            )
+            if by_specialite:
+                intervenants = by_specialite
 
+        notified = 0
         for iv in intervenants:
-            if not hasattr(iv, 'fcm_token') or not iv.fcm_token:
+            if not iv.fcm_token:
                 continue
             self.env['sinistre.message'].sudo()._push_notification(
                 iv.fcm_token,
                 title=f"🚨 Nouvelle mission {'URGENTE' if self.urgence != 'normale' else ''}",
-                body=f"{self.type_intervention} — {self.adresse_intervention or ''}",
+                body=f"{self.type_intervention} — {adresse}",
                 data={'type': 'new_mission', 'mission_id': str(self.id)},
+                data_only=True,
             )
+            notified += 1
+
+        _logger.info(
+            "[sinistre] Push secteur mission %s : %d artisan(s) notifié(s) / %d éligible(s)",
+            self.reference, notified, len(intervenants),
+        )
 
     def action_voir_devis(self):
         return {
