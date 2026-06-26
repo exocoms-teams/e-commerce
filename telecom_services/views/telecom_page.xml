@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="telecom_page" name="Télécom — Catalogue">
+        <t t-call="website.layout">
+            <t t-set="title">Télécom — Services professionnels</t>
+
+            <div class="oe_structure" id="oe_structure_telecom_top"/>
+
+            <section class="pt-5 pb-4 text-center bg-light">
+                <div class="container">
+                    <h1 class="display-5 fw-bold mb-2">Solutions Télécom</h1>
+                    <p class="lead text-muted">
+                        Voix, mobilité, intelligence conversationnelle,
+                        connectivité et cybersécurité pour les professionnels.
+                    </p>
+                </div>
+            </section>
+
+            <div class="container py-5">
+                <t t-foreach="universes" t-as="universe">
+                    <section class="mb-5">
+                        <h2 class="h4 fw-bold mb-4 pb-2 border-bottom">
+                            <t t-esc="universe['category'].name"/>
+                        </h2>
+                        <div class="row g-3">
+                            <t t-foreach="universe['products']" t-as="product">
+                                <div class="col-sm-6 col-lg-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body d-flex flex-column">
+                                            <h3 class="card-title h6 fw-semibold mb-3">
+                                                <t t-esc="product.name"/>
+                                            </h3>
+                                            <div class="mt-auto">
+                                                <a t-att-href="product.website_url"
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    En savoir plus
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </section>
+                </t>
+
+                <t t-if="not universes">
+                    <div class="alert alert-info text-center my-5">
+                        Aucun service disponible pour le moment.
+                    </div>
+                </t>
+            </div>
+
+            <div class="oe_structure" id="oe_structure_telecom_bottom"/>
+        </t>
+    </template>
+</odoo>

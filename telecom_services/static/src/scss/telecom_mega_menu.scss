@@ -1,0 +1,43 @@
+/* Supprime le focus outline au clic */
+#top #top_menu .nav-item .o_mega_menu_toggle:focus,
+#top #top_menu .nav-item .o_mega_menu_toggle:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Supprime le chevron Bootstrap sur ::after (conflit avec underline du thème) */
+#top #top_menu .nav-item .o_mega_menu_toggle::after {
+    border-top: none !important;
+    border-right: none !important;
+    border-left: none !important;
+    margin-left: 0 !important;
+    vertical-align: unset !important;
+    display: block !important;
+}
+
+/* Odoo pose bottom:0 → bandeau pleine hauteur. On corrige. */
+#top .o_mega_menu {
+    bottom: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background-color: var(--bs-body-bg, #fff);
+    border-top: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.08));
+    border-bottom: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.08));
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Force pleine largeur, écrase les styles inline Popper au premier hover */
+#top .o_mega_menu.show {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    transform: none !important;
+    margin: 0 !important;
+}
+
+#top .o_mega_menu > .container,
+#top .o_mega_menu > .container-fluid {
+    padding-top: 0.875rem;
+    padding-bottom: 0.875rem;
+}
