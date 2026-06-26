@@ -304,8 +304,10 @@ window.Dashboard = (() => {
     }
 
     async function accepterMission(missionId, btn) {
-        btn.disabled = true;
-        btn.textContent = '…';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '…';
+        }
         try {
             const result = await API.accepterMissionProposee(missionId);
 
@@ -337,14 +339,16 @@ window.Dashboard = (() => {
             );
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
-            btn.disabled = false;
-            btn.textContent = 'Accepter';
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Accepter';
+            }
         }
     }
 
-    async function refuserMission(missionId, btn) {
-        if (!confirm('Refuser cette mission ?')) return;
-        btn.disabled = true;
+    async function refuserMission(missionId, btn, skipConfirm) {
+        if (!skipConfirm && !confirm('Refuser cette mission ?')) return;
+        if (btn) btn.disabled = true;
         try {
             const result = await API.refuserMissionProposee(missionId);
             const card = document.getElementById(`proposee-${missionId}`);
@@ -373,7 +377,7 @@ window.Dashboard = (() => {
             );
         } catch(err) {
             Toast.show('Erreur: ' + err.message, 'error');
-            btn.disabled = false;
+            if (btn) btn.disabled = false;
         }
     }
 
