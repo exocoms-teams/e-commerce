@@ -9,6 +9,7 @@
     'data': [
         'data/product_categories.xml',
         'data/products.xml',
+        'data/translations_en.xml',
         'data/menu_data.xml',
         'views/telecom_page.xml',
     ],
@@ -19,7 +20,6 @@
         ],
     },
     'post_init_hook': 'post_init_hook',
-    'post_migrate_hook': 'post_migrate_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
