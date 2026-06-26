@@ -9,9 +9,9 @@
                 <t t-call="website.layout">
                     <div class="oe_website_sale">
                         <div class="container my-5">
-                            <div class="alert alert-success text-center py-5">
-                                <h2 class="mb-2">Merci pour votre commande.</h2>
-                                <p class="mb-0 fs-5">
+                            <div class="alert alert-success text-center py-3">
+                                <h4 class="mb-2">Merci pour votre commande.</h4>
+                                <p class="mb-0">
                                     Votre commande <strong t-esc="order.name"/> a bien été enregistrée.<br/>
                                     Elle sera traitée par mandat administratif.<br/>
                                     Vous recevrez votre Bon de Commande Administratif (BCA) prochainement.
@@ -27,8 +27,16 @@
                                                 <td class="text-end"><t t-esc="line.price_subtotal"/> <t t-esc="order.currency_id.symbol"/></td>
                                             </tr>
                                         </t>
-                                        <tr class="fw-bold">
-                                            <td>Total</td>
+                                        <tr>
+                                            <td class="text-muted">Sous-total HT</td>
+                                            <td class="text-end text-muted"><t t-esc="order.amount_untaxed"/> <t t-esc="order.currency_id.symbol"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Taxes</td>
+                                            <td class="text-end text-muted"><t t-esc="order.amount_tax"/> <t t-esc="order.currency_id.symbol"/></td>
+                                        </tr>
+                                        <tr class="fw-bold border-top">
+                                            <td>Total TTC</td>
                                             <td class="text-end"><t t-esc="order.amount_total"/> <t t-esc="order.currency_id.symbol"/></td>
                                         </tr>
                                     </table>
