@@ -7,7 +7,6 @@
     'website': 'https://exocoms.fr',
     'depends': ['website', 'website_sale'],
     'data': [
-        'data/delete_products.xml',
         'data/product_categories.xml',
         'data/menu_data.xml',
         'data/translations_fr.xml',
