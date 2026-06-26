@@ -22,7 +22,7 @@ class Exocoms(http.Controller):
         # Si cookie existe — respecter le choix du visiteur
         return request.render('exocoms_theme.home', {})
 
-    @http.route('/services', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/nos-services', type='http', auth='public', website=True, sitemap=True)
     def services_page(self, **kw):
         return request.render('exocoms_theme.services_page', {})
 
