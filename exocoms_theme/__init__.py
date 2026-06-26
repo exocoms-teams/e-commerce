@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo.modules.module import get_module_resource
+from odoo.tools import file_path
 
 from . import controllers
 from . import models
@@ -45,10 +45,12 @@ def _set_logo(env, website):
     if not website:
         return
     try:
-        logo_path = get_module_resource(MODULE_NAME, *LOGO_PATH)
+        logo_path = file_path(f'{MODULE_NAME}/{"/".join(LOGO_PATH)}', filter_ext=('.png',))
         if logo_path:
             with open(logo_path, 'rb') as f:
                 website.write({'logo': base64.b64encode(f.read())})
+    except FileNotFoundError:
+        _logger.warning("Logo Exocoms introuvable à static/src/img/EXOCOMS.png — site %s non modifié", website.name)
     except Exception:
         _logger.exception("Impossible d'appliquer le logo Exocoms sur le site %s", website.name)
 
@@ -435,13 +437,25 @@ def post_init_hook(env):
     if cats_demo:
         cats_demo.unlink()
 
+    def _find_by_name_ci(records, target_name):
+        """Recherche insensible à la CASSE UNIQUEMENT (pas aux accents),
+        faite en Python plutôt qu'en SQL. CORRECTIF nécessaire car
+        '=ilike' en SQL peut, selon la configuration régionale (locale)
+        de la base PostgreSQL, ignorer aussi les accents — ce qui a
+        provoqué une confusion entre 'Monetique' et 'Monétique' (deux
+        catégories volontairement différentes ici) et une erreur de
+        récursion (une catégorie devenant son propre parent)."""
+        target = target_name.strip().lower()
+        return next((r for r in records if r.name and r.name.strip().lower() == target), None)
+
     def get_or_create(name, parent=None, seq=10):
-        domain = [('name', '=', name)]
-        if parent:
-            domain.append(('parent_id', '=', parent.id))
-        else:
-            domain.append(('parent_id', '=', False))
-        c = cat.search(domain, limit=1)
+        # CORRECTIF : on récupère toutes les catégories du même parent,
+        # puis on compare les noms en Python (casse ignorée, accents
+        # respectés) — pour retrouver les catégories déjà existantes
+        # (votre boutique EXOCOMS existait déjà avec ses propres
+        # catégories) sans jamais confondre deux noms différents.
+        siblings = cat.search([('parent_id', '=', parent.id if parent else False)])
+        c = _find_by_name_ci(siblings, name)
         if not c:
             vals = {'name': name, 'sequence': seq}
             if parent:
@@ -451,20 +465,23 @@ def post_init_hook(env):
             if website:
                 vals['website_id'] = website.id
             c = cat.create(vals)
-        elif website and not c.website_id:
-            # CORRECTIF : si la catégorie existait déjà sans site assigné
-            # (orpheline), on la rattache aussi à notre site.
-            c.write({'website_id': website.id})
+            _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
+        else:
+            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante)", name, c.id)
+            if website and not c.website_id:
+                # CORRECTIF : si la catégorie existait déjà sans site assigné
+                # (orpheline), on la rattache aussi à notre site.
+                c.write({'website_id': website.id})
         return c
 
     informatique = get_or_create('Informatique & Réseaux', seq=1)
     monetique_root = get_or_create('Monétique', seq=2)
     telecom = get_or_create('Télécom', seq=3)
 
-    monetique_sub = cat.search([
-        ('name', '=', 'Monetique'), ('parent_id', '=', False)
-    ], limit=1)
-    if monetique_sub:
+    monetique_sub = _find_by_name_ci(
+        cat.search([('parent_id', '=', False)]), 'Monetique'
+    )
+    if monetique_sub and monetique_sub.id != monetique_root.id:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
 
     pdv = cat.search([
@@ -477,9 +494,9 @@ def post_init_hook(env):
     get_or_create('Réseaux & Infrastructure', informatique, seq=2)
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
-    monetique = cat.search([
-        ('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)
-    ], limit=1)
+    monetique = _find_by_name_ci(
+        cat.search([('parent_id', '=', monetique_root.id)]), 'Monetique'
+    )
     if not monetique:
         monetique_vals = {
             'name': 'Monetique',
@@ -489,6 +506,9 @@ def post_init_hook(env):
         if website:
             monetique_vals['website_id'] = website.id
         monetique = cat.create(monetique_vals)
+        _logger.info("Catégorie CRÉÉE : 'Monetique' (sous-catégorie de Monétique)")
+    else:
+        _logger.info("Catégorie RETROUVÉE : 'Monetique' -> id=%s (déjà existante)", monetique.id)
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
