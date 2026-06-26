@@ -2,12 +2,12 @@
 from . import controllers
 from . import models
 
-WEBSITE_NAME = 'Exocoms Group'
+WEBSITE_NAME = 'exocoms'
 OUR_URLS = ['/', '/shop', '/services']
 
 
 def _get_website(env):
-    """Retourne le website Exocoms Group — par nom, jamais par ID."""
+    """Retourne le website exocoms — par nom, jamais par ID."""
     website = env['website'].search([('name', '=', WEBSITE_NAME)], limit=1)
     if not website:
         website = env['website'].search([], limit=1)
@@ -105,6 +105,14 @@ def _setup_menus(env, website, lang_en):
     ])
     if unwanted:
         unwanted.unlink()
+
+    # NOUVEAU — Rattacher TOUT menu orphelin restant (sans website_id) à
+    # notre site, y compris les sous-menus créés en dehors de OUR_URLS
+    # (ex: "Catégorie"). Comme on n'a qu'un seul vrai site, tout orphelin
+    # restant après le nettoyage de démo nous appartient forcément.
+    leftover_orphans = env['website.menu'].search([('website_id', '=', False)])
+    if leftover_orphans:
+        leftover_orphans.write({'website_id': website.id})
 
 
 def _setup_monetique_attributes(env, lang_en):
@@ -235,8 +243,11 @@ def post_init_hook(env):
             'country_id': env.ref('base.fr').id,
         })
 
-    # === SITE WEB — on nomme le site en premier pour que _get_website() fonctionne ===
-    website = env['website'].search([], limit=1)
+    # === SITE WEB ===
+    # CORRECTIF : on utilise _get_website() (recherche par nom 'exocoms')
+    # au lieu de search([], limit=1) qui prenait N'IMPORTE QUEL site —
+    # c'est ce qui causait le renommage accidentel d'autres sites.
+    website = _get_website(env)
     if website:
         website.write({
             'name': WEBSITE_NAME,
@@ -351,9 +362,15 @@ def post_init_hook(env):
     except Exception:
         pass
 
-    # === PUBLIER TOUS LES PRODUITS ===
+    # === PUBLIER TOUS LES PRODUITS — UNIQUEMENT SUR NOTRE SITE ===
+    # CORRECTIF : on ajoute website_id pour ne pas publier "partout".
+    # Sans ce champ, un produit sans site = visible sur TOUS les sites.
     try:
-        env["product.template"].search([("is_published", "=", False)]).write({"is_published": True})
+        if website:
+            env["product.template"].search([("is_published", "=", False)]).write({
+                "is_published": True,
+                "website_id": website.id,
+            })
     except Exception:
         pass
 
@@ -380,7 +397,15 @@ def post_init_hook(env):
             vals = {'name': name, 'sequence': seq}
             if parent:
                 vals['parent_id'] = parent.id
+            # CORRECTIF : on rattache la catégorie à notre site dès la
+            # création, pour qu'elle n'apparaisse pas sur tous les sites.
+            if website:
+                vals['website_id'] = website.id
             c = cat.create(vals)
+        elif website and not c.website_id:
+            # CORRECTIF : si la catégorie existait déjà sans site assigné
+            # (orpheline), on la rattache aussi à notre site.
+            c.write({'website_id': website.id})
         return c
 
     informatique = get_or_create('Informatique & Réseaux', seq=1)
@@ -407,11 +432,14 @@ def post_init_hook(env):
         ('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)
     ], limit=1)
     if not monetique:
-        monetique = cat.create({
+        monetique_vals = {
             'name': 'Monetique',
             'parent_id': monetique_root.id,
             'sequence': 1
-        })
+        }
+        if website:
+            monetique_vals['website_id'] = website.id
+        monetique = cat.create(monetique_vals)
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
@@ -538,7 +566,20 @@ def post_migrate_hook(env):
     # Attributs/filtres maintenus + traduction à chaque update
     _setup_monetique_attributes(env, lang_en)
 
+    # CORRECTIF : à chaque mise à jour, on rattache aussi tout produit
+    # ou catégorie qui se serait retrouvé orphelin (sans website_id),
+    # pour éviter que le bug d'affichage "partout" ne réapparaisse.
     if website:
+        try:
+            env['product.template'].search([('website_id', '=', False)]).write({
+                'website_id': website.id,
+            })
+            env['product.public.category'].search([('website_id', '=', False)]).write({
+                'website_id': website.id,
+            })
+        except Exception:
+            pass
+
         try:
             website.write({
                 'shop_opt_products_design_classes': (
