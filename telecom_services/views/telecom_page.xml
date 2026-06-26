@@ -22,20 +22,37 @@
                         <h2 class="h4 fw-bold mb-4 pb-2 border-bottom">
                             <t t-esc="universe['category'].name"/>
                         </h2>
-                        <div class="row g-3">
+                        <div class="row g-4">
                             <t t-foreach="universe['products']" t-as="product">
-                                <div class="col-sm-6 col-lg-4">
-                                    <div class="card h-100 border-0 shadow-sm">
-                                        <div class="card-body d-flex flex-column">
-                                            <h3 class="card-title h6 fw-semibold mb-3">
-                                                <t t-esc="product.name"/>
-                                            </h3>
-                                            <div class="mt-auto">
-                                                <a t-att-href="product.website_url"
-                                                   class="btn btn-outline-primary btn-sm">
-                                                    En savoir plus
-                                                </a>
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <a t-att-href="product.website_url" class="d-block overflow-hidden">
+                                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                                 style="height: 180px;">
+                                                <img t-att-src="'/web/image/product.template/%s/image_512' % product.id"
+                                                     t-att-alt="product.name"
+                                                     loading="lazy"
+                                                     class="img-fluid p-3"
+                                                     style="max-height: 160px; object-fit: contain;"/>
                                             </div>
+                                        </a>
+                                        <div class="card-body d-flex flex-column">
+                                            <h3 class="card-title h6 fw-semibold mb-2">
+                                                <a t-att-href="product.website_url"
+                                                   class="text-dark text-decoration-none">
+                                                    <t t-esc="product.name"/>
+                                                </a>
+                                            </h3>
+                                            <p class="card-text text-muted small flex-grow-1"
+                                               t-if="product.description_sale">
+                                                <t t-esc="product.description_sale"/>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                                            <a t-att-href="product.website_url"
+                                               class="btn btn-primary btn-sm w-100">
+                                                Voir le service
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
