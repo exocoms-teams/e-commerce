@@ -9,6 +9,7 @@
     'data': [
         'data/product_categories.xml',
         'data/products.xml',
+        'data/product_visibility.xml',
         'data/menu_data.xml',
         'data/translations_fr.xml',
         'data/translations_en.xml',
