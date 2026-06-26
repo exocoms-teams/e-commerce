@@ -154,6 +154,57 @@ def _mission_matches_specialites(mission, specialite_types):
     return mission.type_intervention in specialite_types
 
 
+def _mission_matches_zone(mission, intervenant):
+    """True si la mission est dans le secteur géographique de l'artisan."""
+    if not intervenant:
+        return False
+    return intervenant.couvre_adresse(mission.adresse_intervention or '')
+
+
+def _get_intervenant_by_fcm(fcm_token):
+    token = (fcm_token or '').strip()
+    if not token:
+        return None
+    return request.env['sinistre.intervenant'].sudo().search([
+        ('fcm_token', '=', token),
+        ('actif', '=', True),
+    ], limit=1)
+
+
+def _mission_reponse_intervenant(intervenant, mission, reponse):
+    """Traite acceptation ou refus. Retourne (ok: bool, payload_or_error)."""
+    reponse = (reponse or '').strip().lower()
+    if reponse == 'accepte':
+        if not mission or mission.state != 'nouveau' or mission.intervenant_id:
+            return False, "Mission introuvable ou déjà assignée"
+        specialite_types = _intervenant_specialite_types(intervenant)
+        if specialite_types and not _mission_matches_specialites(mission, specialite_types):
+            return False, "Cette mission ne correspond pas à vos spécialités"
+        if not _mission_matches_zone(mission, intervenant):
+            return False, "Cette mission est hors de votre secteur d'intervention"
+        mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
+        mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
+        _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
+        return True, {
+            'success':          True,
+            'state':            mission.state,
+            'mission_id':       mission.id,
+            'taux_acceptation': _calc_taux_acceptation_jour(intervenant),
+            'reponse':          'accepte',
+        }
+    if reponse == 'refuse':
+        if not mission or mission.state != 'nouveau':
+            return False, "Mission introuvable"
+        mission.message_post(body=_(f"❌ Mission refusée par {intervenant.name}."))
+        _enregistrer_proposition_reponse(intervenant, mission, 'refuse')
+        return True, {
+            'success':          True,
+            'reponse':          'refuse',
+            'taux_acceptation': _calc_taux_acceptation_jour(intervenant),
+        }
+    return False, "Réponse invalide"
+
+
 def _proposition_table_ready(env):
     """True si le modèle proposition est installé et sa table SQL existe."""
     try:
@@ -1154,12 +1205,12 @@ class SinistrePWAController(http.Controller):
             ('intervenant_id', '=', False),
         ], order='urgence desc, date_reception asc', limit=50)
         specialite_types = _intervenant_specialite_types(intervenant)
+        missions = missions.filtered(lambda m: _mission_matches_zone(m, intervenant))
         if specialite_types:
             missions = missions.filtered(
                 lambda m: _mission_matches_specialites(m, specialite_types)
-            )[:20]
-        else:
-            missions = missions[:20]
+            )
+        missions = missions[:20]
         result = [{
             'id':                 m.id,
             'reference':          m.reference,
@@ -1193,20 +1244,16 @@ class SinistrePWAController(http.Controller):
         specialite_types = _intervenant_specialite_types(intervenant)
         if specialite_types and not _mission_matches_specialites(mission, specialite_types):
             return _err(403, "Cette mission ne correspond pas à vos spécialités")
+        if not _mission_matches_zone(mission, intervenant):
+            return _err(403, "Cette mission est hors de votre secteur d'intervention")
         try:
-            mission.sudo().write({'intervenant_id': intervenant.id, 'state': 'assigne'})
-            mission.message_post(body=_(f"✅ Mission acceptée par {intervenant.name}."))
-            _enregistrer_proposition_reponse(intervenant, mission, 'accepte')
+            ok, payload = _mission_reponse_intervenant(intervenant, mission, 'accepte')
+            if not ok:
+                return _err(400, payload)
+            return _ok(payload)
         except Exception as e:
             _logger.error("[sinistre] accepter_mission: %s", e, exc_info=True)
             return _err(500, str(e))
-        taux = _calc_taux_acceptation_jour(intervenant)
-        return _ok({
-            'success': True,
-            'state': mission.state,
-            'mission_id': mission.id,
-            'taux_acceptation': taux,
-        })
 
     # ── REFUSER MISSION PROPOSÉE ─────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/refuser-proposition',
@@ -1222,15 +1269,42 @@ class SinistrePWAController(http.Controller):
         if not mission:
             return _err(404, "Mission introuvable")
         try:
-            mission.message_post(body=_(f"❌ Mission refusée par {intervenant.name}."))
-            _enregistrer_proposition_reponse(intervenant, mission, 'refuse')
+            ok, payload = _mission_reponse_intervenant(intervenant, mission, 'refuse')
+            if not ok:
+                return _err(400, payload)
+            return _ok(payload)
         except Exception as e:
             _logger.error("[sinistre] refuser_proposition: %s", e, exc_info=True)
             return _err(500, str(e))
-        return _ok({
-            'success': True,
-            'taux_acceptation': _calc_taux_acceptation_jour(intervenant),
-        })
+
+    # ── RÉPONSE MISSION DEPUIS NOTIFICATION PUSH (token FCM) ─────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/reponse-push',
+                type='http', auth='public', methods=['POST'], csrf=False)
+    def reponse_push(self, mission_id, **kwargs):
+        try:
+            body = json.loads(request.httprequest.data.decode('utf-8'))
+        except Exception:
+            return _err(400, "Body JSON invalide")
+        fcm_token = (body.get('fcm_token') or '').strip()
+        reponse = (body.get('reponse') or '').strip().lower()
+        if not fcm_token:
+            return _err(400, "Token FCM requis")
+        if reponse not in ('accepte', 'refuse'):
+            return _err(400, "Réponse invalide (accepte ou refuse)")
+        intervenant = _get_intervenant_by_fcm(fcm_token)
+        if not intervenant:
+            return _err(403, "Token FCM invalide")
+        mission = request.env['sinistre.mission'].sudo().browse(mission_id)
+        if not mission.exists():
+            return _err(404, "Mission introuvable")
+        try:
+            ok, payload = _mission_reponse_intervenant(intervenant, mission, reponse)
+            if not ok:
+                return _err(400, payload)
+            return _ok(payload)
+        except Exception as e:
+            _logger.error("[sinistre] reponse_push: %s", e, exc_info=True)
+            return _err(500, str(e))
 
     # ── FACTURER MISSION ─────────────────────────────────────────────
     @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/facturer',
