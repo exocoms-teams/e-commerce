@@ -9,6 +9,7 @@
     'data': [
         'data/product_categories.xml',
         'data/products.xml',
+        'data/translations_fr.xml',
         'data/translations_en.xml',
         'data/menu_data.xml',
         'views/telecom_page.xml',
