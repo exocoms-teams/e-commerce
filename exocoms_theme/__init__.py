@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo.tools import file_path
+from odoo.modules.module import get_module_resource
 
 from . import controllers
 from . import models
@@ -45,12 +45,10 @@ def _set_logo(env, website):
     if not website:
         return
     try:
-        logo_path = file_path(f'{MODULE_NAME}/{"/".join(LOGO_PATH)}', filter_ext=('.png',))
+        logo_path = get_module_resource(MODULE_NAME, *LOGO_PATH)
         if logo_path:
             with open(logo_path, 'rb') as f:
                 website.write({'logo': base64.b64encode(f.read())})
-    except FileNotFoundError:
-        _logger.warning("Logo Exocoms introuvable à static/src/img/EXOCOMS.png — site %s non modifié", website.name)
     except Exception:
         _logger.exception("Impossible d'appliquer le logo Exocoms sur le site %s", website.name)
 
@@ -438,13 +436,7 @@ def post_init_hook(env):
         cats_demo.unlink()
 
     def get_or_create(name, parent=None, seq=10):
-        # CORRECTIF : recherche insensible à la casse ('=ilike' au lieu
-        # de '=') pour retrouver les catégories déjà existantes même en
-        # cas de différence de majuscule/minuscule (votre boutique
-        # EXOCOMS existait déjà avec ses propres catégories avant que
-        # ce module ne tourne — sans ça, la moindre différence créait
-        # un doublon au lieu de réutiliser l'existant).
-        domain = [('name', '=ilike', name)]
+        domain = [('name', '=', name)]
         if parent:
             domain.append(('parent_id', '=', parent.id))
         else:
@@ -459,13 +451,10 @@ def post_init_hook(env):
             if website:
                 vals['website_id'] = website.id
             c = cat.create(vals)
-            _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
-        else:
-            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante)", name, c.id)
-            if website and not c.website_id:
-                # CORRECTIF : si la catégorie existait déjà sans site assigné
-                # (orpheline), on la rattache aussi à notre site.
-                c.write({'website_id': website.id})
+        elif website and not c.website_id:
+            # CORRECTIF : si la catégorie existait déjà sans site assigné
+            # (orpheline), on la rattache aussi à notre site.
+            c.write({'website_id': website.id})
         return c
 
     informatique = get_or_create('Informatique & Réseaux', seq=1)
@@ -473,7 +462,7 @@ def post_init_hook(env):
     telecom = get_or_create('Télécom', seq=3)
 
     monetique_sub = cat.search([
-        ('name', '=ilike', 'Monetique'), ('parent_id', '=', False)
+        ('name', '=', 'Monetique'), ('parent_id', '=', False)
     ], limit=1)
     if monetique_sub:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
@@ -489,7 +478,7 @@ def post_init_hook(env):
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
     monetique = cat.search([
-        ('name', '=ilike', 'Monetique'), ('parent_id', '=', monetique_root.id)
+        ('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)
     ], limit=1)
     if not monetique:
         monetique_vals = {
@@ -500,9 +489,6 @@ def post_init_hook(env):
         if website:
             monetique_vals['website_id'] = website.id
         monetique = cat.create(monetique_vals)
-        _logger.info("Catégorie CRÉÉE : 'Monetique' (sous-catégorie de Monétique)")
-    else:
-        _logger.info("Catégorie RETROUVÉE : 'Monetique' -> id=%s (déjà existante)", monetique.id)
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
