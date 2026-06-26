@@ -271,7 +271,7 @@ window.App = (() => {
         const sa = document.getElementById('screen-app');
         if (sl) sl.style.display = 'none';
         if (sa) sa.style.display = 'flex';
-        FCM.autoInit();
+        if (window.FCM) FCM.autoInit();
         const fallbackUser = Auth.getUser() || (() => {
             try { return JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) { return {}; }
         })();
