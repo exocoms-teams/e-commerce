@@ -1,5 +1,28 @@
 /** @odoo-module **/
 
+const MEGA_MENU_EN = {
+    title: 'Telecom Solutions for Professionals',
+    subtitle: 'Voice, mobility, conversational intelligence, connectivity and cybersecurity.',
+    cta: 'View catalogue',
+};
+
+function applyMegaMenuLang() {
+    const lang = document.documentElement.lang || '';
+    if (!lang.startsWith('en')) return;
+
+    const container = document.querySelector('.o_mega_menu_telecom');
+    if (!container) return;
+
+    const title = container.querySelector('p.fw-bold');
+    if (title) title.textContent = MEGA_MENU_EN.title;
+
+    const subtitle = container.querySelector('p.mb-0');
+    if (subtitle) subtitle.textContent = MEGA_MENU_EN.subtitle;
+
+    const cta = container.querySelector('a.btn');
+    if (cta) cta.textContent = MEGA_MENU_EN.cta;
+}
+
 function bindMegaMenuHover() {
     if (window.innerWidth < 992) return;
     document.querySelectorAll(
@@ -49,7 +72,12 @@ function bindMegaMenuHover() {
     });
 }
 
-if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', bindMegaMenuHover);
-else
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        applyMegaMenuLang();
+        bindMegaMenuHover();
+    });
+} else {
+    applyMegaMenuLang();
     bindMegaMenuHover();
+}
