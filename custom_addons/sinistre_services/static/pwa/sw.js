@@ -6,8 +6,15 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'sinistre-pro-v4';
+const CACHE_NAME = 'sinistre-pro-v6';
 const OFFLINE_URL = '/pwa/offline.html';
+const API_BASE = '/api/sinistre/v1';
+const PWA_ICON = '/sinistre_services/static/pwa/icons/icon-192.png';
+const PWA_BADGE = '/sinistre_services/static/pwa/icons/badge-72.png';
+const FCM_TOKEN_CACHE = 'sinistre-config';
+const FCM_TOKEN_KEY = '/sw-fcm-token';
+
+let _cachedFcmToken = null;
 
 // ─── Ressources à précacher ───────────────────────────────────────
 const PRECACHE_URLS = [
@@ -126,54 +133,180 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+function _isNewMissionData(data) {
+    return data && data.type === 'new_mission' && data.mission_id;
+}
+
+async function getFcmToken() {
+    if (_cachedFcmToken) return _cachedFcmToken;
+    try {
+        const cache = await caches.open(FCM_TOKEN_CACHE);
+        const resp = await cache.match(FCM_TOKEN_KEY);
+        if (resp) {
+            _cachedFcmToken = (await resp.text()).trim();
+        }
+    } catch (e) {
+        console.warn('[SW] FCM token cache read failed', e);
+    }
+    return _cachedFcmToken;
+}
+
+function showMissionNotification(payload) {
+    const notif = payload.notification || {};
+    const data = { ...(payload.data || notif.data || {}) };
+    const title = notif.title || data.title;
+    const body = notif.body || data.body;
+    const icon = notif.icon || data.icon;
+    const missionId = data.mission_id;
+    const isNewMission = _isNewMissionData(data);
+
+    const options = {
+        body: body || 'Nouvelle mission disponible',
+        icon: icon || PWA_ICON,
+        badge: PWA_BADGE,
+        tag: missionId ? `mission-${missionId}` : 'sinistre-notif',
+        renotify: true,
+        requireInteraction: isNewMission,
+        vibrate: [200, 100, 200, 100, 400],
+        data,
+    };
+
+    if (isNewMission) {
+        options.actions = [
+            { action: 'accepter', title: '✅ Accepter' },
+            { action: 'refuser', title: '❌ Refuser' },
+        ];
+    } else {
+        options.actions = [
+            { action: 'voir', title: '👁 Voir' },
+        ];
+    }
+
+    return self.registration.showNotification(title || 'Sinistre Pro', options);
+}
+
+async function missionReponsePush(missionId, reponse) {
+    const fcmToken = await getFcmToken();
+    if (!fcmToken) {
+        return { ok: false, error: 'Token FCM introuvable — ouvrez l\'app et activez les notifications' };
+    }
+
+    const response = await fetch(
+        `${API_BASE}/intervenant/mission/${missionId}/reponse-push`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ fcm_token: fcmToken, reponse }),
+        }
+    );
+
+    let data = {};
+    try { data = await response.json(); } catch (e) { /* ignore */ }
+
+    if (!response.ok) {
+        return { ok: false, error: data.error || `Erreur HTTP ${response.status}` };
+    }
+    return { ok: true, data, reponse };
+}
+
+async function notifyClients(message) {
+    const allClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    allClients.forEach((client) => client.postMessage(message));
+}
+
+async function showActionResult(title, body, tag) {
+    await self.registration.showNotification(title, {
+        body,
+        tag: tag || 'sinistre-action-result',
+        renotify: true,
+        icon: PWA_ICON,
+    });
+}
+
+async function openMissionInApp(missionId) {
+    const targetUrl = missionId ? `/pwa/?mission=${missionId}` : '/pwa/';
+    const windowClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of windowClients) {
+        if (client.url.includes('/pwa/') && 'focus' in client) {
+            client.postMessage({ type: 'OPEN_MISSION', missionId });
+            return client.focus();
+        }
+    }
+    return clients.openWindow(targetUrl);
+}
+
 // Notification push reçue en background (app fermée / onglet inactif)
 messaging.onBackgroundMessage((payload) => {
     console.log('[SW] Push reçu en background', payload);
-
-    const { title, body, icon, data = {} } = payload.notification || {};
-
-    self.registration.showNotification(title || 'Sinistre Pro', {
-        body: body || 'Nouvelle mission disponible',
-        icon: icon || '/pwa/icons/icon-192.png',
-        badge: '/pwa/icons/badge-72.png',
-        tag: data.mission_id ? `mission-${data.mission_id}` : 'sinistre-notif',
-        renotify: true,
-        requireInteraction: true,          // reste affichée jusqu'au clic
-        vibrate: [200, 100, 200, 100, 400],
-        actions: [
-            { action: 'voir', title: '👁 Voir la mission' },
-            { action: 'ignorer', title: 'Plus tard' }
-        ],
-        data: data,
-    });
+    return showMissionNotification(payload);
 });
 
 // ─── CLICK sur notification ────────────────────────────────────────
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const { action, notification } = event;
-    const data = notification.data || {};
+    const { action } = event;
+    const data = event.notification.data || {};
+    const missionId = data.mission_id;
+
+    if (action === 'accepter' && missionId) {
+        event.waitUntil((async () => {
+            const result = await missionReponsePush(missionId, 'accepte');
+            if (result.ok) {
+                await showActionResult(
+                    '✅ Mission acceptée',
+                    'La mission est disponible dans Mes Missions.',
+                    `mission-accepted-${missionId}`
+                );
+                await notifyClients({ type: 'MISSION_ACCEPTED', missionId, data: result.data });
+                await openMissionInApp(missionId);
+            } else {
+                await showActionResult('⚠️ Acceptation impossible', result.error, 'mission-action-error');
+                await notifyClients({ type: 'MISSION_ACTION_ERROR', message: result.error, missionId });
+            }
+        })());
+        return;
+    }
+
+    if (action === 'refuser' && missionId) {
+        event.waitUntil((async () => {
+            const result = await missionReponsePush(missionId, 'refuse');
+            if (result.ok) {
+                await showActionResult('Mission refusée', 'Proposition ignorée.', `mission-refused-${missionId}`);
+                await notifyClients({ type: 'MISSION_REFUSED', missionId });
+            } else {
+                await showActionResult('⚠️ Refus impossible', result.error, 'mission-action-error');
+                await notifyClients({ type: 'MISSION_ACTION_ERROR', message: result.error, missionId });
+            }
+        })());
+        return;
+    }
 
     if (action === 'ignorer') return;
 
-    const targetUrl = data.mission_id
-        ? `/pwa/?mission=${data.mission_id}`
-        : '/pwa/';
+    event.waitUntil(openMissionInApp(missionId));
+});
 
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-            // Activer une fenêtre déjà ouverte
-            for (const client of windowClients) {
-                if (client.url.includes('/pwa/') && 'focus' in client) {
-                    client.postMessage({ type: 'OPEN_MISSION', missionId: data.mission_id });
-                    return client.focus();
-                }
+// ─── Messages depuis l'app (token FCM, sync offline) ───────────────
+self.addEventListener('message', (event) => {
+    const msg = event.data || {};
+    if (msg.type === 'FCM_TOKEN' && msg.token) {
+        _cachedFcmToken = String(msg.token).trim();
+        event.waitUntil((async () => {
+            try {
+                const cache = await caches.open(FCM_TOKEN_CACHE);
+                await cache.put(FCM_TOKEN_KEY, new Response(_cachedFcmToken, {
+                    headers: { 'Content-Type': 'text/plain' },
+                }));
+            } catch (e) {
+                console.warn('[SW] FCM token cache write failed', e);
             }
-            // Sinon ouvrir une nouvelle fenêtre
-            return clients.openWindow(targetUrl);
-        })
-    );
+        })());
+    }
 });
 
 // ─── SYNC background (envoi offline queue) ────────────────────────
