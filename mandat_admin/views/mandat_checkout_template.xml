@@ -1,2 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo/>
+<odoo>
+    <template id="mandat_confirmation" inherit_id="website_sale.confirmation">
+        <xpath expr="//div[hasclass('oe_website_sale')]" position="before">
+            <t t-if="order and order.payment_mode == 'mandat_administratif'">
+                <div class="container my-4">
+                    <div class="alert alert-success text-center py-4">
+                        <h3 class="mb-1">Merci pour votre commande.</h3>
+                        <p class="mb-0">
+                            Votre commande <strong t-esc="order.name"/> a bien été enregistrée.<br/>
+                            Elle sera traitée par mandat administratif. Vous recevrez votre Bon de Commande Administratif (BCA) prochainement.
+                        </p>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>
