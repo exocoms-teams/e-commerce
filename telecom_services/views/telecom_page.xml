@@ -19,9 +19,9 @@
 
             <div class="container py-5">
                 <t t-foreach="universes" t-as="universe">
-                    <section t-att-id="'cat-%d' % universe['category'].id" class="mb-5">
+                    <section t-att-id="'cat-' + universe['id']" class="mb-5">
                         <h2 class="h4 fw-bold mb-4 pb-2 border-bottom">
-                            <t t-esc="universe['category'].name"/>
+                            <t t-esc="universe['category']"/>
                         </h2>
                         <div class="row g-4">
                             <t t-foreach="universe['products']" t-as="product">
@@ -29,19 +29,15 @@
                                     <div class="card h-100 shadow-sm border-0">
                                         <div class="bg-light d-flex align-items-center justify-content-center"
                                              style="height: 180px;">
-                                            <img t-att-src="'/web/image/product.template/%s/image_512' % product.id"
-                                                 t-att-alt="product.name"
-                                                 loading="lazy"
-                                                 class="img-fluid p-3"
-                                                 style="max-height: 160px; object-fit: contain;"/>
+                                            <i class="fa fa-cube fa-3x text-muted"/>
                                         </div>
                                         <div class="card-body d-flex flex-column">
                                             <h3 class="card-title h6 fw-semibold mb-2">
-                                                <t t-esc="product.name"/>
+                                                <t t-esc="product['name']"/>
                                             </h3>
                                             <p class="card-text text-muted small flex-grow-1"
-                                               t-if="product.description_sale">
-                                                <t t-esc="product.description_sale"/>
+                                               t-if="product.get('description')">
+                                                <t t-esc="product['description']"/>
                                             </p>
                                         </div>
                                     </div>
