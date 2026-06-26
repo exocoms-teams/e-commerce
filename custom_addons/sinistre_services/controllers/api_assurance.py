@@ -73,9 +73,6 @@ class AssuranceAPIController(http.Controller):
                 'franchise':            float(data.get('franchise', 0)),
             })
 
-            # Notifier les artisans disponibles dans la zone
-            mission._notifier_artisans_zone()
-
             return _ok({
                 'success':    True,
                 'reference':  mission.reference,
