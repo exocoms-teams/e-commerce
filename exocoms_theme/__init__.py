@@ -438,7 +438,13 @@ def post_init_hook(env):
         cats_demo.unlink()
 
     def get_or_create(name, parent=None, seq=10):
-        domain = [('name', '=', name)]
+        # CORRECTIF : recherche insensible à la casse ('=ilike' au lieu
+        # de '=') pour retrouver les catégories déjà existantes même en
+        # cas de différence de majuscule/minuscule (votre boutique
+        # EXOCOMS existait déjà avec ses propres catégories avant que
+        # ce module ne tourne — sans ça, la moindre différence créait
+        # un doublon au lieu de réutiliser l'existant).
+        domain = [('name', '=ilike', name)]
         if parent:
             domain.append(('parent_id', '=', parent.id))
         else:
@@ -453,10 +459,13 @@ def post_init_hook(env):
             if website:
                 vals['website_id'] = website.id
             c = cat.create(vals)
-        elif website and not c.website_id:
-            # CORRECTIF : si la catégorie existait déjà sans site assigné
-            # (orpheline), on la rattache aussi à notre site.
-            c.write({'website_id': website.id})
+            _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
+        else:
+            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante)", name, c.id)
+            if website and not c.website_id:
+                # CORRECTIF : si la catégorie existait déjà sans site assigné
+                # (orpheline), on la rattache aussi à notre site.
+                c.write({'website_id': website.id})
         return c
 
     informatique = get_or_create('Informatique & Réseaux', seq=1)
@@ -464,7 +473,7 @@ def post_init_hook(env):
     telecom = get_or_create('Télécom', seq=3)
 
     monetique_sub = cat.search([
-        ('name', '=', 'Monetique'), ('parent_id', '=', False)
+        ('name', '=ilike', 'Monetique'), ('parent_id', '=', False)
     ], limit=1)
     if monetique_sub:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
@@ -480,7 +489,7 @@ def post_init_hook(env):
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
     monetique = cat.search([
-        ('name', '=', 'Monetique'), ('parent_id', '=', monetique_root.id)
+        ('name', '=ilike', 'Monetique'), ('parent_id', '=', monetique_root.id)
     ], limit=1)
     if not monetique:
         monetique_vals = {
@@ -491,6 +500,9 @@ def post_init_hook(env):
         if website:
             monetique_vals['website_id'] = website.id
         monetique = cat.create(monetique_vals)
+        _logger.info("Catégorie CRÉÉE : 'Monetique' (sous-catégorie de Monétique)")
+    else:
+        _logger.info("Catégorie RETROUVÉE : 'Monetique' -> id=%s (déjà existante)", monetique.id)
 
     caisse = get_or_create('Caisse Enregistreuse', monetique_root, seq=3)
     get_or_create('Distributeur automatique', monetique_root, seq=4)
