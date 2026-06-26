@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
+import base64
+import logging
+
+from odoo.modules.module import get_module_resource
+
 from . import controllers
 from . import models
 
+_logger = logging.getLogger(__name__)
+
 WEBSITE_NAME = 'EXOCOMS'
 COMPANY_NAME = 'Exocoms Group'
+MODULE_NAME = 'exocoms_theme'  # <-- adaptez si le nom réel du module diffère
+LOGO_PATH = ('static', 'src', 'img', 'EXOCOMS.png')
 OUR_URLS = ['/', '/shop', '/nos-services']
 
 
@@ -27,6 +36,21 @@ def _get_company(env):
     if not company:
         company = env['res.company'].create({'name': COMPANY_NAME})
     return company
+
+
+def _set_logo(env, website):
+    """Applique le logo Exocoms UNIQUEMENT sur notre site (jamais sur
+    'website.default_website', qui pointe vers le premier site de la
+    base et peut appartenir à un autre projet client)."""
+    if not website:
+        return
+    try:
+        logo_path = get_module_resource(MODULE_NAME, *LOGO_PATH)
+        if logo_path:
+            with open(logo_path, 'rb') as f:
+                website.write({'logo': base64.b64encode(f.read())})
+    except Exception:
+        _logger.exception("Impossible d'appliquer le logo Exocoms sur le site %s", website.name)
 
 
 def _clean_demo_data(env, website):
@@ -274,6 +298,12 @@ def post_init_hook(env):
             'social_twitter': 'https://twitter.com/exocoms',
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
         })
+
+    # === LOGO ===
+    # CORRECTIF : géré ici en Python (sécurisé par _get_website) plutôt
+    # qu'en XML sur "website.default_website", qui ciblait le premier
+    # site de la base — n'importe quel autre projet client.
+    _set_logo(env, website)
 
     # === LANGUES — Français + Anglais ===
     lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
@@ -566,18 +596,24 @@ def post_init_hook(env):
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
 
-    # NOTE : Le footer et le copyright sont désormais gérés par
+    # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
     # custom_copyright, inherit_id="website.layout"), pas ici.
     # Cela évite le bug de validation XPath rencontré avec
     # position="replace" en Python, et garantit l'affichage sur
     # TOUTES les pages du site de façon déclarative et stable.
+    # ⚠️ Si ce fichier footer.xml contient lui aussi des écritures
+    # directes sur "website.default_website" ou un site sans condition,
+    # il faudra le corriger de la même façon — voir avec moi si besoin.
 
 
 def post_migrate_hook(env):
     """S'exécute à chaque update du module"""
     website = _get_website(env)
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
+    # Logo maintenu à chaque update (au cas où le site ait été recréé)
+    _set_logo(env, website)
 
     # Menus maintenus + nettoyage démo à chaque update
     _setup_menus(env, website, lang_en)

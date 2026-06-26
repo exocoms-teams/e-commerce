@@ -2,15 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- NOM + LOGO + LANGUE PAR DÉFAUT -->
-        <record id="website.default_website" model="website">
-            <field name="name">Exocoms Group</field>
-            <field name="default_lang_id" ref="base.lang_fr"/>
-            <field name="logo" type="base64" file="exocoms_theme/static/src/img/EXOCOMS.png"/>
-            <field name="shop_opt_products_design_classes">o_wsale_products_opt_name_color_regular o_wsale_products_opt_thumb_cover o_wsale_products_opt_img_secondary_show o_wsale_products_opt_img_hover_zoom_out_light o_wsale_products_opt_has_cta o_wsale_products_opt_has_wishlist o_wsale_products_opt_has_comparison o_wsale_products_opt_actions_inline o_wsale_products_opt_wishlist_inline o_wsale_products_opt_actions_promote o_wsale_products_opt_cc o_wsale_products_opt_cc1 o_wsale_products_opt_rounded_4 o_wsale_products_opt_thumb_6_5 o_wsale_products_opt_layout_catalog o_wsale_products_opt_design_chips</field>
-        </record>
-
-        <!-- VUES NATIVES ACTIVES -->
+        <!-- VUES NATIVES ACTIVES (génériques, sans risque par site) -->
         <record id="website_sale.products_categories" model="ir.ui.view">
             <field name="active">True</field>
         </record>
@@ -20,6 +12,15 @@
         <record id="website_sale.filter_products_price" model="ir.ui.view">
             <field name="active">True</field>
         </record>
+
+        <!-- NOM, LOGO, LANGUE, DESIGN DU SITE EXOCOMS :
+             Tout ça est désormais géré dans __init__.py (post_init_hook),
+             via _get_website(), qui cible précisément le site nommé
+             "EXOCOMS" (insensible à la casse, créé s'il n'existe pas).
+             On ne touche plus JAMAIS à "website.default_website" ici :
+             cet ID technique pointe vers le premier site de la base,
+             qui peut appartenir à n'importe quel autre projet client
+             dans une base partagée. -->
 
     </data>
 </odoo>
