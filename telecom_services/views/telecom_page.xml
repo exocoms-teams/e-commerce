@@ -19,14 +19,15 @@
 
             <div class="container py-5">
                 <t t-foreach="universes" t-as="universe">
-                    <section t-att-id="'cat-' + str(universe['category'].id)" class="mb-5">
+                    <section t-att-id="'cat-' + universe['id']" class="mb-5">
                         <h2 class="h4 fw-bold mb-4 pb-2 border-bottom">
-                            <t t-esc="universe['category'].name"/>
+                            <t t-esc="universe['category']"/>
                         </h2>
                         <div class="row g-4">
                             <t t-foreach="universe['products']" t-as="product">
+                                <t t-set="product_url" t-value="product_urls.get(product.get('xml_id'), '#')"/>
                                 <div class="col-6 col-md-4 col-lg-3">
-                                    <a t-att-href="product.website_url"
+                                    <a t-att-href="product_url"
                                        class="text-decoration-none text-reset d-block h-100">
                                         <div class="card h-100 shadow-sm border-0 telecom-card">
                                             <div class="bg-light d-flex align-items-center justify-content-center"
@@ -35,11 +36,11 @@
                                             </div>
                                             <div class="card-body d-flex flex-column">
                                                 <h3 class="card-title h6 fw-semibold mb-2">
-                                                    <t t-esc="product.name"/>
+                                                    <t t-esc="product['name']"/>
                                                 </h3>
                                                 <p class="card-text text-muted small flex-grow-1"
-                                                   t-if="product.description_sale">
-                                                    <t t-esc="product.description_sale"/>
+                                                   t-if="product.get('description')">
+                                                    <t t-esc="product['description']"/>
                                                 </p>
                                             </div>
                                         </div>
