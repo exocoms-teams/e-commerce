@@ -9,7 +9,7 @@ from . import models
 
 _logger = logging.getLogger(__name__)
 
-WEBSITE_NAME = 'EXOCOMS'
+WEBSITE_NAME = 'Exocoms'
 COMPANY_NAME = 'Exocoms Group'
 MODULE_NAME = 'exocoms_theme'  # <-- adaptez si le nom réel du module diffère
 LOGO_PATH = ('static', 'src', 'img', 'EXOCOMS.png')
