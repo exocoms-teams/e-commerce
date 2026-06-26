@@ -171,11 +171,94 @@
             </t>
         </template>
 
+        <!-- SerruPro FAQ Page -->
+        <template id="faq_page" name="FAQ SerruPro">
+            <t t-call="website.layout">
+                <section class="serrupro-faq" style="padding: 60px 0; background-color: #ffffff;">
+                    <div class="container">
+                        <div class="row mb-5">
+                            <div class="col-12 text-center">
+                                <h1 style="font-size: 2.8rem; font-weight: bold; margin-bottom: 20px;">FAQ SerruPro</h1>
+                                <p style="font-size: 1.1rem; color: #555; max-width: 760px; margin: 0 auto;">
+                                    Posez votre question et consultez les questions déjà publiées.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div style="padding: 30px; border-radius: 12px; background: #f8f9fa; border: 1px solid #e9ecef;">
+                                    <h2 style="font-size: 1.85rem; font-weight: bold; margin-bottom: 20px;">Posez une question</h2>
+                                    <t t-if="error">
+                                        <div style="margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #f8d7da; color: #842029;">
+                                            Merci de remplir tous les champs obligatoires.
+                                        </div>
+                                    </t>
+                                    <t t-if="success">
+                                        <div style="margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #d1e7dd; color: #0f5132;">
+                                            Votre question a bien été envoyée. Elle sera publiée après validation.
+                                        </div>
+                                    </t>
+                                    <form method="post" action="/serrupro/faq/ask">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <div class="mb-3">
+                                            <label style="font-weight: 600;">Nom</label>
+                                            <input type="text" name="name" class="form-control" required="required" placeholder="Votre nom"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label style="font-weight: 600;">Email</label>
+                                            <input type="email" name="email" class="form-control" required="required" placeholder="votre@email.fr"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label style="font-weight: 600;">Question</label>
+                                            <textarea name="question" class="form-control" rows="5" required="required" placeholder="Écrivez votre question ici..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning btn-lg" style="font-weight: bold;">Envoyer ma question</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div style="padding: 30px; border-radius: 12px; background: #ffffff; border: 1px solid #e9ecef;">
+                                    <h2 style="font-size: 1.85rem; font-weight: bold; margin-bottom: 20px;">Questions publiées</h2>
+                                    <t t-if="faq_questions">
+                                        <div class="accordion" id="faqAccordion">
+                                            <t t-foreach="faq_questions" t-as="question" t-key="question.id">
+                                                <div class="accordion-item" style="border: none; border-bottom: 1px solid #e9ecef;">
+                                                    <h2 class="accordion-header" id="heading<t t-esc="question.id"/>">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<t t-esc="question.id"/>" aria-expanded="false" aria-controls="collapse<t t-esc="question.id"/>">
+                                                            <t t-esc="question.name"/>
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapse<t t-esc="question.id"/>" class="accordion-collapse collapse" aria-labelledby="heading<t t-esc="question.id"/>" data-bs-parent="#faqAccordion">
+                                                        <div class="accordion-body" style="background: #f8f9fa;">
+                                                            <t t-esc="question.answer or 'Réponse en cours de rédaction.'"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <t t-if="not faq_questions">
+                                        <p style="color: #555;">Aucune question publiée pour le moment. Posez la première question.</p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </t>
+        </template>
+
         <!-- Page web qui relie le template a l'URL /homepage -->
         <record id="homepage_page" model="website.page">
             <field name="name">Homepage</field>
             <field name="url">/homepage</field>
             <field name="view_id" ref="homepage"/>
+            <field name="is_published">True</field>
+        </record>
+        <record id="faq_page" model="website.page">
+            <field name="name">FAQ SerruPro</field>
+            <field name="url">/serrupro/faq</field>
+            <field name="view_id" ref="faq_page"/>
             <field name="is_published">True</field>
         </record>
     </data>
