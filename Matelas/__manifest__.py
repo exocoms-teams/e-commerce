@@ -24,6 +24,7 @@
             'Matelas/static/src/css/Avis.css',
             'Matelas/static/src/css/Contact.css',
             'Matelas/static/src/css/Mentions.css',
+            'Matelas/static/src/css/Shop.css',
             'Matelas/static/src/js/main.js',  
         ],
     },
