@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from odoo import models, fields, api, _
+from . import zone_utils
 
 
 class SinistreIntervenant(models.Model):
@@ -100,6 +101,11 @@ class SinistreIntervenant(models.Model):
         """Persiste les slots (dict Python → JSON)."""
         self.ensure_one()
         self.write({'planning_slots': json.dumps(slots_dict)})
+
+    def couvre_adresse(self, adresse):
+        """True si l'adresse mission est dans le secteur de l'artisan."""
+        self.ensure_one()
+        return zone_utils.adresse_dans_zone(adresse or '', self.zone_intervention or '')
 
     def action_voir_missions(self):
         return {
