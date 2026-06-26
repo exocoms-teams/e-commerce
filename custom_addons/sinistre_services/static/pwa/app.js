@@ -212,17 +212,47 @@ window.App = (() => {
         _updateUIFromUser();
     }
 
+    function _handleSWMessage(data) {
+        if (!data || !data.type) return;
+        const missionId = data.missionId || data.mission_id;
+
+        if (data.type === 'OPEN_MISSION' && missionId && window.MissionDetail) {
+            MissionDetail.open(missionId);
+            return;
+        }
+        if (data.type === 'MISSION_ACCEPTED') {
+            Toast.show('✅ Mission acceptée — disponible dans Mes Missions', 'success');
+            if (window.Dashboard) Dashboard.refresh();
+            if (missionId && window.MissionDetail) MissionDetail.open(missionId);
+            return;
+        }
+        if (data.type === 'MISSION_REFUSED') {
+            Toast.show('Mission refusée', 'info');
+            if (window.Dashboard) Dashboard.refresh();
+            return;
+        }
+        if (data.type === 'MISSION_ACTION_ERROR') {
+            Toast.show(data.message || 'Action impossible depuis la notification', 'error', 8000);
+        }
+    }
+
     async function _registerSW() {
         if (!('serviceWorker' in navigator)) return;
         try {
             const reg = await navigator.serviceWorker.register(CONFIG.SW_PATH, { scope: '/sinistre_services/static/pwa/' });
             console.log('[SW] Enregistré:', reg.scope);
 
+            try {
+                const storedToken = localStorage.getItem('ss_fcm_token');
+                const sw = reg.active || reg.waiting || reg.installing;
+                if (storedToken && sw) {
+                    sw.postMessage({ type: 'FCM_TOKEN', token: storedToken });
+                }
+            } catch (e) { /* ignore */ }
+
             // Écouter les messages du SW
             navigator.serviceWorker.addEventListener('message', (e) => {
-                if (e.data?.type === 'OPEN_MISSION') {
-                    MissionDetail.open(e.data.missionId);
-                }
+                _handleSWMessage(e.data);
             });
         } catch (err) {
             console.warn('[SW] Erreur enregistrement:', err);
@@ -250,10 +280,15 @@ window.App = (() => {
             showView('dashboard', document.getElementById('nav-dashboard'));
         });
 
-        // Deep link : ouvrir une mission depuis push
+        // Deep link : ouvrir ou répondre à une mission depuis push
         const urlParams = new URLSearchParams(window.location.search);
         const missionId = urlParams.get('mission');
-        if (missionId) {
+        const pushAction = urlParams.get('action');
+        if (missionId && pushAction === 'accept' && window.Dashboard) {
+            Dashboard.accepterMission(Number(missionId), null);
+        } else if (missionId && pushAction === 'refuse' && window.Dashboard) {
+            Dashboard.refuserMission(Number(missionId), null, true);
+        } else if (missionId) {
             MissionDetail.open(missionId);
         }
 
@@ -376,6 +411,7 @@ window.App = (() => {
         showView,
         showSubView,
         goBack,
+        _handleSWMessage,
         get currentView() { return _currentView; },
     };
 })();
