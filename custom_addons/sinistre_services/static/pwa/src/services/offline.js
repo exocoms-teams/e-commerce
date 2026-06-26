@@ -133,7 +133,9 @@ window.Offline = (() => {
         if (event.data?.type === 'PROCESS_OFFLINE_QUEUE') {
             processQueue();
         }
-        if (event.data?.type === 'OPEN_MISSION') {
+        if (window.App && typeof App._handleSWMessage === 'function') {
+            App._handleSWMessage(event.data);
+        } else if (event.data?.type === 'OPEN_MISSION') {
             MissionDetail.open(event.data.missionId);
         }
     });
