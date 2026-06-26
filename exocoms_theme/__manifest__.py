@@ -14,6 +14,7 @@
         'views/pages/home.xml',
         'views/pages/services.xml',
         'views/pages/mentions_legales.xml',
+        'views/pages/infogerance.xml',
         'views/pages/boutique.xml',
         'views/partials/hero.xml',
         'views/partials/dashbord.xml',
