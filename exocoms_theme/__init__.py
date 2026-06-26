@@ -2,16 +2,31 @@
 from . import controllers
 from . import models
 
-WEBSITE_NAME = 'Exocoms Group'
+WEBSITE_NAME = 'EXOCOMS'
+COMPANY_NAME = 'Exocoms Group'
 OUR_URLS = ['/', '/shop', '/nos-services']
 
 
 def _get_website(env):
-    """Retourne le website exocoms — par nom, jamais par ID."""
-    website = env['website'].search([('name', '=', WEBSITE_NAME)], limit=1)
+    """Retourne le website EXOCOMS — recherche insensible à la casse,
+    jamais par ID. Ne pioche JAMAIS dans un site existant qui ne nous
+    appartient pas (base partagée avec d'autres projets) : si absent,
+    on le CRÉE plutôt que de prendre n'importe quel site au hasard."""
+    website = env['website'].search([('name', '=ilike', WEBSITE_NAME)], limit=1)
     if not website:
-        website = env['website'].search([], limit=1)
+        website = env['website'].create({'name': WEBSITE_NAME})
     return website
+
+
+def _get_company(env):
+    """Retourne la société Exocoms Group — par nom, jamais par défaut.
+    Ne touche JAMAIS à une société existante qui ne nous appartient pas
+    (base partagée avec d'autres projets) : si absente, on la CRÉE
+    plutôt que de prendre la première société trouvée."""
+    company = env['res.company'].search([('name', '=ilike', COMPANY_NAME)], limit=1)
+    if not company:
+        company = env['res.company'].create({'name': COMPANY_NAME})
+    return company
 
 
 def _clean_demo_data(env, website):
@@ -90,8 +105,8 @@ def _setup_menus(env, website, lang_en):
     ], limit=1)
 
     menus = [
-        ('/',         'Accueil',      'Home',         1),
-        ('/shop',     'Boutique',     'Shop',         2),
+        ('/',             'Accueil',      'Home',         1),
+        ('/shop',         'Boutique',     'Shop',         2),
         ('/nos-services', 'Nos services', 'Our Services', 3),
     ]
     for url, name_fr, name_en, seq in menus:
@@ -106,8 +121,8 @@ def _setup_menus(env, website, lang_en):
     if unwanted:
         unwanted.unlink()
 
-    # NOUVEAU — Rattacher TOUT menu orphelin restant (sans website_id) à
-    # notre site, y compris les sous-menus créés en dehors de OUR_URLS
+    # Rattacher TOUT menu orphelin restant (sans website_id) à notre
+    # site, y compris les sous-menus créés en dehors de OUR_URLS
     # (ex: "Catégorie"). Comme on n'a qu'un seul vrai site, tout orphelin
     # restant après le nettoyage de démo nous appartient forcément.
     leftover_orphans = env['website.menu'].search([('website_id', '=', False)])
@@ -234,19 +249,23 @@ def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
     # === COMPANY ===
-    company = env['res.company'].search([], limit=1)
+    # CORRECTIF : on utilise _get_company() (recherche par nom, jamais
+    # "la première société trouvée") pour ne jamais toucher à la société
+    # d'un autre projet partageant cette base.
+    company = _get_company(env)
     if company:
         company.write({
-            'name': 'Exocoms Group',
+            'name': COMPANY_NAME,
             'email': 'contact@exocoms.fr',
             'phone': '+33 (0)1 84 79 37 55',
             'country_id': env.ref('base.fr').id,
         })
 
     # === SITE WEB ===
-    # CORRECTIF : on utilise _get_website() (recherche par nom 'exocoms')
-    # au lieu de search([], limit=1) qui prenait N'IMPORTE QUEL site —
-    # c'est ce qui causait le renommage accidentel d'autres sites.
+    # CORRECTIF : on utilise _get_website() (recherche par nom 'EXOCOMS',
+    # insensible à la casse, et création si absent) au lieu de
+    # search([], limit=1) qui prenait N'IMPORTE QUEL site — c'est ce qui
+    # causait le renommage accidentel d'autres sites.
     website = _get_website(env)
     if website:
         website.write({
