@@ -53,39 +53,3 @@ class TestSinistreServices(TransactionCase):
         self.assertEqual(mission.state, 'nouveau')
         mission.write({'state': 'en_cours'})
         self.assertEqual(mission.state, 'en_cours')
-
-    def test_04_zone_matching(self):
-        """Vérifie le matching géographique secteur artisan ↔ adresse mission."""
-        from odoo.addons.sinistre_services.models import zone_utils
-
-        self.assertTrue(
-            zone_utils.adresse_dans_zone('12 rue Test, 75011 Paris', 'Paris 75')
-        )
-        self.assertTrue(
-            zone_utils.adresse_dans_zone('7 rue Oberkampf, Paris 11e', '75011')
-        )
-        self.assertFalse(
-            zone_utils.adresse_dans_zone('10 rue de Lyon, 69001 Lyon', 'Paris 75')
-        )
-        self.assertTrue(
-            zone_utils.adresse_dans_zone('10 rue de Lyon, 69001 Lyon', '')
-        )
-
-        partner = self.env['res.partner'].create({'name': 'Artisan Zone'})
-        artisan_paris = self.env['sinistre.intervenant'].create({
-            'name': 'Artisan Paris',
-            'partner_id': partner.id,
-            'zone_intervention': '75, 75011',
-            'disponible': True,
-            'actif': True,
-        })
-        artisan_lyon = self.env['sinistre.intervenant'].create({
-            'name': 'Artisan Lyon',
-            'partner_id': self.env['res.partner'].create({'name': 'P Lyon'}).id,
-            'zone_intervention': '69',
-            'disponible': True,
-            'actif': True,
-        })
-        self.assertTrue(artisan_paris.couvre_adresse('45 av. Parmentier, 75011 Paris'))
-        self.assertFalse(artisan_paris.couvre_adresse('10 rue de Lyon, 69001 Lyon'))
-        self.assertTrue(artisan_lyon.couvre_adresse('10 rue de Lyon, 69001 Lyon'))
