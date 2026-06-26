@@ -13,7 +13,6 @@ def post_install_hook(env):
     _ensure_certification_table(env)
     _ensure_planning_schema(env)
     _ensure_admin_phone_param(env)
-    _repair_pwa_static_files()
     _setup_admin_rights(env)
     _setup_demo_intervenant(env)
     _cleanup_menus(env)
@@ -112,59 +111,6 @@ def _ensure_admin_phone_param(env):
     ICP = env['ir.config_parameter'].sudo()
     if not ICP.get_param('sinistre.admin_phone'):
         ICP.set_param('sinistre.admin_phone', '0X0X0X')
-
-
-def _repair_pwa_static_files():
-    """Restaure les assets PWA si des fichiers statiques ont été écrasés (ex. par du Python)."""
-    import os
-    import shutil
-    from odoo.modules.module import get_module_path
-
-    mod_path = get_module_path('sinistre_services')
-    if not mod_path:
-        return
-
-    integrity_dir = os.path.join(mod_path, 'static', 'pwa', '_integrity')
-    if not os.path.isdir(integrity_dir):
-        _logger.warning("[sinistre_services] Dossier PWA _integrity introuvable")
-        return
-
-    targets = {
-        'index.html':        os.path.join(mod_path, 'static', 'pwa', 'index.html'),
-        'app.js':            os.path.join(mod_path, 'static', 'pwa', 'app.js'),
-        'dashboard.js':      os.path.join(mod_path, 'static', 'pwa', 'src', 'screens', 'dashboard.js'),
-        'mission_detail.js': os.path.join(mod_path, 'static', 'pwa', 'src', 'screens', 'mission_detail.js'),
-        'comptabilite.js':   os.path.join(mod_path, 'static', 'pwa', 'src', 'screens', 'comptabilite.js'),
-        'carte.js':          os.path.join(mod_path, 'static', 'pwa', 'src', 'screens', 'carte.js'),
-    }
-    markers = {
-        'index.html':        '<!DOCTYPE html>',
-        'app.js':            'window.App',
-        'dashboard.js':      'window.Dashboard',
-        'mission_detail.js': 'window.MissionDetail',
-        'comptabilite.js':   'window.Comptabilite',
-        'carte.js':          'window.CarteMap',
-    }
-
-    for name, target in targets.items():
-        source = os.path.join(integrity_dir, name)
-        if not os.path.isfile(source):
-            continue
-        corrupted = True
-        if os.path.isfile(target):
-            try:
-                with open(target, 'r', encoding='utf-8', errors='ignore') as handle:
-                    head = handle.read(120)
-                corrupted = markers[name] not in head
-            except OSError:
-                corrupted = True
-        if corrupted:
-            try:
-                os.makedirs(os.path.dirname(target), exist_ok=True)
-                shutil.copy2(source, target)
-                _logger.warning("[sinistre_services] PWA restauré depuis _integrity : %s", name)
-            except OSError as err:
-                _logger.error("[sinistre_services] Échec restauration PWA %s : %s", name, err)
 
 
 def _setup_demo_intervenant(env):
