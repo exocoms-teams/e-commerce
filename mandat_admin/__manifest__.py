@@ -56,6 +56,7 @@ Fonctionnalités
         'views/mandat_inline_form.xml',
         'data/payment_provider_data.xml',
         'views/mandat_checkout_template.xml',
+        'views/mandat_confirmation_page.xml',
     ],
     'assets': {
         'web.assets_backend': [

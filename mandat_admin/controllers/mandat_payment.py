@@ -92,7 +92,15 @@ class MandatPaymentController(http.Controller):
         # 4. Prépare la session pour la page de confirmation
         request.session['sale_last_order_id'] = order.id
 
-        return {'success': True, 'redirect': '/shop/confirmation'}
+        return {'success': True, 'redirect': '/mandat/confirmation'}
+
+    @http.route('/mandat/confirmation', type='http', auth='public', website=True)
+    def mandat_confirmation(self, **kwargs):
+        order_id = request.session.get('sale_last_order_id')
+        order = request.env['sale.order'].sudo().browse(order_id) if order_id else None
+        if not order or not order.exists():
+            return request.redirect('/shop')
+        return request.render('mandat_admin.mandat_confirmation_page', {'order': order})
 
     @http.route('/mandat/save_checkout_data', type='jsonrpc', auth='public', website=True)
     def save_mandat_checkout_data(self, **kwargs):

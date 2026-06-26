@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mandat_confirmation_page" model="ir.ui.view">
+        <field name="name">mandat_admin.confirmation_page</field>
+        <field name="type">qweb</field>
+        <field name="key">mandat_admin.mandat_confirmation_page</field>
+        <field name="arch" type="xml">
+            <t t-name="mandat_admin.mandat_confirmation_page">
+                <t t-call="website.layout">
+                    <div class="oe_website_sale">
+                        <div class="container my-5">
+                            <div class="alert alert-success text-center py-5">
+                                <h2 class="mb-2">Merci pour votre commande.</h2>
+                                <p class="mb-0 fs-5">
+                                    Votre commande <strong t-esc="order.name"/> a bien été enregistrée.<br/>
+                                    Elle sera traitée par mandat administratif.<br/>
+                                    Vous recevrez votre Bon de Commande Administratif (BCA) prochainement.
+                                </p>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <h5>Récapitulatif</h5>
+                                    <table class="table">
+                                        <t t-foreach="order.order_line" t-as="line">
+                                            <tr t-if="not line.display_type">
+                                                <td><t t-esc="line.product_id.name"/></td>
+                                                <td class="text-end"><t t-esc="line.price_subtotal"/> <t t-esc="order.currency_id.symbol"/></td>
+                                            </tr>
+                                        </t>
+                                        <tr class="fw-bold">
+                                            <td>Total</td>
+                                            <td class="text-end"><t t-esc="order.amount_total"/> <t t-esc="order.currency_id.symbol"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="/shop" class="btn btn-primary">Continuer mes achats</a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+</odoo>
