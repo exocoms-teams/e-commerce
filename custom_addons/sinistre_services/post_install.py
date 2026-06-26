@@ -13,6 +13,7 @@ def post_install_hook(env):
     _ensure_certification_table(env)
     _ensure_planning_schema(env)
     _ensure_admin_phone_param(env)
+    _ensure_firebase_params(env)
     _setup_admin_rights(env)
     _setup_demo_intervenant(env)
     _cleanup_menus(env)
@@ -111,6 +112,24 @@ def _ensure_admin_phone_param(env):
     ICP = env['ir.config_parameter'].sudo()
     if not ICP.get_param('sinistre.admin_phone'):
         ICP.set_param('sinistre.admin_phone', '0X0X0X')
+
+
+def _ensure_firebase_params(env):
+    """Crée les clés de paramètres Firebase si absentes (valeurs à renseigner dans Odoo)."""
+    ICP = env['ir.config_parameter'].sudo()
+    defaults = {
+        'sinistre.firebase_api_key':            '',
+        'sinistre.firebase_auth_domain':        '',
+        'sinistre.firebase_project_id':         '',
+        'sinistre.firebase_storage_bucket':     '',
+        'sinistre.firebase_messaging_sender_id': '',
+        'sinistre.firebase_app_id':             '',
+        'sinistre.firebase_vapid_key':          '',
+        'sinistre.fcm_server_key':              '',
+    }
+    for key, default in defaults.items():
+        if not ICP.get_param(key):
+            ICP.set_param(key, default)
 
 
 def _setup_demo_intervenant(env):
