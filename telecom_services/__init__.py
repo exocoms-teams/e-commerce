@@ -3,10 +3,22 @@ from . import controllers
 
 def post_init_hook(env):
     _position_telecom_menu(env)
+    _load_translations(env)
 
 
 def post_migrate_hook(env):
     _position_telecom_menu(env)
+    _load_translations(env)
+
+
+def _load_translations(env):
+    if not env['res.lang'].search([('code', '=', 'en_US')], limit=1):
+        return
+    module = env['ir.module.module'].search(
+        [('name', '=', 'telecom_services')], limit=1
+    )
+    if module:
+        module.with_context(overwrite=True)._update_translations('en_US')
 
 
 def _position_telecom_menu(env):
