@@ -132,6 +132,42 @@ def _ensure_firebase_params(env):
             ICP.set_param(key, default)
 
 
+_DEMO_SPEC_XMLIDS = ('spec_serrurerie', 'spec_plomberie', 'spec_electricite')
+
+
+def _assign_specialites(env, interv, xml_ids):
+    """Assigne des spécialités à un intervenant via leurs XML IDs."""
+    spec_ids = []
+    for xml_id in xml_ids:
+        try:
+            spec_ids.append(env.ref(f'sinistre_services.{xml_id}').id)
+        except Exception:
+            pass
+    if spec_ids:
+        interv.write({'specialites': [(6, 0, spec_ids)]})
+
+
+def _ensure_intervenant_specialites(env, interv):
+    """Renseigne les spécialités si l'intervenant n'en a pas encore."""
+    if interv.specialites:
+        return
+    login = interv.user_id.login if interv.user_id else ''
+    if login == 'thomas.moreau@artisanpro.fr':
+        _assign_specialites(env, interv, list(_DEMO_SPEC_XMLIDS))
+        return
+    # Déduire depuis les missions existantes
+    type_ivs = set(
+        interv.mission_ids.mapped('type_intervention')
+    ) - {False}
+    if not type_ivs:
+        return
+    specs = env['sinistre.specialite'].search([
+        ('type_intervention', 'in', list(type_ivs)),
+    ])
+    if specs:
+        interv.write({'specialites': [(6, 0, specs.ids)]})
+
+
 def _setup_demo_intervenant(env):
     """Crée un intervenant de démo complet avec missions cohérentes."""
     try:
@@ -144,8 +180,9 @@ def _setup_demo_intervenant(env):
                 [('user_id', '=', existing_user.id)], limit=1
             )
             if not interv:
-                _create_intervenant_for_user(env, existing_user)
+                interv = _create_intervenant_for_user(env, existing_user)
             else:
+                _ensure_intervenant_specialites(env, interv)
                 # S'assurer qu'il a des missions
                 missions = env['sinistre.mission'].search(
                     [('intervenant_id', '=', interv.id)]
@@ -203,7 +240,7 @@ def _create_intervenant_for_user(env, user):
     )
     if interv:
         return interv
-    return env['sinistre.intervenant'].create({
+    interv = env['sinistre.intervenant'].create({
         'name':               user.name,
         'partner_id':         user.partner_id.id,
         'user_id':            user.id,
@@ -212,6 +249,8 @@ def _create_intervenant_for_user(env, user):
         'actif':              True,
         'zone_intervention':  'Paris 75',
     })
+    _ensure_intervenant_specialites(env, interv)
+    return interv
 
 
 def _create_demo_missions(env, interv):
