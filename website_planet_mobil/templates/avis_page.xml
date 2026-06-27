@@ -1,138 +1,831 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<template id="avis_page" name="Planet Mobil - Avis clients">
+<t t-call="website_planet_mobil.layout">
+<div id="wrap" class="oe_structure">
 
-    <template id="avis_page" name="Planet Mobil - Avis clients">
-        <t t-call="website_planet_mobil.layout">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    #wrap { font-family: 'Inter', sans-serif; }
 
-            <div id="wrap" class="oe_structure">
-                <div id="oe_structure_avis_top" class="oe_structure oe_empty" />
-                <div class="avis-hero">
-                    <h1>⭐ Avis de nos clients</h1>
-                    <p>Ce que pensent nos clients de Planet Mobil</p>
-                </div>
+    /* ══════════════════════════════════════
+       HERO
+    ══════════════════════════════════════ */
+    .pm-avis-hero {
+        position: relative;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #db2777 100%);
+        padding: 100px 40px 80px;
+        overflow: hidden;
+        text-align: center;
+    }
+    /* Formes décoratives flottantes */
+    .pm-avis-hero::before {
+        content: '';
+        position: absolute;
+        width: 500px; height: 500px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.06);
+        top: -180px; right: -100px;
+        pointer-events: none;
+    }
+    .pm-avis-hero::after {
+        content: '';
+        position: absolute;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        bottom: -120px; left: -60px;
+        pointer-events: none;
+    }
+    /* Barre blanche translucide en haut */
+    .pm-avis-topbar {
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 3px;
+        background: rgba(255,255,255,0.35);
+    }
+    .pm-avis-hero-inner {
+        position: relative; z-index: 2;
+        max-width: 680px;
+        margin: 0 auto;
+        animation: pmFadeUp 0.8s ease both;
+    }
+    @keyframes pmFadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    .pm-avis-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 50px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(8px);
+    }
+    .pm-avis-eyebrow-stars { display: flex; gap: 2px; }
+    .pm-avis-eyebrow-stars i { color: #fde68a; font-size: 0.7rem; }
+    .pm-avis-hero h1 {
+        font-size: clamp(2rem, 4.5vw, 3.2rem);
+        font-weight: 900;
+        color: #fff;
+        line-height: 1.1;
+        margin: 0 0 16px;
+    }
+    .pm-avis-hero h1 span {
+        background: linear-gradient(135deg, #fde68a, #fbbf24);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .pm-avis-hero p {
+        font-size: 1.05rem;
+        color: rgba(255,255,255,0.72);
+        line-height: 1.7;
+        margin: 0 0 36px;
+    }
+    .pm-avis-hero-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        color: #4f46e5 !important;
+        font-weight: 800;
+        font-size: 0.9rem;
+        padding: 13px 28px;
+        border-radius: 50px;
+        text-decoration: none !important;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+    }
+    .pm-avis-hero-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+        color: #4f46e5 !important;
+    }
 
-                <div id="oe_structure_avis_stats" class="oe_structure oe_empty" />
-                <t t-if="stats">
-                    <div class="avis-stats">
-                        <div class="avis-stat-main">
-                            <div class="note">
-                                <t t-out="stats['avg']" />
-                            </div>
-                            <div class="stars-big">
-                                <t t-foreach="range(int(stats['avg']))" t-as="s">
-                                    <i class="fa fa-star" />
-                                </t>
-                                <t t-if="stats['avg'] % 1 >= 0.5">
-                                    <i class="fa fa-star-half-o" />
-                                </t>
-                            </div>
-                            <p>Basé sur <t t-out="stats['total']" /> avis vérifiés</p>
-                        </div>
-                        <div class="avis-stat-bars">
-                            <t t-foreach="[5,4,3,2,1]" t-as="star">
-                                <div class="avis-bar-row">
-                                    <span><t t-out="star" /> ⭐</span>
-                                    <div class="avis-bar-bg">
-                                        <div class="avis-bar-fill"
-                                            t-att-style="'width:' + str(stats['dist'][star]) + '%'" />
-                                    </div>
-                                    <span><t t-out="stats['dist'][star]" />%</span>
-                                </div>
-                            </t>
-                        </div>
-                        <div class="avis-stats-link">
-                            <a href="#avis-form">
-                                <i class="fa fa-pencil" /> Écrire un avis </a>
-                        </div>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div class="avis-stats" style="text-align:center; padding:32px;">
-                        
-                        <div class="avis-stats-link">
-                            <a href="#avis-form">
-                                <i class="fa fa-pencil" /> Écrire un avis
-                            </a>
-                        </div>
-                    </div>
-                </t>
+    /* ══════════════════════════════════════
+       STATS SECTION
+    ══════════════════════════════════════ */
+    .pm-avis-stats-section {
+        background: #f8fafc;
+        padding: 64px 40px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .pm-avis-stats-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 56px;
+        align-items: center;
+    }
+    /* Score global */
+    .pm-score-block { text-align: center; }
+    .pm-score-big {
+        font-size: 5rem;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+    .pm-score-stars-big {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+    .pm-score-stars-big i { color: #fbbf24; font-size: 1.4rem; }
+    .pm-score-total {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    /* Barres */
+    .pm-bars-block { flex: 1; }
+    .pm-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .pm-bar-row:last-child { margin-bottom: 0; }
+    .pm-bar-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+        width: 36px;
+        flex-shrink: 0;
+        justify-content: flex-end;
+    }
+    .pm-bar-label i { color: #fbbf24; font-size: 0.75rem; }
+    .pm-bar-track {
+        flex: 1;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .pm-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 1s cubic-bezier(.4,0,.2,1);
+    }
+    .pm-bar-pct {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #94a3b8;
+        width: 34px;
+        flex-shrink: 0;
+    }
+    /* CTA écrire */
+    .pm-write-block { text-align: center; }
+    .pm-write-btn {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #fff !important;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 20px 28px;
+        border-radius: 20px;
+        text-decoration: none !important;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 24px rgba(37,99,235,0.3);
+    }
+    .pm-write-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(37,99,235,0.45);
+        color: #fff !important;
+    }
+    .pm-write-btn .pm-write-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.15);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+    }
+    .pm-write-btn span { font-size: 0.8rem; opacity: 0.8; font-weight: 500; }
 
-                <div id="oe_structure_avis_grid" class="oe_structure oe_empty" />
-                <div class="avis-grid">
-                    <t t-foreach="avis_list" t-as="avis">
-                        <div class="avis-card">
-                            <div class="avis-card-header">
-                                <div class="avis-avatar">
-                                    <t t-out="avis.name[0].upper()" />
-                                </div>
-                                <div class="avis-author-info">
-                                    <h4>
-                                        <t t-out="avis.name" />
-                                    </h4>
-                                    <span>
-                                        <t t-out="avis.date" />
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="avis-card-stars">
-                                <t t-foreach="range(avis.rating)" t-as="s">
-                                    <i class="fa fa-star" />
-                                </t>
-                                <t t-foreach="range(5 - avis.rating)" t-as="s">
-                                    <i class="fa fa-star-o" style="color:#d1d5db" />
-                                </t>
-                            </div>
-                            <p class="avis-card-text">
-                                <t t-out="avis.comment" />
-                            </p>
-                            <t t-if="avis.product">
-                                <div class="avis-card-product">
-                                    <i class="fa fa-tag" />
-                                    <t t-out="avis.product" />
-                                </div>
-                            </t>
-                            <div class="avis-verified"><i class="fa fa-check-circle" /> Achat
-                                vérifié</div>
-                        </div>
+    /* ══════════════════════════════════════
+       FILTRES
+    ══════════════════════════════════════ */
+    .pm-avis-filters {
+        background: #fff;
+        padding: 28px 40px;
+        border-bottom: 1px solid #f1f5f9;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .pm-avis-filters-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .pm-filter-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-right: 4px;
+    }
+    .pm-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        color: #475569;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .pm-filter-btn i { color: #fbbf24; }
+    .pm-filter-btn:hover, .pm-filter-btn.active {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #fff;
+    }
+    .pm-filter-btn.active i { color: #fbbf24; }
+
+    /* ══════════════════════════════════════
+       GRILLE AVIS
+    ══════════════════════════════════════ */
+    .pm-avis-body {
+        background: #f8fafc;
+        padding: 56px 40px 80px;
+    }
+    .pm-avis-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .pm-avis-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 28px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+    .pm-avis-card::after {
+        content: '\f10d';
+        font-family: FontAwesome;
+        position: absolute;
+        top: 16px; right: 20px;
+        font-size: 2.5rem;
+        color: rgba(37,99,235,0.05);
+        line-height: 1;
+        pointer-events: none;
+    }
+    .pm-avis-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+        border-color: #bfdbfe;
+    }
+    .pm-avis-card-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .pm-avis-avatar {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+    }
+    .pm-avis-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+    .pm-avis-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    .pm-avis-stars {
+        display: flex;
+        gap: 3px;
+    }
+    .pm-avis-stars i.fa-star { color: #fbbf24; font-size: 0.9rem; }
+    .pm-avis-stars i.fa-star-o { color: #e2e8f0; font-size: 0.9rem; }
+    .pm-avis-text {
+        font-size: 0.875rem;
+        color: #475569;
+        line-height: 1.75;
+        flex: 1;
+        margin: 0;
+    }
+    .pm-avis-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .pm-avis-product-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 50px;
+    }
+    .pm-avis-product-tag i { color: #2563eb; font-size: 0.75rem; }
+    .pm-avis-verified {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #16a34a;
+    }
+    /* Mise en avant — carte 5 étoiles */
+    .pm-avis-card.featured {
+        border-color: #fef08a;
+        background: linear-gradient(135deg, #fffdf0 0%, #fff 60%);
+    }
+    .pm-avis-card.featured::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    }
+
+    /* ══════════════════════════════════════
+       FORMULAIRE AVIS
+    ══════════════════════════════════════ */
+    .pm-avis-form-section {
+        background: #fff;
+        padding: 80px 40px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .pm-avis-form-inner {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+    .pm-form-section-header {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+    .pm-section-eyebrow {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #2563eb;
+        background: #dbeafe;
+        padding: 5px 14px;
+        border-radius: 50px;
+        margin-bottom: 14px;
+    }
+    .pm-form-section-title {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 10px;
+    }
+    .pm-form-section-sub {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    /* Carte formulaire */
+    .pm-avis-form-card {
+        background: #f8fafc;
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+        padding: 44px;
+        position: relative;
+        overflow: hidden;
+    }
+    .pm-avis-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    }
+
+    /* Star picker interactif */
+    .pm-star-picker-wrap {
+        margin-bottom: 28px;
+    }
+    .pm-star-picker-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 12px;
+        display: block;
+        letter-spacing: 0.02em;
+    }
+    .pm-star-picker {
+        display: flex;
+        gap: 8px;
+    }
+    .pm-star-btn {
+        font-size: 2rem;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: transform 0.15s, color 0.15s;
+        line-height: 1;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: FontAwesome;
+    }
+    .pm-star-btn:hover,
+    .pm-star-btn.active { color: #fbbf24; transform: scale(1.2); }
+    .pm-star-hint {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-top: 8px;
+        min-height: 18px;
+        font-style: italic;
+    }
+
+    /* Champs */
+    .pm-avis-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .pm-avis-form-group { margin-bottom: 20px; }
+    .pm-avis-form-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 7px;
+        letter-spacing: 0.02em;
+    }
+    .pm-avis-form-label .req { color: #ef4444; margin-left: 2px; }
+    .pm-avis-input,
+    .pm-avis-textarea {
+        width: 100%;
+        background: #fff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        padding: 12px 16px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+    .pm-avis-input::placeholder,
+    .pm-avis-textarea::placeholder { color: #c0ccd8; }
+    .pm-avis-input:focus,
+    .pm-avis-textarea:focus {
+        border-color: #fbbf24;
+        box-shadow: 0 0 0 3px rgba(251,191,36,0.12);
+    }
+    .pm-avis-textarea { resize: vertical; min-height: 120px; }
+    .pm-hidden-rating {
+        display: none;
+    }
+    .pm-avis-submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: #0f172a;
+        font-weight: 800;
+        font-size: 0.95rem;
+        padding: 14px 32px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 8px;
+        font-family: 'Inter', sans-serif;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 24px rgba(251,191,36,0.35);
+    }
+    .pm-avis-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(251,191,36,0.5);
+    }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 1024px) {
+        .pm-avis-grid { grid-template-columns: repeat(2, 1fr); }
+        .pm-avis-stats-inner { grid-template-columns: auto 1fr; gap: 36px; }
+        .pm-write-block { grid-column: 1 / -1; justify-self: center; }
+    }
+    @media (max-width: 768px) {
+        .pm-avis-hero { padding: 80px 24px 60px; }
+        .pm-avis-stats-section { padding: 48px 24px; }
+        .pm-avis-stats-inner { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+        .pm-avis-filters { padding: 18px 24px; }
+        .pm-avis-body { padding: 40px 24px 60px; }
+        .pm-avis-grid { grid-template-columns: 1fr; }
+        .pm-avis-form-section { padding: 60px 24px; }
+        .pm-avis-form-card { padding: 32px 24px; }
+        .pm-avis-form-row { grid-template-columns: 1fr; }
+        .pm-score-block { justify-self: center; }
+    }
+</style>
+
+<div id="oe_structure_avis_top" class="oe_structure oe_empty" />
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="pm-avis-hero">
+    <div class="pm-avis-topbar"></div>
+    <div class="pm-avis-hero-inner">
+        <div class="pm-avis-eyebrow">
+            <div class="pm-avis-eyebrow-stars">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+            </div>
+            Avis clients vérifiés
+        </div>
+        <h1>Ce que pensent<br/>nos <span>clients</span></h1>
+        <p>Des milliers de clients satisfaits parlent de leur expérience<br/>avec Planet Mobil.</p>
+        <a href="#avis-form" class="pm-avis-hero-btn">
+            <i class="fa fa-pencil"></i> Écrire un avis
+        </a>
+    </div>
+</div>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div id="oe_structure_avis_stats" class="oe_structure oe_empty" />
+<div class="pm-avis-stats-section">
+    <div class="pm-avis-stats-inner">
+
+        <!-- Score global -->
+        <div class="pm-score-block">
+            <t t-if="stats">
+                <div class="pm-score-big"><t t-out="stats['avg']" /></div>
+                <div class="pm-score-stars-big">
+                    <t t-foreach="range(int(stats['avg']))" t-as="s">
+                        <i class="fa fa-star"></i>
+                    </t>
+                    <t t-if="stats['avg'] % 1 >= 0.5">
+                        <i class="fa fa-star-half-o"></i>
                     </t>
                 </div>
+                <div class="pm-score-total"><t t-out="stats['total']" /> avis vérifiés</div>
+            </t>
+            <t t-else="">
+                <div class="pm-score-big">—</div>
+                <div class="pm-score-total">Aucun avis pour l'instant</div>
+            </t>
+        </div>
 
-                <div class="avis-form-wrap" id="avis-form">
-                    <h2>Laisser un avis</h2>
-                    <form action="/avis/submit" method="post">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-                        <div class="form-group">
-                            <label>Nom *</label>
-                            <input type="text" name="name" required="1" class="form-control"
-                                placeholder="Votre nom" />
+        <!-- Barres de distribution -->
+        <div class="pm-bars-block">
+            <t t-if="stats">
+                <t t-foreach="[5,4,3,2,1]" t-as="star">
+                    <div class="pm-bar-row">
+                        <div class="pm-bar-label">
+                            <t t-out="star" /> <i class="fa fa-star"></i>
                         </div>
-                        <div class="form-group">
-                            <label>Note *</label>
-                            <select name="rating" class="form-control">
-                                <option value="5">⭐⭐⭐⭐⭐</option>
-                                <option value="4">⭐⭐⭐⭐</option>
-                                <option value="3">⭐⭐⭐</option>
-                                <option value="2">⭐⭐</option>
-                                <option value="1">⭐</option>
-                            </select>
+                        <div class="pm-bar-track">
+                            <div class="pm-bar-fill pm-bar-anim"
+                                t-att-data-width="str(stats['dist'][star])"
+                                t-att-style="'width:0%'" />
                         </div>
-                        <div class="form-group">
-                            <label>Produit acheté</label>
-                            <input type="text" name="product" class="form-control"
-                                placeholder="Ex: iPhone 15 Pro Max" />
-                        </div>
-                        <div class="form-group">
-                            <label>Commentaire *</label>
-                            <textarea name="comment" required="1" class="form-control"
-                                placeholder="Votre avis..." />
-                        </div>
-                        <button type="submit" class="form-submit">
-                            <i class="fa fa-paper-plane" /> Envoyer mon avis </button>
-                    </form>
+                        <div class="pm-bar-pct"><t t-out="stats['dist'][star]" />%</div>
+                    </div>
+                </t>
+            </t>
+            <t t-else="">
+                <t t-foreach="[5,4,3,2,1]" t-as="star">
+                    <div class="pm-bar-row">
+                        <div class="pm-bar-label"><t t-out="star" /> <i class="fa fa-star"></i></div>
+                        <div class="pm-bar-track"><div class="pm-bar-fill" style="width:0%"></div></div>
+                        <div class="pm-bar-pct">0%</div>
+                    </div>
+                </t>
+            </t>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- ═══════════ FILTRES ═══════════ -->
+<div class="pm-avis-filters">
+    <div class="pm-avis-filters-inner">
+        <span class="pm-filter-label">Filtrer :</span>
+        <button class="pm-filter-btn active" data-filter="all">Tous les avis</button>
+        <button class="pm-filter-btn" data-filter="5"><i class="fa fa-star"></i> 5 étoiles</button>
+        <button class="pm-filter-btn" data-filter="4"><i class="fa fa-star"></i> 4 étoiles</button>
+        <button class="pm-filter-btn" data-filter="3"><i class="fa fa-star"></i> 3 étoiles</button>
+        <button class="pm-filter-btn" data-filter="2"><i class="fa fa-star"></i> 2 étoiles</button>
+        <button class="pm-filter-btn" data-filter="1"><i class="fa fa-star"></i> 1 étoile</button>
+    </div>
+</div>
+
+<!-- ═══════════ GRILLE AVIS ═══════════ -->
+<div id="oe_structure_avis_grid" class="oe_structure oe_empty" />
+<div class="pm-avis-body">
+    <div class="pm-avis-grid" id="pm-avis-grid">
+        <t t-foreach="avis_list" t-as="avis">
+            <div t-attf-class="pm-avis-card {{ 'featured' if avis.rating == 5 else '' }}"
+                 t-att-data-rating="avis.rating">
+                <div class="pm-avis-card-head">
+                    <div class="pm-avis-avatar">
+                        <t t-out="avis.name[0].upper()" />
+                    </div>
+                    <div>
+                        <div class="pm-avis-name"><t t-out="avis.name" /></div>
+                        <div class="pm-avis-date"><t t-out="avis.date" /></div>
+                    </div>
                 </div>
-                <div id="oe_structure_avis_bottom" class="oe_structure oe_empty" />
+                <div class="pm-avis-stars">
+                    <t t-foreach="range(avis.rating)" t-as="s">
+                        <i class="fa fa-star" />
+                    </t>
+                    <t t-foreach="range(5 - avis.rating)" t-as="s">
+                        <i class="fa fa-star-o" />
+                    </t>
+                </div>
+                <p class="pm-avis-text"><t t-out="avis.comment" /></p>
+                <div class="pm-avis-card-footer">
+                    <t t-if="avis.product">
+                        <div class="pm-avis-product-tag">
+                            <i class="fa fa-tag" /> <t t-out="avis.product" />
+                        </div>
+                    </t>
+                    <div class="pm-avis-verified">
+                        <i class="fa fa-check-circle" /> Achat vérifié
+                    </div>
+                </div>
             </div>
         </t>
-    </template>
+    </div>
+</div>
 
+<!-- ═══════════ FORMULAIRE ═══════════ -->
+<div class="pm-avis-form-section" id="avis-form">
+    <div class="pm-avis-form-inner">
+        <div class="pm-form-section-header">
+            <div class="pm-section-eyebrow">Votre avis compte</div>
+            <h2 class="pm-form-section-title">Partagez votre expérience</h2>
+            <p class="pm-form-section-sub">Votre retour aide d'autres clients à faire le bon choix.</p>
+        </div>
+
+        <div class="pm-avis-form-card">
+            <form action="/avis/submit" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+
+                <!-- Star picker interactif -->
+                <div class="pm-star-picker-wrap">
+                    <label class="pm-star-picker-label">Votre note <span style="color:#ef4444">*</span></label>
+                    <div class="pm-star-picker" id="pm-star-picker">
+                        <button type="button" class="pm-star-btn" data-val="1">&#xf005;</button>
+                        <button type="button" class="pm-star-btn" data-val="2">&#xf005;</button>
+                        <button type="button" class="pm-star-btn" data-val="3">&#xf005;</button>
+                        <button type="button" class="pm-star-btn" data-val="4">&#xf005;</button>
+                        <button type="button" class="pm-star-btn" data-val="5">&#xf005;</button>
+                    </div>
+                    <div class="pm-star-hint" id="pm-star-hint">Cliquez pour noter</div>
+                    <input type="hidden" name="rating" id="pm-rating-input" value="5" required="" />
+                </div>
+
+                <div class="pm-avis-form-row">
+                    <div class="pm-avis-form-group">
+                        <label class="pm-avis-form-label" for="av_nom">Nom<span class="req"> *</span></label>
+                        <input class="pm-avis-input" type="text" name="name" id="av_nom" required="" placeholder="Votre nom" />
+                    </div>
+                    <div class="pm-avis-form-group">
+                        <label class="pm-avis-form-label" for="av_product">Produit acheté</label>
+                        <input class="pm-avis-input" type="text" name="product" id="av_product" placeholder="Ex : iPhone 15 Pro" />
+                    </div>
+                </div>
+
+                <div class="pm-avis-form-group">
+                    <label class="pm-avis-form-label" for="av_comment">Votre commentaire<span class="req"> *</span></label>
+                    <textarea class="pm-avis-textarea" name="comment" id="av_comment" required="" placeholder="Décrivez votre expérience avec ce produit ou notre service..." rows="5"></textarea>
+                </div>
+
+                <button type="submit" class="pm-avis-submit">
+                    <i class="fa fa-paper-plane"></i> Publier mon avis
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="oe_structure_avis_bottom" class="oe_structure oe_empty" />
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
+<script>
+(function () {
+    /* ── Barres animées au scroll ── */
+    var bars = document.querySelectorAll('.pm-bar-fill.pm-bar-anim');
+    if (bars.length) {
+        var obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                obs.unobserve(e.target);
+                var w = e.target.dataset.width || '0';
+                setTimeout(function () {
+                    e.target.style.width = w + '%';
+                }, 100);
+            });
+        }, { threshold: 0.2 });
+        bars.forEach(function (b) { obs.observe(b); });
+    }
+
+    /* ── Filtres par note ── */
+    var filterBtns = document.querySelectorAll('.pm-filter-btn');
+    var cards = document.querySelectorAll('.pm-avis-card');
+    filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            filterBtns.forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var f = this.dataset.filter;
+            cards.forEach(function (c) {
+                if (f === 'all' || c.dataset.rating === f) {
+                    c.style.display = '';
+                } else {
+                    c.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    /* ── Star picker ── */
+    var hints = ['', 'Mauvais', 'Passable', 'Bien', 'Très bien', 'Excellent !'];
+    var starBtns = document.querySelectorAll('.pm-star-btn');
+    var hintEl = document.getElementById('pm-star-hint');
+    var ratingInput = document.getElementById('pm-rating-input');
+    var currentRating = 0;
+
+    function setStars(n) {
+        starBtns.forEach(function (b) {
+            b.classList.toggle('active', +b.dataset.val &lt;= n);
+        });
+        if (hintEl) hintEl.textContent = n > 0 ? hints[n] : 'Cliquez pour noter';
+        if (ratingInput) ratingInput.value = n || '';
+        currentRating = n;
+    }
+
+    starBtns.forEach(function (btn) {
+        btn.addEventListener('mouseenter', function () { setStars(+this.dataset.val); });
+        btn.addEventListener('click', function () { currentRating = +this.dataset.val; setStars(currentRating); });
+    });
+    document.getElementById('pm-star-picker') &amp;&amp;
+    document.getElementById('pm-star-picker').addEventListener('mouseleave', function () {
+        setStars(currentRating);
+    });
+
+    /* ── Smooth scroll ancre ── */
+    document.querySelectorAll('a[href="#avis-form"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            var el = document.getElementById('avis-form');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+})();
+</script>
+
+</div>
+</t>
+</template>
 </odoo>
