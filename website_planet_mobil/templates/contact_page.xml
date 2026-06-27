@@ -1,311 +1,728 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<template id="contact_page" name="Planet Mobil - Contact">
+<t t-call="website_planet_mobil.layout">
+<div id="wrap" class="oe_structure">
 
-    <template id="contact_page" name="Planet Mobil - Contact">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        #wrap { font-family: 'Inter', sans-serif; }
 
-        <t t-call="website_planet_mobil.layout">
+        /* ══════════════════════════════════════
+           HERO
+        ══════════════════════════════════════ */
+        .pm-contact-hero {
+            position: relative;
+            background: #0a0f1e;
+            padding: 100px 40px 80px;
+            overflow: hidden;
+            text-align: center;
+        }
+        .pm-contact-hero::before {
+            content: '';
+            position: absolute;
+            width: 700px; height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37,99,235,0.14) 0%, transparent 70%);
+            top: -200px; left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        /* Ligne animée en haut */
+        .pm-contact-topbar {
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
+            background-size: 200% 100%;
+            animation: pmGradMove 4s linear infinite;
+        }
+        @keyframes pmGradMove { 0% { background-position: 0%; } 100% { background-position: 200%; } }
+        .pm-contact-hero-inner {
+            position: relative; z-index: 2;
+            max-width: 680px;
+            margin: 0 auto;
+            animation: pmFadeUp 0.8s ease both;
+        }
+        @keyframes pmFadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        .pm-contact-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99,179,237,0.12);
+            border: 1px solid rgba(99,179,237,0.3);
+            color: #63b3ed;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+        }
+        .pm-contact-eyebrow-dot {
+            width: 6px; height: 6px;
+            background: #63b3ed;
+            border-radius: 50%;
+            animation: pmDotPulse 1.4s infinite;
+        }
+        @keyframes pmDotPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.7);opacity:0.5;} }
+        .pm-contact-hero h1 {
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            margin: 0 0 18px;
+        }
+        .pm-contact-hero h1 span {
+            background: linear-gradient(135deg, #63b3ed, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .pm-contact-hero p {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            margin: 0;
+        }
 
-            <div id="wrap" class="oe_structure">
-                <div id="oe_structure_contact_top" class="oe_structure oe_empty"
-                    data-editor-message-default="true"
-                    data-editor-message="DRAG BUILDING BLOCKS HERE" />
-                <div class="contact-hero">
-                    <h1>📞 Contactez-nous</h1>
-                    <p>Notre équipe est disponible pour répondre à toutes vos questions</p>
+        /* ══════════════════════════════════════
+           LAYOUT PRINCIPAL
+        ══════════════════════════════════════ */
+        .pm-contact-body {
+            background: #f8fafc;
+            padding: 72px 40px 80px;
+        }
+        .pm-contact-wrap {
+            max-width: 1160px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 48px;
+            align-items: start;
+        }
+
+        /* ══════════════════════════════════════
+           COLONNE GAUCHE — infos
+        ══════════════════════════════════════ */
+        .pm-contact-info {}
+        .pm-contact-info-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        .pm-contact-info-sub {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        /* Cartes contact */
+        .pm-info-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        .pm-info-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px 24px;
+            text-decoration: none !important;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .pm-info-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #2563eb, #7c3aed);
+            transform: scaleY(0);
+            transition: transform 0.25s ease;
+            transform-origin: top;
+        }
+        .pm-info-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 28px rgba(37,99,235,0.1);
+            border-color: transparent;
+        }
+        .pm-info-card:hover::before { transform: scaleY(1); }
+        .pm-info-card-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+        }
+        .pm-info-card:nth-child(1) .pm-info-card-icon { background: #dbeafe; color: #2563eb; }
+        .pm-info-card:nth-child(2) .pm-info-card-icon { background: #dcfce7; color: #16a34a; }
+        .pm-info-card:nth-child(3) .pm-info-card-icon { background: #fef3c7; color: #d97706; }
+        .pm-info-card:nth-child(4) .pm-info-card-icon { background: #fce7f3; color: #db2777; }
+        .pm-info-card-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 3px;
+        }
+        .pm-info-card-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.4;
+        }
+        .pm-info-card-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Réseaux sociaux */
+        .pm-contact-social-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .pm-contact-social {
+            display: flex;
+            gap: 10px;
+        }
+        .pm-contact-social-btn {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            color: #64748b !important;
+            text-decoration: none !important;
+            font-size: 1rem;
+            transition: all 0.25s;
+        }
+        .pm-contact-social-btn:hover { transform: translateY(-3px); border-color: transparent; }
+        .pm-contact-social-btn.fb:hover { background: #1877f2; color: #fff !important; }
+        .pm-contact-social-btn.ig:hover { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff !important; }
+        .pm-contact-social-btn.tw:hover { background: #1da1f2; color: #fff !important; }
+        .pm-contact-social-btn.yt:hover { background: #ff0000; color: #fff !important; }
+
+        /* ══════════════════════════════════════
+           COLONNE DROITE — formulaire
+        ══════════════════════════════════════ */
+        .pm-contact-form-card {
+            background: #fff;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            padding: 44px 44px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .pm-contact-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+        }
+        .pm-form-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .pm-form-sub {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+
+        /* Champs */
+        .pm-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .pm-form-group {
+            margin-bottom: 20px;
+        }
+        .pm-form-group.full { grid-column: 1 / -1; }
+        .pm-form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+            letter-spacing: 0.02em;
+        }
+        .pm-form-label .req { color: #ef4444; margin-left: 2px; }
+        .pm-form-input,
+        .pm-form-textarea {
+            width: 100%;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            box-sizing: border-box;
+        }
+        .pm-form-input::placeholder,
+        .pm-form-textarea::placeholder { color: #c0ccd8; }
+        .pm-form-input:focus,
+        .pm-form-textarea:focus {
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .pm-form-textarea { resize: vertical; min-height: 130px; }
+
+        /* Sujet — select stylisé */
+        .pm-form-select-wrap { position: relative; }
+        .pm-form-select {
+            width: 100%;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            padding: 12px 40px 12px 16px;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .pm-form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+        .pm-form-select-arrow {
+            position: absolute;
+            right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            font-size: 0.75rem;
+        }
+
+        /* Bouton submit */
+        .pm-form-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none !important;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 24px rgba(37,99,235,0.35);
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+        .pm-form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(37,99,235,0.45);
+            color: #fff !important;
+        }
+
+        /* Message succès */
+        .s_website_form_end_message { display: none; }
+        .pm-success-msg {
+            text-align: center;
+            padding: 48px 24px;
+        }
+        .pm-success-icon {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 0 auto 20px;
+            animation: pmBounceIn 0.5s ease;
+        }
+        @keyframes pmBounceIn {
+            0%   { transform: scale(0); opacity: 0; }
+            60%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pm-success-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .pm-success-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        /* ══════════════════════════════════════
+           FAQ
+        ══════════════════════════════════════ */
+        .pm-faq {
+            background: #fff;
+            padding: 72px 40px 80px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .pm-faq-inner {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        .pm-faq-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .pm-section-eyebrow {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 14px;
+        }
+        .pm-faq-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+        .pm-faq-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .pm-faq-item.open { box-shadow: 0 4px 20px rgba(37,99,235,0.08); border-color: #bfdbfe; }
+        .pm-faq-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0f172a;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .pm-faq-item.open .pm-faq-question { color: #2563eb; }
+        .pm-faq-chevron {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            flex-shrink: 0;
+            transition: all 0.25s;
+        }
+        .pm-faq-item.open .pm-faq-chevron {
+            background: #dbeafe;
+            color: #2563eb;
+            transform: rotate(180deg);
+        }
+        .pm-faq-answer {
+            display: none;
+            padding: 0 24px 20px;
+            font-size: 0.875rem;
+            color: #475569;
+            line-height: 1.75;
+        }
+        .pm-faq-item.open .pm-faq-answer { display: block; }
+
+        /* ══════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .pm-contact-wrap { grid-template-columns: 1fr; }
+            .pm-contact-hero { padding: 80px 24px 60px; }
+            .pm-contact-body { padding: 48px 24px 60px; }
+            .pm-contact-form-card { padding: 32px 28px; }
+            .pm-faq { padding: 60px 24px; }
+        }
+        @media (max-width: 540px) {
+            .pm-form-row { grid-template-columns: 1fr; }
+            .pm-form-group.full { grid-column: auto; }
+        }
+    </style>
+
+    <div id="oe_structure_contact_top" class="oe_structure oe_empty"
+        data-editor-message-default="true"
+        data-editor-message="DRAG BUILDING BLOCKS HERE" />
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <div class="pm-contact-hero">
+        <div class="pm-contact-topbar"></div>
+        <div class="pm-contact-hero-inner">
+            <div class="pm-contact-eyebrow">
+                <div class="pm-contact-eyebrow-dot"></div>
+                On vous répond rapidement
+            </div>
+            <h1>Parlons de votre <span>projet</span></h1>
+            <p>Notre équipe est disponible du lundi au samedi pour répondre<br/>à toutes vos questions.</p>
+        </div>
+    </div>
+
+    <div id="oe_structure_contact_middle" class="oe_structure oe_empty"
+        data-editor-message-default="true"
+        data-editor-message="DRAG BUILDING BLOCKS HERE" />
+
+    <!-- ═══════════ CORPS ═══════════ -->
+    <div class="pm-contact-body">
+        <div class="pm-contact-wrap">
+
+            <!-- ─── Colonne infos ─── -->
+            <div class="pm-contact-info">
+                <h2 class="pm-contact-info-title">Nos coordonnées</h2>
+                <p class="pm-contact-info-sub">Plusieurs façons de nous joindre — choisissez celle qui vous convient.</p>
+
+                <div class="pm-info-cards">
+                    <a href="tel:+33664978050" class="pm-info-card">
+                        <div class="pm-info-card-icon"><i class="fa fa-phone"></i></div>
+                        <div>
+                            <div class="pm-info-card-label">Téléphone</div>
+                            <div class="pm-info-card-value">+33 (0)6 64 97 80 50</div>
+                            <div class="pm-info-card-sub">Lun – Sam · 9h à 18h</div>
+                        </div>
+                    </a>
+                    <a href="mailto:contact@planet-mobil.com" class="pm-info-card">
+                        <div class="pm-info-card-icon"><i class="fa fa-envelope"></i></div>
+                        <div>
+                            <div class="pm-info-card-label">Email</div>
+                            <div class="pm-info-card-value">contact@planet-mobil.com</div>
+                            <div class="pm-info-card-sub">Réponse sous 24h</div>
+                        </div>
+                    </a>
+                    <div class="pm-info-card">
+                        <div class="pm-info-card-icon"><i class="fa fa-clock-o"></i></div>
+                        <div>
+                            <div class="pm-info-card-label">Horaires</div>
+                            <div class="pm-info-card-value">Lun – Ven : 9h – 18h</div>
+                            <div class="pm-info-card-sub">Samedi : 10h – 16h</div>
+                        </div>
+                    </div>
+                    <div class="pm-info-card">
+                        <div class="pm-info-card-icon"><i class="fa fa-map-marker"></i></div>
+                        <div>
+                            <div class="pm-info-card-label">Adresse</div>
+                            <div class="pm-info-card-value">15 Rue de la Technologie</div>
+                            <div class="pm-info-card-sub">75008 Paris, France</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="oe_structure_contact_middle" class="oe_structure oe_empty"
-                    data-editor-message-default="true"
-                    data-editor-message="DRAG BUILDING BLOCKS HERE" />
+                <div class="pm-contact-social-title">Suivez-nous</div>
+                <div class="pm-contact-social">
+                    <a href="#" class="pm-contact-social-btn fb" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="pm-contact-social-btn ig" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+                    <a href="#" class="pm-contact-social-btn tw" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+                    <a href="#" class="pm-contact-social-btn yt" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+                </div>
+            </div>
 
-                <div id="oe_structure_contact_bottom" class="oe_structure oe_empty"
-                    data-editor-message-default="true"
-                    data-editor-message="DRAG BUILDING BLOCKS HERE" />
-                <section class="s_website_form_cover o_colored_level pb88 o_full_screen_height"
-                    data-snippet="s_website_form_cover" data-name="Form Cover">
-                    <div class="container-fluid">
-                        <div class="row s_nb_column_fixed o_grid_mode" data-row-count="14">
+            <!-- ─── Formulaire ─── -->
+            <div class="pm-contact-form-card">
+                <h3 class="pm-form-title">Envoyer un message</h3>
+                <p class="pm-form-sub">Remplissez le formulaire, on vous répond sous 24h.</p>
 
+                <section class="s_website_form pt0 pb0" data-vcss="001"
+                    data-snippet="s_website_form" data-name="Form">
+                    <div class="container-fluid px-0">
+                        <form action="/website/form/" method="post"
+                            enctype="multipart/form-data"
+                            class="o_mark_required" data-mark="*"
+                            data-pre-fill="true" data-model_name="crm.lead"
+                            data-success-mode="message"
+                            data-success-page="/contactus-thank-you">
+                            <div class="s_website_form_rows">
 
-                            <div
-                                class="px-4 o_colored_level rounded border o_cc o_cc1 g-col-lg-5 o_grid_item col-lg-5 shadow g-height-13"
-                                style="--box-border-bottom-left-radius: 15px; --box-border-bottom-right-radius: 15px; --box-border-top-right-radius: 15px; --box-border-top-left-radius: 15px; --box-border-left-width: 0px; --box-border-bottom-width: 0px; --box-border-right-width: 0px; --box-border-top-width: 0px; z-index: 2; grid-area: 2 / 7 / 15 / 12; --grid-item-padding-y: 20px; box-shadow: rgb(156, 198, 239) 0px 8px 16px 0px !important; border-style: double !important; border-left-color: var(--o-color-2) !important; border-bottom-color: var(--o-color-2) !important; border-right-color: var(--o-color-2) !important; border-top-color: var(--o-color-2) !important; --grid-item-padding-x: 20px;">
-                                <h2>
-                                    <span style="font-size: 32px;">
-                                        <font style="color: rgb(91, 124, 250);">➤</font>
-                                    </span>
-                                    <font style="color: rgb(91, 124, 250);">
-                                        <span class="h3-fs">
-                                            <strong> </strong>
-                                        </span>
-                                    </font>
-                                    <font>
-                                        <span class="h3-fs">
-                                            <strong>Envoyer un message</strong>
-                                        </span>
-                                    </font>
-                                </h2>
-                                <section class="s_website_form pt16 pb0" data-vcss="001"
-                                    data-snippet="s_website_form" data-name="Form">
-                                    <div class="container-fluid">
-                                        <form action="/website/form/" method="post"
-                                            enctype="multipart/form-data"
-                                            class="o_mark_required" data-mark="*"
-                                            data-pre-fill="true" data-model_name="crm.lead"
-                                            data-success-mode="message"
-                                            data-success-page="/contactus-thank-you">
-                                            <div class="s_website_form_rows row s_col_no_bgcolor">
-                                                <div data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required col-lg-6"
-                                                    data-type="char" data-translated-name="Nom">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="o6egv76stxhp">
-                                                        <span
-                                                            class="s_website_form_label_content">
-                                                            Nom</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input
-                                                        class="form-control s_website_form_input"
-                                                        type="text" name="contact_name" required=""
-                                                        placeholder="Votre nom"
-                                                        id="o6egv76stxhp" data-fill-with="name" />
-                                                </div>
-                                                <div style="animation-name: dummy;"
-                                                    data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required col-lg-6"
-                                                    data-type="char"
-                                                    data-translated-name="Custom Text">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="or92i5hnx2z">
-                                                        <span
-                                                            class="s_website_form_label_content">
-                                                            Prenom</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input
-                                                        class="form-control s_website_form_input"
-                                                        type="text" name="Prenom"
-                                                        id="or92i5hnx2z" required=""
-                                                        placeholder="Votre prénom" />
-                                                </div>
-                                                <div data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_custom"
-                                                    data-type="tel"
-                                                    data-translated-name="N° de téléphone">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="o5kd9r1k9cv3">
-                                                        <span
-                                                            class="s_website_form_label_content">N°
-                                                            de téléphone</span>
-                                                    </label>
-                                                    <input
-                                                        class="form-control s_website_form_input"
-                                                        type="tel" name="phone"
-                                                        placeholder="ex.: 06 11 22 33 44"
-                                                        id="o5kd9r1k9cv3" data-fill-with="phone" />
-                                                </div>
-                                                <div data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_model_required"
-                                                    data-type="email"
-                                                    data-translated-name="Adresse email">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="osvrnmgdmje">
-                                                        <span
-                                                            class="s_website_form_label_content">Adresse
-                                                            email</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input
-                                                        class="form-control s_website_form_input"
-                                                        type="email" name="email_from"
-                                                        required=""
-                                                        placeholder="exemple@email.com"
-                                                        id="osvrnmgdmje" data-fill-with="email" />
-                                                </div>
-
-                                                <div data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_model_required"
-                                                    data-type="char"
-                                                    data-translated-name="Sujet">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="ovpwtl9fs0i">
-                                                        <span
-                                                            class="s_website_form_label_content">
-                                                            Sujet</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <input
-                                                        class="form-control s_website_form_input"
-                                                        type="text" name="name" required=""
-                                                        value="" placeholder="Votre sujet"
-                                                        id="ovpwtl9fs0i"
-                                                        data-fill-with="undefined" />
-                                                </div>
-                                                <div data-name="Field"
-                                                    class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required pb4"
-                                                    data-type="text"
-                                                    data-translated-name="Your Question">
-                                                    <label class="s_website_form_label"
-                                                        style="width: 200px" for="oz239pavu8x">
-                                                        <span
-                                                            class="s_website_form_label_content">Votre
-                                                            question</span>
-                                                        <span class="s_website_form_mark"> *</span>
-                                                    </label>
-                                                    <textarea
-                                                        class="form-control s_website_form_input"
-                                                        name="description" required=""
-                                                        placeholder="Décrivez votre question"
-                                                        id="oz239pavu8x" rows="5" />
-                                                </div>
-                                                <div
-                                                    class="mb-0 py-2 col-12 s_website_form_submit col-lg-4 offset-lg-7 text-center s_website_form_no_submit_label"
-                                                    data-name="Submit Button">
-                                                    <div style="width: 200px;"
-                                                        class="s_website_form_label">
-                                                        <br />
-                                                    </div>
-                                                    <span id="s_website_form_result" />
-                                                    <a href="#" role="button"
-                                                        class="btn btn-primary s_website_form_send o_translate_inline">
-                                                        Envoyer</a>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        <div class="s_website_form_end_message d-none">
-                                            <div class="oe_structure">
-                                                <section
-                                                    class="s_text_block o_colored_level rounded px-5 text-center pb96 pt80"
-                                                    data-snippet="s_text_block">
-                                                    <i
-                                                        class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success"
-                                                        role="img" aria-hidden="true"
-                                                        title="Success" />
-                                                    <h1 class="fw-bolder">Merci pour votre
-                                                        message</h1>
-                                                    <p class="lead mb-0">Notre équipe vous répondra
-                                                        dans les plus brefs délais. En attendant,
-                                                        nous vous invitons à visiter notre <a
-                                                            href="/"
-                                                            class="o_translate_inline">site web</a>
-                                                        .</p>
-                                                </section>
-                                            </div>
-                                        </div>
+                                <!-- Nom + Prénom -->
+                                <div class="pm-form-row">
+                                    <div class="s_website_form_field pm-form-group s_website_form_custom s_website_form_required" data-type="char" data-translated-name="Nom">
+                                        <label class="pm-form-label s_website_form_label" for="pm_nom">
+                                            Nom<span class="req s_website_form_mark"> *</span>
+                                        </label>
+                                        <input class="pm-form-input s_website_form_input form-control" type="text" name="contact_name" required="" placeholder="Votre nom" id="pm_nom" data-fill-with="name" />
                                     </div>
+                                    <div class="s_website_form_field pm-form-group s_website_form_custom s_website_form_required" data-type="char" data-translated-name="Custom Text">
+                                        <label class="pm-form-label s_website_form_label" for="pm_prenom">
+                                            Prénom<span class="req s_website_form_mark"> *</span>
+                                        </label>
+                                        <input class="pm-form-input s_website_form_input form-control" type="text" name="Prenom" required="" placeholder="Votre prénom" id="pm_prenom" />
+                                    </div>
+                                </div>
+
+                                <!-- Téléphone + Email -->
+                                <div class="pm-form-row">
+                                    <div class="s_website_form_field pm-form-group s_website_form_custom" data-type="tel" data-translated-name="N° de téléphone">
+                                        <label class="pm-form-label s_website_form_label" for="pm_tel">
+                                            Téléphone
+                                        </label>
+                                        <input class="pm-form-input s_website_form_input form-control" type="tel" name="phone" placeholder="06 11 22 33 44" id="pm_tel" data-fill-with="phone" />
+                                    </div>
+                                    <div class="s_website_form_field pm-form-group s_website_form_model_required" data-type="email" data-translated-name="Adresse email">
+                                        <label class="pm-form-label s_website_form_label" for="pm_email">
+                                            Email<span class="req s_website_form_mark"> *</span>
+                                        </label>
+                                        <input class="pm-form-input s_website_form_input form-control" type="email" name="email_from" required="" placeholder="exemple@email.com" id="pm_email" data-fill-with="email" />
+                                    </div>
+                                </div>
+
+                                <!-- Sujet -->
+                                <div class="s_website_form_field pm-form-group s_website_form_model_required" data-type="char" data-translated-name="Sujet">
+                                    <label class="pm-form-label s_website_form_label" for="pm_sujet">
+                                        Sujet<span class="req s_website_form_mark"> *</span>
+                                    </label>
+                                    <div class="pm-form-select-wrap">
+                                        <input class="pm-form-input s_website_form_input form-control" type="text" name="name" required="" placeholder="Ex : Question sur une commande" id="pm_sujet" data-fill-with="undefined" />
+                                    </div>
+                                </div>
+
+                                <!-- Message -->
+                                <div class="s_website_form_field pm-form-group s_website_form_custom s_website_form_required" data-type="text" data-translated-name="Your Question">
+                                    <label class="pm-form-label s_website_form_label" for="pm_msg">
+                                        Message<span class="req s_website_form_mark"> *</span>
+                                    </label>
+                                    <textarea class="pm-form-textarea s_website_form_input form-control" name="description" required="" placeholder="Décrivez votre demande en détail..." id="pm_msg" rows="5"></textarea>
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="s_website_form_submit col-12" data-name="Submit Button">
+                                    <span id="s_website_form_result"></span>
+                                    <a href="#" role="button" class="pm-form-submit btn btn-primary s_website_form_send o_translate_inline">
+                                        <i class="fa fa-paper-plane"></i> Envoyer le message
+                                    </a>
+                                </div>
+
+                            </div>
+                        </form>
+
+                        <!-- Message succès -->
+                        <div class="s_website_form_end_message d-none">
+                            <div class="oe_structure">
+                                <section class="s_text_block o_colored_level rounded px-5 text-center pb96 pt80" data-snippet="s_text_block">
+                                    <i class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success" role="img" aria-hidden="true" title="Success" />
+                                    <h1 class="fw-bolder">Merci pour votre message</h1>
+                                    <p class="lead mb-0">Notre équipe vous répondra dans les plus brefs délais. En attendant, nous vous invitons à visiter notre <a href="/" class="o_translate_inline">site web</a>.</p>
                                 </section>
-                            </div>
-                            <div
-                                class="col-lg-4 o_colored_level g-height-3 g-col-lg-4 o_grid_item"
-                                style="z-index: 8; grid-area: 5 / 2 / 8 / 6;">
-                                <div
-                                    class="s_card card o_cc mt-0 o_cc1 o_colored_level flex-lg-row o_card_img_horizontal shadow"
-                                    data-vxml="001" data-snippet="s_card" data-name="Card"
-                                    style="max-width: 100%; --card-img-size-h: 24.99999999%; --card-img-ratio-align: 48%; box-shadow: rgb(156, 198, 239) 0px 8px 16px 0px !important;">
-                                    <figure
-                                        class="o_card_img_wrapper mb-0 o_card_img_adjust_v ratio ratio-1x1">
-                                        <span
-                                            class="fa fa-phone o_card_img o_editable_media text-o-color-3 mx-auto d-block fa-2x rounded-start rounded-circle shadow img-thumbnail"
-                                            style="background-color: rgb(91, 124, 250);" />
-                                    </figure>
-                                    <div class="card-body">
-                                        <h2 class="h3-fs" style="text-align: left;">
-                                            <span style="font-size: 28px;">Téléphone</span>
-                                            <br />
-                                        </h2>
-                                        <p style="text-align: left;">
-                                            <font class="text-600">+33 (0)6 64 97 80
-                                                50,&amp;nbsp;Lun-Ven, 9h-18h</font>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="col-lg-4 o_colored_level g-height-3 g-col-lg-4 o_grid_item"
-                                style="z-index: 9; grid-area: 8 / 2 / 11 / 6;">
-                                <div
-                                    class="s_card card o_cc mt-0 o_cc1 shadow o_colored_level o_card_img_horizontal flex-lg-row"
-                                    data-vxml="001" data-snippet="s_card" data-name="Card"
-                                    style="max-width: 100%; --card-img-size-h: 24.99999999%; --card-img-ratio-align: 48%; box-shadow: rgb(156, 198, 239) 0px 8px 16px 0px !important;">
-                                    <figure
-                                        class="o_card_img_wrapper mb-0 o_card_img_adjust_v ratio ratio-1x1">
-                                        <span
-                                            class="fa fa-envelope-o o_card_img o_editable_media text-o-color-3 mx-auto d-block fa-2x rounded-circle rounded-start img-thumbnail shadow"
-                                            style="background-color: rgb(91, 124, 250);" />
-                                    </figure>
-                                    <div class="card-body">
-                                        <h2 class="h3-fs" style="text-align: left;">
-                                            <span style="font-size: 28px;">Email</span>
-                                            <br />
-                                        </h2>
-                                        <p style="text-align: left;">
-                                            <a href="mailto:contact@exocoms.com"
-                                                class="o_translate_inline">
-                                                <font class="text-600">contact@exocoms.com</font>
-                                            </a>
-                                            <font class="text-600">, réponse sous 24h</font>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="col-lg-4 o_colored_level g-height-3 g-col-lg-4 o_grid_item"
-                                style="z-index: 10; grid-area: 11 / 2 / 14 / 6;">
-                                <div
-                                    class="s_card card o_cc mt-0 o_cc1 shadow o_colored_level flex-lg-row o_card_img_horizontal"
-                                    data-vxml="001" data-snippet="s_card" data-name="Card"
-                                    style="max-width: 100%; --card-img-size-h: 24.99999999%; --card-img-ratio-align: 48%; box-shadow: rgb(156, 198, 239) 0px 8px 16px 0px !important;">
-                                    <figure
-                                        class="o_card_img_wrapper mb-0 o_card_img_adjust_v ratio ratio-1x1">
-                                        <span
-                                            class="fa fa-clock-o o_card_img o_editable_media text-o-color-3 mx-auto d-block rounded-start fa-2x rounded-circle img-thumbnail shadow"
-                                            style="background-color: rgb(91, 124, 250);" />
-                                    </figure>
-                                    <div class="card-body">
-                                        <h2 class="h3-fs" style="text-align: left;">
-                                            <span style="font-size: 28px;">Horaires</span>
-                                            <br />
-                                        </h2>
-                                        <p style="text-align: left;">
-                                            <font class="text-600">Lundi - Vendredi : 9h-18h</font>
-                                        </p>
-                                        <p style="text-align: left;">
-                                            <font class="text-600">Samedi : 10h 16h</font>
-                                            <br />
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="o_colored_level o_grid_item g-col-lg-4 col-12 g-height-5 col-lg-4"
-                                style="z-index: 7; grid-area: 2 / 2 / 7 / 6;">
-                                <div
-                                    class="s_card card o_cc mt-0 o_colored_level o_cc1 shadow o_card_img_horizontal flex-lg-row"
-                                    data-vxml="001" data-snippet="s_card" data-name="Card"
-                                    style="max-width: 100%; --card-img-size-h: 24.99999999%; box-shadow: rgb(156, 198, 239) 0px 8px 16px 0px !important;">
-                                    <figure
-                                        class="o_card_img_wrapper mb-0 o_card_img_adjust_v ratio ratio-1x1">
-                                        <span
-                                            class="fa o_card_img o_editable_media d-block mx-auto text-o-color-3 rounded-circle fa-map-marker fa-2x shadow img-thumbnail rounded-start"
-                                            style="background-color: rgb(91, 124, 250);" />
-                                    </figure>
-                                    <div class="card-body">
-                                        <h2 class="h3-fs" style="text-align: left;">
-                                            <span style="font-size: 28px;">Notre adresse</span>
-                                        </h2>
-                                        <p style="text-align: left;">
-                                            <font class="text-600">15 Rue de la Technologie,
-                                                75008 Paris France</font>
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
-        </t>
-    </template>
 
+        </div>
+    </div>
+
+    <div id="oe_structure_contact_bottom" class="oe_structure oe_empty"
+        data-editor-message-default="true"
+        data-editor-message="DRAG BUILDING BLOCKS HERE" />
+
+    <!-- ═══════════ FAQ ═══════════ -->
+    <div class="pm-faq">
+        <div class="pm-faq-inner">
+            <div class="pm-faq-header">
+                <div class="pm-section-eyebrow">Questions fréquentes</div>
+                <h2 class="pm-faq-title">Besoin d'une réponse rapide ?</h2>
+            </div>
+
+            <div class="pm-faq-item">
+                <div class="pm-faq-question">
+                    Quels sont les délais de livraison ?
+                    <div class="pm-faq-chevron"><i class="fa fa-chevron-down"></i></div>
+                </div>
+                <div class="pm-faq-answer">
+                    Nous livrons en France métropolitaine en 24h et en Europe en 48 à 72h. La livraison est offerte à partir de 50€ d'achat.
+                </div>
+            </div>
+
+            <div class="pm-faq-item">
+                <div class="pm-faq-question">
+                    Comment retourner un produit ?
+                    <div class="pm-faq-chevron"><i class="fa fa-chevron-down"></i></div>
+                </div>
+                <div class="pm-faq-answer">
+                    Vous avez 30 jours pour retourner un article. Contactez notre service client par email ou téléphone pour obtenir votre bon de retour gratuit. Le remboursement est effectué sous 5 à 7 jours ouvrés.
+                </div>
+            </div>
+
+            <div class="pm-faq-item">
+                <div class="pm-faq-question">
+                    Les produits sont-ils garantis ?
+                    <div class="pm-faq-chevron"><i class="fa fa-chevron-down"></i></div>
+                </div>
+                <div class="pm-faq-answer">
+                    Tous nos produits sont couverts par la garantie constructeur (minimum 2 ans). Nos experts vérifient chaque appareil avant expédition. Nous proposons également une garantie étendue optionnelle.
+                </div>
+            </div>
+
+            <div class="pm-faq-item">
+                <div class="pm-faq-question">
+                    Quels moyens de paiement acceptez-vous ?
+                    <div class="pm-faq-chevron"><i class="fa fa-chevron-down"></i></div>
+                </div>
+                <div class="pm-faq-answer">
+                    Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal et les virements bancaires. Toutes les transactions sont sécurisées par protocole SSL 256 bits et 3D Secure.
+                </div>
+            </div>
+
+            <div class="pm-faq-item">
+                <div class="pm-faq-question">
+                    Comment suivre ma commande ?
+                    <div class="pm-faq-chevron"><i class="fa fa-chevron-down"></i></div>
+                </div>
+                <div class="pm-faq-answer">
+                    Dès l'expédition de votre commande, vous recevez un email avec votre numéro de suivi. Vous pouvez également consulter l'état de votre commande depuis votre espace client.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script FAQ accordion -->
+    <script>
+    (function () {
+        document.querySelectorAll('.pm-faq-question').forEach(function (q) {
+            q.addEventListener('click', function () {
+                var item = this.closest('.pm-faq-item');
+                var isOpen = item.classList.contains('open');
+                document.querySelectorAll('.pm-faq-item.open').forEach(function (el) {
+                    el.classList.remove('open');
+                });
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+    })();
+    </script>
+
+</div>
+</t>
+</template>
 </odoo>
