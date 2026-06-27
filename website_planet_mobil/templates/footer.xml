@@ -1,131 +1,488 @@
 <odoo>
 <template id="footer" name="Planet Mobil - Footer">
-<style> .o_footer { background: #1a1a2e !important; } .o_footer_copyright { display: none !important; } .tsp-footer { background: #1a1a2e; border-top: none; font-family: sans-serif; padding: 48px 40px 0; width: 100%; box-sizing: border-box; } .tsp-footer-grid { display: grid; grid-template-columns: 1.8fr 1.2fr 1.6fr 1.2fr; gap: 32px; align-items: start; } .tsp-footer-col { display: flex; flex-direction: column; gap: 14px; } .tsp-footer-col:last-child { padding-right: 40px; } .tsp-footer-logo { font-size: 18px; font-weight: 500; color: #ffffff !important; white-space: nowrap; display: flex; align-items: center; gap: 6px; } .tsp-footer-logo .tsp-planet { color: #5b7cfa !important; } .tsp-footer-desc { font-size: 13px; color: rgba(255,255,255,0.6) !important; line-height: 1.75; margin: 0; } .tsp-footer-desc strong { color: rgba(255,255,255,0.85) !important; } .tsp-footer-title { font-size: 11px; font-weight: 500; color: #ffffff !important; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 10px; white-space: nowrap; margin: 0; position: relative; } .tsp-footer-title::after { content: ""; position: absolute; left: 0; bottom: 0; width: 26px; height: 2px; background: #5b7cfa; } .tsp-footer-links { display: flex; flex-direction: column; gap: 11px; list-style: none; padding: 0; margin: 0; } .tsp-footer-links li a { font-size: 13px; color: rgba(255,255,255,0.7) !important; text-decoration: none !important; display: flex; align-items: center; gap: 8px; white-space: nowrap; } .tsp-footer-links li a:hover { color: #5b7cfa !important; } .tsp-footer-links li a .fa { width: 18px; font-size: 14px; flex-shrink: 0; text-align: center; color: inherit !important; } /* Reseaux sociaux : pastilles rondes */ .tsp-social { display: flex; gap: 10px; } .tsp-social-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; color: #ffffff !important; text-decoration: none !important; transition: background 0.2s, transform 0.15s; } .tsp-social-btn .fa { font-size: 16px; color: inherit !important; } .tsp-social-btn:hover { background: #2c4ecb; transform: translateY(-2px); } .tsp-link-blue, .tsp-link-blue:visited, .tsp-link-blue:hover, .tsp-link-blue:focus { font-size: 13px; color: #5b7cfa !important; text-decoration: none !important; margin-top: 6px; display: inline-block; white-space: nowrap; opacity: 1 !important; } .tsp-footer-bottom { margin-top: 8px; padding: 16px 0; border-top: 0.5px solid rgba(255,255,255,0.12); text-align: center; } .tsp-footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.5) !important; margin: 0; } /* Newsletter */ .tsp-newsletter { background: #1e40af; padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; box-sizing: border-box; } .tsp-newsletter-text h3 { color: #fff; font-size: 1.1rem; font-weight: 500; margin: 0 0 4px; } .tsp-newsletter-text p { color: rgba(255,255,255,0.8); font-size: 0.875rem; margin: 0; } .tsp-newsletter .js_subscribe_wrap { display: flex; gap: 8px; align-items: center; min-width: 360px; } .tsp-newsletter .js_subscribe_value { flex: 1 1 auto; padding: 10px 14px; border-radius: 6px; border: none; font-size: 0.875rem; } .tsp-newsletter-btn { padding: 10px 20px; background: #fff; color: #2563eb; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; white-space: nowrap; } .tsp-newsletter .js_subscribed_wrap { color: #fff; } /* ===== RESPONSIVE / MOBILE ===== */ /* Tablette : 2 colonnes */ @media (max-width: 992px) { .tsp-footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; } .tsp-footer-col:last-child { padding-right: 0; } } /* Mobile : 1 colonne + newsletter empilée */ @media (max-width: 600px) { .tsp-newsletter { flex-direction: column; align-items: stretch; gap: 1rem; padding: 1.5rem 1.25rem; text-align: center; } .tsp-newsletter .js_subscribe_wrap { min-width: 0; width: 100%; } .tsp-newsletter-text h3 { white-space: normal; } .tsp-footer { padding: 32px 20px 0; } .tsp-footer-grid { grid-template-columns: 1fr; gap: 26px; } .tsp-footer-desc { white-space: normal; } .tsp-footer-bottom p { font-size: 11px; line-height: 1.5; white-space: normal; } } </style>
-<!--   NEWSLETTER   -->
-<div class="tsp-newsletter">
-<div class="tsp-newsletter-text">
-<h3>📧 Restez informé !</h3>
-<p>Inscrivez-vous pour ne rater aucune offre exclusive Planet Mobil</p>
+<style>
+    /* ══════════════════════════════════════
+       RESET ODOO
+    ══════════════════════════════════════ */
+    .o_footer { background: #0a0f1e !important; }
+    .o_footer_copyright { display: none !important; }
+
+    /* ══════════════════════════════════════
+       FOOTER PRINCIPAL
+    ══════════════════════════════════════ */
+    .pm-footer {
+        background: #0a0f1e;
+        font-family: 'Inter', -apple-system, sans-serif;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Ligne dégradée animée en haut */
+    .pm-footer-topbar {
+        height: 3px;
+        background: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
+        background-size: 200% 100%;
+        animation: pmGradientMove 4s linear infinite;
+    }
+    @keyframes pmGradientMove {
+        0%   { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+    }
+
+    /* Cercles décoratifs d'arrière-plan */
+    .pm-footer::before {
+        content: '';
+        position: absolute;
+        width: 600px; height: 600px;
+        border-radius: 50%;
+        background: rgba(37,99,235,0.04);
+        top: -200px; right: -150px;
+        pointer-events: none;
+    }
+    .pm-footer::after {
+        content: '';
+        position: absolute;
+        width: 400px; height: 400px;
+        border-radius: 50%;
+        background: rgba(124,58,237,0.04);
+        bottom: 60px; left: -100px;
+        pointer-events: none;
+    }
+
+    /* ── Bandeau confiance ── */
+    .pm-footer-trust {
+        position: relative; z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+    .pm-trust-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 22px 32px;
+        border-right: 1px solid rgba(255,255,255,0.06);
+        flex: 1;
+        transition: background 0.25s;
+    }
+    .pm-trust-item:last-child { border-right: none; }
+    .pm-trust-item:hover { background: rgba(255,255,255,0.03); }
+    .pm-trust-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    .pm-trust-item:nth-child(1) .pm-trust-icon { background: rgba(37,99,235,0.15); color: #63b3ed; }
+    .pm-trust-item:nth-child(2) .pm-trust-icon { background: rgba(22,163,74,0.15); color: #4ade80; }
+    .pm-trust-item:nth-child(3) .pm-trust-icon { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .pm-trust-item:nth-child(4) .pm-trust-icon { background: rgba(236,72,153,0.15); color: #f472b6; }
+    .pm-trust-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        margin-bottom: 2px;
+    }
+    .pm-trust-sub {
+        font-size: 0.74rem;
+        color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Grille principale ── */
+    .pm-footer-body {
+        position: relative; z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 56px 40px 48px;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 48px;
+        align-items: start;
+    }
+
+    /* Colonne 1 : Brand */
+    .pm-footer-brand {}
+    .pm-footer-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        text-decoration: none !important;
+    }
+    .pm-footer-logo-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .pm-footer-logo-text {
+        font-size: 1.2rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+    .pm-footer-logo-text .pm-blue { color: #63b3ed; }
+    .pm-footer-logo-text .pm-white { color: #fff; }
+    .pm-footer-desc {
+        font-size: 0.875rem;
+        color: rgba(255,255,255,0.5);
+        line-height: 1.75;
+        margin: 0 0 28px;
+    }
+    .pm-footer-desc strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+    /* Réseaux sociaux */
+    .pm-footer-social {
+        display: flex;
+        gap: 10px;
+    }
+    .pm-social-btn {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        display: flex; align-items: center; justify-content: center;
+        color: rgba(255,255,255,0.6) !important;
+        text-decoration: none !important;
+        font-size: 0.95rem;
+        transition: all 0.25s ease;
+    }
+    .pm-social-btn:hover {
+        transform: translateY(-3px);
+        border-color: transparent;
+    }
+    .pm-social-btn.fb:hover  { background: #1877f2; color: #fff !important; }
+    .pm-social-btn.tw:hover  { background: #1da1f2; color: #fff !important; }
+    .pm-social-btn.ig:hover  { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff !important; }
+    .pm-social-btn.yt:hover  { background: #ff0000; color: #fff !important; }
+
+    /* Colonnes liens */
+    .pm-footer-col {}
+    .pm-footer-col-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.9);
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 12px;
+    }
+    .pm-footer-col-title::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 24px; height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+    }
+    .pm-footer-links {
+        list-style: none;
+        padding: 0; margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .pm-footer-links li a {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 0.875rem;
+        color: rgba(255,255,255,0.5) !important;
+        text-decoration: none !important;
+        transition: color 0.2s, gap 0.2s;
+        line-height: 1;
+    }
+    .pm-footer-links li a .fa {
+        font-size: 0.8rem;
+        width: 14px;
+        text-align: center;
+        color: rgba(255,255,255,0.25) !important;
+        transition: color 0.2s;
+        flex-shrink: 0;
+    }
+    .pm-footer-links li a:hover {
+        color: #fff !important;
+        gap: 12px;
+    }
+    .pm-footer-links li a:hover .fa {
+        color: #63b3ed !important;
+    }
+
+    /* Contact spécial */
+    .pm-contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .pm-contact-item:last-child { margin-bottom: 0; }
+    .pm-contact-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.06);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem;
+        color: #63b3ed;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .pm-contact-label {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.35);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 3px;
+    }
+    .pm-contact-value {
+        font-size: 0.875rem;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none !important;
+        transition: color 0.2s;
+        line-height: 1.4;
+        display: block;
+    }
+    a.pm-contact-value:hover { color: #63b3ed !important; }
+
+    /* ── Barre de fond ── */
+    .pm-footer-bottom {
+        position: relative; z-index: 2;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .pm-footer-bottom-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .pm-footer-copy {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.3);
+    }
+    .pm-footer-copy span { color: rgba(255,255,255,0.5); }
+    .pm-footer-bottom-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+    .pm-footer-bottom-links a {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.35) !important;
+        text-decoration: none !important;
+        transition: color 0.2s;
+    }
+    .pm-footer-bottom-links a:hover { color: rgba(255,255,255,0.7) !important; }
+    .pm-footer-bottom-sep {
+        width: 1px; height: 12px;
+        background: rgba(255,255,255,0.1);
+    }
+    /* Logos paiement */
+    .pm-payment-badges {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pm-payment-badge {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.45);
+        letter-spacing: 0.04em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .pm-payment-badge .fa { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1024px) {
+        .pm-footer-body { grid-template-columns: 1.5fr 1fr 1fr; gap: 36px; }
+        .pm-footer-brand { grid-column: 1 / -1; }
+        .pm-footer-trust { flex-wrap: wrap; }
+        .pm-trust-item { min-width: 200px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    }
+    @media (max-width: 768px) {
+        .pm-footer-body { grid-template-columns: 1fr 1fr; padding: 40px 24px; }
+        .pm-footer-trust { padding: 0 24px; }
+        .pm-trust-item { padding: 16px 20px; }
+        .pm-footer-bottom-inner { flex-direction: column; text-align: center; padding: 20px 24px; }
+        .pm-footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+        .pm-footer-body { grid-template-columns: 1fr; }
+        .pm-footer-brand { grid-column: auto; }
+    }
+</style>
+
+<!-- ═══════════════════════════════════
+     FOOTER
+═══════════════════════════════════ -->
+<div class="pm-footer">
+
+    <!-- Ligne dégradée animée -->
+    <div class="pm-footer-topbar"></div>
+
+    <!-- Bandeau de confiance -->
+    <div class="pm-footer-trust">
+        <div class="pm-trust-item">
+            <div class="pm-trust-icon"><i class="fa fa-shield"></i></div>
+            <div>
+                <div class="pm-trust-label">Paiement sécurisé</div>
+                <div class="pm-trust-sub">SSL 256 bits</div>
+            </div>
+        </div>
+        <div class="pm-trust-item">
+            <div class="pm-trust-icon"><i class="fa fa-rocket"></i></div>
+            <div>
+                <div class="pm-trust-label">Livraison 24h</div>
+                <div class="pm-trust-sub">France métropolitaine</div>
+            </div>
+        </div>
+        <div class="pm-trust-item">
+            <div class="pm-trust-icon"><i class="fa fa-undo"></i></div>
+            <div>
+                <div class="pm-trust-label">Retours 30 jours</div>
+                <div class="pm-trust-sub">Remboursement garanti</div>
+            </div>
+        </div>
+        <div class="pm-trust-item">
+            <div class="pm-trust-icon"><i class="fa fa-headphones"></i></div>
+            <div>
+                <div class="pm-trust-label">Support 7j/7</div>
+                <div class="pm-trust-sub">Réponse sous 2h</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Corps principal -->
+    <div class="pm-footer-body">
+
+        <!-- Col 1 : Brand -->
+        <div class="pm-footer-brand">
+            <a href="/" class="pm-footer-logo">
+                <div class="pm-footer-logo-icon">🌍</div>
+                <div class="pm-footer-logo-text">
+                    <span class="pm-blue">PLANET</span><span class="pm-white"> MOBIL</span>
+                </div>
+            </a>
+            <p class="pm-footer-desc">
+                Chez <strong>Planet Mobil</strong>, nous sommes une équipe passionnée
+                de tech-addicts et de conseillers experts, réunis par une mission commune :
+                vous offrir la meilleure expérience d'achat tech en ligne.
+            </p>
+            <div class="pm-footer-social">
+                <a href="#" class="pm-social-btn fb" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="pm-social-btn tw" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="pm-social-btn ig" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+                <a href="#" class="pm-social-btn yt" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+            </div>
+        </div>
+
+        <!-- Col 2 : Navigation -->
+        <div class="pm-footer-col">
+            <h4 class="pm-footer-col-title">Navigation</h4>
+            <ul class="pm-footer-links">
+                <li><a href="/"><i class="fa fa-home"></i>Page d'accueil</a></li>
+                <li><a href="/shop"><i class="fa fa-shopping-bag"></i>Catalogue</a></li>
+                <li><a href="/shop?x_is_promotion=1"><i class="fa fa-tag"></i>Promotions</a></li>
+                <li><a href="/about"><i class="fa fa-info-circle"></i>À propos</a></li>
+                <li><a href="/avis"><i class="fa fa-star"></i>Avis clients</a></li>
+                <li><a href="/contact"><i class="fa fa-comment"></i>Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Col 3 : Contact -->
+        <div class="pm-footer-col">
+            <h4 class="pm-footer-col-title">EXOCOMS Group</h4>
+            <div class="pm-contact-item">
+                <div class="pm-contact-icon"><i class="fa fa-envelope"></i></div>
+                <div>
+                    <div class="pm-contact-label">Email</div>
+                    <a href="mailto:contact@planet-mobil.com" class="pm-contact-value">
+                        contact@planet-mobil.com
+                    </a>
+                </div>
+            </div>
+            <div class="pm-contact-item">
+                <div class="pm-contact-icon"><i class="fa fa-phone"></i></div>
+                <div>
+                    <div class="pm-contact-label">Téléphone</div>
+                    <a href="tel:+33664978050" class="pm-contact-value">
+                        +33 (0)6 64 97 80 50
+                    </a>
+                </div>
+            </div>
+            <div class="pm-contact-item">
+                <div class="pm-contact-icon"><i class="fa fa-clock-o"></i></div>
+                <div>
+                    <div class="pm-contact-label">Disponibilité</div>
+                    <div class="pm-contact-value">Lun – Sam · 9h à 18h</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Col 4 : Légal -->
+        <div class="pm-footer-col">
+            <h4 class="pm-footer-col-title">Informations</h4>
+            <ul class="pm-footer-links">
+                <li><a href="/mentions-legales"><i class="fa fa-file-text"></i>Mentions légales</a></li>
+                <li><a href="/cgv"><i class="fa fa-file-text-o"></i>CGV</a></li>
+                <li><a href="/politique-confidentialite"><i class="fa fa-lock"></i>Confidentialité</a></li>
+                <li><a href="/cookie-policy"><i class="fa fa-circle-o"></i>Cookies</a></li>
+                <li><a href="/livraison"><i class="fa fa-truck"></i>Livraison &amp; retours</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Barre de bas de page -->
+    <footer class="pm-footer-bottom">
+        <div class="pm-footer-bottom-inner">
+            <div class="pm-footer-copy">
+                © 2025 <span>EXOCOMS Group</span> · Tous droits réservés
+            </div>
+            <div class="pm-payment-badges">
+                <div class="pm-payment-badge"><i class="fa fa-cc-visa"></i> Visa</div>
+                <div class="pm-payment-badge"><i class="fa fa-cc-mastercard"></i> MC</div>
+                <div class="pm-payment-badge"><i class="fa fa-cc-paypal"></i> PayPal</div>
+                <div class="pm-payment-badge"><i class="fa fa-shield"></i> 3D Secure</div>
+            </div>
+            <div class="pm-footer-bottom-links">
+                <a href="/mentions-legales">Mentions légales</a>
+                <div class="pm-footer-bottom-sep"></div>
+                <a href="/cookie-policy">Cookies</a>
+                <div class="pm-footer-bottom-sep"></div>
+                <a href="/politique-confidentialite">Confidentialité</a>
+            </div>
+        </div>
+    </footer>
+
 </div>
-<div class="tsp-newsletter-form s_newsletter_subscribe_form s_newsletter_list js_subscribe" data-list-id="3" data-name="Newsletter Form">
-<div class="js_subscribed_wrap d-none">
-<p style="margin:0;">
-<i class="fa fa-check-circle-o" role="img"/>
-Merci, vous êtes bien inscrit !
-</p>
-</div>
-<div class="js_subscribe_wrap">
-<input type="email" name="email" class="js_subscribe_value form-control" placeholder="Votre adresse email..."/>
-<button type="button" class="tsp-newsletter-btn js_subscribe_btn o_submit">S'inscrire</button>
-</div>
-</div>
-</div>
-<!--   FOOTER   -->
-<footer class="tsp-footer">
-<div class="tsp-footer-grid">
-<!--   Colonne 1 : Logo + description   -->
-<div class="tsp-footer-col">
-<div class="tsp-footer-logo">
-🌍
-<span class="tsp-planet">PLANET</span>
-MOBIL
-</div>
-<p class="tsp-footer-desc">
-Chez
-<strong>Planet-mobil</strong>
-, nous sommes une équipe passionnée de tech-addicts et de conseillers experts, réunis par une mission commune : vous offrir la meilleure expérience d'achat tech en ligne.
-</p>
-</div>
-<!--   Colonne 2 : Liens utiles   -->
-<div class="tsp-footer-col">
-<h4 class="tsp-footer-title">Liens utiles</h4>
-<ul class="tsp-footer-links">
-<li>
-<a href="/">
-<i class="fa fa-home"/>
-Page d'accueil
-</a>
-</li>
-<li>
-<a href="/about">
-<i class="fa fa-info-circle"/>
-À propos de nous
-</a>
-</li>
-<li>
-<a href="/shop">
-<i class="fa fa-shopping-bag"/>
-Produits
-</a>
-</li>
-<li>
-<a href="/mentions-legales">
-<i class="fa fa-file-text"/>
-Mentions légales
-</a>
-</li>
-<li>
-<a href="/contact">
-<i class="fa fa-comment"/>
-Contactez-nous
-</a>
-</li>
-</ul>
-</div>
-<!--   Colonne 3 : Contact   -->
-<div class="tsp-footer-col">
-<h4 class="tsp-footer-title">EXOCOMS Group</h4>
-<ul class="tsp-footer-links">
-<li>
-<a href="/contact">
-<i class="fa fa-envelope"/>
-Contactez-nous
-</a>
-</li>
-<li>
-<a href="mailto:contact@planet-mobil.com">
-<i class="fa fa-at"/>
-contact@planet-mobil.com
-</a>
-</li>
-<li>
-<a href="tel:+33664978050">
-<i class="fa fa-phone"/>
-+33 (0)6 64 97 80 50
-</a>
-</li>
-</ul>
-</div>
-<!--   Colonne 4 : Réseaux sociaux (pastilles rondes)   -->
-<div class="tsp-footer-col">
-<h4 class="tsp-footer-title">Suivez-nous</h4>
-<div class="tsp-social">
-<a href="#" class="tsp-social-btn" aria-label="Facebook">
-<i class="fa fa-facebook-square"/>
-</a>
-<a href="#" class="tsp-social-btn" aria-label="Twitter">
-<i class="fa fa-twitter"/>
-</a>
-<a href="#" class="tsp-social-btn" aria-label="Instagram">
-<i class="fa fa-instagram"/>
-</a>
-<a href="#" class="tsp-social-btn" aria-label="YouTube">
-<i class="fa fa-youtube-play"/>
-</a>
-</div>
-<a href="/cookie-policy" class="tsp-link-blue">Politique de cookies</a>
-</div>
-</div>
-<div class="tsp-footer-bottom">
-<p>Copyright © 2025 – EXOCOMS Group | Tous droits réservés</p>
-</div>
-</footer>
 </template>
+
 <template id="footer_replace" inherit_id="website.layout" name="Planet Mobil - Remplacement du footer">
-<xpath expr="//div[@id='footer']" position="replace">
-<div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
-<t t-call="website_planet_mobil.footer"/>
-</div>
-</xpath>
+    <xpath expr="//div[@id='footer']" position="replace">
+        <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+            <t t-call="website_planet_mobil.footer"/>
+        </div>
+    </xpath>
 </template>
 </odoo>
