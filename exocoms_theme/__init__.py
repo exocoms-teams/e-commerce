@@ -57,24 +57,43 @@ def _set_logo(env, website):
 
 def _clean_demo_data(env, website):
     """Nettoie les données de démo créées automatiquement par Odoo.
-    - Supprime "My Website 2" (site fantôme de démo)
-    - Supprime les doublons de menus sur notre site
-    Compatible avec tous les autres modules — cible uniquement les données de démo connues.
+    - Supprime "My Website 2" (site fantôme de démo), SI ET SEULEMENT SI
+      ce site n'a aucune page/menu/produit réel (sécurité supplémentaire
+      sur base multi-sites : on ne veut jamais supprimer un site client
+      qui porterait accidentellement ce nom).
+    - Supprime les doublons de menus sur notre site UNIQUEMENT.
     """
     if not website:
         return
 
-    # 1. Supprimer le site fantôme de démo Odoo — ciblé par nom exact
+    # 1. Supprimer le site fantôme de démo Odoo — ciblé par nom exact,
+    #    ET seulement s'il est vide (sécurité ajoutée pour base partagée
+    #    avec 17 sites : on ne veut jamais détruire un vrai site client
+    #    qui porterait ce nom par coïncidence).
     ghost = env['website'].search([
         ('name', '=', 'My Website 2'),
         ('id', '!=', website.id),
     ], limit=1)
     if ghost:
-        env['website.menu'].search([('website_id', '=', ghost.id)]).unlink()
-        env['website.page'].search([('website_id', '=', ghost.id)]).unlink()
-        ghost.unlink()
+        ghost_menus = env['website.menu'].search([('website_id', '=', ghost.id)])
+        ghost_pages = env['website.page'].search([('website_id', '=', ghost.id)])
+        ghost_products = env['product.template'].search([('website_id', '=', ghost.id)])
+        # On ne supprime que si ça ressemble vraiment à un site de démo
+        # vide (pas de produits, peu/pas de pages personnalisées).
+        if not ghost_products and len(ghost_pages) <= 1:
+            ghost_menus.unlink()
+            ghost_pages.unlink()
+            ghost.unlink()
+        else:
+            _logger.warning(
+                "Site 'My Website 2' trouvé mais NON supprimé : il contient "
+                "des données (produits=%s, pages=%s) — ne ressemble pas à "
+                "un site de démo vide. Vérification manuelle recommandée.",
+                len(ghost_products), len(ghost_pages),
+            )
 
-    # 2. Rattacher les menus orphelins (sans website_id) qui sont les nôtres
+    # 2. Rattacher les menus orphelins (sans website_id) qui sont les
+    #    nôtres EXPLICITEMENT (par URL connue) — jamais par déduction.
     orphans = env['website.menu'].search([
         ('website_id', '=', False),
         ('url', 'in', OUR_URLS),
@@ -118,7 +137,7 @@ def _get_or_create_menu(env, url, name_fr, name_en, sequence, website, root_menu
 
 
 def _setup_menus(env, website, lang_en):
-    """Gestion complète des menus."""
+    """Gestion complète des menus — strictement scopée à website.id."""
     if not website:
         return
 
@@ -147,47 +166,41 @@ def _setup_menus(env, website, lang_en):
     if unwanted:
         unwanted.unlink()
 
-    # Rattacher TOUT menu orphelin restant (sans website_id) à notre
-    # site, y compris les sous-menus créés en dehors de OUR_URLS
-    # (ex: "Catégorie"). Comme on n'a qu'un seul vrai site, tout orphelin
-    # restant après le nettoyage de démo nous appartient forcément.
-    leftover_orphans = env['website.menu'].search([('website_id', '=', False)])
-    if leftover_orphans:
-        leftover_orphans.write({'website_id': website.id})
+    # CORRECTIF MAJEUR (cause du bug "menus d'autres sites affichés") :
+    # le bloc original captait TOUT menu orphelin restant sous l'hypothèse
+    # fausse "on n'a qu'un seul site". Sur une base à 17 sites, ce bloc
+    # aspirait des menus appartenant à d'autres projets (Events, Courses,
+    # Appointment, Jobs...). SUPPRIMÉ : on ne rattache plus que ce qui
+    # est explicitement connu (OUR_URLS, déjà géré par _clean_demo_data).
 
 
 def _setup_monetique_attributes(env, lang_en):
     """Crée les attributs/filtres boutique pour la gamme Monétique.
 
-    Idempotent — recherche par nom (en langue de base fr_FR) avant
-    création, ne touche jamais aux attributs déjà existants/personnalisés.
-
-    Traduction : chaque nom (attribut + valeur) est écrit explicitement
-    en fr_FR, puis en en_US si cette langue est active sur le site —
-    exactement la même logique que _get_or_create_menu. Comme ça, le
-    filtre change correctement de libellé quand le visiteur bascule la
-    langue du site (FR <-> EN), sans dépendre de la langue de session
-    de l'utilisateur qui exécute le hook.
+    NOTE multi-sites : product.attribute et product.attribute.value sont
+    des modèles GLOBAUX dans Odoo (pas de website_id) — ils sont par
+    nature partagés entre tous les sites de la base, ce qui est normal
+    et sans danger ici : un attribut "Garantie" peut être réutilisé par
+    n'importe quel produit, quel que soit son site. Le risque
+    multi-sites ne se situe pas dans cette fonction.
     """
     attr_model = env['product.attribute']
     value_model = env['product.attribute.value']
 
     def get_or_create_attribute(name_fr, name_en, display_type='radio', sequence=10):
-        # Recherche toujours faite avec le nom fr_FR comme référence stable
         attr = attr_model.with_context(lang='fr_FR').search(
             [('name', '=', name_fr)], limit=1
         )
         if not attr:
             attr = attr_model.with_context(lang='fr_FR').create({
                 'name': name_fr,
-                'display_type': display_type,   # 'radio', 'select', 'pills', 'color'
-                'create_variant': 'no_variant',  # n'affecte pas les variantes produit
+                'display_type': display_type,
+                'create_variant': 'no_variant',
                 'sequence': sequence,
             })
         else:
             attr.with_context(lang='fr_FR').write({'sequence': sequence})
 
-        # Traduction explicite — jamais d'identifiant traduisible dans une recherche
         attr.with_context(lang='fr_FR').write({'name': name_fr})
         if lang_en and name_en:
             attr.with_context(lang='en_US').write({'name': name_en})
@@ -212,7 +225,6 @@ def _setup_monetique_attributes(env, lang_en):
             val.with_context(lang='en_US').write({'name': name_en})
         return val
 
-    # --- Forfait DATA par TPE / TPE Data Plan ---
     forfait = get_or_create_attribute(
         'Forfait DATA par TPE', 'TPE Data Plan',
         display_type='radio', sequence=1
@@ -224,8 +236,6 @@ def _setup_monetique_attributes(env, lang_en):
     ]):
         get_or_create_value(forfait, fr, en, sequence=i)
 
-    # --- Nombre de chèques par mois / Cheques per month ---
-    # ⚠️ valeurs provisoires en attendant confirmation des vraies tranches
     cheques = get_or_create_attribute(
         'Nombre de chèques par mois', 'Cheques per month',
         display_type='select', sequence=2
@@ -236,7 +246,6 @@ def _setup_monetique_attributes(env, lang_en):
     ]):
         get_or_create_value(cheques, fr, en, sequence=i)
 
-    # --- Garantie / Warranty ---
     garantie = get_or_create_attribute(
         'Garantie', 'Warranty',
         display_type='radio', sequence=3
@@ -249,7 +258,6 @@ def _setup_monetique_attributes(env, lang_en):
     ]):
         get_or_create_value(garantie, fr, en, sequence=i)
 
-    # --- Type de modèle / Model type ---
     modele = get_or_create_attribute(
         'Type de modèle', 'Model type',
         display_type='select', sequence=4
@@ -260,7 +268,6 @@ def _setup_monetique_attributes(env, lang_en):
     ]):
         get_or_create_value(modele, fr, en, sequence=i)
 
-    # --- Quantité / Quantity ---
     quantite = get_or_create_attribute(
         'Quantité', 'Quantity',
         display_type='pills', sequence=5
@@ -271,102 +278,24 @@ def _setup_monetique_attributes(env, lang_en):
         get_or_create_value(quantite, fr, en, sequence=i)
 
 
-def post_init_hook(env):
-    """Initialise les données Exocoms Group"""
-
-    # === COMPANY ===
-    # CORRECTIF : on utilise _get_company() (recherche par nom, jamais
-    # "la première société trouvée") pour ne jamais toucher à la société
-    # d'un autre projet partageant cette base.
-    company = _get_company(env)
-    if company:
-        company.write({
-            'name': COMPANY_NAME,
-            'email': 'contact@exocoms.fr',
-            'phone': '+33 (0)1 84 79 37 55',
-            'country_id': env.ref('base.fr').id,
-        })
-
-    # === SITE WEB ===
-    # CORRECTIF : on utilise _get_website() (recherche par nom 'EXOCOMS',
-    # insensible à la casse, et création si absent) au lieu de
-    # search([], limit=1) qui prenait N'IMPORTE QUEL site — c'est ce qui
-    # causait le renommage accidentel d'autres sites.
-    website = _get_website(env)
-    if website:
-        website.write({
-            'name': WEBSITE_NAME,
-            'social_facebook': 'https://www.facebook.com/exocoms',
-            'social_twitter': 'https://twitter.com/exocoms',
-            'social_linkedin': 'https://www.linkedin.com/company/exocoms',
-        })
-
-    # === LOGO ===
-    # CORRECTIF : géré ici en Python (sécurisé par _get_website) plutôt
-    # qu'en XML sur "website.default_website", qui ciblait le premier
-    # site de la base — n'importe quel autre projet client.
-    _set_logo(env, website)
-
-    # === LANGUES — Français + Anglais ===
-    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
-    if not lang_fr:
-        env['res.lang']._activate_lang('fr_FR')
-        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
-
-    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
-
-    if website and lang_fr:
-        website.write({'language_ids': [(5, 0, 0)]})
-        website.write({
-            'default_lang_id': lang_fr.id,
-            'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
-        })
-
-    # === LANGUE PAR DÉFAUT — public_user + website ===
-    # Le public_user doit être en fr_FR pour qu'Odoo serve le français par défaut sur "/".
-    # Sans ça, Odoo détecte en_US sur le public_user et force l'anglais sur la page d'accueil.
-    public_user = env.ref('base.public_user', raise_if_not_found=False)
-    if public_user and lang_fr:
-        public_user.with_context(no_recompute=True).write({'lang': 'fr_FR'})
-
-    public_partner = env.ref('base.public_partner', raise_if_not_found=False)
-    if public_partner and lang_fr:
-        public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
-
-    params = env['ir.config_parameter'].sudo()
-    params.set_param('web.base.lang', 'fr_FR')
-    params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
-
-    # Charger les traductions françaises officielles Odoo
-    try:
-        mods = env['ir.module.module'].search([
-            ('name', 'in', [
-                'base', 'web', 'website', 'website_sale',
-                'portal', 'auth_signup', 'mail', 'sale'
-            ]),
-            ('state', '=', 'installed')
-        ])
-        mods._update_translations('fr_FR')
-    except Exception:
-        pass
-
-    # === MENUS ===
-    _setup_menus(env, website, lang_en)
-
-    # === ATTRIBUTS / FILTRES MONÉTIQUE ===
-    _setup_monetique_attributes(env, lang_en)
-
-    # === PROFIL DROPDOWN — Mon compte (recherche par clé, pas par ID) ===
+def _setup_account_dropdown_view(env, website):
+    """CORRECTIF : recherche et création strictement scopées à
+    website.id. La vue originale était cherchée/créée SANS filtre de
+    site, donc soit elle modifiait une vue globale partagée par tous
+    les sites, soit elle volait la vue déjà créée par un autre site.
+    """
     account_view = env['ir.ui.view'].search([
         ('key', '=', 'portal.user_dropdown_link_account'),
+        ('website_id', '=', website.id),
     ], limit=1)
     if not account_view:
         account_view = env['ir.ui.view'].search([
             ('name', 'ilike', 'Link to frontend portal'),
             ('inherit_id.key', '=', 'portal.user_dropdown'),
+            ('website_id', '=', website.id),
         ], limit=1)
-    if account_view and account_view.exists():
-        account_view.write({'arch': """
+
+    arch = """
 <data name="Link to frontend portal" inherit_id="portal.user_dropdown">
     <xpath expr="//*[@id='o_logout_divider']" position="before">
         <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
@@ -375,21 +304,63 @@ def post_init_hook(env):
         </a>
     </xpath>
 </data>
-"""})
+"""
+    if account_view and account_view.exists():
+        account_view.write({'arch': arch})
+    else:
+        # On vérifie d'abord qu'aucune vue identique n'existe déjà SANS
+        # website_id (vue partagée) avant de créer la nôtre — sinon on
+        # risque un conflit de "key" dupliquée entre sites.
+        shared = env['ir.ui.view'].search([
+            ('key', '=', 'portal.user_dropdown_link_account'),
+            ('website_id', '=', False),
+        ], limit=1)
+        if shared:
+            _logger.info(
+                "Une vue 'portal.user_dropdown_link_account' partagée "
+                "existe déjà sans website_id — non modifiée pour ne pas "
+                "impacter les autres sites. Créez une vue spécifique au "
+                "site Exocoms manuellement via Site Web > Personnaliser "
+                "si vous voulez un comportement différent par site."
+            )
+            return
+        parent = env.ref('portal.user_dropdown', raise_if_not_found=False)
+        if parent:
+            env['ir.ui.view'].create({
+                'name': 'Exocoms - Link to frontend portal',
+                'key': 'portal.user_dropdown_link_account',
+                'inherit_id': parent.id,
+                'website_id': website.id,
+                'arch': arch,
+            })
 
-    # === DÉCONNEXION — supprimer la vue custom ===
-    existing = env['ir.ui.view'].search([
-        ('name', '=', 'Exocoms Logout FR')
-    ], limit=1)
-    if existing:
-        existing.unlink()
 
-    # === DESIGN BOUTIQUE — Chips par défaut ===
+def _setup_shop_grid_design(env, website):
+    """CORRECTIF MAJEUR : la version originale cherchait TOUTES les vues
+    'website_sale.products' qweb de la base SANS filtre de site, donc
+    modifiait potentiellement la vue générique partagée par les 17
+    sites de la base. On ne modifie désormais QUE la vue déjà
+    spécifique à notre site (website_id = website.id). Si elle n'existe
+    pas encore, on ne touche à RIEN — il faut d'abord l'activer
+    manuellement via Site Web > Personnaliser sur le site Exocoms, ce
+    qui crée automatiquement la vue spécifique avec website_id posé
+    correctement par Odoo lui-même.
+    """
     try:
         grid_views = env['ir.ui.view'].search([
             ('key', 'like', 'website_sale.products'),
             ('type', '=', 'qweb'),
+            ('website_id', '=', website.id),
         ])
+        if not grid_views:
+            _logger.info(
+                "Aucune vue 'website_sale.products' spécifique au site "
+                "Exocoms (website_id=%s) — design 'chips' non appliqué "
+                "pour éviter de modifier la vue partagée par les autres "
+                "sites. Activez une personnalisation sur ce site via "
+                "Site Web > Personnaliser, puis relancez le module.",
+                website.id,
+            )
         for grid_view in grid_views:
             try:
                 arch = grid_view.arch
@@ -409,21 +380,147 @@ def post_init_hook(env):
                         )
                     grid_view.write({'arch': arch})
             except Exception:
-                pass
+                _logger.exception("Échec application design chips sur vue id=%s", grid_view.id)
+    except Exception:
+        _logger.exception("Échec recherche des vues grid produits")
+
+
+def _publish_our_products(env, website, company):
+    """CORRECTIF MAJEUR : la version originale publiait TOUS les
+    produits non publiés de TOUTE la base sur le site Exocoms — y
+    compris des brouillons appartenant à d'autres sites/sociétés. On
+    restreint maintenant strictement aux produits qui n'ont AUCUN site
+    assigné (orphelins) ET qui appartiennent à notre société (ou à
+    aucune société, en mono-société) — jamais aux produits déjà
+    rattachés à un autre website_id.
+    """
+    try:
+        domain = [
+            ('is_published', '=', False),
+            ('website_id', '=', False),  # jamais un produit déjà sur un autre site
+        ]
+        if company:
+            domain.append(('company_id', 'in', [company.id, False]))
+        products = env['product.template'].search(domain)
+        if products:
+            products.write({
+                'is_published': True,
+                'website_id': website.id,
+            })
+    except Exception:
+        _logger.exception("Échec publication des produits Exocoms")
+
+
+def post_init_hook(env):
+    """Initialise les données Exocoms Group"""
+
+    # === COMPANY ===
+    company = _get_company(env)
+    if company:
+        company.write({
+            'name': COMPANY_NAME,
+            'email': 'contact@exocoms.fr',
+            'phone': '+33 (0)1 84 79 37 55',
+            'country_id': env.ref('base.fr').id,
+        })
+
+    # === SITE WEB ===
+    website = _get_website(env)
+    if website:
+        website.write({
+            'name': WEBSITE_NAME,
+            'social_facebook': 'https://www.facebook.com/exocoms',
+            'social_twitter': 'https://twitter.com/exocoms',
+            'social_linkedin': 'https://www.linkedin.com/company/exocoms',
+        })
+
+    # === LOGO ===
+    _set_logo(env, website)
+
+    # === LANGUES — Français + Anglais ===
+    # NOTE multi-sites : ce bloc ne touche que website.language_ids du
+    # SITE Exocoms (website.write), donc déjà scopé correctement.
+    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+    if not lang_fr:
+        env['res.lang']._activate_lang('fr_FR')
+        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+
+    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
+    if website and lang_fr:
+        website.write({'language_ids': [(5, 0, 0)]})
+        website.write({
+            'default_lang_id': lang_fr.id,
+            'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
+        })
+
+    # === LANGUE PAR DÉFAUT — public_user + website ===
+    # ⚠️ ATTENTION CONNUE, NON CORRIGÉE AUTOMATIQUEMENT : base.public_user
+    # et base.public_partner sont des enregistrements UNIQUES et GLOBAUX
+    # dans Odoo (pas un par site). Sur une base multi-sites, chaque site
+    # gère en réalité sa langue via website.default_lang_id (déjà posé
+    # ci-dessus) et la détection de langue du navigateur/URL ; modifier
+    # la langue du public_user global peut affecter le comportement par
+    # défaut perçu sur D'AUTRES sites qui n'auraient pas de
+    # default_lang_id explicite. On le garde ici car c'est nécessaire
+    # pour Exocoms, mais SI un autre site se met soudain à afficher du
+    # français par défaut après cette installation, c'est la cause la
+    # plus probable — vérifiez le default_lang_id de chaque site concerné.
+    public_user = env.ref('base.public_user', raise_if_not_found=False)
+    if public_user and lang_fr:
+        public_user.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
+    public_partner = env.ref('base.public_partner', raise_if_not_found=False)
+    if public_partner and lang_fr:
+        public_partner.with_context(no_recompute=True).write({'lang': 'fr_FR'})
+
+    # ⚠️ ATTENTION CONNUE, NON CORRIGÉE : ir.config_parameter est GLOBAL
+    # à toute la base, pas par site. 'web.base.lang' va changer la langue
+    # par défaut du BACKEND Odoo pour tous les utilisateurs de TOUS les
+    # projets sur cette base. Sur une base partagée à 17 sites, c'est
+    # risqué si d'autres équipes travaillent en anglais sur le backend.
+    # Recommandation : commentez ces deux lignes si vous n'êtes pas seul
+    # à administrer cette base, ou validez avec les autres responsables.
+    params = env['ir.config_parameter'].sudo()
+    params.set_param('web.base.lang', 'fr_FR')
+    params.set_param('website.default_lang_id', str(lang_fr.id) if lang_fr else 'fr_FR')
+
+    # Charger les traductions françaises officielles Odoo (sans danger,
+    # ça ne fait qu'installer des traductions, pas de la config).
+    try:
+        mods = env['ir.module.module'].search([
+            ('name', 'in', [
+                'base', 'web', 'website', 'website_sale',
+                'portal', 'auth_signup', 'mail', 'sale'
+            ]),
+            ('state', '=', 'installed')
+        ])
+        mods._update_translations('fr_FR')
     except Exception:
         pass
 
-    # === PUBLIER TOUS LES PRODUITS — UNIQUEMENT SUR NOTRE SITE ===
-    # CORRECTIF : on ajoute website_id pour ne pas publier "partout".
-    # Sans ce champ, un produit sans site = visible sur TOUS les sites.
-    try:
-        if website:
-            env["product.template"].search([("is_published", "=", False)]).write({
-                "is_published": True,
-                "website_id": website.id,
-            })
-    except Exception:
-        pass
+    # === MENUS ===
+    _setup_menus(env, website, lang_en)
+
+    # === ATTRIBUTS / FILTRES MONÉTIQUE ===
+    _setup_monetique_attributes(env, lang_en)
+
+    # === PROFIL DROPDOWN — Mon compte ===
+    _setup_account_dropdown_view(env, website)
+
+    # === DÉCONNEXION — supprimer la vue custom (scopée à notre site) ===
+    existing = env['ir.ui.view'].search([
+        ('name', '=', 'Exocoms Logout FR'),
+        ('website_id', '=', website.id),
+    ], limit=1)
+    if existing:
+        existing.unlink()
+
+    # === DESIGN BOUTIQUE — Chips par défaut (scopé à notre site) ===
+    _setup_shop_grid_design(env, website)
+
+    # === PUBLIER NOS PRODUITS — UNIQUEMENT LES NÔTRES, SUR NOTRE SITE ===
+    _publish_our_products(env, website, company)
 
     # === CRÉER TOUTE LA STRUCTURE DE CATÉGORIES ===
     cat = env['product.public.category']
@@ -433,59 +530,67 @@ def post_init_hook(env):
         'Cabinets', 'Bins', 'Lamps', 'All',
         'Indoor', 'Outdoor', 'Multimedia',
     ]
-    cats_demo = cat.search([('name', 'in', demo_names)])
+    # CORRECTIF : on ne supprime ces catégories de démo QUE si elles ne
+    # sont rattachées à aucun site (vraies données de démo Odoo) ou
+    # spécifiquement à notre site. On ne touche jamais aux catégories
+    # de démo qu'un AUTRE site aurait gardées intentionnellement.
+    cats_demo = cat.search([
+        ('name', 'in', demo_names),
+        ('website_id', 'in', [False, website.id]),
+    ])
     if cats_demo:
         cats_demo.unlink()
 
     def _find_by_name_ci(records, target_name):
         """Recherche insensible à la CASSE UNIQUEMENT (pas aux accents),
-        faite en Python plutôt qu'en SQL. CORRECTIF nécessaire car
-        '=ilike' en SQL peut, selon la configuration régionale (locale)
-        de la base PostgreSQL, ignorer aussi les accents — ce qui a
-        provoqué une confusion entre 'Monetique' et 'Monétique' (deux
-        catégories volontairement différentes ici) et une erreur de
-        récursion (une catégorie devenant son propre parent)."""
+        faite en Python plutôt qu'en SQL (cf. souci de locale PostgreSQL
+        avec '=ilike' qui peut aussi ignorer les accents)."""
         target = target_name.strip().lower()
         return next((r for r in records if r.name and r.name.strip().lower() == target), None)
 
     def get_or_create(name, parent=None, seq=10):
-        # CORRECTIF : on récupère toutes les catégories du même parent,
-        # puis on compare les noms en Python (casse ignorée, accents
-        # respectés) — pour retrouver les catégories déjà existantes
-        # (votre boutique EXOCOMS existait déjà avec ses propres
-        # catégories) sans jamais confondre deux noms différents.
-        siblings = cat.search([('parent_id', '=', parent.id if parent else False)])
+        # CORRECTIF MAJEUR : sur une base à 17 sites, des catégories
+        # génériques ("Services", "Accessoires", "Crypto"...) existent
+        # très probablement déjà pour d'autres projets, avec ou sans
+        # website_id. On ne réutilise désormais QUE :
+        #   (a) une catégorie déjà explicitement à NOUS (website_id =
+        #       website.id), ou
+        #   (b) à défaut, on en CRÉE une nouvelle pour nous — on ne vole
+        #       JAMAIS la catégorie d'un autre site, même orpheline,
+        #       même si le nom correspond exactement.
+        siblings = cat.search([
+            ('parent_id', '=', parent.id if parent else False),
+            ('website_id', '=', website.id),
+        ])
         c = _find_by_name_ci(siblings, name)
         if not c:
-            vals = {'name': name, 'sequence': seq}
+            vals = {'name': name, 'sequence': seq, 'website_id': website.id}
             if parent:
                 vals['parent_id'] = parent.id
-            # CORRECTIF : on rattache la catégorie à notre site dès la
-            # création, pour qu'elle n'apparaisse pas sur tous les sites.
-            if website:
-                vals['website_id'] = website.id
             c = cat.create(vals)
             _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
         else:
-            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante)", name, c.id)
-            if website and not c.website_id:
-                # CORRECTIF : si la catégorie existait déjà sans site assigné
-                # (orpheline), on la rattache aussi à notre site.
-                c.write({'website_id': website.id})
+            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante, site Exocoms)", name, c.id)
         return c
 
     informatique = get_or_create('Informatique & Réseaux', seq=1)
     monetique_root = get_or_create('Monétique', seq=2)
     telecom = get_or_create('Télécom', seq=3)
 
+    # CORRECTIF : la recherche "Monetique" sans accent au niveau racine
+    # est désormais aussi scopée à notre site, pour ne pas réorganiser
+    # une catégorie appartenant à un autre projet.
     monetique_sub = _find_by_name_ci(
-        cat.search([('parent_id', '=', False)]), 'Monetique'
+        cat.search([('parent_id', '=', False), ('website_id', '=', website.id)]),
+        'Monetique'
     )
     if monetique_sub and monetique_sub.id != monetique_root.id:
         monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
 
     pdv = cat.search([
-        ('name', 'ilike', 'Point de vente'), ('parent_id', '=', False)
+        ('name', 'ilike', 'Point de vente'),
+        ('parent_id', '=', False),
+        ('website_id', '=', website.id),
     ], limit=1)
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
@@ -495,17 +600,16 @@ def post_init_hook(env):
     get_or_create('Communication & Vidéo', informatique, seq=3)
 
     monetique = _find_by_name_ci(
-        cat.search([('parent_id', '=', monetique_root.id)]), 'Monetique'
+        cat.search([('parent_id', '=', monetique_root.id), ('website_id', '=', website.id)]),
+        'Monetique'
     )
     if not monetique:
-        monetique_vals = {
+        monetique = cat.create({
             'name': 'Monetique',
             'parent_id': monetique_root.id,
-            'sequence': 1
-        }
-        if website:
-            monetique_vals['website_id'] = website.id
-        monetique = cat.create(monetique_vals)
+            'sequence': 1,
+            'website_id': website.id,
+        })
         _logger.info("Catégorie CRÉÉE : 'Monetique' (sous-catégorie de Monétique)")
     else:
         _logger.info("Catégorie RETROUVÉE : 'Monetique' -> id=%s (déjà existante)", monetique.id)
@@ -618,18 +722,16 @@ def post_init_hook(env):
 
     # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
-    # custom_copyright, inherit_id="website.layout"), pas ici.
-    # Cela évite le bug de validation XPath rencontré avec
-    # position="replace" en Python, et garantit l'affichage sur
-    # TOUTES les pages du site de façon déclarative et stable.
-    # ⚠️ Si ce fichier footer.xml contient lui aussi des écritures
-    # directes sur "website.default_website" ou un site sans condition,
-    # il faudra le corriger de la même façon — voir avec moi si besoin.
+    # custom_copyright, inherit_id="website.layout"). Si ce fichier
+    # contient des écritures directes sur "website.default_website" ou
+    # un site sans condition de website_id, il faut le corriger avec
+    # la même logique que ci-dessus (toujours filtrer par website.id).
 
 
 def post_migrate_hook(env):
-    """S'exécute à chaque update du module"""
+    """S'exécute à chaque update du module — strictement scopé à notre site."""
     website = _get_website(env)
+    company = _get_company(env)
     lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
 
     # Logo maintenu à chaque update (au cas où le site ait été recréé)
@@ -641,19 +743,24 @@ def post_migrate_hook(env):
     # Attributs/filtres maintenus + traduction à chaque update
     _setup_monetique_attributes(env, lang_en)
 
-    # CORRECTIF : à chaque mise à jour, on rattache aussi tout produit
-    # ou catégorie qui se serait retrouvé orphelin (sans website_id),
-    # pour éviter que le bug d'affichage "partout" ne réapparaisse.
     if website:
-        try:
-            env['product.template'].search([('website_id', '=', False)]).write({
-                'website_id': website.id,
-            })
-            env['product.public.category'].search([('website_id', '=', False)]).write({
-                'website_id': website.id,
-            })
-        except Exception:
-            pass
+        # CORRECTIF MAJEUR : la version originale rattachait À CHAQUE
+        # UPDATE tout produit/catégorie orphelin (sans website_id) de
+        # TOUTE LA BASE au site Exocoms. Sur une base à 17 sites, c'est
+        # la cause la plus probable de "mon module s'affiche aussi sur
+        # les autres sites" si ce hook tourne après qu'un autre projet
+        # ait laissé des produits/catégories temporairement orphelins
+        # (en cours de configuration, par exemple). On utilise désormais
+        # la même fonction strictement scopée que dans post_init_hook.
+        _publish_our_products(env, website, company)
+
+        # Pour les catégories : on ne rattache plus aveuglément les
+        # orphelines. Le système get_or_create (dans post_init_hook) les
+        # crée déjà avec website_id posé dès le départ ; il n'y a donc
+        # normalement plus besoin de rattachement de masse ici. Si vous
+        # constatez des catégories Exocoms orphelines malgré tout,
+        # préférez un script de diagnostic ciblé (liste des noms exacts
+        # attendus) plutôt qu'un rattachement de masse aveugle.
 
         try:
             website.write({
@@ -677,4 +784,8 @@ def post_migrate_hook(env):
                 ),
             })
         except Exception:
-            pass
+            _logger.exception("Échec écriture shop_opt_products_design_classes")
+
+        # Vues qweb (grid produits) maintenues à chaque update, scopées.
+        _setup_shop_grid_design(env, website)
+        _setup_account_dropdown_view(env, website)
