@@ -117,8 +117,22 @@ function envoyerContact() {
     });
 }
 
-// ===== RECHERCHE =====
-function lancerRecherche() {
-    const query = document.getElementById('search-input').value.trim();
-    window.location.href = '/shop?search=' + encodeURIComponent(query || '');
+// ===== FAQ ACCORDION =====
+function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const isOpen = answer.classList.contains('open');
+
+    
+    document.querySelectorAll('.faq-answer').forEach(a => {
+        a.classList.remove('open');
+    });
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.classList.remove('active');
+    });
+
+
+    if (!isOpen) {
+        answer.classList.add('open');
+        btn.classList.add('active');
+    }
 }
