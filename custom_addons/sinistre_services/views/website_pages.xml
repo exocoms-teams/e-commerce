@@ -65,8 +65,7 @@
                                 </div>
                             </div>
                             <div class="mn-service-row__visual mn-service-row__visual--blue">
-                                <img src="/monetique_theme/static/src/img/plomberie.jpeg" alt="Plomberie — fuite" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-                                <div class="mn-service-visual-fallback" style="display:none;"><i class="fa fa-tint" aria-hidden="true"/></div>
+                                <div class="mn-service-visual-fallback"><i class="fa fa-tint" aria-hidden="true"/></div>
                             </div>
                         </div>
 
@@ -87,8 +86,7 @@
                                 </div>
                             </div>
                             <div class="mn-service-row__visual mn-service-row__visual--green">
-                                <img src="/monetique_theme/static/src/img/menuserie.jpg" alt="menuserie — fenetres" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-                                <div class="mn-service-visual-fallback" style="display:none;"><i class="fa fa-home" aria-hidden="true"/></div>
+                                <div class="mn-service-visual-fallback"><i class="fa fa-home" aria-hidden="true"/></div>
                             </div>
                         </div>
 
@@ -109,8 +107,7 @@
                                 </div>
                             </div>
                             <div class="mn-service-row__visual mn-service-row__visual--cyan">
-                                <img src="/monetique_theme/static/src/img/vitre.jpg" alt="vitrerie — vitrage" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-                                <div class="mn-service-visual-fallback" style="display:none;"><i class="fa fa-th-large" aria-hidden="true"/></div>
+                                <div class="mn-service-visual-fallback"><i class="fa fa-th-large" aria-hidden="true"/></div>
                             </div>
                         </div>
 
@@ -131,8 +128,7 @@
                                 </div>
                             </div>
                             <div class="mn-service-row__visual mn-service-row__visual--yellow">
-                                <img src="/monetique_theme/static/src/img/electricite.jpg" alt="Electricite — panne electrique" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-                                <div class="mn-service-visual-fallback" style="display:none;"><i class="fa fa-bolt" aria-hidden="true"/></div>
+                                <div class="mn-service-visual-fallback"><i class="fa fa-bolt" aria-hidden="true"/></div>
                             </div>
                         </div>
 
@@ -1062,18 +1058,18 @@
                                 <t t-if="error">
                                     <div class="mn-form-alert mn-form-alert-error">
                                         <i class="fa fa-exclamation-circle" style="margin-right:6px;" aria-hidden="true"/>
-                                        Veuillez remplir tous les champs obligatoires.
+                                        <t t-esc="error_msg or 'Veuillez remplir tous les champs obligatoires.'"/>
                                     </div>
                                 </t>
 
-                                <form action="/rejoindre-le-reseau/send" method="POST">
+                                <form action="/rejoindre-le-reseau/send" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                                     <h3 class="mn-form-section-title">Identité</h3>
                                     <div class="mn-form-row-2">
                                         <div class="mn-form-group">
                                             <label>Prénom <span class="required">*</span></label>
-                                            <input type="text" name="prenom" placeholder="Jean"
+                                            <input type="text" name="prenom" placeholder="Jean" required="required"
                                                    t-att-value="form_data.get('prenom', '')"/>
                                         </div>
                                         <div class="mn-form-group">
@@ -1096,19 +1092,28 @@
                                     </div>
 
                                     <h3 class="mn-form-section-title">Activité</h3>
-                                    <div class="mn-form-row-2">
-                                        <div class="mn-form-group">
-                                            <label>Spécialité principale <span class="required">*</span></label>
-                                            <select name="specialite" required="required">
-                                                <option value="">— Sélectionnez —</option>
-                                                <option value="serrurerie" t-att-selected="form_data.get('specialite') == 'serrurerie'">Serrurerie</option>
-                                                <option value="plomberie" t-att-selected="form_data.get('specialite') == 'plomberie'">Plomberie</option>
-                                                <option value="menuiserie" t-att-selected="form_data.get('specialite') == 'menuiserie'">Menuiserie</option>
-                                                <option value="vitrerie" t-att-selected="form_data.get('specialite') == 'vitrerie'">Vitrerie</option>
-                                                <option value="electricite" t-att-selected="form_data.get('specialite') == 'electricite'">Électricité</option>
-                                                <option value="multiservices" t-att-selected="form_data.get('specialite') == 'multiservices'">Multiservices</option>
-                                            </select>
+                                    <div class="mn-form-group">
+                                        <label>Spécialités <span class="required">*</span></label>
+                                        <p class="mn-form-hint">Cochez une ou plusieurs spécialités</p>
+                                        <div class="mn-checkbox-grid">
+                                            <t t-foreach="specialites_list" t-as="spec">
+                                                <label class="mn-checkbox-item">
+                                                    <input type="checkbox" name="specialites"
+                                                           t-att-value="spec.type_intervention"
+                                                           t-att-checked="spec.type_intervention in (form_data.get('specialites_selected') or [])"/>
+                                                    <span t-esc="spec.name"/>
+                                                </label>
+                                            </t>
                                         </div>
+                                    </div>
+                                    <div class="mn-form-group">
+                                        <label>Autre métier</label>
+                                        <input type="text" name="specialite_autre"
+                                               placeholder="Ex. Maçonnerie, Couverture…"
+                                               t-att-value="form_data.get('specialite_autre', '')"/>
+                                        <p class="mn-form-hint">Si votre métier n'est pas listé ci-dessus</p>
+                                    </div>
+                                    <div class="mn-form-row-2">
                                         <div class="mn-form-group">
                                             <label>Statut juridique</label>
                                             <select name="statut_juridique">
@@ -1118,13 +1123,6 @@
                                                 <option value="sas" t-att-selected="form_data.get('statut_juridique') == 'sas'">SAS / SASU</option>
                                                 <option value="autre" t-att-selected="form_data.get('statut_juridique') == 'autre'">Autre</option>
                                             </select>
-                                        </div>
-                                    </div>
-                                    <div class="mn-form-row-2">
-                                        <div class="mn-form-group">
-                                            <label>Zone d'intervention <span class="required">*</span></label>
-                                            <input type="text" name="zone" placeholder="Ex: Paris 75, 92, 93…" required="required"
-                                                   t-att-value="form_data.get('zone', '')"/>
                                         </div>
                                         <div class="mn-form-group">
                                             <label>Années d'expérience</label>
@@ -1138,15 +1136,52 @@
                                         </div>
                                     </div>
                                     <div class="mn-form-group">
-                                        <label>SIRET <span style="color:#9CA3AF;font-weight:400;">(facultatif)</span></label>
-                                        <input type="text" name="siret" placeholder="123 456 789 00012"
-                                               t-att-value="form_data.get('siret', '')"/>
+                                        <label>Départements d'intervention <span class="required">*</span></label>
+                                        <select name="departements" multiple="multiple" required="required" class="mn-select-multi" size="8">
+                                            <t t-foreach="departements_list" t-as="dept">
+                                                <option t-att-value="dept[0]"
+                                                        t-att-selected="dept[0] in (form_data.get('departements_selected') or [])"
+                                                        t-esc="dept[1]"/>
+                                            </t>
+                                        </select>
+                                        <p class="mn-form-hint">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs départements</p>
                                     </div>
                                     <div class="mn-form-group">
-                                        <label>Certifications et assurances</label>
-                                        <input type="text" name="certifications" placeholder="Qualifelec, RGE, assurance décennale…"
-                                               t-att-value="form_data.get('certifications', '')"/>
+                                        <label>SIRET <span class="required">*</span></label>
+                                        <input type="text" name="siret" placeholder="12345678900012"
+                                               required="required" maxlength="14" pattern="[0-9]{14}"
+                                               inputmode="numeric" title="14 chiffres sans espace"
+                                               t-att-value="form_data.get('siret', '')"/>
+                                        <p class="mn-form-hint">14 chiffres, sans espace</p>
                                     </div>
+
+                                    <h3 class="mn-form-section-title">Documents à déposer</h3>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Certifications <span class="required">*</span></label>
+                                            <input type="file" name="doc_certification" required="required"
+                                                   accept=".pdf,.jpg,.jpeg,.png"/>
+                                            <p class="mn-form-hint">Qualifelec, RGE, Qualibat… (PDF ou image)</p>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Assurance décennale / RC Pro <span class="required">*</span></label>
+                                            <input type="file" name="doc_assurance" required="required"
+                                                   accept=".pdf,.jpg,.jpeg,.png"/>
+                                        </div>
+                                    </div>
+                                    <div class="mn-form-row-2">
+                                        <div class="mn-form-group">
+                                            <label>Pièce d'identité <span class="required">*</span></label>
+                                            <input type="file" name="doc_identite" required="required"
+                                                   accept=".pdf,.jpg,.jpeg,.png"/>
+                                        </div>
+                                        <div class="mn-form-group">
+                                            <label>Photo <span class="required">*</span></label>
+                                            <input type="file" name="photo" required="required"
+                                                   accept=".jpg,.jpeg,.png"/>
+                                        </div>
+                                    </div>
+
                                     <div class="mn-form-group">
                                         <label>Présentation / message</label>
                                         <textarea name="message" rows="4" placeholder="Présentez votre activité, vos disponibilités…"><t t-esc="form_data.get('message', '')"/></textarea>
@@ -1169,7 +1204,7 @@
                                     <div class="mn-rejoindre-stat-grid">
                                         <div><strong>+1&#160;700</strong><span>Artisans actifs</span></div>
                                         <div><strong>48h</strong><span>Délai paiement</span></div>
-                                        <div><strong>15%</strong><span>Commission</span></div>
+                                        <div><strong>20%</strong><span>Commission</span></div>
                                         <div><strong>0</strong><span>Impayé garanti</span></div>
                                     </div>
                                 </div>
