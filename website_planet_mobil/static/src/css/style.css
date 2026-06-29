@@ -3112,3 +3112,88 @@ a[name="website_sale_main_button"] {
     #top_menu_collapse_mobile .input-group:focus-within { outline-color: var(--alt-red) !important; }
     #top_menu_collapse_mobile .dropdown-menu .fa { color: var(--alt-red) !important; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   BARRE DE CATÉGORIES HORIZONTALE — style alternate.de
+   ══════════════════════════════════════════════════════════ */
+.alt-cat-nav {
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: sticky;
+    top: 0;
+    z-index: 190;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.alt-cat-nav::-webkit-scrollbar { display: none; }
+
+.alt-cat-nav-inner {
+    display: flex;
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+    white-space: nowrap;
+}
+
+.alt-cat-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 14px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text) !important;
+    text-decoration: none !important;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.alt-cat-nav-item:hover {
+    color: var(--blue) !important;
+    border-bottom-color: var(--blue);
+    background: var(--blue-light);
+}
+
+.alt-cat-nav-item.active {
+    color: var(--blue) !important;
+    border-bottom-color: var(--blue);
+    font-weight: 600;
+}
+
+.alt-cat-nav-item i {
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+.alt-cat-nav-item:hover i { color: var(--blue); }
+
+/* "Contact" poussé à droite */
+.alt-cat-nav-contact {
+    margin-left: auto;
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+}
+
+/* Masquer la barre catégories dans l'éditeur website Odoo */
+.editor_enable .alt-cat-nav { display: none !important; }
+
+/* ── Responsive ── */
+@media (max-width: 991px) {
+    .alt-cat-nav-contact {
+        display: none;
+    }
+}
+
+@media (max-width: 575px) {
+    .alt-cat-nav-item {
+        padding: 10px 10px;
+        font-size: 0.78rem;
+    }
+}

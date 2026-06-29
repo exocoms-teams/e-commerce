@@ -1,7 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Fragment réutilisable : barre de catégories horizontale -->
+    <template id="alt_category_nav_fragment" name="Planet Mobil - Fragment barre catégories">
+        <nav class="alt-cat-nav">
+            <div class="alt-cat-nav-inner">
+                <a href="/shop" class="alt-cat-nav-item">
+                    <i class="fa fa-th-large" /> Tous les produits
+                </a>
+                <a href="/shop?x_is_promotion=1" class="alt-cat-nav-item">
+                    <i class="fa fa-bolt" /> Promotions
+                </a>
+                <a href="/shop?order=publish_date+desc" class="alt-cat-nav-item">
+                    <i class="fa fa-certificate" /> Nouveautés
+                </a>
+                <t t-set="nav_cats"
+                    t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('product_tmpl_ids.is_published', '=', True)])" />
+                <t t-foreach="nav_cats" t-as="nc">
+                    <a t-att-href="'/shop/category/' + slug(nc)" class="alt-cat-nav-item">
+                        <t t-out="nc.name" />
+                    </a>
+                </t>
+                <a href="/avis" class="alt-cat-nav-item">
+                    <i class="fa fa-star-o" /> Avis clients
+                </a>
+                <a href="/contact" class="alt-cat-nav-item alt-cat-nav-contact">
+                    <i class="fa fa-phone" /> Contact
+                </a>
+            </div>
+        </nav>
+    </template>
+
     <template id="layout" name="Planet Mobil - Layout principal">
         <t t-call="website.layout">
+            <t t-call="website_planet_mobil.alt_category_nav_fragment" />
             <div class="tsp-wrapper">
                 <nav class="tsp-sidebar">
                     <ul class="tsp-nav">
