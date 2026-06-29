@@ -1137,14 +1137,17 @@
                                     </div>
                                     <div class="mn-form-group">
                                         <label>Départements d'intervention <span class="required">*</span></label>
-                                        <select name="departements" multiple="multiple" required="required" class="mn-select-multi" size="8">
+                                        <p class="mn-form-hint">Cochez un ou plusieurs départements</p>
+                                        <div class="mn-checkbox-grid mn-dept-grid">
                                             <t t-foreach="departements_list" t-as="dept">
-                                                <option t-att-value="dept[0]"
-                                                        t-att-selected="dept[0] in (form_data.get('departements_selected') or [])"
-                                                        t-esc="dept[1]"/>
+                                                <label class="mn-checkbox-item">
+                                                    <input type="checkbox" name="departements"
+                                                           t-att-value="dept['code']"
+                                                           t-att-checked="dept['code'] in (form_data.get('departements_selected') or [])"/>
+                                                    <span t-esc="dept['label']"/>
+                                                </label>
                                             </t>
-                                        </select>
-                                        <p class="mn-form-hint">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs départements</p>
+                                        </div>
                                     </div>
                                     <div class="mn-form-group">
                                         <label>SIRET <span class="required">*</span></label>
