@@ -91,50 +91,7 @@ class Monetique(http.Controller):
             'type_pre': '', 'urgence_pre': '', 'form_data': {},
         })
 
-    # ── REJOINDRE LE RÉSEAU ──────────────────────────────────────────
-    @http.route('/rejoindre-le-reseau', type='http', auth='public', website=True, sitemap=True)
-    def rejoindre_reseau(self, **kw):
-        return request.render('sinistre_services.page_rejoindre', {
-            'error': False, 'success': False, 'form_data': {},
-        })
-
-    @http.route('/rejoindre-le-reseau/send', type='http', auth='public',
-                website=True, methods=['POST'], csrf=True)
-    def rejoindre_send(self, **post):
-        nom = post.get('nom', '').strip()
-        telephone = post.get('telephone', '').strip()
-        email = post.get('email', '').strip()
-        specialite = post.get('specialite', '').strip()
-
-        if not (nom and telephone and email and specialite):
-            return request.render('sinistre_services.page_rejoindre', {
-                'error': True, 'success': False, 'form_data': post,
-            })
-
-        try:
-            mail_vals = {
-                'subject': f'[Candidature Artisan] {nom} — {specialite}',
-                'body_html': f'''
-                    <h3>Nouvelle candidature artisan</h3>
-                    <p><b>Nom :</b> {nom}</p>
-                    <p><b>Email :</b> {email}</p>
-                    <p><b>Tel :</b> {telephone}</p>
-                    <p><b>Specialite :</b> {specialite}</p>
-                    <p><b>Zone :</b> {post.get("zone", "Non renseigne")}</p>
-                    <p><b>Experience :</b> {post.get("experience", "Non renseigne")} ans</p>
-                    <p><b>Certifications :</b> {post.get("certifications", "Non renseigne")}</p>
-                    <p><b>Message :</b> {post.get("message", "")}</p>
-                ''',
-                'email_from': email,
-                'email_to': request.website.email or 'artisans@sinistre-services.fr',
-            }
-            request.env['mail.mail'].sudo().create(mail_vals).send()
-        except Exception as e:
-            _logger.warning(f"Rejoindre send failed: {e}")
-
-        return request.render('sinistre_services.page_rejoindre', {
-            'error': False, 'success': True, 'form_data': {},
-        })
+    # Routes /rejoindre-le-reseau → sinistre_services/controllers/website_controller.py
 
     # ── ASSURANCES ───────────────────────────────────────────────────
     @http.route('/assurances', type='http', auth='public', website=True, sitemap=True)
