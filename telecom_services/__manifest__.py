@@ -1,6 +1,6 @@
 {
     'name': 'Telecom Services',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.1.0',
     'summary': 'Mega-menu Télécom et catalogue de services Dstny',
     'category': 'Website',
     'author': 'Exocoms',
