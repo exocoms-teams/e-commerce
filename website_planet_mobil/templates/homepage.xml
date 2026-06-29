@@ -1,683 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <template id="homepage" name="Planet Mobil - Accueil">
         <t t-call="website_planet_mobil.layout">
-            <div id="wrap" class="oe_structure">
 
-                <style>
-                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap');
-                    #wrap { font-family: 'Inter', sans-serif; background: #f5f5f5; }
-
-                    /* ── HERO ── */
-                    .alt-hero {
-                        background: #0d1440;
-                        padding: 0;
-                        position: relative;
-                        overflow: hidden;
-                    }
-                    .alt-hero-inner {
-                        display: flex;
-                        align-items: center;
-                        min-height: 420px;
-                        max-width: 1280px;
-                        margin: 0 auto;
-                        padding: 48px 24px;
-                        gap: 40px;
-                    }
-                    .alt-hero-text { flex: 1; min-width: 0; }
-                    .alt-hero-eyebrow {
-                        display: inline-block;
-                        background: #2c4ecb;
-                        color: #fff;
-                        font-size: 0.72rem;
-                        font-weight: 700;
-                        letter-spacing: 0.1em;
-                        text-transform: uppercase;
-                        padding: 4px 10px;
-                        border-radius: 2px;
-                        margin-bottom: 16px;
-                    }
-                    .alt-hero-title {
-                        font-size: clamp(1.8rem, 4vw, 2.8rem);
-                        font-weight: 800;
-                        color: #fff;
-                        line-height: 1.15;
-                        margin: 0 0 16px;
-                    }
-                    .alt-hero-title span { color: #2c4ecb; }
-                    .alt-hero-sub {
-                        font-size: 1rem;
-                        color: rgba(255,255,255,0.65);
-                        margin-bottom: 28px;
-                        max-width: 440px;
-                    }
-                    .alt-hero-cta {
-                        display: inline-flex; align-items: center; gap: 8px;
-                        background: #2c4ecb;
-                        color: #fff;
-                        font-weight: 700;
-                        font-size: 0.95rem;
-                        padding: 12px 28px;
-                        border-radius: 4px;
-                        text-decoration: none;
-                        transition: background 0.18s;
-                    }
-                    .alt-hero-cta:hover { background: #1a3aae; color: #fff; text-decoration: none; }
-                    .alt-hero-cta-sec {
-                        display: inline-flex; align-items: center; gap: 8px;
-                        background: rgba(255,255,255,0.1);
-                        color: rgba(255,255,255,0.85);
-                        font-weight: 600;
-                        font-size: 0.9rem;
-                        padding: 11px 22px;
-                        border-radius: 4px;
-                        text-decoration: none;
-                        margin-left: 12px;
-                        transition: background 0.18s;
-                    }
-                    .alt-hero-cta-sec:hover { background: rgba(255,255,255,0.18); color: #fff; text-decoration: none; }
-                    .alt-hero-img {
-                        flex: 0 0 auto;
-                        width: clamp(220px, 32vw, 380px);
-                        text-align: center;
-                    }
-                    .alt-hero-img img {
-                        max-width: 100%;
-                        max-height: 320px;
-                        object-fit: contain;
-                        filter: drop-shadow(0 8px 40px rgba(0,0,0,0.5));
-                    }
-                    .alt-hero-badge {
-                        position: absolute; top: 20px; right: 20px;
-                        background: #2c4ecb;
-                        color: #fff;
-                        border-radius: 50%;
-                        width: 72px; height: 72px;
-                        display: flex; flex-direction: column;
-                        align-items: center; justify-content: center;
-                        font-weight: 800;
-                        font-size: 0.7rem;
-                        text-align: center;
-                        line-height: 1.2;
-                    }
-                    .alt-hero-badge .alt-badge-pct { font-size: 1.4rem; font-weight: 900; }
-
-                    /* ── INFO BAR ── */
-                    .alt-infobar {
-                        background: #fff;
-                        border-bottom: 1px solid #e5e5e5;
-                    }
-                    .alt-infobar-inner {
-                        max-width: 1280px;
-                        margin: 0 auto;
-                        padding: 0 24px;
-                        display: flex;
-                        justify-content: space-around;
-                    }
-                    .alt-infobar-item {
-                        display: flex; align-items: center; gap: 10px;
-                        padding: 14px 8px;
-                        font-size: 0.85rem;
-                        color: #333;
-                        font-weight: 500;
-                    }
-                    .alt-infobar-item i {
-                        font-size: 1.3rem;
-                        color: #2c4ecb;
-                        flex-shrink: 0;
-                    }
-                    .alt-infobar-label { font-weight: 600; display: block; font-size: 0.82rem; }
-                    .alt-infobar-sub { font-size: 0.74rem; color: #888; }
-
-                    /* ── CAT NAV ── */
-                    .alt-catnav {
-                        background: #fff;
-                        border-bottom: 2px solid #e5e5e5;
-                        overflow-x: auto;
-                        scrollbar-width: none;
-                    }
-                    .alt-catnav::-webkit-scrollbar { display: none; }
-                    .alt-catnav-inner {
-                        max-width: 1280px;
-                        margin: 0 auto;
-                        padding: 0 24px;
-                        display: flex;
-                        gap: 0;
-                        white-space: nowrap;
-                    }
-                    .alt-catnav-item {
-                        display: inline-flex; align-items: center; gap: 6px;
-                        padding: 13px 18px;
-                        font-size: 0.85rem;
-                        font-weight: 500;
-                        color: #333;
-                        text-decoration: none;
-                        border-bottom: 2px solid transparent;
-                        margin-bottom: -2px;
-                        transition: color 0.15s, border-color 0.15s;
-                        flex-shrink: 0;
-                    }
-                    .alt-catnav-item:hover,
-                    .alt-catnav-item.active {
-                        color: #2c4ecb;
-                        border-bottom-color: #2c4ecb;
-                        text-decoration: none;
-                    }
-                    .alt-catnav-icon { font-size: 1rem; }
-
-                    /* ── SECTION WRAPPER ── */
-                    .alt-section {
-                        max-width: 1280px;
-                        margin: 0 auto;
-                        padding: 32px 24px;
-                    }
-                    .alt-section-header {
-                        display: flex;
-                        align-items: baseline;
-                        justify-content: space-between;
-                        margin-bottom: 20px;
-                        border-left: 3px solid #2c4ecb;
-                        padding-left: 12px;
-                    }
-                    .alt-section-title {
-                        font-size: 1.15rem;
-                        font-weight: 800;
-                        color: #0d1440;
-                        margin: 0;
-                        text-transform: uppercase;
-                        letter-spacing: 0.03em;
-                    }
-                    .alt-section-more {
-                        font-size: 0.82rem;
-                        color: #2c4ecb;
-                        text-decoration: none;
-                        font-weight: 600;
-                    }
-                    .alt-section-more:hover { text-decoration: underline; color: #1a3aae; }
-
-                    /* ── CATEGORIES ICONS ── */
-                    .alt-cat-grid {
-                        display: grid;
-                        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                        gap: 12px;
-                    }
-                    .alt-cat-card {
-                        background: #fff;
-                        border: 1px solid #e5e5e5;
-                        border-radius: 4px;
-                        padding: 20px 12px;
-                        text-align: center;
-                        text-decoration: none;
-                        color: #0d1440;
-                        transition: box-shadow 0.15s, border-color 0.15s;
-                        display: flex; flex-direction: column;
-                        align-items: center; gap: 8px;
-                    }
-                    .alt-cat-card:hover {
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                        border-color: #2c4ecb;
-                        text-decoration: none;
-                        color: #2c4ecb;
-                    }
-                    .alt-cat-emoji { font-size: 2rem; line-height: 1; }
-                    .alt-cat-label { font-size: 0.78rem; font-weight: 600; }
-
-                    /* ── DEAL STRIP (promo banner) ── */
-                    .alt-deal-strip {
-                        background: #0d1440;
-                        margin: 0;
-                        padding: 28px 0;
-                    }
-                    .alt-deal-inner {
-                        max-width: 1280px;
-                        margin: 0 auto;
-                        padding: 0 24px;
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 20px;
-                    }
-                    .alt-deal-card {
-                        background: rgba(255,255,255,0.05);
-                        border: 1px solid rgba(255,255,255,0.1);
-                        border-radius: 4px;
-                        padding: 24px;
-                        display: flex;
-                        align-items: center;
-                        gap: 20px;
-                        text-decoration: none;
-                        transition: background 0.15s;
-                    }
-                    .alt-deal-card:hover { background: rgba(255,255,255,0.09); text-decoration: none; }
-                    .alt-deal-text { flex: 1; }
-                    .alt-deal-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #2c4ecb; margin-bottom: 6px; }
-                    .alt-deal-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
-                    .alt-deal-sub { font-size: 0.82rem; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
-                    .alt-deal-btn {
-                        display: inline-block;
-                        background: #2c4ecb;
-                        color: #fff;
-                        font-size: 0.8rem;
-                        font-weight: 700;
-                        padding: 8px 18px;
-                        border-radius: 3px;
-                        text-decoration: none;
-                    }
-                    .alt-deal-btn:hover { background: #1a3aae; color: #fff; text-decoration: none; }
-                    .alt-deal-img { width: 120px; flex-shrink: 0; text-align: center; }
-                    .alt-deal-img img { max-width: 100%; max-height: 100px; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
-
-                    /* ── AVIS ── */
-                    .alt-avis-wrap { overflow: hidden; }
-                    .alt-avis-track {
-                        display: flex;
-                        gap: 16px;
-                        overflow-x: auto;
-                        scroll-behavior: smooth;
-                        scrollbar-width: none;
-                        padding-bottom: 4px;
-                    }
-                    .alt-avis-track::-webkit-scrollbar { display: none; }
-                    .alt-avis-card {
-                        flex: 0 0 300px;
-                        background: #fff;
-                        border: 1px solid #e5e5e5;
-                        border-radius: 4px;
-                        padding: 20px;
-                    }
-                    .alt-avis-stars { color: #f5a623; font-size: 0.9rem; margin-bottom: 10px; }
-                    .alt-avis-text { font-size: 0.85rem; color: #333; line-height: 1.55; margin-bottom: 14px; font-style: italic; }
-                    .alt-avis-author { display: flex; align-items: center; gap: 10px; }
-                    .alt-avis-avatar {
-                        width: 36px; height: 36px;
-                        border-radius: 50%;
-                        background: #2c4ecb;
-                        color: #fff;
-                        display: flex; align-items: center; justify-content: center;
-                        font-weight: 800; font-size: 0.85rem;
-                        flex-shrink: 0;
-                    }
-                    .alt-avis-name { font-weight: 700; font-size: 0.85rem; color: #1a1a1a; }
-                    .alt-avis-date { font-size: 0.75rem; color: #999; }
-
-                    /* ── NEWSLETTER ── */
-                    .alt-newsletter {
-                        background: #0d1440;
-                        padding: 48px 0;
-                        margin: 0;
-                    }
-                    .alt-newsletter-inner {
-                        max-width: 560px;
-                        margin: 0 auto;
-                        padding: 0 24px;
-                        text-align: center;
-                    }
-                    .alt-newsletter-title {
-                        font-size: 1.4rem;
-                        font-weight: 800;
-                        color: #fff;
-                        margin-bottom: 8px;
-                    }
-                    .alt-newsletter-sub {
-                        font-size: 0.9rem;
-                        color: rgba(255,255,255,0.55);
-                        margin-bottom: 24px;
-                    }
-                    .alt-newsletter-form {
-                        display: flex;
-                        gap: 0;
-                        max-width: 440px;
-                        margin: 0 auto;
-                    }
-                    .alt-newsletter-input {
-                        flex: 1;
-                        padding: 12px 16px;
-                        font-size: 0.9rem;
-                        border: 1px solid rgba(255,255,255,0.15);
-                        border-right: none;
-                        border-radius: 4px 0 0 4px;
-                        background: rgba(255,255,255,0.08);
-                        color: #fff;
-                        outline: none;
-                    }
-                    .alt-newsletter-input::placeholder { color: rgba(255,255,255,0.35); }
-                    .alt-newsletter-input:focus { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); }
-                    .alt-newsletter-btn {
-                        padding: 12px 22px;
-                        background: #2c4ecb;
-                        color: #fff;
-                        font-weight: 700;
-                        font-size: 0.9rem;
-                        border: none;
-                        border-radius: 0 4px 4px 0;
-                        cursor: pointer;
-                        transition: background 0.18s;
-                    }
-                    .alt-newsletter-btn:hover { background: #1a3aae; }
-
-                    /* ── RESPONSIVE ── */
-                    @media (max-width: 767px) {
-                        .alt-hero-inner { flex-direction: column; padding: 32px 16px; text-align: center; }
-                        .alt-hero-sub { max-width: 100%; }
-                        .alt-hero-img { width: 200px; }
-                        .alt-infobar-inner { flex-wrap: wrap; gap: 0; }
-                        .alt-infobar-item { flex: 0 0 50%; padding: 10px 8px; }
-                        .alt-deal-inner { grid-template-columns: 1fr; }
-                        .alt-cat-grid { grid-template-columns: repeat(4, 1fr); }
-                    }
-                    @media (max-width: 480px) {
-                        .alt-cat-grid { grid-template-columns: repeat(3, 1fr); }
-                        .alt-infobar-item { flex: 0 0 100%; }
-                    }
-                </style>
-
-                <!-- ═══════════════════════════════════════════
-                     HERO BANNER
-                ═══════════════════════════════════════════ -->
-                <section class="alt-hero">
-                    <div class="alt-hero-inner">
-                        <div class="alt-hero-text">
-                            <span class="alt-hero-eyebrow">Nouveauté Été 2025</span>
-                            <h1 class="alt-hero-title">
-                                Les meilleurs smartphones<br/>
-                                au <span>meilleur prix</span>
-                            </h1>
-                            <p class="alt-hero-sub">
-                                iPhone, Samsung, Xiaomi, accessoires — tout ce dont vous avez besoin, livré rapidement.
-                            </p>
-                            <a href="/shop" class="alt-hero-cta">
-                                <i class="fa fa-shopping-bag"></i> Voir tous les produits
-                            </a>
-                            <a href="/shop?tag=promo" class="alt-hero-cta-sec">
-                                <i class="fa fa-tag"></i> Promotions du moment
-                            </a>
-                        </div>
-                        <div class="alt-hero-img">
-                            <img src="/website_planet_mobil/static/src/img/hero_product.png"
-                                 alt="Smartphone"
-                                 onerror="this.style.display='none'"/>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ═══════════════════════════════════════════
-                     BARRE D'INFORMATIONS
-                ═══════════════════════════════════════════ -->
-                <div class="alt-infobar">
-                    <div class="alt-infobar-inner">
-                        <div class="alt-infobar-item">
-                            <i class="fa fa-truck"></i>
-                            <div>
-                                <span class="alt-infobar-label">Livraison rapide</span>
-                                <span class="alt-infobar-sub">Expédition sous 24h</span>
-                            </div>
-                        </div>
-                        <div class="alt-infobar-item">
-                            <i class="fa fa-undo"></i>
-                            <div>
-                                <span class="alt-infobar-label">Retour 30 jours</span>
-                                <span class="alt-infobar-sub">Retour gratuit</span>
-                            </div>
-                        </div>
-                        <div class="alt-infobar-item">
-                            <i class="fa fa-shield"></i>
-                            <div>
-                                <span class="alt-infobar-label">Garantie 2 ans</span>
-                                <span class="alt-infobar-sub">Sur tous les produits</span>
-                            </div>
-                        </div>
-                        <div class="alt-infobar-item">
-                            <i class="fa fa-headphones"></i>
-                            <div>
-                                <span class="alt-infobar-label">Support client</span>
-                                <span class="alt-infobar-sub">Lun–Ven 9h–18h</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- HERO BANNER -->
+            <section class="tsp-hero">
+                <div class="tsp-hero-content">
+                    <h1 class="tsp-hero-title">Bienvenue chez PLANET MOBIL</h1>
+                    <p class="tsp-hero-subtitle">Decouvrez les dernieres technologies au meilleur prix</p>
+                    <a href="/shop" class="tsp-btn-hero">Decouvrir nos produits</a>
                 </div>
+            </section>
 
-                <!-- ═══════════════════════════════════════════
-                     NAV CATÉGORIES HORIZONTALE
-                ═══════════════════════════════════════════ -->
-                <div class="alt-catnav">
-                    <div class="alt-catnav-inner">
-                        <a href="/shop?categ=smartphones" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">📱</span> Smartphones
-                        </a>
-                        <a href="/shop?categ=tablettes" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">💻</span> Tablettes
-                        </a>
-                        <a href="/shop?categ=coques" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">🛡️</span> Coques &amp; Protection
-                        </a>
-                        <a href="/shop?categ=chargeurs" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">🔌</span> Chargeurs
-                        </a>
-                        <a href="/shop?categ=audio" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">🎧</span> Audio
-                        </a>
-                        <a href="/shop?categ=montres" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">⌚</span> Montres connectées
-                        </a>
-                        <a href="/shop?categ=accessoires" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">🔧</span> Accessoires
-                        </a>
-                        <a href="/shop?categ=reconditionnes" class="alt-catnav-item">
-                            <span class="alt-catnav-icon">♻️</span> Reconditionnés
-                        </a>
-                    </div>
+            <!-- SECTION TOP VENTES -->
+            <section class="tsp-section">
+                <div class="tsp-section-header">
+                    <h2 class="tsp-section-title">Top Ventes</h2>
+                    <a href="/shop?filter=top-ventes" class="tsp-voir-tout">Voir tout</a>
                 </div>
-
-                <!-- ═══════════════════════════════════════════
-                     MEILLEURES OFFRES (slot éditable)
-                ═══════════════════════════════════════════ -->
-                <div class="alt-section" style="padding-top: 36px;">
-                    <div class="alt-section-header">
-                        <h2 class="alt-section-title">🔥 Meilleures offres</h2>
-                        <a href="/shop?sort=discount" class="alt-section-more">Voir tout →</a>
-                    </div>
-                    <div id="oe_structure_homepage_nouveautes" class="oe_structure oe_empty">
-                        <!-- Insérez des blocs de produits ici via l'éditeur de site web -->
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════
-                     CATÉGORIES ICÔNES
-                ═══════════════════════════════════════════ -->
-                <div style="background: #fff; padding: 8px 0 0; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5;">
-                    <div class="alt-section" style="padding-top: 28px; padding-bottom: 28px;">
-                        <div class="alt-section-header">
-                            <h2 class="alt-section-title">Nos catégories</h2>
-                        </div>
-                        <div class="alt-cat-grid">
-                            <a href="/shop?categ=smartphones" class="alt-cat-card">
-                                <span class="alt-cat-emoji">📱</span>
-                                <span class="alt-cat-label">Smartphones</span>
-                            </a>
-                            <a href="/shop?categ=tablettes" class="alt-cat-card">
-                                <span class="alt-cat-emoji">💻</span>
-                                <span class="alt-cat-label">Tablettes</span>
-                            </a>
-                            <a href="/shop?categ=coques" class="alt-cat-card">
-                                <span class="alt-cat-emoji">🛡️</span>
-                                <span class="alt-cat-label">Coques</span>
-                            </a>
-                            <a href="/shop?categ=chargeurs" class="alt-cat-card">
-                                <span class="alt-cat-emoji">🔌</span>
-                                <span class="alt-cat-label">Chargeurs</span>
-                            </a>
-                            <a href="/shop?categ=audio" class="alt-cat-card">
-                                <span class="alt-cat-emoji">🎧</span>
-                                <span class="alt-cat-label">Audio</span>
-                            </a>
-                            <a href="/shop?categ=montres" class="alt-cat-card">
-                                <span class="alt-cat-emoji">⌚</span>
-                                <span class="alt-cat-label">Montres</span>
-                            </a>
-                            <a href="/shop?categ=accessoires" class="alt-cat-card">
-                                <span class="alt-cat-emoji">🔧</span>
-                                <span class="alt-cat-label">Accessoires</span>
-                            </a>
-                            <a href="/shop?categ=reconditionnes" class="alt-cat-card">
-                                <span class="alt-cat-emoji">♻️</span>
-                                <span class="alt-cat-label">Reconditionnés</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════
-                     DEAL TEASERS (2 colonnes)
-                ═══════════════════════════════════════════ -->
-                <div class="alt-deal-strip">
-                    <div class="alt-deal-inner">
-                        <a href="/shop?categ=smartphones&amp;brand=apple" class="alt-deal-card">
-                            <div class="alt-deal-text">
-                                <div class="alt-deal-eyebrow">Offre exclusive</div>
-                                <div class="alt-deal-title">iPhone 15 Pro</div>
-                                <div class="alt-deal-sub">Titane · 128 Go · Caméra 48 MP</div>
-                                <span class="alt-deal-btn">Découvrir →</span>
+                <div class="tsp-products-grid">
+                    <t t-foreach="top_ventes" t-as="product">
+                        <div class="tsp-card">
+                            <div class="tsp-card-img-wrap">
+                                <img t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                                     t-att-alt="product['name'] if isinstance(product, dict) else product.name"
+                                     class="tsp-card-img"
+                                     onerror="this.parentElement.classList.add('tsp-img-placeholder')"/>
+                                <button class="tsp-wishlist-btn"><i class="fa fa-heart-o"/></button>
                             </div>
-                            <div class="alt-deal-img">
-                                <img src="/website_planet_mobil/static/src/img/deal_iphone.png"
-                                     alt="iPhone 15 Pro"
-                                     onerror="this.style.display='none'"/>
-                            </div>
-                        </a>
-                        <a href="/shop?categ=audio" class="alt-deal-card">
-                            <div class="alt-deal-text">
-                                <div class="alt-deal-eyebrow">Top ventes audio</div>
-                                <div class="alt-deal-title">AirPods &amp; Casques</div>
-                                <div class="alt-deal-sub">Sans fil · Réduction de bruit · Hi-Fi</div>
-                                <span class="alt-deal-btn">Voir les offres →</span>
-                            </div>
-                            <div class="alt-deal-img">
-                                <img src="/website_planet_mobil/static/src/img/deal_audio.png"
-                                     alt="Audio"
-                                     onerror="this.style.display='none'"/>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════
-                     NOUVEAUTÉS (slot éditable)
-                ═══════════════════════════════════════════ -->
-                <div class="alt-section">
-                    <div class="alt-section-header">
-                        <h2 class="alt-section-title">✨ Nouveautés</h2>
-                        <a href="/shop?sort=newest" class="alt-section-more">Voir tout →</a>
-                    </div>
-                    <div id="oe_structure_homepage_vue_recemment" class="oe_structure oe_empty">
-                        <!-- Insérez des blocs de produits ici via l'éditeur de site web -->
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════
-                     SLOTS SUPPLÉMENTAIRES (éditeur Odoo)
-                ═══════════════════════════════════════════ -->
-                <div id="oe_structure_homepage_bottom" class="oe_structure oe_empty"/>
-
-                <!-- ═══════════════════════════════════════════
-                     AVIS CLIENTS
-                ═══════════════════════════════════════════ -->
-                <t t-if="reviews">
-                    <div style="background: #fff; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; padding: 8px 0;">
-                        <div class="alt-section" style="padding-top: 28px; padding-bottom: 28px;">
-                            <div class="alt-section-header">
-                                <h2 class="alt-section-title">
-                                    ⭐ Avis clients
-                                    <t t-if="stats and stats.get('avg')">
-                                        <span style="font-size:0.9rem; font-weight:400; color:#2c4ecb; margin-left:10px;">
-                                            <t t-out="'%.1f' % stats['avg']"/>/5 · <t t-out="stats.get('total', '')"/> avis
-                                        </span>
+                            <div class="tsp-card-body">
+                                <div class="tsp-stars">
+                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
+                                    <t t-foreach="range(5)" t-as="star_i">
+                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
+                                        <i t-else="" class="fa fa-star tsp-star-off"/>
                                     </t>
-                                </h2>
-                                <a href="/avis" class="alt-section-more">Tous les avis →</a>
-                            </div>
-                            <div class="alt-avis-wrap">
-                                <div class="alt-avis-track" id="alt-avis-track">
-                                    <t t-foreach="reviews" t-as="review">
-                                        <div class="alt-avis-card">
-                                            <div class="alt-avis-stars">
-                                                <t t-set="r" t-value="int(review.get('note', 5))"/>
-                                                <t t-foreach="range(r)" t-as="s">★</t><t t-foreach="range(5 - r)" t-as="s">☆</t>
-                                            </div>
-                                            <p class="alt-avis-text">"<t t-out="review.get('texte', '')"/>"</p>
-                                            <div class="alt-avis-author">
-                                                <div class="alt-avis-avatar">
-                                                    <t t-out="(review.get('prenom') or review.get('auteur', 'A'))[0].upper()"/>
-                                                </div>
-                                                <div>
-                                                    <div class="alt-avis-name">
-                                                        <t t-out="review.get('prenom') or review.get('auteur', 'Client')"/>
-                                                    </div>
-                                                    <div class="alt-avis-date"><t t-out="review.get('date', '')"/></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </t>
+                                    <span class="tsp-stars-count">(<t t-out="product['rating'] if isinstance(product, dict) else product.rating"/>)</span>
+                                </div>
+                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
+                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
+                                <div class="tsp-card-footer">
+                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>euro</span>
+                                    <button class="tsp-btn-add"><i class="fa fa-shopping-cart"/> Ajouter</button>
                                 </div>
                             </div>
                         </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- SECTION NOUVEAUTES -->
+            <section class="tsp-section">
+                <div class="tsp-section-header">
+                    <h2 class="tsp-section-title">Nouveautes</h2>
+                    <a href="/shop?filter=nouveautes" class="tsp-voir-tout">Voir tout</a>
+                </div>
+                <div class="tsp-products-grid">
+                    <t t-foreach="nouveautes" t-as="product">
+                        <div class="tsp-card">
+                            <div class="tsp-card-img-wrap">
+                                <t t-set="prod_badge" t-value="product['badge'] if isinstance(product, dict) else product.badge"/>
+                                <t t-if="prod_badge">
+                                    <span class="tsp-badge-new"><t t-out="prod_badge"/></span>
+                                </t>
+                                <img t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
+                                     t-att-alt="product['name'] if isinstance(product, dict) else product.name"
+                                     class="tsp-card-img"
+                                     onerror="this.parentElement.classList.add('tsp-img-placeholder')"/>
+                                <button class="tsp-wishlist-btn"><i class="fa fa-heart-o"/></button>
+                            </div>
+                            <div class="tsp-card-body">
+                                <div class="tsp-stars">
+                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
+                                    <t t-foreach="range(5)" t-as="star_i">
+                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
+                                        <i t-else="" class="fa fa-star tsp-star-off"/>
+                                    </t>
+                                    <span class="tsp-stars-count">(<t t-out="product['rating'] if isinstance(product, dict) else product.rating"/>)</span>
+                                </div>
+                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
+                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
+                                <div class="tsp-card-footer">
+                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>euro</span>
+                                    <button class="tsp-btn-add"><i class="fa fa-shopping-cart"/> Ajouter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- BANNIERE PROMO -->
+            <section class="tsp-promo">
+                <div class="tsp-promo-inner">
+                    <h2 class="tsp-promo-title">Offres exceptionnelles</h2>
+                    <p class="tsp-promo-subtitle">Jusqu'a -50% sur une selection de produits</p>
+                    <a href="/promotions" class="tsp-btn-promo">Profiter des promotions</a>
+                </div>
+            </section>
+
+            <!-- SECTION AVIS -->
+            <div class="avis-hero">
+                <h1>Avis de nos clients</h1>
+                <p>Ce que pensent nos clients de Planet Mobil</p>
+            </div>
+
+            <div class="avis-stats">
+                <div class="avis-stat-main">
+                    <div class="note">4.6</div>
+                    <div class="stars-big">
+                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/>
                     </div>
-                </t>
+                    <p>Base sur 248 avis verifies</p>
+                </div>
+                <div class="avis-stat-bars">
+                    <div class="avis-bar-row"><span>5 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:72%"/></div><span>72%</span></div>
+                    <div class="avis-bar-row"><span>4 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:18%"/></div><span>18%</span></div>
+                    <div class="avis-bar-row"><span>3 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:6%"/></div><span>6%</span></div>
+                    <div class="avis-bar-row"><span>2 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:3%"/></div><span>3%</span></div>
+                    <div class="avis-bar-row"><span>1 etoile</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:1%"/></div><span>1%</span></div>
+                </div>
+            </div>
 
-                <div id="oe_structure_homepage_avis" class="oe_structure oe_empty"/>
-                <div id="oe_structure_homepage_contact" class="oe_structure oe_empty"/>
+            <div class="avis-grid">
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">ML</div>
+                        <div class="avis-author-info"><h4>Marie L.</h4><span>12 janvier 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
+                    <p class="avis-card-title">Livraison ultra rapide !</p>
+                    <p class="avis-card-text">Commande passee le soir, recue le lendemain matin. Produit exactement comme decrit, je suis ravie de mon achat.</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> iPhone 15 Pro Max</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">TK</div>
+                        <div class="avis-author-info"><h4>Thomas K.</h4><span>5 fevrier 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
+                    <p class="avis-card-title">Excellent rapport qualite/prix</p>
+                    <p class="avis-card-text">La montre est magnifique, les fonctionnalites sont top. Service client tres reactif. Tres bonne experience.</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> Apple Watch Series 9</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">SB</div>
+                        <div class="avis-author-info"><h4>Sophie B.</h4><span>18 fevrier 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-o" style="color:#d1d5db"/></div>
+                    <p class="avis-card-title">Tres satisfaite de mon casque</p>
+                    <p class="avis-card-text">La reduction de bruit est impressionnante, ideal pour travailler. Livraison un peu lente mais produit parfait.</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> Sony WH-1000XM5</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">AD</div>
+                        <div class="avis-author-info"><h4>Alexandre D.</h4><span>2 mars 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
+                    <p class="avis-card-title">Le meilleur smartphone Android</p>
+                    <p class="avis-card-text">Photos epoustouflantes, fluidite parfaite, autonomie excellente. Un achat que je ne regrette pas du tout !</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> Samsung Galaxy S21 Ultra</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">CM</div>
+                        <div class="avis-author-info"><h4>Clara M.</h4><span>15 mars 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
+                    <p class="avis-card-title">TV incroyable pour le gaming</p>
+                    <p class="avis-card-text">L'image OLED est a couper le souffle. Le mode gaming 120Hz fait vraiment la difference. Livraison soignee.</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> LG OLED C3 55</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+                <div class="avis-card">
+                    <div class="avis-card-header">
+                        <div class="avis-avatar">JP</div>
+                        <div class="avis-author-info"><h4>Jean-Pierre V.</h4><span>28 mars 2026</span></div>
+                    </div>
+                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/></div>
+                    <p class="avis-card-title">Bon produit, site agreable</p>
+                    <p class="avis-card-text">Le site est tres bien concu, navigation intuitive. Le Pixel 8 Pro est excellent, l'IA integree est utile au quotidien.</p>
+                    <div class="avis-card-product"><i class="fa fa-tag"/> Google Pixel 8 Pro</div>
+                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
+                </div>
+            </div>
 
-                <!-- ═══════════════════════════════════════════
-                     NEWSLETTER
-                ═══════════════════════════════════════════ -->
-                <div class="alt-newsletter">
-                    <div class="alt-newsletter-inner">
-                        <h2 class="alt-newsletter-title">Restez informé</h2>
-                        <p class="alt-newsletter-sub">
-                            Offres exclusives, nouveautés et bons plans directement dans votre boîte mail.
-                        </p>
-                        <form class="alt-newsletter-form" action="/newsletter/subscribe" method="post">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="email" name="email" class="alt-newsletter-input"
-                                   placeholder="votre@email.com" required="1"/>
-                            <button type="submit" class="alt-newsletter-btn">S'abonner</button>
-                        </form>
+            <!-- SECTION CONTACT -->
+            <div class="contact-hero">
+                <h1>Contactez-nous</h1>
+                <p>Notre equipe est disponible pour repondre a toutes vos questions</p>
+            </div>
+
+            <div class="contact-layout">
+                <div class="contact-infos">
+                    <div class="contact-info-card">
+                        <div class="contact-info-icon"><i class="fa fa-map-marker"/></div>
+                        <div><h4>Notre adresse</h4><p>15 Rue de la Technologie, 75008 Paris</p></div>
+                    </div>
+                    <div class="contact-info-card">
+                        <div class="contact-info-icon"><i class="fa fa-phone"/></div>
+                        <div><h4>Telephone</h4><p>+33 (0)6 64 97 80 50</p></div>
+                    </div>
+                    <div class="contact-info-card">
+                        <div class="contact-info-icon"><i class="fa fa-envelope"/></div>
+                        <div><h4>Email</h4><p>contact@planet-mobil.com</p></div>
+                    </div>
+                    <div class="contact-info-card">
+                        <div class="contact-info-icon"><i class="fa fa-clock-o"/></div>
+                        <div><h4>Horaires</h4><p>Lundi-Vendredi: 9h-18h</p></div>
                     </div>
                 </div>
-
-                <div id="oe_structure_homepage_end" class="oe_structure oe_empty"/>
-
-                <!-- ═══════════════════════════════════════════
-                     SCRIPTS
-                ═══════════════════════════════════════════ -->
-                <script>
-                (function() {
-                    /* Carrousel avis — défilement auto */
-                    function initAvis() {
-                        var track = document.getElementById('alt-avis-track');
-                        if (!track || track.dataset.init) return;
-                        track.dataset.init = '1';
-                        var kids = [].slice.call(track.children);
-                        if (kids.length &lt; 2) return;
-                        kids.forEach(function(n) { track.appendChild(n.cloneNode(true)); });
-                        var paused = false;
-                        track.addEventListener('mouseenter', function() { paused = true; });
-                        track.addEventListener('mouseleave', function() { paused = false; });
-                        var pos = 0;
-                        (function step() {
-                            if (!paused) {
-                                pos += 0.5;
-                                var half = track.scrollWidth / 2;
-                                if (half > 0 &amp;&amp; pos >= half) pos -= half;
-                                track.scrollLeft = pos;
-                            }
-                            requestAnimationFrame(step);
-                        })();
-                    }
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', initAvis);
-                    } else { initAvis(); }
-                })();
-                </script>
-
+                <div class="contact-form-wrap">
+                    <h2><i class="fa fa-paper-plane" style="color:#2c4ecb;margin-right:8px"/>Envoyer un message</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nom *</label>
+                            <input type="text" name="nom" placeholder="Votre nom" required="1"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Prenom *</label>
+                            <input type="text" name="prenom" placeholder="Votre prenom" required="1"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse email *</label>
+                        <input type="email" name="email" placeholder="exemple@email.com" required="1"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Sujet</label>
+                        <select name="sujet">
+                            <option value="">Selectionnez un sujet</option>
+                            <option>Question sur un produit</option>
+                            <option>Suivi de commande</option>
+                            <option>Retour / Remboursement</option>
+                            <option>Probleme technique</option>
+                            <option>Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Votre question *</label>
+                        <textarea name="question" placeholder="Decrivez votre question..." required="1"/>
+                    </div>
+                    <button class="form-submit" type="submit">
+                        <i class="fa fa-paper-plane"/> Envoyer le message
+                    </button>
+                </div>
             </div>
+
         </t>
     </template>
+
 </odoo>
