@@ -30,7 +30,7 @@ class SinistreIntervenant(models.Model):
     # ── Contrat / Commission ─────────────────────────────────────
     taux_commission = fields.Float(
         string='Taux Commission Plateforme (%)',
-        default=15.0,
+        default=20.0,
         help="Pourcentage prélevé par la plateforme sur chaque intervention",
     )
     actif      = fields.Boolean(string='Actif',       default=True, tracking=True)
@@ -159,6 +159,7 @@ class SinistreSpecialite(models.Model):
         ('menuiserie_ext','Menuiserie Extérieure'),
         ('vitrerie',      'Vitrerie'),
         ('electricite',   'Électricité'),
+        ('maconnerie',    'Maçonnerie'),
         ('autre',         'Autre'),
     ], string="Type d'Intervention")
     color = fields.Integer(string='Couleur', default=0)
