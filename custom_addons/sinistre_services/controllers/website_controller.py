@@ -323,7 +323,10 @@ class SinistreWebsite(http.Controller):
             'success': False,
             'form_data': {},
             'specialites_list': request.env['sinistre.specialite'].sudo().search([], order='name'),
-            'departements_list': DEPARTEMENTS_FR,
+            'departements_list': [
+                {'code': code, 'label': label}
+                for code, label in DEPARTEMENTS_FR
+            ],
         }
         defaults.update(ctx)
         return request.render('sinistre_services.page_rejoindre', defaults)
