@@ -52,27 +52,52 @@ def _activer_francais_par_defaut(env):
             _logger.warning("Planet Mobil: langue par defaut non appliquee (%s)", e)
 
 
-def _supprimer_categories_natives(env):
-    """Supprime les categories website natives d'Odoo (demo data).
-    Seules les categories Planet Mobil sont conservees.
+def _supprimer_demo_natif(env):
+    """Supprime les produits et categories demo natifs d'Odoo.
+    Logique : supprimer les produits en premier pour lever le blocage
+    sur les categories, puis supprimer les categories.
     """
-    categories_natives = [
-        'Desks', 'Furnitures', 'Boxes', 'Drawers',
-        'Cabinets', 'Bins', 'Lamps', 'Services',
-        'All', 'Office Furniture', 'Indoor Furniture',
-        'Outdoor Furniture', 'Components', 'Software',
-    ]
-    cats = env['product.public.category'].sudo().search([
-        ('name', 'in', categories_natives),
+    nos_noms = ['Smartphones', 'Montres', 'Accessoires', 'TV']
+
+    # Categories natives = tout ce qui n'est pas a nous
+    cats_natives = env['product.public.category'].sudo().search([
+        ('name', 'not in', nos_noms),
     ])
-    for cat in cats:
+    if not cats_natives:
+        _logger.info("Planet Mobil: aucune categorie native a supprimer.")
+        return
+
+    nos_cats = env['product.public.category'].sudo().search([
+        ('name', 'in', nos_noms),
+    ])
+
+    # Produits lies aux categories natives, mais PAS a nos categories
+    candidats = env['product.template'].sudo().search([
+        ('public_categ_ids', 'in', cats_natives.ids),
+    ])
+    produits_natifs = candidats.filtered(
+        lambda p: not (p.public_categ_ids & nos_cats)
+    )
+
+    # 1. Supprimer les produits natifs (archiver si suppression impossible)
+    for prod in produits_natifs:
+        try:
+            prod.unlink()
+        except Exception:
+            try:
+                prod.write({'active': False, 'is_published': False})
+                _logger.info("Planet Mobil: produit '%s' archive.", prod.name)
+            except Exception as e2:
+                _logger.warning("Planet Mobil: produit '%s' non traite (%s)", prod.name, e2)
+
+    # 2. Supprimer les categories natives (maintenant sans produits)
+    for cat in cats_natives:
         try:
             cat.unlink()
             _logger.info("Planet Mobil: categorie native '%s' supprimee.", cat.name)
         except Exception as e:
             _logger.warning(
-                "Planet Mobil: impossible de supprimer la categorie '%s' (%s)",
-                cat.name, e
+                "Planet Mobil: categorie '%s' non supprimee (%s)", cat.name, e
             )
 
 
@@ -84,7 +109,7 @@ def post_init_hook(env):
     """
     try:
         _activer_francais_par_defaut(env)
-        _supprimer_categories_natives(env)
+        _supprimer_demo_natif(env)
         _logger.info("Planet Mobil: post_init_hook termine avec succes.")
     except Exception as e:
         _logger.warning("Planet Mobil: post_init_hook ignore (%s)", e)
