@@ -1,260 +1,1154 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="homepage" name="Planet Mobil - Accueil">
         <t t-call="website_planet_mobil.layout">
+            <div id="wrap" class="oe_structure">
 
-            <!-- HERO BANNER -->
-            <section class="tsp-hero">
-                <div class="tsp-hero-content">
-                    <h1 class="tsp-hero-title">Bienvenue chez PLANET MOBIL</h1>
-                    <p class="tsp-hero-subtitle">Decouvrez les dernieres technologies au meilleur prix</p>
-                    <a href="/shop" class="tsp-btn-hero">Decouvrir nos produits</a>
-                </div>
-            </section>
+                <!-- ═══════════════════════════════════════════
+                     STYLES GLOBAUX
+                ═══════════════════════════════════════════ -->
+                <style>
+                    /* ── Fonts &amp; Reset ── */
+                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap');
+                    #wrap { font-family: 'Inter', sans-serif; }
 
-            <!-- SECTION TOP VENTES -->
-            <section class="tsp-section">
-                <div class="tsp-section-header">
-                    <h2 class="tsp-section-title">Top Ventes</h2>
-                    <a href="/shop?filter=top-ventes" class="tsp-voir-tout">Voir tout</a>
-                </div>
-                <div class="tsp-products-grid">
-                    <t t-foreach="top_ventes" t-as="product">
-                        <div class="tsp-card">
-                            <div class="tsp-card-img-wrap">
-                                <img t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
-                                     t-att-alt="product['name'] if isinstance(product, dict) else product.name"
-                                     class="tsp-card-img"
-                                     onerror="this.parentElement.classList.add('tsp-img-placeholder')"/>
-                                <button class="tsp-wishlist-btn"><i class="fa fa-heart-o"/></button>
+                    /* ══════════════════════════════════════
+                       HERO
+                    ══════════════════════════════════════ */
+                    .pm-hero {
+                        position: relative;
+                        min-height: 90vh;
+                        display: flex;
+                        align-items: center;
+                        overflow: hidden;
+                        background: #0a0f1e;
+                    }
+                    .pm-hero-slides {
+                        position: absolute; inset: 0;
+                    }
+                    .pm-hero-slide {
+                        position: absolute; inset: 0;
+                        background-size: cover;
+                        background-position: center;
+                        opacity: 0;
+                        transition: opacity 1.2s ease;
+                        transform: scale(1.05);
+                        animation: pmSlideZoom 8s ease forwards;
+                    }
+                    .pm-hero-slide.active { opacity: 1; }
+                    @keyframes pmSlideZoom {
+                        from { transform: scale(1.08); }
+                        to   { transform: scale(1.0); }
+                    }
+                    .pm-hero-overlay {
+                        position: absolute; inset: 0;
+                        background: linear-gradient(
+                            135deg,
+                            rgba(5,10,30,0.92) 0%,
+                            rgba(10,20,60,0.75) 50%,
+                            rgba(5,10,30,0.85) 100%
+                        );
+                    }
+                    /* Particules décoratives */
+                    .pm-hero-particles {
+                        position: absolute; inset: 0;
+                        overflow: hidden;
+                        pointer-events: none;
+                    }
+                    .pm-particle {
+                        position: absolute;
+                        width: 2px; height: 2px;
+                        background: rgba(99,179,237,0.6);
+                        border-radius: 50%;
+                        animation: pmFloat linear infinite;
+                    }
+                    @keyframes pmFloat {
+                        0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+                        10%  { opacity: 1; }
+                        90%  { opacity: 1; }
+                        100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+                    }
+                    .pm-hero-content {
+                        position: relative; z-index: 10;
+                        max-width: 860px;
+                        padding: 0 60px;
+                        animation: pmFadeUp 0.9s ease both;
+                    }
+                    @keyframes pmFadeUp {
+                        from { opacity: 0; transform: translateY(40px); }
+                        to   { opacity: 1; transform: translateY(0); }
+                    }
+                    .pm-hero-badge {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        background: rgba(99,179,237,0.15);
+                        border: 1px solid rgba(99,179,237,0.35);
+                        color: #63b3ed;
+                        font-size: 0.78rem;
+                        font-weight: 600;
+                        letter-spacing: 0.12em;
+                        text-transform: uppercase;
+                        padding: 6px 16px;
+                        border-radius: 50px;
+                        margin-bottom: 28px;
+                        animation: pmFadeUp 0.9s 0.1s ease both;
+                    }
+                    .pm-hero-badge-dot {
+                        width: 7px; height: 7px;
+                        background: #63b3ed;
+                        border-radius: 50%;
+                        animation: pmPulse 1.4s infinite;
+                    }
+                    @keyframes pmPulse {
+                        0%,100% { transform: scale(1); opacity:1; }
+                        50%     { transform: scale(1.6); opacity:0.5; }
+                    }
+                    .pm-hero-title {
+                        font-size: clamp(2.4rem, 5vw, 4rem);
+                        font-weight: 900;
+                        line-height: 1.1;
+                        color: #fff;
+                        margin: 0 0 20px;
+                        animation: pmFadeUp 0.9s 0.2s ease both;
+                    }
+                    .pm-hero-title span {
+                        background: linear-gradient(135deg, #63b3ed, #a78bfa);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
+                    .pm-hero-sub {
+                        font-size: 1.15rem;
+                        color: rgba(255,255,255,0.68);
+                        margin-bottom: 40px;
+                        line-height: 1.7;
+                        animation: pmFadeUp 0.9s 0.3s ease both;
+                    }
+                    .pm-hero-btns {
+                        display: flex;
+                        gap: 16px;
+                        flex-wrap: wrap;
+                        animation: pmFadeUp 0.9s 0.4s ease both;
+                    }
+                    .pm-btn-primary {
+                        display: inline-flex; align-items: center; gap: 10px;
+                        background: linear-gradient(135deg, #2563eb, #7c3aed);
+                        color: #fff !important;
+                        font-weight: 700;
+                        font-size: 0.95rem;
+                        padding: 15px 32px;
+                        border-radius: 50px;
+                        text-decoration: none !important;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 8px 32px rgba(37,99,235,0.45);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .pm-btn-primary::before {
+                        content: '';
+                        position: absolute; inset: 0;
+                        background: linear-gradient(135deg, #7c3aed, #2563eb);
+                        opacity: 0;
+                        transition: opacity 0.3s;
+                    }
+                    .pm-btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(37,99,235,0.55); }
+                    .pm-btn-primary:hover::before { opacity: 1; }
+                    .pm-btn-primary span { position: relative; z-index: 1; }
+                    .pm-btn-secondary {
+                        display: inline-flex; align-items: center; gap: 10px;
+                        background: rgba(255,255,255,0.08);
+                        border: 1px solid rgba(255,255,255,0.25);
+                        color: #fff !important;
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                        padding: 14px 28px;
+                        border-radius: 50px;
+                        text-decoration: none !important;
+                        transition: background 0.2s, transform 0.2s;
+                        backdrop-filter: blur(8px);
+                    }
+                    .pm-btn-secondary:hover {
+                        background: rgba(255,255,255,0.18);
+                        transform: translateY(-2px);
+                    }
+                    /* Indicateurs hero */
+                    .pm-hero-indicators {
+                        position: absolute;
+                        bottom: 40px; left: 60px;
+                        z-index: 10;
+                        display: flex; gap: 10px;
+                    }
+                    .pm-indicator {
+                        width: 28px; height: 3px;
+                        background: rgba(255,255,255,0.3);
+                        border-radius: 2px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    }
+                    .pm-indicator.active {
+                        width: 56px;
+                        background: #63b3ed;
+                    }
+                    /* Scroll indicator */
+                    .pm-scroll-hint {
+                        position: absolute;
+                        bottom: 38px; right: 60px;
+                        z-index: 10;
+                        display: flex; align-items: center; gap: 10px;
+                        color: rgba(255,255,255,0.45);
+                        font-size: 0.78rem;
+                        letter-spacing: 0.1em;
+                        text-transform: uppercase;
+                    }
+                    .pm-scroll-line {
+                        width: 40px; height: 1px;
+                        background: rgba(255,255,255,0.3);
+                    }
+
+                    /* ══════════════════════════════════════
+                       STATS BAR
+                    ══════════════════════════════════════ */
+                    .pm-stats {
+                        background: linear-gradient(135deg, #1e40af, #6d28d9);
+                        padding: 0;
+                        overflow: hidden;
+                    }
+                    .pm-stats-inner {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+                    .pm-stat-item {
+                        padding: 32px 24px;
+                        text-align: center;
+                        border-right: 1px solid rgba(255,255,255,0.1);
+                        transition: background 0.25s;
+                    }
+                    .pm-stat-item:last-child { border-right: none; }
+                    .pm-stat-item:hover { background: rgba(255,255,255,0.07); }
+                    .pm-stat-num {
+                        font-size: 2.2rem;
+                        font-weight: 900;
+                        color: #fff;
+                        line-height: 1;
+                        margin-bottom: 6px;
+                    }
+                    .pm-stat-label {
+                        font-size: 0.82rem;
+                        color: rgba(255,255,255,0.65);
+                        font-weight: 500;
+                        letter-spacing: 0.05em;
+                    }
+
+                    /* ══════════════════════════════════════
+                       AVANTAGES
+                    ══════════════════════════════════════ */
+                    .pm-features {
+                        padding: 80px 40px;
+                        background: #f8fafc;
+                    }
+                    .pm-section-header {
+                        text-align: center;
+                        margin-bottom: 56px;
+                    }
+                    .pm-section-eyebrow {
+                        display: inline-block;
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        letter-spacing: 0.15em;
+                        text-transform: uppercase;
+                        color: #2563eb;
+                        background: #dbeafe;
+                        padding: 5px 14px;
+                        border-radius: 50px;
+                        margin-bottom: 16px;
+                    }
+                    .pm-section-title {
+                        font-size: clamp(1.6rem, 3vw, 2.2rem);
+                        font-weight: 800;
+                        color: #0f172a;
+                        margin: 0 0 14px;
+                        line-height: 1.2;
+                    }
+                    .pm-section-desc {
+                        font-size: 1rem;
+                        color: #64748b;
+                        max-width: 500px;
+                        margin: 0 auto;
+                        line-height: 1.7;
+                    }
+                    .pm-features-grid {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        gap: 24px;
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+                    .pm-feature-card {
+                        background: #fff;
+                        border-radius: 20px;
+                        padding: 36px 28px;
+                        border: 1px solid #e2e8f0;
+                        transition: all 0.3s ease;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .pm-feature-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: 0; right: 0;
+                        height: 3px;
+                        background: linear-gradient(90deg, #2563eb, #7c3aed);
+                        transform: scaleX(0);
+                        transition: transform 0.3s ease;
+                        transform-origin: left;
+                    }
+                    .pm-feature-card:hover {
+                        transform: translateY(-8px);
+                        box-shadow: 0 20px 48px rgba(37,99,235,0.12);
+                        border-color: transparent;
+                    }
+                    .pm-feature-card:hover::before { transform: scaleX(1); }
+                    .pm-feature-icon-wrap {
+                        width: 58px; height: 58px;
+                        border-radius: 16px;
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 1.4rem;
+                        margin-bottom: 22px;
+                    }
+                    .pm-feature-card:nth-child(1) .pm-feature-icon-wrap { background: #dbeafe; color: #2563eb; }
+                    .pm-feature-card:nth-child(2) .pm-feature-icon-wrap { background: #dcfce7; color: #16a34a; }
+                    .pm-feature-card:nth-child(3) .pm-feature-icon-wrap { background: #fef3c7; color: #d97706; }
+                    .pm-feature-card:nth-child(4) .pm-feature-icon-wrap { background: #fce7f3; color: #db2777; }
+                    .pm-feature-title {
+                        font-size: 1rem;
+                        font-weight: 800;
+                        color: #0f172a;
+                        margin-bottom: 10px;
+                    }
+                    .pm-feature-text {
+                        font-size: 0.875rem;
+                        color: #64748b;
+                        line-height: 1.65;
+                        margin: 0;
+                    }
+
+                    /* ══════════════════════════════════════
+                       CATEGORIES
+                    ══════════════════════════════════════ */
+                    .pm-categories {
+                        padding: 80px 40px;
+                        background: #fff;
+                    }
+                    .pm-cat-grid {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr 1fr;
+                        grid-template-rows: 240px 240px;
+                        gap: 16px;
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+                    .pm-cat-card {
+                        position: relative;
+                        border-radius: 20px;
+                        overflow: hidden;
+                        display: flex;
+                        align-items: flex-end;
+                        text-decoration: none !important;
+                        background: #1e293b;
+                    }
+                    .pm-cat-card:first-child { grid-row: span 2; }
+                    .pm-cat-bg {
+                        position: absolute; inset: 0;
+                        background-size: cover;
+                        background-position: center;
+                        transition: transform 0.5s ease;
+                    }
+                    .pm-cat-card:hover .pm-cat-bg { transform: scale(1.07); }
+                    .pm-cat-overlay {
+                        position: absolute; inset: 0;
+                        background: linear-gradient(0deg, rgba(5,10,30,0.82) 0%, rgba(5,10,30,0.15) 55%, transparent 100%);
+                    }
+                    .pm-cat-info {
+                        position: relative; z-index: 2;
+                        padding: 28px;
+                        width: 100%;
+                    }
+                    .pm-cat-label {
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        letter-spacing: 0.12em;
+                        text-transform: uppercase;
+                        color: rgba(255,255,255,0.6);
+                        margin-bottom: 6px;
+                    }
+                    .pm-cat-name {
+                        font-size: 1.4rem;
+                        font-weight: 800;
+                        color: #fff;
+                        margin: 0 0 14px;
+                    }
+                    .pm-cat-card:first-child .pm-cat-name { font-size: 2rem; }
+                    .pm-cat-link {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        background: rgba(255,255,255,0.15);
+                        border: 1px solid rgba(255,255,255,0.25);
+                        color: #fff;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        padding: 8px 18px;
+                        border-radius: 50px;
+                        backdrop-filter: blur(8px);
+                        transition: background 0.2s;
+                    }
+                    .pm-cat-card:hover .pm-cat-link { background: rgba(255,255,255,0.28); }
+
+                    /* ══════════════════════════════════════
+                       PROMO BANNER
+                    ══════════════════════════════════════ */
+                    .pm-promo {
+                        margin: 0 40px 0;
+                        border-radius: 28px;
+                        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+                        overflow: hidden;
+                        position: relative;
+                        padding: 70px 70px;
+                    }
+                    /* Cercles décoratifs */
+                    .pm-promo::before, .pm-promo::after {
+                        content: '';
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255,255,255,0.04);
+                    }
+                    .pm-promo::before { width: 500px; height: 500px; top: -200px; right: -100px; }
+                    .pm-promo::after  { width: 300px; height: 300px; bottom: -100px; left: 40%; }
+                    .pm-promo-inner {
+                        position: relative; z-index: 2;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 40px;
+                        flex-wrap: wrap;
+                    }
+                    .pm-promo-left {}
+                    .pm-promo-tag {
+                        display: inline-flex; align-items: center; gap: 8px;
+                        background: rgba(251,191,36,0.15);
+                        border: 1px solid rgba(251,191,36,0.35);
+                        color: #fbbf24;
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        letter-spacing: 0.12em;
+                        text-transform: uppercase;
+                        padding: 6px 14px;
+                        border-radius: 50px;
+                        margin-bottom: 20px;
+                    }
+                    .pm-promo-title {
+                        font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+                        font-weight: 900;
+                        color: #fff;
+                        margin: 0 0 12px;
+                        line-height: 1.1;
+                    }
+                    .pm-promo-title em {
+                        font-style: normal;
+                        color: #fbbf24;
+                    }
+                    .pm-promo-sub {
+                        font-size: 1rem;
+                        color: rgba(255,255,255,0.6);
+                        margin: 0;
+                    }
+                    .pm-promo-right {
+                        text-align: center;
+                        flex-shrink: 0;
+                    }
+                    .pm-promo-badge {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        width: 130px; height: 130px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                        color: #0f172a;
+                        margin-bottom: 24px;
+                        box-shadow: 0 0 0 8px rgba(251,191,36,0.15), 0 0 0 16px rgba(251,191,36,0.07);
+                        animation: pmSpin 10s linear infinite;
+                    }
+                    @keyframes pmSpin {
+                        from { box-shadow: 0 0 0 8px rgba(251,191,36,0.15), 0 0 0 16px rgba(251,191,36,0.07); }
+                        50%  { box-shadow: 0 0 0 12px rgba(251,191,36,0.25), 0 0 0 22px rgba(251,191,36,0.1); }
+                        to   { box-shadow: 0 0 0 8px rgba(251,191,36,0.15), 0 0 0 16px rgba(251,191,36,0.07); }
+                    }
+                    .pm-promo-badge-pct  { font-size: 2.6rem; font-weight: 900; line-height: 1; }
+                    .pm-promo-badge-text { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; }
+                    .pm-btn-promo {
+                        display: inline-flex; align-items: center; gap: 10px;
+                        background: #fbbf24;
+                        color: #0f172a !important;
+                        font-weight: 800;
+                        font-size: 0.95rem;
+                        padding: 15px 32px;
+                        border-radius: 50px;
+                        text-decoration: none !important;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 8px 28px rgba(251,191,36,0.4);
+                    }
+                    .pm-btn-promo:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 14px 36px rgba(251,191,36,0.55);
+                        color: #0f172a !important;
+                    }
+
+                    /* ══════════════════════════════════════
+                       AVIS
+                    ══════════════════════════════════════ */
+                    .pm-avis {
+                        padding: 80px 40px;
+                        background: #f8fafc;
+                    }
+                    .pm-avis-header {
+                        display: flex;
+                        align-items: flex-end;
+                        justify-content: space-between;
+                        max-width: 1200px;
+                        margin: 0 auto 40px;
+                        flex-wrap: wrap;
+                        gap: 20px;
+                    }
+                    .pm-avis-score {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                        margin-top: 16px;
+                    }
+                    .pm-score-num {
+                        font-size: 3.5rem;
+                        font-weight: 900;
+                        color: #0f172a;
+                        line-height: 1;
+                    }
+                    .pm-score-stars { display: flex; gap: 3px; margin-bottom: 5px; }
+                    .pm-score-stars i { color: #fbbf24; font-size: 1rem; }
+                    .pm-score-count { font-size: 0.83rem; color: #64748b; }
+                    .pm-avis-voir-tout {
+                        display: inline-flex; align-items: center; gap: 8px;
+                        color: #2563eb !important;
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                        text-decoration: none !important;
+                        padding: 10px 20px;
+                        border: 1.5px solid #2563eb;
+                        border-radius: 50px;
+                        transition: all 0.2s;
+                    }
+                    .pm-avis-voir-tout:hover {
+                        background: #2563eb;
+                        color: #fff !important;
+                    }
+                    .pm-avis-track-wrap {
+                        overflow: hidden;
+                        position: relative;
+                        max-width: 1200px;
+                        margin: 0 auto;
+                    }
+                    .pm-avis-track-wrap::before,
+                    .pm-avis-track-wrap::after {
+                        content: '';
+                        position: absolute;
+                        top: 0; bottom: 0;
+                        width: 80px;
+                        z-index: 2;
+                        pointer-events: none;
+                    }
+                    .pm-avis-track-wrap::before { left: 0; background: linear-gradient(to right, #f8fafc, transparent); }
+                    .pm-avis-track-wrap::after  { right: 0; background: linear-gradient(to left, #f8fafc, transparent); }
+                    .pm-avis-track {
+                        display: flex;
+                        gap: 20px;
+                        padding: 12px 0;
+                        overflow-x: auto;
+                        scrollbar-width: none;
+                        -ms-overflow-style: none;
+                    }
+                    .pm-avis-track::-webkit-scrollbar { display: none; }
+                    .pm-avis-card {
+                        flex: 0 0 320px;
+                        background: #fff;
+                        border-radius: 20px;
+                        padding: 28px;
+                        border: 1px solid #e2e8f0;
+                        transition: transform 0.3s, box-shadow 0.3s;
+                    }
+                    .pm-avis-card:hover {
+                        transform: translateY(-4px);
+                        box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+                    }
+                    .pm-avis-card-head {
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
+                        margin-bottom: 16px;
+                    }
+                    .pm-avis-avatar {
+                        width: 46px; height: 46px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, #2563eb, #7c3aed);
+                        color: #fff;
+                        font-size: 1.1rem;
+                        font-weight: 800;
+                        display: flex; align-items: center; justify-content: center;
+                        flex-shrink: 0;
+                    }
+                    .pm-avis-name { font-weight: 700; color: #0f172a; font-size: 0.95rem; }
+                    .pm-avis-date { font-size: 0.78rem; color: #94a3b8; }
+                    .pm-avis-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+                    .pm-avis-stars i { color: #fbbf24; font-size: 0.9rem; }
+                    .pm-avis-stars i.empty { color: #e2e8f0; }
+                    .pm-avis-text {
+                        font-size: 0.875rem;
+                        color: #475569;
+                        line-height: 1.7;
+                        margin: 0 0 14px;
+                    }
+                    .pm-avis-product {
+                        display: inline-flex; align-items: center; gap: 6px;
+                        background: #f1f5f9;
+                        color: #475569;
+                        font-size: 0.78rem;
+                        padding: 5px 12px;
+                        border-radius: 50px;
+                        margin-bottom: 12px;
+                    }
+                    .pm-avis-verified {
+                        display: flex; align-items: center; gap: 6px;
+                        font-size: 0.78rem;
+                        color: #16a34a;
+                        font-weight: 600;
+                    }
+                    .pm-avis-cta {
+                        text-align: center;
+                        margin-top: 40px;
+                    }
+
+                    /* ══════════════════════════════════════
+                       NEWSLETTER
+                    ══════════════════════════════════════ */
+                    .pm-newsletter {
+                        padding: 80px 40px;
+                        background: #0f172a;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .pm-newsletter::before {
+                        content: '';
+                        position: absolute;
+                        width: 600px; height: 600px;
+                        border-radius: 50%;
+                        background: rgba(37,99,235,0.08);
+                        top: -200px; right: -100px;
+                    }
+                    .pm-newsletter-inner {
+                        position: relative; z-index: 2;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        text-align: center;
+                    }
+                    .pm-newsletter-title {
+                        font-size: clamp(1.6rem, 3vw, 2.2rem);
+                        font-weight: 800;
+                        color: #fff;
+                        margin-bottom: 12px;
+                    }
+                    .pm-newsletter-sub {
+                        color: rgba(255,255,255,0.55);
+                        font-size: 0.95rem;
+                        margin-bottom: 36px;
+                        line-height: 1.7;
+                    }
+                    .pm-newsletter-form {
+                        display: flex;
+                        gap: 12px;
+                        max-width: 480px;
+                        margin: 0 auto;
+                    }
+                    .pm-newsletter-input {
+                        flex: 1;
+                        background: rgba(255,255,255,0.08);
+                        border: 1px solid rgba(255,255,255,0.15);
+                        color: #fff;
+                        font-size: 0.9rem;
+                        padding: 14px 20px;
+                        border-radius: 50px;
+                        outline: none;
+                        transition: border-color 0.2s;
+                    }
+                    .pm-newsletter-input::placeholder { color: rgba(255,255,255,0.35); }
+                    .pm-newsletter-input:focus { border-color: rgba(99,179,237,0.5); }
+                    .pm-newsletter-btn {
+                        display: inline-flex; align-items: center; gap: 8px;
+                        background: linear-gradient(135deg, #2563eb, #7c3aed);
+                        color: #fff !important;
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                        padding: 14px 26px;
+                        border-radius: 50px;
+                        text-decoration: none !important;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+                        border: none; cursor: pointer;
+                        white-space: nowrap;
+                    }
+                    .pm-newsletter-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 10px 28px rgba(37,99,235,0.55);
+                    }
+
+                    /* ══════════════════════════════════════
+                       RESPONSIVE
+                    ══════════════════════════════════════ */
+                    @media (max-width: 1100px) {
+                        .pm-features-grid { grid-template-columns: repeat(2, 1fr); }
+                        .pm-stats-inner { grid-template-columns: repeat(2, 1fr); }
+                        .pm-cat-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px 200px; }
+                        .pm-cat-card:first-child { grid-row: span 1; }
+                    }
+                    @media (max-width: 768px) {
+                        .pm-hero-content { padding: 0 28px; }
+                        .pm-hero-indicators, .pm-scroll-hint { left: 28px; right: 28px; }
+                        .pm-features { padding: 60px 24px; }
+                        .pm-features-grid { grid-template-columns: 1fr; }
+                        .pm-categories { padding: 60px 24px; }
+                        .pm-cat-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+                        .pm-cat-card { height: 200px; }
+                        .pm-promo { margin: 0 24px; padding: 48px 32px; }
+                        .pm-promo-inner { flex-direction: column; text-align: center; }
+                        .pm-promo-badge { margin: 0 auto 24px; }
+                        .pm-avis { padding: 60px 24px; }
+                        .pm-newsletter { padding: 60px 24px; }
+                        .pm-newsletter-form { flex-direction: column; }
+                        .pm-stats-inner { grid-template-columns: repeat(2, 1fr); }
+                    }
+                </style>
+
+                <div id="oe_structure_homepage_hero" class="oe_structure oe_empty" />
+
+                <!-- ═══════════ HERO ═══════════ -->
+                <section class="pm-hero">
+                    <div class="pm-hero-slides">
+                        <div class="pm-hero-slide active"
+                            style="background-image: url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1600');" />
+                        <div class="pm-hero-slide"
+                            style="background-image: url('https://images.unsplash.com/photo-1603184017968-953f59cd2e37?w=1600');" />
+                        <div class="pm-hero-slide"
+                            style="background-image: url('https://images.unsplash.com/photo-1480694313141-fce5e697ee25?w=1600');" />
+                    </div>
+                    <div class="pm-hero-overlay" />
+                    <div class="pm-hero-particles" id="pm-particles" />
+                    <div class="pm-hero-content">
+                        <div class="pm-hero-badge">
+                            <div class="pm-hero-badge-dot" />
+                            Nouveau · Printemps 2025
+                        </div>
+                        <h1 class="pm-hero-title">
+                            La technologie<br />
+                            <span id="pm-typed-text">à portée de main</span>
+                        </h1>
+                        <p class="pm-hero-sub">
+                            Smartphones, tablettes, accessoires —<br />
+                            les meilleurs prix, livrés chez vous.
+                        </p>
+                        <div class="pm-hero-btns">
+                            <a href="/catalogue" class="pm-btn-primary">
+                                <span><i class="fa fa-th-large" /> Explorer le catalogue</span>
+                            </a>
+                            <a href="/shop?x_is_promotion=1" class="pm-btn-secondary">
+                                <i class="fa fa-tag" /> Voir les promos
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pm-hero-indicators">
+                        <div class="pm-indicator active" data-slide="0" />
+                        <div class="pm-indicator" data-slide="1" />
+                        <div class="pm-indicator" data-slide="2" />
+                    </div>
+                    <div class="pm-scroll-hint">
+                        <div class="pm-scroll-line" />
+                        Défiler
+                    </div>
+                </section>
+
+                <!-- ═══════════ STATS ═══════════ -->
+                <section class="pm-stats">
+                    <div class="pm-stats-inner">
+                        <div class="pm-stat-item">
+                            <div class="pm-stat-num" data-count="12500">0</div>
+                            <div class="pm-stat-label">Clients satisfaits</div>
+                        </div>
+                        <div class="pm-stat-item">
+                            <div class="pm-stat-num" data-count="850">0</div>
+                            <div class="pm-stat-label">Produits disponibles</div>
+                        </div>
+                        <div class="pm-stat-item">
+                            <div class="pm-stat-num" data-count="98" data-suffix="%">0</div>
+                            <div class="pm-stat-label">Avis positifs</div>
+                        </div>
+                        <div class="pm-stat-item">
+                            <div class="pm-stat-num" data-count="24" data-suffix="h">0</div>
+                            <div class="pm-stat-label">Livraison express</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ AVANTAGES ═══════════ -->
+                <section class="pm-features">
+                    <div class="pm-section-header">
+                        <div class="pm-section-eyebrow">Pourquoi nous choisir</div>
+                        <h2 class="pm-section-title">Une expérience d'achat sans compromis</h2>
+                        <p class="pm-section-desc">De la commande à la livraison, nous vous accompagnons à chaque étape.</p>
+                    </div>
+                    <div class="pm-features-grid">
+                        <div class="pm-feature-card">
+                            <div class="pm-feature-icon-wrap">
+                                <i class="fa fa-undo" />
                             </div>
-                            <div class="tsp-card-body">
-                                <div class="tsp-stars">
-                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
-                                    <t t-foreach="range(5)" t-as="star_i">
-                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
-                                        <i t-else="" class="fa fa-star tsp-star-off"/>
+                            <h3 class="pm-feature-title">Retours sous 30 jours</h3>
+                            <p class="pm-feature-text">Pas satisfait ? Retournez votre produit facilement et obtenez un remboursement rapide sans question.</p>
+                        </div>
+                        <div class="pm-feature-card">
+                            <div class="pm-feature-icon-wrap">
+                                <i class="fa fa-rocket" />
+                            </div>
+                            <h3 class="pm-feature-title">Livraison express</h3>
+                            <p class="pm-feature-text">Recevez vos commandes en 24h en France métropolitaine, et jusqu'en Europe en 48h.</p>
+                        </div>
+                        <div class="pm-feature-card">
+                            <div class="pm-feature-icon-wrap">
+                                <i class="fa fa-lock" />
+                            </div>
+                            <h3 class="pm-feature-title">Paiement sécurisé</h3>
+                            <p class="pm-feature-text">Toutes vos transactions sont chiffrées et protégées. Carte, virement, PayPal — vous choisissez.</p>
+                        </div>
+                        <div class="pm-feature-card">
+                            <div class="pm-feature-icon-wrap">
+                                <i class="fa fa-star" />
+                            </div>
+                            <h3 class="pm-feature-title">Qualité certifiée</h3>
+                            <p class="pm-feature-text">Chaque produit est contrôlé et testé par nos experts avant d'être mis en vente.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ CATÉGORIES ═══════════ -->
+                <section class="pm-categories">
+                    <div class="pm-section-header">
+                        <div class="pm-section-eyebrow">Collections</div>
+                        <h2 class="pm-section-title">Explorez par catégorie</h2>
+                    </div>
+                    <div class="pm-cat-grid">
+                        <a href="/shop?categ=smartphones" class="pm-cat-card">
+                            <div class="pm-cat-bg"
+                                style="background-image: url('https://images.unsplash.com/photo-1512499617640-c2f999098de8?w=900');" />
+                            <div class="pm-cat-overlay" />
+                            <div class="pm-cat-info">
+                                <div class="pm-cat-label">Collection 2025</div>
+                                <h3 class="pm-cat-name">Smartphones</h3>
+                                <div class="pm-cat-link">Voir la sélection <i class="fa fa-arrow-right" /></div>
+                            </div>
+                        </a>
+                        <a href="/shop?categ=tablettes" class="pm-cat-card">
+                            <div class="pm-cat-bg"
+                                style="background-image: url('https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600');" />
+                            <div class="pm-cat-overlay" />
+                            <div class="pm-cat-info">
+                                <div class="pm-cat-label">Nomade</div>
+                                <h3 class="pm-cat-name">Tablettes</h3>
+                                <div class="pm-cat-link">Voir <i class="fa fa-arrow-right" /></div>
+                            </div>
+                        </a>
+                        <a href="/shop?categ=accessoires" class="pm-cat-card">
+                            <div class="pm-cat-bg"
+                                style="background-image: url('https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600');" />
+                            <div class="pm-cat-overlay" />
+                            <div class="pm-cat-info">
+                                <div class="pm-cat-label">Compléments</div>
+                                <h3 class="pm-cat-name">Accessoires</h3>
+                                <div class="pm-cat-link">Voir <i class="fa fa-arrow-right" /></div>
+                            </div>
+                        </a>
+                        <a href="/shop?categ=audio" class="pm-cat-card">
+                            <div class="pm-cat-bg"
+                                style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600');" />
+                            <div class="pm-cat-overlay" />
+                            <div class="pm-cat-info">
+                                <div class="pm-cat-label">Son &amp; musique</div>
+                                <h3 class="pm-cat-name">Audio</h3>
+                                <div class="pm-cat-link">Voir <i class="fa fa-arrow-right" /></div>
+                            </div>
+                        </a>
+                        <a href="/shop?categ=montres" class="pm-cat-card">
+                            <div class="pm-cat-bg"
+                                style="background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600');" />
+                            <div class="pm-cat-overlay" />
+                            <div class="pm-cat-info">
+                                <div class="pm-cat-label">Wearables</div>
+                                <h3 class="pm-cat-name">Montres</h3>
+                                <div class="pm-cat-link">Voir <i class="fa fa-arrow-right" /></div>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Slots Odoo -->
+                <div id="oe_structure_homepage_nouveautes" class="oe_structure oe_empty" />
+                <div id="oe_structure_homepage_vue_recemment" class="oe_structure oe_empty" />
+                <div id="oe_structure_homepage_bottom" class="oe_structure oe_empty" />
+
+                <!-- ═══════════ PROMO ═══════════ -->
+                <section style="padding: 60px 0;">
+                    <div class="pm-promo">
+                        <div class="pm-promo-inner">
+                            <div class="pm-promo-left">
+                                <div class="pm-promo-tag">
+                                    <i class="fa fa-bolt" /> Offre limitée
+                                </div>
+                                <h2 class="pm-promo-title">
+                                    Jusqu'à <em>-50%</em><br />sur une sélection<br />de produits
+                                </h2>
+                                <p class="pm-promo-sub">Offres valables jusqu'à épuisement des stocks.</p>
+                            </div>
+                            <div class="pm-promo-right">
+                                <div class="pm-promo-badge">
+                                    <div class="pm-promo-badge-pct">-50%</div>
+                                    <div class="pm-promo-badge-text">JUSQU'À</div>
+                                </div>
+                                <a href="/shop?x_is_promotion=1" class="pm-btn-promo">
+                                    <i class="fa fa-tag" /> Profiter des promos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ AVIS ═══════════ -->
+                <div id="oe_structure_homepage_avis" class="oe_structure oe_empty" />
+                <section class="pm-avis">
+                    <div class="pm-avis-header">
+                        <div>
+                            <div class="pm-section-eyebrow">Témoignages</div>
+                            <h2 class="pm-section-title" style="margin-bottom:0;">Avis de nos clients</h2>
+                            <t t-if="stats">
+                                <div class="pm-avis-score">
+                                    <div class="pm-score-num"><t t-out="stats['avg']" /></div>
+                                    <div>
+                                        <div class="pm-score-stars">
+                                            <t t-foreach="range(int(stats['avg']))" t-as="s">
+                                                <i class="fa fa-star" />
+                                            </t>
+                                            <t t-if="stats['avg'] % 1 >= 0.5">
+                                                <i class="fa fa-star-half-o" />
+                                            </t>
+                                        </div>
+                                        <div class="pm-score-count">Basé sur <t t-out="stats['total']" /> avis</div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                        <a href="/avis" class="pm-avis-voir-tout">
+                            Voir tout <i class="fa fa-arrow-right" />
+                        </a>
+                    </div>
+                    <div class="pm-avis-track-wrap">
+                        <div class="pm-avis-track" id="pm-avis-track">
+                            <t t-foreach="reviews" t-as="avis">
+                                <div class="pm-avis-card">
+                                    <div class="pm-avis-card-head">
+                                        <div class="pm-avis-avatar">
+                                            <t t-out="avis.name[0].upper()" />
+                                        </div>
+                                        <div>
+                                            <div class="pm-avis-name"><t t-out="avis.name" /></div>
+                                            <div class="pm-avis-date"><t t-out="avis.date" /></div>
+                                        </div>
+                                    </div>
+                                    <div class="pm-avis-stars">
+                                        <t t-foreach="range(avis.rating)" t-as="s">
+                                            <i class="fa fa-star" />
+                                        </t>
+                                        <t t-foreach="range(5 - avis.rating)" t-as="s">
+                                            <i class="fa fa-star empty" />
+                                        </t>
+                                    </div>
+                                    <p class="pm-avis-text"><t t-out="avis.comment" /></p>
+                                    <t t-if="avis.product">
+                                        <div class="pm-avis-product">
+                                            <i class="fa fa-tag" /> <t t-out="avis.product" />
+                                        </div>
                                     </t>
-                                    <span class="tsp-stars-count">(<t t-out="product['rating'] if isinstance(product, dict) else product.rating"/>)</span>
+                                    <div class="pm-avis-verified">
+                                        <i class="fa fa-check-circle" /> Achat vérifié
+                                    </div>
                                 </div>
-                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
-                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
-                                <div class="tsp-card-footer">
-                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>euro</span>
-                                    <button class="tsp-btn-add"><i class="fa fa-shopping-cart"/> Ajouter</button>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </div>
-            </section>
-
-            <!-- SECTION NOUVEAUTES -->
-            <section class="tsp-section">
-                <div class="tsp-section-header">
-                    <h2 class="tsp-section-title">Nouveautes</h2>
-                    <a href="/shop?filter=nouveautes" class="tsp-voir-tout">Voir tout</a>
-                </div>
-                <div class="tsp-products-grid">
-                    <t t-foreach="nouveautes" t-as="product">
-                        <div class="tsp-card">
-                            <div class="tsp-card-img-wrap">
-                                <t t-set="prod_badge" t-value="product['badge'] if isinstance(product, dict) else product.badge"/>
-                                <t t-if="prod_badge">
-                                    <span class="tsp-badge-new"><t t-out="prod_badge"/></span>
-                                </t>
-                                <img t-att-src="product['image_url'] if isinstance(product, dict) else '/web/image/planet.product/' + str(product.id) + '/image'"
-                                     t-att-alt="product['name'] if isinstance(product, dict) else product.name"
-                                     class="tsp-card-img"
-                                     onerror="this.parentElement.classList.add('tsp-img-placeholder')"/>
-                                <button class="tsp-wishlist-btn"><i class="fa fa-heart-o"/></button>
-                            </div>
-                            <div class="tsp-card-body">
-                                <div class="tsp-stars">
-                                    <t t-set="prod_rating" t-value="int(product['rating'] if isinstance(product, dict) else product.rating)"/>
-                                    <t t-foreach="range(5)" t-as="star_i">
-                                        <i t-if="star_i &lt; prod_rating" class="fa fa-star tsp-star-on"/>
-                                        <i t-else="" class="fa fa-star tsp-star-off"/>
-                                    </t>
-                                    <span class="tsp-stars-count">(<t t-out="product['rating'] if isinstance(product, dict) else product.rating"/>)</span>
-                                </div>
-                                <h3 class="tsp-card-name"><t t-out="product['name'] if isinstance(product, dict) else product.name"/></h3>
-                                <p class="tsp-card-desc"><t t-out="product['description'] if isinstance(product, dict) else product.description"/></p>
-                                <div class="tsp-card-footer">
-                                    <span class="tsp-price"><t t-out="product['price'] if isinstance(product, dict) else product.price"/>euro</span>
-                                    <button class="tsp-btn-add"><i class="fa fa-shopping-cart"/> Ajouter</button>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </div>
-            </section>
-
-            <!-- BANNIERE PROMO -->
-            <section class="tsp-promo">
-                <div class="tsp-promo-inner">
-                    <h2 class="tsp-promo-title">Offres exceptionnelles</h2>
-                    <p class="tsp-promo-subtitle">Jusqu'a -50% sur une selection de produits</p>
-                    <a href="/promotions" class="tsp-btn-promo">Profiter des promotions</a>
-                </div>
-            </section>
-
-            <!-- SECTION AVIS -->
-            <div class="avis-hero">
-                <h1>Avis de nos clients</h1>
-                <p>Ce que pensent nos clients de Planet Mobil</p>
-            </div>
-
-            <div class="avis-stats">
-                <div class="avis-stat-main">
-                    <div class="note">4.6</div>
-                    <div class="stars-big">
-                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/>
-                    </div>
-                    <p>Base sur 248 avis verifies</p>
-                </div>
-                <div class="avis-stat-bars">
-                    <div class="avis-bar-row"><span>5 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:72%"/></div><span>72%</span></div>
-                    <div class="avis-bar-row"><span>4 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:18%"/></div><span>18%</span></div>
-                    <div class="avis-bar-row"><span>3 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:6%"/></div><span>6%</span></div>
-                    <div class="avis-bar-row"><span>2 etoiles</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:3%"/></div><span>3%</span></div>
-                    <div class="avis-bar-row"><span>1 etoile</span><div class="avis-bar-bg"><div class="avis-bar-fill" style="width:1%"/></div><span>1%</span></div>
-                </div>
-            </div>
-
-            <div class="avis-grid">
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">ML</div>
-                        <div class="avis-author-info"><h4>Marie L.</h4><span>12 janvier 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
-                    <p class="avis-card-title">Livraison ultra rapide !</p>
-                    <p class="avis-card-text">Commande passee le soir, recue le lendemain matin. Produit exactement comme decrit, je suis ravie de mon achat.</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> iPhone 15 Pro Max</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">TK</div>
-                        <div class="avis-author-info"><h4>Thomas K.</h4><span>5 fevrier 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
-                    <p class="avis-card-title">Excellent rapport qualite/prix</p>
-                    <p class="avis-card-text">La montre est magnifique, les fonctionnalites sont top. Service client tres reactif. Tres bonne experience.</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> Apple Watch Series 9</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">SB</div>
-                        <div class="avis-author-info"><h4>Sophie B.</h4><span>18 fevrier 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-o" style="color:#d1d5db"/></div>
-                    <p class="avis-card-title">Tres satisfaite de mon casque</p>
-                    <p class="avis-card-text">La reduction de bruit est impressionnante, ideal pour travailler. Livraison un peu lente mais produit parfait.</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> Sony WH-1000XM5</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">AD</div>
-                        <div class="avis-author-info"><h4>Alexandre D.</h4><span>2 mars 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
-                    <p class="avis-card-title">Le meilleur smartphone Android</p>
-                    <p class="avis-card-text">Photos epoustouflantes, fluidite parfaite, autonomie excellente. Un achat que je ne regrette pas du tout !</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> Samsung Galaxy S21 Ultra</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">CM</div>
-                        <div class="avis-author-info"><h4>Clara M.</h4><span>15 mars 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/></div>
-                    <p class="avis-card-title">TV incroyable pour le gaming</p>
-                    <p class="avis-card-text">L'image OLED est a couper le souffle. Le mode gaming 120Hz fait vraiment la difference. Livraison soignee.</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> LG OLED C3 55</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-                <div class="avis-card">
-                    <div class="avis-card-header">
-                        <div class="avis-avatar">JP</div>
-                        <div class="avis-author-info"><h4>Jean-Pierre V.</h4><span>28 mars 2026</span></div>
-                    </div>
-                    <div class="avis-card-stars"><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star-half-o"/></div>
-                    <p class="avis-card-title">Bon produit, site agreable</p>
-                    <p class="avis-card-text">Le site est tres bien concu, navigation intuitive. Le Pixel 8 Pro est excellent, l'IA integree est utile au quotidien.</p>
-                    <div class="avis-card-product"><i class="fa fa-tag"/> Google Pixel 8 Pro</div>
-                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat verifie</div>
-                </div>
-            </div>
-
-            <!-- SECTION CONTACT -->
-            <div class="contact-hero">
-                <h1>Contactez-nous</h1>
-                <p>Notre equipe est disponible pour repondre a toutes vos questions</p>
-            </div>
-
-            <div class="contact-layout">
-                <div class="contact-infos">
-                    <div class="contact-info-card">
-                        <div class="contact-info-icon"><i class="fa fa-map-marker"/></div>
-                        <div><h4>Notre adresse</h4><p>15 Rue de la Technologie, 75008 Paris</p></div>
-                    </div>
-                    <div class="contact-info-card">
-                        <div class="contact-info-icon"><i class="fa fa-phone"/></div>
-                        <div><h4>Telephone</h4><p>+33 (0)6 64 97 80 50</p></div>
-                    </div>
-                    <div class="contact-info-card">
-                        <div class="contact-info-icon"><i class="fa fa-envelope"/></div>
-                        <div><h4>Email</h4><p>contact@planet-mobil.com</p></div>
-                    </div>
-                    <div class="contact-info-card">
-                        <div class="contact-info-icon"><i class="fa fa-clock-o"/></div>
-                        <div><h4>Horaires</h4><p>Lundi-Vendredi: 9h-18h</p></div>
-                    </div>
-                </div>
-                <div class="contact-form-wrap">
-                    <h2><i class="fa fa-paper-plane" style="color:#2c4ecb;margin-right:8px"/>Envoyer un message</h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nom *</label>
-                            <input type="text" name="nom" placeholder="Votre nom" required="1"/>
-                        </div>
-                        <div class="form-group">
-                            <label>Prenom *</label>
-                            <input type="text" name="prenom" placeholder="Votre prenom" required="1"/>
+                            </t>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Adresse email *</label>
-                        <input type="email" name="email" placeholder="exemple@email.com" required="1"/>
+                    <div class="pm-avis-cta">
+                        <a href="/avis#avis-form" class="pm-btn-primary">
+                            <span><i class="fa fa-pencil" /> Écrire un avis</span>
+                        </a>
                     </div>
-                    <div class="form-group">
-                        <label>Sujet</label>
-                        <select name="sujet">
-                            <option value="">Selectionnez un sujet</option>
-                            <option>Question sur un produit</option>
-                            <option>Suivi de commande</option>
-                            <option>Retour / Remboursement</option>
-                            <option>Probleme technique</option>
-                            <option>Autre</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Votre question *</label>
-                        <textarea name="question" placeholder="Decrivez votre question..." required="1"/>
-                    </div>
-                    <button class="form-submit" type="submit">
-                        <i class="fa fa-paper-plane"/> Envoyer le message
-                    </button>
-                </div>
-            </div>
+                </section>
 
+                <!-- ═══════════ NEWSLETTER ═══════════ -->
+                <section class="pm-newsletter">
+                    <div class="pm-newsletter-inner">
+                        <div class="pm-section-eyebrow" style="color:#63b3ed; background:rgba(99,179,237,0.12);">Newsletter</div>
+                        <h2 class="pm-newsletter-title">Restez dans la boucle</h2>
+                        <p class="pm-newsletter-sub">Recevez nos offres exclusives, nouveautés et bons plans directement dans votre boîte mail.</p>
+                        <div class="pm-newsletter-form">
+                            <input type="email" class="pm-newsletter-input" placeholder="votre@email.com" />
+                            <button class="pm-newsletter-btn">
+                                <i class="fa fa-paper-plane" /> S'inscrire
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="oe_structure_homepage_contact" class="oe_structure oe_empty" />
+                <div id="oe_structure_homepage_end" class="oe_structure oe_empty" />
+
+                <!-- ═══════════ SCRIPTS ═══════════ -->
+                <script>
+                (function () {
+                    /* ── Particules hero ── */
+                    function initParticles() {
+                        var wrap = document.getElementById('pm-particles');
+                        if (!wrap) return;
+                        for (var i = 0; i &lt; 28; i++) {
+                            var p = document.createElement('div');
+                            p.className = 'pm-particle';
+                            var size = Math.random() * 4 + 1;
+                            p.style.cssText = [
+                                'width:' + size + 'px',
+                                'height:' + size + 'px',
+                                'left:' + Math.random() * 100 + '%',
+                                'animation-duration:' + (Math.random() * 12 + 8) + 's',
+                                'animation-delay:' + (Math.random() * 10) + 's'
+                            ].join(';');
+                            wrap.appendChild(p);
+                        }
+                    }
+
+                    /* ── Carrousel hero ── */
+                    function initHero() {
+                        var slides = document.querySelectorAll('.pm-hero-slide');
+                        var indicators = document.querySelectorAll('.pm-indicator');
+                        if (!slides.length) return;
+                        var current = 0;
+                        function goTo(n) {
+                            slides[current].classList.remove('active');
+                            indicators[current] &amp;&amp; indicators[current].classList.remove('active');
+                            current = (n + slides.length) % slides.length;
+                            slides[current].classList.add('active');
+                            indicators[current] &amp;&amp; indicators[current].classList.add('active');
+                        }
+                        indicators.forEach(function(ind) {
+                            ind.addEventListener('click', function() {
+                                goTo(+this.dataset.slide);
+                            });
+                        });
+                        setInterval(function() { goTo(current + 1); }, 5000);
+                    }
+
+                    /* ── Typewriter hero ── */
+                    function initTypewriter() {
+                        var el = document.getElementById('pm-typed-text');
+                        if (!el) return;
+                        var words = ['à portée de main', 'pour tous les budgets', 'livrée en 24h'];
+                        var wi = 0, ci = 0, deleting = false;
+                        function tick() {
+                            var word = words[wi];
+                            if (!deleting) {
+                                el.textContent = word.slice(0, ++ci);
+                                if (ci === word.length) { deleting = true; setTimeout(tick, 1800); return; }
+                            } else {
+                                el.textContent = word.slice(0, --ci);
+                                if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; }
+                            }
+                            setTimeout(tick, deleting ? 50 : 80);
+                        }
+                        setTimeout(tick, 1200);
+                    }
+
+                    /* ── Compteurs animés ── */
+                    function initCounters() {
+                        var els = document.querySelectorAll('.pm-stat-num[data-count]');
+                        if (!els.length) return;
+                        var observer = new IntersectionObserver(function(entries) {
+                            entries.forEach(function(entry) {
+                                if (!entry.isIntersecting) return;
+                                observer.unobserve(entry.target);
+                                var el = entry.target;
+                                var target = +el.dataset.count;
+                                var suffix = el.dataset.suffix || '';
+                                var duration = 1600;
+                                var start = performance.now();
+                                function animate(now) {
+                                    var progress = Math.min((now - start) / duration, 1);
+                                    var ease = 1 - Math.pow(1 - progress, 3);
+                                    var val = Math.round(ease * target);
+                                    el.textContent = val.toLocaleString('fr-FR') + suffix;
+                                    if (progress &lt; 1) requestAnimationFrame(animate);
+                                }
+                                requestAnimationFrame(animate);
+                            });
+                        }, { threshold: 0.3 });
+                        els.forEach(function(el) { observer.observe(el); });
+                    }
+
+                    /* ── Carrousel avis ── */
+                    function initAvis() {
+                        var track = document.getElementById('pm-avis-track');
+                        if (!track || track.dataset.init) return;
+                        track.dataset.init = '1';
+                        var originals = [].slice.call(track.children);
+                        originals.forEach(function(n) { track.appendChild(n.cloneNode(true)); });
+                        var paused = false;
+                        track.addEventListener('mouseenter', function() { paused = true; });
+                        track.addEventListener('mouseleave', function() { paused = false; });
+                        var pos = 0;
+                        (function step() {
+                            if (!paused) {
+                                pos += 0.65;
+                                var half = track.scrollWidth / 2;
+                                if (half > 0 &amp;&amp; pos >= half) pos -= half;
+                                track.scrollLeft = pos;
+                            }
+                            requestAnimationFrame(step);
+                        })();
+                    }
+
+                    /* ── Init ── */
+                    function init() {
+                        initParticles();
+                        initHero();
+                        initTypewriter();
+                        initCounters();
+                        initAvis();
+                    }
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', init);
+                    } else { init(); }
+                })();
+                </script>
+
+            </div>
         </t>
     </template>
-
 </odoo>
