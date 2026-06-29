@@ -127,4 +127,88 @@
         </xpath>
     </template>
 
+    <!-- Phase 5: SEO Optimization (Schema.org) -->
+    <template id="oa_beauty_product_seo_schema" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_detail']" position="inside">
+            <script type="application/ld+json">
+                {
+                    "@context": "https://schema.org/",
+                    "@type": "Product",
+                    "name": "<t t-esc='product.name'/>",
+                    "image": [
+                        "<t t-esc='request.httprequest.url_root'/>web/image/product.template/<t t-esc='product.id'/>/image_1920"
+                    ],
+                    "description": "<t t-esc='product.description_sale or product.name'/>",
+                    "sku": "<t t-esc='product.default_code or product.id'/>",
+                    "brand": {
+                        "@type": "Brand",
+                        "name": "O&amp;A Beauty"
+                    },
+                    "offers": {
+                        "@type": "Offer",
+                        "url": "<t t-esc='request.httprequest.url'/>",
+                        "priceCurrency": "<t t-esc='website.currency_id.name'/>",
+                        "price": "<t t-esc='product.list_price'/>",
+                        "itemCondition": "https://schema.org/NewCondition",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Phase 3: Sticky Add To Cart -->
+    <template id="oa_beauty_product_sticky_cart" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_detail']" position="after">
+            <!-- Sticky Cart Bar (Hidden initially, shown on scroll via JS) -->
+            <div id="oa_sticky_cart_bar" class="fixed-bottom bg-white shadow-lg py-3 px-4 d-flex justify-content-between align-items-center" style="transform: translateY(100%); transition: transform 0.3s ease-in-out; z-index: 1040; border-top: 1px solid var(--oa-border);">
+                <div class="d-none d-md-flex align-items-center">
+                    <img t-att-src="image_data_uri(product.image_128)" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;"/>
+                    <div>
+                        <div class="fw-bold text-dark" style="font-family: var(--oa-font-display);"><t t-esc="product.name"/></div>
+                        <div class="text-muted small" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    </div>
+                </div>
+                <!-- Price for mobile -->
+                <div class="d-flex d-md-none flex-column">
+                    <span class="fw-bold text-dark" style="font-size: 0.9rem;"><t t-esc="product.name"/></span>
+                    <span class="text-muted" style="font-size: 0.85rem;" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                </div>
+                <!-- Action Button -->
+                <div>
+                    <!-- This button triggers a click on the real Add To Cart button -->
+                    <button id="oa_sticky_add_btn" class="oa-btn-primary px-4 py-2" style="font-size: 0.85rem; min-width: 150px;">
+                        Ajouter au Panier
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const stickyBar = document.getElementById('oa_sticky_cart_bar');
+                    const realAddToCart = document.getElementById('add_to_cart');
+                    const stickyBtn = document.getElementById('oa_sticky_add_btn');
+                    
+                    if(stickyBar &amp;&amp; realAddToCart) {
+                        // Show bar when scrolling past the real button
+                        window.addEventListener('scroll', function() {
+                            const rect = realAddToCart.getBoundingClientRect();
+                            if(rect.bottom &lt; 0) {
+                                stickyBar.style.transform = 'translateY(0)';
+                            } else {
+                                stickyBar.style.transform = 'translateY(100%)';
+                            }
+                        });
+                        
+                        // Proxy click
+                        stickyBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            realAddToCart.click();
+                        });
+                    }
+                });
+            </script>
+        </xpath>
+    </template>
+
 </odoo>

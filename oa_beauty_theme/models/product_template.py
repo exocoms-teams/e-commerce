@@ -17,7 +17,8 @@ class ProductTemplate(models.Model):
         """
         demo_keywords = [
             'Desk', 'Chair', 'Acoustic', 'Cabinet', 'Bin', 'Drawer', 'Lamp', 'Pedestal',
-            'Conference', 'Table', 'Whiteboard', 'Storage', 'Bose', 'E-Com', 'Cable', 'Screen'
+            'Conference', 'Table', 'Whiteboard', 'Storage', 'Bose', 'E-Com', 'Cable', 'Screen',
+            'Lorem Ipsum', 'Placeholder', 'Demo', 'Sample Product', 'Test Product'
         ]
         
         domain = ['|'] * (len(demo_keywords) - 1)

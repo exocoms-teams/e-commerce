@@ -12,6 +12,7 @@
     'depends': [
         'website',
         'website_sale',
+        'website_blog',
         'mail',
         'delivery',
     ],
@@ -27,10 +28,12 @@
         'data/product_data.xml',
         'data/oa_products.xml',
         'data/mail_template_data.xml',
+        'data/blog_data.xml',
 
         'views/website_templates.xml',
         'views/website_navigation_templates.xml',
         'views/website_homepage.xml',
+        'views/analytics_templates.xml',
 
         'views/product_template_backend_views.xml',
         'views/website_sale_product_templates.xml',
