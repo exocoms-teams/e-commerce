@@ -45,6 +45,7 @@ class SinistreMission(models.Model):
         ('menuiserie_ext','Menuiserie Extérieure'),
         ('vitrerie',      'Vitrerie'),
         ('electricite',   'Électricité'),
+        ('maconnerie',    'Maçonnerie'),
         ('autre',         'Autre'),
     ], string="Type d'Intervention", required=True, tracking=True)
 
