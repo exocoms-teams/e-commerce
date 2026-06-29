@@ -14,7 +14,7 @@
                     <i class="fa fa-certificate" /> Nouveautés
                 </a>
                 <t t-set="nav_cats"
-                    t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False)], limit=8)" />
+                    t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('product_tmpl_ids.is_published', '=', True)])" />
                 <t t-foreach="nav_cats" t-as="nc">
                     <a t-att-href="'/shop/category/' + slug(nc)" class="alt-cat-nav-item">
                         <t t-out="nc.name" />

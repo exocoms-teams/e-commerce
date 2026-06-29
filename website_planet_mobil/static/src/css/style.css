@@ -3117,14 +3117,16 @@ a[name="website_sale_main_button"] {
    BARRE DE CATÉGORIES HORIZONTALE — style alternate.de
    ══════════════════════════════════════════════════════════ */
 .alt-cat-nav {
-    background: #111111;
-    border-bottom: 1px solid #282828;
+    background: #ffffff;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: sticky;
-    top: var(--header-h);
+    top: 0;
     z-index: 190;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .alt-cat-nav::-webkit-scrollbar { display: none; }
@@ -3143,9 +3145,9 @@ a[name="website_sale_main_button"] {
     align-items: center;
     gap: 6px;
     padding: 11px 14px;
-    font-size: 0.82rem;
+    font-size: 0.83rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.68) !important;
+    color: var(--text) !important;
     text-decoration: none !important;
     border-bottom: 2px solid transparent;
     transition: color 0.15s, border-color 0.15s, background 0.15s;
@@ -3154,28 +3156,28 @@ a[name="website_sale_main_button"] {
 }
 
 .alt-cat-nav-item:hover {
-    color: #fff !important;
+    color: var(--blue) !important;
     border-bottom-color: var(--blue);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--blue-light);
 }
 
 .alt-cat-nav-item.active {
-    color: #fff !important;
+    color: var(--blue) !important;
     border-bottom-color: var(--blue);
     font-weight: 600;
 }
 
 .alt-cat-nav-item i {
     font-size: 0.82rem;
-    opacity: 0.75;
+    color: var(--muted);
 }
 
-.alt-cat-nav-item:hover i { opacity: 1; }
+.alt-cat-nav-item:hover i { color: var(--blue); }
 
 /* "Contact" poussé à droite */
 .alt-cat-nav-contact {
     margin-left: auto;
-    border-left: 1px solid #282828;
+    border-left: 1px solid var(--border);
     padding-left: 20px;
 }
 
@@ -3184,9 +3186,6 @@ a[name="website_sale_main_button"] {
 
 /* ── Responsive ── */
 @media (max-width: 991px) {
-    .alt-cat-nav {
-        top: 56px;
-    }
     .alt-cat-nav-contact {
         display: none;
     }

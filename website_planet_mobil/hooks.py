@@ -52,6 +52,30 @@ def _activer_francais_par_defaut(env):
             _logger.warning("Planet Mobil: langue par defaut non appliquee (%s)", e)
 
 
+def _supprimer_categories_natives(env):
+    """Supprime les categories website natives d'Odoo (demo data).
+    Seules les categories Planet Mobil sont conservees.
+    """
+    categories_natives = [
+        'Desks', 'Furnitures', 'Boxes', 'Drawers',
+        'Cabinets', 'Bins', 'Lamps', 'Services',
+        'All', 'Office Furniture', 'Indoor Furniture',
+        'Outdoor Furniture', 'Components', 'Software',
+    ]
+    cats = env['product.public.category'].sudo().search([
+        ('name', 'in', categories_natives),
+    ])
+    for cat in cats:
+        try:
+            cat.unlink()
+            _logger.info("Planet Mobil: categorie native '%s' supprimee.", cat.name)
+        except Exception as e:
+            _logger.warning(
+                "Planet Mobil: impossible de supprimer la categorie '%s' (%s)",
+                cat.name, e
+            )
+
+
 def post_init_hook(env):
     """Hook execute apres l'installation/mise a jour du module.
 
@@ -60,6 +84,7 @@ def post_init_hook(env):
     """
     try:
         _activer_francais_par_defaut(env)
-        _logger.info("Planet Mobil: francais defini par defaut avec succes.")
+        _supprimer_categories_natives(env)
+        _logger.info("Planet Mobil: post_init_hook termine avec succes.")
     except Exception as e:
-        _logger.warning("Planet Mobil: post_init_hook langue ignore (%s)", e)
+        _logger.warning("Planet Mobil: post_init_hook ignore (%s)", e)
