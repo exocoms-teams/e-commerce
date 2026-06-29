@@ -64,7 +64,7 @@ def run(env):
             'name':              'Thomas Moreau',
             'partner_id':        user.partner_id.id,
             'user_id':           user.id,
-            'taux_commission':   15.0,
+            'taux_commission':   20.0,
             'disponible':        True,
             'actif':             True,
             'zone_intervention': 'Paris 75011',
@@ -215,7 +215,7 @@ def update_thomas(env):
     iv.write({
         'name':              'Moreau Multiservices',
         'zone_intervention': 'Paris 75011',
-        'taux_commission':   15.0,
+        'taux_commission':   20.0,
         'disponible':        True,
         'actif':             True,
     })
