@@ -1096,14 +1096,34 @@
                                         <label>Spécialités <span class="required">*</span></label>
                                         <p class="mn-form-hint">Cochez une ou plusieurs spécialités</p>
                                         <div class="mn-checkbox-grid">
-                                            <t t-foreach="specialites_list" t-as="spec">
-                                                <label class="mn-checkbox-item">
-                                                    <input type="checkbox" name="specialites"
-                                                           t-att-value="spec.type_intervention"
-                                                           t-att-checked="spec.type_intervention in (form_data.get('specialites_selected') or [])"/>
-                                                    <span t-esc="spec.name"/>
-                                                </label>
-                                            </t>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="serrurerie"/>
+                                                <span>Serrurerie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="plomberie"/>
+                                                <span>Plomberie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="menuiserie_int"/>
+                                                <span>Menuiserie Intérieure</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="menuiserie_ext"/>
+                                                <span>Menuiserie Extérieure</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="vitrerie"/>
+                                                <span>Vitrerie</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="electricite"/>
+                                                <span>Électricité</span>
+                                            </label>
+                                            <label class="mn-checkbox-item">
+                                                <input type="checkbox" name="specialites" value="maconnerie"/>
+                                                <span>Maçonnerie</span>
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="mn-form-group">
@@ -1139,14 +1159,7 @@
                                         <label>Départements d'intervention <span class="required">*</span></label>
                                         <p class="mn-form-hint">Cochez un ou plusieurs départements</p>
                                         <div class="mn-checkbox-grid mn-dept-grid">
-                                            <t t-foreach="departements_list" t-as="dept">
-                                                <label class="mn-checkbox-item">
-                                                    <input type="checkbox" name="departements"
-                                                           t-att-value="dept['code']"
-                                                           t-att-checked="dept['code'] in (form_data.get('departements_selected') or [])"/>
-                                                    <span t-esc="dept['label']"/>
-                                                </label>
-                                            </t>
+                                            <t t-call="sinistre_services.rejoindre_departements_options"/>
                                         </div>
                                     </div>
                                     <div class="mn-form-group">
