@@ -165,7 +165,34 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-lg-10">
                                 <span class="d-block mb-3 text-uppercase fw-bold" style="letter-spacing: 0.2em; color: var(--oa-mauve); font-size: 0.85rem;">La Communauté O&amp;A Beauty</span>
-                                <h2 class="oa-editorial-h2 mb-4 text-white">Rejoignez plus de <span class="oa-editorial-accent" style="color: var(--oa-lilac);">10 000</span> clientes satisfaites</h2>
+                                <h2 class="oa-editorial-h2 mb-4 text-white">Rejoignez plus de <span class="oa-editorial-accent oa-counter-10k" style="color: var(--oa-lilac);">10000</span> clientes satisfaites</h2>
+                                
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function() {
+                                        const counter = document.querySelector('.oa-counter-10k');
+                                        if (counter) {
+                                            let count = 0;
+                                            const updateCounter = () => {
+                                                const target = 10000;
+                                                const increment = target / 100;
+                                                if(count &lt; target) {
+                                                    count = Math.ceil(count + increment);
+                                                    counter.innerText = count.toLocaleString() + "+";
+                                                    setTimeout(updateCounter, 20);
+                                                } else {
+                                                    counter.innerText = "10 000+";
+                                                }
+                                            };
+                                            const observer = new IntersectionObserver((entries) => {
+                                                if(entries[0].isIntersecting) {
+                                                    updateCounter();
+                                                    observer.disconnect();
+                                                }
+                                            });
+                                            observer.observe(counter);
+                                        }
+                                    });
+                                </script>
                                 
                                 <div class="mb-5">
                                     <i class="fa fa-star text-warning fs-4 mx-1"></i>

@@ -25,6 +25,7 @@
         'data/product_public_category_data.xml',
         'data/cleanup_data.xml',
         'data/product_data.xml',
+        'data/oa_products.xml',
         'data/mail_template_data.xml',
 
         'views/website_templates.xml',

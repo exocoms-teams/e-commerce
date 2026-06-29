@@ -1190,6 +1190,112 @@
 }
 @media (max-width: 991px) {
     .oa-overlap-top {
+
+
+/* ==========================================================================
+   EPIC 9: EDITORIAL HOMEPAGE REDESIGN
+   ========================================================================== */
+
+/* ORGANIC SHAPES & CLIPPING */
+.oa-organic-shape-1 {
+    border-radius: 50% 50% 0 0;
+}
+.oa-organic-shape-2 {
+    border-radius: 50% 0 50% 50%;
+}
+.oa-pill-shape {
+    border-radius: 100px;
+}
+.oa-arch-shape {
+    border-radius: 200px 200px 0 0;
+}
+
+/* FLOATING IMAGES & ANIMATIONS */
+.oa-float-wrapper {
+    position: relative;
+    z-index: 2;
+}
+
+.oa-float-item {
+    animation: oaFloat 6s ease-in-out infinite;
+}
+
+.oa-float-item-delayed {
+    animation: oaFloat 6s ease-in-out infinite;
+    animation-delay: 2s;
+}
+
+@keyframes oaFloat {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* IMAGE HOVER MICRO-ANIMATIONS */
+.oa-img-zoom {
+    overflow: hidden;
+}
+.oa-img-zoom img, .oa-img-zoom .oa-bg-img {
+    transition: transform 0.8s ease;
+}
+.oa-img-zoom:hover img, .oa-img-zoom:hover .oa-bg-img {
+    transform: scale(1.05);
+}
+
+/* EDITORIAL TYPOGRAPHY ENHANCEMENTS */
+.oa-editorial-h1 {
+    font-family: var(--oa-font-display);
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1.1;
+    color: var(--oa-prune);
+}
+
+.oa-editorial-h2 {
+    font-family: var(--oa-font-display);
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    line-height: 1.2;
+    color: var(--oa-prune);
+}
+
+.oa-editorial-accent {
+    font-family: var(--oa-font-display);
+    font-style: italic;
+    color: var(--oa-mauve);
+}
+
+/* PLACEHOLDER BLOCKS FOR BUILDER */
+.oa-placeholder-img {
+    background: linear-gradient(135deg, var(--oa-ivory), var(--oa-bg-alt));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--oa-mauve);
+    font-family: var(--oa-font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    border: 1px solid var(--oa-border);
+}
+
+.oa-placeholder-ingredient {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--oa-bg-alt) 0%, var(--oa-ivory) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* ASYMMETRICAL LAYOUT UTILITIES */
+.oa-overlap-top {
+    margin-top: -100px;
+    position: relative;
+    z-index: 3;
+}
+@media (max-width: 991px) {
+    .oa-overlap-top {
         margin-top: -50px;
     }
 }
@@ -1201,4 +1307,84 @@
 }
 .oa-cart-icon:active, .oa-cart-icon:hover {
     transform: scale(1.15);
+}
+
+/* STICKY ADD TO CART (MOBILE) */
+@media (max-width: 768px) {
+    #add_to_cart_wrap {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 15px 20px;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+        z-index: 1040;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 !important;
+    }
+    #add_to_cart_wrap .btn {
+        width: 100%;
+        border-radius: 0;
+        padding: 15px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+    }
+    /* Add padding to body to prevent overlap */
+    body {
+        padding-bottom: 80px;
+    }
+}
+
+/* ==========================================================================
+   RTL SUPPORT (ARABIC)
+   ========================================================================== */
+html[dir="rtl"] {
+    .oa-footer-links li a {
+        padding-right: 0;
+        padding-left: 20px;
+    }
+    
+    .ms-auto {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+    .me-auto {
+        margin-right: 0 !important;
+        margin-left: auto !important;
+    }
+    .ms-3 {
+        margin-left: 0 !important;
+        margin-right: 1rem !important;
+    }
+    .me-3 {
+        margin-right: 0 !important;
+        margin-left: 1rem !important;
+    }
+    .ms-4 {
+        margin-left: 0 !important;
+        margin-right: 1.5rem !important;
+    }
+    .me-4 {
+        margin-right: 0 !important;
+        margin-left: 1.5rem !important;
+    }
+    
+    .text-start { text-align: right !important; }
+    .text-end { text-align: left !important; }
+    
+    /* Hero Section Fixes */
+    .oa-float-item {
+        right: auto !important;
+        left: -5% !important;
+    }
+    .oa-float-item-delayed {
+        left: auto !important;
+        right: -10% !important;
+    }
+    
+    /* Social Proof Banner Counters */
+    .text-md-start { text-align: right !important; }
 }
