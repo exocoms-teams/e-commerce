@@ -15,153 +15,16 @@
       <field name="sequence">20</field>
     </record>
 
-
-    <!-- Header -->
-    <record id="website_header" model="ir.ui.view">
-      <field name="name">Matelas Header</field>
-      <field name="type">qweb</field>
-      <field name="key">Matelas.header_custom</field>
-      <field name="inherit_id" ref="website.layout" />
-      <field name="arch" type="xml">
-
-        <xpath expr="//header[@id='top']" position="replace">
-          <header id="top" class="matelas-header">
-            <nav class="navbar navbar-expand-lg container">
-
-              <!-- Logo -->
-              <a href="/" class="navbar-brand matelas-logo">
-                <i class="bi bi-moon-stars-fill logo-icon" />
-                <span class="logo-text">Matelas</span>
-              </a>
-
-              <!-- Liens de navigations -->
-              <div class="collapse navbar-collapse">
-                <ul class="navbar-nav mx-auto">
-                  <li class="nav-item">
-                    <a href="/" class="nav-link">Accueil</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="/shop" class="nav-link">Boutique</a>
-                  </li>
-
-                  <li class="nav-item">
-                    <a href="/avis" class="nav-link">Avis</a>
-                  </li>
-
-                  <li class="nav-item">
-                    <a href="/contact" class="nav-link">Contact</a>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- icônes -->
-              <div class="header-right d-flex align-items-center gap-3">
-
-                <!-- Recherche -->
-                <a href="#" class="header-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#searchModal">
-                  <i class="bi bi-search" />
-                </a>
-
-                <!-- Panier -->
-                <a href="/shop/cart" class="header-icon header-cart">
-                  <i class="bi bi-bag" />
-                </a>
-
-                <a href="/shop/wishlist" class="header-icon exo-icon-btn">
-                  <i class="bi bi-heart-fill"></i>
-                </a>
-
-                <!-- Langue -->
-                <div class="dropdown">
-                  <a href="#" class="header-icon"
-                    data-bs-toggle="dropdown">
-                    <i class="bi bi-globe" />
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end account-dropdown">
-                    <li>
-                      <a class="dropdown-item" href="/website/lang/fr_FR">
-                        🇫🇷 Français
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/website/lang/en_US">
-                        🇬🇧 English
-                      </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/website/lang/es_ES">
-                        🇪🇸 Español
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-
-                <!-- Compte -->
-                <div class="dropdown">
-                  <a href="#" class="header-icon"
-                    data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle" />
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end account-dropdown">
-                    <li>
-                      <a class="dropdown-item" href="/web/login">
-                        <i class="bi bi-box-arrow-in-right me-2" /> Se connecter </a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/my/home">
-                        <i class="bi bi-person me-2" /> Mon compte </a>
-                    </li>
-                    <li>
-                      <hr class="dropdown-divider" />
-                    </li>
-                    <li>
-                      <a class="dropdown-item text-danger"
-                        href="/web/session/logout">
-                        <i class="bi bi-box-arrow-right me-2" /> Se déconnecter </a>
-                    </li>
-                  </ul>
-                </div>
-
-              </div>
-            </nav>
-
-            <!-- Modal Recherche -->
-            <div class="modal fade" id="searchModal" tabindex="-1">
-              <div class="modal-dialog modal-fullscreen">
-                <div class="modal-content search-modal-content">
-                  <div class="modal-header border-0">
-                    <button type="button"
-                      class="btn-close btn-close-white ms-auto"
-                      data-bs-dismiss="modal" />
-                  </div>
-                  <div
-                    class="modal-body d-flex align-items-center
-                               justify-content-center">
-                    <div class="search-box">
-                      <h3 class="text-white text-center mb-4">
-                        Que recherchez-vous ?
-                      </h3>
-                      <div class="d-flex gap-3">
-                        <input type="text"
-                          id="search-input"
-                          class="search-input"
-                          placeholder="Ex: Matelas ferme, oreiller..." />
-                        <a href="/shop?search=" class="btn btn-search" id="btn-search">
-                          <i class="bi bi-search" /> Rechercher </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </header>
-        </xpath>
-
-      </field>
+     <record id="menu_avis" model="website.menu">
+      <field name="name">Avis</field>
+      <field name="url">/avis</field>
+      <field name="sequence">30</field>
     </record>
 
+    <record id="menu_contact" model="website.menu">
+      <field name="name">Contact</field>
+      <field name="url">/contact</field>
+      <field name="sequence">40</field>
+    </record>
   </data>
 </odoo>
