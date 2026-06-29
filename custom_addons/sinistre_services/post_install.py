@@ -244,7 +244,7 @@ def _create_intervenant_for_user(env, user):
         'name':               user.name,
         'partner_id':         user.partner_id.id,
         'user_id':            user.id,
-        'taux_commission':    15.0,
+        'taux_commission':    20.0,
         'disponible':         True,
         'actif':              True,
         'zone_intervention':  'Paris 75',
