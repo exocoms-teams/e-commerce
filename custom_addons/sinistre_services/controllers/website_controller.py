@@ -14,13 +14,20 @@ Routes :
   /suivi/<token>              → Suivi dossier public par token UUID
   /rappel                     → POST modal rappel
 """
+import base64
 import datetime
 import logging
+import re
 
 from odoo import http, _
 from odoo.http import request
 
+from ..models.departements_fr import DEPARTEMENTS_FR
+
 _logger = logging.getLogger(__name__)
+
+_MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+_ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png'}
 
 
 class SinistreWebsite(http.Controller):
@@ -312,11 +319,45 @@ class SinistreWebsite(http.Controller):
         defaults = {
             'year': datetime.datetime.now().year,
             'error': False,
+            'error_msg': '',
             'success': False,
             'form_data': {},
+            'specialites_list': request.env['sinistre.specialite'].sudo().search([], order='name'),
+            'departements_list': DEPARTEMENTS_FR,
         }
         defaults.update(ctx)
         return request.render('sinistre_services.page_rejoindre', defaults)
+
+    def _rejoindre_specialite_labels(self, type_codes, autre_label):
+        """Retourne les libellés des spécialités cochées + métier libre."""
+        Specialite = request.env['sinistre.specialite'].sudo()
+        labels = []
+        for code in type_codes:
+            spec = Specialite.search([('type_intervention', '=', code)], limit=1)
+            labels.append(spec.name if spec else code)
+        autre = (autre_label or '').strip()
+        if autre:
+            spec = Specialite.search([('name', '=ilike', autre)], limit=1)
+            if not spec:
+                spec = Specialite.create({
+                    'name': autre.title(),
+                    'type_intervention': 'autre',
+                })
+            if spec.name not in labels:
+                labels.append(spec.name)
+        return labels
+
+    def _rejoindre_read_upload(self, file_storage):
+        if not file_storage or not file_storage.filename:
+            return None, None
+        ext = ('.' + file_storage.filename.rsplit('.', 1)[-1].lower()
+               if '.' in file_storage.filename else '')
+        if ext not in _ALLOWED_EXTENSIONS:
+            raise ValueError('format')
+        data = file_storage.read()
+        if len(data) > _MAX_UPLOAD_BYTES:
+            raise ValueError('size')
+        return base64.b64encode(data), file_storage.filename
 
     @http.route('/rejoindre-le-reseau', type='http', auth='public', website=True)
     def rejoindre_reseau(self, **kwargs):
@@ -325,33 +366,107 @@ class SinistreWebsite(http.Controller):
     @http.route('/rejoindre-le-reseau/send', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def rejoindre_send(self, **post):
+        form = request.httprequest.form
+        files = request.httprequest.files
+
         nom = post.get('nom', '').strip()
+        prenom = post.get('prenom', '').strip()
         telephone = post.get('telephone', '').strip()
         email = post.get('email', '').strip()
-        specialite = post.get('specialite', '').strip()
-        zone = post.get('zone', '').strip()
+        siret = re.sub(r'\D', '', post.get('siret', ''))
+        specialites_codes = form.getlist('specialites')
+        specialite_autre = post.get('specialite_autre', '').strip()
+        departements = form.getlist('departements')
 
-        if not (nom and telephone and email and specialite and zone):
-            return self._rejoindre_render(error=True, form_data=post)
+        form_data = dict(post)
+        form_data['specialites_selected'] = specialites_codes
+        form_data['departements_selected'] = departements
+
+        if not (nom and telephone and email and prenom):
+            return self._rejoindre_render(
+                error=True,
+                error_msg='Veuillez remplir tous les champs obligatoires.',
+                form_data=form_data,
+            )
+        if len(siret) != 14:
+            return self._rejoindre_render(
+                error=True,
+                error_msg='Le SIRET doit contenir exactement 14 chiffres.',
+                form_data=form_data,
+            )
+        if not specialites_codes and not specialite_autre:
+            return self._rejoindre_render(
+                error=True,
+                error_msg='Sélectionnez au moins une spécialité.',
+                form_data=form_data,
+            )
+        if not departements:
+            return self._rejoindre_render(
+                error=True,
+                error_msg="Sélectionnez au moins un département d'intervention.",
+                form_data=form_data,
+            )
+
+        upload_fields = {
+            'doc_certification': ('doc_certification', 'doc_certification_filename'),
+            'doc_assurance': ('doc_assurance', 'doc_assurance_filename'),
+            'doc_identite': ('doc_identite', 'doc_identite_filename'),
+            'photo': ('photo', 'photo_filename'),
+        }
+        uploads = {}
+        try:
+            for key, (bin_field, name_field) in upload_fields.items():
+                content, filename = self._rejoindre_read_upload(files.get(key))
+                if not content:
+                    return self._rejoindre_render(
+                        error=True,
+                        error_msg='Tous les documents sont obligatoires '
+                                  '(certifications, assurance, pièce d\'identité, photo).',
+                        form_data=form_data,
+                    )
+                uploads[bin_field] = content
+                uploads[name_field] = filename
+        except ValueError as err:
+            msg = ('Chaque fichier doit faire moins de 5 Mo (PDF, JPG ou PNG).'
+                   if str(err) == 'size' else
+                   'Format de fichier non accepté (PDF, JPG ou PNG uniquement).')
+            return self._rejoindre_render(error=True, error_msg=msg, form_data=form_data)
+
+        specialite_labels = self._rejoindre_specialite_labels(
+            specialites_codes, specialite_autre,
+        )
+        zone_label = ', '.join(departements)
+        full_name = ' '.join(filter(None, [prenom, nom]))
 
         try:
-            full_name = ' '.join(filter(None, [
-                post.get('prenom', '').strip(), nom,
-            ]))
+            candidature = request.env['sinistre.candidature'].sudo().create({
+                'prenom':            prenom,
+                'nom':               nom,
+                'email':             email,
+                'telephone':         telephone,
+                'specialites':       ', '.join(specialite_labels),
+                'zone_intervention': zone_label,
+                'siret':             siret,
+                'statut_juridique':  post.get('statut_juridique') or False,
+                'experience':        post.get('experience', ''),
+                'message':           post.get('message', ''),
+                **uploads,
+            })
+
             mail_vals = {
-                'subject': f'[Candidature Artisan] {full_name} — {specialite}',
+                'subject': f'[Candidature Artisan] {full_name} — {candidature.name}',
                 'body_html': f"""
-                    <h3>Nouvelle candidature artisan</h3>
+                    <h3>Nouvelle candidature artisan {candidature.name}</h3>
                     <p><b>Nom :</b> {full_name}</p>
                     <p><b>Email :</b> {email}</p>
                     <p><b>Téléphone :</b> {telephone}</p>
-                    <p><b>Spécialité :</b> {specialite}</p>
+                    <p><b>Spécialités :</b> {', '.join(specialite_labels)}</p>
                     <p><b>Statut :</b> {post.get('statut_juridique', '')}</p>
-                    <p><b>Zone :</b> {zone}</p>
-                    <p><b>SIRET :</b> {post.get('siret', '')}</p>
+                    <p><b>Départements :</b> {zone_label}</p>
+                    <p><b>SIRET :</b> {siret}</p>
                     <p><b>Expérience :</b> {post.get('experience', '')}</p>
-                    <p><b>Certifications :</b> {post.get('certifications', '')}</p>
                     <p><b>Message :</b> {post.get('message', '')}</p>
+                    <p><i>Documents disponibles dans le back-office → Annuaire → Candidatures.</i></p>
                 """,
                 'email_from': email,
                 'email_to': request.website.email or 'artisans@sinistre-services.fr',
@@ -359,6 +474,11 @@ class SinistreWebsite(http.Controller):
             request.env['mail.mail'].sudo().create(mail_vals).send()
         except Exception as e:
             _logger.warning("Rejoindre send failed: %s", e)
+            return self._rejoindre_render(
+                error=True,
+                error_msg='Une erreur est survenue. Veuillez réessayer.',
+                form_data=form_data,
+            )
 
         return self._rejoindre_render(success=True)
 
