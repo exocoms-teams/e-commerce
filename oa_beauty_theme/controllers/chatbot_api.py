@@ -3,7 +3,7 @@ from odoo.http import request
 
 class ChatbotController(http.Controller):
 
-    @http.route('/api/chat/message', type='json', auth='public', website=True)
+    @http.route('/api/chat/message', type='jsonrpc', auth='public', website=True)
     def handle_message(self, **kw):
         data = request.jsonrequest
         user_message = data.get('message', '').lower()
