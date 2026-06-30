@@ -14,7 +14,6 @@
         'views/templates/Contact.xml',
         'views/templates/Mentions_légales.xml',
         'views/templates/Cookies.xml',
-        'views/templates/Langues.xml',
         'data/Footer.xml',
         'data/Header.xml',
         'data/Setting.xml',
