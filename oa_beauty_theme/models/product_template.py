@@ -18,6 +18,7 @@ class ProductTemplate(models.Model):
         demo_keywords = [
             'Desk', 'Chair', 'Acoustic', 'Cabinet', 'Bin', 'Drawer', 'Lamp', 'Pedestal',
             'Conference', 'Table', 'Whiteboard', 'Storage', 'Bose', 'E-Com', 'Cable', 'Screen',
+            'Bureau', 'Chaise', 'Poubelle', 'Tiroir', 'Lampe', 'Caisson', 'Conférence', 'Tableau',
             'Lorem Ipsum', 'Placeholder', 'Demo', 'Sample Product', 'Test Product'
         ]
         
