@@ -6,144 +6,151 @@
         <xpath expr="//div[hasclass('o_wsale_product_details_content_section_price')]"
             position="before">
 
-            <div
-                class="tire-specs o_wsale_product_details_content_section border rounded d-flex flex-column mt-4 mb-4 pt-3 pb-3">
+            <t t-if="product.is_tire and product.tire_eprel">
+                <div
+                    class="tire-specs o_wsale_product_details_content_section border rounded d-flex flex-column mt-4 mb-4 pt-3 pb-3">
 
-                <div class="d-flex justify-content-evenly align-items-center">
-                    <div class="tooltip-box text-center ms-1">
-                        <span class="text-warning">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem" height="1.4rem"
-                                fill="currentColor" class="tire-icon-fuel bi bi-fuel-pump-fill"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M1 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1 2 2v.5a.5.5 0 0 0 1 0V8h-.5a.5.5 0 0 1-.5-.5V4.375a.5.5 0 0 1 .5-.5h1.495c-.011-.476-.053-.894-.201-1.222a.97.97 0 0 0-.394-.458c-.184-.11-.464-.195-.9-.195a.5.5 0 0 1 0-1q.846-.002 1.412.336c.383.228.634.551.794.907.295.655.294 1.465.294 2.081V7.5a.5.5 0 0 1-.5.5H15v4.5a1.5 1.5 0 0 1-3 0V12a1 1 0 0 0-1-1v4h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1zm2.5 0a.5.5 0 0 0-.5.5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5z" />
-                            </svg>
-                        </span>
-                        <strong class="ms-1">
-                            <t
-                                t-esc="dict(product._fields['tire_fuel_efficiency'].selection).get(product.tire_fuel_efficiency)" />
-                        </strong>
-                        <span class="tooltip-text tooltip-text-fuel">
-                            <b>Efficacité en carburant</b> (résistance au roulement) </span>
-                    </div>
-
-                    <div class="tooltip-box text-center ms-1">
-                        <span class="text-info">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.6rem" height="1.6rem"
-                                fill="currentColor" class="tire-icon-cloud bi bi-cloud-drizzle-fill"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m-3.5 1.5a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m.747-8.498a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973" />
-                            </svg>
-                        </span>
-                        <strong class="ms-1">
-                            <t
-                                t-esc="dict(product._fields['tire_wet_grip'].selection).get(product.tire_wet_grip)" />
-                        </strong>
-                        <span class="tooltip-text tooltip-text-cloud">
-                            <b>Adhérence sur sol mouillé</b>
-                        </span>
-                    </div>
-
-                    <div class="tooltip-box text-center ms-1">
-                        <span class="text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem"
-                                fill="currentColor" class="tire-icon-sound bi bi-volume-up-fill"
-                                viewBox="0 0 16 16">
-                                <path
-                                    d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z" />
-                                <path
-                                    d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z" />
-                                <path
-                                    d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06" />
-                            </svg>
-                        </span>
-                        <strong><t
-                                t-esc="product.tire_noise_db" /> dB</strong>
-                        <span class="tooltip-text tooltip-text-sound">
-                            <b>Bruit de roulement externe</b>
-                        </span>
-                    </div>
-
-                    <div class="tooltip-box text-center ms-1">
-                        <span class="text-warning">
-                            <t t-if="product.tire_season == 'summer'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
-                                    height="1.4rem"
-                                    fill="currentColor" class="tire-icon-season bi bi-sun-fill"
-                                    viewBox="0 0 16 16">
-                                    <path
-                                        d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
-                                </svg>
-                                <span class="tooltip-text tooltip-text-summer">
-                                    <b>Pneu été :</b> Conçus pour les températures supérieures à
-                                    7°C. Offrent une excellente tenue de route sur sol sec et
-                                    mouillé. Nécessite obligatoirement d'être équipé de chaines ou
-                                    chaussettes neige pour les zones en "loi montagne" durant
-                                    l'hiver. </span>
-                            </t>
-                        </span>
-                        <span class="text-secondary">
-                            <t t-if="product.tire_season == 'winter'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
-                                    height="1.4rem"
-                                    fill="currentColor" class="tire-icon-season bi bi-snow"
-                                    viewBox="0 0 16 16">
-                                    <path
-                                        d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z" />
-                                </svg>
-                                <span class="tooltip-text tooltip-text-winter">
-                                    <b>Pneu hiver :</b> Optimisés pour les températures inférieures
-                                    à 7°C. Meilleure adhérence sur neige, verglas et routes froides. </span>
-                            </t>
-                        </span>
-                        <t t-if="product.tire_season == 'all'">
+                    <div class="d-flex justify-content-evenly align-items-center">
+                        <div class="tooltip-box text-center ms-1">
                             <span class="text-warning">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
                                     height="1.4rem"
-                                    fill="currentColor" class="tire-icon-season bi bi-sun-fill"
+                                    fill="currentColor" class="tire-icon-fuel bi bi-fuel-pump-fill"
                                     viewBox="0 0 16 16">
                                     <path
-                                        d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
+                                        d="M1 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1 2 2v.5a.5.5 0 0 0 1 0V8h-.5a.5.5 0 0 1-.5-.5V4.375a.5.5 0 0 1 .5-.5h1.495c-.011-.476-.053-.894-.201-1.222a.97.97 0 0 0-.394-.458c-.184-.11-.464-.195-.9-.195a.5.5 0 0 1 0-1q.846-.002 1.412.336c.383.228.634.551.794.907.295.655.294 1.465.294 2.081V7.5a.5.5 0 0 1-.5.5H15v4.5a1.5 1.5 0 0 1-3 0V12a1 1 0 0 0-1-1v4h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1zm2.5 0a.5.5 0 0 0-.5.5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5z" />
                                 </svg>
                             </span>
+                            <strong class="ms-1">
+                                <t
+                                    t-esc="dict(product._fields['tire_fuel_efficiency'].selection).get(product.tire_fuel_efficiency)" />
+                            </strong>
+                            <span class="tooltip-text tooltip-text-fuel">
+                                <b>Efficacité en carburant</b> (résistance au roulement) </span>
+                        </div>
+
+                        <div class="tooltip-box text-center ms-1">
                             <span class="text-info">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
-                                    height="1.4rem"
-                                    fill="currentColor" class="tire-icon-season bi bi-snow"
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1.6rem"
+                                    height="1.6rem"
+                                    fill="currentColor"
+                                    class="tire-icon-cloud bi bi-cloud-drizzle-fill"
                                     viewBox="0 0 16 16">
                                     <path
-                                        d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z" />
+                                        d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m-3.5 1.5a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317m.747-8.498a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973" />
                                 </svg>
                             </span>
-                            <span class="tooltip-text tooltip-text-4seasons">
-                                <b>Pneu 4 saisons :</b> Compromis été/hiver. Adaptés à une
-                                utilisation toute l’année avec performances équilibrées sur routes
-                                sèches, mouillées et légèrement enneigées. </span>
-                        </t>
-                        <strong>
-                            <t
-                                t-esc="dict(product._fields['tire_season'].selection).get(product.tire_season)" />
-                        </strong>
+                            <strong class="ms-1">
+                                <t
+                                    t-esc="dict(product._fields['tire_wet_grip'].selection).get(product.tire_wet_grip)" />
+                            </strong>
+                            <span class="tooltip-text tooltip-text-cloud">
+                                <b>Adhérence sur sol mouillé</b>
+                            </span>
+                        </div>
+
+                        <div class="tooltip-box text-center ms-1">
+                            <span class="text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem"
+                                    height="1.7rem"
+                                    fill="currentColor" class="tire-icon-sound bi bi-volume-up-fill"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z" />
+                                    <path
+                                        d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z" />
+                                    <path
+                                        d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06" />
+                                </svg>
+                            </span>
+                            <strong><t
+                                    t-esc="product.tire_noise_db" /> dB</strong>
+                            <span class="tooltip-text tooltip-text-sound">
+                                <b>Bruit de roulement externe</b>
+                            </span>
+                        </div>
+
+                        <div class="tooltip-box text-center ms-1">
+                            <span class="text-warning">
+                                <t t-if="product.tire_season == 'summer'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
+                                        height="1.4rem"
+                                        fill="currentColor" class="tire-icon-season bi bi-sun-fill"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
+                                    </svg>
+                                    <span class="tooltip-text tooltip-text-summer">
+                                        <b>Pneu été :</b> Conçus pour les températures supérieures à
+                                        7°C. Offrent une excellente tenue de route sur sol sec et
+                                        mouillé. Nécessite obligatoirement d'être équipé de chaines
+                                        ou chaussettes neige pour les zones en "loi montagne" durant
+                                        l'hiver. </span>
+                                </t>
+                            </span>
+                            <span class="text-secondary">
+                                <t t-if="product.tire_season == 'winter'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
+                                        height="1.4rem"
+                                        fill="currentColor" class="tire-icon-season bi bi-snow"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z" />
+                                    </svg>
+                                    <span class="tooltip-text tooltip-text-winter">
+                                        <b>Pneu hiver :</b> Optimisés pour les températures
+                                        inférieures à 7°C. Meilleure adhérence sur neige, verglas et
+                                        routes froides. </span>
+                                </t>
+                            </span>
+                            <t t-if="product.tire_season == 'all'">
+                                <span class="text-warning">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
+                                        height="1.4rem"
+                                        fill="currentColor" class="tire-icon-season bi bi-sun-fill"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
+                                    </svg>
+                                </span>
+                                <span class="text-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem"
+                                        height="1.4rem"
+                                        fill="currentColor" class="tire-icon-season bi bi-snow"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z" />
+                                    </svg>
+                                </span>
+                                <span class="tooltip-text tooltip-text-4seasons">
+                                    <b>Pneu 4 saisons :</b> Compromis été/hiver. Adaptés à une
+                                    utilisation toute l’année avec performances équilibrées sur
+                                    routes sèches, mouillées et légèrement enneigées. </span>
+                            </t>
+                            <strong>
+                                <t
+                                    t-esc="dict(product._fields['tire_season'].selection).get(product.tire_season)" />
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div
+                        class="tooltip-box d-flex justify-content-center align-items-center text-center mt-3"
+                        t-if="product.tire_snow_homologation in ['3pmsf', 'm_s_3pmsf']">
+                        <span>
+                            <img class="three-pmsf"
+                                t-att-src="'/tire_catalog/static/src/img/icons/3pmsf.svg'" />
+                            Conforme loi montagne ( <t
+                                t-esc="dict(product._fields['tire_snow_homologation'].selection)
+                .get(product.tire_snow_homologation)" />
+                            ) <span class="tooltip-text tooltip-text-3pmsf">
+                                <b>Certification 3PMSF</b> (Three Peak Mountain Snowflake) :
+                            performances hivernales testées et homologuées.<br /> Autorise la
+                            circulation sur les routes concernées par la <b>Loi Montagne</b>. </span>
+                        </span>
                     </div>
                 </div>
-
-                <div
-                    class="tooltip-box d-flex justify-content-center align-items-center text-center mt-3"
-                    t-if="product.tire_snow_homologation in ['3pmsf', 'm_s_3pmsf']">
-                    <span>
-                        <img class="three-pmsf"
-                            t-att-src="'/tire_catalog/static/src/img/icons/3pmsf.svg'" /> Conforme
-                        loi montagne ( <t
-                            t-esc="dict(product._fields['tire_snow_homologation'].selection)
-                .get(product.tire_snow_homologation)" />
-                        ) <span class="tooltip-text tooltip-text-3pmsf">
-                            <b>Certification 3PMSF</b> (Three Peak Mountain Snowflake) :
-                        performances hivernales testées et homologuées.<br /> Autorise la
-                        circulation sur les routes concernées par la <b>Loi Montagne</b>. </span>
-                    </span>
-                </div>
-            </div>
+            </t>
 
         </xpath>
 
@@ -177,6 +184,7 @@
                                 <tbody>
                                     <!-- PNEUS -->
                                     <t t-if="product.is_tire">
+                                        <!-- MARQUE -->
                                         <tr>
                                             <th>
                                                 <t t-esc="product._fields['tire_brand'].string" />
@@ -185,6 +193,7 @@
                                                 <t t-esc="product.tire_brand" />
                                             </td>
                                         </tr>
+                                        <!-- MODELE -->
                                         <tr>
                                             <th>
                                                 <t t-esc="product._fields['tire_model'].string" />
@@ -193,157 +202,30 @@
                                                 <t t-esc="product.tire_model" />
                                             </td>
                                         </tr>
+                                        <!-- SAISON -->
+                                        <tr>
+                                            <t t-if="product.tire_season">
+                                                <th>
+                                                    <t t-esc="product._fields['tire_season'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_season'].selection).get(product.tire_season)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- DOMAINE D'UTILISATION -->
                                         <tr>
                                             <th>
-                                                <t t-esc="product._fields['tire_season'].string" />
+                                                <t
+                                                    t-esc="product._fields['tire_usage_id'].string" />
                                             </th>
                                             <td>
                                                 <t
-                                                    t-esc="dict(product._fields['tire_season'].selection).get(product.tire_season)" />
+                                                    t-esc="product.tire_usage_id.display_name" />
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_width'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_width" /> mm </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_height'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_height" /> mm </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_construction'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_construction'].selection).get(product.tire_construction)" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_rim'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_rim" /> pouces </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_load_index'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_load_index" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_speed_index'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_speed_index" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_fuel_efficiency'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_fuel_efficiency'].selection).get(product.tire_fuel_efficiency)"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_wet_grip'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_wet_grip'].selection).get(product.tire_wet_grip)" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_noise_db'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_noise_db" /> dB </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_speed_index'].string" />
-                                            </th>
-                                            <td>
-                                                <t t-esc="product.tire_speed_index" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_extra_load'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_extra_load'].selection).get(product.tire_extra_load)" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_runflat'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_runflat'].selection).get(product.tire_runflat)" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_seal'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_seal'].selection).get(product.tire_seal)" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_snow_homologation'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_snow_homologation'].selection).get(product.tire_snow_homologation)"
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_specific_approval'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="product.tire_specific_approval" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                <t
-                                                    t-esc="product._fields['tire_new_or_retreaded'].string" />
-                                            </th>
-                                            <td>
-                                                <t
-                                                    t-esc="dict(product._fields['tire_new_or_retreaded'].selection).get(product.tire_new_or_retreaded)" />
-                                            </td>
-                                        </tr>
+                                        <!-- PROFIL DU PNEU -->
                                         <tr>
                                             <th>
                                                 <t
@@ -354,16 +236,154 @@
                                                     t-esc="product.tire_tread_pattern_id.display_name" />
                                             </td>
                                         </tr>
+                                        <!-- LARGEUR -->
+                                        <tr>
+                                            <th>
+                                                <t t-esc="product._fields['tire_width'].string" />
+                                            </th>
+                                            <td>
+                                                <t t-esc="product.tire_width" /> mm </td>
+                                        </tr>
+                                        <!-- HAUTEUR -->
+                                        <tr>
+                                            <th>
+                                                <t t-esc="product._fields['tire_height'].string" />
+                                            </th>
+                                            <td>
+                                                <t t-esc="product.tire_height" /> mm </td>
+                                        </tr>
+                                        <!-- TYPE DE CONSTRUCTION -->
                                         <tr>
                                             <th>
                                                 <t
-                                                    t-esc="product._fields['tire_sidewall_lettering'].string" />
+                                                    t-esc="product._fields['tire_construction'].string" />
                                             </th>
                                             <td>
                                                 <t
-                                                    t-esc="dict(product._fields['tire_sidewall_lettering'].selection).get(product.tire_sidewall_lettering)" />
+                                                    t-esc="dict(product._fields['tire_construction'].selection).get(product.tire_construction)" />
                                             </td>
                                         </tr>
+                                        <!-- DIAMETRE -->
+                                        <tr>
+                                            <th>
+                                                <t t-esc="product._fields['tire_rim'].string" />
+                                            </th>
+                                            <td>
+                                                <t t-esc="product.tire_rim" /> pouces </td>
+                                        </tr>
+                                        <!-- INDICE DE CHARGE -->
+                                        <tr>
+                                            <th>
+                                                <t t-esc="product._fields['tire_load_index'].string" />
+                                            </th>
+                                            <td>
+                                                <t t-esc="product.tire_load_index" />
+                                            </td>
+                                        </tr>
+                                        <!-- INDICE DE VITESSE -->
+                                        <tr>
+                                            <t t-if="product.tire_speed_index">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_speed_index'].string" />
+                                                </th>
+                                                <td>
+                                                    <t t-esc="product.tire_speed_index" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- RENFORCE (XL) -->
+                                        <tr>
+                                            <t t-if="product.tire_extra_load">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_extra_load'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_extra_load'].selection).get(product.tire_extra_load)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- RUNFLAT -->
+                                        <tr>
+                                            <t t-if="product.tire_runflat">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_runflat'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_runflat'].selection).get(product.tire_runflat)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- SELF SEALING -->
+                                        <tr>
+                                            <t t-if="product.tire_seal">
+                                                <th>
+                                                    <t t-esc="product._fields['tire_seal'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_seal'].selection).get(product.tire_seal)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- HOMOLOGATION NEIGE -->
+                                        <tr>
+                                            <t t-if="product.tire_snow_homologation">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_snow_homologation'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_snow_homologation'].selection).get(product.tire_snow_homologation)"
+                                                    />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- HOMOLOGATION SPECIFIQUE -->
+                                        <tr>
+                                            <t t-if="product.tire_specific_approval">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_specific_approval'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="product.tire_specific_approval" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- PNEU RECHAPPE -->
+                                        <tr>
+                                            <t t-if="product.tire_new_or_retreaded">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_new_or_retreaded'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_new_or_retreaded'].selection).get(product.tire_new_or_retreaded)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- LETTRAGE LATERAL -->
+                                        <tr>
+                                            <t t-if="product.tire_sidewall_lettering">
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_sidewall_lettering'].string" />
+                                                </th>
+                                                <td>
+                                                    <t
+                                                        t-esc="dict(product._fields['tire_sidewall_lettering'].selection).get(product.tire_sidewall_lettering)" />
+                                                </td>
+                                            </t>
+                                        </tr>
+                                        <!-- CARACTERISTIQUES DIVERSES -->
                                         <tr>
                                             <t t-if="product.tire_characteristics">
                                                 <th>
@@ -376,29 +396,61 @@
                                                 </td>
                                             </t>
                                         </tr>
+                                        <!-- REFERENCE -->
                                         <tr>
-                                            <div t-if="product.default_code">
+                                            <t t-if="product.default_code">
                                                 <th>
-                                                    Référence
+                                                    <t
+                                                        t-esc="product._fields['default_code'].string" />
                                                 </th>
                                                 <td>
                                                     <t
                                                         t-esc="product.default_code" />
                                                 </td>
-                                            </div>
+                                            </t>
                                         </tr>
-                                        <tr>
-                                            <th>
-                                                <t t-esc="product._fields['tire_eprel'].string" />
-                                            </th>
-                                            <td>
-                                                <a t-att-href="product.tire_eprel"
-                                                    target="_blank"
-                                                    rel="noopener">
-                                                    <t t-esc="product.tire_eprel" />
-                                                </a>
-                                            </td>
-                                        </tr>
+                                        <!-- EPREL -->
+                                        <t
+                                            t-if="product.tire_field_applicability_map.get('tire_eprel')">
+                                            <tr>
+                                                <th>
+                                                    <t t-esc="product._fields['tire_eprel'].string" />
+                                                </th>
+                                                <td>
+                                                    <a t-att-href="product.tire_eprel"
+                                                        target="_blank"
+                                                        rel="noopener">
+                                                        <t t-esc="product.tire_eprel" />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_fuel_efficiency'].string" />
+                                                </th>
+                                                <td>
+                                                    <t t-esc="product.tire_fuel_efficiency" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_wet_grip'].string" />
+                                                </th>
+                                                <td>
+                                                    <t t-esc="product.tire_wet_grip" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <t
+                                                        t-esc="product._fields['tire_noise_db'].string" />
+                                                </th>
+                                                <td>
+                                                    <t t-esc="product.tire_noise_db" /> dB </td>
+                                            </tr>
+                                        </t>
                                     </t>
                                 </tbody>
                             </table>
@@ -409,7 +461,7 @@
             </div>
 
             <!-- Étiquette EPREL (si pneu) -->
-            <t t-if="product.is_tire">
+            <t t-if="product.is_tire and product.tire_eprel">
                 <div class="prodcut_eprel border-top" data-anchor="true">
                     <section class="container pt48 pb48">
 

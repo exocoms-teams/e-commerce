@@ -13,6 +13,7 @@
         "data/product_category.xml",
         "data/tire_tread_pattern.xml",
         "data/tire_usage.xml",
+        "demo/tags.xml",
         "demo/product_data.xml",
     ],
     "installable": True,
