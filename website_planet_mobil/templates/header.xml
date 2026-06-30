@@ -79,10 +79,10 @@
                         <i class="fa fa-chevron-down" />
                     </a>
                     <div id="mobile_categories" class="collapse ps-3">
-                        <t t-set="_pm_native_ids"
-                            t-value="request.env['ir.model.data'].sudo().search([('model', '=', 'product.public.category')]).mapped('res_id')" />
+                        <t t-set="_pm_cat_ids"
+                            t-value="request.env['ir.model.data'].sudo().search([('model', '=', 'product.public.category'), ('module', '=', 'website_planet_mobil')]).mapped('res_id')" />
                         <t t-set="categories"
-                            t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('id', 'not in', _pm_native_ids)])" />
+                            t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False), ('id', 'in', _pm_cat_ids)])" />
                         <t t-foreach="categories" t-as="cat">
                             <a t-att-href="'/shop/category/' + slug(cat)"
                                 class="nav-link p-2 text-wrap">

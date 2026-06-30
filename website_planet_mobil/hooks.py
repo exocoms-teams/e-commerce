@@ -53,51 +53,37 @@ def _activer_francais_par_defaut(env):
 
 
 def _supprimer_demo_natif(env):
-    """Supprime les produits et categories demo natifs d'Odoo.
-    Logique : supprimer les produits en premier pour lever le blocage
-    sur les categories, puis supprimer les categories.
+    """Depublie les produits qui n'appartiennent a aucune categorie Planet Mobil.
+    Logique : on recupere nos categories via leur xmlid (module=website_planet_mobil),
+    puis on depublie tous les produits publiés qui n'en font pas partie.
+    On ne supprime pas (contraintes FK Odoo), on depublie seulement.
     """
-    nos_noms = ['Smartphones', 'Montres', 'Accessoires', 'TV']
+    pm_cat_ids = env['ir.model.data'].sudo().search([
+        ('model', '=', 'product.public.category'),
+        ('module', '=', 'website_planet_mobil'),
+    ]).mapped('res_id')
 
-    # Categories natives = tout ce qui n'est pas a nous
-    cats_natives = env['product.public.category'].sudo().search([
-        ('name', 'not in', nos_noms),
-    ])
-    if not cats_natives:
-        _logger.info("Planet Mobil: aucune categorie native a supprimer.")
+    if not pm_cat_ids:
+        _logger.info("Planet Mobil: categories PM non trouvees, nettoyage ignore.")
         return
 
-    nos_cats = env['product.public.category'].sudo().search([
-        ('name', 'in', nos_noms),
+    # Produits publiés qui ne sont dans AUCUNE de nos categories
+    produits_natifs = env['product.template'].sudo().search([
+        ('is_published', '=', True),
+        '!', ('public_categ_ids', 'in', pm_cat_ids),
     ])
 
-    # Produits lies aux categories natives, mais PAS a nos categories
-    candidats = env['product.template'].sudo().search([
-        ('public_categ_ids', 'in', cats_natives.ids),
-    ])
-    produits_natifs = candidats.filtered(
-        lambda p: not (p.public_categ_ids & nos_cats)
-    )
+    if not produits_natifs:
+        _logger.info("Planet Mobil: aucun produit natif publie a depublier.")
+        return
 
-    # 1. Supprimer les produits natifs (archiver si suppression impossible)
     for prod in produits_natifs:
         try:
-            prod.unlink()
-        except Exception:
-            try:
-                prod.write({'active': False, 'is_published': False})
-                _logger.info("Planet Mobil: produit '%s' archive.", prod.name)
-            except Exception as e2:
-                _logger.warning("Planet Mobil: produit '%s' non traite (%s)", prod.name, e2)
-
-    # 2. Supprimer les categories natives (maintenant sans produits)
-    for cat in cats_natives:
-        try:
-            cat.unlink()
-            _logger.info("Planet Mobil: categorie native '%s' supprimee.", cat.name)
+            prod.write({'is_published': False})
+            _logger.info("Planet Mobil: produit '%s' depublie.", prod.name)
         except Exception as e:
             _logger.warning(
-                "Planet Mobil: categorie '%s' non supprimee (%s)", cat.name, e
+                "Planet Mobil: produit '%s' non depublie (%s)", prod.name, e
             )
 
 
