@@ -1,61 +1,32 @@
-// Page avis
+document.addEventListener('DOMContentLoaded', function() {
 
-document.addEventListener('DOMContentLoaded', function () {
+    // ===== ÉTOILES AVIS =====
+    const stars = document.querySelectorAll('.star');
+    const starRating = document.getElementById('star-rating');
 
-    // ===== ÉTOILES =====
-    document.querySelectorAll('.star').forEach(star => {
-        star.addEventListener('mouseover', function () {
-            const val = this.dataset.value;
-            document.querySelectorAll('.star').forEach(s => {
-                s.classList.toggle('active', s.dataset.value <= val);
+    if (stars.length > 0 && starRating) {
+        stars.forEach(function(star) {
+            star.addEventListener('mouseover', function() {
+                const val = this.dataset.value;
+                stars.forEach(function(s) {
+                    s.classList.toggle('active', s.dataset.value <= val);
+                });
+            });
+
+            star.addEventListener('click', function() {
+                document.getElementById('avis-note').value = this.dataset.value;
             });
         });
 
-        star.addEventListener('click', function () {
-            document.getElementById('avis-note').value = this.dataset.value;
-        });
-    });
-
-    document.getElementById('star-rating').addEventListener('mouseleave', function () {
-        const note = document.getElementById('avis-note').value;
-        document.querySelectorAll('.star').forEach(s => {
-            s.classList.toggle('active', s.dataset.value <= note);
-        });
-    });
-    // ===== RECHERCHE =====
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') lancerRecherche();
+        starRating.addEventListener('mouseleave', function() {
+            const note = document.getElementById('avis-note').value;
+            stars.forEach(function(s) {
+                s.classList.toggle('active', s.dataset.value <= note);
+            });
         });
     }
 
-    // ===== NEWSLETTER =====
-    const btnNewsletter = document.querySelector('.btn-newsletter');
-    if (btnNewsletter) {
-        btnNewsletter.addEventListener('click', function (e) {
-            e.preventDefault();
-            const input = document.querySelector('.newsletter-input');
-            if (!input.value.trim()) {
-                alert('Merci de saisir votre adresse email.');
-                return;
-            }
-            // Message de confirmation
-            input.value = '';
-            btnNewsletter.textContent = '✅ Inscrit !';
-            btnNewsletter.style.backgroundColor = '#2C3A4B';
-            setTimeout(() => {
-                btnNewsletter.textContent = "S'inscrire →";
-                btnNewsletter.style.backgroundColor = '';
-            }, 3000);
-        });
-    }
-
-});
-
-// ===== AVIS =====
-// ===== AVIS =====
-document.addEventListener('DOMContentLoaded', function() {
+    // ===== AVIS =====
     const btnAvis = document.getElementById('btn-envoyer-avis');
     if (btnAvis) {
         btnAvis.addEventListener('click', function() {
@@ -69,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const starsHtml = '★'.repeat(note) + '☆'.repeat(5 - note);
+            const starsHtml = '★'.repeat(parseInt(note)) + '☆'.repeat(5 - parseInt(note));
             const card = `
                 <div class="col-md-4 mb-4">
                     <div class="avis-card">
@@ -89,15 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('avis-note').value = 0;
             document.getElementById('avis-produit').value = '';
             document.getElementById('avis-commentaire').value = '';
-            document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+            stars.forEach(function(s) { s.classList.remove('active'); });
 
             document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
         });
     }
-});
 
-// ===== CONTACT =====
-document.addEventListener('DOMContentLoaded', function() {
+    // ===== CONTACT =====
     const btnContact = document.getElementById('btn-contact-send');
     if (btnContact) {
         btnContact.addEventListener('click', function() {
@@ -126,29 +95,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-});
 
-
-// ===== FAQ ACCORDION =====
-document.addEventListener('DOMContentLoaded', function() {
+    // ===== FAQ =====
     document.querySelectorAll('.faq-question').forEach(function(btn) {
         btn.addEventListener('click', function() {
             const answer = this.nextElementSibling;
             const isOpen = answer.classList.contains('open');
 
-            
-            document.querySelectorAll('.faq-answer').forEach(a => {
+            document.querySelectorAll('.faq-answer').forEach(function(a) {
                 a.classList.remove('open');
             });
-            document.querySelectorAll('.faq-question').forEach(q => {
+            document.querySelectorAll('.faq-question').forEach(function(q) {
                 q.classList.remove('active');
             });
 
-            
             if (!isOpen) {
                 answer.classList.add('open');
                 this.classList.add('active');
             }
         });
     });
-});
+
+    // ===== NEWSLETTER =====
+    const btnNewsletter = document.querySelector('.btn-newsletter');
+    if (btnNewsletter) {
+        btnNewsletter.addEventListener('click', function(e) {
+            e.preventDefault();
+            const input = document.querySelector('.newsletter-input');
+            if (!input || !input.value.trim()) {
+                alert('Merci de saisir votre adresse email.');
+                return;
+            }
+            input.value = '';
+            btnNewsletter.textContent = '✅ Inscrit !';
+            btnNewsletter.style.backgroundColor = '#2C3A4B';
+            setTimeout(function() {
+                btnNewsletter.textContent = "S'inscrire →";
+                btnNewsletter.style.backgroundColor = '';
+            }, 3000);
+        });
+    }
+
+
+})
