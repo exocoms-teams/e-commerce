@@ -15,6 +15,7 @@
         'views/templates/Mentions_légales.xml',
         'data/Footer.xml',
         'data/Header.xml',
+        'data/Setting.xml',
 
     ],
     'assets': {
