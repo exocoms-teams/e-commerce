@@ -3,27 +3,20 @@
 
     <template id="product_specs_inherit" inherit_id="website_sale.product" name="Planet Mobil - Caractéristiques produit">
 
-        <!-- 1. Boutons Imprimer/Partager dans la colonne droite, après le bouton Ajouter au panier -->
-        <xpath expr="//div[@id='add_to_cart']" position="after">
-            <div class="pm-specs-actions" style="display:flex; gap:10px; margin-top:16px; justify-content:flex-end;">
-                <button class="pm-specs-btn pm-btn-print" onclick="window.print()"
-                    style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; padding:9px 18px; border-radius:50px; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; cursor:pointer;">
-                    <i class="fa fa-print"/> Imprimer
-                </button>
-                <button class="pm-specs-btn pm-btn-share" id="pm-share-btn"
-                    style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; padding:9px 18px; border-radius:50px; background:#2563eb; color:#fff; border:none; cursor:pointer;">
-                    <i class="fa fa-share-alt"/> Partager
-                </button>
-            </div>
-        </xpath>
-
-        <!-- 2. Tableau des caractéristiques en bas de page -->
+        <!-- Injection après la section principale du produit -->
         <xpath expr="//div[@id='product_detail_main']" position="after">
 
             <div class="container" id="pm-specs-block" style="margin:48px auto; padding:0 24px;">
 
                 <style>
-                    .pm-specs-title { font-size:1.2rem; font-weight:700; color:#0f172a; margin:0 0 16px 0; }
+                    .pm-specs-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+                    .pm-specs-title { font-size:1.2rem; font-weight:700; color:#0f172a; margin:0; }
+                    .pm-specs-actions { display:flex; gap:10px; justify-content:flex-end; }
+                    .pm-specs-btn { display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; padding:9px 18px; border-radius:50px; cursor:pointer; transition:all 0.2s; }
+                    .pm-btn-print { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
+                    .pm-btn-print:hover { background:#e2e8f0; color:#0f172a; }
+                    .pm-btn-share { background:#2563eb; color:#fff; border:none; }
+                    .pm-btn-share:hover { opacity:0.9; }
                     .pm-specs-table { width:100%; border-collapse:collapse; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; }
                     .pm-specs-table tr:nth-child(even) { background:#f8fafc; }
                     .pm-specs-table td { padding:12px 18px; font-size:0.875rem; border-bottom:1px solid #f1f5f9; }
@@ -45,7 +38,17 @@
                     <div style="color:#64748b; margin-top:4px;"><t t-out="product.name"/></div>
                 </div>
 
-                <h2 class="pm-specs-title">Caractéristiques</h2>
+                <div class="pm-specs-header">
+                    <h2 class="pm-specs-title">Caractéristiques</h2>
+                    <div class="pm-specs-actions">
+                        <button class="pm-specs-btn pm-btn-print" onclick="window.print()">
+                            <i class="fa fa-print"/> Imprimer
+                        </button>
+                        <button class="pm-specs-btn pm-btn-share" id="pm-share-btn">
+                            <i class="fa fa-share-alt"/> Partager
+                        </button>
+                    </div>
+                </div>
 
                 <t t-if="product.attribute_line_ids">
                     <table class="pm-specs-table">
