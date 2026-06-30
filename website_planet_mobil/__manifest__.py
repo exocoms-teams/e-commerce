@@ -22,6 +22,7 @@
         'templates/shop.xml',
         'templates/wishlist.xml',
         'data/product_categories.xml',
+        'data/brands.xml',
         'data/demo_products.xml',
         'data/homepage_views.xml',
         'data/product_detail_views.xml',
