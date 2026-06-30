@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Admin Settings UI for AI Configuration -->
+    <record id="res_config_settings_view_oa_beauty" model="ir.ui.view">
+        <field name="name">res.config.settings.view.oa.beauty</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.action_general_configuration"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="O&amp;A Beauty AI" name="oa_beauty_theme">
+                    <block title="AI Beauty Advisor Configuration">
+                        <setting id="oa_ai_provider" string="AI Provider">
+                            <field name="oa_ai_provider" widget="radio"/>
+                        </setting>
+                        <setting id="oa_ai_api_key" string="API Key">
+                            <field name="oa_ai_api_key" password="True" placeholder="Enter your Gemini or OpenAI API Key..."/>
+                        </setting>
+                        <setting id="oa_ai_system_prompt" string="System Prompt">
+                            <field name="oa_ai_system_prompt" widget="text" placeholder="You are an expert luxury beauty advisor for O&amp;A Beauty."/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Analytics Tracking List View -->
+    <record id="oa_advisor_session_list_view" model="ir.ui.view">
+        <field name="name">oa.advisor.session.list</field>
+        <field name="model">oa.advisor.session</field>
+        <field name="arch" type="xml">
+            <list string="Advisor Sessions">
+                <field name="create_date" string="Date"/>
+                <field name="skin_type"/>
+                <field name="main_concern"/>
+                <field name="makeup_preference"/>
+                <field name="budget"/>
+                <field name="recommended_product_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="oa_advisor_session_action" model="ir.actions.act_window">
+        <field name="name">Beauty Advisor Analytics</field>
+        <field name="res_model">oa.advisor.session</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="oa_beauty_menu_root"
+              name="O&amp;A Beauty"
+              sequence="100"/>
+    <menuitem id="oa_beauty_menu_analytics"
+              name="Advisor Analytics"
+              parent="oa_beauty_menu_root"
+              action="oa_advisor_session_action"
+              sequence="10"/>
+
+</odoo>
