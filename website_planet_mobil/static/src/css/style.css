@@ -3102,15 +3102,29 @@ a[name="website_sale_main_button"] {
 .alt-spec-list li::before { content: '–'; margin-right: 5px; color: #bbb; }
 .alt-brand-label { font-size: 0.75rem; color: var(--alt-muted); font-weight: 500; display: block; margin-bottom: 3px; }
 
-/* ── Mobile header sombre ── */
+/* ── Mobile header : fond blanc cohérent avec le desktop ── */
 @media (max-width: 991px) {
-    .o_header_mobile { background: var(--alt-header) !important; }
-    .o_header_mobile .btn.p-2.nav-link { color: rgba(255,255,255,0.85) !important; }
-    #top_menu_collapse_mobile { background: #111 !important; }
-    #top_menu_collapse_mobile .nav-link { color: rgba(255,255,255,0.8) !important; }
-    #top_menu_collapse_mobile .nav-link:hover { color: #fff !important; background: rgba(255,255,255,0.08) !important; }
-    #top_menu_collapse_mobile .input-group:focus-within { outline-color: var(--alt-red) !important; }
-    #top_menu_collapse_mobile .dropdown-menu .fa { color: var(--alt-red) !important; }
+    .o_header_mobile { background: #ffffff !important; }
+    .o_header_mobile .btn.p-2.nav-link { color: var(--text) !important; }
+    /* logo : "MOBIL" en sombre (il était blanc, invisible sur fond blanc) */
+    .o_header_mobile a.navbar-brand::after { color: var(--text) !important; }
+    /* menu déroulant */
+    #top_menu_collapse_mobile { background: #ffffff !important; border-top: 1px solid var(--border) !important; }
+    #top_menu_collapse_mobile .nav-link { color: var(--text) !important; }
+    #top_menu_collapse_mobile .nav-link:hover { color: var(--blue) !important; background: var(--blue-light) !important; }
+    #top_menu_collapse_mobile .input-group:focus-within { outline-color: var(--blue) !important; }
+    #top_menu_collapse_mobile .dropdown-menu .fa { color: var(--blue) !important; }
+    /* icônes panier/wishlist sur fond blanc */
+    .o_header_mobile .o_wsale_my_cart a,
+    .o_header_mobile .o_wsale_my_wish a {
+        background: var(--blue-light) !important;
+        color: var(--blue) !important;
+    }
+    .o_header_mobile .o_wsale_my_cart a:hover,
+    .o_header_mobile .o_wsale_my_wish a:hover {
+        background: var(--blue) !important;
+        color: #fff !important;
+    }
 }
 
 /* ══════════════════════════════════════════════════════════
