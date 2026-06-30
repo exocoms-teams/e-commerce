@@ -2,12 +2,14 @@
 <odoo>
     <template id="telecom_page" name="Télécom — Catalogue">
         <t t-call="website.layout">
-            <t t-set="title">Télécom — Services professionnels</t>
+            <t t-set="title">Télécom — Solutions professionnelles</t>
 
             <div class="oe_structure" id="oe_structure_telecom_top"/>
 
-            <section class="pt-5 pb-4 text-center bg-light">
-                <div class="container">
+            <div id="telecom-catalog" class="container py-5">
+
+                <!-- En-tête -->
+                <div class="text-center mb-4">
                     <h1 class="display-5 fw-bold mb-2">
                         <t t-esc="page_title"/>
                     </h1>
@@ -15,54 +17,71 @@
                         <t t-esc="page_subtitle"/>
                     </p>
                 </div>
-            </section>
 
-            <div class="container py-5">
-                <t t-foreach="universes" t-as="universe">
-                    <section t-att-id="'cat-' + universe['id']" class="mb-5">
-                        <h2 class="h4 fw-bold mb-4 pb-2 border-bottom">
-                            <t t-esc="universe['category']"/>
-                        </h2>
-                        <div class="row g-4">
-                            <t t-foreach="universe['products']" t-as="product">
-                                <t t-set="product_url" t-value="product.get('url', '#')"/>
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <a t-att-href="product_url"
-                                       class="text-decoration-none text-reset d-block h-100">
-                                        <div class="card h-100 shadow-sm border-0 telecom-card">
-                                            <div class="bg-light d-flex align-items-center justify-content-center"
-                                                 style="height: 180px;">
-                                                <i class="fa fa-cube fa-3x text-muted"/>
-                                            </div>
-                                            <div class="card-body d-flex flex-column">
-                                                <h3 class="card-title h6 fw-semibold mb-2">
-                                                    <t t-esc="product['name']"/>
-                                                </h3>
-                                                <p class="card-text text-muted small flex-grow-1"
-                                                   t-if="product.get('description')">
-                                                    <t t-esc="product['description']"/>
-                                                </p>
-                                                <p class="fw-bold mb-0 mt-2"
-                                                   t-if="product.get('price')">
-                                                    <t t-esc="'%.2f €/mois HT' % product['price']"/>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </t>
+                <!-- Filtres -->
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-5 telecom-filter">
+                    <button type="button" class="telecom-chip active" data-filter="all">
+                        <t t-esc="all_label"/>
+                    </button>
+                    <t t-foreach="categories" t-as="cat">
+                        <button type="button" class="telecom-chip" t-att-data-filter="cat['key']">
+                            <t t-esc="cat['label']"/>
+                        </button>
+                    </t>
+                </div>
+
+                <!-- Grille de cartes -->
+                <div class="row g-4">
+                    <t t-foreach="cards" t-as="card">
+                        <div class="col-12 col-md-6 col-lg-4 telecom-card-col"
+                             t-att-data-cat="card['cat']">
+                            <div class="telecom-cat-card h-100 d-flex flex-column p-4">
+                                <span class="telecom-cat-pill mb-3">
+                                    <t t-esc="card['cat_label']"/>
+                                </span>
+                                <i t-attf-class="fa #{card['icon']} fa-lg telecom-cat-icon mb-3"/>
+                                <h3 class="h6 fw-bold mb-2">
+                                    <t t-esc="card['name']"/>
+                                </h3>
+                                <p class="small text-muted flex-grow-1 mb-3">
+                                    <t t-esc="card['description']"/>
+                                </p>
+                                <a t-att-href="order_url" target="_blank" rel="noopener"
+                                   class="btn btn-primary w-100">
+                                    <t t-esc="order_label"/> ↗
+                                </a>
+                            </div>
                         </div>
-                    </section>
-                </t>
+                    </t>
+                </div>
 
-                <t t-if="not universes">
-                    <div class="alert alert-info text-center my-5">
-                        Aucun service disponible pour le moment.
-                    </div>
-                </t>
+                <p class="text-center text-muted small mt-5 mb-0">
+                    <t t-esc="footer_note"/>
+                </p>
+
             </div>
 
             <div class="oe_structure" id="oe_structure_telecom_bottom"/>
+
+            <script type="text/javascript">
+                (function () {
+                    var root = document.getElementById('telecom-catalog');
+                    if (!root) { return; }
+                    var chips = root.querySelectorAll('.telecom-chip');
+                    var cards = root.querySelectorAll('.telecom-card-col');
+                    chips.forEach(function (chip) {
+                        chip.addEventListener('click', function () {
+                            chips.forEach(function (c) { c.classList.remove('active'); });
+                            chip.classList.add('active');
+                            var f = chip.getAttribute('data-filter');
+                            cards.forEach(function (card) {
+                                var show = (f === 'all') || (card.getAttribute('data-cat') === f);
+                                card.style.display = show ? '' : 'none';
+                            });
+                        });
+                    });
+                })();
+            </script>
         </t>
     </template>
 </odoo>

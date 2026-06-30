@@ -1,7 +1,7 @@
 {
     'name': 'Telecom Services',
-    'version': '19.0.2.0.0',
-    'summary': 'Catalogue Télécom + intégration grossiste KISSGROUP',
+    'version': '19.0.3.0.0',
+    'summary': 'Vitrine catalogue Télécom KISSGROUP (commande sur portail KISSGROUP)',
     'category': 'Website',
     'author': 'Exocoms',
     'website': 'https://exocoms.fr',
@@ -12,7 +12,6 @@
         'data/translations_en.xml',
         'data/kissgroup_data.xml',
         'views/telecom_page.xml',
-        'views/product_page.xml',
     ],
     'assets': {
         'web.assets_frontend': [
