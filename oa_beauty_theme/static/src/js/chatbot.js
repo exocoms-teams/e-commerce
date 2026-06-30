@@ -1,9 +1,5 @@
-/** @odoo-module **/
-
-/**
- * O&A Beauty Chatbot — Floating AI Customer Assistant
- * Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
- */
+// O&A Beauty Chatbot — Floating AI Customer Assistant
+// Communicates with /api/chat/message (Odoo JSON-RPC endpoint)
 
 const OaChatbot = {
     isOpen: false,
@@ -131,6 +127,15 @@ const OaChatbot = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    OaChatbot.init();
-});
+function initOaChatbot() {
+    if (!window.oaChatbotInitialized) {
+        window.oaChatbotInitialized = true;
+        OaChatbot.init();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOaChatbot);
+} else {
+    initOaChatbot();
+}

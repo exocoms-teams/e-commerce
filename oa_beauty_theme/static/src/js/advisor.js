@@ -1,9 +1,5 @@
-/** @odoo-module **/
-
-/**
- * O&A Beauty Advisor — Quiz & Recommendation Engine
- * Communicates with /api/advisor/recommend (Odoo JSON-RPC endpoint)
- */
+// O&A Beauty Advisor — Quiz & Recommendation Engine
+// Communicates with /api/advisor/recommend (Odoo JSON-RPC endpoint)
 
 const OaAdvisor = {
     currentStep: 1,
@@ -24,15 +20,6 @@ const OaAdvisor = {
         document.getElementById('oa_advisor_next')?.addEventListener('click', () => this.nextStep());
         document.getElementById('oa_advisor_back')?.addEventListener('click', () => this.prevStep());
         document.getElementById('oa_advisor_restart')?.addEventListener('click', () => this.restart());
-
-        // Quick reply chips
-        document.querySelectorAll('[data-msg]').forEach(chip => {
-            chip.addEventListener('click', e => {
-                const input = document.getElementById('oa_chat_input');
-                if (input) { input.value = e.currentTarget.dataset.msg; }
-                OaChatbot.sendMessage();
-            });
-        });
     },
 
     selectOption(btn) {
@@ -169,8 +156,15 @@ const OaAdvisor = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('oa_advisor_quiz')) {
+function initOaAdvisor() {
+    if (document.getElementById('oa_advisor_quiz') && !window.oaAdvisorInitialized) {
+        window.oaAdvisorInitialized = true;
         OaAdvisor.init();
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOaAdvisor);
+} else {
+    initOaAdvisor();
+}
