@@ -12,16 +12,29 @@ class ProductTemplate(models.Model):
         string="Télécom uniquement",
         help="Produit visible uniquement sur la page /telecom et masqué du shop.",
     )
-    kissgroup_plan_code = fields.Char(
-        string="Code forfait KISSGROUP", index=True, copy=False,
+    kissgroup_code = fields.Char(
+        string="Code KISSGROUP", index=True, copy=False,
+        help="Identifiant stable de l'offre chez KISSGROUP (plan_code, pack_code...).",
+    )
+    kissgroup_kind = fields.Selection(
+        selection=[
+            ('mobile_plan', "Forfait mobile"),
+            ('sim_pack', "Pack SIM"),
+        ],
+        string="Type d'offre KISSGROUP",
     )
     kissgroup_provider = fields.Char(string="Opérateur KISSGROUP")
-    kissgroup_setup_fee = fields.Float(string="Frais d'activation HT")
+    kissgroup_setup_fee = fields.Float(
+        string="Frais ponctuels HT",
+        help="Frais d'activation (forfait) ou frais de livraison (pack SIM), HT.",
+    )
     kissgroup_supports_esim = fields.Boolean(string="eSIM supportée")
 
+    # ------------------------------------------------------------------
+    # Mapping API -> product.template values
+    # ------------------------------------------------------------------
     @api.model
-    def _kissgroup_plan_to_vals(self, plan):
-        """Map a KISSGROUP mobile plan dict to product.template values."""
+    def _map_mobile_plan(self, plan):
         provider = (plan.get('provider') or '').strip()
         monthly = float(plan.get('monthly_price_eur') or 0.0)
         setup = float(plan.get('setup_fee_eur') or 0.0)
@@ -36,6 +49,8 @@ class ProductTemplate(models.Model):
             desc.append("eSIM disponible")
 
         return {
+            'kissgroup_kind': 'mobile_plan',
+            'kissgroup_code': plan.get('plan_code'),
             'name': plan.get('plan_name') or plan.get('plan_code'),
             'type': 'service',
             'sale_ok': True,
@@ -49,50 +64,97 @@ class ProductTemplate(models.Model):
         }
 
     @api.model
-    def _cron_sync_kissgroup_mobile_plans(self):
-        """Upsert KISSGROUP mobile plans into product.template.
+    def _map_sim_pack(self, pack):
+        provider = (pack.get('provider') or '').strip()
+        quantity = pack.get('quantity') or 0
+        price = float(pack.get('price_eur') or 0.0)
+        shipping = float(pack.get('shipping_fee_eur') or 0.0)
 
-        Run by an ir.cron. Safe to call even when no API key is configured
-        (it logs and returns without raising).
+        name = pack.get('description') or (
+            "Pack %s SIM%s" % (quantity, " %s" % provider.capitalize() if provider else "")
+        )
+        desc = []
+        if quantity:
+            desc.append("%s carte(s) SIM" % quantity)
+        if provider:
+            desc.append("Opérateur : %s" % provider.capitalize())
+        desc.append("%.2f € HT" % price)
+        if shipping:
+            desc.append("Livraison : %.2f € HT" % shipping)
+
+        return {
+            'kissgroup_kind': 'sim_pack',
+            'kissgroup_code': pack.get('pack_code'),
+            'name': name,
+            'type': 'consu',
+            'sale_ok': True,
+            'is_published': True,
+            'is_telecom_only': True,
+            'list_price': price,
+            'description_sale': " • ".join(desc),
+            'kissgroup_provider': provider or False,
+            'kissgroup_setup_fee': shipping,
+            'kissgroup_supports_esim': False,
+        }
+
+    @api.model
+    def _kissgroup_catalogue_sources(self):
+        """Map each KISSGROUP catalogue kind to a builder returning a list of
+        product.template value dicts. Add a new catalogue here to expose it."""
+        api = self.env['telecom.kissgroup.api']
+        return {
+            'mobile_plan': lambda: [self._map_mobile_plan(p) for p in api.get_mobile_plans()],
+            'sim_pack': lambda: [self._map_sim_pack(p) for p in api.get_sim_packs()],
+        }
+
+    # ------------------------------------------------------------------
+    # Cron
+    # ------------------------------------------------------------------
+    @api.model
+    def _cron_sync_kissgroup_catalogue(self):
+        """Upsert every KISSGROUP catalogue into product.template.
+
+        Run by an ir.cron. Safe to call without an API key (logs and returns).
         """
         api = self.env['telecom.kissgroup.api']
         if not api._get_credentials()[0]:
             _logger.info("KISSGROUP sync skipped: API key not configured.")
             return False
 
-        plans = api.get_mobile_plans()
         Product = self.with_context(active_test=False)
-        seen_codes = []
-        created = updated = 0
+        totals = {'created': 0, 'updated': 0, 'retired': 0}
 
-        for plan in plans:
-            code = plan.get('plan_code')
-            if not code:
-                continue
-            seen_codes.append(code)
-            vals = self._kissgroup_plan_to_vals(plan)
-            product = Product.search([('kissgroup_plan_code', '=', code)], limit=1)
-            if product:
-                if not product.active:
-                    vals['active'] = True
-                product.write(vals)
-                updated += 1
-            else:
-                vals['kissgroup_plan_code'] = code
-                Product.create(vals)
-                created += 1
+        for kind, build in self._kissgroup_catalogue_sources().items():
+            seen_codes = []
+            for vals in build():
+                code = vals.get('kissgroup_code')
+                if not code:
+                    continue
+                seen_codes.append(code)
+                product = Product.search([
+                    ('kissgroup_kind', '=', kind),
+                    ('kissgroup_code', '=', code),
+                ], limit=1)
+                if product:
+                    if not product.active:
+                        vals['active'] = True
+                    product.write(vals)
+                    totals['updated'] += 1
+                else:
+                    Product.create(vals)
+                    totals['created'] += 1
 
-        # Retire plans no longer offered by KISSGROUP.
-        obsolete = Product.search([
-            ('kissgroup_plan_code', '!=', False),
-            ('kissgroup_plan_code', 'not in', seen_codes or ['__none__']),
-            ('active', '=', True),
-        ])
-        if obsolete:
-            obsolete.write({'is_published': False, 'active': False})
+            obsolete = Product.search([
+                ('kissgroup_kind', '=', kind),
+                ('kissgroup_code', 'not in', seen_codes or ['__none__']),
+                ('active', '=', True),
+            ])
+            if obsolete:
+                obsolete.write({'is_published': False, 'active': False})
+                totals['retired'] += len(obsolete)
 
         _logger.info(
-            "KISSGROUP mobile sync: %s created, %s updated, %s retired.",
-            created, updated, len(obsolete),
+            "KISSGROUP catalogue sync: %(created)s created, %(updated)s updated, "
+            "%(retired)s retired.", totals,
         )
         return True

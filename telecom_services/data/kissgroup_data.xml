@@ -9,12 +9,12 @@
             <field name="value">https://api.kissgroup.io</field>
         </record>
 
-        <!-- Synchronisation quotidienne des forfaits mobiles KISSGROUP -->
+        <!-- Synchronisation quotidienne du catalogue KISSGROUP (forfaits, SIM) -->
         <record id="cron_sync_kissgroup_mobile" model="ir.cron">
-            <field name="name">Télécom : Synchroniser les forfaits mobiles KISSGROUP</field>
+            <field name="name">Télécom : Synchroniser le catalogue KISSGROUP</field>
             <field name="model_id" ref="product.model_product_template"/>
             <field name="state">code</field>
-            <field name="code">model._cron_sync_kissgroup_mobile_plans()</field>
+            <field name="code">model._cron_sync_kissgroup_catalogue()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="nextcall" eval="(datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')"/>

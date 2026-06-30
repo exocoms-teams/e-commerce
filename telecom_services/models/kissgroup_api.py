@@ -73,6 +73,11 @@ class KissgroupApi(models.AbstractModel):
 
     @api.model
     def get_mobile_plans(self, provider=None):
-        """Return the full KissMobile catalogue (list of plan dicts)."""
+        """Return the full KissMobile plan catalogue (list of plan dicts)."""
         params = {'provider': provider} if provider else None
         return self._request('GET', '/v1/kissmobile/plans', params=params) or []
+
+    @api.model
+    def get_sim_packs(self):
+        """Return the orderable KissMobile SIM packs (list of pack dicts)."""
+        return self._request('GET', '/v1/kissmobile/sim-packs') or []

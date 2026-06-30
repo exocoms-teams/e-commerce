@@ -13,6 +13,12 @@ _UI_STRINGS = {
     },
 }
 
+# Ordered KISSGROUP catalogue sections shown on /telecom, with their label.
+_KISSGROUP_SECTIONS = [
+    ('mobile_plan', 'Mobile'),
+    ('sim_pack', 'Cartes SIM'),
+]
+
 
 class TelecomController(http.Controller):
 
@@ -21,33 +27,32 @@ class TelecomController(http.Controller):
         lang = request.env.context.get('lang', 'fr_FR')
         strings = _UI_STRINGS.get(lang, _UI_STRINGS['fr_FR'])
 
-        universes = []
-        mobile_universe = self._kissgroup_mobile_universe()
-        if mobile_universe:
-            universes.append(mobile_universe)
-
         return request.render('telecom_services.telecom_page', {
-            'universes': universes,
+            'universes': self._kissgroup_universes(),
             **strings,
         })
 
-    def _kissgroup_mobile_universe(self):
-        products = request.env['product.template'].sudo().search([
-            ('kissgroup_plan_code', '!=', False),
-            ('is_published', '=', True),
-        ], order='list_price, name')
-        if not products:
-            return None
-        return {
-            'id': 'mobile-kissgroup',
-            'category': 'Mobile',
-            'products': [{
-                'name': p.name,
-                'description': p.description_sale,
-                'price': p.list_price,
-                'url': p.website_url,
-            } for p in products],
-        }
+    def _kissgroup_universes(self):
+        Product = request.env['product.template'].sudo()
+        universes = []
+        for kind, label in _KISSGROUP_SECTIONS:
+            products = Product.search([
+                ('kissgroup_kind', '=', kind),
+                ('is_published', '=', True),
+            ], order='list_price, name')
+            if not products:
+                continue
+            universes.append({
+                'id': kind,
+                'category': label,
+                'products': [{
+                    'name': p.name,
+                    'description': p.description_sale,
+                    'price': p.list_price,
+                    'url': p.website_url,
+                } for p in products],
+            })
+        return universes
 
 
 class TelecomShopOverride(WebsiteSale):
