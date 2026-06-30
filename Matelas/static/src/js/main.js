@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+/** @odoo-module **/
+
+import { onMounted } from "@odoo/owl";
+
+function initAll() {
 
     // ===== ÉTOILES AVIS =====
     const stars = document.querySelectorAll('.star');
@@ -8,21 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
         stars.forEach(function(star) {
             star.addEventListener('mouseover', function() {
                 const val = this.dataset.value;
-                stars.forEach(function(s) {
-                    s.classList.toggle('active', s.dataset.value <= val);
-                });
+                stars.forEach(s => s.classList.toggle('active', s.dataset.value <= val));
             });
-
             star.addEventListener('click', function() {
                 document.getElementById('avis-note').value = this.dataset.value;
             });
         });
-
         starRating.addEventListener('mouseleave', function() {
             const note = document.getElementById('avis-note').value;
-            stars.forEach(function(s) {
-                s.classList.toggle('active', s.dataset.value <= note);
-            });
+            stars.forEach(s => s.classList.toggle('active', s.dataset.value <= note));
         });
     }
 
@@ -55,13 +53,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('avis-container').innerHTML += card;
             document.getElementById('avis-success').style.display = 'block';
-
             document.getElementById('avis-nom').value = '';
             document.getElementById('avis-note').value = 0;
             document.getElementById('avis-produit').value = '';
             document.getElementById('avis-commentaire').value = '';
-            stars.forEach(function(s) { s.classList.remove('active'); });
-
+            stars.forEach(s => s.classList.remove('active'));
             document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
         });
     }
@@ -81,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             document.getElementById('contact-success').style.display = 'block';
-
             document.getElementById('c-nom').value = '';
             document.getElementById('c-prenom').value = '';
             document.getElementById('c-email').value = '';
@@ -102,12 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const answer = this.nextElementSibling;
             const isOpen = answer.classList.contains('open');
 
-            document.querySelectorAll('.faq-answer').forEach(function(a) {
-                a.classList.remove('open');
-            });
-            document.querySelectorAll('.faq-question').forEach(function(q) {
-                q.classList.remove('active');
-            });
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+            document.querySelectorAll('.faq-question').forEach(q => q.classList.remove('active'));
 
             if (!isOpen) {
                 answer.classList.add('open');
@@ -128,13 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             input.value = '';
             btnNewsletter.textContent = '✅ Inscrit !';
-            btnNewsletter.style.backgroundColor = '#2C3A4B';
             setTimeout(function() {
                 btnNewsletter.textContent = "S'inscrire →";
-                btnNewsletter.style.backgroundColor = '';
             }, 3000);
         });
     }
 
-
-})
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+} else {
+    initAll();
+}
+}
