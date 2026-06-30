@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
@@ -276,21 +276,39 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
 
 
 
-    #@http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
-    #def product(self, product_id, **kwargs):
-    #    product = request.env['product.template'].sudo().search([('id', '=', product_id)], limit=1)
+    @http.route('/shop/product/<int:product_id>', type='http', auth='public', website=True)
+    def product(self, product_id, **kwargs):
+        # 1. Chercher le vrai produit Odoo
+        product = request.env['product.template'].sudo().search(
+            [('id', '=', product_id), ('website_published', '=', True)], limit=1
+        )
 
-    #    if not product:
-            #return request.not_found()     pour linstant pas de base, creer produits fictifs
-    #        product =  FAKE_PRODUCTS.get(product_id, FAKE_PRODUCTS[1])
+        # 2. Fallback : produit fictif pour la démo
+        if not product:
+            product = FAKE_PRODUCTS.get(product_id, FAKE_PRODUCTS[1])
 
-    #    if isinstance(product, dict):
-    #        specs = product.get('specs', {})
-    #    else:
-    #        specs = json.loads(product.x_specs) if product.x_specs else {}
+        # 3. Récupérer les caractéristiques selon la source
+        if isinstance(product, dict):
+            # Produit fictif : specs déjà dans le dict
+            specs = product.get('specs', {})
+        else:
+            # Vrai produit Odoo : specs dans le champ JSON x_specs
+            # (ou via les attributs de variantes si x_specs n'existe pas)
+            try:
+                specs_raw = getattr(product, 'x_specs', None)
+                specs = json.loads(specs_raw) if specs_raw else {}
+            except (ValueError, TypeError):
+                specs = {}
 
-    #    return request.render('website_planet_mobil.product_page', {
-    #        'product': product,
-    #        'specs': specs,
-    #    })
+            # Compléter avec les attributs de variante si specs vide
+            if not specs:
+                for line in product.attribute_line_ids:
+                    values = line.value_ids.mapped('name')
+                    if values:
+                        specs[line.attribute_id.name] = ', '.join(values)
+
+        return request.render('website_planet_mobil.product_page', {
+            'product': product,
+            'specs': specs,
+        })
 

@@ -68,26 +68,220 @@
                     </div>
 
                     <div id="oe_structure_product_specs" class="oe_structure oe_empty"/>
-                    <div class="tsp-product-specs">
-                        <h2 class="tsp-specs-title">Caracteristiques</h2>
+                    <div class="tsp-product-specs" id="pm-specs-block">
+
+                        <!-- Styles impression -->
+                        <style>
+                            .tsp-product-specs {
+                                max-width: 860px;
+                                margin: 40px auto;
+                                padding: 0 24px;
+                            }
+                            .pm-specs-header {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                flex-wrap: wrap;
+                                gap: 12px;
+                                margin-bottom: 20px;
+                            }
+                            .tsp-specs-title {
+                                font-size: 1.3rem;
+                                font-weight: 800;
+                                color: #0f172a;
+                                margin: 0;
+                            }
+                            .pm-specs-actions {
+                                display: flex;
+                                gap: 10px;
+                            }
+                            .pm-specs-btn {
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 8px;
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                padding: 9px 18px;
+                                border-radius: 50px;
+                                border: none;
+                                cursor: pointer;
+                                transition: all 0.2s;
+                                font-family: 'Inter', sans-serif;
+                            }
+                            .pm-btn-print {
+                                background: #f1f5f9;
+                                color: #475569;
+                            }
+                            .pm-btn-print:hover {
+                                background: #e2e8f0;
+                                color: #0f172a;
+                            }
+                            .pm-btn-share {
+                                background: linear-gradient(135deg, #2563eb, #7c3aed);
+                                color: #fff;
+                            }
+                            .pm-btn-share:hover {
+                                opacity: 0.9;
+                                transform: translateY(-1px);
+                            }
+                            .tsp-specs-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                border-radius: 12px;
+                                overflow: hidden;
+                                border: 1px solid #e2e8f0;
+                            }
+                            .tsp-specs-table tr:nth-child(even) {
+                                background: #f8fafc;
+                            }
+                            .tsp-specs-label {
+                                padding: 12px 18px;
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                color: #64748b;
+                                width: 40%;
+                                border-bottom: 1px solid #f1f5f9;
+                            }
+                            .tsp-specs-value {
+                                padding: 12px 18px;
+                                font-size: 0.875rem;
+                                color: #0f172a;
+                                border-bottom: 1px solid #f1f5f9;
+                            }
+                            /* Toast notification */
+                            .pm-toast {
+                                position: fixed;
+                                bottom: 32px;
+                                left: 50%;
+                                transform: translateX(-50%) translateY(20px);
+                                background: #0f172a;
+                                color: #fff;
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                padding: 12px 24px;
+                                border-radius: 50px;
+                                opacity: 0;
+                                transition: all 0.3s;
+                                z-index: 9999;
+                                pointer-events: none;
+                            }
+                            .pm-toast.show {
+                                opacity: 1;
+                                transform: translateX(-50%) translateY(0);
+                            }
+                            /* Styles impression */
+                            @media print {
+                                body * { visibility: hidden; }
+                                #pm-specs-block,
+                                #pm-specs-block * { visibility: visible; }
+                                #pm-specs-block {
+                                    position: absolute;
+                                    top: 0; left: 0;
+                                    width: 100%;
+                                    padding: 40px;
+                                }
+                                .pm-specs-actions { display: none; }
+                                .pm-print-header {
+                                    display: block !important;
+                                    text-align: center;
+                                    margin-bottom: 24px;
+                                    padding-bottom: 16px;
+                                    border-bottom: 2px solid #e2e8f0;
+                                }
+                                .pm-print-logo {
+                                    font-size: 1.4rem;
+                                    font-weight: 900;
+                                    color: #0f172a;
+                                    margin-bottom: 6px;
+                                }
+                                .pm-print-url {
+                                    font-size: 0.78rem;
+                                    color: #94a3b8;
+                                }
+                            }
+                        </style>
+
+                        <!-- En-tête impression (caché à l'écran) -->
+                        <div class="pm-print-header" style="display:none;">
+                            <div class="pm-print-logo">🌍 PLANET MOBIL</div>
+                            <div class="pm-print-url">planet-mobil.com</div>
+                        </div>
+
+                        <div class="pm-specs-header">
+                            <h2 class="tsp-specs-title">Caractéristiques</h2>
+                            <div class="pm-specs-actions">
+                                <button class="pm-specs-btn pm-btn-print" onclick="window.print()">
+                                    <i class="fa fa-print"></i> Imprimer
+                                </button>
+                                <button class="pm-specs-btn pm-btn-share" id="pm-share-btn">
+                                    <i class="fa fa-share-alt"></i> Partager
+                                </button>
+                            </div>
+                        </div>
+
                         <t t-if="specs">
                             <table class="tsp-specs-table">
                                 <t t-foreach="specs.items()" t-as="spec">
                                     <tr>
-                                        <td class="tsp-specs-label">
-                                            <t t-out="spec[0]" />
-                                        </td>
-                                        <td class="tsp-specs-value">
-                                            <t t-out="spec[1]" />
-                                        </td>
+                                        <td class="tsp-specs-label"><t t-out="spec[0]"/></td>
+                                        <td class="tsp-specs-value"><t t-out="spec[1]"/></td>
                                     </tr>
                                 </t>
                             </table>
                         </t>
                         <t t-else="">
-                            <p>Non renseigné</p>
+                            <p style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
                         </t>
+
                     </div>
+
+                    <!-- Toast -->
+                    <div class="pm-toast" id="pm-toast"></div>
+
+                    <!-- Script partage -->
+                    <script>
+                    (function () {
+                        function showToast(msg) {
+                            var t = document.getElementById('pm-toast');
+                            if (!t) return;
+                            t.textContent = msg;
+                            t.classList.add('show');
+                            setTimeout(function () { t.classList.remove('show'); }, 2800);
+                        }
+
+                        var shareBtn = document.getElementById('pm-share-btn');
+                        if (!shareBtn) return;
+
+                        shareBtn.addEventListener('click', function () {
+                            var url  = window.location.href;
+                            var title = document.querySelector('h1.tsp-product-detail-name');
+                            var name  = title ? title.textContent.trim() : document.title;
+
+                            // Web Share API (mobile natif)
+                            if (navigator.share) {
+                                navigator.share({
+                                    title: name + ' — Planet Mobil',
+                                    text:  'Découvrez ' + name + ' chez Planet Mobil Paris !',
+                                    url:   url
+                                }).catch(function () {});
+                            } else {
+                                // Fallback : copier le lien
+                                navigator.clipboard.writeText(url).then(function () {
+                                    showToast('✓ Lien copié !');
+                                }).catch(function () {
+                                    // Ancien fallback
+                                    var inp = document.createElement('input');
+                                    document.body.appendChild(inp);
+                                    inp.value = url;
+                                    inp.select();
+                                    document.execCommand('copy');
+                                    document.body.removeChild(inp);
+                                    showToast('✓ Lien copié !');
+                                });
+                            }
+                        });
+                    })();
+                    </script>
 
                 </section>
                 <div id="oe_structure_product_bottom" class="oe_structure oe_empty"/>
