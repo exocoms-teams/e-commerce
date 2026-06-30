@@ -54,68 +54,80 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ===== AVIS =====
-function envoyerAvis() {
-    const nom = document.getElementById('avis-nom').value.trim();
-    const note = document.getElementById('avis-note').value;
-    const produit = document.getElementById('avis-produit').value.trim();
-    const commentaire = document.getElementById('avis-commentaire').value.trim();
+// ===== AVIS =====
+document.addEventListener('DOMContentLoaded', function() {
+    const btnAvis = document.getElementById('btn-envoyer-avis');
+    if (btnAvis) {
+        btnAvis.addEventListener('click', function() {
+            const nom = document.getElementById('avis-nom').value.trim();
+            const note = document.getElementById('avis-note').value;
+            const produit = document.getElementById('avis-produit').value.trim();
+            const commentaire = document.getElementById('avis-commentaire').value.trim();
 
-    if (!nom || note == 0 || !commentaire) {
-        alert('Merci de remplir tous les champs obligatoires (*)');
-        return;
+            if (!nom || note == 0 || !commentaire) {
+                alert('Merci de remplir tous les champs obligatoires (*)');
+                return;
+            }
+
+            const starsHtml = '★'.repeat(note) + '☆'.repeat(5 - note);
+            const card = `
+                <div class="col-md-4 mb-4">
+                    <div class="avis-card">
+                        <div class="avis-stars">${starsHtml}</div>
+                        ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
+                        <p class="avis-texte">"${commentaire}"</p>
+                        <strong class="avis-auteur">${nom}</strong>
+                        <span class="avis-date"> — à l'instant</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('avis-container').innerHTML += card;
+            document.getElementById('avis-success').style.display = 'block';
+
+            document.getElementById('avis-nom').value = '';
+            document.getElementById('avis-note').value = 0;
+            document.getElementById('avis-produit').value = '';
+            document.getElementById('avis-commentaire').value = '';
+            document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+
+            document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
+        });
     }
-
-    const starsHtml = '★'.repeat(note) + '☆'.repeat(5 - note);
-    const card = `
-        <div class="col-md-4 mb-4">
-            <div class="avis-card">
-                <div class="avis-stars">${starsHtml}</div>
-                ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
-                <p class="avis-texte">"${commentaire}"</p>
-                <strong class="avis-auteur">${nom}</strong>
-                <span class="avis-date"> — à l'instant</span>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('avis-container').innerHTML += card;
-    document.getElementById('avis-success').style.display = 'block';
-
-    document.getElementById('avis-nom').value = '';
-    document.getElementById('avis-note').value = 0;
-    document.getElementById('avis-produit').value = '';
-    document.getElementById('avis-commentaire').value = '';
-    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
-
-    document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
-}
+});
 
 // ===== CONTACT =====
-function envoyerContact() {
-    const nom = document.getElementById('c-nom').value.trim();
-    const prenom = document.getElementById('c-prenom').value.trim();
-    const email = document.getElementById('c-email').value.trim();
-    const message = document.getElementById('c-message').value.trim();
+document.addEventListener('DOMContentLoaded', function() {
+    const btnContact = document.getElementById('btn-contact-send');
+    if (btnContact) {
+        btnContact.addEventListener('click', function() {
+            const nom = document.getElementById('c-nom').value.trim();
+            const prenom = document.getElementById('c-prenom').value.trim();
+            const email = document.getElementById('c-email').value.trim();
+            const message = document.getElementById('c-message').value.trim();
 
-    if (!nom || !prenom || !email || !message) {
-        alert('Merci de remplir tous les champs obligatoires (*)');
-        return;
+            if (!nom || !prenom || !email || !message) {
+                alert('Merci de remplir tous les champs obligatoires (*)');
+                return;
+            }
+
+            document.getElementById('contact-success').style.display = 'block';
+
+            document.getElementById('c-nom').value = '';
+            document.getElementById('c-prenom').value = '';
+            document.getElementById('c-email').value = '';
+            document.getElementById('c-tel').value = '';
+            document.getElementById('c-sujet').value = '';
+            document.getElementById('c-message').value = '';
+
+            window.scrollTo({
+                top: document.querySelector('.contact-form-box').offsetTop - 100,
+                behavior: 'smooth'
+            });
+        });
     }
+});
 
-    document.getElementById('contact-success').style.display = 'block';
-
-    document.getElementById('c-nom').value = '';
-    document.getElementById('c-prenom').value = '';
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-tel').value = '';
-    document.getElementById('c-sujet').value = '';
-    document.getElementById('c-message').value = '';
-
-    window.scrollTo({
-        top: document.querySelector('.contact-form-box').offsetTop - 100,
-        behavior: 'smooth'
-    });
-}
 
 // ===== FAQ ACCORDION =====
 document.addEventListener('DOMContentLoaded', function() {
