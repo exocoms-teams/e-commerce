@@ -13,6 +13,7 @@
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
         'views/templates/Mentions_légales.xml',
+        'views/templates/Cookies.xml',
         'data/Footer.xml',
         'data/Header.xml',
         'data/Setting.xml',
