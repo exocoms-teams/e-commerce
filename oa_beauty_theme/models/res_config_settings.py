@@ -8,4 +8,4 @@ class ResConfigSettings(models.TransientModel):
         ('gemini', 'Google Gemini'),
         ('openai', 'OpenAI')
     ], string='AI Provider', default='gemini', config_parameter='oa_beauty_theme.ai_provider')
-    oa_ai_system_prompt = fields.Text(string='AI System Prompt', config_parameter='oa_beauty_theme.ai_system_prompt', default='You are an expert luxury beauty advisor for O&A Beauty.')
+    oa_ai_system_prompt = fields.Char(string='AI System Prompt', config_parameter='oa_beauty_theme.ai_system_prompt', default='You are an expert luxury beauty advisor for O&A Beauty.')
