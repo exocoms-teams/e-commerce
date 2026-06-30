@@ -4,13 +4,12 @@ import uuid
 
 class AdvisorController(http.Controller):
 
-    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True)
+    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True, csrf=False)
     def get_recommendation(self, **kw):
-        # Extract data from the JSON body
-        data = request.jsonrequest
-        skin_type = data.get('skin_type', '').lower()
-        concern = data.get('main_concern', '').lower()
-        budget = data.get('budget', '').lower()
+        # Extract data from the JSON-RPC params (passed as kw)
+        skin_type = kw.get('skin_type', '').lower()
+        concern = kw.get('main_concern', '').lower()
+        budget = kw.get('budget', '').lower()
 
         # Product Intelligence Layer: Query Odoo Catalog dynamically
         # In a real intelligent setup, we would score products. Here we do a basic matching.
