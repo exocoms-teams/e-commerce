@@ -223,12 +223,12 @@
                                         <div class="accordion" id="faqAccordion">
                                             <t t-foreach="faq_questions" t-as="question" t-key="question.id">
                                                 <div class="accordion-item" style="border: none; border-bottom: 1px solid #e9ecef;">
-                                                    <h2 class="accordion-header" id="heading<t t-esc="question.id"/>">
-                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<t t-esc="question.id"/>" aria-expanded="false" aria-controls="collapse<t t-esc="question.id"/>">
+                                                    <h2 class="accordion-header" t-attf-id="heading{{question.id}}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" t-attf-data-bs-target="#collapse{{question.id}}" aria-expanded="false" t-attf-aria-controls="collapse{{question.id}}">
                                                             <t t-esc="question.name"/>
                                                         </button>
                                                     </h2>
-                                                    <div id="collapse<t t-esc="question.id"/>" class="accordion-collapse collapse" aria-labelledby="heading<t t-esc="question.id"/>" data-bs-parent="#faqAccordion">
+                                                    <div t-attf-id="collapse{{question.id}}" class="accordion-collapse collapse" t-attf-aria-labelledby="heading{{question.id}}" data-bs-parent="#faqAccordion">
                                                         <div class="accordion-body" style="background: #f8f9fa;">
                                                             <t t-esc="question.answer or 'Réponse en cours de rédaction.'"/>
                                                         </div>
