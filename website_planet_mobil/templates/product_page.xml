@@ -3,6 +3,10 @@
 
     <template id="product_page" name="TechShop Pro - Détail produit">
         <t t-call="website_planet_mobil.layout">
+            <t t-set="_prod_name" t-value="product['name'] if isinstance(product, dict) else product.name"/>
+            <t t-set="_prod_desc" t-value="product['description'] if isinstance(product, dict) else (product.description_sale or '')"/>
+            <t t-set="additional_title" t-value="_prod_name + ' — Planet Mobil Paris'"/>
+            <t t-set="website_meta_description" t-value="_prod_desc or ('Achetez ' + _prod_name + ' chez Planet Mobil à Paris. Livraison rapide, paiement sécurisé, retours sous 30 jours.')"/>
             <div id="wrap" class="oe_structure">
                 <div id="oe_structure_product_top" class="oe_structure oe_empty"/>
                 <section class="tsp-section tsp-product-detail">
