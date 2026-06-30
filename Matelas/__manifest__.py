@@ -13,8 +13,7 @@
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
         'views/templates/Mentions_légales.xml',
-        'data/Footer.xml',
-        'data/Header.xml',
+       
 
     ],
     'assets': {
