@@ -1,161 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Héritage du template natif Odoo : page produit du shop -->
     <template id="product_specs_inherit" inherit_id="website_sale.product" name="Planet Mobil - Caractéristiques produit">
 
-        <!-- Injection après la section principale du produit -->
+        <!-- 1. Boutons Imprimer/Partager dans la colonne droite, après le bouton Ajouter au panier -->
+        <xpath expr="//div[@id='add_to_cart']" position="after">
+            <div class="pm-specs-actions" style="display:flex; gap:10px; margin-top:16px; justify-content:flex-end;">
+                <button class="pm-specs-btn pm-btn-print" onclick="window.print()"
+                    style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; padding:9px 18px; border-radius:50px; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; cursor:pointer;">
+                    <i class="fa fa-print"/> Imprimer
+                </button>
+                <button class="pm-specs-btn pm-btn-share" id="pm-share-btn"
+                    style="display:inline-flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:600; padding:9px 18px; border-radius:50px; background:#2563eb; color:#fff; border:none; cursor:pointer;">
+                    <i class="fa fa-share-alt"/> Partager
+                </button>
+            </div>
+        </xpath>
+
+        <!-- 2. Tableau des caractéristiques en bas de page -->
         <xpath expr="//div[@id='product_detail_main']" position="after">
 
-            <div class="pm-specs-block container" id="pm-specs-block">
+            <div class="container" id="pm-specs-block" style="margin:48px auto; padding:0 24px;">
 
                 <style>
-                    .pm-specs-block {
-                        margin: 48px auto;
-                        padding: 0 24px;
-                    }
-                    .pm-specs-header {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        flex-wrap: wrap;
-                        gap: 12px;
-                        margin-bottom: 20px;
-                    }
-                    .pm-specs-title {
-                        font-size: 1.3rem;
-                        font-weight: 700;
-                        color: #0f172a;
-                        margin: 0;
-                    }
-                    .pm-specs-actions {
-                        display: flex;
-                        gap: 10px;
-                    }
-                    .pm-specs-btn {
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 8px;
-                        font-size: 0.85rem;
-                        font-weight: 600;
-                        padding: 9px 18px;
-                        border-radius: 50px;
-                        border: none;
-                        cursor: pointer;
-                        transition: all 0.2s;
-                    }
-                    .pm-btn-print {
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: 1px solid #e2e8f0;
-                    }
-                    .pm-btn-print:hover { background: #e2e8f0; color: #0f172a; }
-                    .pm-btn-share {
-                        background: #2563eb;
-                        color: #fff;
-                    }
-                    .pm-btn-share:hover { opacity: 0.9; transform: translateY(-1px); }
-                    .pm-specs-table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        overflow: hidden;
-                    }
-                    .pm-specs-table tr:nth-child(even) { background: #f8fafc; }
-                    .pm-specs-table td {
-                        padding: 12px 18px;
-                        font-size: 0.875rem;
-                        border-bottom: 1px solid #f1f5f9;
-                    }
-                    .pm-specs-label {
-                        font-weight: 600;
-                        color: #64748b;
-                        width: 40%;
-                    }
-                    .pm-specs-value { color: #0f172a; }
-                    .pm-specs-empty {
-                        color: #94a3b8;
-                        font-style: italic;
-                        padding: 16px 0;
-                    }
-                    /* Toast */
-                    .pm-toast {
-                        position: fixed;
-                        bottom: 32px;
-                        left: 50%;
-                        transform: translateX(-50%) translateY(20px);
-                        background: #0f172a;
-                        color: #fff;
-                        font-size: 0.85rem;
-                        font-weight: 600;
-                        padding: 12px 24px;
-                        border-radius: 50px;
-                        opacity: 0;
-                        transition: all 0.3s;
-                        z-index: 9999;
-                        pointer-events: none;
-                    }
-                    .pm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-                    /* Impression */
+                    .pm-specs-title { font-size:1.2rem; font-weight:700; color:#0f172a; margin:0 0 16px 0; }
+                    .pm-specs-table { width:100%; border-collapse:collapse; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; }
+                    .pm-specs-table tr:nth-child(even) { background:#f8fafc; }
+                    .pm-specs-table td { padding:12px 18px; font-size:0.875rem; border-bottom:1px solid #f1f5f9; }
+                    .pm-specs-label { font-weight:600; color:#64748b; width:40%; }
+                    .pm-specs-value { color:#0f172a; }
+                    .pm-toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; font-size:0.85rem; font-weight:600; padding:12px 24px; border-radius:50px; opacity:0; transition:all 0.3s; z-index:9999; pointer-events:none; }
+                    .pm-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
                     @media print {
-                        body * { visibility: hidden; }
-                        #pm-specs-block, #pm-specs-block * { visibility: visible; }
-                        #pm-specs-block {
-                            position: absolute;
-                            top: 0; left: 0;
-                            width: 100%;
-                            padding: 40px;
-                        }
-                        .pm-specs-actions { display: none; }
-                        .pm-print-header { display: block !important; text-align: center; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; }
-                        .pm-print-logo { font-size: 1.4rem; font-weight: 900; }
-                        .pm-print-product { font-size: 1rem; color: #64748b; margin-top: 4px; }
+                        body * { visibility:hidden; }
+                        #pm-specs-block, #pm-specs-block * { visibility:visible; }
+                        #pm-specs-block { position:absolute; top:0; left:0; width:100%; padding:40px; }
+                        .pm-specs-actions { display:none !important; }
+                        .pm-print-header { display:block !important; text-align:center; margin-bottom:24px; border-bottom:2px solid #e2e8f0; padding-bottom:16px; }
                     }
                 </style>
 
-                <!-- En-tête impression uniquement -->
                 <div class="pm-print-header" style="display:none;">
-                    <div class="pm-print-logo">PLANET MOBIL</div>
-                    <div class="pm-print-product">
-                        <t t-out="product.name"/>
-                    </div>
+                    <div style="font-size:1.4rem; font-weight:900;">PLANET MOBIL</div>
+                    <div style="color:#64748b; margin-top:4px;"><t t-out="product.name"/></div>
                 </div>
 
-                <div class="pm-specs-header">
-                    <h2 class="pm-specs-title">Caractéristiques</h2>
-                    <div class="pm-specs-actions">
-                        <button class="pm-specs-btn pm-btn-print" onclick="window.print()">
-                            <i class="fa fa-print"/> Imprimer
-                        </button>
-                        <button class="pm-specs-btn pm-btn-share" id="pm-share-btn">
-                            <i class="fa fa-share-alt"/> Partager
-                        </button>
-                    </div>
-                </div>
+                <h2 class="pm-specs-title">Caractéristiques</h2>
 
-                <!-- Attributs du produit Odoo -->
                 <t t-if="product.attribute_line_ids">
                     <table class="pm-specs-table">
                         <t t-foreach="product.attribute_line_ids" t-as="line">
                             <tr>
-                                <td class="pm-specs-label">
-                                    <t t-out="line.attribute_id.name"/>
-                                </td>
-                                <td class="pm-specs-value">
-                                    <t t-out="', '.join(line.value_ids.mapped('name'))"/>
-                                </td>
+                                <td class="pm-specs-label"><t t-out="line.attribute_id.name"/></td>
+                                <td class="pm-specs-value"><t t-out="', '.join(line.value_ids.mapped('name'))"/></td>
                             </tr>
                         </t>
                     </table>
                 </t>
                 <t t-else="">
-                    <p class="pm-specs-empty">Caractéristiques non renseignées.</p>
+                    <p style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
                 </t>
 
             </div>
 
-            <!-- Toast -->
             <div class="pm-toast" id="pm-toast-specs"></div>
 
             <script>
@@ -171,7 +78,7 @@
                 if (!btn) return;
                 btn.addEventListener('click', function () {
                     var url = window.location.href;
-                    var name = document.querySelector('.product-name h1, h1.o_shop_product_title, h1[itemprop="name"]');
+                    var name = document.querySelector('h1[itemprop="name"], .product_name h1, h1.o_shop_product_title');
                     var title = (name ? name.textContent.trim() : document.title) + ' — Planet Mobil';
                     if (navigator.share) {
                         navigator.share({ title: title, url: url }).catch(function(){});
