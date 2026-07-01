@@ -43,7 +43,10 @@
 
                             <!-- Favoris (Wishlist) -->
                             <li class="nav-item">
-                                <t t-set="pm_wl_count" t-value="len(request.env['product.wishlist'].sudo().search([('partner_id', '=', request.env.user.partner_id.id)]))"/>
+                                <t t-set="pm_wl_count" t-value="0"/>
+                                <t t-if="not request.env.user._is_public()">
+                                    <t t-set="pm_wl_count" t-value="request.env['product.wishlist'].sudo().search_count([('partner_id', '=', request.env.user.partner_id.id)])"/>
+                                </t>
                                 <a href="/wishlist" class="pm-topicon" title="Mes favoris">
                                     <i class="fa fa-heart-o fa-lg"/>
                                     <span t-if="pm_wl_count > 0" class="pm-cart-badge">
@@ -54,8 +57,7 @@
 
                             <!-- Panier -->
                             <li class="nav-item">
-                                <t t-set="pm_order" t-value="request.website.sale_get_order(force_create=False)"/>
-                                <t t-set="pm_cart_qty" t-value="pm_order.cart_quantity if pm_order else 0"/>
+                                <t t-set="pm_cart_qty" t-value="request.session.get('cart_quantity', 0) or 0"/>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
                                     <span t-if="pm_cart_qty > 0" class="pm-cart-badge o_cart_quantity">
