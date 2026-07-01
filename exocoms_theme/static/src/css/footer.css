@@ -131,41 +131,48 @@ footer#bottom .o_footer_copyright .js_language_selector a {
 
 /* =========================================================
    CORRECTIF ALIGNEMENT — ligne cookies / langue / copyright
-   Ces 3 éléments s'empilaient verticalement au lieu de rester
-   sur une seule ligne alignée. On force un flex horizontal
-   avec retour à la ligne géré proprement sur mobile.
+   Ces éléments s'empilaient verticalement (chacun dans son propre
+   bloc) au lieu de rester sur une seule ligne alignée. On force
+   TOUS les enfants directs du container en flex horizontal, quelle
+   que soit leur structure exacte (div, row, span...).
 ========================================================= */
-footer#bottom .o_footer_copyright .container > .row {
+footer#bottom .o_footer_copyright .container {
     display: flex !important;
     flex-wrap: wrap !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    gap: 6px 24px !important;
-    padding: 10px 0 !important;
+    justify-content: flex-start !important;
+    gap: 6px 20px !important;
+    padding: 12px 0 !important;
 }
 
-footer#bottom .o_footer_copyright .container > .row > div {
+footer#bottom .o_footer_copyright .container > * {
     width: auto !important;
     max-width: 100% !important;
-    flex: 0 1 auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
     display: flex !important;
     align-items: center !important;
     flex-wrap: wrap !important;
-    gap: 4px 16px !important;
+    gap: 4px 12px !important;
 }
 
-footer#bottom .o_footer_copyright .container > .row > div > * {
-    margin: 0 !important;
+/* Petit séparateur visuel entre les blocs (cookies | langue | copyright) */
+footer#bottom .o_footer_copyright .container > * + *::before {
+    content: "•";
+    color: #3a4560;
+    margin-right: 12px;
 }
 
 @media (max-width: 576px) {
-    footer#bottom .o_footer_copyright .container > .row {
+    footer#bottom .o_footer_copyright .container {
         justify-content: center !important;
         text-align: center !important;
+        flex-direction: column !important;
+        gap: 6px !important;
     }
-    footer#bottom .o_footer_copyright .container > .row > div {
-        justify-content: center !important;
-        width: 100% !important;
+    footer#bottom .o_footer_copyright .container > * + *::before {
+        content: none;
     }
 }
 
