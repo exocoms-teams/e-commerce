@@ -35,56 +35,79 @@
 
       </section>
 
-      <!-- Formulaire d'avis -->
+      <!-- Formulaire d'avis — visible uniquement si a acheté -->
       <section class="avis-form-section container" id="avis-form">
         <div class="avis-form-box">
 
-          <h2>Laisser un avis</h2>
-
-          <div id="avis-success" class="avis-success" style="display:none">
-            ✅ Merci ! Votre avis a bien été envoyé.
-          </div>
-
-          <!-- Nom -->
-          <div class="avis-field">
-            <label>Nom / Pseudonyme *</label>
-            <input type="text" id="avis-nom" class="avis-input"
-              placeholder="Votre nom" />
-          </div>
-
-          <!-- Note -->
-          <div class="avis-field">
-            <label>Note (sur 5) *</label>
-            <div class="star-rating" id="star-rating">
-              <span class="star" data-value="1">★</span>
-              <span class="star" data-value="2">★</span>
-              <span class="star" data-value="3">★</span>
-              <span class="star" data-value="4">★</span>
-              <span class="star" data-value="5">★</span>
+          <!-- Cas 1 : pas connecté -->
+          <t t-if="not user_connected">
+            <div class="avis-message-info">
+              <i class="bi bi-lock-fill" />
+              <h3>Connectez-vous pour laisser un avis</h3>
+              <p>Vous devez être connecté et avoir effectué un achat
+                pour laisser un avis.</p>
+              <a href="/web/login" class="btn-avis-action">
+                <i class="bi bi-box-arrow-in-right" /> Se connecter </a>
             </div>
-            <input type="hidden" id="avis-note" value="0" />
-          </div>
+          </t>
 
-          <!-- Produit acheté -->
-          <div class="avis-field">
-            <label>Titre *</label>
-            <input type="text" id="avis-produit" class="avis-input"
-              placeholder="Ex: Matelas SÉRÉNITÉ" />
-          </div>
+          <!-- Cas 2 : connecté mais n'a pas acheté -->
+          <t t-elif="user_connected and not a_achete">
+            <div class="avis-message-info">
+              <i class="bi bi-bag-x-fill" />
+              <h3>Achat requis</h3>
+              <p>Vous devez avoir effectué un achat sur notre site
+                pour pouvoir laisser un avis.</p>
+              <a href="/shop" class="btn-avis-action">
+                <i class="bi bi-shop" /> Découvrir nos matelas </a>
+            </div>
+          </t>
 
-          <!-- Commentaire -->
-          <div class="avis-field">
-            <label>Commentaire *</label>
-            <textarea id="avis-commentaire" class="avis-input avis-textarea"
-              placeholder="Votre avis..." />
-          </div>
+          <!-- Cas 3 : connecté et a acheté → formulaire visible -->
+          <t t-elif="a_achete">
+            <h2>Laisser un avis</h2>
 
-          <!-- Bouton -->
-          <button class="btn btn-send-avis" id="btn-envoyer-avis">
-            <i class="bi bi-send-fill"></i> Envoyer mon avis </button>
+            <div id="avis-success" class="avis-success" style="display:none">
+              ✅ Merci ! Votre avis a bien été envoyé.
+            </div>
+
+            <div class="avis-field">
+              <label>Nom / Pseudonyme *</label>
+              <input type="text" id="avis-nom" class="avis-input"
+                placeholder="Votre nom" />
+            </div>
+
+            <div class="avis-field">
+              <label>Note (sur 5) *</label>
+              <div class="star-rating" id="star-rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+              </div>
+              <input type="hidden" id="avis-note" value="0" />
+            </div>
+
+            <div class="avis-field">
+              <label>Titre *</label>
+              <input type="text" id="avis-produit" class="avis-input"
+                placeholder="Ex: Matelas SÉRÉNITÉ" />
+            </div>
+
+            <div class="avis-field">
+              <label>Commentaire *</label>
+              <textarea id="avis-commentaire" class="avis-input avis-textarea"
+                placeholder="Votre avis..." />
+            </div>
+
+            <button class="btn btn-send-avis" id="btn-envoyer-avis">
+              <i class="bi bi-send-fill" /> Envoyer mon avis </button>
+          </t>
 
         </div>
       </section>
+
 
       <!-- Newsletter -->
       <section class="newsletter-section">
