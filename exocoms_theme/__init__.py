@@ -511,6 +511,8 @@ def _merge_root_category(env, website, old_name, target_category):
     for p in products:
         new_categs = (p.public_categ_ids - old) | target_category
         p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
+    if not target_category.website_published:
+        target_category.write({'website_published': True})
     old.write({'active': False})
     _logger.info(
         "Catégorie '%s' (id=%s) RÉCUPÉRÉE dans '%s' : %s produit(s) "
@@ -679,12 +681,24 @@ def post_init_hook(env):
         ])
         c = _find_by_name_ci(siblings, name)
         if not c:
-            vals = {'name': name, 'sequence': seq, 'website_id': website.id}
+            vals = {
+                'name': name,
+                'sequence': seq,
+                'website_id': website.id,
+                'website_published': True,  # CORRECTIF : toujours visible, jamais grisée par défaut
+            }
             if parent:
                 vals['parent_id'] = parent.id
             c = cat.create(vals)
             _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
         else:
+            # CORRECTIF : une catégorie retrouvée (déjà existante) peut
+            # avoir été laissée dépubliée (ex: catégorie créée puis
+            # jamais activée sur le site préexistant) — on force sa
+            # publication à chaque passage pour qu'elle ne reste jamais
+            # invisible/grisée sans raison.
+            if not c.website_published:
+                c.write({'website_published': True})
             _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante, site Exocoms)", name, c.id)
         return c
 
@@ -700,7 +714,11 @@ def post_init_hook(env):
         'Monetique'
     )
     if monetique_sub and monetique_sub.id != monetique_root.id:
-        monetique_sub.write({'parent_id': monetique_root.id, 'sequence': 1})
+        monetique_sub.write({
+            'parent_id': monetique_root.id,
+            'sequence': 1,
+            'website_published': True,
+        })
 
     pdv = cat.search([
         ('name', 'ilike', 'Point de vente'),
@@ -708,7 +726,11 @@ def post_init_hook(env):
         ('website_id', '=', website.id),
     ], limit=1)
     if pdv:
-        pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
+        pdv.write({
+            'parent_id': monetique_root.id,
+            'sequence': 2,
+            'website_published': True,
+        })
 
     # Réattacher "Crypto"/"CRYPTO" existant (racine préexistante sur ce
     # site) sous Monétique — par nom, jamais par ID. Les produits déjà
@@ -720,7 +742,11 @@ def post_init_hook(env):
         ('website_id', '=', website.id),
     ], limit=1)
     if crypto_root:
-        crypto_root.write({'parent_id': monetique_root.id, 'sequence': 6})
+        crypto_root.write({
+            'parent_id': monetique_root.id,
+            'sequence': 6,
+            'website_published': True,  # CORRECTIF : catégorie dépubliée sur l'ancien site
+        })
 
     # Réattacher "Distributeur automatique" existant (racine) sous
     # Monétique — même logique, aucune perte de données.
@@ -730,7 +756,11 @@ def post_init_hook(env):
         ('website_id', '=', website.id),
     ], limit=1)
     if distrib_root:
-        distrib_root.write({'parent_id': monetique_root.id, 'sequence': 4})
+        distrib_root.write({
+            'parent_id': monetique_root.id,
+            'sequence': 4,
+            'website_published': True,  # CORRECTIF : catégorie dépubliée sur l'ancien site
+        })
 
     # RÉCUPÉRATION complète de l'ancienne catégorie racine
     # "Informatique" (nom différent du nôtre, donc impossible à
