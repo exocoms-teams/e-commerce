@@ -22,31 +22,40 @@
                                 _submit_classes.f="tsp-search-btn" />
                         </ul>
 
-                        <!-- Droite : Sign In + Wishlist + Panier -->
-                        <ul
-                            class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end tsp-header-actions">
-                            <!-- Sign In / User -->
-                            <t t-call="portal.placeholder_user_sign_in"
-                                _link_class.f="o_nav_link_btn nav-link border px-3" />
-                            <t t-call="portal.user_dropdown"
-                                _user_name="True"
-                                _item_class.f="dropdown"
-                                _link_class.f="nav-link border-0"
-                                _dropdown_menu_class.f="dropdown-menu-end" />
-                            <!-- Wishlist -->
-                            <t t-call="website_sale_wishlist.header_wishlist_link"
-                                _item_class.f="nav-item"
-                                _link_class.f="nav-link"
-                                _icon.f="true"
-                                _icon_wrap_class.f="position-relative d-inline-block"
-                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
+                        <!-- Droite : Compte + Favoris + Panier -->
+                        <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end tsp-header-actions">
+
+                            <!-- Connexion / Mon compte -->
+                            <li class="nav-item">
+                                <t t-if="not request.env.user._is_public()">
+                                    <a href="/my/account" class="pm-topbtn pm-topbtn-account" title="Mon compte">
+                                        <i class="fa fa-user-circle-o fa-lg"/>
+                                        <span class="pm-topbtn-label">Mon compte</span>
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <a href="/web/login" class="pm-topbtn pm-topbtn-login" title="Connexion">
+                                        <i class="fa fa-sign-in fa-lg"/>
+                                        <span class="pm-topbtn-label">Connexion</span>
+                                    </a>
+                                </t>
+                            </li>
+
+                            <!-- Favoris (Wishlist) -->
+                            <li class="nav-item">
+                                <a href="/wishlist" class="pm-topicon" title="Mes favoris">
+                                    <i class="fa fa-heart-o fa-lg"/>
+                                </a>
+                            </li>
+
                             <!-- Panier -->
-                            <t t-call="website_sale.header_cart_link"
-                                _item_class.f="nav-item"
-                                _link_class.f="nav-link"
-                                _icon.f="true"
-                                _icon_wrap_class.f="position-relative d-inline-block"
-                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
+                            <li class="nav-item">
+                                <a href="/shop/cart" class="pm-topicon pm-topicon-cart" title="Mon panier">
+                                    <i class="fa fa-shopping-cart fa-lg"/>
+                                    <span class="pm-cart-badge o_cart_quantity" style="display:none;">0</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </t>
