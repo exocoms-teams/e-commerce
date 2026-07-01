@@ -2675,7 +2675,7 @@ a[name="website_sale_main_button"] {
 
 .o_wsale_products_grid {
     --o-wsale-ppr: 4 !important;
-};
+}
 
 /* ============================================================
    PAGE MON COMPTE
@@ -3370,4 +3370,149 @@ a[name="website_sale_main_button"] {
     background: var(--blue-dark) !important;
     border-color: var(--blue-dark) !important;
     transform: translateY(-1px);
+}
+
+/* ══════════════════════════════════════════════════════════
+   PAGE SHOP — REDESIGN
+   ══════════════════════════════════════════════════════════ */
+
+/* Fond général */
+.o_wsale_products_page {
+    background: #f8faff !important;
+}
+
+/* Titre "Tous les produits" */
+.o_wsale_shop_title {
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    font-size: 1.8rem !important;
+    margin-bottom: 12px !important;
+}
+
+/* ── Barre de catégories native Odoo (pills horizontales) ── */
+.o_wsale_category_list {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    padding: 12px 0 !important;
+    margin-bottom: 12px !important;
+    list-style: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+.o_wsale_category_list::-webkit-scrollbar { display: none; }
+
+.o_wsale_category_item a,
+.o_wsale_category_list > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 5px 14px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    color: #0f172a !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+    transition: background 0.15s, border-color 0.15s, color 0.15s !important;
+}
+.o_wsale_category_item a:hover,
+.o_wsale_category_list > li > a:hover {
+    background: var(--blue) !important;
+    border-color: var(--blue) !important;
+    color: #fff !important;
+}
+.o_wsale_category_item.active a,
+.o_wsale_category_list > li.active > a {
+    background: var(--blue) !important;
+    border-color: var(--blue) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+/* Masquer les thumbnails dans les catégories, garder juste le texte */
+.o_wsale_category_list img {
+    display: none !important;
+}
+
+/* ── Cards produits ── */
+.oe_product .thumbnail,
+.oe_product .card {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease !important;
+    height: 100% !important;
+}
+.oe_product:hover .thumbnail,
+.oe_product:hover .card {
+    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.12) !important;
+    transform: translateY(-3px) !important;
+    border-color: #bfdbfe !important;
+}
+
+/* Zone image */
+.oe_product .o_image,
+.oe_product .product_image_block,
+.oe_product .o_ribbon_container {
+    background: #f8faff !important;
+}
+
+/* Nom produit */
+.oe_product .oe_product_name,
+.oe_product h6,
+.oe_product .o_product_name {
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    font-size: 0.93rem !important;
+}
+
+/* Prix */
+.oe_product .oe_price .oe_currency_value,
+.oe_product .product_price .oe_currency_value {
+    color: var(--blue) !important;
+    font-weight: 800 !important;
+    font-size: 1.05rem !important;
+}
+
+/* Bouton Add to Cart */
+.oe_product .btn.btn-primary,
+.oe_product .o_wsale_product_btn,
+.oe_product .js_add_cart {
+    background: var(--blue) !important;
+    border-color: var(--blue) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    width: 100% !important;
+    transition: background 0.15s !important;
+}
+.oe_product .btn.btn-primary:hover,
+.oe_product .o_wsale_product_btn:hover,
+.oe_product .js_add_cart:hover {
+    background: var(--blue-dark) !important;
+    border-color: var(--blue-dark) !important;
+}
+
+/* ── Barre search/sort ── */
+#products_header {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 10px 16px !important;
+    margin-bottom: 16px !important;
+}
+
+/* ── Responsive shop ── */
+@media (max-width: 767px) {
+    .o_wsale_category_list {
+        padding: 8px 0 !important;
+    }
+    .oe_product .thumbnail,
+    .oe_product .card {
+        border-radius: 10px !important;
+    }
 }
