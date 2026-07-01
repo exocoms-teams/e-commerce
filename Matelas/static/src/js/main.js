@@ -124,6 +124,36 @@
             });
         }
 
+        // ===== HEADER : icône favoris + icône compte =====
+        const header = document.querySelector('header#top') || document;
+        const cartBtn = header.querySelector('.o_cart_btn');
+
+        if (cartBtn && !header.querySelector('.matelas-wishlist-btn')) {
+            const wishlistLink = document.createElement('a');
+            wishlistLink.href = '/shop/wishlist';
+            wishlistLink.className = 'matelas-wishlist-btn nav-link';
+            wishlistLink.title = 'Mes favoris';
+            wishlistLink.innerHTML = '<i class="bi bi-heart"></i>';
+
+            const cartItem = cartBtn.closest('li') || cartBtn.parentElement;
+            if (cartItem && cartItem.parentElement) {
+                const wishlistItem = document.createElement('li');
+                wishlistItem.className = 'nav-item d-flex align-items-center';
+                wishlistItem.appendChild(wishlistLink);
+                cartItem.parentElement.insertBefore(wishlistItem, cartItem);
+            }
+        }
+
+        const accountLink = header.querySelector('a[href="/my/home"], a[href^="/web/login"]');
+        if (accountLink && !accountLink.classList.contains('matelas-account-link')) {
+            const isLoggedIn = accountLink.getAttribute('href') === '/my/home';
+            accountLink.innerHTML = isLoggedIn
+                ? '<i class="bi bi-person-circle"></i>'
+                : '<i class="bi bi-person"></i>';
+            accountLink.classList.add('matelas-account-link');
+            accountLink.title = isLoggedIn ? 'Mon compte' : 'Se connecter';
+        }
+
         // ===== BANNIÈRE COOKIES : texte personnalisé =====
         const cookiesBar = document.getElementById('website_cookies_bar');
         if (cookiesBar) {
