@@ -310,6 +310,110 @@ body {
     color: var(--blue);
 }
 
+/* ══════════════════════════════════════════
+   HEADER — Boutons Compte / Favoris / Panier
+══════════════════════════════════════════ */
+
+/* Bouton texte (Connexion / Mon compte) */
+.pm-topbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.pm-topbtn-login {
+    background: var(--blue);
+    color: #fff !important;
+}
+.pm-topbtn-login:hover {
+    background: var(--blue-dark);
+    color: #fff !important;
+}
+.pm-topbtn-account {
+    background: var(--blue-light);
+    color: var(--blue) !important;
+}
+.pm-topbtn-account:hover {
+    background: var(--blue);
+    color: #fff !important;
+}
+
+/* Boutons icône (Favoris / Panier) */
+.pm-topicon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    color: var(--blue) !important;
+    text-decoration: none !important;
+    font-size: 1.1rem;
+    transition: background 0.2s, color 0.2s;
+}
+.pm-topicon:hover {
+    background: var(--blue);
+    color: #fff !important;
+}
+
+/* Wrapper pour les items natifs Odoo (wishlist + cart) */
+.pm-topicon-wrap {
+    list-style: none;
+}
+
+/* Badge natif Odoo dans nos icônes */
+.pm-topicon .badge,
+.pm-topicon .o_cart_quantity,
+.pm-topicon [class*="badge"] {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    border-radius: 50px !important;
+    background: #ef4444 !important;
+    color: #fff !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    padding: 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+}
+
+/* Badge panier */
+.pm-cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+/* Cache le badge quand la valeur est 0 — !important pour écraser display:flex */
+.pm-hidden {
+    display: none !important;
+}
+
 .tsp-wrapper {
     display: flex;
     min-height: calc(100vh - var(--header-h));
