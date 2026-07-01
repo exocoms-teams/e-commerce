@@ -55,10 +55,10 @@
 
                             <!-- Panier -->
                             <li class="nav-item">
-                                <t t-set="pm_cart_qty" t-value="request.session.get('cart_quantity', 0) or 0"/>
+                                <t t-set="_pm_order" t-value="request.website.sale_get_order()"/>
+                                <t t-set="pm_cart_qty" t-value="int(sum(_pm_order.order_line.mapped('product_uom_qty'))) if _pm_order and _pm_order.order_line else 0"/>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
-                                    <!-- d-none = display:none!important écrase display:flex du .pm-cart-badge -->
                                     <span t-attf-class="pm-cart-badge o_cart_quantity{{ ' d-none' if pm_cart_qty == 0 else '' }}">
                                         <t t-out="pm_cart_qty"/>
                                     </span>
