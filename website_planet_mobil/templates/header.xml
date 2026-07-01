@@ -85,6 +85,20 @@
         <template id="header_mobile_links" name="Planet Mobil - Header Mobile Links"
             inherit_id="website.template_header_mobile">
 
+            <!-- Ajoute l'icône wishlist avant le bouton hamburger -->
+            <xpath expr="//button[hasclass('navbar-toggler')]" position="before">
+                <t t-set="pm_wl_count" t-value="0"/>
+                <t t-if="not request.env.user._is_public()">
+                    <t t-set="pm_wl_count" t-value="request.env['product.wishlist'].sudo().search_count([('partner_id', '=', request.env.user.partner_id.id)])"/>
+                </t>
+                <a href="/shop/wishlist" class="pm-topicon me-1" title="Mes favoris" style="width:38px;height:38px;font-size:1rem;">
+                    <i class="fa fa-heart-o"/>
+                    <t t-if="pm_wl_count > 0">
+                        <span class="pm-cart-badge"><t t-out="pm_wl_count"/></span>
+                    </t>
+                </a>
+            </xpath>
+
             <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace">
                 <li class="nav-item border-top px-0 tsp-mobile-nav-item">
                     <a href="/" class="nav-link p-3 text-wrap">
