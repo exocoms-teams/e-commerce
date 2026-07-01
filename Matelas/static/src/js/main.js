@@ -137,35 +137,31 @@
             cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
         }
 
-        // ===== HEADER : icône compte avec menu déroulant (connexion/déconnexion) =====
-        const accountLink = header.querySelector('a[href="/my/home"], a[href^="/web/login"]');
-        if (accountLink && !accountLink.classList.contains('matelas-account-link')) {
-            const isLoggedIn = accountLink.getAttribute('href') === '/my/home';
-            accountLink.classList.add('matelas-account-link');
+        // ===== HEADER : icône compte (remplace le nom, garde le menu déroulant natif) =====
+        const logoutLink = header.querySelector('a[href*="/web/session/logout"]');
 
-            if (isLoggedIn) {
-                const parentItem = accountLink.closest('li') || accountLink.parentElement;
-                parentItem.classList.add('dropdown', 'matelas-account-item');
+        if (logoutLink) {
+            // Cas connecté : on retrouve le vrai bouton qui affiche le nom (le "toggle"
+            // du menu déroulant), en remontant depuis le lien de déconnexion qui, lui,
+            // est stable quelle que soit la version/thème.
+            const menu = logoutLink.closest('.dropdown-menu, ul, div[class*="dropdown"]');
+            const parentItem = menu ? (menu.parentElement || menu.closest('li')) : null;
+            const toggle = parentItem
+                ? parentItem.querySelector('.dropdown-toggle, a[data-bs-toggle="dropdown"], button[data-bs-toggle="dropdown"]')
+                : null;
 
-                accountLink.setAttribute('href', '#');
-                accountLink.setAttribute('role', 'button');
-                accountLink.setAttribute('data-bs-toggle', 'dropdown');
-                accountLink.setAttribute('aria-expanded', 'false');
-                accountLink.classList.add('dropdown-toggle');
-                accountLink.innerHTML = '<i class="bi bi-person-circle"></i>';
-                accountLink.title = 'Mon compte';
-
-                const menu = document.createElement('div');
-                menu.className = 'dropdown-menu dropdown-menu-end';
-                menu.innerHTML =
-                    '<a class="dropdown-item" href="/my/home"><i class="bi bi-person me-2"></i>Mon compte</a>' +
-                    '<a class="dropdown-item" href="/my/orders"><i class="bi bi-bag me-2"></i>Mes commandes</a>' +
-                    '<div class="dropdown-divider"></div>' +
-                    '<a class="dropdown-item" href="/web/session/logout?redirect=/"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a>';
-                parentItem.appendChild(menu);
-            } else {
-                accountLink.innerHTML = '<i class="bi bi-person"></i>';
-                accountLink.title = 'Se connecter';
+            if (toggle && !toggle.classList.contains('matelas-account-link')) {
+                toggle.classList.add('matelas-account-link');
+                toggle.innerHTML = '<i class="bi bi-person-circle"></i>';
+                toggle.title = 'Mon compte';
+            }
+        } else {
+            // Cas déconnecté : simple lien "Se connecter"
+            const signInLink = header.querySelector('a[href^="/web/login"]');
+            if (signInLink && !signInLink.classList.contains('matelas-account-link')) {
+                signInLink.classList.add('matelas-account-link');
+                signInLink.innerHTML = '<i class="bi bi-person"></i>';
+                signInLink.title = 'Se connecter';
             }
         }
 
@@ -188,16 +184,23 @@
                         method: 'call',
                         params: {
                             product_id: productId,
-                            add_qty: 1
+                            add_qty: 1,
+                            csrf_token: (typeof odoo !== 'undefined' && odoo.csrf_token) ? odoo.csrf_token : undefined
                         }
                     })
                 })
-                    .then(function(response) { return response.json(); })
-                    .then(function(data) {
-                        const result = (data && data.result) || {};
-                        if (result.cart_quantity === undefined && !result.line_id) {
-                            throw new Error('cart update failed');
+                    .then(function(response) {
+                        return response.json().then(function(data) {
+                            return { status: response.status, ok: response.ok, data: data };
+                        });
+                    })
+                    .then(function(res) {
+                        if (res.data && res.data.error) {
+                            console.error('Erreur ajout panier (Odoo):', res.data.error);
+                            throw new Error('server error');
                         }
+                        const result = (res.data && res.data.result) || {};
+                        console.log('Réponse ajout panier:', result);
                         const cartQty = document.querySelector('.my_cart_quantity');
                         if (cartQty && result.cart_quantity !== undefined) {
                             cartQty.textContent = result.cart_quantity;
@@ -208,7 +211,8 @@
                             btn.textContent = originalText;
                         }, 2000);
                     })
-                    .catch(function() {
+                    .catch(function(err) {
+                        console.error('Erreur ajout panier (JS):', err);
                         btn.textContent = originalText;
                         alert("Impossible d'ajouter ce produit au panier pour le moment.");
                     });
