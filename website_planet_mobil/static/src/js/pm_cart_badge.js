@@ -9,7 +9,7 @@
         // Cible tous les éléments .o_cart_quantity sur la page
         document.querySelectorAll('.o_cart_quantity').forEach(function (el) {
             el.textContent = n;
-            el.classList.toggle('d-none', n === 0);
+            el.classList.toggle('pm-hidden', n === 0);
         });
     }
 

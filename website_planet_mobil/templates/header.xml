@@ -47,7 +47,7 @@
                                 </t>
                                 <a href="/shop/wishlist" class="pm-topicon" title="Mes favoris">
                                     <i class="fa fa-heart-o fa-lg"/>
-                                    <span t-attf-class="pm-cart-badge{{ ' d-none' if pm_wl_count == 0 else '' }}">
+                                    <span t-attf-class="pm-cart-badge{{ ' pm-hidden' if pm_wl_count == 0 else '' }}">
                                         <t t-out="pm_wl_count"/>
                                     </span>
                                 </a>
@@ -55,11 +55,10 @@
 
                             <!-- Panier -->
                             <li class="nav-item">
-                                <t t-set="_pm_order" t-value="request.website.sale_get_order()"/>
-                                <t t-set="pm_cart_qty" t-value="int(sum(_pm_order.order_line.mapped('product_uom_qty'))) if _pm_order and _pm_order.order_line else 0"/>
+                                <t t-set="pm_cart_qty" t-value="int(request.session.get('cart_quantity') or 0)"/>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
-                                    <span t-attf-class="pm-cart-badge o_cart_quantity{{ ' d-none' if pm_cart_qty == 0 else '' }}">
+                                    <span t-attf-class="pm-cart-badge o_cart_quantity{{ ' pm-hidden' if pm_cart_qty == 0 else '' }}">
                                         <t t-out="pm_cart_qty"/>
                                     </span>
                                 </a>
