@@ -41,20 +41,17 @@
                                 </t>
                             </li>
 
-                            <!-- Favoris (Wishlist) -->
-                            <li class="nav-item">
-                                <a href="/wishlist" class="pm-topicon" title="Mes favoris">
-                                    <i class="fa fa-heart-o fa-lg"/>
-                                </a>
-                            </li>
+                            <!-- Favoris (Wishlist) — compteur dynamique natif Odoo -->
+                            <t t-call="website_sale_wishlist.header_wishlist_link">
+                                <t t-set="item_class">nav-item pm-topicon-wrap</t>
+                                <t t-set="link_class">pm-topicon</t>
+                            </t>
 
-                            <!-- Panier -->
-                            <li class="nav-item">
-                                <a href="/shop/cart" class="pm-topicon pm-topicon-cart" title="Mon panier">
-                                    <i class="fa fa-shopping-cart fa-lg"/>
-                                    <span class="pm-cart-badge o_cart_quantity" style="display:none;">0</span>
-                                </a>
-                            </li>
+                            <!-- Panier — compteur dynamique natif Odoo -->
+                            <t t-call="website_sale.header_cart_link">
+                                <t t-set="item_class">nav-item pm-topicon-wrap</t>
+                                <t t-set="link_class">pm-topicon pm-topicon-cart</t>
+                            </t>
 
                         </ul>
                     </div>
