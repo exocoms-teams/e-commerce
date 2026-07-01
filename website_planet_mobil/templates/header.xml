@@ -58,11 +58,12 @@
                                 <t t-set="pm_cart_qty" t-value="int(request.session.get('cart_quantity') or 0)"/>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
-                                    <!-- Toujours dans le DOM pour le JS, invisible si vide -->
-                                    <span class="pm-cart-badge o_cart_quantity"
-                                          t-att-style="'display:none' if pm_cart_qty == 0 else ''">
-                                        <t t-out="pm_cart_qty"/>
-                                    </span>
+                                    <t t-if="pm_cart_qty > 0">
+                                        <span class="pm-cart-badge o_cart_quantity"><t t-out="pm_cart_qty"/></span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="o_cart_quantity" style="display:none"></span>
+                                    </t>
                                 </a>
                             </li>
 

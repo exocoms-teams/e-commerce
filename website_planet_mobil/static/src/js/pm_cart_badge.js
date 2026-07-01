@@ -7,8 +7,10 @@
         document.querySelectorAll('.o_cart_quantity').forEach(function (el) {
             el.textContent = n;
             if (n === 0) {
+                el.classList.remove('pm-cart-badge');
                 el.style.setProperty('display', 'none', 'important');
             } else {
+                el.classList.add('pm-cart-badge');
                 el.style.removeProperty('display');
             }
         });
