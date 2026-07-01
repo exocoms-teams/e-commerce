@@ -169,21 +169,25 @@
     </template>
 
     <!-- ═══════════════════════════════════════════
-         COMING SOON BADGE — Replaces Add to Cart
+         COMING SOON BADGE — Shown at top of accordion
+         Uses the same working inherit point as the specs template.
+         A <style> block hides the add-to-cart form for coming-soon products.
          ═══════════════════════════════════════════ -->
-    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product">
-        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product_accordion" name="O&amp;A Beauty — Coming Soon Badge">
+        <xpath expr="//div[@id='product_accordion']" position="before">
             <t t-if="product.oa_is_coming_soon">
-                <div class="oa-coming-soon-wrap text-center py-4 mb-3">
+                <div class="oa-coming-soon-wrap text-center py-4 mb-4">
                     <div class="oa-coming-soon-badge">
                         <span class="oa-coming-soon-icon">✦</span>
                         <span class="oa-coming-soon-text">Official Collection Coming Soon</span>
                     </div>
                     <p class="small text-muted mt-2 mb-0">Cette création sera bientôt disponible. Restez à l'écoute.</p>
                 </div>
-                <!-- Hide the real Add to Cart via CSS -->
+                <!-- Hide add-to-cart form elements for coming-soon products -->
                 <style>
-                    #add_to_cart_wrap { display: none !important; }
+                    form.js_add_to_cart_wrap,
+                    #product_option_block,
+                    .js_add_to_cart_wrap,
                     #oa_sticky_cart_bar { display: none !important; }
                 </style>
             </t>
