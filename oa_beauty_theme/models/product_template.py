@@ -8,6 +8,13 @@ class ProductTemplate(models.Model):
     oa_finish = fields.Char(string='Finish')
     oa_best_for = fields.Char(string='Best For')
     oa_key_ingredients = fields.Char(string='Key Ingredients')
+    
+    # Fragrance & Expansion Fields
+    oa_is_coming_soon = fields.Boolean(string='Coming Soon', default=False, help='If checked, the add to cart button will be replaced with a Coming Soon badge.')
+    oa_fragrance_top_notes = fields.Char(string='Top Notes', help='e.g., Bergamot, Mandarin, Pink Pepper')
+    oa_fragrance_heart_notes = fields.Char(string='Heart Notes', help='e.g., Rose, Jasmine, Orange Blossom')
+    oa_fragrance_base_notes = fields.Char(string='Base Notes', help='e.g., Vanilla, Musk, Sandalwood')
+    oa_mood = fields.Char(string='Mood / Feeling', help='e.g., Elegant, Sensual, Fresh')
 
     @api.model
     def _archive_default_demo_products(self):

@@ -30,6 +30,7 @@
         'data/cleanup_data.xml',
         'data/product_data.xml',
         'data/oa_products.xml',
+        'data/fragrance_data.xml',
         'data/mail_template_data.xml',
         'data/blog_data.xml',
 

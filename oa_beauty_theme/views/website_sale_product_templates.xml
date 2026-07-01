@@ -89,6 +89,47 @@
                 </div>
             </div>
 
+            <!-- ── ACCORDION ITEM: Fragrance Notes Pyramid ── -->
+            <div class="accordion-item" t-if="product.oa_fragrance_top_notes or product.oa_fragrance_heart_notes or product.oa_fragrance_base_notes">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_fragrance_notes" aria-expanded="true" aria-controls="oa_fragrance_notes">
+                        Pyramide Olfactive
+                    </button>
+                </div>
+                <div id="oa_fragrance_notes" class="accordion-collapse collapse show" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="oa-notes-pyramid">
+                            <!-- Top Notes -->
+                            <div class="oa-note-level oa-note-top" t-if="product.oa_fragrance_top_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">◇</span> Notes de Tête
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_top_notes"/>
+                            </div>
+                            <!-- Heart Notes -->
+                            <div class="oa-note-level oa-note-heart" t-if="product.oa_fragrance_heart_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">♡</span> Notes de Cœur
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_heart_notes"/>
+                            </div>
+                            <!-- Base Notes -->
+                            <div class="oa-note-level oa-note-base" t-if="product.oa_fragrance_base_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">▽</span> Notes de Fond
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_base_notes"/>
+                            </div>
+                        </div>
+                        <!-- Mood -->
+                        <div class="mt-3 pt-3 border-top" t-if="product.oa_mood">
+                            <span class="text-uppercase fw-bold small" style="letter-spacing: 0.15em; color: var(--oa-mauve);">Mood</span>
+                            <p class="mb-0 mt-1" style="color: var(--oa-prune); font-style: italic;" t-esc="product.oa_mood"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ── SOCIAL PROOF BANNER ── -->
             <div class="mt-4 pt-4 border-top text-center">
                 <div class="d-flex align-items-center justify-content-center mb-2">
@@ -124,6 +165,28 @@
                 </div>
             </div>
 
+        </xpath>
+    </template>
+
+    <!-- ═══════════════════════════════════════════
+         COMING SOON BADGE — Replaces Add to Cart
+         ═══════════════════════════════════════════ -->
+    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='add_to_cart_wrap']" position="before">
+            <t t-if="product.oa_is_coming_soon">
+                <div class="oa-coming-soon-wrap text-center py-4 mb-3">
+                    <div class="oa-coming-soon-badge">
+                        <span class="oa-coming-soon-icon">✦</span>
+                        <span class="oa-coming-soon-text">Official Collection Coming Soon</span>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">Cette création sera bientôt disponible. Restez à l'écoute.</p>
+                </div>
+                <!-- Hide the real Add to Cart via CSS -->
+                <style>
+                    #add_to_cart_wrap { display: none !important; }
+                    #oa_sticky_cart_bar { display: none !important; }
+                </style>
+            </t>
         </xpath>
     </template>
 

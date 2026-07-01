@@ -223,6 +223,99 @@
                     </div>
                 </section>
 
+                <!-- SECTION F: FRAGRANCE UNIVERSE -->
+                <t t-set="frag_products" t-value="request.env['product.template'].sudo().search([
+                    ('is_published','=',True),
+                    ('oa_is_coming_soon','=',True)
+                ], order='website_sequence asc', limit=6)"/>
+
+                <section class="oa-fragrance-section py-5" t-if="frag_products">
+                    <!-- Atmospheric glow orbs -->
+                    <div class="oa-glow-orb" style="width:500px;height:500px;top:-150px;left:-100px;background:radial-gradient(circle,rgba(158,123,157,0.15) 0%,transparent 70%);"></div>
+                    <div class="oa-glow-orb" style="width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(193,169,208,0.12) 0%,transparent 70%);animation-delay:3s;"></div>
+
+                    <div class="container position-relative py-5">
+                        <!-- Section Header -->
+                        <div class="text-center mb-5">
+                            <span class="d-block mb-3 text-uppercase fw-bold" style="letter-spacing:0.25em;color:var(--oa-lilac);font-size:0.8rem;">✦ Nouvelle Collection</span>
+                            <h2 class="oa-editorial-h2 text-white mb-3" style="font-size:clamp(2rem,5vw,3.5rem);">L'Univers des <span style="color:var(--oa-lilac);font-style:italic;">Parfums</span></h2>
+                            <p style="color:rgba(255,255,255,0.65);max-width:500px;margin:0 auto;font-size:1.05rem;line-height:1.7;">Six créations olfactives d'exception, nées de l'alliance entre la science des fleurs et l'art de la séduction.</p>
+                        </div>
+
+                        <!-- Fragrance Cards -->
+                        <div class="row g-4 justify-content-center">
+                            <t t-foreach="frag_products" t-as="fp">
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a t-att-href="fp.website_url" class="oa-fragrance-card d-block text-decoration-none text-white">
+                                        <span t-field="fp.image_1920" t-options="{'widget':'image','class':'w-100','style':'max-height:180px;object-fit:contain;filter:drop-shadow(0 8px 25px rgba(0,0,0,0.5));','loading':'lazy'}"/>
+                                        <div class="oa-fragrance-card-type mt-3" t-esc="fp.oa_type or 'Eau de Parfum'"/>
+                                        <div class="oa-fragrance-card-name" t-esc="fp.name"/>
+                                        <div class="oa-fragrance-card-price" t-esc="fp.list_price" t-options="{'widget':'monetary','display_currency':website.currency_id}"/>
+                                        <div class="mt-2">
+                                            <span style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Collection à venir</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- CTA -->
+                        <div class="text-center mt-5">
+                            <a href="/shop/category/fragrances" class="btn btn-outline-light rounded-0 px-5 py-3 text-uppercase" style="letter-spacing:0.15em;font-size:0.85rem;">Explorer la Collection</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION G: ENHANCED TRUST SECTION -->
+                <section class="py-5" style="background:var(--oa-prune);">
+                    <div class="container py-4">
+                        <div class="text-center mb-5">
+                            <span class="d-block mb-2 text-uppercase fw-bold" style="letter-spacing:0.2em;color:var(--oa-lilac);font-size:0.8rem;">Notre Engagement</span>
+                            <h2 class="oa-editorial-h2 text-white" style="font-size:clamp(1.5rem,3vw,2.5rem);">La Confiance,<br/><span style="color:var(--oa-lilac);font-style:italic;">au cœur de tout.</span></h2>
+                        </div>
+                        <div class="row g-0 text-center">
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <span class="oa-trust-icon">✦</span>
+                                    <div class="oa-trust-value">10K+</div>
+                                    <div class="oa-trust-label">Clientes Satisfaites</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <span class="oa-trust-icon">◎</span>
+                                    <div class="oa-trust-value">98%</div>
+                                    <div class="oa-trust-label">Satisfaction</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <i class="fa fa-paw oa-trust-icon"></i>
+                                    <div class="oa-trust-label" style="font-size:0.85rem;margin-top:8px;">Cruelty-Free</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <i class="fa fa-leaf oa-trust-icon"></i>
+                                    <div class="oa-trust-label" style="font-size:0.85rem;margin-top:8px;">100% Vegan</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <i class="fa fa-lock oa-trust-icon"></i>
+                                    <div class="oa-trust-label" style="font-size:0.85rem;margin-top:8px;">Paiement Sécurisé</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="oa-trust-item">
+                                    <i class="fa fa-truck oa-trust-icon"></i>
+                                    <div class="oa-trust-label" style="font-size:0.85rem;margin-top:8px;">Livraison Rapide</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- SECTION E: SHOPPABLE EDITORIAL (CURATED PRODUCTS) -->
                 <section class="py-5 position-relative" style="background-color: var(--oa-bg-alt);">
                     <!-- Decorative background element -->

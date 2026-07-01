@@ -1999,3 +1999,244 @@ html[dir="rtl"] {
 
     &:hover { background: var(--oa-mauve); transform: scale(1.05); }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// FRAGRANCE NOTES PYRAMID
+// ═══════════════════════════════════════════════════════════════
+
+.oa-notes-pyramid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.oa-note-level {
+    padding: 16px 20px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+        background: rgba(158, 123, 157, 0.04);
+        transform: translateX(4px);
+    }
+}
+
+.oa-note-top {
+    border-left-color: var(--oa-lilac);
+    .oa-note-label { color: var(--oa-lilac); }
+}
+.oa-note-heart {
+    border-left-color: var(--oa-mauve);
+    .oa-note-label { color: var(--oa-mauve); }
+}
+.oa-note-base {
+    border-left-color: var(--oa-prune);
+    .oa-note-label { color: var(--oa-prune); }
+}
+
+.oa-note-label {
+    font-family: var(--oa-font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+}
+
+.oa-note-icon {
+    margin-right: 6px;
+    font-size: 0.8rem;
+}
+
+.oa-note-items {
+    font-family: var(--oa-font-display);
+    font-size: 1.1rem;
+    color: var(--oa-text);
+    font-style: italic;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMING SOON BADGE
+// ═══════════════════════════════════════════════════════════════
+
+.oa-coming-soon-wrap {
+    background: linear-gradient(135deg, rgba(158,123,157,0.06) 0%, rgba(193,169,208,0.08) 100%);
+    border: 1px solid rgba(158,123,157,0.15);
+    border-radius: 12px;
+}
+
+.oa-coming-soon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--oa-prune), #4a2d52);
+    color: white;
+    border-radius: 50px;
+    font-family: var(--oa-font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    animation: oa-coming-soon-glow 3s ease-in-out infinite;
+}
+
+.oa-coming-soon-icon {
+    font-size: 1rem;
+    animation: oa-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes oa-coming-soon-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(158,123,157,0.2); }
+    50% { box-shadow: 0 0 35px rgba(158,123,157,0.4); }
+}
+
+@keyframes oa-sparkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2) rotate(15deg); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LUXURY PRODUCT CARD ENHANCEMENTS
+// ═══════════════════════════════════════════════════════════════
+
+.oa-product-card {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+    border-radius: 8px;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(54, 34, 59, 0.12);
+
+        .oa-product-img img {
+            transform: scale(1.06);
+        }
+    }
+
+    .oa-product-img {
+        overflow: hidden;
+        border-radius: 8px;
+
+        img {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FRAGRANCE UNIVERSE — HOMEPAGE SECTION
+// ═══════════════════════════════════════════════════════════════
+
+.oa-fragrance-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--oa-prune) 0%, #2a1830 100%);
+    color: white;
+}
+
+.oa-fragrance-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.15);
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    img {
+        max-height: 220px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 10px 30px rgba(0,0,0,0.4));
+        transition: transform 0.5s ease;
+    }
+
+    &:hover img {
+        transform: scale(1.05) translateY(-5px);
+    }
+}
+
+.oa-fragrance-card-name {
+    font-family: var(--oa-font-display);
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+}
+
+.oa-fragrance-card-type {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--oa-lilac);
+    margin-bottom: 8px;
+}
+
+.oa-fragrance-card-price {
+    font-family: var(--oa-font-display);
+    font-size: 1.1rem;
+    color: var(--oa-lilac);
+}
+
+// Floating glow orbs for the fragrance section
+.oa-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: oa-float-orb 8s ease-in-out infinite;
+}
+
+@keyframes oa-float-orb {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+    50% { transform: translateY(-30px) scale(1.1); opacity: 0.5; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENHANCED TRUST SECTION
+// ═══════════════════════════════════════════════════════════════
+
+.oa-trust-item {
+    text-align: center;
+    padding: 25px 15px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+
+        .oa-trust-icon {
+            transform: scale(1.15);
+            color: var(--oa-lilac);
+        }
+    }
+}
+
+.oa-trust-icon {
+    font-size: 2rem;
+    color: var(--oa-mauve);
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.oa-trust-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: white;
+}
+
+.oa-trust-value {
+    font-family: var(--oa-font-display);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
