@@ -55,7 +55,14 @@
 
                             <!-- Panier -->
                             <li class="nav-item">
-                                <t t-set="pm_cart_qty" t-value="int(request.session.get('cart_quantity') or 0)"/>
+                                <t t-set="_pm_oid" t-value="request.session.get('sale_order_%s' % request.website.id) or request.session.get('sale_order_id') or 0"/>
+                                <t t-set="pm_cart_qty" t-value="0"/>
+                                <t t-if="_pm_oid">
+                                    <t t-set="_pm_order" t-value="request.env['sale.order'].sudo().browse(_pm_oid)"/>
+                                    <t t-if="_pm_order.exists() and _pm_order.state == 'draft'">
+                                        <t t-set="pm_cart_qty" t-value="int(sum(_pm_order.order_line.mapped('product_uom_qty')))"/>
+                                    </t>
+                                </t>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
                                     <t t-if="pm_cart_qty > 0">
