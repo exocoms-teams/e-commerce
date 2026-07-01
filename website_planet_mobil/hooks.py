@@ -87,15 +87,36 @@ def _supprimer_demo_natif(env):
             )
 
 
-def post_init_hook(env):
-    """Hook execute apres l'installation/mise a jour du module.
+def _configurer_shop(env):
+    """Force 4 produits par ligne sur la page shop."""
+    websites = env['website'].search([])
+    for website in websites:
+        try:
+            website.write({'shop_ppr': 4})
+            _logger.info("Planet Mobil: shop_ppr=4 applique sur '%s'.", website.name)
+        except Exception as e:
+            _logger.warning("Planet Mobil: shop_ppr non applique (%s)", e)
 
-    Entoure d'un try/except global : meme en cas d'erreur, le build reste
-    vert et l'installation du module n'est pas bloquee.
-    """
+
+def _run_hooks(env):
+    _activer_francais_par_defaut(env)
+    _supprimer_demo_natif(env)
+    _configurer_shop(env)
+
+
+def post_init_hook(env):
+    """Apres installation initiale."""
     try:
-        _activer_francais_par_defaut(env)
-        _supprimer_demo_natif(env)
+        _run_hooks(env)
         _logger.info("Planet Mobil: post_init_hook termine avec succes.")
     except Exception as e:
         _logger.warning("Planet Mobil: post_init_hook ignore (%s)", e)
+
+
+def post_migrate_hook(env):
+    """Apres chaque upgrade du module (--update)."""
+    try:
+        _run_hooks(env)
+        _logger.info("Planet Mobil: post_migrate_hook termine avec succes.")
+    except Exception as e:
+        _logger.warning("Planet Mobil: post_migrate_hook ignore (%s)", e)

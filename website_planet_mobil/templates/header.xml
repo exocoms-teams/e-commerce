@@ -9,10 +9,8 @@
                     <t t-set="_navbar_classes" t-valuef="d-none d-lg-block shadow-sm" />
                     <div id="o_main_nav"
                         t-attf-class="o_main_nav #{header_content_width} tsp-header-bar">
-
                         <!-- Gauche : Logo -->
                         <t t-call="website.placeholder_header_brand" _link_class.f="tsp-header-logo" />
-
                         <!-- Centre : Barre de recherche -->
                         <ul class="navbar-nav tsp-header-search-wrap">
                             <t t-call="website.placeholder_header_search_box"
@@ -21,86 +19,36 @@
                                 _input_classes.f="tsp-search-input"
                                 _submit_classes.f="tsp-search-btn" />
                         </ul>
-
-                        <!-- Droite : Compte + Favoris + Panier -->
+                        <!-- Droite : Sign In + Wishlist + Panier -->
                         <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end tsp-header-actions">
-
-                            <!-- Connexion / Mon compte -->
-                            <li class="nav-item">
-                                <t t-if="not request.env.user._is_public()">
-                                    <a href="/my/account" class="pm-topicon" title="Mon compte">
-                                        <i class="fa fa-user-circle-o fa-lg"/>
-                                    </a>
-                                </t>
-                                <t t-else="">
-                                    <a href="/web/login" class="pm-topicon" title="Connexion">
-                                        <i class="fa fa-sign-in fa-lg"/>
-                                    </a>
-                                </t>
-                            </li>
-
-                            <!-- Favoris (Wishlist) -->
-                            <li class="nav-item">
-                                <t t-set="pm_wl_count" t-value="0"/>
-                                <t t-if="not request.env.user._is_public()">
-                                    <t t-set="pm_wl_count" t-value="request.env['product.wishlist'].sudo().search_count([('partner_id', '=', request.env.user.partner_id.id)])"/>
-                                </t>
-                                <a href="/shop/wishlist" class="pm-topicon" title="Mes favoris">
-                                    <i class="fa fa-heart-o fa-lg"/>
-                                    <t t-if="pm_wl_count > 0">
-                                        <span class="pm-cart-badge"><t t-out="pm_wl_count"/></span>
-                                    </t>
-                                </a>
-                            </li>
-
-                            <!-- Panier -->
-                            <li class="nav-item">
-                                <t t-set="_pm_oid" t-value="request.session.get('sale_order_%s' % request.website.id) or request.session.get('sale_order_id') or 0"/>
-                                <t t-set="pm_cart_qty" t-value="0"/>
-                                <t t-if="_pm_oid">
-                                    <t t-set="_pm_order" t-value="request.env['sale.order'].sudo().browse(_pm_oid)"/>
-                                    <t t-if="_pm_order.exists() and _pm_order.state == 'draft'">
-                                        <t t-set="pm_cart_qty" t-value="int(sum(_pm_order.order_line.mapped('product_uom_qty')))"/>
-                                    </t>
-                                </t>
-                                <a href="/shop/cart" class="pm-topicon" title="Mon panier">
-                                    <i class="fa fa-shopping-cart fa-lg"/>
-                                    <t t-if="pm_cart_qty > 0">
-                                        <span class="pm-cart-badge o_cart_quantity"><t t-out="pm_cart_qty"/></span>
-                                    </t>
-                                    <t t-else="">
-                                        <span class="o_cart_quantity" style="display:none"></span>
-                                    </t>
-                                </a>
-                            </li>
-
+                            <t t-call="portal.placeholder_user_sign_in"
+                                _link_class.f="o_nav_link_btn nav-link border px-3" />
+                            <t t-call="portal.user_dropdown"
+                                _user_name="True"
+                                _item_class.f="dropdown"
+                                _link_class.f="nav-link border-0"
+                                _dropdown_menu_class.f="dropdown-menu-end" />
+                            <t t-call="website_sale_wishlist.header_wishlist_link"
+                                _item_class.f="nav-item"
+                                _link_class.f="nav-link"
+                                _icon.f="true"
+                                _icon_wrap_class.f="position-relative d-inline-block"
+                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
+                            <t t-call="website_sale.header_cart_link"
+                                _item_class.f="nav-item"
+                                _link_class.f="nav-link"
+                                _icon.f="true"
+                                _icon_wrap_class.f="position-relative d-inline-block"
+                                _badge_class.f="position-absolute top-0 start-100 translate-middle" />
                         </ul>
                     </div>
                 </t>
             </xpath>
         </template>
 
-        <!--MENU
-        MOBILE-->
+        <!--MENU MOBILE-->
         <template id="header_mobile_links" name="Planet Mobil - Header Mobile Links"
             inherit_id="website.template_header_mobile">
-
-            <!-- Ajoute l'icône wishlist dans la barre du header mobile -->
-            <xpath expr="//ul[hasclass('o_header_mobile_buttons_wrap')]" position="inside">
-                <t t-set="pm_wl_count" t-value="0"/>
-                <t t-if="not request.env.user._is_public()">
-                    <t t-set="pm_wl_count" t-value="request.env['product.wishlist'].sudo().search_count([('partner_id', '=', request.env.user.partner_id.id)])"/>
-                </t>
-                <li class="nav-item">
-                    <a href="/shop/wishlist" class="pm-topicon" title="Mes favoris" style="width:38px;height:38px;font-size:1rem;">
-                        <i class="fa fa-heart-o"/>
-                        <t t-if="pm_wl_count > 0">
-                            <span class="pm-cart-badge"><t t-out="pm_wl_count"/></span>
-                        </t>
-                    </a>
-                </li>
-            </xpath>
-
             <xpath expr="//t[@t-call='website.placeholder_header_text_element']" position="replace">
                 <li class="nav-item border-top px-0 tsp-mobile-nav-item">
                     <a href="/" class="nav-link p-3 text-wrap">
@@ -148,6 +96,5 @@
                 <attribute name="href">/contact</attribute>
             </xpath>
         </template>
-
     </data>
 </odoo>
