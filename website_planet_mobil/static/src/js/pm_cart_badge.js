@@ -1,61 +1,74 @@
-/** @odoo-module **/
-/**
- * Planet Mobil — mise à jour dynamique du badge panier personnalisé.
- * Odoo 19 utilise un composant Owl pour le panier natif ; comme on l'a remplacé
- * par du HTML custom, ce script intercepte les réponses cart pour mettre à jour
- * notre badge (.pm-cart-badge.o_cart_quantity).
- */
+// Planet Mobil — mise à jour badge panier (plain script, pas de @odoo-module)
 (function () {
     'use strict';
 
+    console.log('[PM] pm_cart_badge.js chargé');
+
     function updateBadge(qty) {
-        const badge = document.querySelector('.pm-cart-badge.o_cart_quantity');
-        if (!badge) return;
-        badge.textContent = qty;
-        badge.classList.toggle('d-none', qty === 0);
+        var n = parseInt(qty) || 0;
+        // Cible tous les éléments .o_cart_quantity sur la page
+        document.querySelectorAll('.o_cart_quantity').forEach(function (el) {
+            el.textContent = n;
+            el.classList.toggle('d-none', n === 0);
+        });
     }
 
-    function tryParse(text) {
-        try { return JSON.parse(text); } catch (e) { return null; }
-    }
-
-    const CART_URLS = ['/shop/cart/update', '/shop/cart/update_json'];
-    const isCartUrl = (url) => CART_URLS.some(u => String(url).includes(u));
-
-    // --- Intercept fetch ---
-    const _fetch = window.fetch;
+    // --- Stratégie 1 : intercepter fetch (Odoo 17+) ---
+    var _fetch = window.fetch;
     window.fetch = function (input, init) {
-        const url = (typeof input === 'string') ? input : (input && input.url) || '';
-        return _fetch.apply(this, arguments).then(function (response) {
-            if (isCartUrl(url)) {
+        var url = typeof input === 'string' ? input : (input && input.url) || '';
+        var promise = _fetch.apply(this, arguments);
+        if (/\/shop\/cart/.test(url)) {
+            promise.then(function (response) {
                 response.clone().json().then(function (data) {
                     if (typeof data.cart_quantity === 'number') {
                         updateBadge(data.cart_quantity);
                     }
                 }).catch(function () {});
-            }
-            return response;
-        });
+            }).catch(function () {});
+        }
+        return promise;
     };
 
-    // --- Intercept XMLHttpRequest (fallback) ---
-    const _open = XMLHttpRequest.prototype.open;
-    const _send = XMLHttpRequest.prototype.send;
-
+    // --- Stratégie 2 : intercepter XMLHttpRequest (fallback) ---
+    var _open = XMLHttpRequest.prototype.open;
+    var _send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.open = function (method, url) {
         this._pmUrl = url;
         return _open.apply(this, arguments);
     };
-
     XMLHttpRequest.prototype.send = function () {
-        if (isCartUrl(this._pmUrl)) {
+        if (this._pmUrl && /\/shop\/cart/.test(this._pmUrl)) {
             this.addEventListener('load', function () {
-                const data = tryParse(this.responseText);
-                if (data && typeof data.cart_quantity === 'number') {
-                    updateBadge(data.cart_quantity);
-                }
+                try {
+                    var data = JSON.parse(this.responseText);
+                    if (typeof data.cart_quantity === 'number') {
+                        updateBadge(data.cart_quantity);
+                    }
+                } catch (e) {}
             });
         }
         return _send.apply(this, arguments);
     };
+
+    // --- Stratégie 3 : clic sur "Ajouter au panier" → requête /shop/cart/quantity ---
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest(
+            '#add_to_cart, .o_add_cart_btn, [data-action="add_to_cart"], .a-submit'
+        );
+        if (!btn) return;
+        // Attendre qu'Odoo ait traité la commande puis rafraîchir
+        [600, 1400].forEach(function (delay) {
+            setTimeout(function () {
+                _fetch('/shop/cart/quantity', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var qty = typeof data === 'number' ? data : (data && data.cart_quantity);
+                        if (qty !== undefined) updateBadge(qty);
+                    })
+                    .catch(function () {});
+            }, delay);
+        });
+    });
+
 })();
