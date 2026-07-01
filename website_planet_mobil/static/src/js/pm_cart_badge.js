@@ -1,19 +1,20 @@
-// Planet Mobil — mise à jour badge panier (plain script, pas de @odoo-module)
+// Planet Mobil — badge panier dynamique
 (function () {
     'use strict';
 
-    console.log('[PM] pm_cart_badge.js chargé');
-
     function updateBadge(qty) {
         var n = parseInt(qty) || 0;
-        // Cible tous les éléments .o_cart_quantity sur la page
         document.querySelectorAll('.o_cart_quantity').forEach(function (el) {
             el.textContent = n;
-            el.classList.toggle('pm-hidden', n === 0);
+            if (n === 0) {
+                el.style.setProperty('display', 'none', 'important');
+            } else {
+                el.style.removeProperty('display');
+            }
         });
     }
 
-    // --- Stratégie 1 : intercepter fetch (Odoo 17+) ---
+    // Intercepte fetch (Odoo 17+)
     var _fetch = window.fetch;
     window.fetch = function (input, init) {
         var url = typeof input === 'string' ? input : (input && input.url) || '';
@@ -30,7 +31,7 @@
         return promise;
     };
 
-    // --- Stratégie 2 : intercepter XMLHttpRequest (fallback) ---
+    // Intercepte XHR (fallback)
     var _open = XMLHttpRequest.prototype.open;
     var _send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.open = function (method, url) {
@@ -51,14 +52,11 @@
         return _send.apply(this, arguments);
     };
 
-    // --- Stratégie 3 : clic sur "Ajouter au panier" → requête /shop/cart/quantity ---
+    // Clic sur "Ajouter au panier" → relit la quantité après délai
     document.addEventListener('click', function (e) {
-        var btn = e.target.closest(
-            '#add_to_cart, .o_add_cart_btn, [data-action="add_to_cart"], .a-submit'
-        );
+        var btn = e.target.closest('#add_to_cart, .o_add_cart_btn, [data-action="add_to_cart"], .a-submit');
         if (!btn) return;
-        // Attendre qu'Odoo ait traité la commande puis rafraîchir
-        [600, 1400].forEach(function (delay) {
+        [700, 1500].forEach(function (delay) {
             setTimeout(function () {
                 _fetch('/shop/cart/quantity', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                     .then(function (r) { return r.json(); })
