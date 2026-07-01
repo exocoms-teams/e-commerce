@@ -129,6 +129,46 @@ footer#bottom .o_footer_copyright .js_language_selector a {
     font-size: 12px !important;
 }
 
+/* =========================================================
+   CORRECTIF ALIGNEMENT — ligne cookies / langue / copyright
+   Ces 3 éléments s'empilaient verticalement au lieu de rester
+   sur une seule ligne alignée. On force un flex horizontal
+   avec retour à la ligne géré proprement sur mobile.
+========================================================= */
+footer#bottom .o_footer_copyright .container > .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px 24px !important;
+    padding: 10px 0 !important;
+}
+
+footer#bottom .o_footer_copyright .container > .row > div {
+    width: auto !important;
+    max-width: 100% !important;
+    flex: 0 1 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 4px 16px !important;
+}
+
+footer#bottom .o_footer_copyright .container > .row > div > * {
+    margin: 0 !important;
+}
+
+@media (max-width: 576px) {
+    footer#bottom .o_footer_copyright .container > .row {
+        justify-content: center !important;
+        text-align: center !important;
+    }
+    footer#bottom .o_footer_copyright .container > .row > div {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+}
+
 /* Cache le logo Odoo si souhaité */
 footer#bottom .o_brand_promotion {
     display: none !important;

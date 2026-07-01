@@ -522,6 +522,44 @@ def _merge_root_category(env, website, old_name, target_category):
     )
 
 
+def _publish_category_tree_products(env, website, category):
+    """Publie tous les produits rattachés à une catégorie ET à ses
+    sous-catégories (récursif). Corrige le cas où une catégorie
+    récupérée (ex: Crypto, Distributeur automatique, Informatique)
+    est bien publiée elle-même, mais où ses PRODUITS restent marqués
+    'Non publié' — ce sont deux champs indépendants dans Odoo
+    (category.website_published vs product.template.is_published).
+
+    Ne touche JAMAIS un produit déjà explicitement rattaché à un
+    AUTRE site (website_id différent) — sécurité multi-sites."""
+    if not category or not website:
+        return
+    tree = category | env['product.public.category'].search([
+        ('id', 'child_of', category.ids),
+    ])
+    products = env['product.template'].search([
+        ('public_categ_ids', 'in', tree.ids),
+    ])
+    updated = 0
+    for p in products:
+        vals = {}
+        if not p.is_published:
+            vals['is_published'] = True
+        if not p.website_id:
+            vals['website_id'] = website.id
+        elif p.website_id.id != website.id:
+            # Produit déjà scopé à un AUTRE site — on n'y touche jamais.
+            continue
+        if vals:
+            p.write(vals)
+            updated += 1
+    if updated:
+        _logger.info(
+            "%s produit(s) publié(s) sous la catégorie '%s' (et ses sous-catégories).",
+            updated, category.name,
+        )
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -543,6 +581,7 @@ def post_init_hook(env):
             'social_facebook': 'https://www.facebook.com/exocoms',
             'social_twitter': 'https://twitter.com/exocoms',
             'social_linkedin': 'https://www.linkedin.com/company/exocoms',
+            'cookies_bar': True,  # Active la bannière RGPD + lien "Politique de cookies" dans le footer
         })
 
     # === LOGO ===
@@ -893,6 +932,14 @@ def post_init_hook(env):
     get_or_create('Visioconférence', solutions_tel)
     get_or_create('Collaboration', solutions_tel)
     get_or_create('Communication unifiée', solutions_tel)
+
+    # Publier tous les produits existants sous nos 3 catégories
+    # racines (et leurs sous-catégories) — corrige le cas où une
+    # catégorie récupérée (Crypto, Distributeur automatique,
+    # Informatique...) est bien publiée, mais où ses PRODUITS restent
+    # marqués 'Non publié' (champ indépendant de la catégorie).
+    for root in (informatique, monetique_root, telecom):
+        _publish_category_tree_products(env, website, root)
 
     # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
