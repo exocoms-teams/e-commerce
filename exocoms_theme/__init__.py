@@ -487,6 +487,39 @@ def _publish_our_products(env, website, company):
         _logger.exception("Échec publication des produits Exocoms")
 
 
+def _merge_root_category(env, website, old_name, target_category):
+    """RÉCUPÈRE une ancienne catégorie racine préexistante (nom
+    différent de la nôtre, ex: 'Informatique') en migrant TOUS ses
+    produits vers notre catégorie cible (ex: 'Informatique & Réseaux').
+    Rien n'est perdu : chaque produit garde ses catégories existantes
+    ET gagne la nouvelle. L'ancienne catégorie racine est ensuite
+    archivée (active=False) pour qu'elle disparaisse du filmstrip —
+    mais elle n'est jamais supprimée, et reste réactivable si besoin.
+    """
+    if not website or not target_category:
+        return
+    old = env['product.public.category'].search([
+        ('name', '=', old_name),
+        ('website_id', '=', website.id),
+        ('parent_id', '=', False),
+    ], limit=1)
+    if not old or old.id == target_category.id:
+        return
+    products = env['product.template'].search([
+        ('public_categ_ids', 'in', old.id),
+    ])
+    for p in products:
+        new_categs = (p.public_categ_ids - old) | target_category
+        p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
+    old.write({'active': False})
+    _logger.info(
+        "Catégorie '%s' (id=%s) RÉCUPÉRÉE dans '%s' : %s produit(s) "
+        "migré(s), rien perdu. Ancienne catégorie archivée "
+        "(active=False, jamais supprimée).",
+        old_name, old.id, target_category.name, len(products),
+    )
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -676,6 +709,35 @@ def post_init_hook(env):
     ], limit=1)
     if pdv:
         pdv.write({'parent_id': monetique_root.id, 'sequence': 2})
+
+    # Réattacher "Crypto"/"CRYPTO" existant (racine préexistante sur ce
+    # site) sous Monétique — par nom, jamais par ID. Les produits déjà
+    # liés le restent automatiquement (on ne fait que déplacer le
+    # parent), aucune migration nécessaire ici.
+    crypto_root = cat.search([
+        ('name', 'ilike', 'Crypto'),
+        ('parent_id', '=', False),
+        ('website_id', '=', website.id),
+    ], limit=1)
+    if crypto_root:
+        crypto_root.write({'parent_id': monetique_root.id, 'sequence': 6})
+
+    # Réattacher "Distributeur automatique" existant (racine) sous
+    # Monétique — même logique, aucune perte de données.
+    distrib_root = cat.search([
+        ('name', 'ilike', 'Distributeur automatique'),
+        ('parent_id', '=', False),
+        ('website_id', '=', website.id),
+    ], limit=1)
+    if distrib_root:
+        distrib_root.write({'parent_id': monetique_root.id, 'sequence': 4})
+
+    # RÉCUPÉRATION complète de l'ancienne catégorie racine
+    # "Informatique" (nom différent du nôtre, donc impossible à
+    # réattacher par simple déplacement de parent comme ci-dessus) :
+    # migre tous ses produits vers "Informatique & Réseaux", puis
+    # archive l'ancienne (jamais supprimée).
+    _merge_root_category(env, website, 'Informatique', informatique)
 
     get_or_create('Matériel & Informatique Générale', informatique, seq=1)
     get_or_create('Réseaux & Infrastructure', informatique, seq=2)
