@@ -41,17 +41,28 @@
                                 </t>
                             </li>
 
-                            <!-- Favoris (Wishlist) — compteur dynamique natif Odoo -->
-                            <t t-call="website_sale_wishlist.header_wishlist_link">
-                                <t t-set="item_class">nav-item pm-topicon-wrap</t>
-                                <t t-set="link_class">pm-topicon</t>
-                            </t>
+                            <!-- Favoris (Wishlist) -->
+                            <li class="nav-item">
+                                <t t-set="pm_wl_count" t-value="len(request.env['product.wishlist'].sudo().search([('partner_id', '=', request.env.user.partner_id.id)]))"/>
+                                <a href="/wishlist" class="pm-topicon" title="Mes favoris">
+                                    <i class="fa fa-heart-o fa-lg"/>
+                                    <span t-if="pm_wl_count > 0" class="pm-cart-badge">
+                                        <t t-out="pm_wl_count"/>
+                                    </span>
+                                </a>
+                            </li>
 
-                            <!-- Panier — compteur dynamique natif Odoo -->
-                            <t t-call="website_sale.header_cart_link">
-                                <t t-set="item_class">nav-item pm-topicon-wrap</t>
-                                <t t-set="link_class">pm-topicon pm-topicon-cart</t>
-                            </t>
+                            <!-- Panier -->
+                            <li class="nav-item">
+                                <t t-set="pm_order" t-value="request.website.sale_get_order(force_create=False)"/>
+                                <t t-set="pm_cart_qty" t-value="pm_order.cart_quantity if pm_order else 0"/>
+                                <a href="/shop/cart" class="pm-topicon" title="Mon panier">
+                                    <i class="fa fa-shopping-cart fa-lg"/>
+                                    <span t-if="pm_cart_qty > 0" class="pm-cart-badge o_cart_quantity">
+                                        <t t-out="pm_cart_qty"/>
+                                    </span>
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
