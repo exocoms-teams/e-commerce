@@ -131,18 +131,21 @@ footer#bottom .o_footer_copyright .js_language_selector a {
 
 /* =========================================================
    CORRECTIF ALIGNEMENT — ligne cookies / langue / copyright
-   Ces éléments s'empilaient verticalement (chacun dans son propre
-   bloc) au lieu de rester sur une seule ligne alignée. On force
-   TOUS les enfants directs du container en flex horizontal, quelle
-   que soit leur structure exacte (div, row, span...).
+   D'après la structure observée, les 3 blocs apparaissent dans cet
+   ordre dans le DOM : (1) Politique cookies, (2) Sélecteur de
+   langue, (3) Copyright. On les remet sur une seule ligne, en
+   réordonnant visuellement : Copyright + Langue à GAUCHE, Politique
+   de cookies poussée tout à DROITE (margin-left: auto).
+   NOTE : si l'ordre réel diffère chez vous, ajustez les nth-child
+   ci-dessous en inspectant l'élément dans le navigateur (clic droit
+   > Inspecter sur chaque bloc pour voir sa position dans le DOM).
 ========================================================= */
 footer#bottom .o_footer_copyright .container {
     display: flex !important;
     flex-wrap: wrap !important;
-    flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 6px 20px !important;
+    gap: 8px 24px !important;
     padding: 12px 0 !important;
 }
 
@@ -157,22 +160,29 @@ footer#bottom .o_footer_copyright .container > * {
     gap: 4px 12px !important;
 }
 
-/* Petit séparateur visuel entre les blocs (cookies | langue | copyright) */
-footer#bottom .o_footer_copyright .container > * + *::before {
-    content: "•";
-    color: #3a4560;
-    margin-right: 12px;
+/* (1) Politique cookies -> poussée à droite, en dernier visuellement */
+footer#bottom .o_footer_copyright .container > *:nth-child(1) {
+    order: 3;
+    margin-left: auto !important;
+}
+/* (2) Sélecteur de langue -> à gauche, en premier */
+footer#bottom .o_footer_copyright .container > *:nth-child(2) {
+    order: 1;
+}
+/* (3) Copyright -> à gauche, juste après la langue */
+footer#bottom .o_footer_copyright .container > *:nth-child(3) {
+    order: 2;
 }
 
 @media (max-width: 576px) {
     footer#bottom .o_footer_copyright .container {
+        flex-direction: column !important;
         justify-content: center !important;
         text-align: center !important;
-        flex-direction: column !important;
         gap: 6px !important;
     }
-    footer#bottom .o_footer_copyright .container > * + *::before {
-        content: none;
+    footer#bottom .o_footer_copyright .container > *:nth-child(1) {
+        margin-left: 0 !important;
     }
 }
 
