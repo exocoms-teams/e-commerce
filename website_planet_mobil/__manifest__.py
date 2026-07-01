@@ -5,7 +5,7 @@
     'category': 'Website/eCommerce',
     'summary': 'Page d\'accueil e-commerce Planet Mobil',
     'author': 'Planet Mobil',
-    'depends': ['website', 'web', 'portal', 'website_sale', 'website_mass_mailing', 'crm', 'website_sale_wishlist'],
+    'depends': ['website', 'web', 'portal', 'website_sale', 'website_mass_mailing', 'crm', 'website_sale_wishlist', 'im_livechat'],
     'data': [
         'security/ir.model.access.csv',
         'views/product_views.xml',
