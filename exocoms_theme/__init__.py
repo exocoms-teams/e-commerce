@@ -14,6 +14,35 @@ COMPANY_NAME = 'Exocoms Group'
 MODULE_NAME = 'exocoms_theme'  # <-- adaptez si le nom réel du module diffère
 LOGO_PATH = ('static', 'src', 'img', 'EXOCOMS.png')
 OUR_URLS = ['/', '/shop', '/nos-services']
+THEME_CSS_FILES = [
+    'exocoms_theme/static/src/css/layout.css',
+    'exocoms_theme/static/src/css/header.css',
+    'exocoms_theme/static/src/css/hero.css',
+    'exocoms_theme/static/src/css/features.css',
+    'exocoms_theme/static/src/css/products.css',
+    'exocoms_theme/static/src/css/footer.css',
+    'exocoms_theme/static/src/css/categories.css',
+    'exocoms_theme/static/src/css/cta.css',
+    'exocoms_theme/static/src/css/dashbord.css',
+    'exocoms_theme/static/src/css/dashbord_boutique.css',
+    'exocoms_theme/static/src/css/services_content.css',
+    'exocoms_theme/static/src/css/services_features.css',
+    'exocoms_theme/static/src/css/services_hero.css',
+    'exocoms_theme/static/src/css/home.css',
+    'exocoms_theme/static/src/css/legal.css',
+    'exocoms_theme/static/src/css/animations.css',
+    'exocoms_theme/static/src/css/benefits.css',
+    'exocoms_theme/static/src/css/cards.css',
+    'exocoms_theme/static/src/css/pages.css',
+    'exocoms_theme/static/src/css/sections.css',
+    'exocoms_theme/static/src/css/home_sections.css',
+    'exocoms_theme/static/src/css/odoo-integration.css',
+    'exocoms_theme/static/src/css/responsive.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',    # toujours en dernier
+]
+THEME_JS_FILES = [
+    'exocoms_theme/static/src/js/main.js',
+]
 
 
 def _get_website(env):
@@ -53,6 +82,53 @@ def _set_logo(env, website):
         _logger.warning("Logo Exocoms introuvable à static/src/img/EXOCOMS.png — site %s non modifié", website.name)
     except Exception:
         _logger.exception("Impossible d'appliquer le logo Exocoms sur le site %s", website.name)
+
+
+def _setup_theme_assets(env, website):
+    """CORRECTIF MAJEUR (cause du bug 'le style/header apparaît sur
+    tous les sites') : les CSS/JS étaient chargés via le manifest
+    dans 'web.assets_frontend', un bundle GLOBAL à toute la base
+    Odoo, jamais filtré par site. Résultat : le `:root{...}` de
+    layout.css (variables --primary, --secondary...) repeignait
+    silencieusement TOUS les sites, car ces noms de variables sont
+    aussi utilisés par les thèmes natifs Odoo pour boutons/liens.
+
+    On utilise désormais `ir.asset` avec `website_id` posé : Odoo ne
+    chargera ces fichiers QUE sur les pages du site Exocoms."""
+    if not website:
+        return
+    Asset = env['ir.asset']
+    for path in THEME_CSS_FILES + THEME_JS_FILES:
+        existing = Asset.search([
+            ('path', '=', path),
+            ('website_id', '=', website.id),
+        ], limit=1)
+        if not existing:
+            Asset.create({
+                'name': f'Exocoms - {path}',
+                'bundle': 'web.assets_frontend',
+                'path': path,
+                'directive': 'append',
+                'website_id': website.id,
+            })
+
+
+def _scope_layout_views(env, website):
+    """CORRECTIF : custom_footer et custom_copyright héritent de
+    website.layout (gabarit universel) sans website_id -> ils
+    s'appliquaient à TOUS les sites. On les rattache explicitement
+    au site Exocoms uniquement."""
+    if not website:
+        return
+    keys = [
+        'exocoms_theme.custom_footer',
+        'exocoms_theme.custom_copyright',
+        'exocoms_theme.boutique_seo',
+    ]
+    views = env['ir.ui.view'].search([('key', 'in', keys)])
+    for v in views:
+        if not v.website_id:
+            v.write({'website_id': website.id})
 
 
 def _clean_demo_data(env, website):
@@ -437,6 +513,12 @@ def post_init_hook(env):
     # === LOGO ===
     _set_logo(env, website)
 
+    # === ASSETS CSS/JS — scopés au site Exocoms uniquement ===
+    _setup_theme_assets(env, website)
+
+    # === FOOTER / COPYRIGHT — scopés au site Exocoms uniquement ===
+    _scope_layout_views(env, website)
+
     # === LANGUES — Français + Anglais ===
     # NOTE multi-sites : ce bloc ne touche que website.language_ids du
     # SITE Exocoms (website.write), donc déjà scopé correctement.
@@ -722,10 +804,9 @@ def post_init_hook(env):
 
     # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
-    # custom_copyright, inherit_id="website.layout"). Si ce fichier
-    # contient des écritures directes sur "website.default_website" ou
-    # un site sans condition de website_id, il faut le corriger avec
-    # la même logique que ci-dessus (toujours filtrer par website.id).
+    # custom_copyright, inherit_id="website.layout"). Ils sont
+    # désormais scopés au site Exocoms via _scope_layout_views(),
+    # appelée juste après _setup_theme_assets() ci-dessus.
 
 
 def post_migrate_hook(env):
@@ -736,6 +817,12 @@ def post_migrate_hook(env):
 
     # Logo maintenu à chaque update (au cas où le site ait été recréé)
     _set_logo(env, website)
+
+    # Assets CSS/JS maintenus, scopés au site Exocoms
+    _setup_theme_assets(env, website)
+
+    # Footer/copyright maintenus, scopés au site Exocoms
+    _scope_layout_views(env, website)
 
     # Menus maintenus + nettoyage démo à chaque update
     _setup_menus(env, website, lang_en)
