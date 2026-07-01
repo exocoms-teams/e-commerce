@@ -124,6 +124,23 @@
             });
         }
 
+        // ===== BANNIÈRE COOKIES : texte personnalisé =====
+        const cookiesBar = document.getElementById('website_cookies_bar');
+        if (cookiesBar) {
+            const cookiesText = cookiesBar.querySelector('p');
+            if (cookiesText) {
+                cookiesText.innerHTML = '🍪 Nous utilisons des cookies pour vous garantir une navigation fluide, mémoriser votre panier et vos préférences, et améliorer votre expérience sur Matelas. Vous pouvez tout accepter ou choisir uniquement les cookies essentiels.';
+            }
+            const btnEssential = cookiesBar.querySelector('.o_cookies_bar_accept_essential');
+            if (btnEssential) {
+                btnEssential.textContent = 'Essentiels uniquement';
+            }
+            const btnAll = cookiesBar.querySelector('.o_cookies_bar_accept_all');
+            if (btnAll) {
+                btnAll.textContent = 'Tout accepter';
+            }
+        }
+
     }
 
     if (document.readyState === 'loading') {
