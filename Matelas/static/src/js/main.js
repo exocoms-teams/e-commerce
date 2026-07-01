@@ -124,35 +124,96 @@
             });
         }
 
-        // ===== HEADER : icône favoris + icône compte =====
-        const header = document.querySelector('header#top') || document;
-        const cartBtn = header.querySelector('.o_cart_btn');
+        // ===== HEADER : icône favoris =====
+        const header = document.querySelector('header#top') || document.querySelector('header') || document;
+        const cartBtn = header.querySelector('.o_cart_btn, a[href="/shop/cart"], a[href*="/shop/cart"]');
 
-        if (cartBtn && !header.querySelector('.matelas-wishlist-btn')) {
+        if (cartBtn && !document.querySelector('.matelas-wishlist-btn')) {
             const wishlistLink = document.createElement('a');
             wishlistLink.href = '/shop/wishlist';
             wishlistLink.className = 'matelas-wishlist-btn nav-link';
             wishlistLink.title = 'Mes favoris';
             wishlistLink.innerHTML = '<i class="bi bi-heart"></i>';
-
-            const cartItem = cartBtn.closest('li') || cartBtn.parentElement;
-            if (cartItem && cartItem.parentElement) {
-                const wishlistItem = document.createElement('li');
-                wishlistItem.className = 'nav-item d-flex align-items-center';
-                wishlistItem.appendChild(wishlistLink);
-                cartItem.parentElement.insertBefore(wishlistItem, cartItem);
-            }
+            cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
         }
 
+        // ===== HEADER : icône compte avec menu déroulant (connexion/déconnexion) =====
         const accountLink = header.querySelector('a[href="/my/home"], a[href^="/web/login"]');
         if (accountLink && !accountLink.classList.contains('matelas-account-link')) {
             const isLoggedIn = accountLink.getAttribute('href') === '/my/home';
-            accountLink.innerHTML = isLoggedIn
-                ? '<i class="bi bi-person-circle"></i>'
-                : '<i class="bi bi-person"></i>';
             accountLink.classList.add('matelas-account-link');
-            accountLink.title = isLoggedIn ? 'Mon compte' : 'Se connecter';
+
+            if (isLoggedIn) {
+                const parentItem = accountLink.closest('li') || accountLink.parentElement;
+                parentItem.classList.add('dropdown', 'matelas-account-item');
+
+                accountLink.setAttribute('href', '#');
+                accountLink.setAttribute('role', 'button');
+                accountLink.setAttribute('data-bs-toggle', 'dropdown');
+                accountLink.setAttribute('aria-expanded', 'false');
+                accountLink.classList.add('dropdown-toggle');
+                accountLink.innerHTML = '<i class="bi bi-person-circle"></i>';
+                accountLink.title = 'Mon compte';
+
+                const menu = document.createElement('div');
+                menu.className = 'dropdown-menu dropdown-menu-end';
+                menu.innerHTML =
+                    '<a class="dropdown-item" href="/my/home"><i class="bi bi-person me-2"></i>Mon compte</a>' +
+                    '<a class="dropdown-item" href="/my/orders"><i class="bi bi-bag me-2"></i>Mes commandes</a>' +
+                    '<div class="dropdown-divider"></div>' +
+                    '<a class="dropdown-item" href="/web/session/logout?redirect=/"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a>';
+                parentItem.appendChild(menu);
+            } else {
+                accountLink.innerHTML = '<i class="bi bi-person"></i>';
+                accountLink.title = 'Se connecter';
+            }
         }
+
+        // ===== AJOUT AU PANIER (best-sellers) =====
+        document.querySelectorAll('.btn-add[data-product-id]').forEach(function(btn) {
+            if (btn.dataset.bound) { return; }
+            btn.dataset.bound = 'true';
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = parseInt(btn.dataset.productId, 10);
+                const originalText = btn.textContent;
+                btn.textContent = '...';
+
+                fetch('/shop/cart/update_json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        params: {
+                            product_id: productId,
+                            add_qty: 1
+                        }
+                    })
+                })
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        const result = (data && data.result) || {};
+                        if (result.cart_quantity === undefined && !result.line_id) {
+                            throw new Error('cart update failed');
+                        }
+                        const cartQty = document.querySelector('.my_cart_quantity');
+                        if (cartQty && result.cart_quantity !== undefined) {
+                            cartQty.textContent = result.cart_quantity;
+                            cartQty.classList.remove('d-none');
+                        }
+                        btn.textContent = '✅ Ajouté';
+                        setTimeout(function() {
+                            btn.textContent = originalText;
+                        }, 2000);
+                    })
+                    .catch(function() {
+                        btn.textContent = originalText;
+                        alert("Impossible d'ajouter ce produit au panier pour le moment.");
+                    });
+            });
+        });
 
         // ===== BANNIÈRE COOKIES : texte personnalisé =====
         const cookiesBar = document.getElementById('website_cookies_bar');
