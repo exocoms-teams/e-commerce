@@ -49,8 +49,7 @@
                                 </t>
                                 <a href="/shop/wishlist" class="pm-topicon" title="Mes favoris">
                                     <i class="fa fa-heart-o fa-lg"/>
-                                    <span class="pm-cart-badge"
-                                          t-att-style="'' if pm_wl_count > 0 else 'display:none;'">
+                                    <span t-attf-class="pm-cart-badge{{ ' d-none' if pm_wl_count == 0 else '' }}">
                                         <t t-out="pm_wl_count"/>
                                     </span>
                                 </a>
@@ -61,9 +60,8 @@
                                 <t t-set="pm_cart_qty" t-value="request.session.get('cart_quantity', 0) or 0"/>
                                 <a href="/shop/cart" class="pm-topicon" title="Mon panier">
                                     <i class="fa fa-shopping-cart fa-lg"/>
-                                    <!-- Toujours dans le DOM pour que le JS Odoo puisse mettre à jour -->
-                                    <span class="pm-cart-badge o_cart_quantity"
-                                          t-att-style="'' if pm_cart_qty > 0 else 'display:none;'">
+                                    <!-- d-none = display:none!important écrase display:flex du .pm-cart-badge -->
+                                    <span t-attf-class="pm-cart-badge o_cart_quantity{{ ' d-none' if pm_cart_qty == 0 else '' }}">
                                         <t t-out="pm_cart_qty"/>
                                     </span>
                                 </a>
