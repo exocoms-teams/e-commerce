@@ -55,12 +55,12 @@ class MandatPaymentController(http.Controller):
         # 2. Confirmation de la commande
         if order.state in ('draft', 'sent'):
             order.sudo().action_confirm()
-        # Réappliquer payment_mode après action_confirm et générer le numéro de mandat
-        extra = {'payment_mode': 'mandat_administratif'}
+        # Marquer comme mandat administratif et générer le numéro de mandat
+        extra = {'payment_mode': 'mandat_administratif', 'is_mandat_administratif': True}
         if not order.mandat_numero:
             extra['mandat_numero'] = order.sudo()._gen_mandat_numero()
         order.sudo().write(extra)
-        _logger.info('Commande %s confirmée, payment_mode=%s, mandat_numero=%s', order.name, order.payment_mode, order.mandat_numero)
+        _logger.info('Commande %s confirmée, is_mandat_administratif=%s, mandat_numero=%s', order.name, order.is_mandat_administratif, order.mandat_numero)
 
         # 3. Création de la transaction (pour suivi backend)
         try:

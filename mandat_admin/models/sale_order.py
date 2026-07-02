@@ -28,7 +28,7 @@ class SaleOrder(models.Model):
         ('mandat_administratif', '🏛 Mandat Administratif'),
     ], string='Mode de paiement', default=False)
     is_mandat_administratif = fields.Boolean(
-        compute='_compute_is_ma', store=True, string='Est un mandat administratif')
+        string='Est un mandat administratif', store=True)
 
     # ── Identification ─────────────────────────────────────────────
     mandat_numero = fields.Char('N° de mandat', copy=False, readonly=True, index=True)
@@ -129,12 +129,7 @@ class SaleOrder(models.Model):
 
     # ── Computed ───────────────────────────────────────────────────
 
-    @api.depends('payment_mode')
-    def _compute_is_ma(self):
-        for o in self:
-            o.is_mandat_administratif = (o.payment_mode == 'mandat_administratif')
-
-    @api.depends('date_order', 'delai_paiement_jours')
+@api.depends('date_order', 'delai_paiement_jours')
     def _compute_dlp(self):
         for o in self:
             if o.date_order and o.delai_paiement_jours:
