@@ -1,22 +1,33 @@
 /* ===== PAGE SHOP ===== */
 
-/* Carte produit */
-.o_wsale_products_grid_table_wrapper .o_wsale_product_grid_cell {
+/* Carte produit (classes réelles confirmées : .oe_product / .oe_product_cart) */
+.oe_product .oe_product_cart {
     background: white !important;
     border-radius: 16px !important;
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
     transition: all 0.3s ease;
     border: none !important;
+    padding-bottom: 0.5rem;
 }
 
-.o_wsale_products_grid_table_wrapper .o_wsale_product_grid_cell:hover {
+.oe_product .oe_product_cart:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
 }
 
+/* Petit espace entre les cartes (la grille native est parfois collée) */
+.oe_product {
+    padding: 8px !important;
+}
+
 /* Image produit */
-.o_wsale_product_grid_cell img {
+.oe_product .oe_product_image {
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+}
+
+.oe_product .oe_product_image img {
     height: 220px !important;
     object-fit: cover !important;
     width: 100% !important;
@@ -24,66 +35,61 @@
     transition: transform 0.3s;
 }
 
-.o_wsale_product_grid_cell:hover img {
+.oe_product .oe_product_cart:hover .oe_product_image img {
     transform: scale(1.04);
 }
 
+/* Zone infos (nom, description, prix) */
+.oe_product .oe_wsale_product_information {
+    background: white !important;
+    padding: 1rem !important;
+}
+
 /* Nom produit */
-.o_wsale_product_grid_cell .o_wsale_product_information h6,
-.o_wsale_product_grid_cell .o_wsale_product_information .h6 {
+.oe_product .o_wsale_products_item_title,
+.oe_product .o_wsale_products_item_title a {
     color: var(--bleu-nuit) !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
     background: none !important;
+    text-decoration: none !important;
 }
 
 /* Prix */
-.o_wsale_product_grid_cell .oe_currency_value {
+.oe_product .oe_currency_value {
     color: var(--terracotta) !important;
     font-weight: 800 !important;
     font-size: 1.1rem !important;
     background: none !important;
 }
 
-/* Bouton ajouter au panier */
-.o_wsale_product_grid_cell .o_wsale_product_btn,
-.o_wsale_product_grid_cell .btn-primary {
+/* Bouton ajouter au panier (si affiché sur la grille) */
+.oe_product .o_wsale_product_btn,
+.oe_product .btn-primary {
     background-color: var(--bleu-nuit) !important;
     border-color: var(--bleu-nuit) !important;
     border-radius: 50px !important;
     font-weight: 600 !important;
     transition: all 0.3s !important;
-    width: 100% !important;
 }
 
-.o_wsale_product_grid_cell .o_wsale_product_btn:hover,
-.o_wsale_product_grid_cell .btn-primary:hover {
+.oe_product .o_wsale_product_btn:hover,
+.oe_product .btn-primary:hover {
     background-color: var(--terracotta) !important;
     border-color: var(--terracotta) !important;
 }
 
-/* Fond blanc sur toute la zone info */
-.o_wsale_product_information {
-    background: white !important;
-    padding: 1rem !important;
-}
-
-/* Sidebar filtres / catégories */
-#products_grid_before,
-.o_wsale_products_categories,
-.o_wsale_categories_sidebar,
-#o_wsale_offer_products_categories {
+/* Sidebar : cadre (classe réelle confirmée #products_grid_before) */
+#products_grid_before {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1rem 1.2rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     margin-bottom: 1.5rem;
 }
 
-#products_grid_before .h6,
-#products_grid_before h6,
-.o_wsale_products_categories .h6,
-#products_grid_before .products_categories_list > .nav-item > .nav-link {
+/* Titre "Categories" */
+#products_grid_before .o_categories_collapse_title {
     color: var(--bleu-nuit) !important;
     font-weight: 700;
     text-transform: uppercase;
@@ -91,71 +97,47 @@
     letter-spacing: 1px;
 }
 
-/* Liens de catégories */
-#products_grid_before a,
-#products_grid_before .nav-link,
-.o_wsale_products_categories a {
+/* Liens de catégories (liste réelle : #o_wsale_categories .wsale_products_categories_list) */
+#products_grid_before .wsale_products_categories_list a,
+#products_grid_before .nav-link {
     color: #555 !important;
     transition: color 0.3s, padding 0.2s;
     padding: 0.3rem 0;
+    text-decoration: none;
 }
 
-#products_grid_before a:hover,
-#products_grid_before .nav-link:hover,
-.o_wsale_products_categories a:hover {
+#products_grid_before .wsale_products_categories_list a:hover,
+#products_grid_before .nav-link:hover {
     color: var(--terracotta) !important;
     padding-left: 4px;
 }
 
 /* Catégorie active / sélectionnée */
-#products_grid_before .active > .nav-link,
-#products_grid_before a.active,
-#products_grid_before .nav-link.active {
+#products_grid_before .wsale_products_categories_list a.active,
+#products_grid_before .active > a {
     color: var(--terracotta) !important;
     font-weight: 700;
 }
 
 /* Sous-catégories indentées */
-#products_grid_before ul ul,
-#products_grid_before .nav ul {
+#products_grid_before .wsale_products_categories_list ul {
     padding-left: 1rem;
     border-left: 2px solid var(--creme);
 }
 
 /* Curseur de prix */
-#products_grid_before input[type="range"],
-#products_grid_before .o_wsale_products_attributes_price_slider {
+#o_wsale_price_range_option input[type="range"] {
     accent-color: var(--terracotta);
 }
 
 /* Barre de tri / recherche */
+#o_wsale_products_header,
 .o_wsale_products_header {
     background: white;
     border-radius: 12px;
     padding: 0.8rem 1.2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     margin-bottom: 1.5rem;
-}
-
-#products_grid_before ~ div .o_wsale_products_header,
-.o_wsale_search_bar,
-#o_wsale_search {
-    border-radius: 50px !important;
-}
-
-/* Coeur favoris sur les fiches produit */
-.o_wsale_product_grid_cell .o_add_wishlist,
-.o_wsale_product_grid_cell .o_wish_add,
-.o_wsale_product_grid_cell .o_wsale_product_information_wishlist {
-    color: var(--bleu-nuit) !important;
-    transition: color 0.3s, transform 0.3s;
-}
-
-.o_wsale_product_grid_cell .o_add_wishlist:hover,
-.o_wsale_product_grid_cell .o_wish_add:hover,
-.o_wsale_product_grid_cell .o_wsale_product_information_wishlist:hover {
-    color: var(--terracotta) !important;
-    transform: scale(1.15);
 }
 
 /* ===== PAGE DÉTAIL PRODUIT ===== */
