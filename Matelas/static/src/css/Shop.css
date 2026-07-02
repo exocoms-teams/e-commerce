@@ -21,7 +21,57 @@
     padding: 8px !important;
 }
 
-/* Image produit : temporairement désactivé pour test de diagnostic */
+/* Image produit : fond bleu nuit assumé comme choix de design, avec une
+   touche décorative (lune, thème sommeil) plutôt qu'un bloc plat */
+.oe_product .oe_product_image {
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+    background: linear-gradient(135deg, var(--bleu-nuit) 0%, #1b2431 100%) !important;
+    min-height: 220px;
+}
+
+.oe_product .oe_product_image::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    transform: translate(-50%, -50%);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z'/%3E%3Ccircle cx='18' cy='6' r='0.6' fill='white' stroke='none'/%3E%3Ccircle cx='20' cy='10' r='0.4' fill='white' stroke='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+.oe_product .oe_product_image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.15), transparent 40%);
+    pointer-events: none;
+}
+
+.oe_product .oe_product_image_img {
+    height: 220px !important;
+    object-fit: cover !important;
+    width: 100% !important;
+    transition: transform 0.3s;
+    opacity: 0;
+}
+
+.oe_product .oe_product_cart:hover .oe_product_image_img_wrapper_primary .oe_product_image_img {
+    transform: scale(1.04);
+}
+
+/* Icône favoris bien visible sur fond foncé */
+.oe_product .oe_product_image [class*="wish"],
+.oe_product .oe_product_image [class*="wish"] i {
+    color: white !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
 
 /* Zone infos (nom, description, prix) */
 .oe_product .oe_wsale_product_information {
