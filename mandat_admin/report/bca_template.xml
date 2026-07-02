@@ -186,7 +186,7 @@
           <t t-if="line.discount"><t t-esc="line.discount"/>%</t><t t-else="">-</t>
         </td>
         <td class="text-center">
-          <t t-foreach="line.tax_id" t-as="tax"><t t-esc="tax.amount"/>% </t>
+          <t t-foreach="line.tax_ids or line.tax_id" t-as="tax"><t t-esc="tax.amount"/>% </t>
         </td>
         <td class="text-end">
           <t t-esc="line.price_subtotal" t-options='{"widget":"monetary","display_currency":o.currency_id}'/>
