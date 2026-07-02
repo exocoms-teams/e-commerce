@@ -184,8 +184,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (promo) promo.checked = true;
     }
 
-    // Récupère l'ID d'un attribut par son nom
-    async function getAttributeId(name) {
+    // Récupère l'ID d'un attribut par son nom (essaie plusieurs variantes)
+    async function getAttributeId(names) {
+        const nameList = Array.isArray(names) ? names : [names];
         const res = await fetch('/web/dataset/call_kw', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -195,8 +196,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 params: {
                     model: 'product.attribute',
                     method: 'search_read',
-                    args: [[['name', '=', name]]],
-                    kwargs: { fields: ['id', 'name'] }
+                    args: [[['name', 'in', nameList]]],
+                    kwargs: { fields: ['id', 'name'], limit: 1 }
                 }
             })
         });
