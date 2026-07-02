@@ -8,48 +8,6 @@
             <!-- Supprime la sidebar native -->
             <xpath expr="//aside[@id='products_grid_before']" position="replace" />
 
-            <!-- Injecte notre sidebar avant la grille produits -->
-            <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
-                <nav class="tsp-sidebar">
-                    <ul class="tsp-nav">
-                        <li class="tsp-nav-item">
-                            <a href="/accueil"><i class="fa fa-bars" /> Accueil</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/shop?x_is_promotion=1"><i class="fa fa-star-o" /> Promotions</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/shop?order=publish_date+desc"><i class="fa fa-star-o" />
-                                Nouveautes</a>
-                        </li>
-                        <li class="tsp-nav-item tsp-nav-dropdown">
-                            <a href="/shop">
-                                <i class="fa fa-th-large" /> Tous les produits <i
-                                    class="fa fa-chevron-down tsp-chevron" />
-                            </a>
-                            <ul class="tsp-submenu">
-                                <t t-set="categories"
-                                    t-value="request.env['product.public.category'].sudo().search([('parent_id', '=', False)])" />
-                                <t t-foreach="categories" t-as="cat">
-                                    <li>
-                                        <a t-att-href="'/shop/category/' + slug(cat)">
-                                            <i class="fa fa-tag" />
-                                            <t t-out="cat.name" />
-                                        </a>
-                                    </li>
-                                </t>
-                            </ul>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/avis"><i class="fa fa-star-o" /> Avis</a>
-                        </li>
-                        <li class="tsp-nav-item">
-                            <a href="/contact"><i class="fa fa-phone" /> Contact</a>
-                        </li>
-                    </ul>
-                </nav>
-            </xpath>
-
             <!-- Injecte la barre de filtres avant la grille produits -->
             <xpath expr="//h1[hasclass('o_wsale_shop_title')]" position="after">
 
