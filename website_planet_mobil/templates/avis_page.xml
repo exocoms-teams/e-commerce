@@ -647,19 +647,6 @@
     </div>
 </div>
 
-<!-- ═══════════ CONFIRMATION ENVOI ═══════════ -->
-<t t-if="sent">
-    <div id="pm-sent" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:16px;padding:20px 28px;max-width:700px;margin:24px auto 0;display:flex;align-items:center;gap:16px;">
-        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="fa fa-check" style="color:#fff;font-size:1.1rem;"></i>
-        </div>
-        <div>
-            <div style="font-weight:700;color:#15803d;font-size:0.95rem;">Merci pour votre avis !</div>
-            <div style="color:#166534;font-size:0.85rem;margin-top:2px;">Votre commentaire est en attente de validation et sera publié prochainement.</div>
-        </div>
-    </div>
-</t>
-
 <!-- ═══════════ FILTRES ═══════════ -->
 <div class="pm-avis-filters">
     <div class="pm-avis-filters-inner">
@@ -723,6 +710,14 @@
         </div>
 
         <div class="pm-avis-form-card">
+            <t t-if="sent">
+                <div class="pm-success-msg">
+                    <div class="pm-success-icon"><i class="fa fa-check"></i></div>
+                    <div class="pm-success-title">Merci pour votre avis !</div>
+                    <p class="pm-success-text">Votre commentaire est en attente de validation<br/>et sera publié prochainement.</p>
+                </div>
+            </t>
+            <t t-else="">
             <form action="/avis/submit" method="post">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
 
@@ -760,6 +755,7 @@
                     <i class="fa fa-paper-plane"></i> Publier mon avis
                 </button>
             </form>
+            </t>
         </div>
     </div>
 </div>
