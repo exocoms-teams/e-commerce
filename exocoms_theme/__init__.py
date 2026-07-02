@@ -620,6 +620,21 @@ def _setup_livechat(env, website):
     if website.channel_id.id != channel.id:
         website.write({'channel_id': channel.id})
 
+    # CORRECTIF : un canal créé par code (.create()) n'a AUCUNE règle
+    # d'affichage (im_livechat.channel.rule) par défaut — contrairement
+    # à un canal créé depuis l'interface, qui en crée une
+    # automatiquement. Sans règle, Odoo ne sait sur quelles pages
+    # afficher la bulle de chat, donc elle n'apparaît nulle part. On
+    # ajoute une règle simple : afficher le bouton sur toutes les
+    # pages du site.
+    if not channel.rule_ids:
+        env['im_livechat.channel.rule'].create({
+            'channel_id': channel.id,
+            'regex_url': '/',
+            'action': 'display_button',
+            'sequence': 10,
+        })
+
 
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
