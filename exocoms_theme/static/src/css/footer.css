@@ -130,59 +130,36 @@ footer#bottom .o_footer_copyright .js_language_selector a {
 }
 
 /* =========================================================
-   CORRECTIF ALIGNEMENT — ligne cookies / langue / copyright
-   D'après la structure observée, les 3 blocs apparaissent dans cet
-   ordre dans le DOM : (1) Politique cookies, (2) Sélecteur de
-   langue, (3) Copyright. On les remet sur une seule ligne, en
-   réordonnant visuellement : Copyright + Langue à GAUCHE, Politique
-   de cookies poussée tout à DROITE (margin-left: auto).
-   NOTE : si l'ordre réel diffère chez vous, ajustez les nth-child
-   ci-dessous en inspectant l'élément dans le navigateur (clic droit
-   > Inspecter sur chaque bloc pour voir sa position dans le DOM).
+   POLITIQUE DE COOKIES — solution finale
+   Le lien "Politique en matière de cookies" est désormais intégré
+   directement dans custom_copyright (footer.xml), avec la classe
+   .exo-cookie-policy-link, aligné avec le copyright via flexbox
+   (justify-content: space-between sur .o_footer_copyright_name).
+
+   On masque ici le lien NATIF d'Odoo (classe exacte confirmée :
+   o_cookie_policy_link) injecté automatiquement ailleurs dans le
+   footer, pour éviter d'avoir le lien en double sur la page.
 ========================================================= */
-footer#bottom .o_footer_copyright .container {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 8px 24px !important;
-    padding: 12px 0 !important;
+footer#bottom .o_cookie_policy_link {
+    display: none !important;
 }
 
-footer#bottom .o_footer_copyright .container > * {
-    width: auto !important;
-    max-width: 100% !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 4px 12px !important;
+.exo-cookie-policy-link {
+    color: #5a6480 !important;
+    text-decoration: none !important;
+    white-space: nowrap;
 }
 
-/* (1) Politique cookies -> poussée à droite, en dernier visuellement */
-footer#bottom .o_footer_copyright .container > *:nth-child(1) {
-    order: 3;
-    margin-left: auto !important;
-}
-/* (2) Sélecteur de langue -> à gauche, en premier */
-footer#bottom .o_footer_copyright .container > *:nth-child(2) {
-    order: 1;
-}
-/* (3) Copyright -> à gauche, juste après la langue */
-footer#bottom .o_footer_copyright .container > *:nth-child(3) {
-    order: 2;
+.exo-cookie-policy-link:hover {
+    color: #4d8aff !important;
+    text-decoration: underline !important;
 }
 
 @media (max-width: 576px) {
-    footer#bottom .o_footer_copyright .container {
+    footer#bottom .o_footer_copyright_name.d-flex {
         flex-direction: column !important;
-        justify-content: center !important;
         text-align: center !important;
         gap: 6px !important;
-    }
-    footer#bottom .o_footer_copyright .container > *:nth-child(1) {
-        margin-left: 0 !important;
     }
 }
 

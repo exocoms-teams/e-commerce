@@ -101,16 +101,32 @@
             </div>
         </xpath>
     </template>
-    <!-- COPYRIGHT — même logique, héritage déclaratif -->
+
+    <!-- ═══════════════════════════════════════════════════════════
+         COPYRIGHT + POLITIQUE DE COOKIES — même logique, héritage
+         déclaratif. Le lien de politique de cookies est désormais
+         intégré ICI, dans notre propre bloc, aligné avec le
+         copyright via flexbox (justify-content: space-between) —
+         copyright à gauche, lien à droite, même ligne, garanti.
+         Le lien NATIF équivalent (classe o_cookie_policy_link, même
+         href="/cookie-policy") injecté ailleurs par Odoo est masqué
+         via CSS (footer.css) pour éviter le doublon.
+         ═══════════════════════════════════════════════════════════ -->
     <template id="custom_copyright" inherit_id="website.layout" name="Exocoms Copyright" priority="1000">
         <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
-            <span class="o_footer_copyright_name me-2 small">
-                <t t-if="request.env.lang == 'fr_FR'">
-                    Copyright © 2026 Exocoms Group. Tous droits réservés.
-                </t>
-                <t t-else="">
-                    Copyright © 2026 Exocoms Group. All rights reserved.
-                </t>
+            <span class="o_footer_copyright_name me-2 small d-flex flex-wrap align-items-center justify-content-between w-100">
+                <span>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        Copyright © 2026 Exocoms Group. Tous droits réservés.
+                    </t>
+                    <t t-else="">
+                        Copyright © 2026 Exocoms Group. All rights reserved.
+                    </t>
+                </span>
+                <a href="/cookie-policy" class="exo-cookie-policy-link small">
+                    <t t-if="request.env.lang == 'fr_FR'">Politique en matière de cookies</t>
+                    <t t-else="">Cookie Policy</t>
+                </a>
             </span>
         </xpath>
     </template>
