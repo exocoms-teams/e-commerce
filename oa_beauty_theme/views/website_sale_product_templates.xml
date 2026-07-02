@@ -297,7 +297,7 @@
     <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Beauty — Low Stock Indicator">
         <xpath expr="//div[@id='product_details']" position="inside">
             <t t-set="product_variant" t-value="product.product_variant_id"/>
-            <t t-if="product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
+            <t t-if="'qty_available' in product_variant._fields and product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
                 <div class="oa-low-stock mt-2">
                     Plus que <t t-esc="int(product_variant.qty_available)"/> en stock — commandez vite !
                 </div>
