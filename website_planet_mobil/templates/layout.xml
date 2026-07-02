@@ -35,9 +35,9 @@
         </nav>
     </template>
 
-    <!-- Injecte la barre de navigation sur TOUTES les pages Odoo (avant <main>, entre header et contenu) -->
-    <template id="inject_nav_all_pages" inherit_id="website.layout" name="Planet Mobil - Nav globale">
-        <xpath expr="//main[@id='o_main_nav']" position="before">
+    <!-- Injecte la barre de navigation juste après le header, sur toutes les pages -->
+    <template id="inject_nav_all_pages" inherit_id="website.template_header_default" name="Planet Mobil - Nav globale">
+        <xpath expr="//header" position="after">
             <t t-call="website_planet_mobil.alt_category_nav_fragment" />
         </xpath>
     </template>
