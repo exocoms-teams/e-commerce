@@ -184,49 +184,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (promo) promo.checked = true;
     }
 
-    // Récupère l'ID de l'attribut ayant des valeurs parmi plusieurs variantes de nom
+    // Essaie chaque nom dans l'ordre jusqu'à trouver un attribut avec des valeurs
     async function getAttributeId(names) {
         const nameList = Array.isArray(names) ? names : [names];
-        try {
-            const res = await fetch('/web/dataset/call_kw', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    id: 1,
-                    params: {
-                        model: 'product.attribute',
-                        method: 'search_read',
-                        args: [[['name', 'in', nameList]]],
-                        kwargs: { fields: ['id', 'name'] }
-                    }
-                })
-            });
-            const data = await res.json();
-            if (data.error) {
-                console.warn('[PM Filtres] Erreur API getAttributeId:', data.error);
-                return null;
-            }
-            if (!data.result?.length) {
-                console.warn('[PM Filtres] Aucun attribut trouvé pour:', nameList);
-                return null;
-            }
-            // Parmi tous les attributs matchants, prendre celui qui a des valeurs
-            for (const attr of data.result) {
-                const values = await getAttributeValues(attr.id);
+        for (const name of nameList) {
+            try {
+                const res = await fetch('/web/dataset/call_kw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0', method: 'call', id: 1,
+                        params: {
+                            model: 'product.attribute',
+                            method: 'search_read',
+                            args: [[['name', '=', name]]],
+                            kwargs: { fields: ['id', 'name'], limit: 1 }
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (data.error || !data.result?.length) continue;
+                const id = data.result[0].id;
+                const values = await getAttributeValues(id);
                 if (values.length > 0) {
-                    console.log('[PM Filtres] Attribut retenu:', attr.name, '→ id', attr.id, '(', values.length, 'valeurs)');
-                    return attr.id;
+                    console.log('[PM Filtres] Attribut retenu:', name, '→ id', id, '(', values.length, 'valeurs)');
+                    return id;
                 }
-                console.warn('[PM Filtres] Attribut', attr.name, '(id', attr.id, ') sans valeurs, essai suivant...');
+                console.warn('[PM Filtres]', name, 'trouvé mais sans valeurs, essai suivant...');
+            } catch (e) {
+                console.warn('[PM Filtres] Erreur pour', name, ':', e);
             }
-            console.warn('[PM Filtres] Tous les attributs trouvés sont vides:', data.result.map(a => a.name));
-            return null;
-        } catch (e) {
-            console.warn('[PM Filtres] Fetch error getAttributeId:', e);
-            return null;
         }
+        console.warn('[PM Filtres] Aucun attribut avec valeurs pour:', nameList);
+        return null;
     }
 
     // Récupère les valeurs d'un attribut
@@ -373,10 +363,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Init dropdowns marque + couleur
     async function initFilters() {
-        const [brandId, colorId] = await Promise.all([
-            getAttributeId(['Brand', 'Marque', 'brand', 'marque']),
-            getAttributeId(['Color', 'Couleur', 'color', 'couleur', 'Colour'])
-        ]);
+        const brandId = await getAttributeId(['Brand', 'brand', 'Marque', 'marque']);
+        const colorId = await getAttributeId(['Color', 'color', 'Couleur', 'couleur']);
 
         if (brandId) {
             const brands = await getAttributeValues(brandId);
