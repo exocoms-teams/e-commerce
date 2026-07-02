@@ -12,7 +12,9 @@
             <!-- Preconnect for performance -->
             <link rel="preconnect" href="https://fonts.googleapis.com"/>
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
-            <!-- Google Fonts: Cormorant Garamond (display) + Jost (body) -->
+            <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>
+            <!-- Google Fonts: Cormorant Garamond (display) + Jost (body) — preloaded for CWV -->
+            <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500;600&amp;display=swap"/>
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=Jost:wght@300;400;500;600&amp;display=swap"/>
             <!-- Font Awesome 6 — required for fa-brands fa-instagram/tiktok/pinterest -->
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecAlmChMD1EjyFg6J5BCFSgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
@@ -49,6 +51,18 @@
             <meta name="twitter:card" content="summary_large_image"/>
             <meta name="twitter:site" content="@oabeauty"/>
             <meta property="og:site_name" content="O&amp;A Beauty"/>
+            <t t-if="main_object and 'name' in main_object">
+                <meta property="og:title" t-att-content="main_object.name"/>
+                <meta property="twitter:title" t-att-content="main_object.name"/>
+            </t>
+            <t t-if="main_object and 'website_meta_description' in main_object and main_object.website_meta_description">
+                <meta property="og:description" t-att-content="main_object.website_meta_description"/>
+                <meta property="twitter:description" t-att-content="main_object.website_meta_description"/>
+            </t>
+            <t t-if="main_object and 'image_1920' in main_object">
+                <meta property="og:image" t-att-content="request.httprequest.url_root + 'web/image/' + main_object._name + '/' + str(main_object.id) + '/image_1920'"/>
+                <meta property="twitter:image" t-att-content="request.httprequest.url_root + 'web/image/' + main_object._name + '/' + str(main_object.id) + '/image_1920'"/>
+            </t>
             
             <!-- Schema.org Organization -->
             <script type="application/ld+json">

@@ -1173,5 +1173,74 @@
             </t>
         </field>
     </record>
+    <!-- ======================================================================= -->
+    <!-- PAGE 8: ORDER TRACKING PAGE (/tracking)                                 -->
+    <!-- ======================================================================= -->
+    <template id="page_order_tracking" name="Order Tracking">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- HERO SECTION -->
+                <section class="oa-hero position-relative" style="background-color: var(--oa-ivory); padding: 60px 0;">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h1 class="oa-hero-h1 mb-3" style="font-size: 2.5rem;">Suivi de Commande</h1>
+                                <p class="oa-hero-tagline fs-6 mb-0">Suivez le voyage de vos soins O&amp;A Beauty.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="py-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 col-lg-6">
+                                
+                                <!-- SEARCH FORM -->
+                                <div class="bg-white p-4 shadow-sm mb-5" style="border: 1px solid var(--oa-border);">
+                                    <form action="/tracking" method="get" class="d-flex">
+                                        <input type="text" name="tracking_number" class="form-control rounded-0 p-3 flex-grow-1" placeholder="Numéro de suivi (ex: PLK-...)" t-att-value="tracking_number" required="1" style="border-color: var(--oa-border);"/>
+                                        <button type="submit" class="oa-btn-primary border-0 rounded-0 px-4">Suivre</button>
+                                    </form>
+                                    <t t-if="error_message">
+                                        <div class="alert alert-danger mt-3 mb-0 rounded-0 small">
+                                            <i class="fa fa-exclamation-circle me-2"></i><t t-esc="error_message"/>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <!-- TRACKING RESULTS -->
+                                <t t-if="tracking_data">
+                                    <div class="bg-white p-4 shadow-sm" style="border: 1px solid var(--oa-border);">
+                                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                                            <h3 class="oa-gallery-caption fs-5 mb-0">Statut: <span style="color: var(--oa-mauve);"><t t-esc="tracking_data.get('status', 'Inconnu')"/></span></h3>
+                                        </div>
+
+                                        <div class="tracking-history position-relative" style="padding-left: 20px; border-left: 2px solid var(--oa-border);">
+                                            <t t-if="tracking_data.get('history')">
+                                                <t t-foreach="tracking_data.get('history')" t-as="event">
+                                                    <div class="mb-4 position-relative">
+                                                        <!-- Timeline dot -->
+                                                        <div class="position-absolute rounded-circle" style="width: 12px; height: 12px; background: var(--oa-prune); left: -27px; top: 5px;"></div>
+                                                        <div class="text-muted small fw-bold mb-1"><t t-esc="event.get('date', '')[:10]"/></div>
+                                                        <div class="fw-bold"><t t-esc="event.get('description')"/></div>
+                                                        <div class="text-muted small"><t t-esc="event.get('city')"/></div>
+                                                    </div>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-muted small">Aucun historique disponible pour le moment.</p>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
 
 </odoo>

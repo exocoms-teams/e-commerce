@@ -2240,3 +2240,171 @@ html[dir="rtl"] {
     color: white;
     margin-bottom: 4px;
 }
+
+// ── ACCESSIBILITY (ARIA & FOCUS STATES) ─────────────────────────
+:focus-visible {
+    outline: 2px solid var(--oa-mauve) !important;
+    outline-offset: 3px !important;
+}
+
+.oa-skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: var(--oa-prune);
+    color: white;
+    padding: 10px 20px;
+    z-index: 2000;
+    transition: top 0.2s ease;
+    text-decoration: none;
+    font-family: var(--oa-font-body);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+
+    &:focus {
+        top: 0;
+        outline: none;
+    }
+}
+
+// ── REDUCED MOTION (Core Web Vitals / Accessibility) ────────────
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+// ── RTL SUPPORT (Priority 7: Internationalization) ──────────────
+html[dir="rtl"] {
+    // Flip text alignment
+    .text-start { text-align: right !important; }
+    .text-end { text-align: left !important; }
+    .text-lg-start { @media (min-width: 992px) { text-align: right !important; } }
+    .text-md-start { @media (min-width: 768px) { text-align: right !important; } }
+    .text-md-end { @media (min-width: 768px) { text-align: left !important; } }
+
+    // Flip margins
+    .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+    .me-auto { margin-left: auto !important; margin-right: 0 !important; }
+    .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+    .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+    .ms-4 { margin-right: 1.5rem !important; margin-left: 0 !important; }
+
+    // Flip paddings
+    .ps-0 { padding-right: 0 !important; padding-left: unset !important; }
+    .pe-0 { padding-left: 0 !important; padding-right: unset !important; }
+
+    // Flip borders
+    .border-start { border-right: 1px solid var(--oa-border) !important; border-left: 0 !important; }
+    .border-end { border-left: 1px solid var(--oa-border) !important; border-right: 0 !important; }
+
+    // Header nav underline
+    .oa-header .nav-link::after {
+        left: auto;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    // Footer links
+    .oa-footer-links a {
+        direction: rtl;
+    }
+
+    // Product card text
+    .oa-product-info {
+        direction: rtl;
+    }
+
+    // Mobile bottom bar
+    .oa-bottom-bar {
+        direction: rtl;
+    }
+
+    // Accordion
+    .accordion-button::after {
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    // Icons in the right-to-left context
+    .fa-long-arrow-right::before {
+        content: "\f177"; // fa-long-arrow-left
+    }
+}
+
+// ── LOW STOCK INDICATOR (Priority 8: Customer Experience) ───────
+.oa-low-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #c0392b;
+    font-family: var(--oa-font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    animation: oa-pulse-stock 2s ease-in-out infinite;
+
+    &::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #c0392b;
+        animation: oa-pulse-dot 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes oa-pulse-stock {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes oa-pulse-dot {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+// ── RECENTLY VIEWED SECTION ─────────────────────────────────────
+.oa-recently-viewed {
+    .oa-rv-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 12px;
+        background: white;
+        border: 1px solid var(--oa-border);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--oa-text);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border-color: var(--oa-mauve);
+        }
+
+        img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .oa-rv-name {
+            font-family: var(--oa-font-display);
+            font-size: 1rem;
+            color: var(--oa-prune);
+        }
+
+        .oa-rv-price {
+            font-family: var(--oa-font-body);
+            font-size: 0.85rem;
+            color: var(--oa-mauve);
+            font-weight: 500;
+        }
+    }
+}

@@ -2,88 +2,133 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- 1. The Blog -->
-        <record id="oa_editorial_blog" model="blog.blog">
-            <field name="name">O&amp;A Editorial</field>
-            <field name="subtitle">Le Journal de la Beauté Révélée</field>
+        <!-- 1. CREATING THE BLOG -->
+        <record id="oa_luxury_blog" model="blog.blog">
+            <field name="name">L'Éditorial</field>
+            <field name="subtitle">Le carnet de beauté O&amp;A : Rituels, sciences et secrets de la beauté clean luxury.</field>
+            <field name="seo_name">l-editorial</field>
         </record>
 
-        <!-- 2. Blog Posts -->
-        <!-- Post 1: Best Skincare Routine -->
+        <!-- 2. BLOG TAGS (CATEGORIES) -->
+        <record id="blog_tag_skincare" model="blog.tag">
+            <field name="name">Soins de la Peau</field>
+            <field name="category_id" ref="website_blog.blog_tag_category_1"/>
+        </record>
+        <record id="blog_tag_makeup" model="blog.tag">
+            <field name="name">Maquillage</field>
+            <field name="category_id" ref="website_blog.blog_tag_category_1"/>
+        </record>
+        <record id="blog_tag_perfume" model="blog.tag">
+            <field name="name">Parfums</field>
+            <field name="category_id" ref="website_blog.blog_tag_category_1"/>
+        </record>
+        <record id="blog_tag_wellness" model="blog.tag">
+            <field name="name">Bien-être</field>
+            <field name="category_id" ref="website_blog.blog_tag_category_1"/>
+        </record>
+
+        <!-- 3. PREMIUM ARTICLES -->
+
+        <!-- Article 1: Skincare -->
         <record id="oa_blog_post_1" model="blog.post">
-            <field name="name">The Ultimate Skincare Routine for Dry, Thirsty Skin</field>
-            <field name="subtitle">Nourish, protect, and restore your skin's natural barrier.</field>
-            <field name="blog_id" ref="oa_beauty_theme.oa_editorial_blog"/>
-            <field name="is_published">True</field>
-            <field name="content"><![CDATA[
-                <section class="s_text_image pt32 pb32" data-snippet="s_text_image" data-name="Text - Image">
+            <field name="name">L'Art du Double Nettoyage : Le Secret d'une Peau Lumineuse</field>
+            <field name="subtitle">Découvrez pourquoi ce rituel ancestral est indispensable pour une peau saine et éclatante.</field>
+            <field name="blog_id" ref="oa_beauty_theme.oa_luxury_blog"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('oa_beauty_theme.blog_tag_skincare'), ref('oa_beauty_theme.blog_tag_wellness')])]"/>
+            <field name="content" type="html">
+                <section class="s_text_image pt32 pb32">
                     <div class="container">
                         <div class="row align-items-center">
                             <div class="col-lg-6 pt16 pb16">
-                                <h2 class="oa-editorial-h2">Hydration is the Foundation</h2>
-                                <p class="lead text-muted">Dry skin lacks the natural oils necessary to maintain a healthy barrier, leading to flakiness, tightness, and premature aging.</p>
-                                <p>Our philosophy at O&amp;A Beauty is to replenish what your skin is missing using bio-compatible ingredients. Start with a gentle cleanser like our <strong>Cleansing Foam</strong> that doesn't strip away your natural moisture. Follow immediately with our <strong>Hydrating Serum</strong>, which is packed with hyaluronic acid to draw moisture deep into the dermis.</p>
-                                <p>Seal it all in with a squalane-based cream, such as the <strong>Daily Moisturizer</strong>, to lock in hydration for 24 hours.</p>
-                            </div>
-                            <div class="col-lg-6 pt16 pb16">
-                                <img src="/web/image/website.s_text_image_default_image" class="img img-fluid mx-auto rounded shadow-sm" alt="Hydrating Skincare Routine"/>
+                                <h2 class="oa-editorial-h2">Le rituel purifiant.</h2>
+                                <p class="text-muted lead">Le nettoyage n'est pas qu'une étape, c'est le fondement de toute routine beauté de luxe.</p>
+                                <p>Le double nettoyage consiste à utiliser d'abord un baume ou une huile démaquillante pour dissoudre le maquillage, les filtres solaires et le sébum, suivi d'un nettoyant aqueux pour purifier la peau en profondeur. Ce rituel préserve la barrière cutanée tout en assurant une toile parfaite pour vos sérums O&amp;A Beauty.</p>
                             </div>
                         </div>
                     </div>
                 </section>
-            ]]></field>
+            </field>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">L'Art du Double Nettoyage | O&amp;A Beauty</field>
+            <field name="website_meta_description">Découvrez le secret d'une peau lumineuse avec notre guide sur le double nettoyage. Une étape essentielle de votre routine skincare clean luxury.</field>
+            <field name="website_meta_keywords">double nettoyage, skincare, peau lumineuse, rituel beauté</field>
         </record>
 
-        <!-- Post 2: Benefits of Vitamin C -->
+        <!-- Article 2: Perfumes -->
         <record id="oa_blog_post_2" model="blog.post">
-            <field name="name">Unlocking the Power of Vitamin C Serum</field>
-            <field name="subtitle">The antioxidant miracle for a radiant, glass-skin complexion.</field>
-            <field name="blog_id" ref="oa_beauty_theme.oa_editorial_blog"/>
-            <field name="is_published">True</field>
-            <field name="content"><![CDATA[
-                <section class="s_text_block pt40 pb40" data-snippet="s_text_block" data-name="Text">
+            <field name="name">Décryptage : La Naissance d'une Fragrance O&amp;A</field>
+            <field name="subtitle">Plongez dans les coulisses de la création de notre nouvelle collection de parfums de luxe.</field>
+            <field name="blog_id" ref="oa_beauty_theme.oa_luxury_blog"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('oa_beauty_theme.blog_tag_perfume')])]"/>
+            <field name="content" type="html">
+                <section class="s_text_block pt40 pb40 text-center">
                     <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <h2 class="oa-editorial-h2 text-center mb-4">Why Vitamin C is Non-Negotiable</h2>
-                                <p class="lead text-muted text-center mb-5">If there is one active ingredient you should never skip in your morning routine, it is Vitamin C.</p>
-                                <p>Vitamin C is a potent antioxidant that neutralizes free radicals—unstable molecules caused by UV rays and pollution that damage your skin cells and accelerate aging. By incorporating our <strong>O&amp;A Vitamin C Glow Serum</strong>, you are actively defending your skin against environmental aggressors.</p>
-                                <h4>The Brightening Effect</h4>
-                                <p>Beyond protection, Vitamin C inhibits melanin production, which helps to fade dark spots, hyperpigmentation, and acne scars, resulting in a significantly brighter and more even skin tone.</p>
-                            </div>
-                        </div>
+                        <h2 class="oa-editorial-h2 mb-4">La symphonie olfactive.</h2>
+                        <p class="lead text-muted mx-auto" style="max-width: 700px;">La création d'un parfum O&amp;A Beauty commence par une émotion. De la récolte délicate de la Rose Centifolia à l'infusion de l'Ambre profond, chaque note est sourcée avec éthique et assemblée avec une précision d'orfèvre. Découvrez comment la science des fleurs rencontre l'art de la séduction dans notre dernière collection.</p>
                     </div>
                 </section>
-            ]]></field>
+            </field>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">La Naissance d'une Fragrance O&amp;A | L'Éditorial</field>
+            <field name="website_meta_description">Plongez dans les coulisses de la création de la nouvelle collection de parfums de luxe O&amp;A Beauty. Notes olfactives et artisanat.</field>
+            <field name="website_meta_keywords">parfum de luxe, création parfum, notes olfactives, rose centifolia, ambre</field>
         </record>
 
-        <!-- Post 3: Natural Makeup Look -->
+        <!-- Article 3: Makeup -->
         <record id="oa_blog_post_3" model="blog.post">
-            <field name="name">The "No-Makeup" Makeup Guide</field>
-            <field name="subtitle">Enhance your features without masking your natural beauty.</field>
-            <field name="blog_id" ref="oa_beauty_theme.oa_editorial_blog"/>
-            <field name="is_published">True</field>
-            <field name="content"><![CDATA[
-                <section class="s_image_text pt32 pb32" data-snippet="s_image_text" data-name="Image - Text">
+            <field name="name">Le Maquillage Soin : Quand le Teint devient Traitement</field>
+            <field name="subtitle">Pourquoi choisir entre couvrance et hydratation ? La révolution du maquillage hybride.</field>
+            <field name="blog_id" ref="oa_beauty_theme.oa_luxury_blog"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('oa_beauty_theme.blog_tag_makeup'), ref('oa_beauty_theme.blog_tag_skincare')])]"/>
+            <field name="content" type="html">
+                <section class="s_text_block pt40 pb40">
                     <div class="container">
-                        <div class="row align-items-center">
-                            <div class="col-lg-6 pt16 pb16">
-                                <img src="/web/image/website.s_image_text_default_image" class="img img-fluid mx-auto rounded shadow-sm" alt="Natural Makeup Look"/>
-                            </div>
-                            <div class="col-lg-6 pt16 pb16">
-                                <h2 class="oa-editorial-h2">Embrace Your Skin</h2>
-                                <p class="lead text-muted">The secret to a flawless natural look isn't more makeup—it's better skin prep and lightweight, buildable formulas.</p>
-                                <ul>
-                                    <li class="mb-2"><strong>Base:</strong> Skip heavy foundations. Opt for the <em>O&amp;A Velvet Foundation</em> applied sparingly where needed. It lets your freckles and natural texture shine through.</li>
-                                    <li class="mb-2"><strong>Flush:</strong> A touch of the <em>Radiance Blush</em> on the apples of your cheeks brings life and health to the face.</li>
-                                    <li class="mb-2"><strong>Glow:</strong> Ditch glittery highlighters. The <em>Glow Highlighter</em> creates a dewy, glass-skin effect that looks like natural sweat and health.</li>
-                                </ul>
-                                <a href="/shop/category/makeup" class="oa-btn-primary mt-3 d-inline-block">Shop the Look</a>
-                            </div>
-                        </div>
+                        <p>Le futur de la beauté ne se contente pas de dissimuler les imperfections, il les traite. Chez O&amp;A Beauty, nos fonds de teint et anti-cernes sont gorgés d'acide hyaluronique, de squalane et de vitamines. Résultat ? Un fini "seconde peau" instantané et une peau visiblement améliorée jour après jour.</p>
                     </div>
                 </section>
-            ]]></field>
+            </field>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Le Maquillage Soin Hybride | O&amp;A Beauty</field>
+            <field name="website_meta_description">Découvrez comment nos formules de maquillage hybrides, infusées de soins, subliment et traitent votre peau simultanément.</field>
+            <field name="website_meta_keywords">maquillage soin, fond de teint hydratant, maquillage hybride, beauté clean</field>
+        </record>
+
+        <!-- Article 4: Ingredients -->
+        <record id="oa_blog_post_4" model="blog.post">
+            <field name="name">L'Or Liquide : Les Bienfaits Inégalés du Squalane Végétal</field>
+            <field name="subtitle">Zoom sur l'ingrédient phare de nos crèmes hydratantes.</field>
+            <field name="blog_id" ref="oa_beauty_theme.oa_luxury_blog"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('oa_beauty_theme.blog_tag_skincare')])]"/>
+            <field name="content" type="html">
+                <section class="s_text_block pt40 pb40 text-center">
+                    <div class="container">
+                        <p class="lead">Le Squalane est biomimétique, ce qui signifie que votre peau le reconnaît et l'absorbe instantanément. Contrairement aux huiles lourdes, il hydrate en profondeur sans obstruer les pores. Provenant de l'olive, notre squalane 100% vegan est le secret derrière la texture fondante de nos soins de nuit.</p>
+                    </div>
+                </section>
+            </field>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Squalane Végétal : Les Bienfaits | L'Éditorial</field>
+            <field name="website_meta_description">Tout savoir sur le Squalane Végétal, l'ingrédient biomimétique star des crèmes hydratantes de luxe O&amp;A Beauty.</field>
+            <field name="website_meta_keywords">squalane, hydratation vegan, ingrédients naturels, beauté clean</field>
+        </record>
+
+        <!-- Article 5: Wellness -->
+        <record id="oa_blog_post_5" model="blog.post">
+            <field name="name">La Beauté In &amp; Out : Le Lien Intime entre Sommeil et Peau</field>
+            <field name="subtitle">Comment le rythme circadien influence l'éclat de votre teint.</field>
+            <field name="blog_id" ref="oa_beauty_theme.oa_luxury_blog"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('oa_beauty_theme.blog_tag_wellness')])]"/>
+            <field name="content" type="html">
+                <section class="s_text_block pt40 pb40">
+                    <div class="container">
+                        <p>La nuit, pendant que vous dormez, votre peau entre en phase de régénération cellulaire intense. L'application de notre Sérum de Nuit Régénérant, combinée à 8 heures de sommeil de qualité, permet de maximiser la production de collagène. Découvrez nos conseils pour un sommeil réparateur et une peau radieuse au réveil.</p>
+                    </div>
+                </section>
+            </field>
+            <field name="is_published" eval="True"/>
+            <field name="website_meta_title">Sommeil et Peau : La Beauté In &amp; Out | O&amp;A Beauty</field>
+            <field name="website_meta_description">Comprenez comment le sommeil influence votre peau et comment maximiser la régénération cellulaire la nuit.</field>
+            <field name="website_meta_keywords">sommeil réparateur, régénération cellulaire, collagène, rituel nuit</field>
         </record>
 
     </data>

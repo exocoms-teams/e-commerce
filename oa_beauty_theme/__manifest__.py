@@ -1,6 +1,6 @@
 {
     'name': 'O.A.I Beauty Theme',
-    'version': '19.0.6.0.0',
+    'version': '19.0.7.0.0',
     'category': 'Website/Theme',
     'summary': 'O.A.I Beauty frontend for Odoo 19: homepage, shop, product page, brand SCSS',
     'description': 'Full migration of the O.A.I Beauty cosmetics frontend to Odoo 19. Clean Luxury positioning.',
@@ -47,6 +47,7 @@
         'views/website_sale_cart_templates.xml',
         'views/website_sale_checkout_templates.xml',
         'views/website_core_pages.xml',
+        'views/portal_templates.xml',
     ],
 
     # ---------------------------

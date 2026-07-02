@@ -8,16 +8,49 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="." position="inside">
-                <app string="O&amp;A Beauty AI" name="oa_beauty_theme" groups="base.group_system">
-                    <block title="AI Beauty Advisor Configuration">
-                        <setting id="oa_ai_provider" string="AI Provider">
+                <app string="O&amp;A Beauty" name="oa_beauty_theme" groups="base.group_system">
+                    <!-- AI Settings -->
+                    <block title="AI Beauty Advisor Configuration" name="oa_ai_settings">
+                        <setting id="oa_ai_provider" string="AI Provider" help="Select the LLM engine for the Advisor.">
                             <field name="oa_ai_provider" widget="radio"/>
                         </setting>
-                        <setting id="oa_ai_api_key" string="API Key">
-                            <field name="oa_ai_api_key" password="True" placeholder="Enter your Gemini or OpenAI API Key..."/>
+                        <setting id="oa_ai_api_key" string="API Key" help="Your provider API key (Gemini, OpenAI, Claude).">
+                            <field name="oa_ai_api_key" password="True" placeholder="sk-..."/>
                         </setting>
-                        <setting id="oa_ai_system_prompt" string="System Prompt">
-                            <field name="oa_ai_system_prompt" widget="text" placeholder="You are an expert luxury beauty advisor for O&amp;A Beauty."/>
+                        <setting id="oa_ai_system_prompt" string="System Prompt" help="The core personality instructions for the AI.">
+                            <field name="oa_ai_system_prompt" widget="text" placeholder="You are an expert luxury beauty advisor..."/>
+                        </setting>
+                    </block>
+
+                    <!-- Packlink Settings -->
+                    <block title="Packlink Pro Logistics" name="oa_packlink_settings">
+                        <setting id="oa_packlink_api_key" string="Packlink API Key" help="Connect to Packlink PRO for automated shipping labels.">
+                            <field name="oa_packlink_api_key" password="True"/>
+                        </setting>
+                        <setting id="oa_packlink_sandbox" string="Sandbox Mode" help="Use the Packlink test environment.">
+                            <field name="oa_packlink_sandbox"/>
+                        </setting>
+                    </block>
+
+                    <!-- Analytics Settings -->
+                    <block title="Enterprise Analytics &amp; Tracking" name="oa_analytics_settings">
+                        <setting id="oa_consent_mode_enabled" string="Consent Mode v2" help="Enable advanced cookie consent integration.">
+                            <field name="oa_consent_mode_enabled"/>
+                        </setting>
+                        <setting id="oa_ga4_id" string="Google Analytics 4">
+                            <field name="oa_ga4_id" placeholder="G-XXXXXX"/>
+                        </setting>
+                        <setting id="oa_gtm_id" string="Google Tag Manager">
+                            <field name="oa_gtm_id" placeholder="GTM-XXXXXX"/>
+                        </setting>
+                        <setting id="oa_meta_pixel_id" string="Meta Pixel">
+                            <field name="oa_meta_pixel_id"/>
+                        </setting>
+                        <setting id="oa_tiktok_pixel_id" string="TikTok Pixel">
+                            <field name="oa_tiktok_pixel_id"/>
+                        </setting>
+                        <setting id="oa_pinterest_tag_id" string="Pinterest Tag">
+                            <field name="oa_pinterest_tag_id"/>
                         </setting>
                     </block>
                 </app>

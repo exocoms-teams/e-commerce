@@ -4,34 +4,61 @@
     <!-- Inject Analytics scripts into the <head> of the website -->
     <template id="oa_beauty_analytics_head" inherit_id="website.layout" name="O&amp;A Beauty Analytics Head">
         <xpath expr="//head" position="inside">
+            <!-- Fetch config parameters -->
+            <t t-set="ga_id" t-value="request.env['ir.config_parameter'].sudo().get_param('oa_beauty_theme.ga4_id')"/>
+            <t t-set="gtm_id" t-value="request.env['ir.config_parameter'].sudo().get_param('oa_beauty_theme.gtm_id')"/>
+            <t t-set="meta_id" t-value="request.env['ir.config_parameter'].sudo().get_param('oa_beauty_theme.meta_pixel_id')"/>
+            <t t-set="tiktok_id" t-value="request.env['ir.config_parameter'].sudo().get_param('oa_beauty_theme.tiktok_pixel_id')"/>
             
-            <!-- Google Analytics 4 (Placeholder) -->
-            <!-- 
-            <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-            <script>
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-XXXXXXXXXX');
-            </script>
-            -->
+            <!-- Google Analytics 4 -->
+            <t t-if="ga_id">
+                <script async="async" t-attf-src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+                <script>
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '<t t-esc="ga_id"/>');
+                </script>
+            </t>
+
+            <!-- Google Tag Manager -->
+            <t t-if="gtm_id">
+                <script>
+                    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                    j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+                    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                    })(window,document,'script','dataLayer','<t t-esc="gtm_id"/>');
+                </script>
+            </t>
             
-            <!-- Meta Pixel Code (Placeholder) -->
-            <!--
-            <script>
-              !function(f,b,e,v,n,t,s)
-              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-              n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t,s)}(window, document,'script',
-              'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', 'XXXXXXXXXXXXXXX');
-              fbq('track', 'PageView');
-            </script>
-            <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=XXXXXXXXXXXXXXX&amp;ev=PageView&amp;noscript=1"/></noscript>
-            -->
+            <!-- Meta Pixel -->
+            <t t-if="meta_id">
+                <script>
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '<t t-esc="meta_id"/>');
+                fbq('track', 'PageView');
+                </script>
+                <noscript><img height="1" width="1" style="display:none" t-attf-src="https://www.facebook.com/tr?id={{ meta_id }}&amp;ev=PageView&amp;noscript=1"/></noscript>
+            </t>
+
+            <!-- TikTok Pixel -->
+            <t t-if="tiktok_id">
+                <script>
+                    !function (w, d, t) {
+                      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i&lt;ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n&lt;ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&amp;lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+                      ttq.load('<t t-esc="tiktok_id"/>');
+                      ttq.page();
+                    }(window, document, 'ttq');
+                </script>
+            </t>
             
         </xpath>
     </template>

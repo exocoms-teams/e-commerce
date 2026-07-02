@@ -16,6 +16,10 @@ class ProductTemplate(models.Model):
     oa_fragrance_base_notes = fields.Char(string='Base Notes', help='e.g., Vanilla, Musk, Sandalwood')
     oa_mood = fields.Char(string='Mood / Feeling', help='e.g., Elegant, Sensual, Fresh')
 
+    # SEO & Editorial Fields
+    oa_benefits = fields.Html(string='Benefits', help='Long description of the product benefits.')
+    oa_how_to_use = fields.Html(string='How to Use', help='Instructions on how to use the product.')
+    oa_seo_keywords = fields.Char(string='SEO Keywords', help='Comma-separated keywords for meta tags.')
     @api.model
     def _archive_default_demo_products(self):
         """

@@ -35,7 +35,7 @@
             </div>
 
             <!-- ── ACCORDION ITEM 2: Conseils d'utilisation ── -->
-            <div class="accordion-item">
+            <div class="accordion-item" t-if="product.oa_how_to_use">
                 <div class="accordion-header my-0 h6">
                     <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_conseils" aria-expanded="false" aria-controls="oa_conseils">
                         Conseils d'utilisation
@@ -43,7 +43,21 @@
                 </div>
                 <div id="oa_conseils" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
                     <div class="accordion-body pt-0">
-                        <p class="mb-0 text-muted">Référez-vous à la section "La gestuelle" ci-dessous pour découvrir le rituel d'application optimal pour ce produit.</p>
+                        <div t-field="product.oa_how_to_use"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM: Bienfaits (Benefits) ── -->
+            <div class="accordion-item" t-if="product.oa_benefits">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_benefits_acc" aria-expanded="false" aria-controls="oa_benefits_acc">
+                        Bienfaits
+                    </button>
+                </div>
+                <div id="oa_benefits_acc" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div t-field="product.oa_benefits"/>
                     </div>
                 </div>
             </div>
@@ -211,6 +225,7 @@
                         "@type": "Brand",
                         "name": "O&amp;A Beauty"
                     },
+                    "keywords": "<t t-esc='product.oa_seo_keywords or product.name'/>",
                     "offers": {
                         "@type": "Offer",
                         "url": "<t t-esc='request.httprequest.url'/>",
@@ -273,6 +288,78 @@
                             realAddToCart.click();
                         });
                     }
+                });
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Low Stock Indicator on Product Page -->
+    <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Beauty — Low Stock Indicator">
+        <xpath expr="//div[@id='product_details']//form[hasclass('js_add_cart_json')]" position="after">
+            <t t-set="product_variant" t-value="product.product_variant_id"/>
+            <t t-if="product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
+                <div class="oa-low-stock mt-2">
+                    Plus que <t t-esc="int(product_variant.qty_available)"/> en stock — commandez vite !
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Recently Viewed Products Section -->
+    <template id="oa_beauty_recently_viewed" inherit_id="website_sale.product" name="O&amp;A Beauty — Recently Viewed">
+        <xpath expr="." position="inside">
+            <section class="oa-recently-viewed py-5" style="background-color: var(--oa-ivory);">
+                <div class="container">
+                    <h2 class="oa-section-heading text-center mb-5">Récemment Consultés</h2>
+                    <div id="oa_rv_container" class="row g-3">
+                        <!-- Populated by JS from localStorage -->
+                    </div>
+                </div>
+            </section>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Save current product to recently viewed
+                    var currentProduct = {
+                        id: '<t t-esc="product.id"/>',
+                        name: '<t t-esc="product.name"/>',
+                        price: '<t t-esc="product.list_price"/>',
+                        url: window.location.pathname,
+                        image: '/web/image/product.template/<t t-esc="product.id"/>/image_128'
+                    };
+
+                    var rvKey = 'oa_recently_viewed';
+                    var rvList = JSON.parse(localStorage.getItem(rvKey) || '[]');
+
+                    // Remove if already exists
+                    rvList = rvList.filter(function(p) { return p.id !== currentProduct.id; });
+                    // Add to front
+                    rvList.unshift(currentProduct);
+                    // Keep max 6
+                    rvList = rvList.slice(0, 6);
+                    localStorage.setItem(rvKey, JSON.stringify(rvList));
+
+                    // Render recently viewed (excluding current)
+                    var container = document.getElementById('oa_rv_container');
+                    var displayList = rvList.filter(function(p) { return p.id !== currentProduct.id; });
+
+                    if (displayList.length === 0) {
+                        container.closest('section').style.display = 'none';
+                        return;
+                    }
+
+                    displayList.slice(0, 4).forEach(function(p) {
+                        var card = document.createElement('div');
+                        card.className = 'col-6 col-md-3';
+                        card.innerHTML =
+                            '<a href="' + p.url + '" class="oa-rv-card">' +
+                            '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy"/>' +
+                            '<div>' +
+                            '<div class="oa-rv-name">' + p.name + '</div>' +
+                            '<div class="oa-rv-price">' + p.price + ' €</div>' +
+                            '</div></a>';
+                        container.appendChild(card);
+                    });
                 });
             </script>
         </xpath>
