@@ -3385,8 +3385,8 @@ a[name="website_sale_main_button"] {
    SHOP — Cards produits (/shop)
 ═══════════════════════════════════════════════════════ */
 
-/* Card wrapper */
-.o_product_item_helper {
+/* Card wrapper — classe réelle Odoo 19 */
+.o_wsale_product_grid_wrapper {
     background: #fff;
     border-radius: 16px;
     border: 1px solid #ebebeb;
@@ -3395,56 +3395,46 @@ a[name="website_sale_main_button"] {
     overflow: hidden;
     height: 100%;
 }
-.o_product_item_helper:hover {
+.o_wsale_product_grid_wrapper:hover {
     box-shadow: 0 10px 32px rgba(37, 99, 235, 0.13);
     transform: translateY(-5px);
     border-color: #bfdbfe;
 }
 
 /* Zone image */
-.o_product_image.oe_product {
+.oe_product_image {
     background: #f5f5f5;
-    border-radius: 16px 16px 0 0;
-    overflow: hidden;
-    margin: 0;
-}
-
-/* Zone texte */
-.o_product_price_and_name {
-    padding: 12px 14px 14px;
 }
 
 /* Nom du produit */
-.o_product_name {
+.o_wsale_products_item_title {
     font-weight: 700 !important;
-    font-size: 0.97rem !important;
+    font-size: 0.95rem !important;
     color: var(--text) !important;
     margin-bottom: 4px;
-    display: block;
 }
 
 /* Description courte */
-.o_product_short_description {
-    font-size: 0.82rem;
-    color: #888;
+.oe_subdescription {
+    font-size: 0.82rem !important;
+    color: #888 !important;
     margin-bottom: 8px;
-    display: -webkit-box;
+    display: -webkit-box !important;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
 /* Prix */
-#products_grid .product_price,
-#products_grid .oe_price {
+.product_price .mb-0.fw-bold {
     color: var(--blue) !important;
     font-weight: 800 !important;
     font-size: 1.08rem !important;
 }
 
-/* Bouton panier (apparaît au hover) */
+/* Bouton panier */
 #products_grid .o_wsale_product_btn_primary,
-#products_grid .btn-primary {
+.o_wsale_product_btn_primary {
     background: var(--blue) !important;
     border-color: var(--blue) !important;
     border-radius: 10px !important;
@@ -3452,27 +3442,20 @@ a[name="website_sale_main_button"] {
     transition: background 0.15s, transform 0.15s !important;
 }
 #products_grid .o_wsale_product_btn_primary:hover,
-#products_grid .btn-primary:hover {
-    background: var(--blue-dark) !important;
-    border-color: var(--blue-dark) !important;
+.o_wsale_product_btn_primary:hover {
+    background: var(--blue-dark, #1d4ed8) !important;
+    border-color: var(--blue-dark, #1d4ed8) !important;
     transform: translateY(-1px);
 }
 
 /* Icône wishlist (cœur) */
-.o_product_item_helper .o_add_wishlist,
-.o_product_item_helper .o_add_wishlist_dyn {
+.o_wsale_product_grid_wrapper .o_add_wishlist {
     background: rgba(255,255,255,0.85) !important;
     border-radius: 50% !important;
-    width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
     transition: background 0.15s, box-shadow 0.15s !important;
 }
-.o_product_item_helper .o_add_wishlist:hover,
-.o_product_item_helper .o_add_wishlist_dyn:hover {
+.o_wsale_product_grid_wrapper .o_add_wishlist:hover {
     background: #fff !important;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18) !important;
 }
