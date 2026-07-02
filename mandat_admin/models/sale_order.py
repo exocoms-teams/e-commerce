@@ -129,7 +129,7 @@ class SaleOrder(models.Model):
 
     # ── Computed ───────────────────────────────────────────────────
 
-@api.depends('date_order', 'delai_paiement_jours')
+    @api.depends('date_order', 'delai_paiement_jours')
     def _compute_dlp(self):
         for o in self:
             if o.date_order and o.delai_paiement_jours:
