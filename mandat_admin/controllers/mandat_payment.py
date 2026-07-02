@@ -55,7 +55,9 @@ class MandatPaymentController(http.Controller):
         # 2. Confirmation de la commande
         if order.state in ('draft', 'sent'):
             order.sudo().action_confirm()
-        _logger.info('Commande %s confirmée via mandat administratif', order.name)
+        # Réappliquer payment_mode après action_confirm (qui peut le réinitialiser)
+        order.sudo().write({'payment_mode': 'mandat_administratif'})
+        _logger.info('Commande %s confirmée via mandat administratif, payment_mode=%s', order.name, order.payment_mode)
 
         # 3. Création de la transaction (pour suivi backend)
         try:
@@ -73,8 +75,10 @@ class MandatPaymentController(http.Controller):
                     else:
                         reference = f"MANDAT-{order.name}-{uuid.uuid4().hex[:6].upper()}"
                         partner_id = order.partner_invoice_id.id or order.partner_id.id
+                        payment_method = provider.payment_method_ids[:1]
                         tx = request.env['payment.transaction'].sudo().create({
                             'provider_id': provider.id,
+                            'payment_method_id': payment_method.id,
                             'amount': order.amount_total,
                             'currency_id': order.currency_id.id,
                             'partner_id': partner_id,
