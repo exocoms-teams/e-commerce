@@ -18,6 +18,7 @@
         "views/product_brand_views.xml",
         "views/templates.xml",
         "views/snippets.xml",
+        "data/website_data.xml",
     ],
     "assets": {
         "web.assets_frontend": [
