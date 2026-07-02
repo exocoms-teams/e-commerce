@@ -218,14 +218,16 @@
             if (cookiesText) {
                 cookiesText.innerHTML = '🍪 Nous utilisons des cookies pour vous garantir une navigation fluide, mémoriser votre panier et vos préférences, et améliorer votre expérience sur Matelas. Vous pouvez tout accepter ou choisir uniquement les cookies essentiels.';
             }
-            const btnEssential = cookiesBar.querySelector('.o_cookies_bar_accept_essential');
-            if (btnEssential) {
-                btnEssential.textContent = 'Essentiels uniquement';
-            }
-            const btnAll = cookiesBar.querySelector('.o_cookies_bar_accept_all');
-            if (btnAll) {
-                btnAll.textContent = 'Tout accepter';
-            }
+            // On matche par texte visible (plus fiable que deviner les classes,
+            // qui changent selon la version d'Odoo).
+            cookiesBar.querySelectorAll('a, button').forEach(function(b) {
+                const t = b.textContent.trim().toLowerCase();
+                if (t === 'i agree' || t.indexOf('agree') !== -1 || t.indexOf('accept all') !== -1) {
+                    b.textContent = 'Tout accepter';
+                } else if (t.indexOf('essential') !== -1) {
+                    b.textContent = 'Essentiels uniquement';
+                }
+            });
         }
 
     }
