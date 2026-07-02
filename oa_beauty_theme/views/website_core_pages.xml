@@ -1173,13 +1173,13 @@
             </t>
         </field>
     </record>
+
     <!-- ======================================================================= -->
     <!-- PAGE 8: ORDER TRACKING PAGE (/tracking)                                 -->
     <!-- ======================================================================= -->
     <template id="page_order_tracking" name="Order Tracking">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                <!-- HERO SECTION -->
                 <section class="oa-hero position-relative" style="background-color: var(--oa-ivory); padding: 60px 0;">
                     <div class="container text-center">
                         <div class="row justify-content-center">
@@ -1190,16 +1190,13 @@
                         </div>
                     </div>
                 </section>
-
                 <section class="py-5">
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-md-8 col-lg-6">
-                                
-                                <!-- SEARCH FORM -->
                                 <div class="bg-white p-4 shadow-sm mb-5" style="border: 1px solid var(--oa-border);">
                                     <form action="/tracking" method="get" class="d-flex">
-                                        <input type="text" name="tracking_number" class="form-control rounded-0 p-3 flex-grow-1" placeholder="Numéro de suivi (ex: PLK-...)" t-att-value="tracking_number" required="1" style="border-color: var(--oa-border);"/>
+                                        <input type="text" name="tracking_number" class="form-control rounded-0 p-3 flex-grow-1" placeholder="Numero de suivi (ex: PLK-...)" t-att-value="tracking_number" required="1" style="border-color: var(--oa-border);"/>
                                         <button type="submit" class="oa-btn-primary border-0 rounded-0 px-4">Suivre</button>
                                     </form>
                                     <t t-if="error_message">
@@ -1208,119 +1205,99 @@
                                         </div>
                                     </t>
                                 </div>
-
-                                <!-- TRACKING RESULTS -->
                                 <t t-if="tracking_data">
                                     <div class="bg-white p-4 shadow-sm" style="border: 1px solid var(--oa-border);">
-                                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-                                            <h3 class="oa-gallery-caption fs-5 mb-0">Statut: <span style="color: var(--oa-mauve);"><t t-esc="tracking_data.get('status', 'Inconnu')"/></span></h3>
-                                        </div>
-
-                                        <div class="tracking-history position-relative" style="padding-left: 20px; border-left: 2px solid var(--oa-border);">
-                                            <t t-if="tracking_data.get('history')">
-                                                <t t-foreach="tracking_data.get('history')" t-as="event">
-                                                    <div class="mb-4 position-relative">
-                                                        <!-- Timeline dot -->
-                                                        <div class="position-absolute rounded-circle" style="width: 12px; height: 12px; background: var(--oa-prune); left: -27px; top: 5px;"></div>
-                                                        <div class="text-muted small fw-bold mb-1"><t t-esc="event.get('date', '')[:10]"/></div>
-                                                        <div class="fw-bold"><t t-esc="event.get('description')"/></div>
-                                                        <div class="text-muted small"><t t-esc="event.get('city')"/></div>
-                                                    </div>
-                                                </t>
-                                            </t>
-                                            <t t-else="">
-                                                <p class="text-muted small">Aucun historique disponible pour le moment.</p>
+                                        <h3 class="oa-gallery-caption fs-5 mb-3">Statut: <span style="color: var(--oa-mauve);"><t t-esc="tracking_data.get('status', 'Inconnu')"/></span></h3>
+                                        <div style="padding-left: 20px; border-left: 2px solid var(--oa-border);">
+                                            <t t-foreach="tracking_data.get('history', [])" t-as="event">
+                                                <div class="mb-3 position-relative">
+                                                    <div class="text-muted small fw-bold mb-1"><t t-esc="event.get('date', '')"/></div>
+                                                    <div class="fw-bold"><t t-esc="event.get('description')"/></div>
+                                                    <div class="text-muted small"><t t-esc="event.get('city')"/></div>
+                                                </div>
                                             </t>
                                         </div>
                                     </div>
                                 </t>
-
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
         </t>
+    </template>
+
     <!-- ======================================================================= -->
     <!-- PAGE 9: PRIVACY POLICY PAGE (/privacy-policy)                           -->
     <!-- ======================================================================= -->
-    <template id="page_privacy_policy_template" name="Politique de Confidentialité">
+    <template id="page_privacy_policy_template" name="Politique de Confidentialite">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure oe_empty">
-                
                 <section class="oa-hero position-relative" style="background-color: var(--oa-bg-alt); padding: 80px 0;">
                     <div class="container text-center">
                         <div class="row justify-content-center">
                             <div class="col-lg-8">
-                                <h1 class="oa-hero-h1 mb-3" style="font-size: 2.5rem;">Politique de Confidentialité</h1>
-                                <p class="oa-hero-tagline fs-6 mb-0 text-muted">Dernière mise à jour : Juillet 2026</p>
+                                <h1 class="oa-hero-h1 mb-3" style="font-size: 2.5rem;">Politique de Confidentialite</h1>
+                                <p class="oa-hero-tagline fs-6 mb-0 text-muted">Derniere mise a jour : Juillet 2026</p>
                             </div>
                         </div>
                     </div>
                 </section>
-
                 <section class="py-5" style="background-color: var(--oa-ivory);">
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-lg-8 bg-white p-5 shadow-sm" style="border: 1px solid var(--oa-border); color: #444;">
-                                
-                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune); font-family: var(--oa-font-display);">1. Introduction</h3>
-                                <p class="mb-4" style="font-family: var(--oa-font-body); line-height: 1.8;">
-                                    Chez O&amp;A Beauty, nous accordons une importance primordiale à la protection de vos données personnelles. Cette politique de confidentialité explique comment nous collectons, utilisons, protégeons et partageons vos informations lorsque vous utilisez notre site web et nos services, conformément au Règlement Général sur la Protection des Données (RGPD).
+                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune);">1. Introduction</h3>
+                                <p class="mb-4" style="line-height: 1.8;">
+                                    Chez O&amp;A Beauty, nous accordons une importance primordiale a la protection de
+                                    vos donnees personnelles, conformement au Reglement General sur la Protection
+                                    des Donnees (RGPD).
                                 </p>
-
-                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune); font-family: var(--oa-font-display);">2. Données collectées</h3>
-                                <p class="mb-2" style="font-family: var(--oa-font-body); line-height: 1.8;">Nous collectons les types d'informations suivants :</p>
-                                <ul class="mb-4" style="font-family: var(--oa-font-body); line-height: 1.8; padding-left: 20px;">
-                                    <li><strong>Informations d'identification :</strong> nom, prénom, adresse e-mail, numéro de téléphone.</li>
-                                    <li><strong>Informations de transaction :</strong> historique d'achats, adresse de facturation et de livraison (les données de carte bancaire sont traitées par nos prestataires de paiement sécurisés).</li>
-                                    <li><strong>Profil Beauté (optionnel) :</strong> type de peau, préoccupations, préférences olfactives partagées via notre outil d'Intelligence Artificielle ou dans votre espace client.</li>
-                                    <li><strong>Données de navigation :</strong> adresse IP, type de navigateur, historique de navigation sur notre site via les cookies essentiels et analytiques.</li>
+                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune);">2. Donnees collectees</h3>
+                                <ul class="mb-4" style="line-height: 1.8; padding-left: 20px;">
+                                    <li><strong>Identification :</strong> nom, prenom, adresse e-mail, telephone.</li>
+                                    <li><strong>Transactions :</strong> historique d'achats, adresses de livraison.</li>
+                                    <li><strong>Profil Beaute :</strong> type de peau, preferences olfactives (optionnel).</li>
+                                    <li><strong>Navigation :</strong> adresse IP, cookies essentiels et analytiques.</li>
                                 </ul>
-
-                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune); font-family: var(--oa-font-display);">3. Utilisation de vos données</h3>
-                                <p class="mb-2" style="font-family: var(--oa-font-body); line-height: 1.8;">Vos données sont utilisées pour :</p>
-                                <ul class="mb-4" style="font-family: var(--oa-font-body); line-height: 1.8; padding-left: 20px;">
-                                    <li>Traiter et expédier vos commandes via nos partenaires logistiques (ex: Packlink).</li>
-                                    <li>Vous fournir des recommandations de produits personnalisées via notre "Beauty Advisor".</li>
-                                    <li>Améliorer l'expérience utilisateur et les performances de notre site.</li>
-                                    <li>Vous envoyer notre newsletter si vous y avez explicitement consenti.</li>
+                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune);">3. Utilisation de vos donnees</h3>
+                                <ul class="mb-4" style="line-height: 1.8; padding-left: 20px;">
+                                    <li>Traitement et expedition de vos commandes (via Packlink).</li>
+                                    <li>Recommandations personnalisees via le Beauty Advisor.</li>
+                                    <li>Amelioration de l'experience utilisateur.</li>
+                                    <li>Newsletter (avec votre consentement explicite).</li>
                                 </ul>
-
-                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune); font-family: var(--oa-font-display);">4. Partage et Sécurité</h3>
-                                <p class="mb-4" style="font-family: var(--oa-font-body); line-height: 1.8;">
-                                    O&amp;A Beauty ne vend <strong>jamais</strong> vos données personnelles à des tiers. Vos informations ne sont partagées qu'avec des prestataires de services de confiance (transporteurs, processeurs de paiement, fournisseurs d'outils analytiques) dans le strict cadre de l'exécution de nos services. Nous utilisons des protocoles de sécurité avancés pour protéger vos données contre tout accès non autorisé.
+                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune);">4. Partage et Securite</h3>
+                                <p class="mb-4" style="line-height: 1.8;">
+                                    O&amp;A Beauty ne vend <strong>jamais</strong> vos donnees personnelles.
+                                    Elles sont partagees uniquement avec des prestataires de confiance.
                                 </p>
-
-                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune); font-family: var(--oa-font-display);">5. Vos Droits</h3>
-                                <p class="mb-4" style="font-family: var(--oa-font-body); line-height: 1.8;">
-                                    Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition au traitement de vos données. Vous pouvez exercer ces droits à tout moment en nous contactant à <strong>privacy@oaibeauty.com</strong> ou via la page de contact de notre site.
+                                <h3 class="fs-4 mb-3" style="color: var(--oa-prune);">5. Vos Droits (RGPD)</h3>
+                                <p class="mb-4" style="line-height: 1.8;">
+                                    Vous disposez d'un droit d'acces, de rectification, de suppression et d'opposition.
+                                    Contactez-nous a <strong>privacy@oaibeauty.com</strong>.
                                 </p>
-
-                                <hr class="my-5" style="border-top: 1px solid var(--oa-border);"/>
-                                
-                                <p class="text-center text-muted small" style="font-family: var(--oa-font-body);">
-                                    En utilisant le site O&amp;A Beauty, vous acceptez les termes de cette politique de confidentialité.
+                                <hr style="border-top: 1px solid var(--oa-border); margin: 40px 0;"/>
+                                <p class="text-center text-muted small">
+                                    En utilisant le site O&amp;A Beauty, vous acceptez les termes de cette politique.
                                 </p>
-
                             </div>
                         </div>
                     </div>
                 </section>
-                
             </div>
         </t>
     </template>
 
     <record id="page_privacy_policy" model="website.page">
-        <field name="name">Politique de Confidentialité</field>
+        <field name="name">Politique de Confidentialite</field>
         <field name="url">/privacy-policy</field>
         <field name="view_id" ref="page_privacy_policy_template"/>
         <field name="is_published">True</field>
         <field name="track">True</field>
-        <field name="website_meta_title">Politique de Confidentialité | O&amp;A Beauty</field>
-        <field name="website_meta_description">Découvrez comment O&amp;A Beauty protège vos données personnelles et respecte votre vie privée.</field>
-        <field name="website_meta_keywords">politique de confidentialité, rgpd, données personnelles, vie privée</field>
+        <field name="website_meta_title">Politique de Confidentialite | O&amp;A Beauty</field>
+        <field name="website_meta_description">Decouvrez comment O&amp;A Beauty protege vos donnees personnelles.</field>
+        <field name="website_meta_keywords">politique de confidentialite, rgpd, donnees personnelles</field>
     </record>
 
 </odoo>
