@@ -88,12 +88,12 @@ def _supprimer_demo_natif(env):
 
 
 def _configurer_shop(env):
-    """Force 4 produits par ligne sur la page shop."""
+    """Force 5 produits par ligne sur la page shop."""
     websites = env['website'].search([])
     for website in websites:
         try:
-            website.write({'shop_ppr': 4})
-            _logger.info("Planet Mobil: shop_ppr=4 applique sur '%s'.", website.name)
+            website.write({'shop_ppr': 5})
+            _logger.info("Planet Mobil: shop_ppr=5 applique sur '%s'.", website.name)
         except Exception as e:
             _logger.warning("Planet Mobil: shop_ppr non applique (%s)", e)
 
