@@ -366,7 +366,7 @@ class SaleOrder(models.Model):
             il = etree.SubElement(root, cac('InvoiceLine'))
             etree.SubElement(il, cbc('ID')).text = str(i)
             etree.SubElement(il, cbc('InvoicedQuantity'),
-                             unitCode=line.product_uom.name or 'C62').text = str(line.product_uom_qty)
+                             unitCode=line.product_uom_id.name or 'C62').text = str(line.product_uom_qty)
             etree.SubElement(il, cbc('LineExtensionAmount'),
                              currencyID=self.currency_id.name).text = str(round(line.price_subtotal, 2))
             itm = etree.SubElement(il, cac('Item'))
