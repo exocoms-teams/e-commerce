@@ -548,8 +548,6 @@ def _merge_root_category(env, website, old_name, target_category):
     for p in products:
         new_categs = (p.public_categ_ids - old) | target_category
         p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
-    if not target_category.website_published:
-        target_category.write({'website_published': True})
     old.write({'active': False})
     _logger.info(
         "Catégorie '%s' (id=%s) RÉCUPÉRÉE dans '%s' : %s produit(s) "
@@ -561,11 +559,15 @@ def _merge_root_category(env, website, old_name, target_category):
 
 def _publish_category_tree_products(env, website, category):
     """Publie tous les produits rattachés à une catégorie ET à ses
-    sous-catégories (récursif). Corrige le cas où une catégorie
-    récupérée (ex: Crypto, Distributeur automatique, Informatique)
-    est bien publiée elle-même, mais où ses PRODUITS restent marqués
-    'Non publié' — ce sont deux champs indépendants dans Odoo
-    (category.website_published vs product.template.is_published).
+    sous-catégories (récursif). Corrige le cas où les PRODUITS d'une
+    catégorie récupérée (ex: Crypto, Distributeur automatique,
+    Informatique) restent marqués 'Non publié' individuellement
+    (product.template.is_published) — NOTE : product.public.category
+    n'a pas de champ de publication propre sur cette version d'Odoo
+    (contrairement à une fausse hypothèse initiale qui a causé une
+    erreur d'installation, cf. 'Invalid field website_published').
+    Seuls les PRODUITS ont un statut de publication, pas les
+    catégories elles-mêmes.
 
     Ne touche JAMAIS un produit déjà explicitement rattaché à un
     AUTRE site (website_id différent) — sécurité multi-sites."""
@@ -786,20 +788,13 @@ def post_init_hook(env):
                 'name': name,
                 'sequence': seq,
                 'website_id': website.id,
-                'website_published': True,  # CORRECTIF : toujours visible, jamais grisée par défaut
             }
             if parent:
                 vals['parent_id'] = parent.id
             c = cat.create(vals)
             _logger.info("Catégorie CRÉÉE : '%s' (parent: %s)", name, parent.name if parent else '-')
         else:
-            # CORRECTIF : une catégorie retrouvée (déjà existante) peut
-            # avoir été laissée dépubliée (ex: catégorie créée puis
-            # jamais activée sur le site préexistant) — on force sa
-            # publication à chaque passage pour qu'elle ne reste jamais
-            # invisible/grisée sans raison.
-            if not c.website_published:
-                c.write({'website_published': True})
+            _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante, site Exocoms)", name, c.id)
             _logger.info("Catégorie RETROUVÉE : '%s' -> id=%s (déjà existante, site Exocoms)", name, c.id)
         return c
 
@@ -818,7 +813,6 @@ def post_init_hook(env):
         monetique_sub.write({
             'parent_id': monetique_root.id,
             'sequence': 1,
-            'website_published': True,
         })
 
     pdv = cat.search([
@@ -830,7 +824,6 @@ def post_init_hook(env):
         pdv.write({
             'parent_id': monetique_root.id,
             'sequence': 2,
-            'website_published': True,
         })
 
     # Réattacher "Crypto"/"CRYPTO" existant (racine préexistante sur ce
@@ -846,7 +839,6 @@ def post_init_hook(env):
         crypto_root.write({
             'parent_id': monetique_root.id,
             'sequence': 6,
-            'website_published': True,  # CORRECTIF : catégorie dépubliée sur l'ancien site
         })
 
     # Réattacher "Distributeur automatique" existant (racine) sous
@@ -860,7 +852,6 @@ def post_init_hook(env):
         distrib_root.write({
             'parent_id': monetique_root.id,
             'sequence': 4,
-            'website_published': True,  # CORRECTIF : catégorie dépubliée sur l'ancien site
         })
 
     # RÉCUPÉRATION complète de l'ancienne catégorie racine
