@@ -248,7 +248,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 'product': product,
                 'is_published': False,
             })
-        return request.redirect('/avis?sent=1')
+        return request.redirect('/avis?sent=1#pm-sent')
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):
