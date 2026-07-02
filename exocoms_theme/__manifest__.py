@@ -9,6 +9,7 @@
         'website',
         'website_sale',
         'im_livechat',
+        'website_livechat',
     ],
     'data': [
         'data/website_data.xml',
