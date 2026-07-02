@@ -35,9 +35,15 @@
         </nav>
     </template>
 
+    <!-- Injecte la barre de navigation sur TOUTES les pages Odoo (avant #wrap, pleine largeur) -->
+    <template id="inject_nav_all_pages" inherit_id="website.layout" name="Planet Mobil - Nav globale">
+        <xpath expr="//div[@id='wrap']" position="before">
+            <t t-call="website_planet_mobil.alt_category_nav_fragment" />
+        </xpath>
+    </template>
+
     <template id="layout" name="Planet Mobil - Layout principal">
         <t t-call="website.layout">
-            <t t-call="website_planet_mobil.alt_category_nav_fragment" />
             <t t-out="0"/>
         </t>
     </template>
