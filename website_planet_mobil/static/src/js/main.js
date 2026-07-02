@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (promo) promo.checked = true;
     }
 
-    // Récupère l'ID d'un attribut par son nom (essaie plusieurs variantes)
+    // Récupère l'ID de l'attribut ayant des valeurs parmi plusieurs variantes de nom
     async function getAttributeId(names) {
         const nameList = Array.isArray(names) ? names : [names];
         try {
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         model: 'product.attribute',
                         method: 'search_read',
                         args: [[['name', 'in', nameList]]],
-                        kwargs: { fields: ['id', 'name'], limit: 1 }
+                        kwargs: { fields: ['id', 'name'] }
                     }
                 })
             });
@@ -208,10 +208,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.warn('[PM Filtres] Erreur API getAttributeId:', data.error);
                 return null;
             }
-            const found = data.result?.[0];
-            if (found) console.log('[PM Filtres] Attribut trouvé:', found.name, '→ id', found.id);
-            else console.warn('[PM Filtres] Aucun attribut trouvé pour:', nameList);
-            return found?.id || null;
+            if (!data.result?.length) {
+                console.warn('[PM Filtres] Aucun attribut trouvé pour:', nameList);
+                return null;
+            }
+            // Parmi tous les attributs matchants, prendre celui qui a des valeurs
+            for (const attr of data.result) {
+                const values = await getAttributeValues(attr.id);
+                if (values.length > 0) {
+                    console.log('[PM Filtres] Attribut retenu:', attr.name, '→ id', attr.id, '(', values.length, 'valeurs)');
+                    return attr.id;
+                }
+                console.warn('[PM Filtres] Attribut', attr.name, '(id', attr.id, ') sans valeurs, essai suivant...');
+            }
+            console.warn('[PM Filtres] Tous les attributs trouvés sont vides:', data.result.map(a => a.name));
+            return null;
         } catch (e) {
             console.warn('[PM Filtres] Fetch error getAttributeId:', e);
             return null;
