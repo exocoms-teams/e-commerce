@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // FILTRES /shop 
     // ══════════════════════════════════════════
 
-    if (!window.location.pathname.startsWith('/shop')) return;
+    if (!window.location.pathname.includes('/shop')) return;
     // Pré-coche le filtre promotion si dans l'URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('x_is_promotion')) {
@@ -422,13 +422,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 params.set('category', currentParams.get('category'));
             }
 
-            //garde path de category si on est sur /shop/category/...
-            const pathMatch = window.location.pathname.match(/\/shop\/category\/([^\/]+)/);
-            const redirect = pathMatch
-                ? '/shop/category/' + pathMatch[1] + '?' + params.toString()
-                : '/shop?' + params.toString();
-
-            window.location.href = redirect;
+            //garde path de category si on est sur /en/shop/category/...
+            const pathMatch = window.location.pathname.match(/(\/(?:[a-z]{2}\/)?shop(?:\/category\/[^\/]+)?)/);
+            const basePath = pathMatch ? pathMatch[1] : '/shop';
+            window.location.href = basePath + '?' + params.toString();
         });
     }
 
