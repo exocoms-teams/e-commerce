@@ -98,10 +98,24 @@ def _configurer_shop(env):
             _logger.warning("Planet Mobil: shop_ppr non applique (%s)", e)
 
 
+def _activer_cookies_bar(env):
+    """Active la barre de consentement cookies sur chaque site web.
+    Equivaut a cocher 'Barre de cookies' dans Site Web > Configuration >
+    Parametres, reglage perdu a chaque rebuild de la base."""
+    websites = env['website'].search([])
+    for website in websites:
+        try:
+            website.write({'cookies_bar': True})
+            _logger.info("Planet Mobil: cookies_bar active sur '%s'.", website.name)
+        except Exception as e:
+            _logger.warning("Planet Mobil: cookies_bar non applique (%s)", e)
+
+
 def _run_hooks(env):
     _activer_francais_par_defaut(env)
     _supprimer_demo_natif(env)
     _configurer_shop(env)
+    _activer_cookies_bar(env)
 
 
 def post_init_hook(env):
