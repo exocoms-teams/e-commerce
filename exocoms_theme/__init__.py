@@ -46,13 +46,50 @@ THEME_JS_FILES = [
 
 
 def _get_website(env):
-    """Retourne le website EXOCOMS — recherche insensible à la casse,
-    jamais par ID. Ne pioche JAMAIS dans un site existant qui ne nous
-    appartient pas (base partagée avec d'autres projets) : si absent,
-    on le CRÉE plutôt que de prendre n'importe quel site au hasard."""
-    website = env['website'].search([('name', '=ilike', WEBSITE_NAME)], limit=1)
-    if not website:
-        website = env['website'].create({'name': WEBSITE_NAME})
+    """Retourne LE site qui appartient à CE module — jamais un autre
+    site préexistant, même s'il porte exactement le même nom
+    ('Exocoms'). C'est le cas ici : un site nommé 'Exocoms' existe
+    déjà dans la base partagée avant même l'installation du module.
+
+    CORRECTIF MAJEUR : l'ancienne version cherchait le site PAR NOM
+    ('=ilike', WEBSITE_NAME) — donc elle retombait systématiquement
+    sur ce site préexistant et fusionnait nos données dedans (origine
+    de tous les conflits de catégories/produits qu'on a dû corriger
+    à la main). Désormais, on mémorise l'ID exact du site créé par CE
+    module dans un paramètre système (ir.config_parameter). À chaque
+    lancement suivant (update, rebuild...), on ne retrouve QUE ce
+    site précis par son ID — jamais par une recherche de nom qui
+    pourrait accidentellement matcher le site de quelqu'un d'autre.
+
+    Si le paramètre est absent (première installation, ou base neuve
+    après un rebuild) OU si l'enregistrement qu'il pointe n'existe
+    plus, un site TOUT NEUF est créé — jamais réutilisé depuis un
+    site existant, même en cas d'homonymie parfaite.
+    """
+    param_key = 'exocoms_theme.website_id'
+    params = env['ir.config_parameter'].sudo()
+    stored_id = params.get_param(param_key)
+
+    if stored_id:
+        website = env['website'].browse(int(stored_id))
+        if website.exists():
+            return website
+        _logger.warning(
+            "Le paramètre '%s' pointait vers un site (id=%s) qui "
+            "n'existe plus — création d'un nouveau site.",
+            param_key, stored_id,
+        )
+
+    # Aucun site connu, ou son ID ne correspond plus à rien -> on en
+    # crée un NOUVEAU, sans JAMAIS réutiliser un site préexistant,
+    # même s'il porte exactement le même nom.
+    website = env['website'].create({'name': WEBSITE_NAME})
+    params.set_param(param_key, str(website.id))
+    _logger.info(
+        "Nouveau site Exocoms créé (id=%s), totalement indépendant de "
+        "tout autre site préexistant portant potentiellement le même nom.",
+        website.id,
+    )
     return website
 
 
@@ -560,6 +597,28 @@ def _publish_category_tree_products(env, website, category):
         )
 
 
+def _setup_livechat(env, website):
+    """Crée (ou retrouve) un canal Live Chat dédié à Exocoms Group et
+    le rattache à NOTRE site uniquement, via website.channel_id — un
+    champ déjà nativement scopé par site dans Odoo (chaque website a
+    son propre channel_id), donc aucun risque de fuite vers un autre
+    site avec ce mécanisme, contrairement au CSS/footer qu'on a dû
+    corriger manuellement plus haut dans ce fichier.
+    """
+    if not website:
+        return
+    channel = env['im_livechat.channel'].search([
+        ('name', '=', COMPANY_NAME),
+    ], limit=1)
+    if not channel:
+        channel = env['im_livechat.channel'].create({
+            'name': COMPANY_NAME,
+            'user_ids': [(4, env.uid)],  # opérateur par défaut = utilisateur qui installe
+        })
+    if website.channel_id.id != channel.id:
+        website.write({'channel_id': channel.id})
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -592,6 +651,9 @@ def post_init_hook(env):
 
     # === FOOTER / COPYRIGHT — scopés au site Exocoms uniquement ===
     _scope_layout_views(env, website)
+
+    # === LIVE CHAT — canal dédié Exocoms, scopé nativement via website.channel_id ===
+    _setup_livechat(env, website)
 
     # === LANGUES — Français + Anglais ===
     # NOTE multi-sites : ce bloc ne touche que website.language_ids du
@@ -962,6 +1024,9 @@ def post_migrate_hook(env):
 
     # Footer/copyright maintenus, scopés au site Exocoms
     _scope_layout_views(env, website)
+
+    # Live Chat maintenu, scopé au site Exocoms
+    _setup_livechat(env, website)
 
     # Menus maintenus + nettoyage démo à chaque update
     _setup_menus(env, website, lang_en)

@@ -8,6 +8,7 @@
     'depends': [
         'website',
         'website_sale',
+        'im_livechat',
     ],
     'data': [
         'data/website_data.xml',
