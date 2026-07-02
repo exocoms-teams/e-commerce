@@ -166,56 +166,48 @@
         }
 
         // ===== AJOUT AU PANIER (best-sellers) =====
-        document.querySelectorAll('.btn-add[data-product-id]').forEach(function(btn) {
+        // Reproduit exactement le formulaire natif de la fiche produit Odoo :
+        // POST vers la page du produit lui-même, avec les mêmes champs cachés
+        // (confirmé en inspectant le vrai bouton "Add to cart" du site).
+        function getCsrfToken() {
+            if (typeof odoo !== 'undefined' && odoo.csrf_token) {
+                return odoo.csrf_token;
+            }
+            const tokenInput = document.querySelector('input[name="csrf_token"]');
+            return tokenInput ? tokenInput.value : '';
+        }
+
+        document.querySelectorAll('.btn-add[data-product-url]').forEach(function(btn) {
             if (btn.dataset.bound) { return; }
             btn.dataset.bound = 'true';
 
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const productId = parseInt(btn.dataset.productId, 10);
-                const originalText = btn.textContent;
-                btn.textContent = '...';
 
-                fetch('/shop/cart/update_json', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'call',
-                        params: {
-                            product_id: productId,
-                            add_qty: 1,
-                            csrf_token: (typeof odoo !== 'undefined' && odoo.csrf_token) ? odoo.csrf_token : undefined
-                        }
-                    })
-                })
-                    .then(function(response) {
-                        return response.json().then(function(data) {
-                            return { status: response.status, ok: response.ok, data: data };
-                        });
-                    })
-                    .then(function(res) {
-                        if (res.data && res.data.error) {
-                            console.error('Erreur ajout panier (Odoo):', res.data.error);
-                            throw new Error('server error');
-                        }
-                        const result = (res.data && res.data.result) || {};
-                        console.log('Réponse ajout panier:', result);
-                        const cartQty = document.querySelector('.my_cart_quantity');
-                        if (cartQty && result.cart_quantity !== undefined) {
-                            cartQty.textContent = result.cart_quantity;
-                            cartQty.classList.remove('d-none');
-                        }
-                        btn.textContent = '✅ Ajouté';
-                        setTimeout(function() {
-                            btn.textContent = originalText;
-                        }, 2000);
-                    })
-                    .catch(function(err) {
-                        console.error('Erreur ajout panier (JS):', err);
-                        btn.textContent = originalText;
-                        alert("Impossible d'ajouter ce produit au panier pour le moment.");
-                    });
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = btn.dataset.productUrl;
+                form.style.display = 'none';
+
+                const fields = {
+                    csrf_token: getCsrfToken(),
+                    product_id: btn.dataset.productId,
+                    product_template_id: btn.dataset.templateId,
+                    product_category_id: btn.dataset.categoryId,
+                    product_type: btn.dataset.productType,
+                    add_qty: '1'
+                };
+                Object.keys(fields).forEach(function(key) {
+                    if (fields[key] === undefined || fields[key] === '') { return; }
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = fields[key];
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
             });
         });
 
