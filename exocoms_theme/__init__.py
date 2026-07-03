@@ -205,16 +205,24 @@ def _clean_demo_data(env, website):
                 len(ghost_products), len(ghost_pages),
             )
 
-    # 2. Rattacher les menus orphelins (sans website_id) qui sont les
-    #    nôtres EXPLICITEMENT (par URL connue) — jamais par déduction.
-    orphans = env['website.menu'].search([
-        ('website_id', '=', False),
-        ('url', 'in', OUR_URLS),
-    ])
-    if orphans:
-        orphans.write({'website_id': website.id})
+    # CORRECTIF (analyse a posteriori — bloc supprimé) : ce point
+    # contenait auparavant un rattachement automatique de "menus
+    # orphelins" (website_id=False) dont l'URL correspondait à
+    # OUR_URLS ('/', '/shop', '/nos-services'). Ce filtre était une
+    # fausse sécurité : ces URLs sont génériques (page d'accueil et
+    # boutique standard de N'IMPORTE QUEL site e-commerce Odoo), pas
+    # spécifiques à Exocoms. Sans filtre de site sur le search(), ce
+    # bloc pouvait potentiellement s'approprier le menu "Accueil" ou
+    # "Boutique" d'un AUTRE site de la base partagée, si celui-ci se
+    # retrouvait temporairement orphelin (migration, bug, manipulation
+    # d'une autre équipe...). Il tournait en plus à CHAQUE update du
+    # module (post_migrate_hook), donc le risque n'était pas ponctuel.
+    # SUPPRIMÉ : totalement inutile de toute façon, puisque
+    # _get_or_create_menu() (appelée juste après dans _setup_menus)
+    # crée déjà le menu proprement, scopé à website.id, s'il n'existe
+    # pas encore — aucune perte de fonctionnalité.
 
-    # 3. Supprimer les doublons de menus sur notre site
+    # Supprimer les doublons de menus sur notre site
     # Garder uniquement le menu avec la sequence la plus basse pour chaque URL
     for url in OUR_URLS:
         menus = env['website.menu'].search([
