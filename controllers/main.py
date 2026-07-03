@@ -14,8 +14,8 @@ class MonetiqueWebsite(Website):
         sidebar_modules = ['exocoms_sidebar_cards', 'exocoms_sidebar_tree', 'exocoms_sidebar_accordion']
         for module_name in sidebar_modules:
             module = IrModule.search([('name', '=', module_name), ('state', '=', 'installed')], limit=1)
-        if module:
-            return request.redirect('/boutique')
+            if module:
+                return request.redirect('/boutique')
 
     # Comportement normal monetique
         Product = request.env['product.template'].sudo()
