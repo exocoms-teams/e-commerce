@@ -1,171 +1,99 @@
 /* ===== PAGE SHOP ===== */
 
-/* Carte produit (classes réelles confirmées : .oe_product / .oe_product_cart) */
-.oe_product .oe_product_cart {
+/* Carte produit */
+.o_wsale_products_grid_table_wrapper .o_wsale_product_grid_cell {
     background: white !important;
     border-radius: 16px !important;
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
     transition: all 0.3s ease;
     border: none !important;
-    padding-bottom: 0.5rem;
 }
 
-.oe_product .oe_product_cart:hover {
+.o_wsale_products_grid_table_wrapper .o_wsale_product_grid_cell:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
 }
 
-/* Petit espace entre les cartes (la grille native est parfois collée) */
-.oe_product {
-    padding: 8px !important;
-}
-
-/* Image produit : fond bleu nuit assumé comme choix de design, avec une
-   touche décorative (lune, thème sommeil) plutôt qu'un bloc plat */
-.oe_product .oe_product_image {
-    overflow: hidden;
-    border-radius: 16px 16px 0 0;
-    position: relative;
-    background: linear-gradient(135deg, var(--bleu-nuit) 0%, #1b2431 100%) !important;
-    min-height: 220px;
-}
-
-.oe_product .oe_product_image::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 70px;
-    height: 70px;
-    transform: translate(-50%, -50%);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z'/%3E%3Ccircle cx='18' cy='6' r='0.6' fill='white' stroke='none'/%3E%3Ccircle cx='20' cy='10' r='0.4' fill='white' stroke='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.18;
-    pointer-events: none;
-}
-
-.oe_product .oe_product_image::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.15), transparent 40%);
-    pointer-events: none;
-}
-
-.oe_product .oe_product_image_img {
+/* Image produit */
+.o_wsale_product_grid_cell img {
     height: 220px !important;
     object-fit: cover !important;
     width: 100% !important;
+    background: white !important;
     transition: transform 0.3s;
-    opacity: 0;
 }
 
-.oe_product .oe_product_cart:hover .oe_product_image_img_wrapper_primary .oe_product_image_img {
+.o_wsale_product_grid_cell:hover img {
     transform: scale(1.04);
 }
 
-/* Icône favoris bien visible sur fond foncé */
-.oe_product .oe_product_image [class*="wish"],
-.oe_product .oe_product_image [class*="wish"] i {
-    color: white !important;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-}
-
-/* Zone infos (nom, description, prix) */
-.oe_product .oe_wsale_product_information {
-    background: white !important;
-    padding: 1rem !important;
-}
-
 /* Nom produit */
-.oe_product .o_wsale_products_item_title,
-.oe_product .o_wsale_products_item_title a {
+.o_wsale_product_grid_cell .o_wsale_product_information h6,
+.o_wsale_product_grid_cell .o_wsale_product_information .h6 {
     color: var(--bleu-nuit) !important;
     font-weight: 700 !important;
     font-size: 1rem !important;
     background: none !important;
-    text-decoration: none !important;
 }
 
 /* Prix */
-.oe_product .oe_currency_value {
+.o_wsale_product_grid_cell .oe_currency_value {
     color: var(--terracotta) !important;
     font-weight: 800 !important;
     font-size: 1.1rem !important;
     background: none !important;
 }
 
-/* Bouton ajouter au panier (si affiché sur la grille) */
-.oe_product .o_wsale_product_btn,
-.oe_product .btn-primary {
+/* Bouton ajouter au panier */
+.o_wsale_product_grid_cell .o_wsale_product_btn,
+.o_wsale_product_grid_cell .btn-primary {
     background-color: var(--bleu-nuit) !important;
     border-color: var(--bleu-nuit) !important;
     border-radius: 50px !important;
     font-weight: 600 !important;
     transition: all 0.3s !important;
+    width: 100% !important;
 }
 
-.oe_product .o_wsale_product_btn:hover,
-.oe_product .btn-primary:hover {
+.o_wsale_product_grid_cell .o_wsale_product_btn:hover,
+.o_wsale_product_grid_cell .btn-primary:hover {
     background-color: var(--terracotta) !important;
     border-color: var(--terracotta) !important;
 }
 
-/* Sidebar : cadre (classe réelle confirmée #products_grid_before) */
+/* Fond blanc sur toute la zone info */
+.o_wsale_product_information {
+    background: white !important;
+    padding: 1rem !important;
+}
+
+/* Sidebar filtres */
 #products_grid_before {
     background: white;
     border-radius: 16px;
-    padding: 1rem 1.2rem;
+    padding: 1.5rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    margin-bottom: 1.5rem;
 }
 
-/* Titre "Categories" */
-#products_grid_before .o_categories_collapse_title {
+#products_grid_before .h6 {
     color: var(--bleu-nuit) !important;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 1px;
 }
 
-/* Liens de catégories (liste réelle : #o_wsale_categories .wsale_products_categories_list) */
-#products_grid_before .wsale_products_categories_list a,
-#products_grid_before .nav-link {
+#products_grid_before a {
     color: #555 !important;
-    transition: color 0.3s, padding 0.2s;
-    padding: 0.3rem 0;
-    text-decoration: none;
+    transition: color 0.3s;
 }
 
-#products_grid_before .wsale_products_categories_list a:hover,
-#products_grid_before .nav-link:hover {
+#products_grid_before a:hover {
     color: var(--terracotta) !important;
-    padding-left: 4px;
 }
 
-/* Catégorie active / sélectionnée */
-#products_grid_before .wsale_products_categories_list a.active,
-#products_grid_before .active > a {
-    color: var(--terracotta) !important;
-    font-weight: 700;
-}
-
-/* Sous-catégories indentées */
-#products_grid_before .wsale_products_categories_list ul {
-    padding-left: 1rem;
-    border-left: 2px solid var(--creme);
-}
-
-/* Curseur de prix */
-#o_wsale_price_range_option input[type="range"] {
-    accent-color: var(--terracotta);
-}
-
-/* Barre de tri / recherche */
-#o_wsale_products_header,
+/* Barre de tri */
 .o_wsale_products_header {
     background: white;
     border-radius: 12px;

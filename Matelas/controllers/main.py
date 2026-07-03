@@ -9,7 +9,21 @@ class MatelasVente(http.Controller):
         products = request.env['product.template'].sudo().search([
             ('is_published', '=', True)
         ], limit=6)
-        return request.render('Matelas.home', {'products': products})
+
+        # Produits "Nouveauté" : le maître de stage choisit lesquels
+        # apparaissent ici en ajoutant/retirant le tag "Nouveauté" sur la
+        # fiche produit (Ventes > Produits > Tags produit), sans coder.
+        nouveaute_tag = request.env.ref(
+            'Matelas.product_tag_nouveaute', raise_if_not_found=False)
+        nouveautes = request.env['product.template'].sudo().search([
+            ('is_published', '=', True),
+            ('product_tag_ids', 'in', nouveaute_tag.ids if nouveaute_tag else []),
+        ], limit=6) if nouveaute_tag else request.env['product.template']
+
+        return request.render('Matelas.home', {
+            'products': products,
+            'nouveautes': nouveautes,
+        })
 
     @http.route('/avis', auth='public', website=True)
     def avis(self, **kwargs):

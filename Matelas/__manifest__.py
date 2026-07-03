@@ -4,11 +4,19 @@
     'version': '19.0.1.0.10',
     'summary': 'Site e-commerce de vente de matelas',
     'category': 'Website',
-    'depends': ['website', 'website_sale'],
+    'depends': [
+        'website',
+        'website_sale',
+        'account',         
+        'im_livechat',     
+        'mass_mailing',     
+        'crm',              
+    ],
     'author': 'Equipe matelas',
     'license': 'LGPL-3',
 
     'data': [
+        'data/ProductTags.xml',
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',

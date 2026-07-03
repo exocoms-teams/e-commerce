@@ -233,6 +233,51 @@
 
       </section>
 
+      <!-- Nouveautés : produits choisis via le tag "Nouveauté" sur la fiche
+           produit (Ventes > Produits > Tags produit) — modifiable par le
+           maître de stage sans toucher au code. -->
+      <t t-if="nouveautes">
+        <section class="bestsellers container">
+          <p class="section-label">FRAÎCHEMENT ARRIVÉ</p>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Nos nouveautés</h2>
+            <a href="/shop" class="voir-tout">Voir tout →</a>
+          </div>
+
+          <div class="row bestseller-grid">
+            <t t-foreach="nouveautes" t-as="product">
+              <div class="col-md-4">
+                <div class="product-card position-relative">
+                  <span class="badge-nouveaute">Nouveau</span>
+                  <a href="/shop">
+                    <img class="product-image"
+                      t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                      alt="Matelas" />
+                  </a>
+                  <p class="product-type">MATELAS</p>
+
+                  <h4
+                    t-esc="product.name" />
+
+                  <div class="price-action">
+                    <p class="price">
+                      <span t-esc="product.list_price" /> € </p>
+
+                    <a href="#" class="btn-add"
+                      t-att-data-product-url="product.website_url"
+                      t-att-data-product-id="product.product_variant_id.id"
+                      t-att-data-template-id="product.id"
+                      t-att-data-category-id="product.categ_id.id"
+                      t-att-data-product-type="product.type">Ajouter</a>
+                  </div>
+                </div>
+              </div>
+            </t>
+          </div>
+
+        </section>
+      </t>
+
       <!-- Bannière promo -->
       <section class="promo-banner container">
         <div class="promo-content">
