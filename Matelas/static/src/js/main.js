@@ -230,6 +230,103 @@
             });
         }
 
+        // ===== PRODUITS VUS RÉCEMMENT (stockage navigateur) =====
+        (function() {
+            const STORAGE_KEY = 'matelas_recently_viewed';
+            const MAX_ITEMS = 6;
+
+            function getStored() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function saveStored(items) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+                } catch (e) {
+                    // localStorage indisponible (navigation privée...) : on ignore
+                }
+            }
+
+            // Sur une page produit : on enregistre ce produit
+            const addToCartBtn = document.getElementById('add_to_cart');
+            if (addToCartBtn) {
+                const titleMeta = document.querySelector('meta[property="og:title"]');
+                const imageMeta = document.querySelector('meta[property="og:image"]');
+                const priceEl = document.querySelector('.oe_currency_value');
+
+                const product = {
+                    url: window.location.pathname,
+                    title: titleMeta ? titleMeta.content : document.title,
+                    image: imageMeta ? imageMeta.content : '',
+                    price: priceEl ? priceEl.textContent.trim() : ''
+                };
+
+                if (product.url && product.title) {
+                    let items = getStored().filter(function(p) {
+                        return p.url !== product.url;
+                    });
+                    items.unshift(product);
+                    items = items.slice(0, MAX_ITEMS);
+                    saveStored(items);
+                }
+            }
+
+            // Sur la page d'accueil : on affiche la section si on a des produits
+            const container = document.getElementById('recently-viewed-container');
+            if (container) {
+                const items = getStored();
+                if (items.length > 0) {
+                    const section = document.getElementById('recently-viewed-section');
+                    if (section) {
+                        section.style.display = '';
+                    }
+                    container.innerHTML = '';
+                    items.forEach(function(p) {
+                        const col = document.createElement('div');
+                        col.className = 'bestseller-scroll-item';
+
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+
+                        const link = document.createElement('a');
+                        link.href = p.url;
+
+                        const img = document.createElement('img');
+                        img.className = 'product-image';
+                        img.src = p.image;
+                        img.alt = p.title;
+                        link.appendChild(img);
+
+                        const type = document.createElement('p');
+                        type.className = 'product-type';
+                        type.textContent = 'MATELAS';
+
+                        const title = document.createElement('h4');
+                        title.textContent = p.title;
+
+                        const priceWrap = document.createElement('div');
+                        priceWrap.className = 'price-action';
+                        const price = document.createElement('p');
+                        price.className = 'price';
+                        price.textContent = p.price;
+                        priceWrap.appendChild(price);
+
+                        card.appendChild(link);
+                        card.appendChild(type);
+                        card.appendChild(title);
+                        card.appendChild(priceWrap);
+                        col.appendChild(card);
+                        container.appendChild(col);
+                    });
+                }
+            }
+        })();
+
     }
 
     if (document.readyState === 'loading') {

@@ -311,6 +311,42 @@ header#top a[href="/contactus"] {
     margin-top: 2rem;
 }
 
+/* Rangée de best-sellers qui défile horizontalement (scroll/swipe) */
+.bestseller-scroll {
+    display: flex;
+    gap: 20px;
+    margin-top: 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 1rem;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: var(--terracotta) transparent;
+}
+
+.bestseller-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.bestseller-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--terracotta);
+    border-radius: 999px;
+}
+
+.bestseller-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.bestseller-scroll-item {
+    flex: 0 0 auto;
+    width: 280px;
+    scroll-snap-align: start;
+}
+
+.bestseller-scroll-item .product-card {
+    height: 100%;
+}
+
 .voir-tout {
     color: var(--terracotta);
     text-decoration: none;
