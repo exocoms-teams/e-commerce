@@ -576,6 +576,25 @@ def _publish_category_tree_products(env, website, category):
         )
 
 
+def _get_default_operator(env):
+    """Retourne un utilisateur RÉEL (jamais OdooBot/système) pour
+    servir d'opérateur par défaut du Live Chat.
+
+    CORRECTIF : l'ancienne version utilisait env.uid, qui pointe vers
+    OdooBot (id=1, compte système INACTIF) quand le code s'exécute
+    via odoo-bin shell — c'est exactement pour ça que l'opérateur
+    restait vide après chaque installation/rebuild, obligeant à le
+    corriger manuellement à chaque fois. On cherche ici explicitement
+    un utilisateur actif, interne (non "share", donc pas un simple
+    contact portail), en excluant les comptes techniques.
+    """
+    return env['res.users'].search([
+        ('active', '=', True),
+        ('share', '=', False),
+        ('login', 'not in', ['__system__']),
+    ], order='id asc', limit=1)
+
+
 def _setup_livechat(env, website):
     """Crée (ou retrouve) un canal Live Chat dédié à Exocoms Group et
     le rattache à NOTRE site uniquement, via website.channel_id — un
@@ -590,12 +609,19 @@ def _setup_livechat(env, website):
         ('name', '=', COMPANY_NAME),
     ], limit=1)
     if not channel:
-        channel = env['im_livechat.channel'].create({
-            'name': COMPANY_NAME,
-            'user_ids': [(4, env.uid)],  # opérateur par défaut = utilisateur qui installe
-        })
+        channel = env['im_livechat.channel'].create({'name': COMPANY_NAME})
     if website.channel_id.id != channel.id:
         website.write({'channel_id': channel.id})
+
+    # Couleurs du widget alignées sur le bleu principal du site
+    # (--primary: #0d4dff dans layout.css), plutôt que la couleur
+    # aléatoire/violette par défaut d'un canal créé par code.
+    channel.write({
+        'header_background_color': '#0d4dff',
+        'title_color': '#FFFFFF',
+        'button_background_color': '#0d4dff',
+        'button_text_color': '#FFFFFF',
+    })
 
     # CORRECTIF : un canal créé par code (.create()) n'a AUCUNE règle
     # d'affichage (im_livechat.channel.rule) par défaut — contrairement
@@ -611,6 +637,27 @@ def _setup_livechat(env, website):
             'action': 'display_button',
             'sequence': 10,
         })
+
+    # CORRECTIF : réassigne un opérateur RÉEL à CHAQUE exécution
+    # (install ET update) si le canal n'en a aucun — pas seulement à
+    # la création. Sans ça, un canal existant mais resté sans
+    # opérateur valide (ex: après un rebuild) restait invisible tant
+    # qu'on ne corrigeait pas ça manuellement.
+    if not channel.user_ids:
+        operator = _get_default_operator(env)
+        if operator:
+            channel.write({'user_ids': [(4, operator.id)]})
+            _logger.info(
+                "Opérateur Live Chat assigné automatiquement : %s",
+                operator.name,
+            )
+        else:
+            _logger.warning(
+                "Aucun utilisateur actif trouvé pour servir d'opérateur "
+                "Live Chat — la bulle de chat pourrait ne pas s'afficher. "
+                "Assignez un opérateur manuellement via Site Web > "
+                "Live Chat."
+            )
 
 
 def post_init_hook(env):
