@@ -9,6 +9,15 @@ class MonetiqueWebsite(Website):
 
     @http.route('/', type='http', auth='public', website=True)
     def homepage(self, **kwargs):
+    # Redirection automatique si un module sidebar EXOCOMS est installé
+        IrModule = request.env['ir.module.module'].sudo()
+        sidebar_modules = ['exocoms_sidebar_cards', 'exocoms_sidebar_tree', 'exocoms_sidebar_accordion']
+        for module_name in sidebar_modules:
+            module = IrModule.search([('name', '=', module_name), ('state', '=', 'installed')], limit=1)
+        if module:
+            return request.redirect('/boutique')
+
+    # Comportement normal monetique
         Product = request.env['product.template'].sudo()
         featured = Product.search([
             ('is_published', '=', True),
@@ -17,7 +26,7 @@ class MonetiqueWebsite(Website):
         return request.render('monetique_theme.homepage', {
             'featured_products': featured,
             'year': datetime.datetime.now().year,
-        })
+    })
 
     @http.route('/solutions', type='http', auth='public', website=True)
     def solutions(self, **kwargs):
