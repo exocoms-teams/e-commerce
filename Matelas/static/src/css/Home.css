@@ -353,6 +353,33 @@ header#top a[href="/contactus"] {
     height: 100%;
 }
 
+/* Rangée qui défile automatiquement (best-sellers, nouveautés) */
+.auto-scroll-wrapper {
+    overflow: hidden;
+    margin-top: 2rem;
+    padding-bottom: 0.5rem;
+}
+
+.auto-scroll-wrapper:hover .auto-scroll-track {
+    animation-play-state: paused;
+}
+
+.auto-scroll-track {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    animation: autoScrollProducts 35s linear infinite;
+}
+
+@keyframes autoScrollProducts {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 .voir-tout {
     color: var(--terracotta);
     text-decoration: none;
