@@ -279,7 +279,7 @@ def _setup_menus(env, website, lang_en):
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
     # Supprimer les menus indésirables sur notre site uniquement
-    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
+    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides', '/Appointment']
     unwanted = env['website.menu'].search([
         ('url', 'in', unwanted_urls),
         ('website_id', '=', website.id),
