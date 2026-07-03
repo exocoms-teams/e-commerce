@@ -279,7 +279,7 @@ def _setup_menus(env, website, lang_en):
         _get_or_create_menu(env, url, name_fr, name_en, seq, website, root_menu, lang_en)
 
     # Supprimer les menus indésirables sur notre site uniquement
-    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides', '/Appointment']
+    unwanted_urls = ['/contactus', '/blog', '/forum', '/event', '/jobs', '/slides']
     unwanted = env['website.menu'].search([
         ('url', 'in', unwanted_urls),
         ('website_id', '=', website.id),
@@ -399,61 +399,30 @@ def _setup_monetique_attributes(env, lang_en):
         get_or_create_value(quantite, fr, en, sequence=i)
 
 
-def _setup_account_dropdown_view(env, website):
-    """CORRECTIF : recherche et création strictement scopées à
-    website.id. La vue originale était cherchée/créée SANS filtre de
-    site, donc soit elle modifiait une vue globale partagée par tous
-    les sites, soit elle volait la vue déjà créée par un autre site.
+def _remove_account_dropdown_duplicate(env, website):
+    """CORRECTIF : cette fonction créait auparavant un lien "My Account"
+    en double dans le menu déroulant du compte client, en plus du lien
+    natif "Mon compte" déjà fourni par Odoo (portail) — les deux
+    pointaient vers la même page (/my/home). Doublon inutile et
+    source de confusion pour le visiteur, présent dès la toute
+    première version du module.
+
+    On retire ici cette vue custom si elle existe (scopée à notre
+    site uniquement), pour ne garder que le lien natif d'Odoo.
+    Idempotent : ne fait rien si la vue a déjà été retirée.
     """
+    if not website:
+        return
     account_view = env['ir.ui.view'].search([
         ('key', '=', 'portal.user_dropdown_link_account'),
         ('website_id', '=', website.id),
     ], limit=1)
-    if not account_view:
-        account_view = env['ir.ui.view'].search([
-            ('name', 'ilike', 'Link to frontend portal'),
-            ('inherit_id.key', '=', 'portal.user_dropdown'),
-            ('website_id', '=', website.id),
-        ], limit=1)
-
-    arch = """
-<data name="Link to frontend portal" inherit_id="portal.user_dropdown">
-    <xpath expr="//*[@id='o_logout_divider']" position="before">
-        <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
-            <i class="fa fa-fw fa-id-card-o me-1 small text-primary-emphasis"></i>
-            My Account
-        </a>
-    </xpath>
-</data>
-"""
-    if account_view and account_view.exists():
-        account_view.write({'arch': arch})
-    else:
-        # On vérifie d'abord qu'aucune vue identique n'existe déjà SANS
-        # website_id (vue partagée) avant de créer la nôtre — sinon on
-        # risque un conflit de "key" dupliquée entre sites.
-        shared = env['ir.ui.view'].search([
-            ('key', '=', 'portal.user_dropdown_link_account'),
-            ('website_id', '=', False),
-        ], limit=1)
-        if shared:
-            _logger.info(
-                "Une vue 'portal.user_dropdown_link_account' partagée "
-                "existe déjà sans website_id — non modifiée pour ne pas "
-                "impacter les autres sites. Créez une vue spécifique au "
-                "site Exocoms manuellement via Site Web > Personnaliser "
-                "si vous voulez un comportement différent par site."
-            )
-            return
-        parent = env.ref('portal.user_dropdown', raise_if_not_found=False)
-        if parent:
-            env['ir.ui.view'].create({
-                'name': 'Exocoms - Link to frontend portal',
-                'key': 'portal.user_dropdown_link_account',
-                'inherit_id': parent.id,
-                'website_id': website.id,
-                'arch': arch,
-            })
+    if account_view:
+        account_view.unlink()
+        _logger.info(
+            "Vue custom 'My Account' (doublon) retirée sur le site %s.",
+            website.name,
+        )
 
 
 def _setup_shop_grid_design(env, website):
@@ -748,8 +717,8 @@ def post_init_hook(env):
     # === ATTRIBUTS / FILTRES MONÉTIQUE ===
     _setup_monetique_attributes(env, lang_en)
 
-    # === PROFIL DROPDOWN — Mon compte ===
-    _setup_account_dropdown_view(env, website)
+    # === PROFIL DROPDOWN — retrait du doublon "My Account" ===
+    _remove_account_dropdown_duplicate(env, website)
 
     # === DÉCONNEXION — supprimer la vue custom (scopée à notre site) ===
     existing = env['ir.ui.view'].search([
@@ -1093,4 +1062,4 @@ def post_migrate_hook(env):
 
         # Vues qweb (grid produits) maintenues à chaque update, scopées.
         _setup_shop_grid_design(env, website)
-        _setup_account_dropdown_view(env, website)
+        _remove_account_dropdown_duplicate(env, website)
