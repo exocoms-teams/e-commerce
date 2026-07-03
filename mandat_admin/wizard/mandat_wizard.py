@@ -113,7 +113,7 @@ class MandatWizard(models.TransientModel):
                 'ordonnateur':             so.ordonnateur or '',
                 'qualite_ordonnateur':     so.qualite_ordonnateur or '',
                 'comptable_public':        so.comptable_public or p.comptable_public or '',
-                'structure_chorus':        so.structure_chorus or p.structure_chorus or '',
+                'structure_chorus':        so.structure_chorus or p.structure_chorus or so.acheteur_siret or '',
                 'service_chorus':          so.service_chorus or p.service_chorus or '',
                 'code_tiers_chorus':       so.code_tiers_chorus or p.code_tiers_chorus or '',
                 'regime_tva_public':       so.regime_tva_public or p.regime_tva_public or 'non_assujetti',

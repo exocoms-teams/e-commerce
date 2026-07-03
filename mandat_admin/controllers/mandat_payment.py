@@ -52,6 +52,7 @@ class MandatPaymentController(http.Controller):
             'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
             'comptable': 'comptable_public', 'ej': 'numero_engagement',
             'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+            'service_chorus': 'service_chorus', 'code_tiers_chorus': 'code_tiers_chorus',
         }
         for src, dst in mapping.items():
             if hasattr(order, dst):
@@ -126,6 +127,7 @@ class MandatPaymentController(http.Controller):
             'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
             'comptable': 'comptable_public', 'ej': 'numero_engagement',
             'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+            'service_chorus': 'service_chorus', 'code_tiers_chorus': 'code_tiers_chorus',
         }
         for src, dst in mapping.items():
             if hasattr(order, dst):

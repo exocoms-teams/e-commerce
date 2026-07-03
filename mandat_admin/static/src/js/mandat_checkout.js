@@ -35,6 +35,8 @@ document.addEventListener('click', async function (e) {
                     ej: document.getElementById('mandat_ej')?.value?.trim() || '',
                     service: document.getElementById('mandat_service')?.value?.trim() || '',
                     reference: document.getElementById('mandat_reference')?.value?.trim() || '',
+                    service_chorus: document.getElementById('mandat_service_chorus')?.value?.trim() || '',
+                    code_tiers_chorus: document.getElementById('mandat_code_tiers_chorus')?.value?.trim() || '',
                 },
             }),
         });
