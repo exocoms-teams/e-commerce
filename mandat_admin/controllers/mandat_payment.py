@@ -32,12 +32,18 @@ class MandatPaymentController(http.Controller):
             return {'success': False, 'error': 'Commande introuvable'}
 
         siret = kwargs.get('siret', '').strip()
-        iban = kwargs.get('iban', '').strip()
         ordonnateur = kwargs.get('ordonnateur', '').strip()
         comptable = kwargs.get('comptable', '').strip()
 
-        if not siret or not iban or not ordonnateur or not comptable:
+        if not siret or not ordonnateur or not comptable:
             return {'success': False, 'error': 'Champs obligatoires manquants'}
+
+        # Récupérer l'IBAN de l'entreprise depuis ses coordonnées bancaires
+        company = request.env.company.sudo()
+        bank_account = request.env['res.partner.bank'].sudo().search(
+            [('partner_id', '=', company.partner_id.id)], limit=1
+        )
+        iban = bank_account.acc_number or ''
 
         # 1. Sauvegarde des données mandat sur la commande
         write_fields = {'payment_mode': 'mandat_administratif'}

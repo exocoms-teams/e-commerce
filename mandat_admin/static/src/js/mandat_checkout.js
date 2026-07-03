@@ -10,12 +10,11 @@ document.addEventListener('click', async function (e) {
     e.stopImmediatePropagation();
 
     const siret = document.getElementById('mandat_siret')?.value?.trim();
-    const iban = document.getElementById('mandat_iban')?.value?.trim();
     const ordonnateur = document.getElementById('mandat_ordonnateur')?.value?.trim();
     const comptable = document.getElementById('mandat_comptable')?.value?.trim();
     const errorDiv = document.getElementById('mandat_form_error');
 
-    if (!siret || !iban || !ordonnateur || !comptable) {
+    if (!siret || !ordonnateur || !comptable) {
         if (errorDiv) errorDiv.style.display = 'block';
         return;
     }
@@ -31,7 +30,7 @@ document.addEventListener('click', async function (e) {
             body: JSON.stringify({
                 jsonrpc: '2.0', method: 'call', id: 1,
                 params: {
-                    siret, iban, ordonnateur, comptable,
+                    siret, ordonnateur, comptable,
                     qualite: document.getElementById('mandat_qualite')?.value?.trim() || '',
                     ej: document.getElementById('mandat_ej')?.value?.trim() || '',
                     service: document.getElementById('mandat_service')?.value?.trim() || '',
