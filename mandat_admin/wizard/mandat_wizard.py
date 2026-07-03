@@ -91,6 +91,12 @@ class MandatWizard(models.TransientModel):
     note_mandat = fields.Text('Observations')
     generer_pj  = fields.Boolean('Générer la liste des PJ obligatoires standard', default=True)
 
+    def _get_company_iban(self):
+        bank = self.env['res.partner.bank'].sudo().search(
+            [('partner_id', '=', self.env.company.partner_id.id)], limit=1
+        )
+        return bank.acc_number or ''
+
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
@@ -102,6 +108,8 @@ class MandatWizard(models.TransientModel):
                 'acheteur_siret':          so.acheteur_siret or p.siret_public or '',
                 'acheteur_service':        so.acheteur_service or p.service_public or '',
                 'nomenclature_budgetaire': so.nomenclature_budgetaire or p.nomenclature_budgetaire or 'M14',
+                'reference_bon_commande':  so.reference_bon_commande or '',
+                'numero_engagement':       so.numero_engagement or '',
                 'ordonnateur':             so.ordonnateur or '',
                 'qualite_ordonnateur':     so.qualite_ordonnateur or '',
                 'comptable_public':        so.comptable_public or p.comptable_public or '',
@@ -109,7 +117,7 @@ class MandatWizard(models.TransientModel):
                 'service_chorus':          so.service_chorus or p.service_chorus or '',
                 'code_tiers_chorus':       so.code_tiers_chorus or p.code_tiers_chorus or '',
                 'regime_tva_public':       so.regime_tva_public or p.regime_tva_public or 'non_assujetti',
-                'fournisseur_iban':        so.fournisseur_iban or '',
+                'fournisseur_iban':        so.fournisseur_iban or self._get_company_iban(),
                 'delai_paiement_jours':    so.delai_paiement_jours or 30,
                 'note_mandat':             so.note_mandat or '',
             })
