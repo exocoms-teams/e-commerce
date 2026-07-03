@@ -8,7 +8,9 @@
         'website_sale',
         'stock',        
     ],
-    'data': [],
+    'data': [
+        'views/product_template_views.xml',
+    ],
     'installable': True,
     'application': True,
 }
