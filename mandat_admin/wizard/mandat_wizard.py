@@ -194,6 +194,9 @@ class MandatWizard(models.TransientModel):
         if so.state == 'draft':
             so.action_confirm()
 
+        # Envoi automatique du BCA par email
+        self._send_bca_email(so)
+
         return {
             'type':      'ir.actions.act_window',
             'res_model': 'sale.order',
@@ -201,6 +204,42 @@ class MandatWizard(models.TransientModel):
             'view_mode': 'form',
             'target':    'current',
         }
+
+    def _send_bca_email(self, so):
+        try:
+            report = self.env.ref('mandat_admin.action_report_bca')
+            pdf_content, _ = report._render_qweb_pdf('mandat_admin.report_bca', [so.id])
+            attachment = self.env['ir.attachment'].create({
+                'name': 'BCA-%s.pdf' % (so.mandat_numero or so.name),
+                'type': 'binary',
+                'datas': pdf_content,
+                'res_model': 'sale.order',
+                'res_id': so.id,
+                'mimetype': 'application/pdf',
+            })
+            partner_email = so.partner_id.email
+            if partner_email:
+                so.message_post(
+                    body=_(
+                        "Bonjour,<br/><br/>"
+                        "Veuillez trouver ci-joint votre Bon de Commande Administratif (BCA) "
+                        "pour la commande <strong>%(name)s</strong> d'un montant de "
+                        "<strong>%(amount)s %(currency)s</strong>.<br/><br/>"
+                        "Cordialement,<br/>%(company)s",
+                        name=so.name,
+                        amount=so.amount_total,
+                        currency=so.currency_id.symbol,
+                        company=so.company_id.name,
+                    ),
+                    subject='Bon de Commande Administratif – %s' % so.name,
+                    partner_ids=[so.partner_id.id],
+                    attachment_ids=[attachment.id],
+                    message_type='email',
+                    subtype_xmlid='mail.mt_comment',
+                )
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception('Erreur envoi email BCA (non bloquant)')
 
     def action_valider_et_imprimer(self):
         self.action_valider_bca()
