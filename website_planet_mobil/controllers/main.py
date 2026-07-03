@@ -209,11 +209,11 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
             'use_fake': use_fake,
         })
     @http.route('/avis', type='http', auth='public', website=True)
-    def avis(self, **kwargs):
+    def avis(self, sent=False, **kwargs):
         reviews = request.env['planet.review'].sudo().search([
             ('is_published', '=', True)
         ])
-        
+
         total = len(reviews)
         if total > 0:
             avg = sum(r.rating for r in reviews) / total
@@ -231,6 +231,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
         return request.render('website_planet_mobil.avis_page', {
             'avis_list': reviews,
             'stats': stats,
+            'sent': bool(sent),
         })
 
     @http.route('/avis/submit', type='http', auth='public', website=True, methods=['POST'])
@@ -247,7 +248,7 @@ class WebsitePlanetMobil(WebsiteSale):  #herite du websitesale
                 'product': product,
                 'is_published': False,
             })
-        return request.make_response('ok')
+        return request.redirect('/avis?sent=1#avis-form')
 
     @http.route('/contact', type='http', auth='public', website=True)
     def contact(self, **kwargs):

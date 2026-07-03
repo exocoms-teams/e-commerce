@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // FILTRES /shop 
     // ══════════════════════════════════════════
 
-    if (!window.location.pathname.startsWith('/shop')) return;
+    if (!window.location.pathname.includes('/shop')) return;
     // Pré-coche le filtre promotion si dans l'URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('x_is_promotion')) {
@@ -184,38 +184,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (promo) promo.checked = true;
     }
 
-    // Récupère l'ID d'un attribut par son nom (essaie plusieurs variantes)
+    // Essaie chaque nom dans l'ordre jusqu'à trouver un attribut avec des valeurs
     async function getAttributeId(names) {
         const nameList = Array.isArray(names) ? names : [names];
-        try {
-            const res = await fetch('/web/dataset/call_kw', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    id: 1,
-                    params: {
-                        model: 'product.attribute',
-                        method: 'search_read',
-                        args: [[['name', 'in', nameList]]],
-                        kwargs: { fields: ['id', 'name'], limit: 1 }
-                    }
-                })
-            });
-            const data = await res.json();
-            if (data.error) {
-                console.warn('[PM Filtres] Erreur API getAttributeId:', data.error);
-                return null;
+        for (const name of nameList) {
+            try {
+                const res = await fetch('/web/dataset/call_kw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0', method: 'call', id: 1,
+                        params: {
+                            model: 'product.attribute',
+                            method: 'search_read',
+                            args: [[['name', '=', name]]],
+                            kwargs: { fields: ['id', 'name'], limit: 1 }
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (data.error || !data.result?.length) continue;
+                const id = data.result[0].id;
+                const values = await getAttributeValues(id);
+                if (values.length > 0) {
+                    console.log('[PM Filtres] Attribut retenu:', name, '→ id', id, '(', values.length, 'valeurs)');
+                    return id;
+                }
+                console.warn('[PM Filtres]', name, 'trouvé mais sans valeurs, essai suivant...');
+            } catch (e) {
+                console.warn('[PM Filtres] Erreur pour', name, ':', e);
             }
-            const found = data.result?.[0];
-            if (found) console.log('[PM Filtres] Attribut trouvé:', found.name, '→ id', found.id);
-            else console.warn('[PM Filtres] Aucun attribut trouvé pour:', nameList);
-            return found?.id || null;
-        } catch (e) {
-            console.warn('[PM Filtres] Fetch error getAttributeId:', e);
-            return null;
         }
+        console.warn('[PM Filtres] Aucun attribut avec valeurs pour:', nameList);
+        return null;
     }
 
     // Récupère les valeurs d'un attribut
@@ -362,10 +363,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Init dropdowns marque + couleur
     async function initFilters() {
-        const [brandId, colorId] = await Promise.all([
-            getAttributeId(['Brand', 'Marque', 'brand', 'marque']),
-            getAttributeId(['Color', 'Couleur', 'color', 'couleur', 'Colour'])
-        ]);
+        const brandId = await getAttributeId(['Brand', 'brand', 'Marque', 'marque']);
+        const colorId = await getAttributeId(['Color', 'color', 'Couleur', 'couleur']);
 
         if (brandId) {
             const brands = await getAttributeValues(brandId);
@@ -422,13 +421,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 params.set('category', currentParams.get('category'));
             }
 
-            //garde path de category si on est sur /shop/category/...
-            const pathMatch = window.location.pathname.match(/\/shop\/category\/([^\/]+)/);
-            const redirect = pathMatch
-                ? '/shop/category/' + pathMatch[1] + '?' + params.toString()
-                : '/shop?' + params.toString();
-
-            window.location.href = redirect;
+            //garde path de category si on est sur /en/shop/category/...
+            const pathMatch = window.location.pathname.match(/(\/(?:[a-z]{2}\/)?shop(?:\/category\/[^\/]+)?)/);
+            const basePath = pathMatch ? pathMatch[1] : '/shop';
+            window.location.href = basePath + '?' + params.toString();
         });
     }
 

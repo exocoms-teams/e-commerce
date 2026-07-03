@@ -50,8 +50,13 @@
                     </div>
                 </div>
 
-                <t t-if="product.attribute_line_ids">
-                    <table class="pm-specs-table">
+                <!-- Conteneur JSON caché : QWeb pose x_specs en data-attribute, le JS le parse -->
+                <t t-set="pm_specs_raw" t-value="product.x_specs or ''"/>
+                <div id="pm-specs-json" t-att-data-specs="pm_specs_raw" style="display:none;"/>
+
+                <!-- Fallback server-side : attribute_line_ids si pas de x_specs -->
+                <t t-if="not pm_specs_raw and product.attribute_line_ids">
+                    <table class="pm-specs-table" id="pm-specs-table">
                         <t t-foreach="product.attribute_line_ids" t-as="line">
                             <tr>
                                 <td class="pm-specs-label"><t t-out="line.attribute_id.name"/></td>
@@ -60,8 +65,12 @@
                         </t>
                     </table>
                 </t>
+                <t t-elif="pm_specs_raw">
+                    <!-- Table vide : le JS la remplira avec le JSON -->
+                    <table class="pm-specs-table" id="pm-specs-table"></table>
+                </t>
                 <t t-else="">
-                    <p style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
+                    <p id="pm-specs-empty" style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
                 </t>
 
             </div>
@@ -69,7 +78,43 @@
             <div class="pm-toast" id="pm-toast-specs"></div>
 
             <script>
+            //<![CDATA[
             (function () {
+                // Parse x_specs JSON et peuple le tableau
+                var jsonEl = document.getElementById('pm-specs-json');
+                var raw = jsonEl ? jsonEl.getAttribute('data-specs') : '';
+                if (raw) {
+                    try {
+                        var specs = JSON.parse(raw);
+                        var table = document.getElementById('pm-specs-table');
+                        var keys = Object.keys(specs);
+                        if (table && keys.length) {
+                            keys.forEach(function (key) {
+                                var tr = document.createElement('tr');
+                                var tdLabel = document.createElement('td');
+                                var tdValue = document.createElement('td');
+                                tdLabel.className = 'pm-specs-label';
+                                tdValue.className = 'pm-specs-value';
+                                tdLabel.textContent = key;
+                                tdValue.textContent = specs[key];
+                                tr.appendChild(tdLabel);
+                                tr.appendChild(tdValue);
+                                table.appendChild(tr);
+                            });
+                        } else if (!keys.length) {
+                            var empty = document.getElementById('pm-specs-empty');
+                            if (table) table.style.display = 'none';
+                            if (!empty) {
+                                var p = document.createElement('p');
+                                p.style.cssText = 'color:#94a3b8; font-style:italic;';
+                                p.textContent = 'Caractéristiques non renseignées.';
+                                jsonEl.parentNode.appendChild(p);
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                // Bouton Partager
                 function showToast(msg) {
                     var t = document.getElementById('pm-toast-specs');
                     if (!t) return;
@@ -100,6 +145,7 @@
                     }
                 });
             })();
+            //]]>
             </script>
 
         </xpath>

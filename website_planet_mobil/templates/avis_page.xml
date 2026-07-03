@@ -16,7 +16,7 @@
     .pm-avis-hero {
         position: relative;
         background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #db2777 100%);
-        padding: 100px 40px 80px;
+        padding: 48px 40px 40px;
         overflow: hidden;
         text-align: center;
     }
@@ -178,9 +178,8 @@
         height: 100%;
         border-radius: 99px;
         background: linear-gradient(90deg, #fbbf24, #f59e0b);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 1s cubic-bezier(.4,0,.2,1);
+        width: 0%;
+        transition: width 1s cubic-bezier(.4,0,.2,1);
     }
     .pm-bar-pct {
         font-size: 0.78rem;
@@ -189,6 +188,38 @@
         width: 34px;
         flex-shrink: 0;
     }
+    /* Message confirmation submit */
+    .pm-success-msg {
+        text-align: center;
+        padding: 48px 24px;
+    }
+    .pm-success-icon {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem;
+        color: #fff;
+        margin: 0 auto 20px;
+        animation: pmBounceIn 0.5s ease;
+    }
+    @keyframes pmBounceIn {
+        0%   { transform: scale(0); opacity: 0; }
+        60%  { transform: scale(1.15); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .pm-success-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+    .pm-success-text {
+        font-size: 0.9rem;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
     /* CTA écrire */
     .pm-write-block { text-align: center; }
     .pm-write-btn {
@@ -558,7 +589,7 @@
         .pm-write-block { grid-column: 1 / -1; justify-self: center; }
     }
     @media (max-width: 768px) {
-        .pm-avis-hero { padding: 80px 24px 60px; }
+        .pm-avis-hero { padding: 36px 24px 28px; }
         .pm-avis-stats-section { padding: 48px 24px; }
         .pm-avis-stats-inner { grid-template-columns: 1fr; gap: 32px; text-align: center; }
         .pm-avis-filters { padding: 18px 24px; }
@@ -711,6 +742,14 @@
         </div>
 
         <div class="pm-avis-form-card">
+            <t t-if="sent">
+                <div class="pm-success-msg">
+                    <div class="pm-success-icon"><i class="fa fa-check"></i></div>
+                    <div class="pm-success-title">Merci pour votre avis !</div>
+                    <p class="pm-success-text">Votre commentaire est en attente de validation<br/>et sera publié prochainement.</p>
+                </div>
+            </t>
+            <t t-else="">
             <form action="/avis/submit" method="post">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
 
@@ -748,6 +787,7 @@
                     <i class="fa fa-paper-plane"></i> Publier mon avis
                 </button>
             </form>
+            </t>
         </div>
     </div>
 </div>
