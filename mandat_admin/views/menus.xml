@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ── Actions déclarées EN PREMIER ────────────────────── -->
+<record id="action_ma_payments" model="ir.actions.act_window">
+    <field name="name">Paiements par mandat administratif</field>
+    <field name="res_model">account.payment</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('is_mandat_administratif','=',True)]</field>
+</record>
+
+<!-- ── Menus Ventes ─────────────────────────────────────── -->
+<menuitem id="menu_ma_root"
+          name="🏛 Mandats Administratifs"
+          parent="sale.sale_menu_root"
+          sequence="99"/>
+
+<menuitem id="menu_ma_bca"
+          name="Bons de Commande Administratifs"
+          parent="menu_ma_root"
+          action="action_sale_ma"
+          sequence="10"/>
+
+<menuitem id="menu_ma_bordereaux"
+          name="Bordereaux de mandats"
+          parent="menu_ma_root"
+          action="action_mandat_bordereau"
+          sequence="20"/>
+
+<menuitem id="menu_ma_bordereau_new"
+          name="Créer un bordereau"
+          parent="menu_ma_root"
+          action="action_bordereau_wizard"
+          sequence="30"/>
+
+<!-- ── Menus Comptabilité ───────────────────────────────── -->
+<menuitem id="menu_ma_compta_root"
+          name="🏛 Mandats Administratifs"
+          parent="account.menu_finance"
+          sequence="99"/>
+
+<menuitem id="menu_ma_paiements"
+          name="Paiements par mandat"
+          parent="menu_ma_compta_root"
+          action="action_ma_payments"
+          sequence="10"/>
+
+<menuitem id="menu_ma_bordereaux_compta"
+          name="Bordereaux de mandats"
+          parent="menu_ma_compta_root"
+          action="action_mandat_bordereau"
+          sequence="20"/>
+
+</odoo>

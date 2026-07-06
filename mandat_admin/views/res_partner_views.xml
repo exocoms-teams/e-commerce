@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<record id="view_partner_form_ma" model="ir.ui.view">
+    <field name="name">res.partner.form.mandat</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//sheet" position="inside">
+            <widget name="web_ribbon" title="Organisme public" bg_color="text-bg-info"
+                    invisible="not is_organisme_public"/>
+        </xpath>
+        <xpath expr="//page[@name='sales_purchases']" position="inside">
+            <separator string="🏛 Organisme public – Mandat Administratif"/>
+            <group col="2">
+                <field name="is_organisme_public"/>
+                <field name="nature_juridique"        invisible="not is_organisme_public"/>
+                <field name="nomenclature_budgetaire" invisible="not is_organisme_public"/>
+                <field name="siret_public"            invisible="not is_organisme_public"/>
+                <field name="code_collectivite"       invisible="not is_organisme_public"/>
+                <field name="service_public"          invisible="not is_organisme_public"/>
+                <field name="comptable_public"        invisible="not is_organisme_public"/>
+                <field name="iban_comptable"          invisible="not is_organisme_public"/>
+                <field name="regime_tva_public"       invisible="not is_organisme_public"/>
+                <field name="taux_prorata_tva"
+                       invisible="not is_organisme_public or regime_tva_public != 'assujetti_partiel'"/>
+            </group>
+            <group string="Chorus Pro" invisible="not is_organisme_public">
+                <field name="code_tiers_chorus"/>
+                <field name="structure_chorus"/>
+                <field name="service_chorus"/>
+            </group>
+        </xpath>
+    </field>
+</record>
+
+<record id="view_partner_search_ma" model="ir.ui.view">
+    <field name="name">res.partner.search.mandat</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_res_partner_filter"/>
+    <field name="arch" type="xml">
+        <xpath expr="//search/filter[last()]" position="after">
+            <separator/>
+            <filter string="Organismes publics" name="org_public"
+                    domain="[('is_organisme_public','=',True)]"/>
+        </xpath>
+    </field>
+</record>
+
+</odoo>

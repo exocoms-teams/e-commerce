@@ -1,0 +1,136 @@
+# -*- coding: utf-8 -*-
+import logging
+import uuid
+from odoo import http
+from odoo.http import request
+
+_logger = logging.getLogger(__name__)
+
+
+class MandatPaymentController(http.Controller):
+
+    def _get_current_order(self):
+        """Récupère la commande courante depuis la session."""
+        order_id = request.session.get('sale_order_id')
+        if not order_id:
+            return None
+        order = request.env['sale.order'].sudo().browse(order_id)
+        return order if order.exists() else None
+
+    @http.route('/mandat/submit', type='jsonrpc', auth='public', website=True)
+    def submit_mandat(self, **kwargs):
+        """Valide, confirme la commande et crée la transaction mandat."""
+        try:
+            return self._submit_mandat_impl(**kwargs)
+        except Exception as e:
+            _logger.exception('Erreur dans submit_mandat')
+            return {'success': False, 'error': str(e)}
+
+    def _submit_mandat_impl(self, **kwargs):
+        order = self._get_current_order()
+        if not order:
+            return {'success': False, 'error': 'Commande introuvable'}
+
+        siret = kwargs.get('siret', '').strip()
+        ordonnateur = kwargs.get('ordonnateur', '').strip()
+        comptable = kwargs.get('comptable', '').strip()
+
+        if not siret or not ordonnateur or not comptable:
+            return {'success': False, 'error': 'Champs obligatoires manquants'}
+
+        # Récupérer l'IBAN de l'entreprise depuis ses coordonnées bancaires
+        company = request.env.company.sudo()
+        bank_account = request.env['res.partner.bank'].sudo().search(
+            [('partner_id', '=', company.partner_id.id)], limit=1
+        )
+        iban = bank_account.acc_number or ''
+
+        # 1. Sauvegarde des données mandat sur la commande
+        write_fields = {'payment_mode': 'mandat_administratif'}
+        mapping = {
+            'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
+            'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
+            'comptable': 'comptable_public', 'ej': 'numero_engagement',
+            'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+            'service_chorus': 'service_chorus', 'code_tiers_chorus': 'code_tiers_chorus',
+        }
+        for src, dst in mapping.items():
+            if hasattr(order, dst):
+                write_fields[dst] = kwargs.get(src, '').strip()
+        order.write(write_fields)
+
+        # 2. Confirmation de la commande
+        if order.state in ('draft', 'sent'):
+            order.sudo().action_confirm()
+        # Marquer comme mandat administratif et générer le numéro de mandat
+        extra = {'payment_mode': 'mandat_administratif', 'is_mandat_administratif': True}
+        if not order.mandat_numero:
+            extra['mandat_numero'] = order.sudo()._gen_mandat_numero()
+        order.sudo().write(extra)
+        _logger.info('Commande %s confirmée, is_mandat_administratif=%s, mandat_numero=%s', order.name, order.is_mandat_administratif, order.mandat_numero)
+
+        # 3. Création de la transaction (pour suivi backend)
+        try:
+            with request.env.cr.savepoint():
+                provider = request.env['payment.provider'].sudo().search(
+                    [('code', '=', 'mandat_administratif'), ('state', '!=', 'disabled')], limit=1
+                )
+                if provider:
+                    existing_tx = order.transaction_ids.filtered(
+                        lambda t: t.provider_code == 'mandat_administratif' and t.state != 'cancel'
+                    ).sorted('create_date', reverse=True)
+
+                    if existing_tx:
+                        tx = existing_tx[0]
+                    else:
+                        reference = f"MANDAT-{order.name}-{uuid.uuid4().hex[:6].upper()}"
+                        partner_id = order.partner_invoice_id.id or order.partner_id.id
+                        payment_method = provider.payment_method_ids[:1]
+                        tx = request.env['payment.transaction'].sudo().create({
+                            'provider_id': provider.id,
+                            'payment_method_id': payment_method.id,
+                            'amount': order.amount_total,
+                            'currency_id': order.currency_id.id,
+                            'partner_id': partner_id,
+                            'reference': reference,
+                            'operation': 'online_redirect',
+                            'sale_order_ids': [(4, order.id)],
+                        })
+                    if tx.state not in ('pending', 'done', 'cancel'):
+                        tx.sudo()._set_pending()
+                    request.session['__payment_monitored_tx_id__'] = tx.id
+                    _logger.info('Transaction mandat %s mise en pending', tx.reference)
+        except Exception:
+            _logger.exception('Erreur création transaction mandat (non bloquante)')
+
+        # 4. Prépare la session pour la page de confirmation
+        request.session['sale_last_order_id'] = order.id
+
+        return {'success': True, 'redirect': '/mandat/confirmation'}
+
+    @http.route('/mandat/confirmation', type='http', auth='public', website=True)
+    def mandat_confirmation(self, **kwargs):
+        order_id = request.session.get('sale_last_order_id')
+        order = request.env['sale.order'].sudo().browse(order_id) if order_id else None
+        if not order or not order.exists():
+            return request.redirect('/shop')
+        return request.render('mandat_admin.mandat_confirmation_page', {'order': order})
+
+    @http.route('/mandat/save_checkout_data', type='jsonrpc', auth='public', website=True)
+    def save_mandat_checkout_data(self, **kwargs):
+        order = self._get_current_order()
+        if not order:
+            return {'success': False, 'error': 'Commande introuvable'}
+        write_fields = {'payment_mode': 'mandat_administratif'}
+        mapping = {
+            'siret': 'acheteur_siret', 'iban': 'fournisseur_iban',
+            'ordonnateur': 'ordonnateur', 'qualite': 'qualite_ordonnateur',
+            'comptable': 'comptable_public', 'ej': 'numero_engagement',
+            'service': 'acheteur_service', 'reference': 'reference_bon_commande',
+            'service_chorus': 'service_chorus', 'code_tiers_chorus': 'code_tiers_chorus',
+        }
+        for src, dst in mapping.items():
+            if hasattr(order, dst):
+                write_fields[dst] = kwargs.get(src, '')
+        order.write(write_fields)
+        return {'success': True}
