@@ -83,4 +83,5 @@ versions antérieures.
     'application': False,
     'auto_install': False,
     'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
 }

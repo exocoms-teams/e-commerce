@@ -73,3 +73,9 @@ def post_init_hook(env):
             'journal_id': journal.id,
         })
         _logger.info('mandat_admin: méthode "Mandat Administratif" rattachée au journal MA.')
+
+
+def uninstall_hook(env):
+    """Supprime la méthode de paiement pour éviter le conflit d'unicité à la réinstallation."""
+    env['payment.method'].search([('code', '=', 'mandat_administratif')]).unlink()
+    env['account.payment.method'].search([('code', '=', 'mandat_administratif')]).unlink()
