@@ -76,6 +76,12 @@ def post_init_hook(env):
 
 
 def uninstall_hook(env):
-    """Supprime la méthode de paiement pour éviter le conflit d'unicité à la réinstallation."""
-    env['payment.method'].search([('code', '=', 'mandat_administratif')]).unlink()
+    """Supprime le provider et la méthode de paiement pour éviter le conflit d'unicité à la réinstallation."""
+    # Désactiver le provider d'abord (requis pour pouvoir supprimer la méthode liée)
+    providers = env['payment.provider'].search([('code', '=', 'mandat_administratif')])
+    providers.write({'state': 'disabled'})
+    # Détacher la méthode de tous les providers
+    methods = env['payment.method'].search([('code', '=', 'mandat_administratif')])
+    methods.write({'provider_ids': [(5, 0, 0)]})
+    methods.unlink()
     env['account.payment.method'].search([('code', '=', 'mandat_administratif')]).unlink()
