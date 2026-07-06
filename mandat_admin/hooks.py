@@ -76,12 +76,16 @@ def post_init_hook(env):
 
 
 def uninstall_hook(env):
-    """Supprime le provider et la méthode de paiement pour éviter le conflit d'unicité à la réinstallation."""
-    # Désactiver le provider d'abord (requis pour pouvoir supprimer la méthode liée)
-    providers = env['payment.provider'].search([('code', '=', 'mandat_administratif')])
-    providers.write({'state': 'disabled'})
-    # Détacher la méthode de tous les providers
-    methods = env['payment.method'].search([('code', '=', 'mandat_administratif')])
-    methods.write({'provider_ids': [(5, 0, 0)]})
-    methods.unlink()
-    env['account.payment.method'].search([('code', '=', 'mandat_administratif')]).unlink()
+    """Supprime la méthode de paiement via SQL pour éviter le conflit d'unicité à la réinstallation."""
+    cr = env.cr
+    # Détacher la méthode de paiement de tous les providers (table many2many)
+    cr.execute("""
+        DELETE FROM payment_method_payment_provider_rel
+        WHERE payment_method_id IN (
+            SELECT id FROM payment_method WHERE code = 'mandat_administratif'
+        )
+    """)
+    # Supprimer la méthode payment.method
+    cr.execute("DELETE FROM payment_method WHERE code = 'mandat_administratif'")
+    # Supprimer la méthode account.payment.method
+    cr.execute("DELETE FROM account_payment_method WHERE code = 'mandat_administratif'")
