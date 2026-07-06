@@ -1,9 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <record id="payment_provider_mandat" model="payment.provider">
-        <field name="name">Mandat Administratif</field>
+
+    <record id="payment_provider_mandat_administratif" model="payment.provider">
+        <field name="name">Mandat administratif</field>
+        <field name="sequence">30</field>
         <field name="code">mandat_administratif</field>
-        <field name="state">test</field>
-        <field name="is_published" eval="True"/>
-        <field name="image_128" type="base64" file="payment/static/description/icon.png"/>
+        <field name="state">disabled</field>
+        <field name="is_published" eval="False"/>
+        <field name="allow_tokenization" eval="False"/>
+        <field name="allow_express_checkout" eval="False"/>
+        <field name="redirect_form_view_id" ref="mandat_administratif.redirect_form"/>
+        <field name="pending_msg" type="html">
+            <div>
+                <h5>Commande enregistrée — règlement par mandat administratif</h5>
+                <p>
+                    Votre commande a bien été confirmée. La facture correspondante
+                    sera déposée sur <strong>Chorus Pro</strong>, le portail de
+                    facturation électronique de l'État.
+                </p>
+                <p>
+                    Le règlement s'effectuera par <strong>virement administratif</strong>
+                    émis par votre comptable public, dans le délai global de paiement
+                    applicable à votre structure (30 jours pour l'État et les
+                    collectivités territoriales).
+                </p>
+                <p class="mb-0">
+                    Pensez à nous communiquer, si ce n'est pas déjà fait, votre
+                    <strong>SIRET</strong>, votre <strong>code service Chorus Pro</strong>
+                    et, le cas échéant, votre <strong>numéro d'engagement juridique</strong>
+                    (bon de commande).
+                </p>
+            </div>
+        </field>
     </record>
+
 </odoo>

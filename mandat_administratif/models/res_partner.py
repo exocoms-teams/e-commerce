@@ -1,64 +1,60 @@
 # -*- coding: utf-8 -*-
-import re
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    is_organisme_public = fields.Boolean(
-        string='Organisme public (MA)',
-        default=False,
-        help='Cocher pour activer le mode Mandat Administratif sur ce partenaire.',
+    is_public_entity = fields.Boolean(
+        string="Entité publique (mandat administratif)",
+        help="Administration, collectivité territoriale ou établissement "
+             "public réglant par mandat administratif. Active le mode de "
+             "paiement « Mandat administratif » au checkout et le bloc "
+             "Chorus Pro sur les factures.",
     )
-    nature_juridique = fields.Selection([
-        ('etat',        'État'),
-        ('region',      'Région'),
-        ('departement', 'Département'),
-        ('commune',     'Commune'),
-        ('epci',        'EPCI / Intercommunalité'),
-        ('hopital',     'Hôpital / EHPAD (M22)'),
-        ('universite',  "Université / École (M9)"),
-        ('sdis',        'SDIS'),
-        ('autre',       'Autre organisme public'),
-    ], string='Nature juridique', default='commune')
+    chorus_siret = fields.Char(
+        string="SIRET destinataire (Chorus Pro)",
+        size=14,
+        help="SIRET de la structure publique destinataire de la facture "
+             "sur Chorus Pro (14 chiffres).",
+    )
+    chorus_service_code = fields.Char(
+        string="Code service (Chorus Pro)",
+        help="Code service exécutant tel que paramétré sur Chorus Pro "
+             "(obligatoire pour certaines structures, ex. FACTURES_PUBLIQUES).",
+    )
+    chorus_engagement_required = fields.Boolean(
+        string="Engagement juridique obligatoire",
+        help="La structure exige un numéro d'engagement juridique (bon de "
+             "commande) pour accepter la facture sur Chorus Pro.",
+    )
 
-    nomenclature_budgetaire = fields.Selection([
-        ('M14', 'M14 – Communes et groupements'),
-        ('M57', 'M57 – Collectivités (nouveau régime)'),
-        ('M22', 'M22 – Établissements hospitaliers'),
-        ('M9',  "M9 – Établissements d'enseignement"),
-        ('M4',  'M4 – Services industriels et commerciaux'),
-        ('M52', 'M52 – Départements'),
-        ('M71', 'M71 – Régions'),
-    ], string='Nomenclature budgétaire', default='M14')
+    @api.constrains('chorus_siret')
+    def _check_chorus_siret(self):
+        for partner in self.filtered('chorus_siret'):
+            siret = partner.chorus_siret.replace(' ', '')
+            if not (siret.isdigit() and len(siret) == 14):
+                raise ValidationError(
+                    _("Le SIRET Chorus Pro doit comporter exactement "
+                      "14 chiffres.")
+                )
+            # Exception La Poste : les SIRET commençant par 356000000
+            # ne respectent pas la clé de Luhn.
+            if not siret.startswith('356000000') and not self._luhn_valid(siret):
+                raise ValidationError(
+                    _("Le SIRET Chorus Pro « %s » est invalide "
+                      "(clé de contrôle incorrecte).", siret)
+                )
 
-    siret_public     = fields.Char('SIRET public (14 chiffres)', size=14)
-    code_collectivite= fields.Char('Code collectivité INSEE')
-    service_public   = fields.Char('Service / Direction émetteur')
-    comptable_public = fields.Char('Comptable public / Trésorerie assignataire')
-    iban_comptable   = fields.Char('IBAN comptable public (DFT)')
-
-    # Chorus Pro
-    code_tiers_chorus  = fields.Char('Code tiers Chorus Pro')
-    structure_chorus   = fields.Char('Structure Chorus Pro (SIRET)')
-    service_chorus     = fields.Char('Code service Chorus Pro')
-
-    # Régime TVA
-    regime_tva_public = fields.Selection([
-        ('non_assujetti',     'Non assujetti'),
-        ('assujetti_partiel', 'Assujetti partiel (prorata)'),
-        ('assujetti_total',   'Assujetti total'),
-        ('fctva',             'FCTVA'),
-    ], string='Régime TVA public', default='non_assujetti')
-
-    taux_prorata_tva = fields.Float('Prorata TVA (%)', digits=(5, 2))
-
-    @api.constrains('siret_public')
-    def _check_siret(self):
-        for p in self:
-            if p.siret_public:
-                s = re.sub(r'\s', '', p.siret_public)
-                if not s.isdigit() or len(s) != 14:
-                    raise ValidationError(_('Le SIRET doit contenir exactement 14 chiffres.'))
+    @staticmethod
+    def _luhn_valid(number):
+        total = 0
+        for i, digit in enumerate(reversed(number)):
+            d = int(digit)
+            if i % 2 == 1:
+                d *= 2
+                if d > 9:
+                    d -= 9
+            total += d
+        return total % 10 == 0

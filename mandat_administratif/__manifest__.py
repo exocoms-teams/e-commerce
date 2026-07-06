@@ -1,66 +1,73 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Mandat Administratif',
-    'version': '1.0.6',
-    'category': 'Accounting/Payment',
-    'summary': 'Mandat administratif public français : GBCP, service fait, PEC, Chorus Pro, bordereau',
+    'name': "Mandat administratif (Chorus Pro)",
+    'version': '19.0.1.3.0',
+    'category': 'Accounting/Payment Providers',
+    'summary': "Paiement par mandat administratif pour les entités publiques françaises — dépôt des factures sur Chorus Pro",
     'description': """
-Mandat Administratif Français – Conforme GBCP
-==============================================
-• Décret n°2012-1246 du 7 novembre 2012 (GBCP)
-• Décret n°2016-33 du 20 janvier 2016 (pièces justificatives)
-• Article L.1617-1 CGCT (comptabilité publique)
-• Article L.2192-10 CCP (délai 30 jours, intérêts moratoires)
-• Arrêté du 9 décembre 2016 (Chorus Pro)
-• Nomenclatures M14 / M57 / M22
+Mandat administratif — Chorus Pro
+=================================
+Module de paiement destiné aux administrations, collectivités territoriales
+et établissements publics français.
 
-Fonctionnalités :
------------------
-• Sélection "Mandat Administratif" au moment du paiement (account.payment)
-• Wizard BCA complet : SIRET Luhn, IBAN, imputation budgétaire, PJ
-• Certification du service fait (obligatoire)
-• Prise en charge comptable (PEC)
-• Export XML UBL 2.1 / Factur-X pour Chorus Pro
-• Bordereau récapitulatif des mandats signé par l'ordonnateur
-• Calcul automatique des intérêts moratoires
-• Gestion TVA publique (FCTVA, assujetti partiel)
-• PDF BCA conforme GBCP avec zones de signature
+Fonctionnalités
+---------------
+* Fournisseur de paiement « Mandat administratif » (flux différé, transaction
+  mise en attente comme le virement bancaire).
+* Visible au checkout eCommerce uniquement pour les partenaires marqués
+  « Entité publique ».
+* Champs Chorus Pro sur le partenaire : SIRET destinataire (contrôle de la
+  clé de Luhn), code service, engagement juridique obligatoire.
+* Report des informations sur le devis / bon de commande et la facture :
+  n° d'engagement juridique, code service.
+* Bloc « Règlement par mandat administratif — Chorus Pro » ajouté au PDF
+  de facture.
+* Suivi du dépôt sur Chorus Pro depuis la facture (bouton « Déposée sur
+  Chorus Pro » + horodatage) et lien direct vers le portail.
+* Snippet Website Builder « Mandat administratif » prêt à glisser-déposer
+  sur le site.
+
+Cadre réglementaire : facturation électronique obligatoire via Chorus Pro
+(ordonnance n° 2014-697, décret n° 2016-1478) — délai global de paiement
+de 30 jours (Code de la commande publique).
+
+Compatibilité : Odoo 19 (Odoo.sh) uniquement — non compatible avec les
+versions antérieures.
     """,
-    'author': 'Exocoms',
-    'website': 'https://www.exocoms.fr',
+    'author': "EXOCOMS Group",
+    'website': "https://www.exocoms.fr",
     'license': 'LGPL-3',
-    'depends': ['account', 'sale', 'sale_management', 'mail', 'payment', 'website_sale'],
+    'depends': [
+        'payment',
+        'account',
+        'sale_management',
+        'website_sale',
+    ],
     'data': [
-        'security/ir.model.access.csv',
-        'views/mandat_checkout_template.xml',
-        'data/sequence_data.xml',
+        # Templates de paiement d'abord (référencés par les données du provider)
+        'views/payment_form_templates.xml',
         'data/payment_method_data.xml',
         'data/payment_provider_data.xml',
+        # Vues backend
+        'views/payment_provider_views.xml',
         'views/res_partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
-        'views/account_payment_views.xml',
-        'views/mandat_bordereau_views.xml',
-        'views/menus.xml',
-        'views/payment_mandat_form.xml',
-        'wizard/mandat_wizard_views.xml',
-        'wizard/service_fait_wizard_views.xml',
-        'wizard/pec_wizard_views.xml',
-        'wizard/bordereau_wizard_views.xml',
-        'report/report_action.xml',
-        'report/bca_template.xml',
-        'report/bordereau_template.xml',
+        'views/report_invoice.xml',
+        # Snippet website
+        'views/snippets/s_mandat_administratif.xml',
+        'views/snippets/snippets.xml',
     ],
     'assets': {
-        'web.assets_backend': [
-            'mandat_administratif/static/src/css/mandat.css',
-        ],
         'web.assets_frontend': [
-            'mandat_administratif/static/src/js/mandat_checkout.js',
+            'mandat_administratif/static/src/snippets/s_mandat_administratif/000.scss',
+            'mandat_administratif/static/src/payment_badge.scss',
+            'mandat_administratif/static/src/interactions/payment_badge.js',
         ],
     },
+    'images': ['static/description/icon.png'],
     'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
     'installable': True,
     'application': False,
-    'auto_install': False,
 }
