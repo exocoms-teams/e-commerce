@@ -2,8 +2,12 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.website.controllers.main import Website
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 WEBSITE_NAME = 'Exocoms'  # doit correspondre à WEBSITE_NAME dans __init__.py
+
+RECENT_HISTORY_KEY = 'website_sale_history'
+RECENT_HISTORY_MAX = 20
 
 
 def _is_our_site(request):
@@ -79,3 +83,31 @@ class ExocomsWebsite(Website):
         if not _is_our_site(request):
             raise http.NotFound()
         return request.redirect('/shop')
+
+
+class ExocomsWebsiteSale(WebsiteSale):
+    """CORRECTIF : le widget "Vus récemment" (dashbord.xml, section
+    'Vus récemment') lit `request.session['website_sale_history']`,
+    mais RIEN dans tout le code (ni ce module, ni Odoo lui-même) ne
+    l'a jamais écrite — confirmé par recherche dans le code source
+    natif d'Odoo (grep sur website_sale sans résultat). Ce widget
+    était donc cassé depuis sa création, quel que soit le nombre de
+    fiches produit consultées.
+
+    On hérite ici de la méthode native `product()` (page fiche
+    produit), sans créer de route concurrente (même principe que
+    ExocomsWebsite ci-dessus), pour y ajouter l'enregistrement de
+    chaque produit visité dans la session — le plus récent en
+    premier, dédoublonné, plafonné à 20 entrées.
+    """
+
+    @http.route()
+    def product(self, product, category=None, pricelist=None, **kwargs):
+        response = super().product(product, category=category, pricelist=pricelist, **kwargs)
+
+        history = request.session.get(RECENT_HISTORY_KEY, [])
+        history = [pid for pid in history if pid != product.id]
+        history.insert(0, product.id)
+        request.session[RECENT_HISTORY_KEY] = history[:RECENT_HISTORY_MAX]
+
+        return response
