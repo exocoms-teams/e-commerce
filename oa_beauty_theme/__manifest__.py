@@ -33,6 +33,7 @@
         'data/fragrance_data.xml',
         'data/mail_template_data.xml',
         'data/blog_data.xml',
+        'data/ingram_cron.xml',
 
         'views/website_templates.xml',
         'views/website_navigation_templates.xml',
