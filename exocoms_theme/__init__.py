@@ -903,6 +903,8 @@ def post_init_hook(env):
     get_or_create('Matériel & Informatique Générale', informatique, seq=1)
     get_or_create('Réseaux & Infrastructure', informatique, seq=2)
     get_or_create('Communication & Vidéo', informatique, seq=3)
+    info_logiciels = get_or_create('Logiciels', informatique, seq=4)
+    get_or_create('Cybersécurité', info_logiciels)
 
     monetique = _find_by_name_ci(
         cat.search([('parent_id', '=', monetique_root.id), ('website_id', '=', website.id)]),
@@ -927,56 +929,66 @@ def post_init_hook(env):
     consommables = get_or_create('Consommables', monetique_root, seq=8)
     services = get_or_create('Services', monetique_root, seq=9)
 
+    # --- TPE : casse des marques normalisée (Ingenico, Pax, Verifone,
+    # Urovo, Sunmi, Castles — première lettre majuscule uniquement) ---
     tpe_fixe = get_or_create('TPE Fixe', monetique, seq=1)
-    get_or_create('INGENICO', tpe_fixe)
-    get_or_create('PAX', tpe_fixe)
+    get_or_create('Ingenico', tpe_fixe)
+    get_or_create('Pax', tpe_fixe)
+    get_or_create('Verifone', tpe_fixe)
 
     tpe_portable = get_or_create('TPE Portable', monetique, seq=2)
-    get_or_create('INGENICO', tpe_portable)
-    get_or_create('PAX', tpe_portable)
-    get_or_create('UROVO', tpe_portable)
-    get_or_create('SUNMI', tpe_portable)
+    get_or_create('Ingenico', tpe_portable)
+    get_or_create('Pax', tpe_portable)
+    get_or_create('Urovo', tpe_portable)
+    get_or_create('Sunmi', tpe_portable)
 
     tpe_mobile = get_or_create('TPE Mobile', monetique, seq=3)
-    get_or_create('INGENICO', tpe_mobile)
-    get_or_create('PAX', tpe_mobile)
-    get_or_create('UROVO', tpe_mobile)
+    get_or_create('Ingenico', tpe_mobile)
+    get_or_create('Pax', tpe_mobile)
+    get_or_create('Urovo', tpe_mobile)
+    get_or_create('Sunmi', tpe_mobile)
+    get_or_create('Verifone', tpe_mobile)
+    get_or_create('Castles', tpe_mobile)
 
     tpe_sante = get_or_create('TPE Santé', monetique, seq=4)
-    get_or_create('INGENICO', tpe_sante)
-    get_or_create('PAX', tpe_sante)
+    get_or_create('Ingenico', tpe_sante)
+    get_or_create('Pax', tpe_sante)
 
     pin_pad = get_or_create('PIN Pad', monetique, seq=5)
-    get_or_create('INGENICO', pin_pad)
-    get_or_create('PAX', pin_pad)
+    get_or_create('Ingenico', pin_pad)
+    get_or_create('Pax', pin_pad)
 
     logiciels_tpe = get_or_create('Logiciels TPE', monetique, seq=6)
     get_or_create('Ingenico', logiciels_tpe)
     get_or_create('Verifone', logiciels_tpe)
     get_or_create('Pax', logiciels_tpe)
+    get_or_create('Logiciels pour Pax', logiciels_tpe)
 
     passerelles = get_or_create('Passerelles', monetique, seq=7)
     get_or_create('Passerelle IP', passerelles)
     get_or_create('Passerelle 3G/4G', passerelles)
 
+    # --- Caisse Enregistreuse : Logiciels/Consommables/Services ne
+    # sont PLUS créées ici (Cybersécurité -> Informatique & Réseaux,
+    # HP -> Consommables racine, produits Services -> Services >
+    # Caisse Enregistreuse) — on ne recrée pas de conteneurs vides. ---
     caisse_tactile = get_or_create('Caisse Tactile', caisse, seq=1)
-    sunmi_cat = get_or_create('SUNMI', caisse_tactile)
+    sunmi_cat = get_or_create('Sunmi', caisse_tactile)
     get_or_create('Sunmi D3 80mm', sunmi_cat)
-    get_or_create('SUNMI D3 PRO', sunmi_cat)
-    get_or_create('SUNMI D3 MINI', sunmi_cat)
-    get_or_create('SUNMI T3', sunmi_cat)
-    get_or_create('PAX', caisse_tactile)
+    get_or_create('Sunmi D3 PRO', sunmi_cat)
+    get_or_create('Sunmi D3 MINI', sunmi_cat)
+    get_or_create('Sunmi T3', sunmi_cat)
+    get_or_create('Pax', caisse_tactile)
 
     imprimante = get_or_create('Imprimante', caisse, seq=2)
     get_or_create('Imprimante Ticket', imprimante)
     get_or_create('Imprimante Etiquette', imprimante)
 
     get_or_create('Kiosques', caisse, seq=3)
-    logiciels_caisse = get_or_create('Logiciels', caisse, seq=4)
-    get_or_create('Cybersécurité', logiciels_caisse)
     get_or_create('Accessoires', caisse, seq=5)
-    get_or_create('Consommables', caisse, seq=6)
-    get_or_create('Services', caisse, seq=7)
+    get_or_create('Écrans tactiles / moniteurs', caisse, seq=8)
+    get_or_create('Tiroirs caisses', caisse, seq=9)
+    get_or_create('Afficheurs', caisse, seq=10)
 
     get_or_create('Scanner de Chèque', monnaie)
     get_or_create('Lecteur de Chèque', monnaie)
@@ -984,6 +996,7 @@ def post_init_hook(env):
     get_or_create('Compteuse de Pièces', detecteurs)
     get_or_create('Compteuse de Billets', detecteurs)
     get_or_create('Détecteurs', detecteurs)
+    get_or_create('Accessoires', monnaie)
 
     get_or_create('ATM', crypto)
     get_or_create('Logiciel ATM', crypto)
@@ -991,23 +1004,26 @@ def post_init_hook(env):
 
     get_or_create('Batteries TPE', accessoires)
     chargeurs = get_or_create('Chargeurs & Alimentations', accessoires)
-    get_or_create('INGENICO', chargeurs)
-    get_or_create('PAX', chargeurs)
+    get_or_create('Ingenico', chargeurs)
+    get_or_create('Pax', chargeurs)
     cables = get_or_create('Cables', accessoires)
-    get_or_create('INGENICO', cables)
-    get_or_create('VERIFONE', cables)
+    get_or_create('Ingenico', cables)
+    get_or_create('Verifone', cables)
     get_or_create('Housses & protections', accessoires)
-    get_or_create('Pièces détachées', accessoires)
+    # 'Pièces détachées' n'est plus créée ici : ses produits ont été
+    # déplacés vers Monétique > Services > Pièces Détachées.
 
     get_or_create('Monetique', consommables)
     get_or_create('Pitney Bowes', consommables)
     get_or_create('Panini', consommables)
     get_or_create("DOC'UP", consommables)
+    get_or_create('HP', consommables)
     get_or_create('Autres', consommables)
 
     get_or_create('Monetique', services)
     get_or_create('Caisse Enregistreuse', services)
     get_or_create('Pièces Détachées', services)
+    get_or_create('Assistance', services)
 
     equip = get_or_create('Équipements Électriques', telecom)
     get_or_create('Onduleurs & électricité', equip)
