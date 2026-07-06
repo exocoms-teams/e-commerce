@@ -38,7 +38,7 @@ class AdvisorController(http.Controller):
                 top = (f.oa_fragrance_top_notes or '').lower()
                 heart = (f.oa_fragrance_heart_notes or '').lower()
                 base = (f.oa_fragrance_base_notes or '').lower()
-
+    
                 # Scent family matching
                 if scent_family:
                     if scent_family == 'floral' and any(k in heart for k in ['rose', 'jasmine', 'peony', 'lily', 'blossom']):
