@@ -1,37 +1,42 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Mandat Administratif',
+    'name': 'Mandat Administratif (Chorus Pro)',
     'version': '19.0.4.0.0',
-    'category': 'Accounting/Payment',
-    'summary': 'Gestion complète des mandats administratifs conformes GBCP pour organismes publics français',
+    'category': 'Accounting/Payment Providers',
+    'summary': "Paiement par mandat administratif pour les entités publiques françaises — dépôt des factures sur Chorus Pro",
     'description': """
-Mandat Administratif Français – Conforme GBCP
-==============================================
-
-Références réglementaires
---------------------------
-
-- Décret n°2012-1246 du 7 novembre 2012 (GBCP)
-- Décret n°2016-33 du 20 janvier 2016 (pièces justificatives)
-- Article L.1617-1 CGCT (comptabilité publique)
-- Article L.2192-10 CCP (délai 30 jours, intérêts moratoires)
-- Arrêté du 9 décembre 2016 (Chorus Pro)
-- Nomenclatures M14 / M57 / M22
+Mandat administratif — Chorus Pro
+=================================
+Module de paiement destiné aux administrations, collectivités territoriales
+et établissements publics français.
 
 Fonctionnalités
 ---------------
+* Fournisseur de paiement « Mandat administratif » (flux différé, transaction
+  mise en attente comme le virement bancaire).
+* Visible au checkout eCommerce uniquement pour les partenaires marqués
+  « Organisme public ».
+* Wizard BCA complet : SIRET (contrôle Luhn), IBAN, imputation budgétaire,
+  pièces justificatives, PDF BCA conforme GBCP, envoi email automatique.
+* Workflow mandat : service fait certifié, prise en charge comptable (PEC),
+  bordereau récapitulatif signé par l'ordonnateur.
+* Export XML UBL 2.1 / Factur-X pour dépôt sur Chorus Pro.
+* Suivi du dépôt sur Chorus Pro depuis la facture (bouton « Déposée sur
+  Chorus Pro » + horodatage) et lien direct vers le portail.
+* Bloc « Règlement par mandat administratif — Chorus Pro » ajouté au PDF
+  de facture.
+* Calcul automatique des intérêts moratoires et gestion TVA publique (FCTVA).
+* Snippet Website Builder « Mandat administratif » prêt à glisser-déposer
+  sur le site.
 
-- Sélection "Mandat Administratif" au moment du paiement (account.payment)
-- Wizard BCA complet : SIRET Luhn, IBAN, imputation budgétaire, PJ
-- Certification du service fait (obligatoire)
-- Prise en charge comptable (PEC)
-- Export XML UBL 2.1 / Factur-X pour Chorus Pro
-- Bordereau récapitulatif des mandats signé par l'ordonnateur
-- Calcul automatique des intérêts moratoires
-- Gestion TVA publique (FCTVA, assujetti partiel)
-- PDF BCA conforme GBCP avec zones de signature
+Cadre réglementaire : facturation électronique obligatoire via Chorus Pro
+(ordonnance n° 2014-697, décret n° 2016-1478) — délai global de paiement
+de 30 jours (Code de la commande publique).
+
+Compatibilité : Odoo 19 (Odoo.sh) uniquement — non compatible avec les
+versions antérieures.
     """,
-    'author': 'Exocoms',
+    'author': 'EXOCOMS Group',
     'website': 'https://www.exocoms.fr',
     'license': 'LGPL-3',
     'depends': ['account', 'sale', 'sale_management', 'mail', 'payment', 'website_sale'],
