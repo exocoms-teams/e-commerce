@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ── Formulaire commande ──────────────────────────────── -->
+<record id="view_sale_order_form_ma" model="ir.ui.view">
+    <field name="name">sale.order.form.mandat</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//button[@name='action_confirm']" position="before">
+            <button name="action_open_mandat_wizard"
+                    string="🏛 Confirmer (Mandat Administratif)"
+                    type="object" class="btn-primary"
+                    invisible="not is_public_entity_partner or mandat_state != 'draft'"/>
+        </xpath>
+
+        <xpath expr="//button[@name='action_confirm']" position="after">
+            <button name="action_certifier_service_fait" string="✅ Certifier le service fait"
+                    type="object" class="btn-secondary"
+                    invisible="not is_mandat_administratif or mandat_state != 'bca_emis'"/>
+            <button name="action_prise_en_charge" string="📋 Prise en charge comptable"
+                    type="object" class="btn-secondary"
+                    invisible="not is_mandat_administratif or mandat_state != 'service_fait'"/>
+            <button name="action_mandater" string="📜 Mandater"
+                    type="object" class="btn-primary"
+                    invisible="not is_mandat_administratif or mandat_state != 'pec'"/>
+            <button name="action_marquer_paye" string="💶 Marquer payé"
+                    type="object" class="btn-success"
+                    invisible="not is_mandat_administratif or mandat_state != 'mandate'"/>
+            <button name="action_print_bca" string="🖨 Imprimer BCA"
+                    type="object" class="btn-secondary"
+                    invisible="not is_mandat_administratif or not mandat_numero"/>
+            <button name="action_export_facturx" string="📤 Export Chorus Pro"
+                    type="object" class="btn-secondary"
+                    invisible="not is_mandat_administratif or mandat_state not in ('bca_emis','service_fait','pec','mandate')"/>
+        </xpath>
+
+        <xpath expr="//header/field[@name='state']" position="after">
+            <field name="mandat_state" widget="statusbar"
+                   statusbar_visible="draft,bca_emis,service_fait,pec,mandate,paye"
+                   invisible="not is_mandat_administratif"/>
+        </xpath>
+
+        <!-- Alerte intérêts moratoires -->
+        <xpath expr="//sheet" position="inside">
+            <div class="alert alert-danger" role="status" invisible="montant_interet_moratoire == 0">
+                ⚠️ <strong>Dépassement du délai de paiement !</strong>
+                Intérêts moratoires : <field name="montant_interet_moratoire" widget="monetary" nolabel="1" readonly="1"/>
+                + IFR : <field name="indemnite_forfaitaire" nolabel="1" readonly="1"/> €
+            </div>
+        </xpath>
+
+        <xpath expr="//notebook" position="inside">
+        <page string="🏛 Mandat Administratif" name="page_ma" invisible="not is_mandat_administratif">
+
+            <group string="Identification" col="4">
+                <field name="mandat_numero" readonly="1"/>
+                <field name="mandat_state" widget="badge" readonly="1"/>
+                <field name="reference_bon_commande"/>
+                <field name="numero_engagement"/>
+                <field name="date_engagement"/>
+                <field name="numero_marche"/>
+                <field name="objet_marche" colspan="2"/>
+                <field name="nomenclature_budgetaire"/>
+                <field name="delai_paiement_jours"/>
+                <field name="date_limite_paiement" readonly="1"/>
+                <field name="taux_interet_moratoire"/>
+                <field name="indemnite_forfaitaire"/>
+            </group>
+
+            <group string="Acheteur public" col="4">
+                <field name="acheteur_siret"/>
+                <field name="acheteur_service"/>
+                <field name="acheteur_contact"/>
+            </group>
+
+            <group string="Ordonnancement" col="4">
+                <field name="ordonnateur"/>
+                <field name="qualite_ordonnateur"/>
+                <field name="comptable_public"/>
+            </group>
+
+            <group string="Imputation budgétaire (M14 / M57 / M22)">
+                <field name="imputation_ids" nolabel="1" colspan="2">
+                    <list editable="bottom">
+                        <field name="section"/>
+                        <field name="chapitre"/>
+                        <field name="article"/>
+                        <field name="sous_article" optional="hide"/>
+                        <field name="operation"    optional="hide"/>
+                        <field name="exercice"/>
+                        <field name="credit_ouvert"/>
+                        <field name="disponible"/>
+                        <field name="montant_engage"/>
+                        <field name="visa_controleur" optional="hide"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+            </group>
+
+            <group string="Certification du service fait" col="4">
+                <field name="service_fait_certifie" widget="boolean_toggle"/>
+                <field name="date_service_fait"          invisible="not service_fait_certifie"/>
+                <field name="certificateur_service_fait" invisible="not service_fait_certifie"/>
+                <field name="reserve_service_fait" colspan="4" invisible="not service_fait_certifie"/>
+            </group>
+
+            <group string="Prise en charge comptable (PEC)" col="4">
+                <field name="pec_acceptee" widget="boolean_toggle"/>
+                <field name="date_pec"        invisible="not pec_acceptee"/>
+                <field name="reference_pec"   invisible="not pec_acceptee"/>
+                <field name="motif_rejet_pec" colspan="4"
+                       invisible="not motif_rejet_pec"/>
+            </group>
+
+            <group string="Chorus Pro" col="4">
+                <field name="structure_chorus"/>
+                <field name="service_chorus"/>
+                <field name="code_tiers_chorus"/>
+                <field name="statut_chorus" widget="badge"/>
+                <field name="numero_chorus"     invisible="statut_chorus == 'non_envoye'"/>
+                <field name="date_envoi_chorus" invisible="statut_chorus == 'non_envoye'"/>
+            </group>
+
+            <group string="RIB fournisseur (virement SEPA)" col="4">
+                <field name="fournisseur_iban"/>
+                <field name="fournisseur_bic"/>
+                <field name="fournisseur_banque"/>
+                <field name="rib_certifie" widget="boolean_toggle"/>
+            </group>
+
+            <group string="TVA publique" col="4">
+                <field name="regime_tva_public"/>
+                <field name="taux_fctva"    invisible="regime_tva_public != 'fctva'"/>
+                <field name="montant_fctva" invisible="regime_tva_public != 'fctva'" readonly="1"/>
+            </group>
+
+            <group string="Pièces justificatives (Décret n°2016-33)">
+                <field name="pj_completes" widget="boolean_toggle" readonly="1"/>
+                <button name="action_generer_pj_std" string="Générer PJ standard"
+                        type="object" class="btn-sm btn-secondary"/>
+                <field name="pj_ids" nolabel="1" colspan="2">
+                    <list editable="bottom"
+                          decoration-success="fournie"
+                          decoration-danger="not fournie and obligatoire">
+                        <field name="sequence" widget="handle"/>
+                        <field name="type_pj"/>
+                        <field name="libelle"/>
+                        <field name="reference" optional="hide"/>
+                        <field name="date_document" optional="hide"/>
+                        <field name="obligatoire" widget="boolean_toggle"/>
+                        <field name="fournie"     widget="boolean_toggle"/>
+                        <field name="date_reception" invisible="not fournie"/>
+                    </list>
+                </field>
+            </group>
+
+            <group string="Observations">
+                <field name="note_mandat" nolabel="1" colspan="2"/>
+            </group>
+
+        </page>
+        </xpath>
+    </field>
+</record>
+
+<!-- ── Vue liste ─────────────────────────────────────────── -->
+<record id="view_sale_order_tree_ma" model="ir.ui.view">
+    <field name="name">sale.order.tree.mandat</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_quotation_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='amount_total']" position="after">
+            <field name="mandat_numero" optional="show" string="N° Mandat"/>
+            <field name="mandat_state" optional="show" widget="badge"
+                   decoration-success="mandat_state == 'paye'"
+                   decoration-info="mandat_state in ('bca_emis','service_fait','pec')"
+                   decoration-warning="mandat_state == 'mandate'"
+                   decoration-danger="mandat_state == 'annule'"/>
+        </xpath>
+    </field>
+</record>
+
+<!-- ── Recherche ─────────────────────────────────────────── -->
+<record id="view_sale_order_search_ma" model="ir.ui.view">
+    <field name="name">sale.order.search.mandat</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+    <field name="arch" type="xml">
+        <xpath expr="//search/filter[last()]" position="after">
+            <separator/>
+            <filter string="Mandats administratifs" name="ma_all"   domain="[('is_mandat_administratif','=',True)]"/>
+            <filter string="BCA émis"               name="ma_bca"   domain="[('mandat_state','=','bca_emis')]"/>
+            <filter string="Service fait"           name="ma_sf"    domain="[('mandat_state','=','service_fait')]"/>
+            <filter string="PEC acceptée"           name="ma_pec"   domain="[('mandat_state','=','pec')]"/>
+            <filter string="Mandatés"               name="ma_mand"  domain="[('mandat_state','=','mandate')]"/>
+            <filter string="Payés"                  name="ma_paye"  domain="[('mandat_state','=','paye')]"/>
+            <filter string="⚠ Dépassement délai"    name="ma_retard" domain="[('montant_interet_moratoire','&gt;',0)]"/>
+        </xpath>
+    </field>
+</record>
+
+<record id="action_sale_ma" model="ir.actions.act_window">
+    <field name="name">Mandats Administratifs</field>
+    <field name="res_model">sale.order</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('is_mandat_administratif','=',True)]</field>
+</record>
+
+</odoo>

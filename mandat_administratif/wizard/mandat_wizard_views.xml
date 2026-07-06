@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="view_mandat_wizard_form" model="ir.ui.view">
+    <field name="name">mandat.wizard.form</field>
+    <field name="model">mandat.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Mandat Administratif – Saisie du BCA">
+            <div class="alert alert-info" role="status">
+                🏛 <strong>Mode de paiement : Mandat Administratif</strong><br/>
+                Décret n°2012-1246 (GBCP) | Art. L.1617-1 CGCT | Art. L.2192-10 CCP.<br/>
+                Renseignez tous les champs * pour émettre le Bon de Commande Administratif.
+            </div>
+            <group string="Commande concernée" col="2">
+                <field name="sale_order_id" readonly="1"/>
+                <field name="partner_id"    readonly="1"/>
+                <field name="amount_total"  readonly="1" widget="monetary"/>
+                <field name="currency_id"   invisible="1"/>
+            </group>
+            <separator/>
+            <group string="Acheteur public" col="2">
+                <field name="acheteur_siret"          placeholder="21750001600015"/>
+                <field name="acheteur_service"        placeholder="Direction des Finances"/>
+                <field name="acheteur_contact"        placeholder="Mme Dupont"/>
+                <field name="nomenclature_budgetaire"/>
+            </group>
+            <group string="Engagement" col="2">
+                <field name="reference_bon_commande"  placeholder="BC-2025-0042"/>
+                <field name="objet_marche"            placeholder="Fourniture de matériels informatiques"/>
+                <field name="numero_engagement"       placeholder="EJ-2025-0001"/>
+                <field name="date_engagement"/>
+                <field name="numero_marche"           placeholder="(facultatif si hors marché)"/>
+            </group>
+            <group string="Imputation budgétaire" col="2">
+                <field name="section"/>
+                <field name="exercice"/>
+                <field name="chapitre"               placeholder="Ex: 60"/>
+                <field name="article"                placeholder="Ex: 6064"/>
+                <field name="sous_article"/>
+                <field name="operation"/>
+                <field name="credit_ouvert"/>
+                <field name="disponible_budgetaire"/>
+                <field name="visa_controleur"/>
+            </group>
+            <group string="Ordonnancement" col="2">
+                <field name="ordonnateur"            placeholder="M. le Maire"/>
+                <field name="qualite_ordonnateur"    placeholder="Le Maire de la commune de…"/>
+                <field name="comptable_public"       placeholder="Trésorerie Municipale de…"/>
+            </group>
+            <group string="Chorus Pro" col="2">
+                <field name="structure_chorus"       placeholder="SIRET structure Chorus"/>
+                <field name="service_chorus"         placeholder="Code service Chorus"/>
+                <field name="code_tiers_chorus"      placeholder="Code tiers Chorus Pro"/>
+            </group>
+            <group string="RIB fournisseur (virement SEPA)" col="2">
+                <field name="fournisseur_iban"       placeholder="FR76…"/>
+                <field name="fournisseur_bic"        placeholder="BNPAFRPPXXX"/>
+                <field name="fournisseur_banque"/>
+                <field name="rib_certifie"           widget="boolean_toggle"/>
+            </group>
+            <group string="TVA publique" col="2">
+                <field name="regime_tva_public"/>
+                <field name="taux_fctva" invisible="regime_tva_public != 'fctva'"/>
+            </group>
+            <group string="Délais et pénalités" col="2">
+                <field name="delai_paiement_jours"/>
+                <field name="taux_interet_moratoire"/>
+                <field name="indemnite_forfaitaire"/>
+            </group>
+            <group>
+                <field name="generer_pj"/>
+            </group>
+            <group string="Observations">
+                <field name="note_mandat" nolabel="1" colspan="2"/>
+            </group>
+            <footer>
+                <button name="action_valider_bca"         string="✅ Valider le BCA"             type="object" class="btn-primary"/>
+                <button name="action_valider_et_imprimer" string="🖨 Valider et imprimer le BCA" type="object" class="btn-secondary"/>
+                <button string="Annuler" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+</odoo>

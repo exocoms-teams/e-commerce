@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Formulaire de redirection standard -->
+    <template id="redirect_form" name="Mandat administratif – formulaire de redirection">
+        <form t-att-action="api_url" method="post">
+            <input type="hidden" name="reference" t-att-value="reference"/>
+        </form>
+    </template>
+
+    <!-- Inline form pour le checkout eCommerce -->
+    <record id="mandat_inline_form_view" model="ir.ui.view">
+        <field name="name">Mandat Administratif - Inline Form</field>
+        <field name="type">qweb</field>
+        <field name="key">mandat_administratif.mandat_inline_form</field>
+        <field name="arch" type="xml">
+            <div id="mandat_administratif_form" class="mt-3">
+                <p class="text-muted small mb-3">
+                    Renseignez les informations de votre collectivité. Les champs marqués * sont obligatoires.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">SIRET acheteur public *</label>
+                        <input type="text" class="form-control" id="mandat_siret" placeholder="14 chiffres" maxlength="14"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Ordonnateur *</label>
+                        <input type="text" class="form-control" id="mandat_ordonnateur" placeholder="Nom et prénom"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Qualité de l'ordonnateur</label>
+                        <input type="text" class="form-control" id="mandat_qualite" placeholder="Ex: Maire, DGS..."/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Comptable public assignataire *</label>
+                        <input type="text" class="form-control" id="mandat_comptable" placeholder="Nom du comptable"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">N° engagement juridique (EJ)</label>
+                        <input type="text" class="form-control" id="mandat_ej" placeholder="N° EJ"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Service / Direction</label>
+                        <input type="text" class="form-control" id="mandat_service" placeholder="Ex: Direction des finances"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Référence bon de commande</label>
+                        <input type="text" class="form-control" id="mandat_reference" placeholder="Référence interne"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Code service Chorus Pro</label>
+                        <input type="text" class="form-control" id="mandat_service_chorus" placeholder="Code service"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Code tiers Chorus Pro</label>
+                        <input type="text" class="form-control" id="mandat_code_tiers_chorus" placeholder="Code tiers"/>
+                    </div>
+                </div>
+                <div id="mandat_form_error" class="alert alert-danger mt-3" style="display:none;">
+                    Veuillez remplir tous les champs obligatoires (*).
+                </div>
+                <button type="button" id="mandat_confirm_btn" class="btn btn-primary w-100 mt-3">
+                    &#x1F3DB; Confirmer le paiement par Mandat Administratif
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>
