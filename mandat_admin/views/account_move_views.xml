@@ -6,6 +6,22 @@
     <field name="inherit_id" ref="account.view_move_form"/>
     <field name="arch" type="xml">
 
+        <xpath expr="//header" position="inside">
+            <button name="action_open_chorus_pro"
+                    type="object"
+                    string="Ouvrir Chorus Pro"
+                    invisible="not is_mandat_administratif or move_type not in ('out_invoice', 'out_refund')"/>
+            <button name="action_mark_chorus_sent"
+                    type="object"
+                    string="Déposée sur Chorus Pro"
+                    class="btn-secondary"
+                    invisible="not is_mandat_administratif or statut_chorus != 'non_envoye' or state != 'posted' or move_type not in ('out_invoice', 'out_refund')"/>
+            <button name="action_reset_chorus_sent"
+                    type="object"
+                    string="Annuler le dépôt Chorus Pro"
+                    invisible="not is_mandat_administratif or statut_chorus == 'non_envoye'"/>
+        </xpath>
+
         <xpath expr="//field[@name='invoice_payment_term_id']" position="after">
             <field name="is_mandat_administratif"/>
             <field name="mandat_sale_order_id"   invisible="not is_mandat_administratif"/>
@@ -58,4 +74,22 @@
         </xpath>
     </field>
 </record>
+
+<record id="view_account_invoice_filter_mandat" model="ir.ui.view">
+    <field name="name">account.move.select.mandat</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+    <field name="arch" type="xml">
+        <xpath expr="//filter[@name='draft']" position="before">
+            <filter string="À déposer sur Chorus Pro"
+                    name="chorus_to_send"
+                    domain="[('is_mandat_administratif', '=', True), ('statut_chorus', '=', 'non_envoye'), ('state', '=', 'posted')]"/>
+            <filter string="Déposées sur Chorus Pro"
+                    name="chorus_sent"
+                    domain="[('statut_chorus', 'not in', ('non_envoye', False))]"/>
+            <separator/>
+        </xpath>
+    </field>
+</record>
+
 </odoo>

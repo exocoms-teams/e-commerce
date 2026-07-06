@@ -52,6 +52,7 @@ Fonctionnalités
         'report/report_action.xml',
         'report/bca_template.xml',
         'report/bordereau_template.xml',
+        'views/report_invoice.xml',
         'views/mandat_redirect_form.xml',
         'views/mandat_inline_form.xml',
         'data/payment_provider_data.xml',

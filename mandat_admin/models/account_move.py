@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+
+CHORUS_PRO_URL = "https://portail.chorus-pro.gouv.fr"
 
 
 class AccountMove(models.Model):
@@ -43,13 +45,31 @@ class AccountMove(models.Model):
         ('en_cours',   'En cours'),   ('integre', 'Intégré'),
         ('rejete',     'Rejeté'),
     ], default='non_envoye', copy=False)
-    numero_chorus = fields.Char('N° dépôt Chorus', copy=False)
+    numero_chorus      = fields.Char('N° dépôt Chorus', copy=False)
+    chorus_sent_date   = fields.Datetime('Date de dépôt Chorus Pro', copy=False)
 
     # Bordereaux
     bordereau_ids = fields.Many2many(
         'mandat.bordereau',
         'bordereau_invoice_rel', 'invoice_id', 'bordereau_id',
         string='Bordereaux')
+
+    def action_mark_chorus_sent(self):
+        for move in self:
+            move.write({
+                'statut_chorus': 'depose',
+                'chorus_sent_date': fields.Datetime.now(),
+            })
+            move.message_post(
+                body=_("Facture déposée sur Chorus Pro le %s.",
+                       fields.Datetime.now().strftime('%d/%m/%Y %H:%M')),
+            )
+
+    def action_reset_chorus_sent(self):
+        self.write({'statut_chorus': 'non_envoye', 'chorus_sent_date': False})
+
+    def action_open_chorus_pro(self):
+        return {'type': 'ir.actions.act_url', 'url': CHORUS_PRO_URL, 'target': 'new'}
 
     @api.onchange('mandat_sale_order_id')
     def _onchange_bca_source(self):
