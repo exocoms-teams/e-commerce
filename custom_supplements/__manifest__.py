@@ -6,7 +6,8 @@
     'depends': [
         'base',
         'website_sale',
-        'stock',        
+        'stock',
+        'product_expiry', # Ajout du module de gestion des DLC/DLUO
     ],
     'data': [
         'views/product_template_views.xml',
