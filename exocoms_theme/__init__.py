@@ -476,21 +476,28 @@ def _setup_shop_grid_design(env, website):
 
 
 def _publish_our_products(env, website, company):
-    """CORRECTIF MAJEUR : la version originale publiait TOUS les
-    produits non publiés de TOUTE la base sur le site Exocoms — y
-    compris des brouillons appartenant à d'autres sites/sociétés. On
-    restreint maintenant strictement aux produits qui n'ont AUCUN site
-    assigné (orphelins) ET qui appartiennent à notre société (ou à
-    aucune société, en mono-société) — jamais aux produits déjà
-    rattachés à un autre website_id.
+    """CORRECTIF DE SÉCURITÉ (incident constaté) : cette fonction
+    publiait auparavant tout produit orphelin (website_id=False) SANS
+    société assignée (company_id=False inclus dans le domaine) — bien
+    trop permissif sur une base partagée à 17 sites. Résultat observé
+    en conditions réelles : 25 produits d'AUTRES projets (plomberie,
+    matériel réseau Cisco, hôtellerie, frais de réservation...) se
+    sont retrouvés publiés par erreur sur le site Exocoms après un
+    rebuild, simplement parce qu'ils n'avaient ni site ni société.
+
+    Cette fonction ne fait plus AUCUNE supposition sur des produits
+    orphelins génériques. Elle ne publie que des produits dont la
+    société correspond STRICTEMENT à la nôtre — jamais de fallback
+    sur company_id=False.
     """
     try:
+        if not company:
+            return
         domain = [
             ('is_published', '=', False),
-            ('website_id', '=', False),  # jamais un produit déjà sur un autre site
+            ('website_id', '=', False),
+            ('company_id', '=', company.id),  # correspondance stricte, jamais de fallback False
         ]
-        if company:
-            domain.append(('company_id', 'in', [company.id, False]))
         products = env['product.template'].search(domain)
         if products:
             products.write({
@@ -499,6 +506,156 @@ def _publish_our_products(env, website, company):
             })
     except Exception:
         _logger.exception("Échec publication des produits Exocoms")
+
+
+LEGACY_SITE_NAME = 'EXOCOMS'  # nom exact (tout en majuscules) du site préexistant, source réelle de nos produits
+
+
+def _migrate_products_from_legacy_site(env, website):
+    """Migre vers NOTRE site les produits déjà PUBLIÉS sur le site
+    préexistant 'EXOCOMS' (celui qui existait avant ce module, dans
+    la base partagée à 17 sites) — jamais de produits orphelins
+    génériques, uniquement ceux confirmés comme appartenant à ce site
+    précis, par son ID exact (jamais deviné).
+
+    Remplace l'ancienne logique d'adoption d'orphelins, responsable
+    d'un incident de sécurité (cf. _publish_our_products ci-dessus).
+    Idempotente : sans effet si déjà migré (les produits ont alors
+    website_id = le nôtre, donc exclus du domaine de recherche).
+
+    CORRECTIF 1 : exclut explicitement les produits GÉNÉRIQUES natifs
+    d'Odoo (carte-cadeau, acompte, frais de réservation...) qui sont
+    souvent publiés sur N'IMPORTE QUEL site par défaut — confirmé en
+    conditions réelles : ils s'étaient invités dans notre catalogue.
+
+    CORRECTIF 2 : la redistribution fine par mot-clé (Portable/Mobile/
+    Santé/PIN Pad/Logiciel) est désormais AUTOMATISÉE ici — auparavant
+    seulement documentée en commentaire, elle devait être relancée à
+    la main à chaque migration, ce qui a été oublié au moins deux fois
+    en conditions réelles (produits Ingenico/Pax tous entassés sous
+    'TPE Fixe' au lieu de Portable/Mobile/Santé/PIN Pad/Logiciels TPE).
+
+    Les catégories sont réassignées par correspondance de NOM avec
+    notre propre arborescence (déjà construite à ce stade du hook).
+    """
+    if not website:
+        return
+    legacy = env['website'].search([
+        ('name', '=', LEGACY_SITE_NAME),
+        ('id', '!=', website.id),
+    ], limit=1)
+    if not legacy:
+        return
+
+    Product = env['product.template']
+    Category = env['product.public.category']
+
+    # Produits génériques natifs d'Odoo à ne jamais migrer (frais de
+    # réservation, carte-cadeau, e-wallet, acomptes...) — non
+    # spécifiques à Exocoms, publiés par défaut sur de nombreux sites.
+    GENERIC_PRODUCT_NAMES = [
+        'Frais de réservation', 'Booking Fees',
+        'Carte-cadeau', 'Gift Card',
+        'Recharger le e-wallet', 'Top-up eWallet',
+        'Deposit', 'Down Payment (POS)', 'Down Payment',
+        'Déplacement',
+    ]
+
+    legacy_products = Product.search([
+        ('website_id', '=', legacy.id),
+        ('is_published', '=', True),
+        ('name', 'not in', GENERIC_PRODUCT_NAMES),
+    ])
+    if not legacy_products:
+        return
+
+    legacy_categories = Category.search([('website_id', '=', legacy.id)])
+    our_categories = Category.search([('website_id', '=', website.id)])
+    our_by_name = {}
+    for c in our_categories:
+        our_by_name.setdefault(c.name.strip().lower(), []).append(c)
+
+    legacy_products.write({'website_id': website.id, 'is_published': True})
+
+    remapped = 0
+    unmatched_names = set()
+    for p in legacy_products:
+        old_categs = p.public_categ_ids.filtered(lambda c: c.id in legacy_categories.ids)
+        if not old_categs:
+            continue
+        new_categs = Category
+        for oc in old_categs:
+            candidates = our_by_name.get(oc.name.strip().lower())
+            if candidates:
+                new_categs |= candidates[0]
+            else:
+                unmatched_names.add(oc.name)
+        kept = p.public_categ_ids - old_categs
+        p.write({'public_categ_ids': [(6, 0, (new_categs | kept).ids)]})
+        remapped += 1
+
+    _logger.info(
+        "%s produit(s) migré(s) depuis le site préexistant '%s' vers %s "
+        "(%s recatégorisé(s)).",
+        len(legacy_products), LEGACY_SITE_NAME, website.name, remapped,
+    )
+    if unmatched_names:
+        _logger.warning(
+            "Noms de catégorie sans équivalent lors de la migration "
+            "depuis '%s' : %s. Ajoutez-les dans get_or_create() si "
+            "nécessaire, puis relancez -u.",
+            LEGACY_SITE_NAME, sorted(unmatched_names),
+        )
+
+    # --- Redistribution fine automatique par mot-clé ---
+    # Les produits Ingenico/Pax se retrouvent tous sous "TPE Fixe" par
+    # la correspondance de nom simple ci-dessus (une seule catégorie
+    # "Ingenico"/"Pax" existe par marque au moment du premier mapping
+    # trouvé). On les redistribue ici vers leur vraie sous-catégorie,
+    # déduite du nom du produit lui-même.
+    def _get_or_none(name, parent_id):
+        return Category.search([
+            ('name', '=', name), ('parent_id', '=', parent_id), ('website_id', '=', website.id),
+        ], limit=1)
+
+    monetique_root = Category.search([
+        ('name', '=', 'Monétique'), ('parent_id', '=', False), ('website_id', '=', website.id),
+    ], limit=1)
+    monetique_sub = _get_or_none('Monetique', monetique_root.id) if monetique_root else None
+    tpe_fixe = _get_or_none('TPE Fixe', monetique_sub.id) if monetique_sub else None
+
+    if tpe_fixe:
+        keyword_targets = [
+            ('Portable', 'TPE Portable'), ('Mobile', 'TPE Mobile'), ('Santé', 'TPE Santé'),
+            ('Pinpad', 'PIN Pad'), ('PIN Pad', 'PIN Pad'), ('Logiciel', 'Logiciels TPE'),
+        ]
+        redistributed = 0
+        for brand in ['Ingenico', 'Pax']:
+            brand_cat = _get_or_none(brand, tpe_fixe.id)
+            if not brand_cat:
+                continue
+            brand_products = Product.search([
+                ('public_categ_ids', 'in', brand_cat.id), ('website_id', '=', website.id),
+            ])
+            for p in brand_products:
+                matched = None
+                for kw, target_name in keyword_targets:
+                    if kw in p.name:
+                        matched = target_name
+                        break
+                if matched:
+                    target_parent = _get_or_none(matched, monetique_sub.id)
+                    target_cat = _get_or_none(brand, target_parent.id) if target_parent else None
+                    if target_cat and target_cat.id != brand_cat.id:
+                        new_categs = (p.public_categ_ids - brand_cat) | target_cat
+                        p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
+                        redistributed += 1
+        if redistributed:
+            _logger.info(
+                "%s produit(s) redistribué(s) automatiquement depuis 'TPE Fixe' "
+                "vers leur vraie sous-catégorie (Portable/Mobile/Santé/PIN Pad/Logiciel).",
+                redistributed,
+            )
 
 
 def _merge_root_category(env, website, old_name, target_category):
@@ -776,6 +933,37 @@ def post_init_hook(env):
         existing.unlink()
 
     # === DESIGN BOUTIQUE — Chips par défaut (scopé à notre site) ===
+    # CORRECTIF : ce réglage n'existait auparavant que dans
+    # post_migrate_hook() — qui ne s'exécute JAMAIS automatiquement
+    # ('post_migrate' n'est pas un hook reconnu par Odoo, cf. notes
+    # plus haut dans ce fichier). Résultat : après un rebuild ou une
+    # installation fraîche, la boutique retombait sur le design natif
+    # "Vignettes" au lieu de "Chips". On l'applique donc ici aussi,
+    # dans post_init_hook, qui lui s'exécute réellement à l'install.
+    try:
+        website.write({
+            'shop_opt_products_design_classes': (
+                'o_wsale_products_opt_name_color_regular '
+                'o_wsale_products_opt_thumb_cover '
+                'o_wsale_products_opt_img_secondary_show '
+                'o_wsale_products_opt_img_hover_zoom_out_light '
+                'o_wsale_products_opt_has_cta '
+                'o_wsale_products_opt_has_wishlist '
+                'o_wsale_products_opt_has_comparison '
+                'o_wsale_products_opt_actions_inline '
+                'o_wsale_products_opt_wishlist_inline '
+                'o_wsale_products_opt_actions_promote '
+                'o_wsale_products_opt_cc '
+                'o_wsale_products_opt_cc1 '
+                'o_wsale_products_opt_rounded_4 '
+                'o_wsale_products_opt_thumb_6_5 '
+                'o_wsale_products_opt_layout_catalog '
+                'o_wsale_products_opt_design_chips'
+            ),
+        })
+    except Exception:
+        _logger.exception("Échec écriture shop_opt_products_design_classes (post_init_hook)")
+
     _setup_shop_grid_design(env, website)
 
     # === PUBLIER NOS PRODUITS — UNIQUEMENT LES NÔTRES, SUR NOTRE SITE ===
@@ -1048,6 +1236,11 @@ def post_init_hook(env):
     # marqués 'Non publié' (champ indépendant de la catégorie).
     for root in (informatique, monetique_root, telecom):
         _publish_category_tree_products(env, website, root)
+
+    # === MIGRATION DEPUIS LE SITE PRÉEXISTANT — appelée ICI, après la
+    # construction complète de l'arborescence, pour que la
+    # correspondance par nom de catégorie fonctionne correctement. ===
+    _migrate_products_from_legacy_site(env, website)
 
     # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
