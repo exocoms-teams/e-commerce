@@ -32,11 +32,12 @@ class PaymentProvider(models.Model):
         providers = super()._get_compatible_providers(
             company_id, partner_id, amount, **kwargs
         )
-        partner = self.env['res.partner'].browse(partner_id).exists()
-        if not partner or not partner.commercial_partner_id.is_public_entity:
-            providers = providers.filtered(
-                lambda p: p.code != 'mandat_administratif'
-            )
+        # TEMP: filtre entité publique désactivé pour diagnostic
+        # partner = self.env['res.partner'].browse(partner_id).exists()
+        # if not partner or not partner.commercial_partner_id.is_public_entity:
+        #     providers = providers.filtered(
+        #         lambda p: p.code != 'mandat_administratif'
+        #     )
         return providers
 
     def _get_default_payment_method_codes(self):
