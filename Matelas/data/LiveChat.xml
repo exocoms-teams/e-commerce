@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="livechat_channel_matelas" model="im_livechat.channel">
+      <field name="name">Support Matelas</field>
+      <field name="user_ids" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- Règle : afficher le bouton de chat sur toutes les pages du site -->
+    <record id="livechat_channel_matelas_rule_all" model="im_livechat.channel.rule">
+      <field name="channel_id" ref="livechat_channel_matelas"/>
+      <field name="regex_url">/</field>
+      <field name="action">display_button</field>
+    </record>
+
+    <!-- Rattache ce canal au site web -->
+    <record id="website.default_website" model="website">
+      <field name="channel_id" ref="livechat_channel_matelas"/>
+    </record>
+
+  </data>
+</odoo>

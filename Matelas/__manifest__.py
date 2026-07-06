@@ -7,16 +7,18 @@
     'depends': [
         'website',
         'website_sale',
-        'account',         
-        'im_livechat',     
-        'mass_mailing',     
-        'crm',              
+        'account',
+        'im_livechat',
+        'website_livechat',
+        'mass_mailing',
+        'crm',
     ],
     'author': 'Equipe matelas',
     'license': 'LGPL-3',
 
     'data': [
         'data/ProductTags.xml',
+        'data/LiveChat.xml',
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
