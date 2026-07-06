@@ -78,14 +78,21 @@ def post_init_hook(env):
 def uninstall_hook(env):
     """Supprime la méthode de paiement via SQL pour éviter le conflit d'unicité à la réinstallation."""
     cr = env.cr
-    # Détacher la méthode de paiement de tous les providers (table many2many)
+    # 1. Supprimer les lignes de journal liées (account.payment.method.line)
+    cr.execute("""
+        DELETE FROM account_payment_method_line
+        WHERE payment_method_id IN (
+            SELECT id FROM account_payment_method WHERE code = 'mandat_administratif'
+        )
+    """)
+    # 2. Supprimer account.payment.method
+    cr.execute("DELETE FROM account_payment_method WHERE code = 'mandat_administratif'")
+    # 3. Détacher payment.method de tous les providers (table many2many)
     cr.execute("""
         DELETE FROM payment_method_payment_provider_rel
         WHERE payment_method_id IN (
             SELECT id FROM payment_method WHERE code = 'mandat_administratif'
         )
     """)
-    # Supprimer la méthode payment.method
+    # 4. Supprimer payment.method
     cr.execute("DELETE FROM payment_method WHERE code = 'mandat_administratif'")
-    # Supprimer la méthode account.payment.method
-    cr.execute("DELETE FROM account_payment_method WHERE code = 'mandat_administratif'")
