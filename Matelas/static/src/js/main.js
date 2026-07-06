@@ -128,13 +128,24 @@
         const header = document.querySelector('header#top') || document.querySelector('header') || document;
         const cartBtn = header.querySelector('.o_cart_btn, a[href="/shop/cart"], a[href*="/shop/cart"]');
 
+        if (cartBtn) {
+            cartBtn.classList.add('matelas-icon-btn');
+        }
+
         if (cartBtn && !document.querySelector('.matelas-wishlist-btn')) {
             const wishlistLink = document.createElement('a');
             wishlistLink.href = '/shop/wishlist';
-            wishlistLink.className = 'matelas-wishlist-btn nav-link';
+            wishlistLink.className = 'matelas-wishlist-btn matelas-icon-btn nav-link';
             wishlistLink.title = 'Mes favoris';
             wishlistLink.innerHTML = '<i class="bi bi-heart"></i>';
             cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
+        }
+
+        // ===== HEADER : icône recherche (même style rond que panier/favoris) =====
+        const searchIcon = header.querySelector('i.fa-search, i.bi-search, .oe_search_button i');
+        const searchBtn = searchIcon ? searchIcon.closest('a, button') : null;
+        if (searchBtn) {
+            searchBtn.classList.add('matelas-icon-btn');
         }
 
         // ===== HEADER : icône compte (remplace le nom, garde le menu déroulant natif) =====
@@ -151,7 +162,7 @@
                 : null;
 
             if (toggle && !toggle.classList.contains('matelas-account-link')) {
-                toggle.classList.add('matelas-account-link');
+                toggle.classList.add('matelas-account-link', 'matelas-icon-btn');
                 toggle.innerHTML = '<i class="bi bi-person-circle"></i>';
                 toggle.title = 'Mon compte';
             }
@@ -159,7 +170,7 @@
             // Cas déconnecté : simple lien "Se connecter"
             const signInLink = header.querySelector('a[href^="/web/login"]');
             if (signInLink && !signInLink.classList.contains('matelas-account-link')) {
-                signInLink.classList.add('matelas-account-link');
+                signInLink.classList.add('matelas-account-link', 'matelas-icon-btn');
                 signInLink.innerHTML = '<i class="bi bi-person"></i>';
                 signInLink.title = 'Se connecter';
             }
