@@ -16,22 +16,18 @@ class ProductTemplate(models.Model):
         help="Indiquez ici les allergènes présents (ex: Lait, Soja, Arachides)"
     )
 
-    # On ajoute un champ caché pour identifier facilement nos produits
-    is_supplement = fields.Boolean(string="Est un complément alimentaire", default=True)
+   # On passe le default à False. C'est au responsable de cocher la case pour tes compléments.
+    is_supplement = fields.Boolean(string="Est un complément alimentaire", default=False)
 
     @api.model
     def create(self, vals):
-        # Automatisation Logistique : Si on crée un complément alimentaire
-        if vals.get('is_supplement', True):
-            # 1. On force le suivi par lot
+        # On n'applique la logistique que si la case est cochée 
+        # ET que le produit est de type 'product' (Article Stockable), pas un 'service'.
+        if vals.get('is_supplement', False) and vals.get('type', 'consu') == 'product':
             vals['tracking'] = 'lot'
-            
-            # 2. On active le suivi des dates de péremption
             vals['use_expiration_date'] = True
             
-            # 3. On définit un temps de conservation par défaut
             if not vals.get('expiration_time'):
                 vals['expiration_time'] = 365
                 
-        # On appelle la vraie méthode 'create' d'Odoo pour sauvegarder en base
         return super(ProductTemplate, self).create(vals)
