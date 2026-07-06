@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Actions ─────────────────────────────────────────────── -->
+    <record id="action_sale_ma" model="ir.actions.act_window">
+        <field name="name">Mandats Administratifs</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_mandat_administratif','=',True)]</field>
+        <field name="context">{'search_default_ma_all': 1}</field>
+    </record>
+
+    <record id="action_ma_invoices" model="ir.actions.act_window">
+        <field name="name">Factures – Entités publiques</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('partner_id.commercial_partner_id.is_public_entity','=',True),('move_type','in',('out_invoice','out_refund'))]</field>
+    </record>
+
+    <!-- ── Menu Ventes ─────────────────────────────────────────── -->
+    <menuitem id="menu_ma_root"
+              name="Mandats Administratifs"
+              parent="sale.sale_menu_root"
+              sequence="99"/>
+
+    <menuitem id="menu_ma_bca"
+              name="Bons de Commande Administratifs"
+              parent="menu_ma_root"
+              action="action_sale_ma"
+              sequence="10"/>
+
+    <!-- ── Menu Comptabilité ────────────────────────────────────── -->
+    <menuitem id="menu_ma_compta_root"
+              name="Mandats Administratifs"
+              parent="account.menu_finance"
+              sequence="99"/>
+
+    <menuitem id="menu_ma_factures"
+              name="Factures entités publiques"
+              parent="menu_ma_compta_root"
+              action="action_ma_invoices"
+              sequence="10"/>
+
+</odoo>
