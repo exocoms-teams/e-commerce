@@ -10,6 +10,7 @@
       <field name="arch" type="xml">
         <xpath expr="//div[@id='footer']" position="replace">
           <div id="footer" class="matelas-footer">
+            <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
             <div class="footer-main container">
               <div class="row py-4">
@@ -17,39 +18,54 @@
                 <!-- Description -->
                 <div class="col-md-3">
                   <p class="footer-logo">
-                    <strong class="footer-title">A PROPOS DE NOUS</strong>
+                    <strong class="footer-title" t-esc="'ABOUT US' if is_en else 'A PROPOS DE NOUS'" />
                   </p>
-                  <p class="footer-desc">
-                    Nous sommes dédiés à votre sommeil.
-                    Notre mission : vous offrir la meilleure
-                    expérience d'achat de matelas en ligne.
-                  </p>
+                  <t t-if="is_en">
+                    <p class="footer-desc">
+                      We are dedicated to your sleep.
+                      Our mission: to offer you the best
+                      online mattress shopping experience.
+                    </p>
+                  </t>
+                  <t t-else="">
+                    <p class="footer-desc">
+                      Nous sommes dédiés à votre sommeil.
+                      Notre mission : vous offrir la meilleure
+                      expérience d'achat de matelas en ligne.
+                    </p>
+                  </t>
                 </div>
 
                 <!-- Liens utiles -->
                 <div class="col-md-3">
-                  <p class="footer-title">LIENS UTILES</p>
+                  <p class="footer-title" t-esc="'USEFUL LINKS' if is_en else 'LIENS UTILES'" />
                   <ul class="footer-links">
                     <li>
-                      <a href="/"><i class="bi bi-house-door-fill"></i> Accueil</a>
+                      <a href="/"><i class="bi bi-house-door-fill"></i>
+                        <t t-esc="' Home' if is_en else ' Accueil'" /></a>
                     </li>
                     <li>
-                      <a href="/shop"><i class="bi-shop"></i> Boutique</a>
+                      <a href="/shop"><i class="bi-shop"></i>
+                        <t t-esc="' Shop' if is_en else ' Boutique'" /></a>
                     </li>
                     <li>
                       <a href="/avis">
-                        <i class="bi-star-fill"></i> Avis </a>
+                        <i class="bi-star-fill"></i>
+                        <t t-esc="' Reviews' if is_en else ' Avis'" /></a>
                     </li>
                     <li>
-                      <a href="/mentions-legales"><i class="bi-file-text"></i> Mentions légales</a>
+                      <a href="/mentions-legales"><i class="bi-file-text"></i>
+                        <t t-esc="' Legal notice' if is_en else ' Mentions légales'" /></a>
                     </li>
                     <li>
-                      <a href="/contact"><i class="bi-chat-dots-fill"></i> Contact</a>
+                      <a href="/contact"><i class="bi-chat-dots-fill"></i>
+                        <t t-esc="' Contact' if is_en else ' Contact'" /></a>
                     </li>
 
                     <li>
                       <a href="/cookie-policy">
-                        <i class="bi bi-shield-check" /> Politique de cookies </a>
+                        <i class="bi bi-shield-check" />
+                        <t t-esc="' Cookie policy' if is_en else ' Politique de cookies'" /></a>
                     </li>
                   </ul>
                 </div>
@@ -71,7 +87,7 @@
 
                 <!-- Réseaux sociaux -->
                 <div class="col-md-3">
-                  <p class="footer-title">SUIVEZ-NOUS</p>
+                  <p class="footer-title" t-esc="'FOLLOW US' if is_en else 'SUIVEZ-NOUS'" />
                   <ul class="footer-links">
                     <li>
                       <a href="https://facebook.com" target="_blank">
@@ -93,7 +109,8 @@
 
             <!-- Moyens de paiement -->
             <div class="footer-payment container">
-              <span class="footer-payment-label">Moyens de paiement acceptés :</span>
+              <span class="footer-payment-label"
+                t-esc="'Accepted payment methods:' if is_en else 'Moyens de paiement acceptés :'" />
               <div class="footer-payment-icons">
 
                 <svg class="payment-icon" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg">

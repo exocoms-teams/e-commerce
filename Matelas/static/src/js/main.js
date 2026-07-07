@@ -1,7 +1,15 @@
 (function() {
     'use strict';
 
+    // Langue active du site (Odoo pose l'attribut lang sur <html>,
+    // ex: "fr-FR" ou "en-US"), utilisée pour les quelques textes générés
+    // en JavaScript qui ne passent pas par les templates QWeb.
+    function isEnglish() {
+        return (document.documentElement.getAttribute('lang') || '').toLowerCase().indexOf('en') === 0;
+    }
+
     function initAll() {
+        const en = isEnglish();
 
         // ===== ÉTOILES AVIS =====
         const stars = document.querySelectorAll('.star');
@@ -33,11 +41,12 @@
                 const commentaire = document.getElementById('avis-commentaire').value.trim();
 
                 if (!nom || note == 0 || !commentaire) {
-                    alert('Merci de remplir tous les champs obligatoires (*)');
+                    alert(en ? 'Please fill in all required fields (*)' : 'Merci de remplir tous les champs obligatoires (*)');
                     return;
                 }
 
                 const starsHtml = '★'.repeat(parseInt(note)) + '☆'.repeat(5 - parseInt(note));
+                const justNow = en ? 'just now' : "à l'instant";
                 const card = `
                     <div class="col-md-4 mb-4">
                         <div class="avis-card">
@@ -45,7 +54,7 @@
                             ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
                             <p class="avis-texte">"${commentaire}"</p>
                             <strong class="avis-auteur">${nom}</strong>
-                            <span class="avis-date"> — à l'instant</span>
+                            <span class="avis-date"> — ${justNow}</span>
                         </div>
                     </div>
                 `;
@@ -71,7 +80,7 @@
                 const message = document.getElementById('c-message').value.trim();
 
                 if (!nom || !prenom || !email || !message) {
-                    alert('Merci de remplir tous les champs obligatoires (*)');
+                    alert(en ? 'Please fill in all required fields (*)' : 'Merci de remplir tous les champs obligatoires (*)');
                     return;
                 }
 
@@ -113,13 +122,13 @@
                 e.preventDefault();
                 const input = document.querySelector('.newsletter-input');
                 if (!input || !input.value.trim()) {
-                    alert('Merci de saisir votre adresse email.');
+                    alert(en ? 'Please enter your email address.' : 'Merci de saisir votre adresse email.');
                     return;
                 }
                 input.value = '';
-                btnNewsletter.textContent = '✅ Inscrit !';
+                btnNewsletter.textContent = en ? '✅ Subscribed!' : '✅ Inscrit !';
                 setTimeout(function() {
-                    btnNewsletter.textContent = "S'inscrire →";
+                    btnNewsletter.textContent = en ? 'Sign up →' : "S'inscrire →";
                 }, 3000);
             });
         }
@@ -141,20 +150,18 @@
             cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
         }
 
-        // ===== HEADER : icône recherche (même style rond que panier/favoris) =====
+        // ===== HEADER : icône recherche =====
         const searchIcon = header.querySelector('i.fa-search, i.bi-search, .oe_search_button i');
         const searchBtn = searchIcon ? searchIcon.closest('a, button') : null;
         if (searchBtn) {
             searchBtn.classList.add('matelas-icon-btn');
         }
 
-        // ===== HEADER : icône compte (remplace le nom, garde le menu déroulant natif) =====
+        // ===== HEADER : icône compte =====
         const logoutLink = header.querySelector('a[href*="/web/session/logout"]');
 
         if (logoutLink) {
-            // Cas connecté : on retrouve le vrai bouton qui affiche le nom (le "toggle"
-            // du menu déroulant), en remontant depuis le lien de déconnexion qui, lui,
-            // est stable quelle que soit la version/thème.
+           
             const menu = logoutLink.closest('.dropdown-menu, ul, div[class*="dropdown"]');
             const parentItem = menu ? (menu.parentElement || menu.closest('li')) : null;
             const toggle = parentItem
@@ -177,9 +184,7 @@
         }
 
         // ===== AJOUT AU PANIER (best-sellers) =====
-        // Reproduit exactement le formulaire natif de la fiche produit Odoo :
-        // POST vers la page du produit lui-même, avec les mêmes champs cachés
-        // (confirmé en inspectant le vrai bouton "Add to cart" du site).
+        
         function getCsrfToken() {
             if (typeof odoo !== 'undefined' && odoo.csrf_token) {
                 return odoo.csrf_token;
@@ -227,21 +232,22 @@
         if (cookiesBar) {
             const cookiesText = cookiesBar.querySelector('p');
             if (cookiesText) {
-                cookiesText.innerHTML = '🍪 Nous utilisons des cookies pour vous garantir une navigation fluide, mémoriser votre panier et vos préférences, et améliorer votre expérience sur Matelas. Vous pouvez tout accepter ou choisir uniquement les cookies essentiels.';
+                cookiesText.innerHTML = en
+                    ? '🍪 We use cookies to ensure smooth browsing, remember your cart and preferences, and improve your experience on Matelas. You can accept all cookies or choose only the essential ones.'
+                    : '🍪 Nous utilisons des cookies pour vous garantir une navigation fluide, mémoriser votre panier et vos préférences, et améliorer votre expérience sur Matelas. Vous pouvez tout accepter ou choisir uniquement les cookies essentiels.';
             }
-            // On matche par texte visible (plus fiable que deviner les classes,
-            // qui changent selon la version d'Odoo).
+            
             cookiesBar.querySelectorAll('a, button').forEach(function(b) {
                 const t = b.textContent.trim().toLowerCase();
                 if (t === 'i agree' || t.indexOf('agree') !== -1 || t.indexOf('accept all') !== -1) {
-                    b.textContent = 'Tout accepter';
+                    b.textContent = en ? 'Accept all' : 'Tout accepter';
                 } else if (t.indexOf('essential') !== -1) {
-                    b.textContent = 'Essentiels uniquement';
+                    b.textContent = en ? 'Essential only' : 'Essentiels uniquement';
                 }
             });
         }
 
-        // ===== PRODUITS VUS RÉCEMMENT (stockage navigateur) =====
+        // ===== PRODUITS VUS RÉCEMMENT =====
         (function() {
             const STORAGE_KEY = 'matelas_recently_viewed';
             const MAX_ITEMS = 6;
@@ -259,11 +265,11 @@
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
                 } catch (e) {
-                    // localStorage indisponible (navigation privée...) : on ignore
+                
                 }
             }
 
-            // Sur une page produit : on enregistre ce produit
+           
             const addToCartBtn = document.getElementById('add_to_cart');
             if (addToCartBtn) {
                 const titleMeta = document.querySelector('meta[property="og:title"]');
@@ -287,8 +293,7 @@
                 }
             }
 
-            // Sur la page d'accueil : on affiche la section si on a des produits
-            const container = document.getElementById('recently-viewed-container');
+            
             if (container) {
                 const items = getStored();
                 if (items.length > 0) {
@@ -315,7 +320,7 @@
 
                         const type = document.createElement('p');
                         type.className = 'product-type';
-                        type.textContent = 'MATELAS';
+                        type.textContent = en ? 'MATTRESS' : 'MATELAS';
 
                         const title = document.createElement('h4');
                         title.textContent = p.title;

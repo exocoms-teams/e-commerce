@@ -19,6 +19,7 @@
     'data': [
         'data/ProductTags.xml',
         'data/LiveChat.xml',
+        'data/Languages.xml',
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
