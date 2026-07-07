@@ -70,7 +70,6 @@ class LuxuryController(WebsiteSale):
             for d in extra_domains[1:]:
                 result = result & Domain(d)
             return domain & result
-    
         return domain
 
 
