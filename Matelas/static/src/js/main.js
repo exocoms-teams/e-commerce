@@ -157,6 +157,24 @@
             searchBtn.classList.add('matelas-icon-btn');
         }
 
+        // ===== HEADER : bascule de langue FR / EN =====
+    
+        if (cartBtn && !document.querySelector('.matelas-lang-btn')) {
+            const path = window.location.pathname;
+            const isEnPath = path === '/en' || path.indexOf('/en/') === 0;
+            const targetPath = isEnPath
+                ? (path.replace(/^\/en/, '') || '/')
+                : ('/en' + path);
+            const search = window.location.search || '';
+
+            const langLink = document.createElement('a');
+            langLink.href = targetPath + search;
+            langLink.className = 'matelas-lang-btn matelas-icon-btn nav-link';
+            langLink.title = isEnPath ? 'Passer en français' : 'Switch to English';
+            langLink.textContent = isEnPath ? 'FR' : 'EN';
+            cartBtn.insertAdjacentElement('beforebegin', langLink);
+        }
+
         // ===== HEADER : icône compte =====
         const logoutLink = header.querySelector('a[href*="/web/session/logout"]');
 
@@ -293,7 +311,8 @@
                 }
             }
 
-            
+            // Sur la page d'accueil : on affiche la section si on a des produits
+            const container = document.getElementById('recently-viewed-container');
             if (container) {
                 const items = getStored();
                 if (items.length > 0) {
