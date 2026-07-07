@@ -111,11 +111,36 @@ def _activer_cookies_bar(env):
             _logger.warning("Planet Mobil: cookies_bar non applique (%s)", e)
 
 
+def _archiver_carriers_demo(env):
+    """Archive les methodes de livraison demo d'Odoo (Standard delivery,
+    The Poste, Local Delivery) pour ne garder que les notres.
+    Logique : tous les carriers qui n'ont PAS un xmlid du module
+    website_planet_mobil sont archives.
+    """
+    pm_carrier_ids = env['ir.model.data'].sudo().search([
+        ('model', '=', 'delivery.carrier'),
+        ('module', '=', 'website_planet_mobil'),
+    ]).mapped('res_id')
+
+    carriers_demo = env['delivery.carrier'].with_context(active_test=False).sudo().search([
+        ('id', 'not in', pm_carrier_ids),
+        ('active', '=', True),
+    ])
+
+    for carrier in carriers_demo:
+        try:
+            carrier.write({'active': False})
+            _logger.info("Planet Mobil: carrier demo '%s' archive.", carrier.name)
+        except Exception as e:
+            _logger.warning("Planet Mobil: carrier '%s' non archive (%s)", carrier.name, e)
+
+
 def _run_hooks(env):
     _activer_francais_par_defaut(env)
     _supprimer_demo_natif(env)
     _configurer_shop(env)
     _activer_cookies_bar(env)
+    _archiver_carriers_demo(env)
 
 
 def post_init_hook(env):

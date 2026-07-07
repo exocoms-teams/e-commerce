@@ -432,4 +432,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initFilters();
 
+    // ── Checkout : message livraison hors France
+    if (window.location.pathname.includes('/shop/checkout')) {
+        const isEn = window.location.pathname.startsWith('/en/') ||
+                     document.documentElement.lang === 'en' ||
+                     document.documentElement.lang === 'en-US';
+        function fixNoDeliveryMessage() {
+            const alertEl = document.querySelector('#o_delivery_form .alert-warning');
+            if (alertEl && alertEl.textContent.includes('No suitable delivery method') && !alertEl.dataset.pmFixed) {
+                alertEl.dataset.pmFixed = '1';
+                if (isEn) {
+                    alertEl.innerHTML =
+                        '<i class="fa fa-map-marker me-2"></i>' +
+                        '<strong>Delivery not available for this address</strong><br>' +
+                        '<small>Planet Mobil only ships within mainland France. ' +
+                        'Please update your delivery address.</small>';
+                } else {
+                    alertEl.innerHTML =
+                        '<i class="fa fa-map-marker me-2"></i>' +
+                        '<strong>Livraison non disponible pour cette adresse</strong><br>' +
+                        '<small>Planet Mobil livre uniquement en France métropolitaine. ' +
+                        'Veuillez modifier votre adresse de livraison.</small>';
+                }
+            }
+        }
+
+        fixNoDeliveryMessage();
+
+        const deliveryForm = document.getElementById('o_delivery_form');
+        if (deliveryForm) {
+            new MutationObserver(fixNoDeliveryMessage).observe(deliveryForm, { childList: true, subtree: true });
+        }
+    }
+
 });
