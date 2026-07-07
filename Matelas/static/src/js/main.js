@@ -157,6 +157,14 @@
             searchBtn.classList.add('matelas-icon-btn');
         }
 
+        // ===== HEADER : cacher le bouton "Contact Us" natif d'Odoo =====
+        header.querySelectorAll('a, button').forEach(function(el) {
+            const t = el.textContent.trim().toLowerCase();
+            if (t === 'contact us' || t === 'contactez-nous' || t === 'nous contacter') {
+                el.style.display = 'none';
+            }
+        });
+
         // ===== HEADER : bascule de langue FR / EN =====
        
         if (cartBtn && !document.querySelector('.matelas-lang-btn')) {
