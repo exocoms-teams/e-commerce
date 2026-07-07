@@ -158,20 +158,22 @@
         }
 
         // ===== HEADER : bascule de langue FR / EN =====
-    
+       
         if (cartBtn && !document.querySelector('.matelas-lang-btn')) {
-            const path = window.location.pathname;
-            const isEnPath = path === '/en' || path.indexOf('/en/') === 0;
-            const targetPath = isEnPath
-                ? (path.replace(/^\/en/, '') || '/')
-                : ('/en' + path);
-            const search = window.location.search || '';
+            const cookieMatch = ('; ' + document.cookie).split('; frontend_lang=').pop().split(';')[0];
+            const currentLang = cookieMatch ? decodeURIComponent(cookieMatch) : (en ? 'en_US' : 'fr_FR');
+            const isCurrentlyEn = currentLang.toLowerCase().indexOf('en') === 0;
+            const targetLang = isCurrentlyEn ? 'fr_FR' : 'en_US';
+
+            const params = new URLSearchParams(window.location.search);
+            params.set('lang', targetLang);
+            const targetHref = window.location.pathname + '?' + params.toString();
 
             const langLink = document.createElement('a');
-            langLink.href = targetPath + search;
+            langLink.href = targetHref;
             langLink.className = 'matelas-lang-btn matelas-icon-btn nav-link';
-            langLink.title = isEnPath ? 'Passer en français' : 'Switch to English';
-            langLink.textContent = isEnPath ? 'FR' : 'EN';
+            langLink.title = isCurrentlyEn ? 'Passer en français' : 'Switch to English';
+            langLink.textContent = isCurrentlyEn ? 'FR' : 'EN';
             cartBtn.insertAdjacentElement('beforebegin', langLink);
         }
 
