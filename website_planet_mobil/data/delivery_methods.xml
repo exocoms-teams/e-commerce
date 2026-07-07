@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="product_pm_delivery_standard" model="product.product">
+        <record id="pm_delivery_standard_tmpl" model="product.template">
             <field name="name">Livraison standard</field>
             <field name="detailed_type">service</field>
             <field name="sale_ok" eval="False"/>
@@ -18,11 +18,11 @@
             <field name="free_over">True</field>
             <field name="amount">50.0</field>
             <field name="is_published">True</field>
-            <field name="product_id" ref="product_pm_delivery_standard"/>
+            <field name="product_id" eval="env['product.template'].browse(ref('pm_delivery_standard_tmpl')).product_variant_id.id"/>
             <field name="country_ids" eval="[(4, ref('base.fr'))]"/>
         </record>
 
-        <record id="product_pm_delivery_express" model="product.product">
+        <record id="pm_delivery_express_tmpl" model="product.template">
             <field name="name">Livraison express 24h</field>
             <field name="detailed_type">service</field>
             <field name="sale_ok" eval="False"/>
@@ -36,7 +36,7 @@
             <field name="delivery_type">fixed</field>
             <field name="fixed_price">9.99</field>
             <field name="is_published">True</field>
-            <field name="product_id" ref="product_pm_delivery_express"/>
+            <field name="product_id" eval="env['product.template'].browse(ref('pm_delivery_express_tmpl')).product_variant_id.id"/>
             <field name="country_ids" eval="[(4, ref('base.fr'))]"/>
         </record>
 
