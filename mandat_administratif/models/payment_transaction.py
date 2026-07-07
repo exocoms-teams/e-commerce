@@ -36,8 +36,7 @@ class PaymentTransaction(models.Model):
             return super()._extract_reference(provider_code, payment_data)
         return payment_data.get('reference')
 
-    @api.model
-    def _extract_amount_data(self, provider_code, payment_data):
+    def _extract_amount_data(self, payment_data):
         """CORRECTIF : méthode manquante dans la version d'origine du
         module, provoquant un KeyError('amount') lors du paiement réel
         (confirmé en conditions réelles — Internal Server Error au
@@ -51,9 +50,16 @@ class PaymentTransaction(models.Model):
         fournisseur, en renvoyant None ici (cf. commentaire natif dans
         payment_transaction.py : "Skip validation for transactions
         where the provider opts out of amount check").
+
+        NOTE : contrairement à _extract_reference (méthode @api.model,
+        appelée avant qu'une transaction précise soit identifiée),
+        _extract_amount_data est un appel D'INSTANCE — self.provider_code
+        est déjà accessible directement, pas besoin de le recevoir en
+        paramètre (erreur corrigée ici : la version précédente de ce
+        correctif avait la mauvaise signature).
         """
-        if provider_code != 'mandat_administratif':
-            return super()._extract_amount_data(provider_code, payment_data)
+        if self.provider_code != 'mandat_administratif':
+            return super()._extract_amount_data(payment_data)
         return None
 
     def _apply_updates(self, payment_data):
