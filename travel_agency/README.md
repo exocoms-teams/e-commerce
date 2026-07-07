@@ -1,4 +1,4 @@
-# e-commerce
+# e-commerce 2026
 # Travel Agency - Module Odoo
 
 Module Odoo de gestion d'agence de voyage. Il permet d'administrer des offres de voyage, des hôtels, des vols, des trains, des locations de voiture et des réservations clients depuis le back-office, avec des pages publiques intégrées au site web Odoo.
