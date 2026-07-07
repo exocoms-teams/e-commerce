@@ -77,7 +77,14 @@
                                             <div class="cam-product-body">
                                                 <h3 t-esc="product.name"/>
                                                 <div class="cam-product-footer">
-                                                    <span class="cam-product-price" t-esc="'%.2f € HT' % product.list_price"/>
+                                                   <span class="cam-product-price">
+                                                    <span t-field="product.list_price"
+                                                        t-options="{
+                                                            'widget': 'monetary',
+                                                            'display_currency': website.currency_id
+                                                        }"/>
+                                                    <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/>
+</span>
                                                     <span class="cam-btn-sm">Voir</span>
                                                 </div>
                                             </div>
