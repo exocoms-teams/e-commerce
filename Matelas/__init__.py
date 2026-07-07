@@ -26,16 +26,14 @@ def _assign_nouveaute_tag(env):
 
 
 def _ensure_french_is_default_language(env):
-    """S'assure que le français reste la langue par défaut du site public,
-    même après l'activation de l'anglais. On cherche la langue par son
-    code ('fr_FR') plutôt que par un xmlid, car les langues autres que
-    l'anglais n'ont pas toujours d'identifiant externe stable dans Odoo.
+    """Installe (si besoin) et active la langue française, puis la remet
+    comme langue par défaut du site public.
+
+   
     """
-    fr_lang = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+    fr_lang = env['res.lang']._activate_and_install_lang('fr_FR')
     if not fr_lang:
         return
-    if not fr_lang.active:
-        fr_lang.active = True
 
     websites = env['website'].search([])
     for website in websites:
