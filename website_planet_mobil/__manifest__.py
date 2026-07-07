@@ -39,6 +39,7 @@
         'web.assets_frontend': [
             'website_planet_mobil/static/src/css/style.css',
             'website_planet_mobil/static/src/js/pm_cart_badge.js',
+            'website_planet_mobil/static/src/js/translate_en.js',
         ],
         'web.assets_frontend_minimal': [
             'website_planet_mobil/static/src/js/main.js',
