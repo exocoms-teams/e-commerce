@@ -36,9 +36,30 @@ class PaymentTransaction(models.Model):
             return super()._extract_reference(provider_code, payment_data)
         return payment_data.get('reference')
 
+    @api.model
+    def _extract_amount_data(self, provider_code, payment_data):
+        """CORRECTIF : méthode manquante dans la version d'origine du
+        module, provoquant un KeyError('amount') lors du paiement réel
+        (confirmé en conditions réelles — Internal Server Error au
+        clic sur « Payer maintenant »).
+
+        Le formulaire de redirection de ce mode de paiement ne poste
+        qu'une référence de transaction (pas de montant, cf.
+        _get_specific_rendering_values ci-dessus) — exactement comme
+        le virement bancaire natif (payment_custom). Il faut donc
+        explicitement dire à Odoo de ne PAS valider de montant pour ce
+        fournisseur, en renvoyant None ici (cf. commentaire natif dans
+        payment_transaction.py : "Skip validation for transactions
+        where the provider opts out of amount check").
+        """
+        if provider_code != 'mandat_administratif':
+            return super()._extract_amount_data(provider_code, payment_data)
+        return None
+
     def _apply_updates(self, payment_data):
         """Mettre la transaction en attente : le paiement se fera par
-        virement administratif après dépôt de la facture sur Chorus Pro."""
+        virement administratif après dépôt de la facture sur Chorus Pro.
+        """
         if self.provider_code != 'mandat_administratif':
             return super()._apply_updates(payment_data)
         _logger.info(
