@@ -723,7 +723,9 @@
                         </div>
                         <h1 class="pm-hero-title">
                             La technologie<br />
-                            <span id="pm-typed-text">à portée de main</span>
+                            <span id="pm-typed-text"
+                              data-words-fr="à portée de main,pour tous les budgets,livrée en 24h"
+                              data-words-en="at your fingertips,for every budget,delivered in 24h">à portée de main</span>
                         </h1>
                         <p class="pm-hero-sub">
                             Smartphones, tablettes, accessoires —<br />
@@ -1014,7 +1016,10 @@
                     function initTypewriter() {
                         var el = document.getElementById('pm-typed-text');
                         if (!el) return;
-                        var words = ['à portée de main', 'pour tous les budgets', 'livrée en 24h'];
+                        var lang = (document.documentElement.lang || 'fr').toLowerCase();
+                        var words = lang.startsWith('en')
+                            ? (el.dataset.wordsEn || '').split(',')
+                            : (el.dataset.wordsFr || '').split(',');
                         var wi = 0, ci = 0, deleting = false;
                         function tick() {
                             var word = words[wi];
