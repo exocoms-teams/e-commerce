@@ -7,7 +7,13 @@ import { registry } from "@web/core/registry";
  * « Mandat administratif ».
  */
 export class MandatAdministratifPaymentBadge extends Interaction {
-    static selector = "form[name='o_payment_form']";
+    // CORRECTIF (diagnostiqué en conditions réelles le 07/07) : le
+    // sélecteur original "form[name='o_payment_form']" ciblait
+    // l'attribut HTML `name`, qui n'existe pas sur ce formulaire —
+    // seuls `id="o_payment_form"` et la classe `o_payment_form` sont
+    // présents. Résultat : cette Interaction ne se déclenchait JAMAIS,
+    // peu importe que le JS soit bien chargé (confirmé) ou non.
+    static selector = "#o_payment_form, .o_payment_form";
 
     start() {
         const input = this.el.querySelector(
@@ -17,7 +23,17 @@ export class MandatAdministratifPaymentBadge extends Interaction {
         if (!input) {
             return;
         }
-        const label = input.closest("label") || input.parentElement;
+        // CORRECTIF : le <label> n'est pas un ANCÊTRE de l'input dans
+        // le vrai DOM (ils sont frères, tous deux enfants du même
+        // conteneur "form-check") — closest("label") ne trouve donc
+        // jamais rien et retombait systématiquement sur le
+        // parentElement générique, ce qui pouvait mal positionner le
+        // badge. On cherche maintenant le vrai <label for="..."> qui
+        // référence l'ID de l'input, ce qui fonctionne quelle que soit
+        // la position relative des deux éléments dans le HTML.
+        const label = (input.id && this.el.querySelector(`label[for='${input.id}']`))
+            || input.closest("label")
+            || input.parentElement;
         if (!label || label.querySelector(".o_ma_flag")) {
             return;
         }
