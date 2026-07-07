@@ -156,6 +156,7 @@
         ['DOM-TOM (délais étendus)', 'Overseas territories (extended lead times)'],
         ['Union Européenne (sur devis)', 'European Union (on request)'],
         ['Livraison standard (Colissimo)', 'Standard delivery (Colissimo)'],
+        ['Livraison standard', 'Standard delivery'],
         ['Livraison express (24h)', 'Express delivery (24h)'],
         ['Point relais', 'Collection point'],
         ['Mode de livraison', 'Delivery method'],
