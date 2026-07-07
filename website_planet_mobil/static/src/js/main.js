@@ -1,3 +1,4 @@
+var PM_FR = (document.documentElement.lang || '').toLowerCase().indexOf('fr') === 0;
 document.addEventListener('DOMContentLoaded', function () {
 
     // ── Dropdown menu sidebar
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('button.tsp-btn-add').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var original = this.innerHTML;
-            this.innerHTML = '<i class="fa fa-check"></i> Ajouté !';
+            this.innerHTML = '<i class="fa fa-check"></i> ' + (PM_FR ? 'Ajouté !' : 'Added!');
             this.style.background = '#16a34a';
             var self = this;
             setTimeout(function () {
@@ -78,11 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
             checkbox.addEventListener('change', function () {
                 var checked = options.querySelectorAll('input[type="checkbox"]:checked');
                 if (checked.length === 0) {
-                    selected.innerHTML = 'Toutes <i class="fa fa-chevron-down"></i>';
+                    selected.innerHTML = (PM_FR ? 'Toutes' : 'All') + ' <i class="fa fa-chevron-down"></i>';
                 } else if (checked.length === 1) {
-                    selected.innerHTML = '1 sélectionné <i class="fa fa-chevron-down"></i>';
+                    selected.innerHTML = (PM_FR ? '1 sélectionné' : '1 selected') + ' <i class="fa fa-chevron-down"></i>';
                 } else {
-                    selected.innerHTML = checked.length + ' sélectionnés <i class="fa fa-chevron-down"></i>';
+                    selected.innerHTML = checked.length + (PM_FR ? ' sélectionnés' : ' selected') + ' <i class="fa fa-chevron-down"></i>';
                 }
             });
         });
@@ -158,10 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 wrap.innerHTML = `
                 <div style="text-align:center; padding: 40px 20px;">
                     <i class="fa fa-check-circle" style="font-size:3rem; color:#16a34a; margin-bottom:16px; display:block"></i>
-                    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">Merci pour votre avis !</h2>
-                    <p style="color:var(--muted); font-size:0.95rem;">Votre avis a bien été reçu. Il sera publié après validation par notre équipe.</p>
+                    <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:12px;">${PM_FR ? 'Merci pour votre avis !' : 'Thank you for your review!'}</h2>
+                    <p style="color:var(--muted); font-size:0.95rem;">${PM_FR ? 'Votre avis a bien été reçu. Il sera publié après validation par notre équipe.' : 'Your review has been received. It will be published after moderation by our team.'}</p>
                     <a href="/accueil" style="display:inline-block; margin-top:24px; padding:10px 24px; background:var(--blue); color:white; border-radius:var(--radius-sm); font-weight:600; text-decoration:none;">
-                        Retour à l'accueil
+                        ${PM_FR ? "Retour à l'accueil" : 'Back to home'}
                     </a>
                 </div>
             `;
@@ -295,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 cb.addEventListener('change', function () {
                     const checked = ul.querySelectorAll('input[type="checkbox"]:checked');
                     if (checked.length === 0) {
-                        selectedDiv.innerHTML = 'Toutes <i class="fa fa-chevron-down"></i>';
+                        selectedDiv.innerHTML = (PM_FR ? 'Toutes' : 'All') + ' <i class="fa fa-chevron-down"></i>';
                     } else if (checked.length === 1) {
                         selectedDiv.innerHTML = '1 sélectionné <i class="fa fa-chevron-down"></i>';
                     } else {
@@ -333,9 +334,9 @@ document.addEventListener('DOMContentLoaded', function () {
             group.innerHTML = `
                 <label>${attr.name}</label>
                 <div class="tsp-custom-select" data-filter="${attr.name.toLowerCase()}">
-                    <div class="tsp-custom-selected">Tous<i class="fa fa-chevron-down"></i></div>
+                    <div class="tsp-custom-selected">${PM_FR ? "Tous" : "All"}<i class="fa fa-chevron-down"></i></div>
                     <ul class="tsp-custom-options">
-                        <li data-value="">Tous</li>
+                        <li data-value="">${PM_FR ? "Tous" : "All"}</li>
                     </ul>
                 </div>
             `;

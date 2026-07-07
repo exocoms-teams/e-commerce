@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="product_specs_inherit" inherit_id="website_sale.product" name="Planet Mobil - Caractéristiques produit">
+    <template id="product_specs_inherit" inherit_id="website_sale.product" name="Planet Mobil - Specifications produit">
 
         <!-- Injection après la section principale du produit -->
         <xpath expr="//div[@id='product_detail_main']" position="after">
@@ -39,13 +39,13 @@
                 </div>
 
                 <div class="pm-specs-header">
-                    <h2 class="pm-specs-title">Caractéristiques</h2>
+                    <h2 class="pm-specs-title">Specifications</h2>
                     <div class="pm-specs-actions">
                         <button class="pm-specs-btn pm-btn-print" onclick="window.print()">
-                            <i class="fa fa-print"/> Imprimer
+                            <i class="fa fa-print"/> Print
                         </button>
                         <button class="pm-specs-btn pm-btn-share" id="pm-share-btn">
-                            <i class="fa fa-share-alt"/> Partager
+                            <i class="fa fa-share-alt"/> Share
                         </button>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                     <table class="pm-specs-table" id="pm-specs-table"></table>
                 </t>
                 <t t-else="">
-                    <p id="pm-specs-empty" style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
+                    <p id="pm-specs-empty" style="color:#94a3b8; font-style:italic;">Specifications not available.</p>
                 </t>
 
             </div>
@@ -81,6 +81,8 @@
             //<![CDATA[
             (function () {
                 // Parse x_specs JSON et peuple le tableau
+                var pmFr = (document.documentElement.lang || '').toLowerCase().indexOf('fr') === 0;
+                var PM_SPEC_LABELS_FR = {"Processor": "Processeur", "Storage": "Stockage", "Display": "Écran", "Battery": "Batterie", "System": "Système", "Connectivity": "Connectivité", "Camera": "Appareil photo", "Weight": "Poids", "Case": "Boîtier", "Battery life": "Autonomie", "Water resistance": "Étanchéité", "Sensors": "Capteurs", "Compatibility": "Compatibilité", "Material": "Matière", "Mounting": "Fixation", "Available colours": "Couleurs disponibles", "Power": "Puissance", "Connector": "Connecteur", "Indicator": "Indicateur", "Size": "Taille", "Technology": "Technologie", "Resolution": "Résolution", "Refresh rate": "Taux de rafraîchissement", "Sound": "Son", "Type": "Type"};
                 var jsonEl = document.getElementById('pm-specs-json');
                 var raw = jsonEl ? jsonEl.getAttribute('data-specs') : '';
                 if (raw) {
@@ -95,7 +97,7 @@
                                 var tdValue = document.createElement('td');
                                 tdLabel.className = 'pm-specs-label';
                                 tdValue.className = 'pm-specs-value';
-                                tdLabel.textContent = key;
+                                tdLabel.textContent = (pmFr && PM_SPEC_LABELS_FR[key]) || key;
                                 tdValue.textContent = specs[key];
                                 tr.appendChild(tdLabel);
                                 tr.appendChild(tdValue);
@@ -107,7 +109,7 @@
                             if (!empty) {
                                 var p = document.createElement('p');
                                 p.style.cssText = 'color:#94a3b8; font-style:italic;';
-                                p.textContent = 'Caractéristiques non renseignées.';
+                                p.textContent = 'Specifications not available.';
                                 jsonEl.parentNode.appendChild(p);
                             }
                         }
@@ -132,7 +134,7 @@
                         navigator.share({ title: title, url: url }).catch(function(){});
                     } else {
                         navigator.clipboard.writeText(url).then(function () {
-                            showToast('✓ Lien copié !');
+                            showToast(pmFr ? '✓ Lien copié !' : '✓ Link copied!');
                         }).catch(function () {
                             var inp = document.createElement('input');
                             document.body.appendChild(inp);
@@ -140,7 +142,7 @@
                             inp.select();
                             document.execCommand('copy');
                             document.body.removeChild(inp);
-                            showToast('✓ Lien copié !');
+                            showToast(pmFr ? '✓ Lien copié !' : '✓ Link copied!');
                         });
                     }
                 });

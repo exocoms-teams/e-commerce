@@ -5,7 +5,7 @@
         <template id="category_page" name="Planet Mobil - Catalogue">
             <t t-call="website_planet_mobil.layout">
                 <t t-set="additional_title" t-value="(category or 'Catalogue') + ' — Planet Mobil Paris'"/>
-                <t t-set="website_meta_description" t-value="'Découvrez notre sélection de ' + (category or 'produits') + ' chez Planet Mobil à Paris : meilleurs prix, livraison rapide, qualité garantie.'"/>
+                <t t-set="website_meta_description" t-value="request.env.lang.startswith('fr') and ('Découvrez notre sélection de ' + (category or 'produits') + ' chez Planet Mobil à Paris : meilleurs prix, livraison rapide, qualité garantie.') or ('Discover our selection of ' + (category or 'products') + ' at Planet Mobil in Paris: best prices, fast delivery, guaranteed quality.')"/>
                 <div id="wrap" class="oe_structure">
                     <div id="oe_structure_category_top" class="oe_structure oe_empty" />
                     <section class="tsp-section">
@@ -14,14 +14,14 @@
                                 <t t-if="category">
                                     <t t-out="category" />
                                 </t>
-                                <t t-else="">Tous les produits</t>
+                                <t t-else="">All products</t>
                             </h2>
                         </div>
 
                         <div id="oe_structure_filter_bar" class="oe_structure oe_empty" />
                         <div class="tsp-filter-bar">
                             <div class="tsp-filter-group">
-                                <label>Prix</label>
+                                <label>Price</label>
                                 <div class="tsp-filter-price">
                                     <input type="number" placeholder="Min" class="tsp-filter-input" />
                                     <span>-</span>
@@ -30,12 +30,12 @@
                             </div>
 
                             <div class="tsp-filter-group">
-                                <label>Marque</label>
+                                <label>Brand</label>
                                 <div class="tsp-custom-select" data-filter="marque">
-                                    <div class="tsp-custom-selected">Toutes <i
+                                    <div class="tsp-custom-selected">All <i
                                             class="fa fa-chevron-down" /></div>
                                     <ul class="tsp-custom-options">
-                                        <li data-value="">Toutes</li>
+                                        <li data-value="">All</li>
                                         <t t-foreach="brands" t-as="brand">
                                             <li t-att-data-value="brand">
                                                 <input type="checkbox" t-att-id="'marque-' + brand" />
@@ -49,9 +49,9 @@
                             </div>
 
                             <div class="tsp-filter-group">
-                                <label>Note</label>
+                                <label>Rating</label>
                                 <div class="tsp-custom-select" data-filter="note">
-                                    <div class="tsp-custom-selected">Toutes <i
+                                    <div class="tsp-custom-selected">All <i
                                             class="fa fa-chevron-down" /></div>
                                     <ul class="tsp-custom-options">
                                         <li data-value="5">
@@ -60,23 +60,23 @@
                                         </li>
                                         <li data-value="4">
                                             <input type="checkbox" id="note-4" />
-                                            <label for="note-4">⭐⭐⭐⭐ et +</label>
+                                            <label for="note-4">⭐⭐⭐⭐ and up</label>
                                         </li>
                                         <li data-value="3">
                                             <input type="checkbox" id="note-3" />
-                                            <label for="note-3">⭐⭐⭐ et +</label>
+                                            <label for="note-3">⭐⭐⭐ and up</label>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
 
                             <div class="tsp-filter-group">
-                                <label>Couleur</label>
+                                <label>Colour</label>
                                 <div class="tsp-custom-select" data-filter="couleur">
-                                    <div class="tsp-custom-selected">Toutes <i
+                                    <div class="tsp-custom-selected">All <i
                                             class="fa fa-chevron-down" /></div>
                                     <ul class="tsp-custom-options">
-                                        <li data-value="">Toutes</li>
+                                        <li data-value="">All</li>
                                         <t t-foreach="colors" t-as="color">
                                             <li t-att-data-value="color">
                                                 <input type="checkbox" t-att-id="'couleur-' + color" />
@@ -91,9 +91,9 @@
 
                             <t t-if="category == 'Smartphones'">
                                 <div class="tsp-filter-group">
-                                    <label>Système</label>
+                                    <label>System</label>
                                     <div class="tsp-custom-select" data-filter="systeme">
-                                        <div class="tsp-custom-selected">Tous <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="ios">
@@ -108,9 +108,9 @@
                                     </div>
                                 </div>
                                 <div class="tsp-filter-group">
-                                    <label>Stockage</label>
+                                    <label>Storage</label>
                                     <div class="tsp-custom-select" data-filter="stockage">
-                                        <div class="tsp-custom-selected">Tous <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="64">
@@ -133,9 +133,9 @@
                                     </div>
                                 </div>
                                 <div class="tsp-filter-group">
-                                    <label>Taille écran</label>
+                                    <label>Screen size</label>
                                     <div class="tsp-custom-select" data-filter="taille">
-                                        <div class="tsp-custom-selected">Toutes <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="5">
@@ -159,11 +159,11 @@
                                 </div>
                             </t>
 
-                            <t t-if="category == 'Montres'">
+                            <t t-if="category == 'Watches'">
                                 <div class="tsp-filter-group">
-                                    <label>Compatibilité</label>
+                                    <label>Compatibility</label>
                                     <div class="tsp-custom-select" data-filter="compatibilite">
-                                        <div class="tsp-custom-selected">Toutes <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="ios">
@@ -181,9 +181,9 @@
 
                             <t t-if="category == 'Televisions'">
                                 <div class="tsp-filter-group">
-                                    <label>Taille</label>
+                                    <label>Size</label>
                                     <div class="tsp-custom-select" data-filter="taille">
-                                        <div class="tsp-custom-selected">Toutes <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="43">
@@ -206,9 +206,9 @@
                                     </div>
                                 </div>
                                 <div class="tsp-filter-group">
-                                    <label>Résolution</label>
+                                    <label>Resolution</label>
                                     <div class="tsp-custom-select" data-filter="resolution">
-                                        <div class="tsp-custom-selected">Toutes <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="4k">
@@ -224,11 +224,11 @@
                                 </div>
                             </t>
 
-                            <t t-if="category == 'Accessoires'">
+                            <t t-if="category == 'Accessories'">
                                 <div class="tsp-filter-group">
-                                    <label>Compatibilité</label>
+                                    <label>Compatibility</label>
                                     <div class="tsp-custom-select" data-filter="compatibilite">
-                                        <div class="tsp-custom-selected">Toutes <i
+                                        <div class="tsp-custom-selected">All <i
                                                 class="fa fa-chevron-down" /></div>
                                         <ul class="tsp-custom-options">
                                             <li data-value="iphone">
@@ -248,7 +248,7 @@
                                 </div>
                             </t>
 
-                            <button class="tsp-filter-btn"><i class="fa fa-filter" /> Filtrer</button>
+                            <button class="tsp-filter-btn"><i class="fa fa-filter" /> Filter</button>
                         </div>
 
                         <div id="oe_structure_product_grid" class="oe_structure oe_empty" />
@@ -288,7 +288,7 @@
                                                     </div>
                                                     <a t-att-href="item['product'].website_url"
                                                         class="tsp-btn tsp-btn-add">
-                                                        <i class="fa fa-shopping-cart" /> Voir </a>
+                                                        <i class="fa fa-shopping-cart" /> View </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -338,7 +338,7 @@
                                                             t-out="product['price']" /> €</span>
                                                     <button class="tsp-btn tsp-btn-add"
                                                         onclick="event.stopPropagation();">
-                                                        <i class="fa fa-shopping-cart" /> Ajouter </button>
+                                                        <i class="fa fa-shopping-cart" /> Add </button>
                                                 </div>
                                             </div>
                                         </div>
