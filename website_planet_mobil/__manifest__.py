@@ -30,6 +30,7 @@
         'data/product_detail_views.xml',
         'data/reviews.xml',
         'data/menus.xml',
+        'data/delivery_methods.xml',
         'templates/page.xml',
         'templates/politiques_cookies.xml',
         
