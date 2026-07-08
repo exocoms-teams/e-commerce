@@ -240,9 +240,11 @@ window.Comptabilite = (function() {
                     + '<td>' + _fmtDate(r.date_facturation) + '</td>'
                     + '<td>' + _fmtMoney(r.montant_ht) + '</td>'
                     + '<td>' + _fmtMoney(r.montant_ttc) + '</td>'
+                    + '<td>' + (r.ref_paiement ? _esc(r.ref_paiement) + (r.paye ? ' ✓' : '') : '—') + '</td>'
+                    + '<td>' + (r.net_artisan != null ? _fmtMoney(r.net_artisan) : '—') + '</td>'
                     + '</tr>';
             }).join('')
-            : '<tr><td colspan="5" class="acct-empty">Aucune facture émise — utilisez « Facturer » dans Gérer mes factures ou Interventions.</td></tr>';
+            : '<tr><td colspan="7" class="acct-empty">Aucune facture émise — utilisez « Facturer » dans Gérer mes factures ou Interventions.</td></tr>';
     }
 
     function facturerMission(missionId) {
