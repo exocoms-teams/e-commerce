@@ -1,0 +1,93 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* IDENTITÉ PREMIUM — MONETIQUE x MARKETPLACE                    */
+/* Surcouche visuelle : accent or "fintech", verre dépoli,        */
+/* signature de marque distinctive au-dessus du design system.   */
+/* ═══════════════════════════════════════════════════════════ */
+
+:root {
+    --gold: #c9a24b;
+    --gold-light: #e8c877;
+    --navy-deep: #060c1f;
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.14);
+}
+
+/* Signature dorée sur les titres de section */
+.exo-section-title h2::after,
+.exo-testimonials-header h2::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 3px;
+    margin: 14px auto 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+
+.exo-section-title,
+.exo-testimonials-header { text-align: center; }
+
+/* Badge pastille "premium" réutilisable */
+.exo-vendors-badge,
+.exo-testimonials-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--navy-deep);
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+/* Boutons dorés d'action forte (ex: devenir vendeur) */
+.btn-accent {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy-deep) !important;
+    font-weight: 700;
+}
+
+.btn-accent:hover {
+    box-shadow: 0 10px 28px rgba(201, 162, 75, 0.45);
+}
+
+/* Effet verre dépoli générique, utilisé par la trustbar et les cartes vendeur */
+.glass-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+/* Header : ombre discrète au scroll (activée par main.js) */
+header.o_header_standard.exo-scrolled,
+.o_header_sticky.exo-scrolled {
+    box-shadow: 0 4px 24px rgba(6, 12, 31, 0.12) !important;
+}
+
+/* Micro-interaction générale sur cartes cliquables */
+.exo-product-card,
+.exo-category-card,
+.exo-vendor-card,
+.exo-testimonial-card {
+    transition: transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s ease;
+}
+
+.exo-vendor-card:hover,
+.exo-product-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Reveal au scroll (classes ajoutées par main.js via IntersectionObserver) */
+.exo-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+}
+
+.exo-reveal.exo-reveal-in {
+    opacity: 1;
+    transform: translateY(0);
+}

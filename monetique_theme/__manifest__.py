@@ -8,6 +8,8 @@
     'depends': [
         'website',
         'website_sale',
+        'multi_vendor_marketplace',
+        'monetique_specs',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -18,15 +20,20 @@
         'views/partials/hero.xml',
         'views/partials/dashboard.xml',
         'views/partials/home_sections.xml',
+        'views/partials/vendors.xml',
+        'views/partials/trustbar.xml',
         'views/pages/home.xml',
     ],
     'assets': {
         'web.assets_frontend': [
             'monetique_theme/static/src/css/layout.css',
+            'monetique_theme/static/src/css/premium.css',
             'monetique_theme/static/src/css/header.css',
             'monetique_theme/static/src/css/hero.css',
+            'monetique_theme/static/src/css/trustbar.css',
             'monetique_theme/static/src/css/features.css',
             'monetique_theme/static/src/css/products.css',
+            'monetique_theme/static/src/css/vendors.css',
             'monetique_theme/static/src/css/footer.css',
             'monetique_theme/static/src/css/categories.css',
             'monetique_theme/static/src/css/cta.css',

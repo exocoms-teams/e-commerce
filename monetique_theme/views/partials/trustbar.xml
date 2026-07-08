@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="trustbar_section" name="Trust Bar">
+        <div class="exo-trustbar">
+            <div class="exo-trustbar-inner">
+                <div class="exo-trust-item">
+                    <i class="fa fa-shield-alt"/>
+                    <span>Certifié <strong>PCI-DSS</strong></span>
+                </div>
+                <div class="exo-trust-sep"/>
+                <div class="exo-trust-item">
+                    <i class="fa fa-bolt"/>
+                    <span><strong>99,9%</strong> de disponibilité</span>
+                </div>
+                <div class="exo-trust-sep"/>
+                <div class="exo-trust-item">
+                    <i class="fa fa-truck"/>
+                    <span>Livraison <strong>48h</strong> France &amp; Europe</span>
+                </div>
+                <div class="exo-trust-sep"/>
+                <div class="exo-trust-item">
+                    <i class="fa fa-store"/>
+                    <t t-set="seller_count" t-value="request.env['res.partner'].sudo().search_count([('state', '=', 'Approved')])"/>
+                    <span><strong t-esc="seller_count or '30+'"/> vendeurs partenaires</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

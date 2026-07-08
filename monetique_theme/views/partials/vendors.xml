@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="vendors_section" name="Vendors Showcase">
+        <t t-set="vendor_shops"
+           t-value="request.env['seller.shop'].sudo().search([('state', '=', 'Approved'), ('is_publish', '=', True)], limit=4)"/>
+
+        <section class="exo-vendors" t-if="vendor_shops">
+            <div class="exo-home-container">
+                <div class="exo-section-title">
+                    <span class="exo-vendors-badge">MARKETPLACE MONÉTIQUE</span>
+                    <h2>Nos vendeurs partenaires</h2>
+                    <p>Un réseau de revendeurs certifiés qui proposent leurs propres gammes de
+                        terminaux et solutions monétiques sur la marketplace Monetique.</p>
+                </div>
+
+                <div class="exo-vendors-grid">
+                    <t t-foreach="vendor_shops" t-as="shop">
+                        <a t-attf-href="/seller/profile/{{ shop.seller_id.profile_url or '' }}"
+                           class="exo-vendor-card">
+                            <div class="exo-vendor-avatar">
+                                <t t-if="shop.seller_image">
+                                    <img t-attf-src="/web/image/seller.shop/{{ shop.id }}/seller_image"
+                                         t-att-alt="shop.name"/>
+                                </t>
+                                <t t-else="">
+                                    <i class="fa fa-store"/>
+                                </t>
+                            </div>
+                            <h4 t-esc="shop.name"/>
+                            <p t-esc="shop.tag_line or shop.description or 'Vendeur certifié Monetique'"/>
+                            <span class="exo-vendor-count">
+                                <i class="fa fa-box"/>
+                                <t t-esc="shop.product_count or len(shop.product_ids)"/> produits
+                            </span>
+                        </a>
+                    </t>
+                </div>
+
+                <div class="exo-vendors-cta">
+                    <a href="/shop" class="btn btn-secondary">Voir toute la marketplace</a>
+                    <a href="/sell" class="btn btn-accent">
+                        <i class="fa fa-rocket"/> Devenir vendeur partenaire
+                    </a>
+                </div>
+            </div>
+        </section>
+    </template>
+
+</odoo>

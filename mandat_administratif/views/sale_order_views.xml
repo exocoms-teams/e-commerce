@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_form_mandat_administratif" model="ir.ui.view">
+        <field name="name">sale.order.form.mandat.administratif</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <group name="mandat_administratif"
+                       string="Mandat administratif — Chorus Pro"
+                       invisible="not is_public_entity_partner">
+                    <field name="is_public_entity_partner" invisible="1"/>
+                    <field name="engagement_juridique"
+                           placeholder="ex. EJ2600012345"/>
+                    <field name="chorus_service_code"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

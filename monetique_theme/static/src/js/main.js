@@ -28,7 +28,9 @@
 
     function initScrollReveal() {
         if (!('IntersectionObserver' in window)) return;
-        const targets = document.querySelectorAll('.mq-sol-card, .mq-hp-prod-card, [data-animate]');
+        const targets = document.querySelectorAll(
+            '.mq-sol-card, .mq-hp-prod-card, .exo-vendor-card, .exo-category-card, .exo-testimonial-card, [data-animate]'
+        );
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -46,6 +48,16 @@
             el.style.transition = `opacity 0.45s ease ${i * 0.06}s, transform 0.45s ease ${i * 0.06}s`;
             observer.observe(el);
         });
+    }
+
+    function initHeaderScrollEffect() {
+        const header = document.querySelector('header.o_header_standard, .o_header_sticky, header#top');
+        if (!header) return;
+        const onScroll = () => {
+            header.classList.toggle('exo-scrolled', window.scrollY > 12);
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
     }
 
     function initPriceFilter() {
@@ -92,6 +104,7 @@
         initDropdowns();
         initBurgerMenu();
         initScrollReveal();
+        initHeaderScrollEffect();
         initPriceFilter();
     }
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bloc "Fiche technique monétique" injecté sur la page produit /shop -->
+    <template id="product_monetique_specs" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_details']" position="after">
+            <div class="monetique-specs-block" t-if="product.monetique_category or product.pci_dss_certified or product.connectivity_type">
+                <h5 class="monetique-specs-title">
+                    <i class="fa fa-microchip"/> Fiche technique monétique
+                </h5>
+                <ul class="monetique-specs-list">
+                    <li t-if="product.monetique_category">
+                        <i class="fa fa-tags"/>
+                        <span>Catégorie :</span>
+                        <strong t-esc="dict(product._fields['monetique_category'].selection).get(product.monetique_category)"/>
+                    </li>
+                    <li t-if="product.pci_dss_certified" class="monetique-badge-line">
+                        <i class="fa fa-shield"/>
+                        <span class="monetique-badge-pci">Certifié PCI-DSS</span>
+                    </li>
+                    <li t-if="product.connectivity_type">
+                        <i class="fa fa-wifi"/>
+                        <span>Connectivité :</span>
+                        <strong t-esc="dict(product._fields['connectivity_type'].selection).get(product.connectivity_type)"/>
+                    </li>
+                    <li t-if="product.battery_life_hours">
+                        <i class="fa fa-battery-three-quarters"/>
+                        <span>Autonomie :</span>
+                        <strong><t t-esc="product.battery_life_hours"/> h</strong>
+                    </li>
+                    <li t-if="product.warranty_months">
+                        <i class="fa fa-certificate"/>
+                        <span>Garantie :</span>
+                        <strong><t t-esc="product.warranty_months"/> mois</strong>
+                    </li>
+                    <li t-if="product.bank_certified_model">
+                        <i class="fa fa-university"/>
+                        <span>Modèle certifié :</span>
+                        <strong t-esc="product.bank_certified_model"/>
+                    </li>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
