@@ -27,7 +27,7 @@ window.Photos = (() => {
     /* ── Traitement après sélection ── */
     async function handleFile(file, type) {
         if (!file || !file.type.startsWith('image/')) {
-            Toast.show('Fichier invalide', 'error');
+            Toast.show('Format invalide — JPEG, PNG ou WebP uniquement', 'error');
             return;
         }
 
@@ -54,8 +54,10 @@ window.Photos = (() => {
 
             if (!result?.queued) {
                 Toast.show(`📸 Photo ${type} enregistrée`, 'success');
-                // Mettre à jour le compteur de photos
                 MissionDetail.refreshPhotoCounts();
+                if (result.photo_id) {
+                    MissionDetail.addPhotoThumb({ type, preview: compressed, id: result.photo_id });
+                }
             }
         } catch (err) {
             Toast.show('Erreur upload photo: ' + err.message, 'error');
