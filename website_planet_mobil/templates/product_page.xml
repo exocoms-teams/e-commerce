@@ -6,7 +6,7 @@
             <t t-set="_prod_name" t-value="product['name'] if isinstance(product, dict) else product.name"/>
             <t t-set="_prod_desc" t-value="product['description'] if isinstance(product, dict) else (product.description_sale or '')"/>
             <t t-set="additional_title" t-value="_prod_name + ' — Planet Mobil Paris'"/>
-            <t t-set="website_meta_description" t-value="_prod_desc or ('Achetez ' + _prod_name + ' chez Planet Mobil à Paris. Livraison rapide, paiement sécurisé, retours sous 30 jours.')"/>
+            <t t-set="website_meta_description" t-value="_prod_desc or (request.env.lang.startswith('fr') and ('Achetez ' + _prod_name + ' chez Planet Mobil à Paris. Livraison rapide, paiement sécurisé, retours sous 30 jours.') or ('Buy ' + _prod_name + ' at Planet Mobil in Paris. Fast delivery, secure payment, 30-day returns.'))"/>
             <div id="wrap" class="oe_structure">
                 <div id="oe_structure_product_top" class="oe_structure oe_empty"/>
                 <section class="tsp-section tsp-product-detail">
@@ -61,7 +61,7 @@
                                     <i class="fa fa-heart-o" />
                                 </button>
                                 <button class="tsp-btn tsp-btn-add tsp-btn-lg">
-                                    <i class="fa fa-shopping-cart" /> Ajouter au panier </button>
+                                    <i class="fa fa-shopping-cart" /> Add to cart </button>
                             </div>
                         </div>
 
@@ -208,13 +208,13 @@
                         </div>
 
                         <div class="pm-specs-header">
-                            <h2 class="tsp-specs-title">Caractéristiques</h2>
+                            <h2 class="tsp-specs-title">Specifications</h2>
                             <div class="pm-specs-actions">
                                 <button class="pm-specs-btn pm-btn-print" onclick="window.print()">
-                                    <i class="fa fa-print"></i> Imprimer
+                                    <i class="fa fa-print"></i> Print
                                 </button>
                                 <button class="pm-specs-btn pm-btn-share" id="pm-share-btn">
-                                    <i class="fa fa-share-alt"></i> Partager
+                                    <i class="fa fa-share-alt"></i> Share
                                 </button>
                             </div>
                         </div>
@@ -230,7 +230,7 @@
                             </table>
                         </t>
                         <t t-else="">
-                            <p style="color:#94a3b8; font-style:italic;">Caractéristiques non renseignées.</p>
+                            <p style="color:#94a3b8; font-style:italic;">Specifications not available.</p>
                         </t>
 
                     </div>
@@ -256,18 +256,19 @@
                             var url  = window.location.href;
                             var title = document.querySelector('h1.tsp-product-detail-name');
                             var name  = title ? title.textContent.trim() : document.title;
+                            var pmFr = (document.documentElement.lang || '').toLowerCase().indexOf('fr') === 0;
 
                             // Web Share API (mobile natif)
                             if (navigator.share) {
                                 navigator.share({
                                     title: name + ' — Planet Mobil',
-                                    text:  'Découvrez ' + name + ' chez Planet Mobil Paris !',
+                                    text:  pmFr ? ('Découvrez ' + name + ' chez Planet Mobil Paris !') : ('Discover ' + name + ' at Planet Mobil Paris!'),
                                     url:   url
                                 }).catch(function () {});
                             } else {
                                 // Fallback : copier le lien
                                 navigator.clipboard.writeText(url).then(function () {
-                                    showToast('✓ Lien copié !');
+                                    showToast(pmFr ? '✓ Lien copié !' : '✓ Link copied!');
                                 }).catch(function () {
                                     // Ancien fallback
                                     var inp = document.createElement('input');
@@ -276,7 +277,7 @@
                                     inp.select();
                                     document.execCommand('copy');
                                     document.body.removeChild(inp);
-                                    showToast('✓ Lien copié !');
+                                    showToast(pmFr ? '✓ Lien copié !' : '✓ Link copied!');
                                 });
                             }
                         });
