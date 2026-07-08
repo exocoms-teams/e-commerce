@@ -99,6 +99,8 @@ window.App = (() => {
                     company_name: u.company_name || u.name,
                     zone: u.zone || '',
                     note_moyenne: u.note_moyenne || 0,
+                    badge_level: u.badge_level || 'bronze',
+                    badge_label: u.badge_label || '',
                     interventions: u.interventions || 0,
                     ca_total: u.ca_total || 0,
                     ca_mois: u.ca_mois || 0,
@@ -171,6 +173,14 @@ window.App = (() => {
         set('profileCompanyLg', company);
         set('profileInterv', nbInterv);
         set('profileSince', user.membre_depuis || '—');
+        const badgeEl = document.getElementById('profileBadge');
+        if (badgeEl) {
+            badgeEl.textContent = user.badge_label || CONFIG.BADGE_LABELS[user.badge_level] || '';
+        }
+        const noteEl = document.getElementById('profileNoteClient');
+        if (noteEl && user.note_moyenne) {
+            noteEl.textContent = user.note_moyenne + ' / 5';
+        }
         setVal('profileEmail', user.email || '');
         setVal('profileTel', user.phone || '');
         setVal('profileZone', user.zone || '');
