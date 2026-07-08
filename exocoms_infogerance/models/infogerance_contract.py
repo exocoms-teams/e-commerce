@@ -25,10 +25,12 @@ class InfogeranceContract(models.Model):
         ('cancelled', 'Résilié'),
     ], string='Statut', default='draft', tracking=True)
 
-    subscription_id = fields.Many2one('sale.subscription',
-                                       string='Abonnement lié')
-    contract_template_id = fields.Many2one('sale.contract.template',
-                                           string='Modèle de contrat')
+    subscription_id = fields.Many2one('sale.order',
+                                       string='Abonnement lié',
+                                       domain=[('is_subscription', '=', True)])
+    contract_template_id = fields.Many2one('sale.order.template',
+                                           string='Modèle de contrat',
+                                           domain=[('is_subscription', '=', True)])
     analytic_account_id = fields.Many2one('account.analytic.account',
                                           string='Compte analytique')
 
