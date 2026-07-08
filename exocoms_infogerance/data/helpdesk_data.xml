@@ -12,23 +12,8 @@
         <field name="assign_method">randomly</field>
     </record>
 
-    <!-- TYPES DE TICKET pour l'infogérance -->
-    <record id="helpdesk_ticket_type_incident" model="helpdesk.ticket.type">
-        <field name="name">Incident</field>
-        <field name="team_ids" eval="[(4, ref('helpdesk_team_infogerance'))]"/>
-    </record>
-    <record id="helpdesk_ticket_type_intervention" model="helpdesk.ticket.type">
-        <field name="name">Intervention programmée</field>
-        <field name="team_ids" eval="[(4, ref('helpdesk_team_infogerance'))]"/>
-    </record>
-    <record id="helpdesk_ticket_type_depannage" model="helpdesk.ticket.type">
-        <field name="name">Dépannage ponctuel</field>
-        <field name="team_ids" eval="[(4, ref('helpdesk_team_infogerance'))]"/>
-    </record>
-    <record id="helpdesk_ticket_type_installation" model="helpdesk.ticket.type">
-        <field name="name">Installation / Mise en service</field>
-        <field name="team_ids" eval="[(4, ref('helpdesk_team_infogerance'))]"/>
-    </record>
+    <!-- Catégories gérées via le champ Selection x_ticket_category sur helpdesk.ticket
+         (voir helpdesk_extend.py) — plus besoin de records helpdesk.ticket.type -->
 
     <!-- SLAs -->
     <record id="helpdesk_sla_critique" model="helpdesk.sla">

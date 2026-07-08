@@ -4,6 +4,13 @@ from odoo import api, fields, models, _
 class HelpdeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
 
+    x_ticket_category = fields.Selection([
+        ('incident', 'Incident'),
+        ('intervention_programmee', 'Intervention programmée'),
+        ('depannage_ponctuel', 'Dépannage ponctuel'),
+        ('installation', 'Installation / Mise en service'),
+    ], string='Catégorie infogérance', tracking=True)
+
     x_infogerance_contract_id = fields.Many2one(
         'exocoms.infogerance.contract',
         string='Contrat d\'infogérance')
