@@ -58,7 +58,10 @@ window.MissionDetail = (() => {
         _renderIntervention(m, urgConf);
         _renderDescription(m);
         _renderPhotos(m);
+        _renderDevisUnderPhotos(m);
         _renderDevis(m);
+        _renderConsommables(m);
+        _renderPenseBetes(m);
         _renderNotes(m);
         _renderFacture(m);
         _renderActions(m);
@@ -98,7 +101,11 @@ window.MissionDetail = (() => {
         card.style.display = 'block';
         if (content) {
             if (m.facture_numero) {
-                content.innerHTML = '<div style="font-size:15px;font-weight:700;color:#059669">' + m.facture_numero + '</div>';
+                let html = '<div style="font-size:15px;font-weight:700;color:#059669">' + m.facture_numero + '</div>';
+                if (m.ref_paiement) {
+                    html += '<div style="font-size:12px;color:#6B7280;margin-top:4px">Réf. paiement : ' + m.ref_paiement + '</div>';
+                }
+                content.innerHTML = html;
             } else if (m.a_facturer) {
                 content.innerHTML = '<div style="font-size:13px;color:#9CA3AF">Facture non générée</div>';
             } else {
@@ -107,13 +114,19 @@ window.MissionDetail = (() => {
         }
     }
 
-    function _renderClient(m, urgConf) {
+    function _renderClient(m) {
         const ci = document.getElementById('clientInfo');
         if (!ci) return;
         ci.innerHTML = `
             <div class="info-item">
                 <div class="info-label">Client</div>
                 <div class="info-val">${m.client || '–'}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-val">${m.client_email
+                    ? `<a href="mailto:${m.client_email}" style="color:var(--blue-light)">${m.client_email}</a>`
+                    : '–'}</div>
             </div>
             <div class="info-item">
                 <div class="info-label">Source</div>
@@ -142,6 +155,7 @@ window.MissionDetail = (() => {
                 <div class="info-label">Urgence</div>
                 <div class="info-val" style="color:${urgConf.text}">${urgConf.icon} ${m.urgence}</div>
             </div>
+            ${m.numero_dossier ? `<div class="info-item"><div class="info-label">N° dossier</div><div class="info-val">${m.numero_dossier}</div></div>` : ''}
             <div class="info-item" style="grid-column:1/-1">
                 <div class="info-label">Adresse</div>
                 <div class="info-val">
@@ -150,6 +164,11 @@ window.MissionDetail = (() => {
                 </div>
             </div>
             ${m.date_rdv ? `<div class="info-item"><div class="info-label">Date RDV</div><div class="info-val">${_formatDate(m.date_rdv)}</div></div>` : ''}
+            ${m.montant_garanti && m.source === 'assurance' ? `
+            <div class="info-item">
+                <div class="info-label">Garantie assurance</div>
+                <div class="info-val" style="font-weight:700">${_fmt(m.montant_garanti)} € HT</div>
+            </div>` : ''}
             ${m.montant_devis ? `
             <div class="info-item">
                 <div class="info-label">Montant Devis</div>
@@ -157,17 +176,11 @@ window.MissionDetail = (() => {
             </div>
             <div class="info-item">
                 <div class="info-label">Reste à charge</div>
-                <div class="info-val" style="font-weight:700">${_fmt(m.reste_a_charge)} €</div>
+                <div class="info-val" style="font-weight:700;color:${m.reste_a_charge > 0 ? '#DC2626' : '#059669'}">${_fmt(m.reste_a_charge)} €</div>
             </div>` : ''}
-            ${m.signature_avant ? `
+            ${m.devis_depasse_garantie ? `
             <div class="info-item" style="grid-column:1/-1">
-                <div class="info-label">✅ Signature avant</div>
-                <div class="info-val" style="color:#059669">Enregistrée</div>
-            </div>` : ''}
-            ${m.signature_apres ? `
-            <div class="info-item" style="grid-column:1/-1">
-                <div class="info-label">✅ Signature après</div>
-                <div class="info-val" style="color:#059669">Enregistrée${m.facture_numero ? ' — ' + m.facture_numero : ''}</div>
+                <div class="info-val" style="color:#D97706;font-size:12px">⚠️ Devis supérieur à la garantie — le client peut accepter ou refuser</div>
             </div>` : ''}
         `;
     }
@@ -185,12 +198,15 @@ window.MissionDetail = (() => {
         const avant = (m.photos || []).filter(p => p.type_photo === 'avant');
         const apres = (m.photos || []).filter(p => p.type_photo === 'apres');
         if (counts) counts.textContent = `${avant.length} avant · ${apres.length} après`;
+        const isRecap = ['termine','facture','clos','annule'].includes(m.state);
         [...avant, ...apres].forEach(photo => {
             const thumb = document.createElement('div');
             thumb.className = `photo-thumb ${photo.type_photo}`;
+            thumb.dataset.photoId = photo.id;
             thumb.innerHTML = `
                 <img src="${photo.url || '#'}" alt="Photo ${photo.type_photo}" onerror="this.style.display='none'"/>
                 <div class="photo-thumb-label">${photo.type_photo}</div>
+                ${!isRecap ? `<button class="photo-delete-btn" onclick="MissionDetail.deletePhoto(${photo.id})" title="Supprimer">✕</button>` : ''}
             `;
             grid.appendChild(thumb);
         });
@@ -198,16 +214,48 @@ window.MissionDetail = (() => {
         const btnAvant = document.getElementById('btnPhotoAvant');
         const btnApres = document.getElementById('btnPhotoApres');
         if (btnAvant) btnAvant.style.display = ['nouveau','assigne','rdv_planifie','en_cours'].includes(st) ? 'flex' : 'none';
-        if (btnApres) btnApres.style.display = ['en_cours','travaux_en_cours','devis_accepte'].includes(st) ? 'flex' : 'none';
+        if (btnApres) btnApres.style.display = ['en_cours','travaux_en_cours','devis_accepte','devis_envoye'].includes(st) ? 'flex' : 'none';
     }
 
-    function addPhotoThumb({ type, preview }) {
+    function _renderDevisUnderPhotos(m) {
+        const block = document.getElementById('devisUnderPhotos');
+        if (!block) return;
+        block.innerHTML = '';
+        const isDone = ['termine','facture','clos','annule'].includes(m.state);
+        if (isDone) return;
+        if (!m.devis) {
+            block.appendChild(_btn('💶 Créer un devis', 'btn-nav', () => DevisForm.open(m.id)));
+        }
+    }
+
+    function addPhotoThumb({ type, preview, id }) {
         const grid = document.getElementById('photosGrid');
         if (!grid) return;
         const thumb = document.createElement('div');
         thumb.className = `photo-thumb ${type}`;
-        thumb.innerHTML = `<img src="${preview}" alt="Photo ${type}"/><div class="photo-thumb-label">${type}</div>`;
+        if (id) thumb.dataset.photoId = id;
+        thumb.innerHTML = `
+            <img src="${preview}" alt="Photo ${type}"/>
+            <div class="photo-thumb-label">${type}</div>
+            <button class="photo-delete-btn" onclick="MissionDetail.deletePhoto(${id || 0}, this)" title="Supprimer">✕</button>
+        `;
         grid.appendChild(thumb);
+    }
+
+    async function deletePhoto(photoId, btnEl) {
+        if (!photoId || !_missionId) {
+            if (btnEl) btnEl.closest('.photo-thumb')?.remove();
+            refreshPhotoCounts();
+            return;
+        }
+        if (!confirm('Supprimer cette photo ?')) return;
+        try {
+            await API.deletePhoto(_missionId, photoId);
+            Toast.show('Photo supprimée', 'success');
+            await _load();
+        } catch (err) {
+            Toast.show('Erreur: ' + err.message, 'error');
+        }
     }
 
     function refreshPhotoCounts() {
@@ -218,6 +266,68 @@ window.MissionDetail = (() => {
         if (el) el.textContent = `${avant} avant · ${apres} après`;
     }
 
+    function _renderConsommables(m) {
+        const list = document.getElementById('consommablesList');
+        if (!list) return;
+        const items = m.consommables || [];
+        if (!items.length) {
+            list.textContent = 'Aucun consommable';
+            return;
+        }
+        list.innerHTML = items.map(c => `
+            <div style="padding:6px 0;border-bottom:1px solid #E5E7EB;font-size:13px">
+                ${c.designation} × ${c.quantite} ${c.unite || ''}
+                ${c.commande_fournisseur ? ' <span style="color:#D97706">📦 commande</span>' : ''}
+            </div>
+        `).join('');
+    }
+
+    function _renderPenseBetes(m) {
+        const list = document.getElementById('penseBeteList');
+        if (!list) return;
+        const items = m.pense_betes || [];
+        if (!items.length) {
+            list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;margin:0">Aucun pense-bête</p>';
+            return;
+        }
+        list.innerHTML = items.map(p => `
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px">
+                <span style="flex:1">${p.contenu}</span>
+                <button class="btn btn-outline btn-sm" style="padding:4px 8px" onclick="MissionDetail.donePenseBete(${p.id})">✓</button>
+            </div>
+        `).join('');
+    }
+
+    async function addConsommable() {
+        const des = document.getElementById('consoDesignation')?.value.trim();
+        const qte = parseFloat(document.getElementById('consoQte')?.value) || 1;
+        if (!des || !_missionId) return;
+        try {
+            await API.addConsommable(_missionId, { designation: des, quantite: qte, unite: 'pièce' });
+            document.getElementById('consoDesignation').value = '';
+            Toast.show('Consommable ajouté', 'success');
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    async function addPenseBete() {
+        const contenu = document.getElementById('penseBeteInput')?.value.trim();
+        if (!contenu) return;
+        try {
+            await API.addPenseBete(contenu, _missionId);
+            document.getElementById('penseBeteInput').value = '';
+            Toast.show('Pense-bête ajouté', 'success');
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    async function donePenseBete(id) {
+        try {
+            await API.donePenseBete(id);
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
     function _renderDevis(m) {
         const content = document.getElementById('devisContent');
         const badge   = document.getElementById('devisStatusBadge');
@@ -225,7 +335,7 @@ window.MissionDetail = (() => {
         const devis = m.devis || null;
         if (!devis) {
             if (badge) badge.style.display = 'none';
-            content.innerHTML = `<p style="color:#9CA3AF;font-size:13px;margin-bottom:12px">Aucun devis créé</p>`;
+            content.innerHTML = `<p style="color:#9CA3AF;font-size:13px;margin-bottom:12px">Aucun devis créé — utilisez le bouton sous les photos</p>`;
             return;
         }
         const devisStates = {
@@ -266,9 +376,6 @@ window.MissionDetail = (() => {
         if (badge) { badge.textContent = count || ''; badge.style.display = count ? 'flex' : 'none'; }
     }
 
-    /* ══════════════════════════════════════════════════════════
-       ACTIONS
-    ══════════════════════════════════════════════════════════ */
     function _renderActions(m) {
         const block = document.getElementById('missionActions');
         if (!block) return;
@@ -276,42 +383,30 @@ window.MissionDetail = (() => {
 
         const st  = m.state;
         const dev = m.devis;
-
-        // La mission est-elle terminée/annulée ?
         const isDone = ['termine','facture','clos','annule'].includes(st);
         if (isDone) return;
 
-        // Signature AVANT — affichée si pas encore faite
         if (!m.signature_avant) {
             block.appendChild(_btn('✍️ Signature Avant Intervention', 'btn-start', () =>
                 Signature.open({ mode: 'avant', missionId: m.id })
             ));
         }
 
-        // Démarrer — disponible tant que pas encore en cours
-        // Le check signature est informatif (toast) mais ne bloque plus l'affichage
         if (!['en_cours','travaux_en_cours','devis_accepte','devis_envoye','devis_refuse'].includes(st)) {
             block.appendChild(_btn('🔧 Démarrer l\'intervention', 'btn-start', async () => {
                 const avant = document.querySelectorAll('.photo-thumb.avant').length;
                 if (avant === 0) {
-                    Toast.show('⚠️ Prenez au moins une photo AVANT de démarrer', 'warning');
+                    Toast.show('⚠️ Prenez au moins une photo AVANT (* obligatoire)', 'warning');
                     return;
                 }
                 await _action('DEMARRER_MISSION', () => API.demarrer(m.id), { missionId: m.id });
             }));
         }
 
-        // Créer un devis (si pas encore de devis)
-        if (!dev) {
-            block.appendChild(_btn('💶 Créer un devis', 'btn-nav', () => DevisForm.open(m.id)));
-        }
-
-        // Modifier devis brouillon
         if (dev?.state === 'brouillon') {
             block.appendChild(_btn('✏️ Modifier le devis', 'btn-nav', () => DevisForm.open(m.id, dev, false)));
         }
 
-        // Avenant — devis accepté pendant travaux
         if (dev?.state === 'accepte') {
             block.appendChild(_btn('⚠️ Modifier le devis (avenant)', 'btn-warning', () => {
                 if (!confirm('Modifier le devis obligera le client à signer à nouveau. Continuer ?')) return;
@@ -319,36 +414,32 @@ window.MissionDetail = (() => {
             }));
         }
 
-        // Faire signer le devis envoyé
         if (dev?.state === 'envoye') {
             block.appendChild(_btn('✅ Faire signer le client (devis)', 'btn-start', () =>
                 Signature.open({ mode: 'devis', devisId: dev.id, missionId: m.id })
             ));
             block.appendChild(_btn('❌ Client refuse le devis', 'btn-danger', async () => {
-                if (!confirm('Confirmer le refus ?')) return;
+                if (!confirm('Confirmer le refus ? La mission pourra être clôturée et l\'assurance facturée.')) return;
                 await _action('REFUSER_DEVIS', () => API.refuserDevis(dev.id), { devisId: dev.id });
             }));
         }
 
-        // Re-signature devis modifié
         if (dev?.state === 'en_revision') {
             block.appendChild(_btn('✍️ Re-signature client (devis modifié)', 'btn-warning', () =>
                 Signature.open({ mode: 'devis_modifie', devisId: dev.id, missionId: m.id })
             ));
         }
 
-        // Signature APRÈS + Clôture (mission démarrée)
-        if (['en_cours','travaux_en_cours','devis_accepte'].includes(st)) {
-            // Toujours proposer la signature après
+        const canClose = ['en_cours','travaux_en_cours','devis_accepte','devis_refuse'].includes(st);
+        if (canClose) {
             block.appendChild(_btn('✍️ Signature Après Intervention', 'btn-start', async () => {
                 const apres = document.querySelectorAll('.photo-thumb.apres').length;
                 if (apres === 0) {
-                    Toast.show('⚠️ Prenez des photos APRÈS les travaux avant de faire signer', 'warning');
+                    Toast.show('⚠️ Prenez des photos APRÈS (* obligatoire)', 'warning');
                     return;
                 }
                 Signature.open({ mode: 'apres', missionId: m.id });
             }));
-            // Toujours proposer la clôture (la signature est encouragée, pas bloquante)
             block.appendChild(_btn('🎉 Clôturer la mission', 'btn-start', async () => {
                 const apres = document.querySelectorAll('.photo-thumb.apres').length;
                 if (apres === 0) {
@@ -360,7 +451,6 @@ window.MissionDetail = (() => {
             }));
         }
 
-        // Contact / Maps
         if (m.tel_sur_place) {
             block.appendChild(_btn(`📞 Appeler ${m.tel_sur_place}`, 'btn-call', () => {
                 window.location.href = `tel:${m.tel_sur_place}`;
@@ -415,7 +505,11 @@ window.MissionDetail = (() => {
         getMission: () => _mission,
         addPhotoThumb,
         refreshPhotoCounts,
+        deletePhoto,
         saveNotes,
+        addConsommable,
+        addPenseBete,
+        donePenseBete,
         openMessagerie: () => { if (_missionId) Messagerie.open(_missionId); },
     };
 })();
