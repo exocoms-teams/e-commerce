@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="ss_page_404" name="Sinistre — Page introuvable">
+        <t t-call="website.layout">
+            <div id="wrap" class="container py-5 text-center">
+                <h1>Dossier introuvable</h1>
+                <p t-esc="message or 'Vérifiez le lien reçu par email.'"/>
+                <a href="/" class="btn btn-primary mt-3">Retour à l'accueil</a>
+            </div>
+        </t>
+    </template>
+
+    <template id="ss_page_suivi" name="Sinistre — Suivi mission client">
+        <t t-call="website.layout">
+            <div id="wrap" class="container py-4" style="max-width:720px">
+                <h2>Suivi mission <t t-esc="mission.reference"/></h2>
+                <p class="text-muted">Code d'accès : <strong t-esc="mission.code_acces"/></p>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>État :</strong> <t t-esc="mission.state"/></p>
+                        <p><strong>Adresse :</strong> <t t-esc="mission.adresse_intervention"/></p>
+                        <t t-if="mission.source == 'assurance'">
+                            <p><strong>Garantie assurance :</strong>
+                                <t t-esc="mission.montant_garanti or 150"/> € HT
+                            </p>
+                        </t>
+                    </div>
+                </div>
+
+                <t t-set="devis" t-value="mission.devis_ids.sorted('date_devis', reverse=True)[:1]"/>
+                <t t-if="devis and devis.state in ('envoye', 'en_revision')">
+                    <div class="card mb-3 border-primary">
+                        <div class="card-header bg-primary text-white">Devis à signer</div>
+                        <div class="card-body">
+                            <p>Montant total : <strong><t t-esc="'%.2f' % devis.montant_total"/> €</strong></p>
+                            <t t-if="mission.devis_depasse_garantie">
+                                <p class="text-warning">Ce devis dépasse la garantie assurance.
+                                    Reste à charge : <strong><t t-esc="'%.2f' % mission.reste_a_charge"/> €</strong>
+                                </p>
+                            </t>
+                            <a t-attf-href="/devis/signer/{{mission.token_api}}/{{devis.id}}"
+                               class="btn btn-primary btn-lg w-100">Signer le devis</a>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-if="mission.state in ('termine', 'facture', 'clos') and not mission.avis_ids">
+                    <div class="card mb-3">
+                        <div class="card-header">Noter votre artisan</div>
+                        <div class="card-body">
+                            <form t-attf-action="/suivi/{{mission.token_api}}/avis" method="post" class="o_website_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mb-3">
+                                    <label>Note (1 à 5)</label>
+                                    <select name="note" class="form-select" required="required">
+                                        <option value="5">5 — Excellent</option>
+                                        <option value="4">4 — Très bien</option>
+                                        <option value="3">3 — Correct</option>
+                                        <option value="2">2 — Insuffisant</option>
+                                        <option value="1">1 — Mauvais</option>
+                                    </select>
+                                </div>
+                                <textarea name="commentaire" class="form-control mb-3" rows="3" placeholder="Commentaire (optionnel)"/>
+                                <button type="submit" class="btn btn-success w-100">Envoyer mon avis</button>
+                            </form>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="ss_page_devis_signer" name="Sinistre — Signature devis client">
+        <t t-call="website.layout">
+            <div id="wrap" class="container py-4" style="max-width:720px">
+                <h2>Signature du devis</h2>
+                <p>Mission <strong t-esc="mission.reference"/></p>
+                <p>Montant : <strong><t t-esc="'%.2f' % devis.montant_total"/> € TTC</strong></p>
+
+                <t t-if="mission.source == 'assurance'">
+                    <div class="alert alert-info">
+                        Prise en charge assurance : <strong><t t-esc="mission.montant_garanti or 150"/> € HT</strong>.
+                        La signature est obligatoire même en cas de garantie.
+                        <t t-if="mission.devis_depasse_garantie">
+                            <br/>Reste à charge si acceptation :
+                            <strong><t t-esc="'%.2f' % mission.reste_a_charge"/> €</strong>
+                        </t>
+                    </div>
+                </t>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <canvas id="signCanvas" width="600" height="200"
+                                style="border:2px dashed #ccc;width:100%;touch-action:none;border-radius:8px"/>
+                        <div class="mt-2 d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearSign()">Effacer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="signForm" t-attf-action="/devis/signer/{{mission.token_api}}/{{devis.id}}/submit" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="signature" id="signInput"/>
+                    <input type="hidden" name="action" id="signAction" value="accept"/>
+                    <button type="button" class="btn btn-success btn-lg w-100 mb-2" onclick="submitSign('accept')">
+                        Accepter et signer
+                    </button>
+                    <t t-if="mission.devis_depasse_garantie or mission.source == 'assurance'">
+                        <button type="button" class="btn btn-outline-danger w-100" onclick="submitSign('refuse')">
+                            Refuser le devis
+                        </button>
+                    </t>
+                </form>
+            </div>
+            <script type="text/javascript">
+                const canvas = document.getElementById('signCanvas');
+                const ctx = canvas.getContext('2d');
+                let drawing = false;
+                canvas.addEventListener('mousedown', () => drawing = true);
+                canvas.addEventListener('mouseup', () => drawing = false);
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!drawing) return;
+                    const r = canvas.getBoundingClientRect();
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = '#1E40AF';
+                    ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+                });
+                canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; });
+                canvas.addEventListener('touchend', () => drawing = false);
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!drawing) return;
+                    const t = e.touches[0];
+                    const r = canvas.getBoundingClientRect();
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = '#1E40AF';
+                    ctx.lineTo(t.clientX - r.left, t.clientY - r.top);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+                });
+                function clearSign() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.beginPath();
+                }
+                function submitSign(action) {
+                    document.getElementById('signInput').value = canvas.toDataURL('image/png');
+                    document.getElementById('signAction').value = action;
+                    document.getElementById('signForm').submit();
+                }
+            </script>
+        </t>
+    </template>
+
+    <template id="ss_page_devis_signe_ok" name="Sinistre — Devis signé confirmation">
+        <t t-call="website.layout">
+            <div id="wrap" class="container py-5 text-center" style="max-width:600px">
+                <h2 class="text-success">✅ Devis enregistré</h2>
+                <p t-esc="message"/>
+                <a t-attf-href="/suivi/{{token}}" class="btn btn-primary mt-3">Retour au suivi</a>
+            </div>
+        </t>
+    </template>
+
+</odoo>
