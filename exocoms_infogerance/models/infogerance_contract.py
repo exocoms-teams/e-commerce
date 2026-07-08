@@ -84,7 +84,7 @@ class InfogeranceContract(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Tickets'),
             'res_model': 'helpdesk.ticket',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('x_infogerance_contract_id', '=', self.id)],
             'context': {
                 'default_x_infogerance_contract_id': self.id,

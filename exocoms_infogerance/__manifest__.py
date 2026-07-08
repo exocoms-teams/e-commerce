@@ -10,6 +10,8 @@
         'website_sale',
         'sale_subscription',
         'helpdesk',
+        'helpdesk_sale',
+        'rating',
         'mail',
         'portal',
         'product',

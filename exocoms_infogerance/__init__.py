@@ -13,14 +13,12 @@ def post_init_hook(env):
     if not website:
         return
 
-    # Chercher ou créer le menu parent /infogerance
     parent_menu = env['website.menu'].search([
         ('url', '=', '/infogerance'),
         ('website_id', '=', website.id),
     ], limit=1)
 
     if parent_menu:
-        # Vérifier si le sous-menu existe déjà
         existing = env['website.menu'].search([
             ('url', '=', '/infogerance/detail'),
             ('website_id', '=', website.id),
