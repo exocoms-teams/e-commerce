@@ -17,10 +17,15 @@ window.Dashboard = (() => {
         const map = {
             serrurerie:     ['badge-serrurerie',  'Serrurerie'],
             plomberie:      ['badge-plomberie',   'Plomberie'],
+            chauffagiste:   ['badge-autre',       'Chauffagiste'],
             electricite:    ['badge-electricite', 'Électricité'],
+            assainissement: ['badge-autre',       'Assainissement'],
             vitrerie:       ['badge-vitrerie',    'Vitrerie'],
+            nuisibles:      ['badge-autre',       'Nuisibles'],
+            travaux:        ['badge-autre',       'Travaux'],
             menuiserie_int: ['badge-autre',       'Menuiserie Int.'],
             menuiserie_ext: ['badge-autre',       'Menuiserie Ext.'],
+            maconnerie:     ['badge-autre',       'Maçonnerie'],
             autre:          ['badge-autre',       'Autre'],
         };
         const [cls, label] = map[type] || ['badge-autre', type || '—'];
