@@ -63,10 +63,28 @@ window.CONFIG = {
     TYPE_LABELS: {
         serrurerie:     '🔐 Serrurerie',
         plomberie:      '🔧 Plomberie',
+        chauffagiste:   '🔥 Chauffagiste',
+        electricite:    '⚡ Électricité',
+        assainissement: '💧 Assainissement',
+        vitrerie:       '🪟 Vitrerie',
+        nuisibles:      '🐛 Nuisibles',
+        travaux:        '🔨 Travaux',
         menuiserie_int: '🚪 Menuiserie Int.',
         menuiserie_ext: '🚪 Menuiserie Ext.',
-        vitrerie:       '🪟 Vitrerie',
-        electricite:    '⚡ Électricité',
+        maconnerie:     '🧱 Maçonnerie',
         autre:          '🔨 Autre',
     },
+
+    BADGE_LABELS: {
+        bronze: '🥉 Bronze',
+        argent: '🥈 Argent',
+        or:     '🥇 Or',
+    },
+
+    PHOTO_FORMATS: 'JPEG, PNG, WebP — max 2 Mo par photo',
+    TVA_OPTIONS: [
+        { value: '20', label: 'TVA 20%' },
+        { value: '10', label: 'TVA 10%' },
+        { value: '0',  label: 'Hors taxe' },
+    ],
 };
