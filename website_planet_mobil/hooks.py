@@ -135,12 +135,29 @@ def _archiver_carriers_demo(env):
             _logger.warning("Planet Mobil: carrier '%s' non archive (%s)", carrier.name, e)
 
 
+def _activer_virement_bancaire(env):
+    """Active le virement bancaire (Wire Transfer) comme moyen de paiement.
+    Odoo.sh recrée une base fraiche a chaque push → le provider repasse en
+    'disabled'. Ce hook le remet en 'enabled' automatiquement.
+    """
+    try:
+        provider = env.ref('payment.payment_provider_transfer', raise_if_not_found=False)
+        if provider:
+            provider.sudo().write({'state': 'enabled'})
+            _logger.info("Planet Mobil: Wire Transfer active.")
+        else:
+            _logger.warning("Planet Mobil: Wire Transfer introuvable (xmlid payment.payment_provider_transfer).")
+    except Exception as e:
+        _logger.warning("Planet Mobil: Wire Transfer non active (%s)", e)
+
+
 def _run_hooks(env):
     _activer_francais_par_defaut(env)
     _supprimer_demo_natif(env)
     _configurer_shop(env)
     _activer_cookies_bar(env)
     _archiver_carriers_demo(env)
+    _activer_virement_bancaire(env)
 
 
 def post_init_hook(env):
