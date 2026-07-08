@@ -3105,7 +3105,7 @@ a[name="website_sale_main_button"] {
 .tsp-price,
 .tsp-price-promo { color: var(--alt-red) !important; }
 #product_detail .oe_price .oe_currency_value { color: var(--alt-red) !important; }
-.o_total_card tr[name="o_order_total"] strong { color: var(--alt-red) !important; }
+/* .o_total_card tr[name="o_order_total"] strong : couleur gérée dans la section checkout/confirmation */
 .o_wish_price { color: var(--alt-red) !important; }
 .hp-product-price { color: var(--alt-red) !important; font-weight: 800 !important; }
 
@@ -3598,4 +3598,155 @@ a[name="website_sale_main_button"] {
 .o_customer_address_fill .label-optional {
     font-weight: 400 !important;
     color: #6b7280;
+}
+
+/* ===========================
+   PAGE CONFIRMATION (/shop/confirmation)
+   =========================== */
+
+/* "Thank you" heading */
+.o_website_sale_checkout h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.02em;
+}
+
+/* Numéro de commande */
+.o_website_sale_checkout #order_name h5 {
+    font-size: 1rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+.o_website_sale_checkout #order_name h5 span:last-child {
+    color: var(--blue, #2563eb);
+    font-weight: 700;
+}
+
+/* Alerte "Communication" → style PM (bordure bleue gauche) */
+.o_website_sale_checkout .alert-info {
+    background: #eff6ff !important;
+    border: none !important;
+    border-left: 4px solid var(--blue, #2563eb) !important;
+    border-radius: 10px !important;
+    color: #1e3a8a !important;
+    padding: 16px 20px !important;
+}
+.o_website_sale_checkout .alert-info b,
+.o_website_sale_checkout .alert-info strong {
+    color: #1e40af;
+}
+.o_website_sale_checkout .alert-info span {
+    color: var(--blue, #2563eb);
+    font-weight: 700;
+}
+
+/* Badge "Delivery & Billing" → bleu PM */
+.o_website_sale_checkout #delivery_and_billing .badge.text-bg-info {
+    background-color: var(--blue, #2563eb) !important;
+    color: #fff !important;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+/* Carte adresse livraison */
+.o_website_sale_checkout #delivery_and_billing.card {
+    border-radius: 12px !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Bouton Print → style PM */
+.o_website_sale_checkout .btn-light[href*="print"] {
+    border: 1.5px solid var(--blue, #2563eb) !important;
+    color: var(--blue, #2563eb) !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+.o_website_sale_checkout .btn-light[href*="print"]:hover {
+    background: var(--blue, #2563eb) !important;
+    color: #fff !important;
+}
+
+/* Lien "Edit" dans l'alerte → bleu PM discret */
+.o_website_sale_checkout .alert-info .btn-link {
+    color: #93c5fd !important;
+}
+
+/* ── Carte récapitulatif droite (confirmation + checkout) ── */
+.o_website_sale_checkout .o_total_card {
+    border-radius: 16px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.13) !important;
+    overflow: visible !important;
+}
+
+.o_website_sale_checkout .o_total_card .card-body {
+    padding: 20px 24px !important;
+}
+
+/* Ligne produit : image + nom + prix sans coupure */
+.o_website_sale_checkout .o_total_card .o_cart_products_table {
+    table-layout: auto;
+    width: 100%;
+}
+
+.o_website_sale_checkout .o_total_card .td-img {
+    width: 64px !important;
+    padding-right: 12px !important;
+    vertical-align: top;
+}
+
+.o_website_sale_checkout .o_total_card .o_cart_product_image img {
+    width: 56px !important;
+    height: 56px !important;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.o_website_sale_checkout .o_total_card .td-product_name {
+    vertical-align: top;
+    padding-right: 8px !important;
+}
+
+.o_website_sale_checkout .o_total_card .td-product_name span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+}
+
+.o_website_sale_checkout .o_total_card .td-price {
+    white-space: nowrap;
+    vertical-align: top;
+    text-align: right !important;
+    padding-right: 0 !important;
+    padding-left: 8px !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Lignes Delivery / Subtotal / Taxes */
+.o_website_sale_checkout .o_cart_total td {
+    font-size: 0.875rem;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Ligne Total */
+.o_website_sale_checkout .o_cart_total tr[name="o_order_total"] td {
+    padding-top: 12px !important;
+    border-top: 1.5px solid #e5e7eb !important;
+}
+
+.o_website_sale_checkout .o_cart_total tr[name="o_order_total"] strong {
+    color: var(--blue, #2563eb) !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
 }
