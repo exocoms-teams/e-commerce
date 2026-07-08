@@ -69,8 +69,10 @@ class AssuranceAPIController(http.Controller):
                 'description_sinistre': data.get('description', ''),
                 'adresse_intervention': data.get('adresse', ''),
                 'tel_sur_place':        data.get('client_tel', ''),
-                'montant_garanti':      float(data.get('montant_garanti', 0)),
+                'montant_garanti':      float(data.get('montant_garanti', 150)),
                 'franchise':            float(data.get('franchise', 0)),
+                'tva_client':           '0',
+                'mode_paiement':        'assurance',
             })
 
             return _ok({
