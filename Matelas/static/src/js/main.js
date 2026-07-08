@@ -352,7 +352,7 @@
 
         (function() {
             function normalizePaymentButtons() {
-                document.querySelectorAll('button, span').forEach(function(el) {
+                document.querySelectorAll('button, span, a').forEach(function(el) {
                     if (el.children.length > 0) { return; }
                     const t = el.textContent.trim();
                     if (/^(Payer avec|Pay with)\s+\S/i.test(t)) {
@@ -361,14 +361,11 @@
                 });
             }
 
-            const paymentForm = document.querySelector('#o_payment_form, .o_payment_form, [name="o_payment_form"]');
-            if (paymentForm) {
+            normalizePaymentButtons();
+            const mo = new MutationObserver(function() {
                 normalizePaymentButtons();
-                const mo = new MutationObserver(function() {
-                    normalizePaymentButtons();
-                });
-                mo.observe(paymentForm, { childList: true, subtree: true, characterData: true });
-            }
+            });
+            mo.observe(document.body, { childList: true, subtree: true, characterData: true });
         })();
 
     }
