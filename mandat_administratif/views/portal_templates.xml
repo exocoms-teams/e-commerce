@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Carte d'accès sur la page « Mon compte » du portail -->
+    <template id="portal_my_home_mandat" name="Portail : mandat administratif"
+              inherit_id="portal.portal_my_home" priority="60">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/mandat_administratif/static/src/img/payment_method_icon.png'"/>
+                <t t-set="title">Mandat administratif</t>
+                <t t-set="text">Déclarez votre structure publique (délai 30/50/60 jours) et vos informations Chorus Pro</t>
+                <t t-set="url" t-value="'/my/mandat-administratif'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Formulaire d'auto-déclaration -->
+    <template id="portal_mandat_form" name="Mandat administratif — Ma structure">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+            <div class="container my-4 o_mandat_portal_form" style="max-width: 720px;">
+                <h3 class="mb-2">Mandat administratif — votre structure</h3>
+                <p class="text-muted">
+                    Si vous êtes une administration, une collectivité ou un
+                    établissement public, déclarez ici votre structure : le
+                    mode de paiement « Mandat administratif » sera activé sur
+                    votre compte et le délai global de paiement légal appliqué
+                    automatiquement à vos factures, déposées sur Chorus Pro.
+                </p>
+
+                <div t-if="success" class="alert alert-success" role="status">
+                    <i class="fa fa-check-circle me-1" role="presentation"/>
+                    Vos informations ont bien été enregistrées.
+                    <t t-if="partner.is_public_entity">
+                        Votre délai global de paiement :
+                        <b><t t-out="partner.public_payment_delay"/> jours</b>.
+                    </t>
+                </div>
+                <div t-if="error_message" class="alert alert-danger" role="alert">
+                    <i class="fa fa-exclamation-circle me-1" role="presentation"/>
+                    <t t-out="error_message"/>
+                </div>
+
+                <form method="post" class="card p-4">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input"
+                               id="is_public_entity" name="is_public_entity"
+                               t-att-checked="'checked' if partner.is_public_entity else None"/>
+                        <label class="form-check-label fw-bold" for="is_public_entity">
+                            Notre organisme est une entité publique
+                            (règlement par mandat administratif)
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="public_entity_type">
+                            Type de structure <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="public_entity_type"
+                                name="public_entity_type">
+                            <option value="">— Sélectionnez votre structure —</option>
+                            <t t-foreach="entity_types" t-as="entity_type">
+                                <option t-att-value="entity_type[0]"
+                                        t-att-selected="'selected' if partner.public_entity_type == entity_type[0] else None">
+                                    <t t-out="entity_type[1]"/>
+                                </option>
+                            </t>
+                        </select>
+                        <div class="form-text">
+                            Détermine votre délai global de paiement légal
+                            (Code de la commande publique).
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="chorus_siret">SIRET (Chorus Pro)</label>
+                            <input type="text" class="form-control"
+                                   id="chorus_siret" name="chorus_siret"
+                                   maxlength="14" placeholder="14 chiffres"
+                                   t-att-value="partner.chorus_siret or ''"/>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="chorus_service_code">Code service (Chorus Pro)</label>
+                            <input type="text" class="form-control"
+                                   id="chorus_service_code" name="chorus_service_code"
+                                   t-att-value="partner.chorus_service_code or ''"/>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input"
+                               id="chorus_engagement_required" name="chorus_engagement_required"
+                               t-att-checked="'checked' if partner.chorus_engagement_required else None"/>
+                        <label class="form-check-label" for="chorus_engagement_required">
+                            Notre structure exige un numéro d'engagement
+                            juridique (bon de commande) sur Chorus Pro
+                        </label>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a href="/my" class="btn btn-link">Retour à mon compte</a>
+                    </div>
+                </form>
+
+                <p class="small text-muted mt-3 mb-0">
+                    Délais globaux de paiement : 30 jours (État, collectivités
+                    territoriales, EPA), 50 jours (établissements publics de
+                    santé), 60 jours (entreprises publiques).
+                </p>
+            </div>
+        </t>
+    </template>
+
+</odoo>

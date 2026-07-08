@@ -32,7 +32,10 @@ Comptabilité → Configuration → Paramètres → bloc **Chorus Pro — Mandat
 
 > Odoo.sh n'a pas d'IP sortante statique : aucun problème ici, PISTE authentifie par OAuth2 + compte technique, sans liste blanche d'IP.
 
-### 4. Snippet website
+### 4. Auto-déclaration par le client (délai 30/50/60 jours)
+Le client public déclare lui-même sa structure sur son portail : **Mon compte → Mandat administratif** (`/my/mandat-administratif`), aussi accessible via le bouton du snippet. Il coche « entité publique », choisit son type de structure — État/collectivité/EPA (30 j), établissement public de santé (50 j), entreprise publique (60 j) — et renseigne SIRET, code service et exigence d'engagement juridique. Le module active alors le mode de paiement, calcule le délai global de paiement et affecte automatiquement le terme de paiement Odoo correspondant (« Mandat administratif — 30/50/60 jours », créés à l'installation) : les échéances de factures suivent sans intervention d'EXOCOMS. Tout reste modifiable côté backend sur la fiche contact (champ « Type de structure publique »).
+
+### 5. Snippet website
 Éditer une page → panneau des blocs → catégorie *Contenu* → glisser-déposer **Mandat administratif** (mot-clés : chorus, mandat, collectivité).
 
 ## Flux de travail
@@ -55,5 +58,13 @@ Comptabilité → Configuration → Paramètres → bloc **Chorus Pro — Mandat
 - Hooks `post_init_hook` / `uninstall_hook` via `odoo.addons.payment.setup_provider / reset_payment_provider`.
 - Aucun nouveau modèle (uniquement des champs hérités) : pas de règles d'accès supplémentaires nécessaires.
 - Envoi automatique via l'API PISTE/AIFE : OAuth2 client_credentials sur oauth.piste.gouv.fr (jeton 1 h), en-tête `cpro-account` (compte technique base64), service `POST /cpro/factures/v1/deposer/flux` (deposerFluxFacture), suivi via `POST /cpro/transverses/v1/consulterCR`. Syntaxes gérées : Factur-X `IN_DP_E2_FACTURX` (PDF Odoo natif, recommandé), `IN_DP_E1_CII_16B`, `IN_DP_E1_UBL_INVOICE`.
+
+## Robustesse et supervision
+
+- **Engagement juridique dans les fichiers (BT-13)** : le n° d'engagement est injecté automatiquement dans le XML CII (y compris celui embarqué dans les PDF Factur-X, généré par le même builder) et UBL — `ram:BuyerOrderReferencedDocument` / `cac:OrderReference` — pour éviter les rejets Chorus Pro des structures exigeant l'EJ. Injection défensive : en cas d'imprévu, le fichier d'origine est conservé et un avertissement est journalisé.
+- **Validation humaine des auto-déclarations** : chaque déclaration portail (nouvelle ou modifiée) trace un message au chatter du contact et crée une activité « Vérifier l'auto-déclaration d'entité publique » pour le commercial du compte (à défaut l'administrateur).
+- **Noms de flux uniques** : horodatage systématique du nom de fichier — un nouveau dépôt est possible après rejet (via « Annuler le dépôt Chorus Pro »).
+- **Cron quotidien** « Chorus Pro : suivi des flux déposés » : rafraîchit le statut des flux non finalisés et crée une activité sur la facture en cas de rejet.
+- **Tests automatisés** (`tests/`) : contrainte SIRET (Luhn + exception La Poste), délais 30/50/60 par type de structure, affectation des termes de paiement, réservation du mode de paiement aux entités publiques, horodatage des noms de flux. Lancement : `odoo --test-tags /mandat_administratif`.
 
 Licence : LGPL-3 — © EXOCOMS Group

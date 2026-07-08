@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import base64
+import logging
 import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 CHORUS_PRO_URL = "https://portail.chorus-pro.gouv.fr"
 
@@ -99,7 +102,11 @@ class AccountMove(models.Model):
         """
         self.ensure_one()
         syntax = self.company_id.chorus_flux_syntax or 'facturx'
-        base_name = re.sub(r'[^A-Za-z0-9_-]', '_', self.name or 'FACTURE')
+        # Chorus Pro exige un nom de flux unique : horodater pour permettre
+        # un nouveau dépôt après rejet ou annulation.
+        stamp = fields.Datetime.now().strftime('%Y%m%d%H%M%S')
+        base_name = "%s_%s" % (
+            re.sub(r'[^A-Za-z0-9_-]', '_', self.name or 'FACTURE'), stamp)
 
         if syntax == 'facturx':
             attachment = self.invoice_pdf_report_id
@@ -219,4 +226,51 @@ class AccountMove(models.Model):
                 "Statut du flux Chorus Pro %(flux)s : <b>%(status)s</b>",
                 flux=move.chorus_flux_number, status=status,
             ))
+        return True
+
+    @api.model
+    def _cron_check_chorus_status(self):
+        """Cron quotidien : rafraîchir le statut des flux Chorus Pro non
+        finalisés et alerter en cas de rejet."""
+        moves = self.search([
+            ('chorus_flux_number', '!=', False),
+            '|', ('chorus_flux_status', '=', False),
+            '&', ('chorus_flux_status', 'not ilike', 'INTEGRE'),
+            ('chorus_flux_status', 'not ilike', 'REJET'),
+        ])
+        for move in moves:
+            if not move.company_id.chorus_api_active:
+                continue
+            previous_status = move.chorus_flux_status
+            try:
+                move.action_check_chorus_status()
+            except Exception:  # pylint: disable=broad-except
+                _logger.warning(
+                    "Cron Chorus Pro : échec de la consultation du flux %s "
+                    "(%s) ; nouvelle tentative au prochain passage.",
+                    move.chorus_flux_number, move.display_name,
+                    exc_info=True,
+                )
+                continue
+            status = move.chorus_flux_status or ''
+            if 'REJET' in status.upper() and status != previous_status:
+                user = (move.invoice_user_id
+                        or self.env.ref('base.user_admin',
+                                        raise_if_not_found=False))
+                if user and user.active:
+                    move.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=user.id,
+                        summary=_("Flux Chorus Pro rejeté"),
+                        note=_(
+                            "Le flux %(flux)s de la facture %(move)s a été "
+                            "rejeté par Chorus Pro (statut : %(status)s). "
+                            "Corrigez puis relancez le dépôt (le nom de "
+                            "fichier est horodaté, un nouveau dépôt est "
+                            "possible après « Annuler le dépôt Chorus "
+                            "Pro »).",
+                            flux=move.chorus_flux_number,
+                            move=move.display_name, status=status,
+                        ),
+                    )
         return True

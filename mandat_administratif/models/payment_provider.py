@@ -10,11 +10,13 @@ class PaymentProvider(models.Model):
         ondelete={'mandat_administratif': 'set default'},
     )
     mandat_payment_delay = fields.Integer(
-        string="Délai global de paiement (jours)",
+        string="Délai de paiement par défaut (jours)",
         default=30,
-        help="Délai global de paiement applicable à l'acheteur public "
-             "(30 jours pour l'État et les collectivités, 50 jours pour les "
-             "établissements publics de santé).",
+        help="Valeur informative utilisée uniquement quand le client n'a "
+             "pas déclaré son type de structure. Le délai réel (30, 50 ou "
+             "60 jours) est déterminé automatiquement par le « Type de "
+             "structure publique » de la fiche client, déclarable par le "
+             "client lui-même sur /my/mandat-administratif.",
     )
     mandat_require_engagement = fields.Boolean(
         string="Recommander le n° d'engagement juridique",

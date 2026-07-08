@@ -10,12 +10,6 @@
         <field name="allow_tokenization" eval="False"/>
         <field name="allow_express_checkout" eval="False"/>
         <field name="redirect_form_view_id" ref="mandat_administratif.redirect_form"/>
-        <!-- CORRECTIF (validé en test réel le 06/07) : sans cette ligne,
-             le fournisseur n'est relié à AUCUNE méthode de paiement,
-             donc invisible au checkout même une fois "Activé" —
-             confirmé par "No payment methods found for your payment
-             providers" dans Site Web > Modes de paiement. -->
-        <field name="payment_method_ids" eval="[(6, 0, [ref('mandat_administratif.payment_method_mandat_administratif')])]"/>
         <field name="pending_msg" type="html">
             <div>
                 <h5>Commande enregistrée — règlement par mandat administratif</h5>
@@ -38,6 +32,12 @@
                 </p>
             </div>
         </field>
+        <!-- CORRECTIF (validé en test réel le 06/07) : sans cette ligne,
+             le fournisseur n'est relié à AUCUNE méthode de paiement,
+             donc invisible au checkout même une fois "Activé" —
+             confirmé par "No payment methods found for your payment
+             providers" dans Site Web > Modes de paiement. -->
+        <field name="payment_method_ids" eval="[(6, 0, [ref('mandat_administratif.payment_method_mandat_administratif')])]"/>
     </record>
 
 </odoo>

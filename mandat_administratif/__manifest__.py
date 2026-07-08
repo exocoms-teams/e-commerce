@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Mandat administratif (Chorus Pro)",
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.6.0',
     'category': 'Accounting/Payment Providers',
     'summary': "Paiement par mandat administratif pour les entités publiques françaises — dépôt des factures sur Chorus Pro",
     'description': """
@@ -47,14 +47,17 @@ versions antérieures.
     'data': [
         # Templates de paiement d'abord (référencés par les données du provider)
         'views/payment_form_templates.xml',
+        'data/payment_term_data.xml',
         'data/payment_method_data.xml',
         'data/payment_provider_data.xml',
+        'data/ir_cron_data.xml',
         # Vues backend
         'views/payment_provider_views.xml',
         'views/res_partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
         'views/res_config_settings_views.xml',
+        'views/portal_templates.xml',
         'views/report_invoice.xml',
         # Snippet website
         'views/snippets/s_mandat_administratif.xml',
