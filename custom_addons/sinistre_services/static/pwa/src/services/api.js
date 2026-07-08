@@ -100,6 +100,32 @@ window.API = (() => {
                 description: description || '',
             });
         },
+        async deletePhoto(missionId, photoId) {
+            return this.request('DELETE', `/intervenant/mission/${missionId}/photo/${photoId}`);
+        },
+
+        /* ── Consommables & pense-bêtes ── */
+        async getConsommables(missionId) {
+            return this.get(`/intervenant/mission/${missionId}/consommables`);
+        },
+        async addConsommable(missionId, payload) {
+            return this.post(`/intervenant/mission/${missionId}/consommables`, payload);
+        },
+        async getPenseBetes() {
+            return this.get('/intervenant/pense-betes');
+        },
+        async addPenseBete(contenu, missionId = null) {
+            return this.post('/intervenant/pense-betes', { contenu, mission_id: missionId });
+        },
+        async donePenseBete(id) {
+            return this.post(`/intervenant/pense-betes/${id}`, { action: 'done' });
+        },
+        async deletePenseBete(id) {
+            return this.request('DELETE', `/intervenant/pense-betes/${id}`);
+        },
+        async getDocuments() {
+            return this.get('/intervenant/documents');
+        },
 
         /* ── Notes artisan ── */
         async saveNotes(missionId, texte) {
