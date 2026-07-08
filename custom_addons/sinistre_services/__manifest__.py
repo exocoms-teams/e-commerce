@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Sinistre Services',
-    'version': '19.0.2.4.18',
+    'version': '19.0.2.5.0',
     'category': 'Services',
     'summary': 'Gestion des interventions sinistres — assurances, particuliers, entreprises',
     'author': 'exocoms',
@@ -38,11 +38,13 @@
         'views/candidature_views.xml',
         'views/assurance_views.xml',
         'views/devis_views.xml',
+        'views/page_suivi.xml',
         'views/menu_views.xml',
         # Reports
         'report/report_mission.xml',
         # Wizards
         'wizard/assigner_mission_view.xml',
+        'wizard/mission_note_wizard_view.xml',
     ],
     'assets': {
         'web.assets_frontend': [
