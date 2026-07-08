@@ -182,4 +182,13 @@
         </xpath>
     </template>
 
+    <!--
+        Phase 5: SEO Crawl Optimization (Robots.txt)
+        Prevent indexing of cart and checkout to preserve crawl budget and avoid duplicate content issues.
+    -->
+    <template id="oa_beauty_robots" inherit_id="website.robots" name="O&amp;A Beauty — Robots.txt">
+        <xpath expr="//t[@t-out='request.website.robots_txt']" position="before">
+            <t t-out="'User-agent: *\nDisallow: /shop/cart\nDisallow: /shop/checkout\nDisallow: /shop/payment\nDisallow: /shop/address\nDisallow: /my/\n'"/>
+        </xpath>
+    </template>
 </odoo>
