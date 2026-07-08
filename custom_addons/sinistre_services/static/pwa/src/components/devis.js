@@ -14,6 +14,18 @@ window.DevisForm = (() => {
     let _lignes     = [];
     let _isAmendment = false;   // true = modification en cours d'intervention
 
+    let _tvaRate = 20;
+
+    function _getTvaRate() {
+        const sel = document.getElementById('devisTvaSelect');
+        return sel ? parseFloat(sel.value) : _tvaRate;
+    }
+
+    function onTvaChange() {
+        _tvaRate = _getTvaRate();
+        updateTotaux();
+    }
+
     /* ── Ouvrir le formulaire ── */
     function open(missionId, existingDevis = null, isAmendment = false) {
         _missionId   = missionId;
@@ -53,6 +65,15 @@ window.DevisForm = (() => {
         const noteEl = document.getElementById('devisNote');
         if (noteEl) {
             noteEl.value = existingDevis ? (existingDevis.note_client || '') : '';
+        }
+
+        const tvaSel = document.getElementById('devisTvaSelect');
+        if (tvaSel) {
+            const tvaVal = existingDevis
+                ? String(existingDevis.tva_selection || Math.round(existingDevis.tva || 20))
+                : '20';
+            tvaSel.value = ['10', '20', '0'].includes(tvaVal) ? tvaVal : '20';
+            _tvaRate = parseFloat(tvaSel.value);
         }
 
         const btnEnv = document.getElementById('btnEnvoyerDevis');
@@ -108,12 +129,15 @@ window.DevisForm = (() => {
 
     function updateTotaux() {
         const ht  = _lignes.reduce((sum, l) => sum + (l.montant_total || 0), 0);
-        const tva = ht * 0.2;
+        const rate = _getTvaRate();
+        const tva = ht * (rate / 100);
         const ttc = ht + tva;
         const el  = (id) => document.getElementById(id);
         if (el('totalHT'))  el('totalHT').textContent  = _fmt(ht);
         if (el('totalTVA')) el('totalTVA').textContent = _fmt(tva);
         if (el('totalTTC')) el('totalTTC').textContent = _fmt(ttc);
+        const lbl = document.getElementById('tvaLabel');
+        if (lbl) lbl.textContent = rate === 0 ? 'Hors taxe' : `TVA (${rate}%)`;
     }
 
     function _fmt(n) { return parseFloat(n || 0).toFixed(2).replace('.', ',') + ' €'; }
@@ -129,6 +153,7 @@ window.DevisForm = (() => {
     }
 
     function _buildPayload() {
+        const rate = _getTvaRate();
         return {
             ligne_ids: _lignes.map(l => ({
                 id:            l.id || null,
@@ -136,15 +161,17 @@ window.DevisForm = (() => {
                 quantite:      parseFloat(l.quantite)      || 1,
                 prix_unitaire: parseFloat(l.prix_unitaire) || 0,
             })),
-            note_client:  document.getElementById('devisNote')?.value.trim() || '',
-            tva:          20.0,
-            is_amendment: _isAmendment,
+            note_client:    document.getElementById('devisNote')?.value.trim() || '',
+            tva:            rate,
+            tva_selection:  String(Math.round(rate)),
+            is_amendment:   _isAmendment,
         };
     }
 
     return {
         open,
         updateLigne,
+        onTvaChange,
 
         addLigne() {
             _lignes.push({ description: '', quantite: 1, prix_unitaire: 0, montant_total: 0 });
