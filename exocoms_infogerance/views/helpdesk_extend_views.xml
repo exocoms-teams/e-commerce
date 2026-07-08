@@ -17,18 +17,18 @@
                 <field name="x_intervention_type"/>
                 <field name="x_is_paid_upfront"/>
                 <field name="x_payment_date"
-                       attrs="{'invisible': [('x_is_paid_upfront', '=', False)]}"/>
+                       invisible="not x_is_paid_upfront"/>
             </field>
             <footer position="after">
                 <group name="anydesk_info" string="AnyDesk">
                     <field name="x_anydesk_id"/>
                     <button name="action_start_anydesk" type="object"
                             string="Lancer AnyDesk"
-                            attrs="{'invisible': [('x_anydesk_id', '=', False)]}"
+                            invisible="not x_anydesk_id"
                             class="btn-info"/>
                     <button name="action_validate_intervention" type="object"
                             string="Valider le paiement"
-                            attrs="{'invisible': [('x_is_paid_upfront', '=', True)]}"
+                            invisible="x_is_paid_upfront"
                             class="btn-success"/>
                 </group>
             </footer>

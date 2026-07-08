@@ -24,12 +24,12 @@
             <form>
                 <header>
                     <button name="action_activate" type="object"
-                            states="draft" string="Activer"
+                            invisible="state != 'draft'" string="Activer"
                             class="btn-primary"/>
                     <button name="action_suspend" type="object"
-                            states="active" string="Suspendre"/>
+                            invisible="state != 'active'" string="Suspendre"/>
                     <button name="action_cancel" type="object"
-                            states="active,suspended" string="Résilier"/>
+                            invisible="state not in ('active', 'suspended')" string="Résilier"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

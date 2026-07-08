@@ -11,12 +11,9 @@ def _setup_helpdesk(env):
     team = env['helpdesk.team'].create({
         'name': 'Support Infogérance',
         'description': 'Équipe dédiée aux clients infogérance Exocoms',
-        'use_helpdesk_sale_timesheet': True,
-        'use_rating': True,
-        'use_sla': True,
-        'auto_assignment': True,
         'assign_method': 'randomly',
     })
+    # Note: flags use_* activés manuellement dans UI (évite _check_modules_to_install)
 
     env['ir.model.data'].create({
         'module': 'exocoms_infogerance',
