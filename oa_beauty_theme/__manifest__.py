@@ -48,7 +48,6 @@
         'views/website_sale_cart_templates.xml',
         'views/website_sale_checkout_templates.xml',
         'views/website_core_pages.xml',
-        'views/res_config_settings_views.xml',
         'views/image_audit_views.xml',
         'views/portal_templates.xml',
         'views/auth_templates.xml',
