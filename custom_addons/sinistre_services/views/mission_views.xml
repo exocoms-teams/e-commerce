@@ -9,11 +9,13 @@
                 <header>
                     <button name="action_assigner" string="Assigner" type="object" class="btn-primary" invisible="state != 'nouveau' or not intervenant_id"/>
                     <button name="action_planifier_rdv" string="Confirmer RDV" type="object" class="btn-primary" invisible="state != 'assigne'"/>
-                    <button name="action_demarrer" string="Démarrer travaux" type="object" class="btn-primary" invisible="state != 'devis_accepte'"/>
-                    <button name="action_terminer" string="Clôturer" type="object" class="btn-success" invisible="state not in ('travaux_en_cours','en_cours')"/>
+                    <button name="action_demarrer" string="Démarrer travaux" type="object" class="btn-primary" invisible="state not in ('rdv_planifie','assigne','devis_accepte')"/>
+                    <button name="action_terminer" string="Clôturer" type="object" class="btn-success" invisible="state not in ('travaux_en_cours','en_cours','devis_refuse')"/>
                     <button name="action_creer_facture_assurance" string="Facturer Assurance" type="object" class="btn-secondary" invisible="state != 'termine' or source != 'assurance' or facture_assurance_id"/>
                     <button name="action_creer_facture_client" string="Facturer Reste à Charge" type="object" class="btn-secondary" invisible="state not in ('termine','facture') or reste_a_charge &lt;= 0 or facture_client_id"/>
                     <button name="action_annuler" string="Annuler" type="object" invisible="state in ('clos','annule','facture')"/>
+                    <button name="%(action_sinistre_note_wizard)d" string="Note interne" type="action" class="btn-secondary"/>
+                    <button name="%(action_sinistre_message_wizard)d" string="Message plateforme" type="action" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="nouveau,assigne,rdv_planifie,devis_envoye,devis_accepte,travaux_en_cours,termine,facture,clos"/>
                 </header>
                 <sheet>
@@ -49,21 +51,25 @@
                         <group>
                             <field name="assurance_id"/>
                             <field name="ref_assurance"/>
+                            <field name="numero_dossier"/>
                             <field name="contrat_assurance"/>
                         </group>
                         <group>
                             <field name="montant_garanti"/>
                             <field name="franchise"/>
+                            <field name="devis_depasse_garantie" readonly="1"/>
                         </group>
                     </group>
                     <group string="Client">
                         <group>
                             <field name="client_id" options="{'quick_create': false}"/>
+                            <field name="client_email"/>
                             <field name="adresse_intervention"/>
                         </group>
                         <group>
                             <field name="contact_sur_place"/>
                             <field name="tel_sur_place"/>
+                            <field name="tva_client" invisible="source == 'assurance'"/>
                         </group>
                     </group>
                     <group string="Intervenant">
@@ -91,6 +97,10 @@
                                     <field name="montant_devis"/>
                                     <field name="reste_a_charge" class="fw-bold"/>
                                     <field name="commission_plateforme"/>
+                                    <field name="commission_virement"/>
+                                    <field name="mode_paiement"/>
+                                    <field name="ref_paiement"/>
+                                    <field name="date_credit_virement"/>
                                 </group>
                                 <group>
                                     <field name="facture_assurance_id" readonly="1"/>
@@ -136,9 +146,22 @@
                                 </group>
                             </group>
                         </page>
+                        <page string="Consommables">
+                            <field name="consommable_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="designation"/>
+                                    <field name="quantite"/>
+                                    <field name="unite"/>
+                                    <field name="commande_fournisseur"/>
+                                    <field name="fournisseur"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Technique">
                             <group>
                                 <field name="token_api" readonly="1"/>
+                                <field name="code_acces" readonly="1"/>
                             </group>
                         </page>
                     </notebook>
