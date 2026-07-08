@@ -146,6 +146,11 @@ class SinistreDevis(models.Model):
     ligne_ids = fields.One2many('sinistre.devis.ligne', 'devis_id', string='Lignes')
     currency_id = fields.Many2one(related='mission_id.currency_id')
     tva = fields.Float(default=20.0)
+    tva_selection = fields.Selection([
+        ('10', '10%'),
+        ('20', '20%'),
+        ('0',  'Hors taxe'),
+    ], string='TVA appliquée', default='20')
     montant_ht = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
     montant_tva = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
     montant_total = fields.Monetary(compute='_compute_montants', store=True, currency_field='currency_id')
@@ -159,11 +164,14 @@ class SinistreDevis(models.Model):
     )
     date_signature = fields.Datetime()
 
-    @api.depends('ligne_ids.montant_total', 'tva')
+    @api.depends('ligne_ids.montant_total', 'tva', 'tva_selection')
     def _compute_montants(self):
+        tva_map = {'10': 10.0, '20': 20.0, '0': 0.0}
         for rec in self:
             rec.montant_ht = sum(rec.ligne_ids.mapped('montant_total'))
-            rec.montant_tva = rec.montant_ht * (rec.tva / 100)
+            taux = tva_map.get(rec.tva_selection, rec.tva or 20.0)
+            rec.tva = taux
+            rec.montant_tva = rec.montant_ht * (taux / 100)
             rec.montant_total = rec.montant_ht + rec.montant_tva
 
     @api.model_create_multi
@@ -179,6 +187,43 @@ class SinistreDevis(models.Model):
             raise UserError(_("Ajoutez au moins une ligne."))
         self.write({'state': 'envoye'})
         self.mission_id.write({'state': 'devis_envoye'})
+        self._envoyer_email_devis_client()
+
+    def _envoyer_email_devis_client(self):
+        self.ensure_one()
+        mission = self.mission_id
+        email = mission.client_email or (mission.client_id.email if mission.client_id else '')
+        if not email:
+            return
+        base = self.env['ir.config_parameter'].sudo().get_param('web.base.url', '')
+        sign_url = f"{base}/devis/signer/{mission.token_api}/{self.id}"
+        suivi = f"{base}/suivi/{mission.token_api}"
+        body = f"""
+            <p>Bonjour {mission.client_id.name or ''},</p>
+            <p>Votre artisan vous a transmis un devis pour la mission <strong>{mission.reference}</strong>.</p>
+            <p>Montant total : <strong>{self.montant_total:.2f} €</strong></p>
+            <p><strong>Code d'accès application : {mission.code_acces}</strong></p>
+            <p><a href="{sign_url}">Signer le devis sur votre téléphone</a></p>
+            <p><a href="{suivi}">Suivre ma mission</a></p>
+        """
+        if mission.source == 'assurance':
+            garanti = mission.montant_garanti or 150
+            body += (
+                f"<p>Prise en charge assurance : <strong>{garanti:.0f} € HT</strong>. "
+                f"Signature obligatoire même en cas de garantie.</p>"
+            )
+            if self.montant_total > garanti:
+                rac = mission.reste_a_charge
+                body += f"<p>Reste à charge client : <strong>{rac:.2f} €</strong> (si acceptation).</p>"
+        try:
+            self.env['mail.mail'].sudo().create({
+                'subject': f"[Sinistre Services] Devis {self.name} — {mission.reference}",
+                'body_html': body,
+                'email_to': email,
+                'email_from': self.env.company.email or 'noreply@sinistre-services.fr',
+            }).send()
+        except Exception:
+            pass
 
     def action_accepter(self):
         from odoo.exceptions import UserError
