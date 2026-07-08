@@ -1,9 +1,7 @@
 (function() {
     'use strict';
 
-    // Langue active du site (Odoo pose l'attribut lang sur <html>,
-    // ex: "fr-FR" ou "en-US"), utilisée pour les quelques textes générés
-    // en JavaScript qui ne passent pas par les templates QWeb.
+   
     function isEnglish() {
         return (document.documentElement.getAttribute('lang') || '').toLowerCase().indexOf('en') === 0;
     }
@@ -164,26 +162,6 @@
                 el.style.display = 'none';
             }
         });
-
-        // ===== HEADER : bascule de langue FR / EN =====
-       
-        if (cartBtn && !document.querySelector('.matelas-lang-btn')) {
-            const cookieMatch = ('; ' + document.cookie).split('; frontend_lang=').pop().split(';')[0];
-            const currentLang = cookieMatch ? decodeURIComponent(cookieMatch) : (en ? 'en_US' : 'fr_FR');
-            const isCurrentlyEn = currentLang.toLowerCase().indexOf('en') === 0;
-            const targetLang = isCurrentlyEn ? 'fr_FR' : 'en_US';
-
-            const params = new URLSearchParams(window.location.search);
-            params.set('lang', targetLang);
-            const targetHref = window.location.pathname + '?' + params.toString();
-
-            const langLink = document.createElement('a');
-            langLink.href = targetHref;
-            langLink.className = 'matelas-lang-btn matelas-icon-btn nav-link';
-            langLink.title = isCurrentlyEn ? 'Passer en français' : 'Switch to English';
-            langLink.textContent = isCurrentlyEn ? 'FR' : 'EN';
-            cartBtn.insertAdjacentElement('beforebegin', langLink);
-        }
 
         // ===== HEADER : icône compte =====
         const logoutLink = header.querySelector('a[href*="/web/session/logout"]');
@@ -369,6 +347,27 @@
                         container.appendChild(col);
                     });
                 }
+            }
+        })();
+
+        (function() {
+            function normalizePaymentButtons() {
+                document.querySelectorAll('button, span').forEach(function(el) {
+                    if (el.children.length > 0) { return; }
+                    const t = el.textContent.trim();
+                    if (/^(Payer avec|Pay with)\s+\S/i.test(t)) {
+                        el.textContent = en ? 'Pay' : 'Payer';
+                    }
+                });
+            }
+
+            const paymentForm = document.querySelector('#o_payment_form, .o_payment_form, [name="o_payment_form"]');
+            if (paymentForm) {
+                normalizePaymentButtons();
+                const mo = new MutationObserver(function() {
+                    normalizePaymentButtons();
+                });
+                mo.observe(paymentForm, { childList: true, subtree: true, characterData: true });
             }
         })();
 
