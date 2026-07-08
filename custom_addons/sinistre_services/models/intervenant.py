@@ -61,6 +61,17 @@ class SinistreIntervenant(models.Model):
     titulaire_compte = fields.Char(string='Titulaire du compte')
     banque           = fields.Char(string='Banque')
 
+    # ── Badge artisan (bronze / argent / or) ──────────────────────
+    badge_level = fields.Selection([
+        ('bronze', 'Bronze'),
+        ('argent', 'Argent'),
+        ('or',     'Or'),
+    ], string='Badge', compute='_compute_badge_level', store=True)
+    note_moyenne_client = fields.Float(
+        string='Note clients', compute='_compute_note_moyenne', store=True,
+        help='Moyenne des avis clients (1 à 5)',
+    )
+
     # ── Stats ─────────────────────────────────────────────────────
     mission_ids       = fields.One2many('sinistre.mission', 'intervenant_id', string='Missions')
     certification_ids = fields.One2many('sinistre.certification', 'intervenant_id', string='Certifications')
@@ -74,6 +85,30 @@ class SinistreIntervenant(models.Model):
     currency_id = fields.Many2one(
         'res.currency', default=lambda self: self.env.company.currency_id,
     )
+
+    @api.depends('mission_ids', 'mission_ids.state', 'note_moyenne_client')
+    def _compute_badge_level(self):
+        for rec in self:
+            terminees = rec.mission_ids.filtered(
+                lambda m: m.state in ('termine', 'facture', 'clos')
+            )
+            nb = len(terminees)
+            note = rec.note_moyenne_client or 0
+            if nb >= 100 and note >= 4.5:
+                rec.badge_level = 'or'
+            elif nb >= 30 and note >= 4.0:
+                rec.badge_level = 'argent'
+            else:
+                rec.badge_level = 'bronze'
+
+    @api.depends('mission_ids.avis_ids.note')
+    def _compute_note_moyenne(self):
+        Avis = self.env['sinistre.avis']
+        for rec in self:
+            avis = Avis.search([('intervenant_id', '=', rec.id)])
+            rec.note_moyenne_client = (
+                sum(avis.mapped('note')) / len(avis) if avis else 0
+            )
 
     @api.depends('mission_ids', 'mission_ids.state', 'mission_ids.montant_devis')
     def _compute_stats(self):
@@ -155,10 +190,14 @@ class SinistreSpecialite(models.Model):
     type_intervention = fields.Selection([
         ('serrurerie',    'Serrurerie'),
         ('plomberie',     'Plomberie'),
+        ('chauffagiste',  'Chauffagiste'),
+        ('electricite',   'Électricité'),
+        ('assainissement','Assainissement'),
+        ('vitrerie',      'Vitrerie'),
+        ('nuisibles',     'Nuisibles'),
+        ('travaux',       'Travaux / Bricolage'),
         ('menuiserie_int','Menuiserie Intérieure'),
         ('menuiserie_ext','Menuiserie Extérieure'),
-        ('vitrerie',      'Vitrerie'),
-        ('electricite',   'Électricité'),
         ('maconnerie',    'Maçonnerie'),
         ('autre',         'Autre'),
     ], string="Type d'Intervention")
