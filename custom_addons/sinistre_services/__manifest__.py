@@ -32,6 +32,9 @@
         'views/website_homepage.xml',
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
+        # Wizards (avant mission_views — références action_sinistre_*_wizard)
+        'wizard/assigner_mission_view.xml',
+        'wizard/mission_note_wizard_view.xml',
         # Back-office views
         'views/mission_views.xml',
         'views/intervenant_views.xml',
@@ -42,9 +45,6 @@
         'views/menu_views.xml',
         # Reports
         'report/report_mission.xml',
-        # Wizards
-        'wizard/assigner_mission_view.xml',
-        'wizard/mission_note_wizard_view.xml',
     ],
     'assets': {
         'web.assets_frontend': [
