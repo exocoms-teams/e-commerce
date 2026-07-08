@@ -294,6 +294,71 @@ class SinistreWebsite(http.Controller):
             'mission': mission,
         })
 
+    @http.route('/suivi/<string:token>/avis', type='http', auth='public', website=True,
+                methods=['POST'], csrf=True)
+    def suivi_avis(self, token, **post):
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('token_api', '=', token),
+        ], limit=1)
+        if not mission:
+            return request.redirect('/')
+        try:
+            note = int(post.get('note', 0))
+            if 1 <= note <= 5:
+                request.env['sinistre.avis'].sudo().create({
+                    'mission_id': mission.id,
+                    'note': note,
+                    'commentaire': post.get('commentaire', ''),
+                })
+        except (TypeError, ValueError):
+            pass
+        return request.redirect(f'/suivi/{token}')
+
+    @http.route('/devis/signer/<string:token>/<int:devis_id>', type='http',
+                auth='public', website=True)
+    def devis_signer_page(self, token, devis_id, **kwargs):
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('token_api', '=', token),
+        ], limit=1)
+        devis = request.env['sinistre.devis'].sudo().browse(devis_id)
+        if not mission or not devis or devis.mission_id.id != mission.id:
+            return request.render('sinistre_services.ss_page_404', {
+                'year': datetime.datetime.now().year,
+                'message': "Devis introuvable.",
+            })
+        return request.render('sinistre_services.ss_page_devis_signer', {
+            'year': datetime.datetime.now().year,
+            'mission': mission,
+            'devis': devis,
+        })
+
+    @http.route('/devis/signer/<string:token>/<int:devis_id>/submit', type='http',
+                auth='public', website=True, methods=['POST'], csrf=True)
+    def devis_signer_submit(self, token, devis_id, **post):
+        mission = request.env['sinistre.mission'].sudo().search([
+            ('token_api', '=', token),
+        ], limit=1)
+        devis = request.env['sinistre.devis'].sudo().browse(devis_id)
+        if not mission or not devis or devis.mission_id.id != mission.id:
+            return request.redirect('/')
+        action = post.get('action', 'accept')
+        sig = post.get('signature', '')
+        if action == 'refuse':
+            devis.action_refuser()
+            msg = "Vous avez refusé le devis. L'intervention sera clôturée."
+        else:
+            if sig:
+                devis.sudo().write({'signature_client': sig})
+            devis.action_accepter()
+            msg = "Merci, votre devis a été signé."
+            if mission.reste_a_charge > 0 and mission.source == 'assurance':
+                msg += f" Reste à charge : {mission.reste_a_charge:.2f} € à régler."
+        return request.render('sinistre_services.ss_page_devis_signe_ok', {
+            'year': datetime.datetime.now().year,
+            'message': msg,
+            'token': token,
+        })
+
     # ─── MODAL RAPPEL ───────────────────────────────────────────────
     @http.route('/rappel', type='http', auth='public', website=True,
                 methods=['POST'], csrf=True)
