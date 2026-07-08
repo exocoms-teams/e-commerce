@@ -17,8 +17,8 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'data/product_data.xml',
-        'data/helpdesk_data.xml',
+        # 'data/product_data.xml',  # Désactivé temporairement — créé manuellement via UI
+        # 'data/helpdesk_data.xml', # Désactivé temporairement — créé manuellement via UI
         'data/infogerance_data.xml',
         'views/infogerance_contract_views.xml',
         'views/infogerance_equipment_views.xml',
