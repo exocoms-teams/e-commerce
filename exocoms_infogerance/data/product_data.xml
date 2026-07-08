@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- CATÉGORIE INFOGÉRANCE -->
+    <record id="infogerance_category" model="product.public.category">
+        <field name="name">Infogérance &amp; Services IT</field>
+        <field name="sequence">4</field>
+    </record>
+
+    <record id="infogerance_category_abonnement" model="product.public.category">
+        <field name="name">Abonnements Infogérance</field>
+        <field name="parent_id" ref="infogerance_category"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="infogerance_category_depannage" model="product.public.category">
+        <field name="name">Dépannages ponctuels</field>
+        <field name="parent_id" ref="infogerance_category"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="infogerance_category_telephonie" model="product.public.category">
+        <field name="name">Téléphonie d'entreprise</field>
+        <field name="parent_id" ref="infogerance_category"/>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="infogerance_category_admin" model="product.public.category">
+        <field name="name">Console d'administration</field>
+        <field name="parent_id" ref="infogerance_category"/>
+        <field name="sequence">4</field>
+    </record>
+
+    <!-- ATTRIBUTS INFOGÉRANCE -->
+    <record id="infogerance_attr_nb_poste" model="product.attribute">
+        <field name="name">Nombre de postes</field>
+        <field name="display_type">pills</field>
+        <field name="create_variant">no_variant</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="infogerance_attr_nb_poste_5" model="product.attribute.value">
+        <field name="name">1-5 postes</field>
+        <field name="attribute_id" ref="infogerance_attr_nb_poste"/>
+        <field name="sequence">1</field>
+    </record>
+    <record id="infogerance_attr_nb_poste_10" model="product.attribute.value">
+        <field name="name">6-10 postes</field>
+        <field name="attribute_id" ref="infogerance_attr_nb_poste"/>
+        <field name="sequence">2</field>
+    </record>
+    <record id="infogerance_attr_nb_poste_20" model="product.attribute.value">
+        <field name="name">11-20 postes</field>
+        <field name="attribute_id" ref="infogerance_attr_nb_poste"/>
+        <field name="sequence">3</field>
+    </record>
+    <record id="infogerance_attr_nb_poste_50" model="product.attribute.value">
+        <field name="name">21-50 postes</field>
+        <field name="attribute_id" ref="infogerance_attr_nb_poste"/>
+        <field name="sequence">4</field>
+    </record>
+    <record id="infogerance_attr_nb_poste_plus" model="product.attribute.value">
+        <field name="name">50+ postes</field>
+        <field name="attribute_id" ref="infogerance_attr_nb_poste"/>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="infogerance_attr_type_maintenance" model="product.attribute">
+        <field name="name">Type de maintenance</field>
+        <field name="display_type">radio</field>
+        <field name="create_variant">no_variant</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="infogerance_attr_maintenance_preventive" model="product.attribute.value">
+        <field name="name">Préventive</field>
+        <field name="attribute_id" ref="infogerance_attr_type_maintenance"/>
+    </record>
+    <record id="infogerance_attr_maintenance_corrective" model="product.attribute.value">
+        <field name="name">Corrective</field>
+        <field name="attribute_id" ref="infogerance_attr_type_maintenance"/>
+    </record>
+    <record id="infogerance_attr_maintenance_complete" model="product.attribute.value">
+        <field name="name">Complete (24/7)</field>
+        <field name="attribute_id" ref="infogerance_attr_type_maintenance"/>
+    </record>
+
+    <record id="infogerance_attr_periode" model="product.attribute">
+        <field name="name">Période d'engagement</field>
+        <field name="display_type">radio</field>
+        <field name="create_variant">no_variant</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="infogerance_attr_periode_mensuel" model="product.attribute.value">
+        <field name="name">Mensuel (sans engagement)</field>
+        <field name="attribute_id" ref="infogerance_attr_periode"/>
+    </record>
+    <record id="infogerance_attr_periode_annuel" model="product.attribute.value">
+        <field name="name">Annuel (économisez 15%)</field>
+        <field name="attribute_id" ref="infogerance_attr_periode"/>
+    </record>
+
+    <!-- PRODUITS INFOGÉRANCE — ABONNEMENTS -->
+    <record id="product_infogerance_base" model="product.template">
+        <field name="name">Abonnement Infogérance Base</field>
+        <field name="type">service</field>
+        <field name="list_price">49.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_abonnement"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">subscription</field>
+        <field name="x_billing_period">monthly</field>
+        <field name="is_published" eval="True"/>
+        <field name="attribute_line_ids" eval="[
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_nb_poste'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_nb_poste_5'),
+                    ref('infogerance_attr_nb_poste_10'),
+                    ref('infogerance_attr_nb_poste_20'),
+                ])],
+            }),
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_type_maintenance'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_maintenance_preventive'),
+                    ref('infogerance_attr_maintenance_corrective'),
+                ])],
+            }),
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_periode'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_periode_mensuel'),
+                    ref('infogerance_attr_periode_annuel'),
+                ])],
+            }),
+        ]"/>
+        <field name="description">Maintenance préventive et corrective de base pour vos postes de travail. Inclut : supervision à distance, assistance helpdesk par email et intervention AnyDesk.</field>
+    </record>
+
+    <record id="product_infogerance_premium" model="product.template">
+        <field name="name">Abonnement Infogérance Premium</field>
+        <field name="type">service</field>
+        <field name="list_price">99.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_abonnement"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">subscription</field>
+        <field name="x_billing_period">monthly</field>
+        <field name="is_published" eval="True"/>
+        <field name="attribute_line_ids" eval="[
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_nb_poste'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_nb_poste_5'),
+                    ref('infogerance_attr_nb_poste_10'),
+                    ref('infogerance_attr_nb_poste_20'),
+                    ref('infogerance_attr_nb_poste_50'),
+                ])],
+            }),
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_type_maintenance'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_maintenance_complete'),
+                ])],
+            }),
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_periode'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_periode_mensuel'),
+                    ref('infogerance_attr_periode_annuel'),
+                ])],
+            }),
+        ]"/>
+        <field name="description">Infogérance complète avec supervision 24/7, cybersécurité, sauvegarde cloud, support téléphonique prioritaire et interventions sur site incluses.</field>
+    </record>
+
+    <record id="product_infogerance_console" model="product.template">
+        <field name="name">Console d'administration Infogérance</field>
+        <field name="type">service</field>
+        <field name="list_price">199.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_admin"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">subscription</field>
+        <field name="x_billing_period">monthly</field>
+        <field name="is_published" eval="True"/>
+        <field name="description">Console d'administration centralisée : supervision multi-site, gestion des utilisateurs, rapports automatiques, alertes en temps réel et sauvegarde centralisée.</field>
+    </record>
+
+    <!-- PRODUITS INFOGÉRANCE — DÉPANNAGES PONCTUELS -->
+    <record id="product_depannage_remote" model="product.template">
+        <field name="name">Dépannage à distance (AnyDesk)</field>
+        <field name="type">service</field>
+        <field name="list_price">49.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_depannage"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">onetime</field>
+        <field name="x_billing_period">onetime</field>
+        <field name="is_published" eval="True"/>
+        <field name="description">Intervention à distance via AnyDesk pour diagnostic et résolution de vos problèmes informatiques. Paiement avant intervention requis.</field>
+    </record>
+
+    <record id="product_depannage_on_site" model="product.template">
+        <field name="name">Dépannage sur site (particulier)</field>
+        <field name="type">service</field>
+        <field name="list_price">89.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_depannage"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">onetime</field>
+        <field name="x_billing_period">onetime</field>
+        <field name="is_published" eval="True"/>
+        <field name="description">Intervention d'un technicien à domicile pour dépannage informatique. Paiement à l'avance obligatoire. Forfait incluant 1h d'intervention + déplacement.</field>
+    </record>
+
+    <record id="product_depannage_imprimante" model="product.template">
+        <field name="name">Dépannage imprimante / périphérique</field>
+        <field name="type">service</field>
+        <field name="list_price">69.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_depannage"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">onetime</field>
+        <field name="x_billing_period">onetime</field>
+        <field name="is_published" eval="True"/>
+        <field name="description">Diagnostic et réparation d'imprimante, scanner ou périphérique. Intervention à distance ou sur site selon besoin.</field>
+    </record>
+
+    <!-- PRODUITS TÉLÉPHONIE -->
+    <record id="product_telephonie_standard" model="product.template">
+        <field name="name">Téléphonie d'entreprise - Standard VoIP</field>
+        <field name="type">service</field>
+        <field name="list_price">29.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_telephonie"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">subscription</field>
+        <field name="x_billing_period">monthly</field>
+        <field name="is_published" eval="True"/>
+        <field name="attribute_line_ids" eval="[
+            (0,0,{
+                'attribute_id': ref('infogerance_attr_nb_poste'),
+                'value_ids': [(6,0,[
+                    ref('infogerance_attr_nb_poste_5'),
+                    ref('infogerance_attr_nb_poste_10'),
+                    ref('infogerance_attr_nb_poste_20'),
+                    ref('infogerance_attr_nb_poste_50'),
+                ])],
+            }),
+        ]"/>
+        <field name="description">Solution de téléphonie d'entreprise VoIP avec standard virtuel. Inclus : numéros, messagerie, transfert d'appels et conférence.</field>
+    </record>
+
+    <record id="product_telephonie_svi" model="product.template">
+        <field name="name">Serveur Vocal Interactif (SVI)</field>
+        <field name="type">service</field>
+        <field name="list_price">49.0</field>
+        <field name="taxes_id" eval="[(5,)]"/>
+        <field name="categ_id" ref="infogerance_category_telephonie"/>
+        <field name="x_is_infogerance" eval="True"/>
+        <field name="x_infogerance_type">subscription</field>
+        <field name="x_billing_period">monthly</field>
+        <field name="is_published" eval="True"/>
+        <field name="description">Serveur Vocal Interactif personnalisé pour votre entreprise. Routage intelligent des appels, menu vocal, statistiques.</field>
+    </record>
+
+</odoo>

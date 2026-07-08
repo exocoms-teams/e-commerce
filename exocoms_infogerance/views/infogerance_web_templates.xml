@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- PAGE WEB INFOGÉRANCE DÉTAILLÉE avec abonnement -->
+    <template id="infogerance_detail_page" name="Infogérance détaillée"
+              page="True" active="False">
+        <t t-call="exocoms_theme.custom_layout">
+
+            <t t-set="head">
+                <title>Infogérance IT | Exocoms Group — Solutions &amp; Abonnements</title>
+                <meta name="description" content="Découvrez nos solutions d'infogérance : abonnements par poste, dépannage ponctuel, téléphonie d'entreprise et console d'administration. Devis en ligne."/>
+                <meta name="robots" content="index, follow"/>
+                <link rel="canonical" href="https://www.exocoms.fr/infogerance/detail"/>
+            </t>
+
+            <!-- HERO -->
+            <section class="s_exocoms_services_hero o_colored_level pt32 pb32 oe_img_bg o_bg_img_center"
+                     data-snippet="s_exocoms_services_hero"
+                     data-name="Infogerance Detail Hero"
+                     style="background-image: url('/exocoms_theme/static/src/img/heroservice.jpg');">
+                <div class="o_we_bg_filter bg-black-50"/>
+                <div class="container s_allow_columns">
+                    <div class="row">
+                        <div class="col-lg-9 pt32 pb32 mx-auto">
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <h1 class="text-white oe_editable">
+                                    Solutions d'infogérance complètes
+                                </h1>
+                                <p class="lead text-white-75 oe_editable">
+                                    Abonnement mensuel par poste, dépannage à l'unité, téléphonie —
+                                    une solution adaptée à chaque entreprise.
+                                </p>
+                            </t>
+                            <t t-else="">
+                                <h1 class="text-white oe_editable">
+                                    Complete managed IT solutions
+                                </h1>
+                                <p class="lead text-white-75 oe_editable">
+                                    Monthly subscription per workstation, one-time repairs, telephony —
+                                    a solution for every business.
+                                </p>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_infogerance_detail_top"/>
+
+            <!-- SECTION : COMMENT ÇA MARCHE -->
+            <section class="services-content-section">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="section-header">
+                            <h2>Comment fonctionne l'infogérance Exocoms ?</h2>
+                            <p>Un service clé en main, transparent et adapté à vos besoins</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-cogs fa-3x text-primary mb16"/>
+                                    <h4>1. Audit gratuit</h4>
+                                    <p>Nous réalisons un état des lieux complet de votre parc informatique :
+                                    postes de travail, serveurs, imprimantes, équipements réseau.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-file-signature fa-3x text-primary mb16"/>
+                                    <h4>2. Abonnement sur mesure</h4>
+                                    <p>Vous choisissez votre formule en fonction du nombre de postes
+                                    et des services souhaités. Pas de surprise : tout est inclus.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-headset fa-3x text-primary mb16"/>
+                                    <h4>3. Support &amp; Supervision</h4>
+                                    <p>Nos techniciens supervisent votre infrastructure 24/7
+                                    et interviennent à distance (AnyDesk) ou sur site si besoin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="section-header">
+                            <h2>How does Exocoms managed IT work?</h2>
+                            <p>A turnkey service, transparent and tailored to your needs</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-cogs fa-3x text-primary mb16"/>
+                                    <h4>1. Free audit</h4>
+                                    <p>We conduct a complete inventory of your IT assets:
+                                    workstations, servers, printers, network equipment.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-file-signature fa-3x text-primary mb16"/>
+                                    <h4>2. Custom subscription</h4>
+                                    <p>Choose your plan based on the number of workstations
+                                    and desired services. No surprises: everything is included.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="text-center p-4">
+                                    <i class="fa fa-headset fa-3x text-primary mb16"/>
+                                    <h4>3. Support &amp; Monitoring</h4>
+                                    <p>Our technicians monitor your infrastructure 24/7
+                                    and intervene remotely (AnyDesk) or on-site if needed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- SECTION : TARIFICATION -->
+            <section class="services-content-section" style="background: #f8f9fa;">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="section-header">
+                            <h2>Nos formules d'abonnement</h2>
+                            <p>Un tarif par poste, tout compris</p>
+                        </div>
+                        <div class="row mt16">
+                            <!-- BASE -->
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Base</h3>
+                                        <p class="h1 text-primary">49€</p>
+                                        <p class="text-muted">/mois par poste</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Maintenance préventive</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Supervision à distance</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Support helpdesk email</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Intervention AnyDesk</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Rapports mensuels</li>
+                                        </ul>
+                                        <a href="/shop?search=Abonnement%20Infog%C3%A9rance%20Base"
+                                           class="btn btn-primary w-100 mt16">
+                                            Choisir Base
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- PREMIUM -->
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm border-primary">
+                                    <div class="card-header bg-primary text-white text-center py-3">
+                                        <strong>Le plus populaire</strong>
+                                    </div>
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Premium</h3>
+                                        <p class="h1 text-primary">99€</p>
+                                        <p class="text-muted">/mois par poste</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Tout le programme Base</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Supervision 24/7</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Cybersécurité complète</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Sauvegarde cloud</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Support téléphonique prioritaire</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Intervention sur site incluse</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Console d'administration</li>
+                                        </ul>
+                                        <a href="/shop?search=Infog%C3%A9rance%20Premium"
+                                           class="btn btn-primary w-100 mt16">
+                                            Choisir Premium
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- CONSOLE ADMIN -->
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Console Admin</h3>
+                                        <p class="h1 text-primary">199€</p>
+                                        <p class="text-muted">/mois</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Supervision multi-site</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Gestion des utilisateurs</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Alertes en temps réel</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Rapports automatiques</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Sauvegarde centralisée</li>
+                                        </ul>
+                                        <a href="/shop?search=Console%20d%27administration"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Choisir Console
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="section-header">
+                            <h2>Our subscription plans</h2>
+                            <p>Per-workstation pricing, all-inclusive</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Base</h3>
+                                        <p class="h1 text-primary">€49</p>
+                                        <p class="text-muted">/month per workstation</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Preventive maintenance</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Remote monitoring</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Email helpdesk support</li>
+                                            <li><i class="fa fa-check text-success me-2"/>AnyDesk intervention</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Monthly reports</li>
+                                        </ul>
+                                        <a href="/shop?search=Infog%C3%A9rance%20Base"
+                                           class="btn btn-primary w-100 mt16">
+                                            Choose Base
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm border-primary">
+                                    <div class="card-header bg-primary text-white text-center py-3">
+                                        <strong>Most popular</strong>
+                                    </div>
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Premium</h3>
+                                        <p class="h1 text-primary">€99</p>
+                                        <p class="text-muted">/month per workstation</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Everything in Base</li>
+                                            <li><i class="fa fa-check text-success me-2"/>24/7 monitoring</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Full cybersecurity</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Cloud backup</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Priority phone support</li>
+                                            <li><i class="fa fa-check text-success me-2"/>On-site intervention included</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Admin console</li>
+                                        </ul>
+                                        <a href="/shop?search=Infog%C3%A9rance%20Premium"
+                                           class="btn btn-primary w-100 mt16">
+                                            Choose Premium
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <h3 class="card-title">Admin Console</h3>
+                                        <p class="h1 text-primary">€199</p>
+                                        <p class="text-muted">/month</p>
+                                        <hr/>
+                                        <ul class="list-unstyled text-start">
+                                            <li><i class="fa fa-check text-success me-2"/>Multi-site monitoring</li>
+                                            <li><i class="fa fa-check text-success me-2"/>User management</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Real-time alerts</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Automatic reports</li>
+                                            <li><i class="fa fa-check text-success me-2"/>Centralised backup</li>
+                                        </ul>
+                                        <a href="/shop?search=Console%20d%27administration"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Choose Console
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- SECTION : DÉPANNAGES PONCTUELS -->
+            <section class="services-content-section">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="section-header">
+                            <h2>Dépannages ponctuels</h2>
+                            <p>Sans abonnement — intervention à distance ou sur site, payée à l'avance</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-laptop fa-3x text-primary mb16"/>
+                                        <h4>Dépannage à distance</h4>
+                                        <p class="h3 text-primary">49€</p>
+                                        <p class="text-muted">AnyDesk — paiement avant intervention</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20%C3%A0%20distance"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Commander
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-home fa-3x text-primary mb16"/>
+                                        <h4>Dépannage sur site</h4>
+                                        <p class="h3 text-primary">89€</p>
+                                        <p class="text-muted">1h + déplacement — particulier</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20sur%20site%20particulier"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Commander
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-print fa-3x text-primary mb16"/>
+                                        <h4>Dépannage imprimante</h4>
+                                        <p class="h3 text-primary">69€</p>
+                                        <p class="text-muted">Diagnostic et réparation</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20imprimante"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Commander
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="section-header">
+                            <h2>One-time repairs</h2>
+                            <p>No subscription — remote or on-site, pay before intervention</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-laptop fa-3x text-primary mb16"/>
+                                        <h4>Remote repair</h4>
+                                        <p class="h3 text-primary">€49</p>
+                                        <p class="text-muted">AnyDesk — pay before intervention</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20%C3%A0%20distance"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Order
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-home fa-3x text-primary mb16"/>
+                                        <h4>On-site repair</h4>
+                                        <p class="h3 text-primary">€89</p>
+                                        <p class="text-muted">1h + travel — individual</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20sur%20site%20particulier"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Order
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-print fa-3x text-primary mb16"/>
+                                        <h4>Printer repair</h4>
+                                        <p class="h3 text-primary">€69</p>
+                                        <p class="text-muted">Diagnosis and repair</p>
+                                        <a href="/shop?search=D%C3%A9pannage%20imprimante"
+                                           class="btn btn-outline-primary w-100 mt16">
+                                            Order
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- SECTION : TÉLÉPHONIE -->
+            <section class="services-content-section" style="background: #f8f9fa;">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="section-header">
+                            <h2>Téléphonie d'entreprise</h2>
+                            <p>Communications unifiées, VoIP et standard virtuel</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-6 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-phone-volume fa-3x text-primary mb16"/>
+                                        <h4>Standard VoIP</h4>
+                                        <p class="h3 text-primary">29€ / mois</p>
+                                        <p>Solution téléphonique complète pour votre entreprise :
+                                        standard virtuel, renvoi d'appels, messagerie, conférence.</p>
+                                        <a href="/shop?search=T%C3%A9l%C3%A9phonie%20d%27entreprise"
+                                           class="btn btn-outline-primary mt16">
+                                            Découvrir
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-microphone fa-3x text-primary mb16"/>
+                                        <h4>Serveur Vocal Interactif (SVI)</h4>
+                                        <p class="h3 text-primary">49€ / mois</p>
+                                        <p>Routage intelligent des appels, menu vocal personnalisé,
+                                        statistiques et files d'attente.</p>
+                                        <a href="/shop?search=Serveur%20Vocal%20Interactif"
+                                           class="btn btn-outline-primary mt16">
+                                            Découvrir
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="section-header">
+                            <h2>Business telephony</h2>
+                            <p>Unified communications, VoIP and virtual switchboard</p>
+                        </div>
+                        <div class="row mt16">
+                            <div class="col-md-6 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-phone-volume fa-3x text-primary mb16"/>
+                                        <h4>VoIP Switchboard</h4>
+                                        <p class="h3 text-primary">€29 / month</p>
+                                        <p>Complete phone solution: virtual switchboard, call forwarding,
+                                        voicemail, conference.</p>
+                                        <a href="/shop?search=T%C3%A9l%C3%A9phonie%20d%27entreprise"
+                                           class="btn btn-outline-primary mt16">
+                                            Discover
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb16">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fa fa-microphone fa-3x text-primary mb16"/>
+                                        <h4>IVR (Interactive Voice Response)</h4>
+                                        <p class="h3 text-primary">€49 / month</p>
+                                        <p>Smart call routing, custom voice menu,
+                                        statistics and queue management.</p>
+                                        <a href="/shop?search=Serveur%20Vocal%20Interactif"
+                                           class="btn btn-outline-primary mt16">
+                                            Discover
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- SECTION : FAQ -->
+            <section class="services-content-section">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="section-header">
+                            <h2>Questions fréquentes</h2>
+                        </div>
+                        <div class="accordion" id="faqInfogerance">
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        Comment est calculé le tarif ?
+                                    </button>
+                                </h3>
+                                <div id="faq1" class="accordion-collapse collapse show"
+                                     data-bs-parent="#faqInfogerance">
+                                    <div class="accordion-body">
+                                        Le tarif est calculé en fonction du nombre de postes de travail,
+                                        imprimantes et équipements réseau. Un audit gratuit vous permet
+                                        d'obtenir un devis précis et personnalisé.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Qu'est-ce qui est inclus dans l'abonnement ?
+                                    </button>
+                                </h3>
+                                <div id="faq2" class="accordion-collapse collapse"
+                                     data-bs-parent="#faqInfogerance">
+                                    <div class="accordion-body">
+                                        Selon la formule choisie : maintenance préventive et corrective,
+                                        supervision 24/7, cybersécurité, sauvegarde cloud, support
+                                        helpdesk, interventions à distance (AnyDesk) et sur site.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        Puis-je résilier à tout moment ?
+                                    </button>
+                                </h3>
+                                <div id="faq3" class="accordion-collapse collapse"
+                                     data-bs-parent="#faqInfogerance">
+                                    <div class="accordion-body">
+                                        Oui, avec un préavis de 30 jours. Les abonnements mensuels sont
+                                        sans engagement. Les abonnements annuels bénéficient de 15% de
+                                        réduction avec engagement sur 12 mois.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq4">
+                                        Comment se passe une intervention AnyDesk ?
+                                    </button>
+                                </h3>
+                                <div id="faq4" class="accordion-collapse collapse"
+                                     data-bs-parent="#faqInfogerance">
+                                    <div class="accordion-body">
+                                        Vous ouvrez un ticket dans votre espace client. Un technicien
+                                        vous contacte et vous demande l'ID AnyDesk de votre poste.
+                                        Il se connecte à distance avec votre autorisation et résout
+                                        le problème en direct. L'intervention est enregistrée et suivie
+                                        dans votre portail.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="section-header">
+                            <h2>Frequently asked questions</h2>
+                        </div>
+                        <!-- English FAQ here too -->
+                        <div class="accordion" id="faqInfogeranceEn">
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq1en">
+                                        How is the price calculated?
+                                    </button>
+                                </h3>
+                                <div id="faq1en" class="accordion-collapse collapse show"
+                                     data-bs-parent="#faqInfogeranceEn">
+                                    <div class="accordion-body">
+                                        Pricing is based on the number of workstations, printers
+                                        and network equipment. A free audit provides a precise
+                                        customised quote.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq2en">
+                                        What is included in the subscription?
+                                    </button>
+                                </h3>
+                                <div id="faq2en" class="accordion-collapse collapse"
+                                     data-bs-parent="#faqInfogeranceEn">
+                                    <div class="accordion-body">
+                                        Depending on the plan: preventive and corrective maintenance,
+                                        24/7 monitoring, cybersecurity, cloud backup, helpdesk support,
+                                        remote (AnyDesk) and on-site interventions.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq3en">
+                                        Can I cancel anytime?
+                                    </button>
+                                </h3>
+                                <div id="faq3en" class="accordion-collapse collapse"
+                                     data-bs-parent="#faqInfogeranceEn">
+                                    <div class="accordion-body">
+                                        Yes, with a 30-day notice. Monthly subscriptions are
+                                        commitment-free. Annual subscriptions offer a 15% discount
+                                        with a 12-month commitment.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </section>
+
+            <!-- CTA DEVIS -->
+            <section class="exo-cta-section" style="background: #0d4dff; padding: 60px 0; text-align: center;">
+                <div class="container">
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <h2 style="color: #fff; font-size: 32px; margin-bottom: 16px;">
+                            Prêt à passer à l'infogérance ?
+                        </h2>
+                        <p style="color: rgba(255,255,255,0.85); font-size: 18px; max-width: 600px; margin: 0 auto 24px;">
+                            Demandez votre audit gratuit et obtenez un devis personnalisé sous 48h.
+                        </p>
+                        <a href="/shop?search=Infog%C3%A9rance"
+                           class="btn btn-light btn-lg"
+                           style="font-weight: 700; padding: 14px 40px;">
+                            Voir les offres <i class="fa fa-arrow-right ml8"/>
+                        </a>
+                    </t>
+                    <t t-else="">
+                        <h2 style="color: #fff; font-size: 32px; margin-bottom: 16px;">
+                            Ready for managed IT?
+                        </h2>
+                        <p style="color: rgba(255,255,255,0.85); font-size: 18px; max-width: 600px; margin: 0 auto 24px;">
+                            Request your free audit and get a customised quote within 48h.
+                        </p>
+                        <a href="/shop?search=Infog%C3%A9rance"
+                           class="btn btn-light btn-lg"
+                           style="font-weight: 700; padding: 14px 40px;">
+                            View plans <i class="fa fa-arrow-right ml8"/>
+                        </a>
+                    </t>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_infogerance_detail_bottom"/>
+
+        </t>
+    </template>
+
+</odoo>

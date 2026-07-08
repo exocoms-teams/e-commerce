@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_infogerance_contract_tree" model="ir.ui.view">
+        <field name="name">exocoms.infogerance.contract.tree</field>
+        <field name="model">exocoms.infogerance.contract</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="state" widget="badge"/>
+                <field name="user_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="ticket_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_infogerance_contract_form" model="ir.ui.view">
+        <field name="name">exocoms.infogerance.contract.form</field>
+        <field name="model">exocoms.infogerance.contract</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object"
+                            states="draft" string="Activer"
+                            class="btn-primary"/>
+                    <button name="action_suspend" type="object"
+                            states="active" string="Suspendre"/>
+                    <button name="action_cancel" type="object"
+                            states="active,suspended" string="Résilier"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"
+                                   context="{'show_address': 1}"/>
+                            <field name="user_id"/>
+                            <field name="contract_template_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="subscription_id"/>
+                            <field name="analytic_account_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="services" string="Services">
+                            <field name="service_line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="subtotal" sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="equipment" string="Équipements">
+                            <field name="equipment_ids">
+                                <tree editable="bottom">
+                                    <field name="equipment_name"/>
+                                    <field name="equipment_type"/>
+                                    <field name="serial_number"/>
+                                    <field name="brand"/>
+                                    <field name="location"/>
+                                    <field name="anydesk_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="tickets" string="Tickets">
+                            <group>
+                                <button name="action_open_tickets" type="object"
+                                        string="Voir les tickets"
+                                        class="btn-secondary"/>
+                            </group>
+                            <field name="ticket_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="ticket_type_id"/>
+                                    <field name="stage_id"/>
+                                    <field name="priority"/>
+                                    <field name="create_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="notes" string="Notes">
+                            <field name="note" widget="html"/>
+                        </page>
+                        <page name="terms" string="Conditions générales">
+                            <field name="terms" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_infogerance_contract_search" model="ir.ui.view">
+        <field name="name">exocoms.infogerance.contract.search</field>
+        <field name="model">exocoms.infogerance.contract</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="active" string="Actifs"
+                        domain="[('state', '=', 'active')]"/>
+                <filter name="draft" string="Brouillons"
+                        domain="[('state', '=', 'draft')]"/>
+                <group expand="0">
+                    <filter name="state" string="Statut"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_exocoms_infogerance_contract" model="ir.actions.act_window">
+        <field name="name">Contrats d'infogérance</field>
+        <field name="res_model">exocoms.infogerance.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_infogerance_contract_search"/>
+        <field name="help">Gérez les contrats d'infogérance de vos clients.</field>
+    </record>
+
+    <menuitem id="menu_exocoms_infogerance" name="Infogérance"
+              sequence="50" parent="sale.menu_sale_root"/>
+    <menuitem id="menu_exocoms_infogerance_contracts"
+              name="Contrats d'infogérance"
+              parent="menu_exocoms_infogerance"
+              action="action_exocoms_infogerance_contract"
+              sequence="10"/>
+
+</odoo>

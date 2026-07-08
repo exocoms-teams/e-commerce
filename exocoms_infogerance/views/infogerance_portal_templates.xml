@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- PORTAL - Mes contrats d'infogérance -->
+    <template id="portal_infogerance_contracts" name="Mes contrats d'infogérance"
+              custom="invisible">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/my">Mon compte</a>
+                    </li>
+                    <li class="breadcrumb-item active">Infogérance</li>
+                </ol>
+            </t>
+            <div class="bg-white p-4 rounded shadow-sm">
+                <h2>Mes contrats d'infogérance</h2>
+                <t t-if="not contracts">
+                    <p class="text-muted mt-3">Vous n'avez pas encore de contrat d'infogérance.</p>
+                    <a href="/infogerance" class="btn btn-primary mt-2">
+                        Découvrir nos offres
+                    </a>
+                </t>
+                <t t-else="">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Date début</th>
+                                    <th>Statut</th>
+                                    <th>Services</th>
+                                    <th>Tickets</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="contracts" t-as="c">
+                                    <td>
+                                        <strong>
+                                            <a t-attf-href="/my/infogerance/{{c.id}}">
+                                                <t t-esc="c.name"/>
+                                            </a>
+                                        </strong>
+                                    </td>
+                                    <td><t t-esc="c.date_start"/></td>
+                                    <td>
+                                        <span t-if="c.state == 'active'"
+                                              class="badge bg-success">Actif</span>
+                                        <span t-if="c.state == 'draft'"
+                                              class="badge bg-secondary">Brouillon</span>
+                                        <span t-if="c.state == 'suspended'"
+                                              class="badge bg-warning">Suspendu</span>
+                                        <span t-if="c.state == 'cancelled'"
+                                              class="badge bg-danger">Résilié</span>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled mb-0">
+                                            <li t-foreach="c.service_line_ids" t-as="s">
+                                                <t t-esc="s.product_id.name"/>
+                                                <t t-if="s.quantity &gt; 1">
+                                                    x <t t-esc="s.quantity"/>
+                                                </t>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            <t t-esc="c.ticket_count"/> ticket(s)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a t-attf-href="/my/infogerance/{{c.id}}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Voir
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- PORTAL - Détail contrat infogérance -->
+    <template id="portal_infogerance_contract_detail"
+              name="Détail contrat d'infogérance" custom="invisible">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/my">Mon compte</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/my/infogerance">Infogérance</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <t t-esc="contract.name"/>
+                    </li>
+                </ol>
+            </t>
+            <div class="bg-white p-4 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h2><t t-esc="contract.name"/></h2>
+                        <p class="text-muted">
+                            Souscrit le <t t-esc="contract.create_date"/>
+                        </p>
+                    </div>
+                    <div>
+                        <span t-if="contract.state == 'active'"
+                              class="badge bg-success fs-6">Actif</span>
+                        <span t-if="contract.state == 'draft'"
+                              class="badge bg-secondary fs-6">Brouillon</span>
+                        <span t-if="contract.state == 'suspended'"
+                              class="badge bg-warning fs-6">Suspendu</span>
+                        <span t-if="contract.state == 'cancelled'"
+                              class="badge bg-danger fs-6">Résilié</span>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Période</h5>
+                        <p>
+                            Du <t t-esc="contract.date_start"/>
+                            <t t-if="contract.date_end">
+                                au <t t-esc="contract.date_end"/>
+                            </t>
+                            <t t-else="">— en cours</t>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Commercial</h5>
+                        <p t-if="contract.user_id">
+                            <t t-esc="contract.user_id.name"/>
+                            (<t t-esc="contract.user_id.email"/>)
+                        </p>
+                        <p t-else="" class="text-muted">Non assigné</p>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <h4 class="mt-4">Services souscrits</h4>
+                <table class="table"
+                       t-if="contract.service_line_ids">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Quantité</th>
+                            <th>Prix unitaire</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="contract.service_line_ids" t-as="s">
+                            <td><t t-esc="s.product_id.name"/></td>
+                            <td><t t-esc="s.quantity"/></td>
+                            <td><t t-esc="s.unit_price"/> €</td>
+                            <td><strong><t t-esc="s.subtotal"/> €</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Équipements -->
+                <h4 class="mt-4">Équipements couverts</h4>
+                <table class="table"
+                       t-if="contract.equipment_ids">
+                    <thead>
+                        <tr>
+                            <th>Équipement</th>
+                            <th>Type</th>
+                            <th>N° Série</th>
+                            <th>AnyDesk ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="contract.equipment_ids" t-as="eq">
+                            <td><t t-esc="eq.equipment_name"/></td>
+                            <td><t t-esc="eq.equipment_type"/></td>
+                            <td><t t-esc="eq.serial_number or '-'"/></td>
+                            <td><t t-esc="eq.anydesk_id or '-'"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Tickets -->
+                <h4 class="mt-4">Tickets de support</h4>
+                <div t-if="contract.ticket_ids">
+                    <div class="list-group">
+                        <a t-foreach="contract.ticket_ids" t-as="ticket"
+                           t-attf-href="/helpdesk/ticket/{{ticket.id}}"
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6><t t-esc="ticket.name"/></h6>
+                                <small><t t-esc="ticket.create_date"/></small>
+                            </div>
+                            <small class="text-muted">
+                                <t t-esc="ticket.stage_id.name"/>
+                                <t t-if="ticket.x_intervention_type">
+                                    — <t t-esc="ticket.x_intervention_type"/>
+                                </t>
+                            </small>
+                        </a>
+                    </div>
+                </div>
+                <p t-else="" class="text-muted">Aucun ticket de support.</p>
+
+                <!-- Ouvrir un ticket -->
+                <div class="mt-4">
+                    <a t-attf-href="
+                        /helpdesk/ticket/new?contract_id={{contract.id}}
+                    " class="btn btn-primary">
+                        Ouvrir un ticket de support
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
