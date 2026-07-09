@@ -318,7 +318,11 @@ html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var
 
 /* ── INTERVENTIONS TABLE ── */
 .interv-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-.interv-table-wrap { background: var(--white); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
+.interv-table-wrap {
+    background: var(--white); border-radius: var(--r);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    box-shadow: var(--shadow);
+}
 .interv-table { width: 100%; border-collapse: collapse; }
 .interv-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-mid); letter-spacing: .06em; background: var(--bg); border-bottom: 1px solid var(--border); }
 .interv-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
@@ -830,6 +834,26 @@ gmp-map#googleMap {
 /* Carte sidebar suppression prix */
 .carte-mission-price { display: none !important; }
 
+/* ── PLANNING ── */
+.planning-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+}
+.planning-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#planningTable { min-width: 520px; }
+.planning-absence-dates {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 6px;
+}
+.planning-absence-dates .ff-input { min-width: 0; flex: 1; }
+
 /* ══════════════════════════════════════════════════════════════════
    COMPTABILITÉ — Style FairFair
 ══════════════════════════════════════════════════════════════════ */
@@ -1014,13 +1038,105 @@ gmp-map#googleMap {
     .dash-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .stat-card { padding: 14px 12px; }
     .stat-value { font-size: 20px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stats-grid-3 { grid-template-columns: repeat(2, 1fr); }
 
-    .missions-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
-    .missions-filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-    .mission-card { padding: 14px; }
-    .mission-card-top { flex-wrap: wrap; gap: 8px; }
-    .mission-card-actions { flex-direction: column; }
-    .mission-card-actions .btn { width: 100%; justify-content: center; }
+    .page-header .notif-wrap { display: none; }
+
+    .missions-filters { padding: 14px; }
+    .missions-filters .filter-group {
+        flex-wrap: nowrap; overflow-x: auto;
+        -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+    }
+    .mission-card-h { padding: 16px; }
+    .mc-top { flex-wrap: wrap; gap: 8px; }
+    .mc-price { margin-left: 0; width: 100%; font-size: 18px; }
+    .mc-client { margin-left: 0; }
+    .mc-meta { flex-wrap: wrap; gap: 10px; }
+    .mc-actions { flex-direction: column; }
+    .mc-actions .btn-start,
+    .mc-actions .btn-nav,
+    .mc-actions .btn-call { width: 100%; justify-content: center; }
+
+    .interv-section-header { flex-wrap: wrap; }
+    .interv-filters {
+        flex-wrap: nowrap; overflow-x: auto;
+        -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+    }
+    .interv-table { min-width: 640px; }
+    .interv-table th, .interv-table td { padding: 10px 12px; font-size: 12px; }
+
+    .ff-tabs { margin-bottom: 16px; -webkit-overflow-scrolling: touch; }
+    .ff-tab { padding: 10px 14px; font-size: 11px; }
+    .ff-section-grid { grid-template-columns: 1fr; gap: 24px; padding: 16px; }
+    .ff-docs-card { padding: 16px; }
+    .ff-metiers-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .ff-metier-box { padding: 14px 10px; font-size: 12px; }
+    .ff-doc-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .ff-doc-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+    .ff-save-bar { flex-direction: column; padding: 16px; gap: 10px; }
+    .ff-save-bar .btn-save { width: 100%; text-align: center; }
+    .ff-intervenant-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+    .ff-field-row { flex-direction: column; align-items: stretch; }
+    .ff-field-row > .ff-field { width: 100%; }
+    .ff-input { min-width: 0; }
+    #view-profile .ff-tab-content > .btn-save { width: 100%; margin-top: 8px; }
+    .profile-form-grid { grid-template-columns: 1fr; }
+    .profile-form-card { padding: 16px; }
+    .metier-checkboxes { grid-template-columns: repeat(2, 1fr); }
+    .profile-form-actions { flex-direction: column; }
+    .profile-form-actions .btn-save,
+    .profile-form-actions .btn-cancel { width: 100%; text-align: center; }
+
+    #view-carte.view-page { padding: 0; }
+    .carte-header {
+        flex-direction: column; gap: 12px;
+        padding: 16px 14px 12px;
+    }
+    .carte-header-actions { width: 100%; }
+    .carte-btn-action { flex: 1; justify-content: center; }
+    .carte-layout { grid-template-columns: 1fr; padding: 0 14px 16px; gap: 14px; }
+    .carte-map-wrap { height: 50vh; min-height: 280px; }
+    #googleMap, gmp-map#googleMap { height: 50vh !important; min-height: 280px !important; }
+    .carte-sidebar-new { padding-left: 0; height: auto; max-height: none; }
+    .carte-info-panel {
+        width: calc(100% - 28px); left: 14px; right: 14px; bottom: 12px;
+    }
+    .carte-info-actions { flex-wrap: wrap; }
+    .carte-btn-primary, .carte-btn-secondary { flex: 1 1 calc(50% - 4px); min-width: 120px; }
+    .carte-grid { grid-template-columns: 1fr; }
+
+    .planning-layout { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .planning-absence-dates { flex-wrap: wrap; }
+    #planningTable { font-size: 11px; }
+
+    .acct-hub-grid { grid-template-columns: 1fr; gap: 16px; max-width: none; }
+    .acct-hub-icon { height: 120px; font-size: 48px; }
+    .acct-toolbar {
+        flex-wrap: nowrap; overflow-x: auto;
+        -webkit-overflow-scrolling: touch; gap: 10px; padding-bottom: 4px;
+    }
+    .acct-toolbar-item { white-space: nowrap; flex-shrink: 0; }
+    .acct-solde-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .acct-pagination { text-align: left; }
+
+    .actions-block { flex-direction: column; }
+    .actions-block .btn-start,
+    .actions-block .btn-danger { width: 100%; }
+    .signature-wrap { height: 160px; }
+
+    #view-messagerie #messagerieList {
+        max-height: calc(100dvh - 220px - env(safe-area-inset-bottom, 0px));
+    }
+
+    .login-wrap {
+        width: calc(100% - 28px);
+        max-width: 400px;
+        padding: 28px 20px;
+        box-sizing: border-box;
+    }
+    .acct-select { min-width: 0; width: 100%; }
+    .planning-layout .btn-save { width: 100%; }
 
     .mission-detail-wrap { max-width: 100%; width: 100%; }
     .detail-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -1034,7 +1150,9 @@ gmp-map#googleMap {
     .photos-actions .btn { width: 100%; }
 
     .card { border-radius: 12px; }
-    .card-header { padding: 12px 14px; }
+    .card-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+    .devis-ligne > div { flex-wrap: wrap; }
+    .devis-ligne > div .field-input { min-width: 0; }
     .profile-grid { grid-template-columns: 1fr; }
     .profile-card { padding: 16px; }
 
@@ -1059,13 +1177,9 @@ gmp-map#googleMap {
 
     .acct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .acct-table { min-width: 520px; }
-    .acct-hub-grid { grid-template-columns: 1fr; }
-    .acct-paiements-top { grid-template-columns: 1fr; }
 
     .import-modal { align-items: flex-end; }
-    .import-modal-box { border-radius: 16px 16px 0 0; }
-    #view-carte .carte-wrap { height: calc(100dvh - 180px); min-height: 280px; }
-    .planning-grid { overflow-x: auto; }
+    .import-modal-box { border-radius: 16px 16px 0 0; max-height: 90dvh; overflow-y: auto; }
 }
 
 @media (min-width: 769px) {
@@ -1075,6 +1189,11 @@ gmp-map#googleMap {
 }
 
 @media (max-width: 400px) {
-    .dash-stats { grid-template-columns: 1fr; }
+    .dash-stats,
+    .stats-grid,
+    .stats-grid-3 { grid-template-columns: 1fr; }
     .photos-grid { grid-template-columns: 1fr 1fr; }
+    .ff-metiers-grid,
+    .metier-checkboxes { grid-template-columns: 1fr; }
+    .ff-tab { padding: 10px 12px; font-size: 10px; }
 }
