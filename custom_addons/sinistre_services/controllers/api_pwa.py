@@ -969,6 +969,7 @@ class SinistrePWAController(http.Controller):
             return _err(400, "Signature requise")
         try:
             mission.sudo().write({'signature_apres': sig})
+            mission._accepter_devis_si_signature_fin()
             mission.message_post(body=_("✅ Signature après intervention enregistrée."))
             return _ok({
                 'success':        True,
