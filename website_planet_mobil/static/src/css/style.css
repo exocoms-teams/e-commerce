@@ -3488,15 +3488,26 @@ a[name="website_sale_main_button"] {
 }
 
 /* ===========================
-   CHECKOUT — MOBILE (≤991px)
+   CHECKOUT / PANIER — MOBILE (≤991px)
    =========================== */
 @media (max-width: 991px) {
-    /* Masquer alt-cat-nav sur checkout (inutile + cause overflow horizontal) */
+    /* Bloquer le scroll horizontal sur toutes les pages cart/checkout
+       overflow-x: clip (pas hidden) pour ne pas casser les éléments sticky */
+    .o_website_sale_checkout {
+        overflow-x: clip;
+    }
+
+    /* Masquer alt-cat-nav sur checkout (inutile en tunnel d'achat) */
     .o_website_sale_checkout .alt-cat-nav {
         display: none !important;
     }
 
-    /* "Recap" natif Odoo : forcer en fixed pleine largeur plutôt que sticky décalé */
+    /* Card récapitulatif panier : padding sur mobile (natif p-0, trop serré) */
+    .o_total_card .card-body {
+        padding: 16px !important;
+    }
+
+    /* "Recap" natif Odoo (.o_mobile_summary) : forcer en fixed pleine largeur */
     .o_mobile_summary {
         position: fixed !important;
         bottom: 0 !important;
@@ -3509,8 +3520,8 @@ a[name="website_sale_main_button"] {
         box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.08);
     }
 
-    /* Marge en bas du contenu pour ne pas être masqué par le recap fixe
-       Seulement sur les pages checkout (qui ont .o_mobile_summary), pas sur /shop/cart */
+    /* Marge bas du contenu checkout pour ne pas être masqué par le recap fixe
+       :has(.o_mobile_summary) cible uniquement checkout, PAS /shop/cart */
     .o_website_sale_checkout_container:has(.o_mobile_summary) > .row {
         margin-bottom: 130px;
     }
