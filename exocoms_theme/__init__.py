@@ -855,6 +855,48 @@ def _setup_languages(env, website):
     return lang_fr, lang_en
 
 
+def _setup_demo_avis(env, website):
+    """Sème quelques avis publiés de démonstration, UNIQUEMENT si le
+    site n'en a encore aucun (jamais de doublon, jamais d'écrasement
+    d'avis réels déjà déposés par de vrais clients). Contenu repris des
+    anciens témoignages codés en dur dans features_section, maintenant
+    stockés comme de vrais enregistrements exocoms.avis pour que la
+    home et /avis affichent du contenu réel dès le lancement plutôt
+    qu'un carousel vide."""
+    if not website:
+        return
+    Avis = env['exocoms.avis'].sudo()
+    if Avis.search_count([('website_id', '=', website.id)]):
+        return
+
+    from datetime import date, timedelta
+    today = date.today()
+    demo_avis = [
+        ('Nadia K.', 5, "Déployé 30 TPE en une semaine pour notre réseau de pharmacies. Zéro panne, zéro stress. Un partenaire de confiance.", 'TPE Ingenico', 3),
+        ('Alexandre C.', 5, "Notre hôtel utilise leurs terminaux depuis 3 saisons. La remontée des paiements en temps réel a changé notre gestion.", 'TPE Portable', 7),
+        ('Rachid L.', 5, "J'avais des doutes au départ mais l'onboarding était impeccable. Mon équipe a été formée en 2h chrono.", '', 12),
+        ('Fatima D.', 4, "Le support répond en moins d'une heure même le samedi. Pour une chaîne de 18 restaurants c'est indispensable.", 'Caisse Enregistreuse', 15),
+        ('Julien M.', 5, "Migration de notre ancien système sans aucune interruption de caisse. Impressionnant pour un centre commercial.", '', 20),
+        ('Sofia B.', 5, "Excellent rapport qualité prix. Les terminaux SUNMI sont robustes et le logiciel est intuitif pour mes vendeurs.", 'Terminal SUNMI', 25),
+    ]
+    for name, rating, comment, product, days_ago in demo_avis:
+        avis = Avis.with_context(lang='fr_FR').create({
+            'name': name,
+            'rating': rating,
+            'comment': comment,
+            'product': product,
+            'date': today - timedelta(days=days_ago),
+            'state': 'published',
+            'website_id': website.id,
+        })
+        # Traduit tout de suite vers l'anglais (contenu rédigé en
+        # français) — best-effort, cf. action_translate_missing() :
+        # si le réseau est indisponible pendant l'install, l'avis reste
+        # simplement affiché en français côté anglais pour l'instant.
+        avis.with_context(lang='fr_FR').action_translate_missing()
+    _logger.info("%s avis de démonstration créés pour le site %s.", len(demo_avis), website.name)
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -1268,6 +1310,9 @@ def post_init_hook(env):
     # correspondance par nom de catégorie fonctionne correctement. ===
     _migrate_products_from_legacy_site(env, website)
 
+    # === AVIS DE DÉMONSTRATION — uniquement si le site n'en a aucun ===
+    _setup_demo_avis(env, website)
+
     # NOTE : Le footer et le copyright sont gérés par
     # views/templates/footer.xml (templates custom_footer et
     # custom_copyright, inherit_id="website.layout"). Ils sont
@@ -1305,6 +1350,10 @@ def post_migrate_hook(env):
 
     # Attributs/filtres maintenus + traduction à chaque update
     _setup_monetique_attributes(env, lang_en)
+
+    # Avis de démonstration — ne fait rien si le site en a déjà (réels
+    # ou démo), donc sans danger de relancer ceci à chaque update.
+    _setup_demo_avis(env, website)
 
     if website:
         # CORRECTIF MAJEUR : la version originale rattachait À CHAQUE

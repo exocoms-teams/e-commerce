@@ -153,7 +153,7 @@ class ExocomsWebsite(Website):
         rating = min(5, max(1, rating)) if rating else 5
 
         if name and comment:
-            request.env['exocoms.avis'].sudo().create({
+            avis = request.env['exocoms.avis'].sudo().create({
                 'name': name,
                 'comment': comment,
                 'product': product,
@@ -161,6 +161,13 @@ class ExocomsWebsite(Website):
                 'website_id': request.website.id,
                 'state': 'pending',
             })
+            # Traduit tout de suite vers l'autre langue (fr<->en) à
+            # partir de la langue de la page où le formulaire a été
+            # rempli (request.env.lang). Best-effort : si le service de
+            # traduction est indisponible, l'avis est quand même créé,
+            # juste affiché uniquement dans sa langue d'origine pour le
+            # moment (rattrapable via le bouton "Traduire" du backend).
+            avis.action_translate_missing()
 
         return request.redirect('/avis?sent=1')
 
