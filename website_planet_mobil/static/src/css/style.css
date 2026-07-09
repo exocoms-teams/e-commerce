@@ -3797,7 +3797,8 @@ a[name="website_sale_main_button"] {
         overflow-x: hidden;
     }
 
-    /* Empiler les colonnes (panier + récapitulatif) */
+    /* Empiler TOUTES les colonnes du tunnel checkout (panier, adresse, livraison, paiement) */
+    .o_website_sale_checkout_container > .row > div[class*="col-"],
     .o_website_sale_checkout .oe_cart,
     .o_website_sale_checkout .oe_cart + div,
     .o_website_sale_checkout .o_wsale_shorter_cart_summary {
@@ -3838,6 +3839,12 @@ a[name="website_sale_main_button"] {
     .o_customer_address_fill .form-select {
         padding: 9px 12px;
         font-size: 0.9rem;
+    }
+
+    /* Désactiver le sticky natif Odoo sur mobile → card affichée inline sous le contenu */
+    .o_wsale_sticky_object {
+        position: static !important;
+        top: auto !important;
     }
 
     /* Masquer alt-cat-nav sur pages checkout/panier (inutile en tunnel d'achat) */
