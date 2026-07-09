@@ -1,12 +1,21 @@
 from odoo import http
 from odoo.http import request
 
+from .catalogue_data import CATEGORIES, ORDER, PRODUCTS
+
 _UI_STRINGS = {
     'fr_FR': {
         'page_title': 'Solutions Télécom',
         'page_subtitle': 'Voix, mobilité, connectivité, cloud et cybersécurité pour les professionnels.',
         'all_label': 'Tous',
         'order_label': 'Commander',
+        'discover_label': 'Découvrir',
+        'back_label': 'Retour au catalogue',
+        'benefits_title': 'Pourquoi choisir cette offre',
+        'faq_title': 'Questions fréquentes',
+        'related_title': 'Dans la même catégorie',
+        'cta_title': 'Prêt à commander ?',
+        'cta_text': 'La commande se fait directement sur le portail KISSGROUP, en toute sécurité.',
         'footer_note': '« Commander » redirige vers le portail de commande — aucun paiement sur exocoms.fr',
     },
     'en_US': {
@@ -14,86 +23,118 @@ _UI_STRINGS = {
         'page_subtitle': 'Voice, mobility, connectivity, cloud and cybersecurity for professionals.',
         'all_label': 'All',
         'order_label': 'Order',
+        'discover_label': 'Discover',
+        'back_label': 'Back to catalogue',
+        'benefits_title': 'Why choose this offer',
+        'faq_title': 'Frequently asked questions',
+        'related_title': 'In the same category',
+        'cta_title': 'Ready to order?',
+        'cta_text': 'Ordering is done directly on the KISSGROUP portal, securely.',
         'footer_note': "'Order' redirects to the ordering portal — no payment on exocoms.fr",
     },
-}
-
-# Catalogue sections used both as filter chips and as card tags.
-# (key, FR label, EN label)
-_CATEGORIES = [
-    ('voix', 'Voix', 'Voice'),
-    ('mobile', 'Mobile', 'Mobile'),
-    ('internet', 'Internet', 'Internet'),
-    ('cloud', 'Cloud', 'Cloud'),
-    ('securite', 'Sécurité', 'Security'),
-]
-
-# Curated KISSGROUP catalogue shown on /telecom.
-_CATALOGUE = {
-    'fr_FR': [
-        {'cat': 'voix', 'icon': 'fa-phone', 'name': 'Centrex Wazo',
-         'description': 'Téléphonie hébergée clé en main : infra, licences, trunk et communications incluses.'},
-        {'cat': 'voix', 'icon': 'fa-phone-square', 'name': 'Trunk SIP',
-         'description': 'Raccordez tout IPBX existant. Compatible Microsoft Teams, provisionné en live.'},
-        {'cat': 'mobile', 'icon': 'fa-mobile', 'name': 'Mobile illimité',
-         'description': 'Forfaits illimités sur les réseaux Orange et Bouygues. eSIM, VoLTE, VoWiFi.'},
-        {'cat': 'mobile', 'icon': 'fa-wifi', 'name': 'Data Only',
-         'description': 'SIM data pour routeurs 4G/5G, tablettes et objets connectés. IP publiques.'},
-        {'cat': 'internet', 'icon': 'fa-sitemap', 'name': 'Liens Fibre',
-         'description': 'Agrégation neutre de liens fibre, centralisés et pilotés à distance.'},
-        {'cat': 'internet', 'icon': 'fa-server', 'name': 'KissBox secours',
-         'description': 'Secours 4G illimité et Starlink via boîtiers Mikrotik.'},
-        {'cat': 'cloud', 'icon': 'fa-cloud', 'name': 'Sauvegarde MS 365',
-         'description': 'Backup facturé à l\'agent, sans limite de stockage, 1 an de rétention.'},
-        {'cat': 'cloud', 'icon': 'fa-database', 'name': 'Stockage S3',
-         'description': 'Stockage objet S3 hébergé en France, facturé au Go par mois.'},
-        {'cat': 'securite', 'icon': 'fa-shield', 'name': 'Cybersécurité',
-         'description': 'MPLS et pare-feu managés pour sécuriser l\'ensemble des sites.'},
-    ],
-    'en_US': [
-        {'cat': 'voix', 'icon': 'fa-phone', 'name': 'Centrex Wazo',
-         'description': 'Turnkey hosted telephony: infrastructure, licenses, trunk and calls included.'},
-        {'cat': 'voix', 'icon': 'fa-phone-square', 'name': 'SIP Trunk',
-         'description': 'Connect any existing IPBX. Microsoft Teams compatible, provisioned live.'},
-        {'cat': 'mobile', 'icon': 'fa-mobile', 'name': 'Unlimited Mobile',
-         'description': 'Unlimited plans on the Orange and Bouygues networks. eSIM, VoLTE, VoWiFi.'},
-        {'cat': 'mobile', 'icon': 'fa-wifi', 'name': 'Data Only',
-         'description': 'Data SIMs for 4G/5G routers, tablets and connected devices. Public IPs.'},
-        {'cat': 'internet', 'icon': 'fa-sitemap', 'name': 'Fiber Links',
-         'description': 'Neutral aggregation of fiber links, centralized and managed remotely.'},
-        {'cat': 'internet', 'icon': 'fa-server', 'name': 'KissBox Backup',
-         'description': '4G unlimited and Starlink failover via Mikrotik boxes.'},
-        {'cat': 'cloud', 'icon': 'fa-cloud', 'name': 'MS 365 Backup',
-         'description': 'Per-agent backup billing, unlimited storage, 1-year retention.'},
-        {'cat': 'cloud', 'icon': 'fa-database', 'name': 'S3 Storage',
-         'description': 'S3 object storage hosted in France, billed per GB per month.'},
-        {'cat': 'securite', 'icon': 'fa-shield', 'name': 'Cybersecurity',
-         'description': 'Managed MPLS and firewalls to secure all your sites.'},
-    ],
 }
 
 
 class TelecomController(http.Controller):
 
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    def _lang(self):
+        return request.env.context.get('lang', 'fr_FR')
+
+    def _lang_prefix(self):
+        """URL prefix to preserve the current language on internal links."""
+        website = getattr(request, 'website', None)
+        cur = getattr(request, 'lang', None)
+        if not website or not cur:
+            return ''
+        default = website.default_lang_id
+        if cur and default and cur.id != default.id:
+            code = cur.url_code or (cur.code or '').split('_')[0]
+            if code:
+                return '/' + code
+        return ''
+
+    def _order_url(self):
+        return request.env['ir.config_parameter'].sudo().get_param(
+            'telecom_services.kissgroup_order_url') or '#'
+
+    def _cat_labels(self, is_fr):
+        return {key: (fr if is_fr else en) for key, fr, en in CATEGORIES}
+
+    def _card(self, slug, lang, is_fr, prefix, cat_labels):
+        meta = PRODUCTS[slug]
+        content = meta.get(lang) or meta['fr_FR']
+        return {
+            'slug': slug,
+            'cat': meta['cat'],
+            'cat_label': cat_labels.get(meta['cat'], meta['cat']),
+            'icon': meta['icon'],
+            'name': content['name'],
+            'tagline': content.get('tagline', ''),
+            'summary': content.get('summary', ''),
+            'url': '%s/telecom/%s' % (prefix, slug),
+        }
+
+    # ------------------------------------------------------------------
+    # Catalogue
+    # ------------------------------------------------------------------
     @http.route('/telecom', type='http', auth='public', website=True)
     def telecom_page(self, **kwargs):
-        lang = request.env.context.get('lang', 'fr_FR')
-        strings = _UI_STRINGS.get(lang, _UI_STRINGS['fr_FR'])
+        lang = self._lang()
         is_fr = lang == 'fr_FR'
+        strings = _UI_STRINGS.get(lang, _UI_STRINGS['fr_FR'])
+        prefix = self._lang_prefix()
+        cat_labels = self._cat_labels(is_fr)
 
-        cat_labels = {key: (fr if is_fr else en) for key, fr, en in _CATEGORIES}
-        categories = [{'key': key, 'label': cat_labels[key]} for key, _fr, _en in _CATEGORIES]
-        cards = [
-            dict(card, cat_label=cat_labels.get(card['cat'], card['cat']))
-            for card in _CATALOGUE.get(lang, _CATALOGUE['fr_FR'])
-        ]
-
-        order_url = request.env['ir.config_parameter'].sudo().get_param(
-            'telecom_services.kissgroup_order_url') or '#'
+        categories = [{'key': key, 'label': cat_labels[key]} for key, _fr, _en in CATEGORIES]
+        cards = [self._card(slug, lang, is_fr, prefix, cat_labels) for slug in ORDER]
 
         return request.render('telecom_services.telecom_page', {
             'categories': categories,
             'cards': cards,
-            'order_url': order_url,
+            **strings,
+        })
+
+    # ------------------------------------------------------------------
+    # Fiche produit
+    # ------------------------------------------------------------------
+    @http.route('/telecom/<string:slug>', type='http', auth='public', website=True)
+    def telecom_product(self, slug, **kwargs):
+        meta = PRODUCTS.get(slug)
+        if not meta:
+            return request.redirect(self._lang_prefix() + '/telecom')
+
+        lang = self._lang()
+        is_fr = lang == 'fr_FR'
+        strings = _UI_STRINGS.get(lang, _UI_STRINGS['fr_FR'])
+        prefix = self._lang_prefix()
+        cat_labels = self._cat_labels(is_fr)
+
+        content = meta.get(lang) or meta['fr_FR']
+        product = {
+            'slug': slug,
+            'cat': meta['cat'],
+            'cat_label': cat_labels.get(meta['cat'], meta['cat']),
+            'icon': meta['icon'],
+            'name': content['name'],
+            'tagline': content.get('tagline', ''),
+            'intro': content.get('intro', ''),
+            'benefits': content.get('benefits', []),
+            'sections': content.get('sections', []),
+            'faq': content.get('faq', []),
+        }
+        related = [
+            self._card(s, lang, is_fr, prefix, cat_labels)
+            for s in ORDER
+            if s != slug and PRODUCTS[s]['cat'] == meta['cat']
+        ]
+
+        return request.render('telecom_services.telecom_product', {
+            'product': product,
+            'related': related,
+            'order_url': self._order_url(),
+            'catalogue_url': prefix + '/telecom',
             **strings,
         })

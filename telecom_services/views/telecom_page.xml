@@ -6,17 +6,22 @@
 
             <div class="oe_structure" id="oe_structure_telecom_top"/>
 
-            <div id="telecom-catalog" class="container py-5">
-
-                <!-- En-tête -->
-                <div class="text-center mb-4">
-                    <h1 class="display-5 fw-bold mb-2">
+            <!-- Hero -->
+            <section class="telecom-hero py-5">
+                <div class="container text-center py-4 position-relative">
+                    <span class="telecom-hero-badge mb-3">
+                        <i class="fa fa-th-large me-2"/>Catalogue Télécom
+                    </span>
+                    <h1 class="display-4 fw-bold mb-3 text-white">
                         <t t-esc="page_title"/>
                     </h1>
-                    <p class="lead text-muted">
+                    <p class="lead text-white-50 mx-auto" style="max-width: 720px;">
                         <t t-esc="page_subtitle"/>
                     </p>
                 </div>
+            </section>
+
+            <div id="telecom-catalog" class="container py-5">
 
                 <!-- Filtres -->
                 <div class="d-flex flex-wrap justify-content-center gap-2 mb-5 telecom-filter">
@@ -35,22 +40,24 @@
                     <t t-foreach="cards" t-as="card">
                         <div class="col-12 col-md-6 col-lg-4 telecom-card-col"
                              t-att-data-cat="card['cat']">
-                            <div class="telecom-cat-card h-100 d-flex flex-column p-4">
-                                <span class="telecom-cat-pill mb-3">
-                                    <t t-esc="card['cat_label']"/>
-                                </span>
-                                <i t-attf-class="fa #{card['icon']} fa-lg telecom-cat-icon mb-3"/>
-                                <h3 class="h6 fw-bold mb-2">
-                                    <t t-esc="card['name']"/>
-                                </h3>
-                                <p class="small text-muted flex-grow-1 mb-3">
-                                    <t t-esc="card['description']"/>
-                                </p>
-                                <a t-att-href="order_url" target="_blank" rel="noopener"
-                                   class="btn btn-primary w-100">
-                                    <t t-esc="order_label"/> ↗
-                                </a>
-                            </div>
+                            <a t-att-href="card['url']"
+                               class="text-decoration-none text-reset d-block h-100">
+                                <div class="telecom-cat-card h-100 d-flex flex-column p-4">
+                                    <span class="telecom-cat-pill mb-3">
+                                        <t t-esc="card['cat_label']"/>
+                                    </span>
+                                    <i t-attf-class="fa #{card['icon']} fa-lg telecom-cat-icon mb-3"/>
+                                    <h3 class="h5 fw-bold mb-2">
+                                        <t t-esc="card['name']"/>
+                                    </h3>
+                                    <p class="small text-muted flex-grow-1 mb-3">
+                                        <t t-esc="card['summary']"/>
+                                    </p>
+                                    <span class="telecom-card-link fw-semibold">
+                                        <t t-esc="discover_label"/> →
+                                    </span>
+                                </div>
+                            </a>
                         </div>
                     </t>
                 </div>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="telecom_product" name="Télécom — Fiche produit">
+        <t t-call="website.layout">
+            <t t-set="title"><t t-esc="product['name']"/> — Télécom</t>
+
+            <div class="oe_structure" id="oe_structure_telecom_product_top"/>
+
+            <!-- Hero produit -->
+            <section class="telecom-hero telecom-product-hero py-5">
+                <div class="container py-4">
+                    <a t-att-href="catalogue_url" class="telecom-back small text-white-50 d-inline-block mb-4">
+                        ← <t t-esc="back_label"/>
+                    </a>
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-7">
+                            <span class="telecom-cat-pill mb-3 d-inline-block">
+                                <t t-esc="product['cat_label']"/>
+                            </span>
+                            <h1 class="display-5 fw-bold mb-3 text-white">
+                                <t t-esc="product['name']"/>
+                            </h1>
+                            <p class="lead text-white-50 mb-4">
+                                <t t-esc="product['tagline']"/>
+                            </p>
+                            <a t-att-href="order_url" target="_blank" rel="noopener"
+                               class="btn btn-primary btn-lg px-4">
+                                <t t-esc="order_label"/> ↗
+                            </a>
+                        </div>
+                        <div class="col-lg-5 text-center d-none d-lg-block">
+                            <div class="telecom-hero-icon">
+                                <i t-attf-class="fa #{product['icon']}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="container py-5">
+
+                <!-- Intro -->
+                <div class="row justify-content-center mb-5" t-if="product['intro']">
+                    <div class="col-lg-9">
+                        <p class="fs-5 text-center text-muted mb-0">
+                            <t t-esc="product['intro']"/>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bénéfices -->
+                <t t-if="product['benefits']">
+                    <h2 class="h4 fw-bold text-center mb-4">
+                        <t t-esc="benefits_title"/>
+                    </h2>
+                    <div class="row g-4 mb-5">
+                        <t t-foreach="product['benefits']" t-as="b">
+                            <div class="col-md-4">
+                                <div class="telecom-benefit h-100 p-4 text-center">
+                                    <div class="telecom-benefit-icon mb-3">
+                                        <i t-attf-class="fa #{b['icon']}"/>
+                                    </div>
+                                    <h3 class="h6 fw-bold mb-2">
+                                        <t t-esc="b['title']"/>
+                                    </h3>
+                                    <p class="small text-muted mb-0">
+                                        <t t-esc="b['text']"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <!-- Sections détaillées (alternées) -->
+                <t t-foreach="product['sections']" t-as="sec">
+                    <div t-attf-class="row align-items-center g-4 py-4 telecom-section #{'flex-lg-row-reverse' if sec_index % 2 else ''}">
+                        <div class="col-lg-6">
+                            <h3 class="h4 fw-bold mb-3">
+                                <t t-esc="sec['title']"/>
+                            </h3>
+                            <p class="text-muted mb-3">
+                                <t t-esc="sec['text']"/>
+                            </p>
+                            <ul class="telecom-checklist list-unstyled mb-0">
+                                <t t-foreach="sec.get('points', [])" t-as="pt">
+                                    <li class="mb-2">
+                                        <i class="fa fa-check-circle text-primary me-2"/>
+                                        <t t-esc="pt"/>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6 text-center">
+                            <div class="telecom-section-visual">
+                                <i t-attf-class="fa #{product['icon']}"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- FAQ -->
+                <t t-if="product['faq']">
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-lg-9">
+                            <h2 class="h4 fw-bold text-center mb-4">
+                                <t t-esc="faq_title"/>
+                            </h2>
+                            <div class="accordion telecom-faq" t-attf-id="telecomFaq">
+                                <t t-foreach="product['faq']" t-as="item">
+                                    <div class="accordion-item">
+                                        <h3 class="accordion-header" t-attf-id="faqH#{item_index}">
+                                            <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    t-attf-data-bs-target="#faqC#{item_index}"
+                                                    aria-expanded="false"
+                                                    t-attf-aria-controls="faqC#{item_index}">
+                                                <t t-esc="item['q']"/>
+                                            </button>
+                                        </h3>
+                                        <div t-attf-id="faqC#{item_index}"
+                                             class="accordion-collapse collapse"
+                                             t-attf-aria-labelledby="faqH#{item_index}"
+                                             data-bs-parent="#telecomFaq">
+                                            <div class="accordion-body text-muted">
+                                                <t t-esc="item['a']"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- CTA -->
+                <div class="telecom-cta text-center p-5 mt-5">
+                    <h2 class="h3 fw-bold mb-2 text-white">
+                        <t t-esc="cta_title"/>
+                    </h2>
+                    <p class="text-white-50 mb-4">
+                        <t t-esc="cta_text"/>
+                    </p>
+                    <a t-att-href="order_url" target="_blank" rel="noopener"
+                       class="btn btn-light btn-lg px-4">
+                        <t t-esc="order_label"/> ↗
+                    </a>
+                </div>
+
+                <!-- Offres liées -->
+                <t t-if="related">
+                    <h2 class="h5 fw-bold mt-5 mb-4">
+                        <t t-esc="related_title"/>
+                    </h2>
+                    <div class="row g-4">
+                        <t t-foreach="related" t-as="card">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <a t-att-href="card['url']"
+                                   class="text-decoration-none text-reset d-block h-100">
+                                    <div class="telecom-cat-card h-100 d-flex flex-column p-4">
+                                        <i t-attf-class="fa #{card['icon']} fa-lg telecom-cat-icon mb-3"/>
+                                        <h3 class="h6 fw-bold mb-2">
+                                            <t t-esc="card['name']"/>
+                                        </h3>
+                                        <p class="small text-muted flex-grow-1 mb-0">
+                                            <t t-esc="card['summary']"/>
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+                <p class="text-center text-muted small mt-5 mb-0">
+                    <t t-esc="footer_note"/>
+                </p>
+
+            </div>
+
+            <div class="oe_structure" id="oe_structure_telecom_product_bottom"/>
+        </t>
+    </template>
+</odoo>
