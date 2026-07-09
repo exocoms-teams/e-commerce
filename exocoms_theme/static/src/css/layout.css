@@ -254,3 +254,26 @@ a.btn-secondary {
 #o_wsale_pager .pagination .page-item.disabled .page-link {
     color: #b0b8c9 !important;
 }
+/* Force tous les moyens de paiement du checkout à suivre la couleur
+   de marque du site (var(--primary), définie dans Site > Configurer
+   le thème), peu importe le module qui les fournit. */
+
+#o_payment_methods li.list-group-item:has(input:checked) {
+    border-color: var(--primary) !important;
+    background-color: color-mix(in srgb, var(--primary) 6%, white) !important;
+}
+
+#o_payment_methods input[type="radio"]:checked {
+    accent-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+#o_payment_methods .badge {
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+}
+
+#o_payment_form button[type="submit"] {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
