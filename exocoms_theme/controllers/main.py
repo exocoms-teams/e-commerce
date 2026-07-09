@@ -164,5 +164,4 @@ class ExocomsWebsiteSale(WebsiteSale):
         history = [pid for pid in history if pid != product.id]
         history.insert(0, product.id)
         request.session[RECENT_HISTORY_KEY] = history[:RECENT_HISTORY_MAX]
-
         return response
