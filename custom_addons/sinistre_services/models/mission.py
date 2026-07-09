@@ -311,10 +311,35 @@ class SinistreMission(models.Model):
                 raise UserError(_("Au moins une photo AVANT est obligatoire pour démarrer l'intervention."))
         self.write({'state': 'en_cours', 'date_debut_travaux': fields.Datetime.now()})
 
+    def _accepter_devis_si_signature_fin(self):
+        """Valide le devis en cours lorsque le client a signé la fin d'intervention."""
+        self.ensure_one()
+        if not self.signature_apres:
+            return
+        devis_rs = self.devis_ids.sorted('date_devis', reverse=True)[:1]
+        if not devis_rs:
+            return
+        devis = devis_rs[0]
+        if devis.state in ('accepte', 'refuse'):
+            return
+        if devis.state in ('brouillon', 'envoye', 'en_revision') or getattr(devis, 'import_externe', False):
+            devis.write({
+                'state': 'accepte',
+                'date_signature': fields.Datetime.now(),
+            })
+            if self.state not in ('devis_accepte', 'travaux_en_cours', 'termine', 'facture', 'clos'):
+                self.write({'state': 'devis_accepte'})
+
     def action_terminer(self):
         for rec in self:
             if not rec.photos_apres_count:
                 raise UserError(_("Au moins une photo APRÈS est obligatoire pour clôturer la mission."))
+            if not rec.signature_apres:
+                raise UserError(
+                    _("La signature client de fin d'intervention est obligatoire. "
+                      "Utilisez le bouton « Signature Après Intervention ».")
+                )
+            rec._accepter_devis_si_signature_fin()
             devis_rs = rec.devis_ids.sorted('date_devis', reverse=True)[:1]
             if devis_rs:
                 devis = devis_rs[0]
