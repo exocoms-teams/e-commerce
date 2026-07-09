@@ -39,7 +39,7 @@ window.MissionDetail = (() => {
         if (!_mission) return;
         const m = _mission;
 
-        const titleEl = document.getElementById('topbarTitle');
+        const titleEl = document.getElementById('topbarTitle') || document.getElementById('mobileTopbarTitle');
         if (titleEl) titleEl.textContent = m.reference || 'Mission';
 
         const state   = CONFIG.STATE_LABELS[m.state] || { label: m.state || '–', icon: '❓' };
@@ -60,6 +60,7 @@ window.MissionDetail = (() => {
         _renderPhotos(m);
         _renderDevisUnderPhotos(m);
         _renderDevis(m);
+        _renderDocumentsImportes(m);
         _renderConsommables(m);
         _renderPenseBetes(m);
         _renderNotes(m);
@@ -225,7 +226,49 @@ window.MissionDetail = (() => {
         if (isDone) return;
         if (!m.devis) {
             block.appendChild(_btn('💶 Créer un devis', 'btn-nav', () => DevisForm.open(m.id)));
+            block.appendChild(_btn('📥 Importer un devis (logiciel)', 'btn-outline', () => ImportDoc.open(m.id, 'devis')));
         }
+    }
+
+    function _renderDocumentsImportes(m) {
+        let card = document.getElementById('importDocsCard');
+        const docs = m.documents_importes || [];
+        const isDone = ['termine','facture','clos'].includes(m.state);
+        if (!docs.length && !isDone) return;
+        if (!card) {
+            const devisCard = document.getElementById('devisCard');
+            if (!devisCard) return;
+            card = document.createElement('div');
+            card.id = 'importDocsCard';
+            card.className = 'card';
+            card.innerHTML = '<div class="card-header"><span class="card-icon">📥</span><h3 class="card-title">Documents importés</h3></div><div id="importDocsList"></div><div id="importDocsActions" class="photos-actions"></div>';
+            devisCard.parentNode.insertBefore(card, devisCard.nextSibling);
+        }
+        const list = document.getElementById('importDocsList');
+        const actions = document.getElementById('importDocsActions');
+        if (list) {
+            if (!docs.length) {
+                list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;margin:0">Aucun document importé</p>';
+            } else {
+                list.innerHTML = docs.map(d => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #E5E7EB;font-size:13px">
+                        <div>
+                            <strong>${d.type === 'facture' ? 'Facture' : 'Devis'}</strong> — ${d.reference}<br/>
+                            <span style="color:#6B7280">${_fmt(d.montant_ht)} € HT / ${_fmt(d.montant_ttc)} € TTC</span>
+                        </div>
+                        ${d.url ? `<a href="${d.url}" target="_blank" class="btn btn-outline btn-sm" style="padding:4px 10px">📄</a>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+        if (actions) {
+            actions.innerHTML = '';
+            if (isDone && !docs.some(d => d.type === 'facture')) {
+                const b = _btn('📥 Importer facture (logiciel)', 'btn-outline btn-sm', () => ImportDoc.open(m.id, 'facture'));
+                actions.appendChild(b);
+            }
+        }
+        card.style.display = (docs.length || isDone) ? 'block' : 'none';
     }
 
     function addPhotoThumb({ type, preview, id }) {
