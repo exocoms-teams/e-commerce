@@ -200,6 +200,7 @@ window.MissionDetail = (() => {
         const apres = (m.photos || []).filter(p => p.type_photo === 'apres');
         if (counts) counts.textContent = `${avant.length} avant · ${apres.length} après`;
         const isRecap = ['termine','facture','clos','annule'].includes(m.state);
+        const canDelete = !isRecap;
         [...avant, ...apres].forEach(photo => {
             const thumb = document.createElement('div');
             thumb.className = `photo-thumb ${photo.type_photo}`;
@@ -207,8 +208,15 @@ window.MissionDetail = (() => {
             thumb.innerHTML = `
                 <img src="${photo.url || '#'}" alt="Photo ${photo.type_photo}" onerror="this.style.display='none'"/>
                 <div class="photo-thumb-label">${photo.type_photo}</div>
-                ${!isRecap ? `<button class="photo-delete-btn" onclick="MissionDetail.deletePhoto(${photo.id})" title="Supprimer">✕</button>` : ''}
+                ${canDelete ? `<button type="button" class="photo-delete-btn" data-photo-id="${photo.id}" title="Supprimer cette photo">✕</button>` : ''}
             `;
+            const delBtn = thumb.querySelector('.photo-delete-btn');
+            if (delBtn) {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deletePhoto(photo.id, delBtn);
+                });
+            }
             grid.appendChild(thumb);
         });
         const st = m.state;
@@ -273,29 +281,57 @@ window.MissionDetail = (() => {
 
     function addPhotoThumb({ type, preview, id }) {
         const grid = document.getElementById('photosGrid');
-        if (!grid) return;
+        if (!grid) return null;
         const thumb = document.createElement('div');
         thumb.className = `photo-thumb ${type}`;
         if (id) thumb.dataset.photoId = id;
+        const canDelete = !_mission || !['termine','facture','clos','annule'].includes(_mission.state);
         thumb.innerHTML = `
             <img src="${preview}" alt="Photo ${type}"/>
             <div class="photo-thumb-label">${type}</div>
-            <button class="photo-delete-btn" onclick="MissionDetail.deletePhoto(${id || 0}, this)" title="Supprimer">✕</button>
+            ${canDelete ? `<button type="button" class="photo-delete-btn" title="Supprimer cette photo">✕</button>` : ''}
         `;
+        const delBtn = thumb.querySelector('.photo-delete-btn');
+        if (delBtn) {
+            delBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePhoto(id || 0, delBtn);
+            });
+        }
         grid.appendChild(thumb);
+        refreshPhotoCounts();
+        return thumb;
+    }
+
+    function setPhotoThumbId(thumbEl, photoId) {
+        if (!thumbEl || !photoId) return;
+        thumbEl.dataset.photoId = photoId;
+        const delBtn = thumbEl.querySelector('.photo-delete-btn');
+        if (delBtn) {
+            delBtn.replaceWith(delBtn.cloneNode(true));
+            const newBtn = thumbEl.querySelector('.photo-delete-btn');
+            newBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePhoto(photoId, newBtn);
+            });
+        }
     }
 
     async function deletePhoto(photoId, btnEl) {
-        if (!photoId || !_missionId) {
-            if (btnEl) btnEl.closest('.photo-thumb')?.remove();
+        if (!confirm('Supprimer cette photo ?')) return;
+        if (!photoId || photoId === 0 || !_missionId) {
+            btnEl?.closest('.photo-thumb')?.remove();
             refreshPhotoCounts();
             return;
         }
-        if (!confirm('Supprimer cette photo ?')) return;
         try {
             await API.deletePhoto(_missionId, photoId);
+            btnEl?.closest('.photo-thumb')?.remove();
             Toast.show('Photo supprimée', 'success');
-            await _load();
+            refreshPhotoCounts();
+            if (_mission && _mission.photos) {
+                _mission.photos = _mission.photos.filter(p => p.id !== photoId);
+            }
         } catch (err) {
             Toast.show('Erreur: ' + err.message, 'error');
         }
@@ -547,6 +583,7 @@ window.MissionDetail = (() => {
         reload: async () => { await _load(); },
         getMission: () => _mission,
         addPhotoThumb,
+        setPhotoThumbId,
         refreshPhotoCounts,
         deletePhoto,
         saveNotes,
