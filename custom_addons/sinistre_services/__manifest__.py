@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Sinistre Services',
-    'version': '19.0.2.5.0',
+    'version': '19.0.2.7.1',
     'category': 'Services',
     'summary': 'Gestion des interventions sinistres — assurances, particuliers, entreprises',
     'author': 'exocoms',
@@ -30,6 +30,7 @@
         'data/website_data.xml',
         # Website
         'views/website_homepage.xml',
+        'views/website_seo.xml',
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
         # Wizards (avant mission_views — références action_sinistre_*_wizard)
