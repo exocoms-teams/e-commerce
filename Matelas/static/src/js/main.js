@@ -259,9 +259,23 @@
             if (!addToCartBtn) { return; }
             if (document.querySelector('.matelas-fiche-link')) { return; }
 
-            const match = window.location.pathname.match(/^\/shop\/[\w-]+-(\d+)$/);
-            if (!match) { return; }
-            const productId = match[1];
+            
+            let productId = null;
+            const hiddenInput = document.querySelector(
+                'form[action*="/shop/cart/update"] input[name="product_template_id"], ' +
+                'input[name="product_template_id"]'
+            );
+            if (hiddenInput && hiddenInput.value) {
+                productId = hiddenInput.value;
+            } else {
+                const match = window.location.pathname.match(
+                    /^\/(?:[a-z]{2}(?:_[A-Z]{2})?\/)?shop\/[\w-]+-(\d+)$/
+                );
+                if (match) {
+                    productId = match[1];
+                }
+            }
+            if (!productId) { return; }
 
             const link = document.createElement('a');
             link.href = '/produit/' + productId + '/fiche';
