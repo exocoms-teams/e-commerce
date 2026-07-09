@@ -47,6 +47,7 @@ window.API = (() => {
         post:  (path, body, opts) => request('POST',  path, body, opts),
         put:   (path, body, opts) => request('PUT',   path, body, opts),
         patch: (path, body, opts) => request('PATCH', path, body, opts),
+        delete: (path, opts) => request('DELETE', path, null, opts),
 
         /* ── Session ── */
         async getMe()      { return this.get('/me'); },
@@ -101,7 +102,7 @@ window.API = (() => {
             });
         },
         async deletePhoto(missionId, photoId) {
-            return this.request('DELETE', `/intervenant/mission/${missionId}/photo/${photoId}`);
+            return this.delete(`/intervenant/mission/${missionId}/photo/${photoId}`);
         },
 
         /* ── Consommables & pense-bêtes ── */
@@ -121,10 +122,13 @@ window.API = (() => {
             return this.post(`/intervenant/pense-betes/${id}`, { action: 'done' });
         },
         async deletePenseBete(id) {
-            return this.request('DELETE', `/intervenant/pense-betes/${id}`);
+            return this.delete(`/intervenant/pense-betes/${id}`);
         },
         async getDocuments() {
             return this.get('/intervenant/documents');
+        },
+        async importDocument(missionId, payload) {
+            return this.post(`/intervenant/mission/${missionId}/import-document`, payload);
         },
 
         /* ── Notes artisan ── */
