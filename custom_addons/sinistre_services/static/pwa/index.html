@@ -130,6 +130,16 @@
         </aside>
 
         <!-- Main content -->
+        <div class="mobile-topbar" id="mobileTopbar">
+            <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <span class="mobile-topbar-title" id="mobileTopbarTitle">ArtisanPro</span>
+            <button type="button" class="mobile-notif-btn" onclick="FCM.togglePanel()" aria-label="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+            </button>
+        </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <main class="main-content">
 
             <!-- ── Vue Tableau de bord ── -->
@@ -1267,8 +1277,48 @@
             </div>
 
         </main>
+
+        <!-- Navigation mobile bas d'écran -->
+        <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Navigation principale">
+            <button type="button" class="mbn-item active" data-view="dashboard" onclick="App.mobileNav('dashboard', this)">
+                <span>🏠</span><small>Accueil</small>
+            </button>
+            <button type="button" class="mbn-item" data-view="missions" onclick="App.mobileNav('missions', this)">
+                <span>📋</span><small>Missions</small>
+            </button>
+            <button type="button" class="mbn-item" data-view="carte" onclick="App.mobileNav('carte', this)">
+                <span>🗺</span><small>Carte</small>
+            </button>
+            <button type="button" class="mbn-item" data-view="comptabilite" onclick="App.mobileNav('comptabilite', this)">
+                <span>💶</span><small>Compta</small>
+            </button>
+            <button type="button" class="mbn-item" data-view="profile" onclick="App.mobileNav('profile', this)">
+                <span>👤</span><small>Profil</small>
+            </button>
+        </nav>
     </div><!-- /screen-app -->
 </div><!-- /app -->
+
+<!-- Modal import devis / facture -->
+<div id="importDocModal" class="import-modal" style="display:none" role="dialog" aria-modal="true">
+    <div class="import-modal-box">
+        <div class="import-modal-header">
+            <h3 id="importDocTitle">Importer un document</h3>
+            <button type="button" onclick="ImportDoc.close()" aria-label="Fermer">✕</button>
+        </div>
+        <p style="font-size:12px;color:#6B7280;margin-bottom:12px">Depuis votre logiciel de facturation : indiquez la référence, le montant HT et joignez le PDF.</p>
+        <label class="field-label">Référence du devis / facture *</label>
+        <input type="text" id="importDocRef" class="field-input" placeholder="Ex: DEV-2026-0042" style="margin-bottom:10px"/>
+        <label class="field-label">Montant HT (€) *</label>
+        <input type="number" id="importDocMontant" class="field-input" min="0.01" step="0.01" placeholder="450.00" style="margin-bottom:10px"/>
+        <label class="field-label">Fichier PDF / image</label>
+        <label class="btn btn-outline btn-sm" style="display:block;text-align:center;margin-bottom:16px;cursor:pointer">
+            <span id="importDocFileLabel">Choisir un fichier (max 5 Mo)</span>
+            <input type="file" id="importDocFile" accept=".pdf,image/*" style="display:none" onchange="ImportDoc.onFileSelected(this)"/>
+        </label>
+        <button type="button" class="btn btn-primary btn-block" onclick="ImportDoc.submit()">Importer</button>
+    </div>
+</div>
 
 <!-- Toast -->
 <div id="toastContainer" class="toast-container"></div>
@@ -1285,6 +1335,7 @@
 <script src="/sinistre_services/static/pwa/src/components/photos.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/signature.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/devis.js"></script>
+<script src="/sinistre_services/static/pwa/src/components/import_doc.js"></script>
 <script src="/sinistre_services/static/pwa/src/components/messagerie.js"></script>
 <script src="/sinistre_services/static/pwa/src/screens/carte.js?v=20260626c"></script>
 <script src="/sinistre_services/static/pwa/src/screens/dashboard.js?v=20260624c"></script>
