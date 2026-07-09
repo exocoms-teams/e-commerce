@@ -3487,3 +3487,32 @@ a[name="website_sale_main_button"] {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18) !important;
 }
 
+/* ===========================
+   CHECKOUT — MOBILE (≤991px)
+   =========================== */
+@media (max-width: 991px) {
+    /* Masquer alt-cat-nav sur checkout (inutile + cause overflow horizontal) */
+    .o_website_sale_checkout .alt-cat-nav {
+        display: none !important;
+    }
+
+    /* "Recap" natif Odoo : forcer en fixed pleine largeur plutôt que sticky décalé */
+    .o_mobile_summary {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1020;
+        padding: 12px 16px 10px !important;
+        background: #fff !important;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Marge en bas du contenu pour ne pas être masqué par le recap fixe
+       Seulement sur les pages checkout (qui ont .o_mobile_summary), pas sur /shop/cart */
+    .o_website_sale_checkout_container:has(.o_mobile_summary) > .row {
+        margin-bottom: 130px;
+    }
+}
+
