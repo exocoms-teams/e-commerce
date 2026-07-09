@@ -32,10 +32,3 @@ class SinistreMission(models.Model):
     document_artisan_ids = fields.One2many(
         'sinistre.document.artisan', 'mission_id', string='Documents importés',
     )
-
-
-class SinistreDevis(models.Model):
-    _inherit = 'sinistre.devis'
-
-    ref_externe = fields.Char(string='Référence externe (logiciel artisan)', copy=False)
-    import_externe = fields.Boolean(string='Importé depuis logiciel externe', default=False)
