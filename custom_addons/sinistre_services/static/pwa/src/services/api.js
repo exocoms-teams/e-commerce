@@ -128,7 +128,16 @@ window.API = (() => {
             return this.get('/intervenant/documents');
         },
         async importDocument(missionId, payload) {
-            return this.post(`/intervenant/mission/${missionId}/import-document`, payload);
+            const body = { action: 'import_document', ...payload };
+            try {
+                return await this.post(`/intervenant/mission/${missionId}/import-document`, body);
+            } catch (err) {
+                const msg = String(err.message || '');
+                if (msg.includes('404') || msg.includes('NOT FOUND')) {
+                    return this.post(`/intervenant/mission/${missionId}/devis`, body);
+                }
+                throw err;
+            }
         },
 
         /* ── Notes artisan ── */
