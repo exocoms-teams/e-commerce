@@ -821,6 +821,40 @@ def _setup_livechat(env, website):
             )
 
 
+def _setup_languages(env, website):
+    """Active fr_FR + en_US sur le site Exocoms et fixe fr_FR comme
+    langue par défaut du site.
+
+    CORRECTIF : ce bloc vivait uniquement dans post_init_hook, donc ne
+    se rejouait JAMAIS sur les mises à jour suivantes (post_migrate_hook
+    ne le faisait pas). Sur un environnement où _get_website() retrouve
+    le site existant par son ID mémorisé (jamais recréé), post_init_hook
+    ne s'exécute qu'une seule fois dans la vie du site — si les langues
+    n'étaient pas encore posées correctement à ce moment-là (ou ont été
+    perdues depuis, ex: site dupliqué depuis un snapshot antérieur à ce
+    réglage), plus rien ne les corrige ensuite. Extrait en fonction
+    séparée pour être appelée aussi depuis post_migrate_hook, comme le
+    reste des réglages "maintenus à chaque update" dans ce fichier."""
+    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+    if not lang_fr:
+        env['res.lang']._activate_lang('fr_FR')
+        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+
+    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+    if not lang_en:
+        env['res.lang']._activate_lang('en_US')
+        lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
+    if website and lang_fr:
+        website.write({'language_ids': [(5, 0, 0)]})
+        website.write({
+            'default_lang_id': lang_fr.id,
+            'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
+        })
+
+    return lang_fr, lang_en
+
+
 def post_init_hook(env):
     """Initialise les données Exocoms Group"""
 
@@ -858,21 +892,9 @@ def post_init_hook(env):
     _setup_livechat(env, website)
 
     # === LANGUES — Français + Anglais ===
-    # NOTE multi-sites : ce bloc ne touche que website.language_ids du
-    # SITE Exocoms (website.write), donc déjà scopé correctement.
-    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
-    if not lang_fr:
-        env['res.lang']._activate_lang('fr_FR')
-        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
-
-    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
-
-    if website and lang_fr:
-        website.write({'language_ids': [(5, 0, 0)]})
-        website.write({
-            'default_lang_id': lang_fr.id,
-            'language_ids': [(4, lang_fr.id)] + ([(4, lang_en.id)] if lang_en else []),
-        })
+    # Extrait dans _setup_languages() (voir plus haut) pour pouvoir
+    # être rejoué aussi depuis post_migrate_hook.
+    lang_fr, lang_en = _setup_languages(env, website)
 
     # === LANGUE PAR DÉFAUT — public_user + website ===
     # ⚠️ ATTENTION CONNUE, NON CORRIGÉE AUTOMATIQUEMENT : base.public_user
@@ -1257,7 +1279,14 @@ def post_migrate_hook(env):
     """S'exécute à chaque update du module — strictement scopé à notre site."""
     website = _get_website(env)
     company = _get_company(env)
-    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
+    # Langues maintenues à chaque update — voir _setup_languages() :
+    # sur un site retrouvé par son ID mémorisé (jamais recréé),
+    # post_init_hook ne se relance pas après le tout premier install,
+    # donc c'est ce hook qui doit garantir que fr_FR/en_US restent
+    # actives sur le site (cause probable si l'anglais ne s'affiche
+    # jamais malgré des traductions .po correctes).
+    lang_fr, lang_en = _setup_languages(env, website)
 
     # Logo maintenu à chaque update (au cas où le site ait été recréé)
     _set_logo(env, website)
