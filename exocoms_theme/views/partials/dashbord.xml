@@ -31,10 +31,11 @@
                 <div data-bs-ride="carousel" id="s_carousel_new" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="new_chunks" t-as="chunk">
+                            <t t-set="chunk_col" t-value="12 // len(chunk)"/>
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
+                                        <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -82,10 +83,11 @@
                 <div data-bs-ride="carousel" id="s_carousel_best" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="best_chunks" t-as="chunk">
+                            <t t-set="chunk_col" t-value="12 // len(chunk)"/>
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
+                                        <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -135,10 +137,11 @@
                     <div data-bs-ride="carousel" id="s_carousel_recent" class="carousel slide" data-bs-interval="5000">
                         <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                             <t t-foreach="recent_chunks" t-as="chunk">
+                                <t t-set="chunk_col" t-value="12 // len(chunk)"/>
                                 <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                     <div class="s_dynamic_snippet_row row g-3">
                                         <t t-foreach="chunk" t-as="product">
-                                            <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
+                                            <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
                                                 <t t-call="exocoms_theme.dashboard_product_card"/>
                                             </div>
                                         </t>
