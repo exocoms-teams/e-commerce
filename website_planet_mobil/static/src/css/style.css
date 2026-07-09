@@ -3780,3 +3780,68 @@ a[name="website_sale_main_button"] {
     font-size: 1.15rem !important;
     font-weight: 800 !important;
 }
+
+/* ===========================
+   CHECKOUT / PANIER — MOBILE (≤991px)
+   =========================== */
+@media (max-width: 991px) {
+    /* Bloquer le scroll horizontal sur toutes les pages checkout/panier */
+    .o_website_sale_checkout {
+        overflow-x: hidden;
+    }
+    .o_website_sale_checkout .container,
+    .o_website_sale_checkout .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        max-width: 100vw !important;
+        overflow-x: hidden;
+    }
+
+    /* Empiler les colonnes (panier + récapitulatif) */
+    .o_website_sale_checkout .oe_cart,
+    .o_website_sale_checkout .oe_cart + div,
+    .o_website_sale_checkout .o_wsale_shorter_cart_summary {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Card récapitulatif : padding adapté mobile */
+    .o_website_sale_checkout .o_total_card .card-body,
+    .o_total_card .card-body {
+        padding: 14px 16px !important;
+    }
+
+    /* Bouton Checkout / Confirmer pleine largeur */
+    .o_website_sale_checkout a[name="website_sale_main_button"],
+    .o_website_sale_checkout .btn-primary {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Message "hors France" : taille réduite */
+    #o_delivery_form .alert-warning {
+        padding: 10px 12px;
+        font-size: 0.83rem;
+    }
+
+    /* Méthodes de livraison : padding réduit */
+    #o_delivery_methods .list-group-item {
+        padding: 10px 12px;
+    }
+
+    /* Formulaire adresse : champs adaptés mobile */
+    .o_customer_address_fill .form-control,
+    .o_customer_address_fill .form-select {
+        padding: 9px 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Masquer alt-cat-nav sur pages checkout/panier (inutile en tunnel d'achat) */
+    .o_website_sale_checkout .alt-cat-nav {
+        display: none !important;
+    }
+}
