@@ -3782,45 +3782,39 @@ a[name="website_sale_main_button"] {
 }
 
 /* ===========================
-   CHECKOUT / PANIER — MOBILE (≤991px)
+   CHECKOUT — MOBILE (≤991px)
    =========================== */
 @media (max-width: 991px) {
-    /* Bloquer le scroll horizontal sur toutes les pages checkout/panier */
+    /* Bloquer le scroll horizontal (body de la page checkout) */
     .o_website_sale_checkout {
         overflow-x: hidden;
     }
-    .o_website_sale_checkout .container,
-    .o_website_sale_checkout .container-fluid {
-        padding-left: 12px !important;
-        padding-right: 12px !important;
-        max-width: 100vw !important;
-        overflow-x: hidden;
+
+    /* Masquer alt-cat-nav sur pages checkout (inutile dans le tunnel d'achat) */
+    .o_website_sale_checkout .alt-cat-nav {
+        display: none !important;
     }
 
-    /* Empiler TOUTES les colonnes du tunnel checkout (panier, adresse, livraison, paiement) */
-    .o_website_sale_checkout_container > .row > div[class*="col-"],
-    .o_website_sale_checkout .oe_cart,
-    .o_website_sale_checkout .oe_cart + div,
-    .o_website_sale_checkout .o_wsale_shorter_cart_summary {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 0 0 100% !important;
-        margin-left: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+    /* Padding bas pour ne pas masquer le contenu sous la barre sticky native Odoo */
+    .o_website_sale_checkout .oe_cart {
+        padding-bottom: 150px;
     }
 
-    /* Card récapitulatif : padding adapté mobile */
-    .o_website_sale_checkout .o_total_card .card-body,
-    .o_total_card .card-body {
-        padding: 14px 16px !important;
+    /* Barre récapitulatif mobile native Odoo (.o_mobile_summary sticky-bottom) — style PM */
+    .o_mobile_summary {
+        padding: 12px 16px 10px;
+        border-top: 1px solid var(--border, #e5e7eb);
+        box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.08);
+        background: #fff !important;
     }
-
-    /* Bouton Checkout / Confirmer pleine largeur */
-    .o_website_sale_checkout a[name="website_sale_main_button"],
-    .o_website_sale_checkout .btn-primary {
-        width: 100% !important;
-        text-align: center !important;
+    .o_mobile_summary > button.btn-light {
+        border-radius: 8px;
+        background: #f8fafc;
+        border: 1px solid var(--border, #e5e7eb);
+        font-weight: 600;
+        color: #111827;
+        padding: 10px 14px;
+        margin-bottom: 8px !important;
     }
 
     /* Message "hors France" : taille réduite */
@@ -3839,16 +3833,5 @@ a[name="website_sale_main_button"] {
     .o_customer_address_fill .form-select {
         padding: 9px 12px;
         font-size: 0.9rem;
-    }
-
-    /* Désactiver le sticky natif Odoo sur mobile → card affichée inline sous le contenu */
-    .o_wsale_sticky_object {
-        position: static !important;
-        top: auto !important;
-    }
-
-    /* Masquer alt-cat-nav sur pages checkout/panier (inutile en tunnel d'achat) */
-    .o_website_sale_checkout .alt-cat-nav {
-        display: none !important;
     }
 }
