@@ -36,6 +36,7 @@
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
                                         <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                            <t t-set="show_new_badge" t-value="True"/>
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -88,6 +89,7 @@
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
                                         <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                            <t t-set="show_new_badge" t-value="False"/>
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
                                     </t>
@@ -107,32 +109,36 @@
             </div>
         </section>
 
-        <!-- VUS RÉCEMMENT -->
-        <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
-            <div>
-                <t t-if="request.env.lang == 'fr_FR'">
-                    <h2 class="h3">Vus récemment</h2>
-                    <p class="lead">Les produits que vous avez consultés !</p>
-                </t>
-                <t t-else="">
-                    <h2 class="h3">Recently viewed</h2>
-                    <p class="lead">Products you recently browsed!</p>
-                </t>
-            </div>
-            <div>
-                <t t-if="request.env.lang == 'fr_FR'">
-                    <a title="Voir plus" href="/shop">Voir plus <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
-                </t>
-                <t t-else="">
-                    <a title="See more" href="/en/shop">See more <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
-                </t>
-            </div>
-        </section>
-        <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
-            <div class="dynamic_snippet_template">
-                <t t-set="recent_ids" t-value="request.session.get('website_sale_history', [])[:16]"/>
-                <t t-set="recent_products" t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
-                <t t-if="recent_products">
+        <!-- VUS RÉCEMMENT — la section entière (titre + contenu) est
+             masquée s'il n'y a aucun produit consulté : un message
+             "Aucun produit consulté" flottant dans une section vide
+             fait plus buggé qu'autre chose, mieux vaut ne rien
+             afficher tant qu'il n'y a rien à montrer. -->
+        <t t-set="recent_ids" t-value="request.session.get('website_sale_history', [])[:16]"/>
+        <t t-set="recent_products" t-value="request.env['product.template'].sudo().browse(recent_ids).filtered('is_published')"/>
+        <t t-if="recent_products">
+            <section class="justify-content-between d-flex s_dynamic_snippet_title oe_unremovable oe_unmovable flex-column flex-md-row mb-lg-0 pb-3 pb-md-0 s_col_no_resize o_colored_level mt-5">
+                <div>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <h2 class="h3">Vus récemment</h2>
+                        <p class="lead">Les produits que vous avez consultés !</p>
+                    </t>
+                    <t t-else="">
+                        <h2 class="h3">Recently viewed</h2>
+                        <p class="lead">Products you recently browsed!</p>
+                    </t>
+                </div>
+                <div>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <a title="Voir plus" href="/shop">Voir plus <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                    </t>
+                    <t t-else="">
+                        <a title="See more" href="/en/shop">See more <span class="fa fa-long-arrow-right ms-2" contenteditable="false"/></a>
+                    </t>
+                </div>
+            </section>
+            <section class="s_dynamic_snippet_content oe_unremovable oe_unmovable o_not_editable col s_col_no_resize o_colored_level">
+                <div class="dynamic_snippet_template">
                     <t t-set="recent_chunks" t-value="[recent_products[i:i+4] for i in range(0, len(recent_products), 4)]"/>
                     <div data-bs-ride="carousel" id="s_carousel_recent" class="carousel slide" data-bs-interval="5000">
                         <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
@@ -142,6 +148,7 @@
                                     <div class="s_dynamic_snippet_row row g-3">
                                         <t t-foreach="chunk" t-as="product">
                                             <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                                <t t-set="show_new_badge" t-value="False"/>
                                                 <t t-call="exocoms_theme.dashboard_product_card"/>
                                             </div>
                                         </t>
@@ -158,17 +165,9 @@
                             <span class="visually-hidden"><t t-if="request.env.lang == 'fr_FR'">Suivant</t><t t-else="">Next</t></span>
                         </a>
                     </div>
-                </t>
-                <t t-else="">
-                    <t t-if="request.env.lang == 'fr_FR'">
-                        <p class="text-muted p-3">Aucun produit consulté récemment.</p>
-                    </t>
-                    <t t-else="">
-                        <p class="text-muted p-3">No recently viewed products.</p>
-                    </t>
-                </t>
-            </div>
-        </section>
+                </div>
+            </section>
+        </t>
     </template>
 
     <!-- CARTE PRODUIT -->
@@ -176,6 +175,12 @@
         <div class="oe_product_cart o_carousel_product_card d-flex" role="article" t-att-aria-label="product.name">
             <input type="hidden" name="product-id" t-att-data-product-id="product.product_variant_id.id"/>
             <div class="oe_product_image position-relative flex-grow-0 overflow-hidden">
+                <t t-if="show_new_badge">
+                    <span class="exo-product-badge-new">
+                        <t t-if="request.env.lang == 'fr_FR'">Nouveau</t>
+                        <t t-else="">New</t>
+                    </span>
+                </t>
                 <a contenteditable="false" t-att-href="'/shop/' + slug(product)" class="oe_product_image_link position-relative" t-att-title="product.name">
                     <span role="img" class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center" t-att-alt="product.name + ' image'">
                         <span class="oe_product_image_img h-100 w-100" t-attf-style="background-image: url(/web/image/product.product/#{product.product_variant_id.id}/image_512);"/>

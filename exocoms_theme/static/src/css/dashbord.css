@@ -12,15 +12,19 @@
 
 /* Padding général + contenu centré (sinon les cartes s'étalent
    d'un bord à l'autre de l'écran sur les grands moniteurs, ce qui
-   donne un rendu disproportionné — même largeur max que le reste
-   du site : header, layout, services, etc.) */
+   donne un rendu disproportionné). 32px, pas 48 : c'est la marge
+   intérieure standard utilisée partout ailleurs sur le site
+   (.container en layout.css, features-container, services-*), pour
+   que le bord gauche des cartes tombe pile à la même position que
+   les titres de section juste au-dessus/en dessous (témoignages,
+   features...). */
 .s_dynamic_snippet_title,
 .s_dynamic_snippet_content {
     max-width: 1400px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-left: 48px !important;
-    padding-right: 48px !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
 }
 
 /* Carte produit */
@@ -31,6 +35,31 @@
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid #e8ecf4;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.o_carousel_product_card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(13,77,255,0.12);
+    border-color: rgba(13,77,255,0.15);
+}
+
+/* Badge "Nouveau" — uniquement sur le carousel Nouveautés (voir
+   dashbord.xml, show_new_badge n'est vrai que pour ce chunk-là) */
+.exo-product-badge-new {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    background: linear-gradient(135deg, #0d4dff, #00d4ff);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(13,77,255,0.35);
 }
 
 /* Conteneur de la grille de cartes — toujours en ligne, jamais empilé verticalement */

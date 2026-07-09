@@ -2,10 +2,35 @@
 /* TÉMOIGNAGES */
 /* ═══════════════════════════════════════════════════════════ */
 
+/* Même formule que le reste du site (.container en layout.css et
+   les carousels produits en dashbord.css) : max-width 1400px centré
+   + 32px de marge intérieure fixe. Avant, ce bloc avait sa propre
+   marge (40px) et SES enfants (header/track-wrap/cta) rajoutaient
+   CHACUN leur propre max-width centré par-dessus — double
+   contrainte qui décalait les cartes par rapport au titre selon la
+   largeur d'écran. Un seul point de contrainte ici, les enfants
+   n'en ont plus besoin.
+   Le fond légèrement teinté (au lieu de transparent) casse le
+   grand aplat blanc de la page et donne une vraie respiration
+   visuelle entre les sections. */
 .exo-testimonials {
-    padding: 60px 40px 40px;
-    background: transparent;
+    max-width: none;
+    width: 100%;
+    padding: 60px 0;
+    background: linear-gradient(180deg, #f7f9ff 0%, #f2f5ff 100%);
     text-align: center;
+    box-sizing: border-box;
+}
+
+.exo-testimonials-header,
+.exo-testimonials-track-wrap,
+.exo-testimonials-cta {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 32px;
+    padding-right: 32px;
+    box-sizing: border-box;
 }
 
 .exo-testimonials-header {
@@ -14,8 +39,7 @@
     justify-content: space-between;
     gap: 20px;
     flex-wrap: wrap;
-    max-width: 1200px;
-    margin: 0 auto 40px;
+    margin-bottom: 40px;
     text-align: left;
 }
 
@@ -61,8 +85,7 @@
 .exo-testimonials-track-wrap {
     position: relative;
     overflow: hidden;
-    max-width: 1200px;
-    margin: 0 auto 40px;
+    margin-bottom: 40px;
 }
 
 .exo-testimonials-track-wrap::before,
@@ -74,8 +97,11 @@
     z-index: 2;
     pointer-events: none;
 }
-.exo-testimonials-track-wrap::before { left: 0; background: linear-gradient(to right, #fff, transparent); }
-.exo-testimonials-track-wrap::after  { right: 0; background: linear-gradient(to left, #fff, transparent); }
+/* Couleur de fondu alignée sur le nouveau fond teinté de la section
+   (avant : #fff, qui aurait laissé un carré blanc visible sur le
+   fond désormais bleuté). */
+.exo-testimonials-track-wrap::before { left: 0; background: linear-gradient(to right, #f4f7ff, transparent); }
+.exo-testimonials-track-wrap::after  { right: 0; background: linear-gradient(to left, #f4f7ff, transparent); }
 
 .exo-testimonials-track {
     display: flex;
@@ -92,32 +118,47 @@
     background: white;
     border: 1px solid #eef0f8;
     border-radius: 16px;
-    padding: 28px 24px;
+    padding: 32px 26px 28px;
     text-align: left;
     position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(8,21,45,0.06);
     transition: all 0.25s ease;
 }
 
+/* Effet "gras" — barre d'accent en haut, comme les cartes features,
+   pour que chaque témoignage ait plus de poids visuel au repos
+   (pas seulement au survol). */
+.exo-testimonial-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, #0d4dff, #00d4ff);
+}
+
 .exo-testimonial-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(13,77,255,0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(13,77,255,0.14);
+    border-color: rgba(13,77,255,0.15);
 }
 
 .exo-testimonial-quote {
     position: absolute;
-    top: 16px;
-    right: 20px;
-    font-size: 60px;
-    color: #eef0f8;
+    top: 20px;
+    right: 22px;
+    font-size: 68px;
+    color: #dbe3ff;
     font-family: Georgia, serif;
     line-height: 1;
 }
 
 .exo-stars {
     color: #f5a623;
-    font-size: 18px;
-    letter-spacing: 2px;
+    font-size: 19px;
+    letter-spacing: 3px;
     margin-bottom: 14px;
+    text-shadow: 0 1px 0 rgba(245,166,35,0.25);
 }
 
 .exo-stars-lg {
@@ -126,13 +167,14 @@
 }
 
 .exo-testimonial-card blockquote {
-    font-size: 14px;
-    color: #3a4260;
+    font-size: 14.5px;
+    color: #26304d;
     line-height: 1.7;
     font-style: italic;
+    font-weight: 500;
     margin: 0 0 20px 0;
     padding-left: 12px;
-    border-left: 3px solid #eef0f8;
+    border-left: 3px solid #0d4dff;
 }
 
 .exo-testimonial-author {
@@ -142,16 +184,17 @@
 }
 
 .exo-author-avatar {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     color: white;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 0 0 3px white, 0 0 0 4px #e2e9ff;
 }
 
 .exo-testimonial-author strong {
@@ -184,8 +227,7 @@
 
 .exo-testimonials-cta {
     text-align: center;
-    max-width: 1200px;
-    margin: 28px auto 0;
+    margin-top: 28px;
 }
 
 .exo-testimonials-write-btn {
@@ -334,9 +376,9 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding: 28px 40px;
+    padding: 32px 40px;
     border-top: 1px solid #eef0f8;
-    background: transparent;
+    background: #fafbff;
 }
 
 .exo-payment-bar-title {
@@ -446,7 +488,10 @@
 /* ═══════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-    .exo-testimonials { padding: 40px 16px 24px; }
+    .exo-testimonials { padding: 40px 0 24px; }
+    .exo-testimonials-header,
+    .exo-testimonials-track-wrap,
+    .exo-testimonials-cta { padding-left: 16px; padding-right: 16px; }
     .exo-testimonials-header { flex-direction: column; align-items: flex-start; }
     .exo-testimonial-card { flex-basis: 260px; }
     .exo-features { grid-template-columns: repeat(2, 1fr); padding: 24px; }
