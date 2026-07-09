@@ -29,9 +29,8 @@
                             </a>
                         </div>
                         <div class="col-lg-5 text-center d-none d-lg-block">
-                            <div class="telecom-hero-icon">
-                                <i t-attf-class="fa #{product['icon']}"/>
-                            </div>
+                            <img t-att-src="product['image']" t-att-alt="product['name']"
+                                 class="telecom-hero-img"/>
                         </div>
                     </div>
                 </div>
@@ -157,14 +156,19 @@
                             <div class="col-12 col-md-6 col-lg-4">
                                 <a t-att-href="card['url']"
                                    class="text-decoration-none text-reset d-block h-100">
-                                    <div class="telecom-cat-card h-100 d-flex flex-column p-4">
-                                        <i t-attf-class="fa #{card['icon']} fa-lg telecom-cat-icon mb-3"/>
-                                        <h3 class="h6 fw-bold mb-2">
-                                            <t t-esc="card['name']"/>
-                                        </h3>
-                                        <p class="small text-muted flex-grow-1 mb-0">
-                                            <t t-esc="card['summary']"/>
-                                        </p>
+                                    <div class="telecom-cat-card h-100 d-flex flex-column overflow-hidden">
+                                        <div class="telecom-card-img">
+                                            <img t-att-src="card['image']" t-att-alt="card['name']"
+                                                 loading="lazy"/>
+                                        </div>
+                                        <div class="d-flex flex-column flex-grow-1 p-4">
+                                            <h3 class="h6 fw-bold mb-2">
+                                                <t t-esc="card['name']"/>
+                                            </h3>
+                                            <p class="small text-muted flex-grow-1 mb-0">
+                                                <t t-esc="card['summary']"/>
+                                            </p>
+                                        </div>
                                     </div>
                                 </a>
                             </div>
