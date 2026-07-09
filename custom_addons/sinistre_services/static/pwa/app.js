@@ -281,6 +281,7 @@ window.App = (() => {
         const sa = document.getElementById('screen-app');
         if (sl) sl.style.display = 'none';
         if (sa) sa.style.display = 'flex';
+        _initMobileNav();
         if (window.FCM) FCM.autoInit();
         const fallbackUser = Auth.getUser() || (() => {
             try { return JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch(e) { return {}; }
@@ -330,6 +331,26 @@ window.App = (() => {
         // Sidebar nav
         document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
         if (navEl && navEl.classList) navEl.classList.add('active');
+
+        // Bottom nav mobile
+        const mbnMap = { dashboard: 0, missions: 1, carte: 2, comptabilite: 3, profile: 4 };
+        document.querySelectorAll('.mbn-item').forEach(b => b.classList.remove('active'));
+        const mbnIdx = mbnMap[viewId];
+        if (mbnIdx !== undefined) {
+            const items = document.querySelectorAll('.mbn-item');
+            if (items[mbnIdx]) items[mbnIdx].classList.add('active');
+        }
+
+        // Titre barre mobile
+        const titles = {
+            dashboard: 'Accueil', missions: 'Missions', interventions: 'Interventions',
+            carte: 'Carte', planning: 'Planning', comptabilite: 'Comptabilité',
+            profile: 'Profil', aide: 'Aide', mission: 'Mission',
+        };
+        const topTitle = document.getElementById('mobileTopbarTitle');
+        if (topTitle) topTitle.textContent = titles[viewId] || 'ArtisanPro';
+
+        closeMobileSidebar();
 
         _history.push(_currentView);
         _currentView = viewId;
@@ -385,6 +406,41 @@ window.App = (() => {
         showView(prev, document.getElementById('nav-' + prev));
     }
 
+    function mobileNav(viewId, btnEl) {
+        const navMap = {
+            dashboard: 'nav-dashboard',
+            missions: 'nav-missions',
+            carte: 'nav-carte',
+            comptabilite: 'nav-comptabilite',
+            profile: 'nav-profile',
+        };
+        const navEl = document.getElementById(navMap[viewId] || 'nav-dashboard');
+        showView(viewId, navEl);
+        document.querySelectorAll('.mbn-item').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        closeMobileSidebar();
+    }
+
+    function openMobileSidebar() {
+        document.body.classList.add('sidebar-open');
+    }
+
+    function closeMobileSidebar() {
+        document.body.classList.remove('sidebar-open');
+    }
+
+    function _initMobileNav() {
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                if (document.body.classList.contains('sidebar-open')) closeMobileSidebar();
+                else openMobileSidebar();
+            });
+        }
+        if (overlay) overlay.addEventListener('click', closeMobileSidebar);
+    }
+
     /* ── Utilitaires ── */
     function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -421,6 +477,8 @@ window.App = (() => {
         showView,
         showSubView,
         goBack,
+        mobileNav,
+        closeMobileSidebar,
         _handleSWMessage,
         get currentView() { return _currentView; },
     };
