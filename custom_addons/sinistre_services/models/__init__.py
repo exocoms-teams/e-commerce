@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import mission
+from . import document_artisan
 from . import intervenant
 from . import assurance
 from . import devis
