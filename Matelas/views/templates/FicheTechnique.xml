@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="fiche_technique" name="Fiche technique produit">
+    <t t-call="website.layout">
+      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
+
+      <section class="fiche-technique-page container">
+
+        <div class="fiche-actions">
+          <a t-att-href="product.website_url" class="btn-fiche-retour">
+            <i class="bi bi-arrow-left" />
+            <t t-esc="'Back to product' if is_en else 'Retour au produit'" />
+          </a>
+          <div class="fiche-actions-right">
+            <button type="button" id="btn-fiche-imprimer" class="btn-fiche btn-fiche-print">
+              <i class="bi bi-printer" />
+              <t t-esc="'Print' if is_en else 'Imprimer'" />
+            </button>
+            <button type="button" id="btn-fiche-partager" class="btn-fiche btn-fiche-share">
+              <i class="bi bi-share" />
+              <t t-esc="'Share' if is_en else 'Partager'" />
+            </button>
+          </div>
+        </div>
+        <p id="fiche-partage-confirmation" class="fiche-partage-confirmation">
+          <t t-esc="'Link copied!' if is_en else 'Lien copié !'" />
+        </p>
+
+        <div class="fiche-sheet" id="fiche-sheet">
+
+          <div class="fiche-entete">
+            <h1 class="fiche-titre">
+              <t t-esc="'Product data sheet' if is_en else 'Fiche technique produit'" />
+            </h1>
+            <p class="fiche-soustitre">MATELAS</p>
+          </div>
+
+          <div class="row g-4 fiche-corps">
+            <div class="col-md-5">
+              <img t-attf-src="/web/image/product.template/#{product.id}/image_1024"
+                class="fiche-image" t-att-alt="product.name" />
+            </div>
+            <div class="col-md-7">
+              <h2 class="fiche-nom-produit" t-esc="product.name" />
+              <p class="fiche-prix">
+                <t t-esc="'%.2f €' % product.list_price" />
+              </p>
+
+              <table class="fiche-table">
+                <tbody>
+                  <tr>
+                    <th>
+                      <t t-esc="'Dimensions' if is_en else 'Dimensions'" />
+                    </th>
+                    <td t-esc="product.matelas_dimensions or '—'" />
+                  </tr>
+                  <tr>
+                    <th>
+                      <t t-esc="'Material' if is_en else 'Matière'" />
+                    </th>
+                    <td t-esc="product.matelas_matiere or '—'" />
+                  </tr>
+                  <tr>
+                    <th>
+                      <t t-esc="'Thickness' if is_en else 'Épaisseur'" />
+                    </th>
+                    <td t-esc="product.matelas_epaisseur or '—'" />
+                  </tr>
+                  <tr>
+                    <th>
+                      <t t-esc="'Firmness' if is_en else 'Fermeté'" />
+                    </th>
+                    <td>
+                      <t t-if="product.matelas_fermete == 'souple'">
+                        <t t-esc="'Soft' if is_en else 'Souple'" />
+                      </t>
+                      <t t-elif="product.matelas_fermete == 'medium'">
+                        <t t-esc="'Medium' if is_en else 'Médium'" />
+                      </t>
+                      <t t-elif="product.matelas_fermete == 'ferme'">
+                        <t t-esc="'Firm' if is_en else 'Ferme'" />
+                      </t>
+                      <t t-else="">—</t>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>
+                      <t t-esc="'Warranty' if is_en else 'Garantie'" />
+                    </th>
+                    <td t-esc="product.matelas_garantie or '—'" />
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="fiche-description" t-if="product.description_sale">
+                <h3>
+                  <t t-esc="'Description' if is_en else 'Description'" />
+                </h3>
+                <p t-esc="product.description_sale" />
+              </div>
+            </div>
+          </div>
+
+          <div class="fiche-pied">
+            <p>
+              <t t-esc="'Sheet generated from matelas.example' if is_en else 'Fiche générée depuis matelas.example'" />
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+      <script type="text/javascript">
+        (function () {
+          var printBtn = document.getElementById('btn-fiche-imprimer');
+          if (printBtn) {
+            printBtn.addEventListener('click', function () {
+              window.print();
+            });
+          }
+
+          var shareBtn = document.getElementById('btn-fiche-partager');
+          var confirmation = document.getElementById('fiche-partage-confirmation');
+          if (shareBtn) {
+            shareBtn.addEventListener('click', function () {
+              var url = window.location.href;
+              var title = document.title;
+
+              if (navigator.share) {
+                navigator.share({ title: title, url: url }).catch(function () {});
+                return;
+              }
+
+              if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function () {
+                  if (confirmation) {
+                    confirmation.classList.add('visible');
+                    setTimeout(function () {
+                      confirmation.classList.remove('visible');
+                    }, 2500);
+                  }
+                });
+              }
+            });
+          }
+        })();
+      </script>
+    </t>
+  </template>
+
+</odoo>

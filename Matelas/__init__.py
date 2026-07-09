@@ -12,6 +12,7 @@ def _assign_nouveaute_tag(env):
     sans toucher au code.
     """
     _ensure_french_is_default_language(env)
+    _seed_matelas_caracteristiques(env)
 
     tag = env.ref('Matelas.product_tag_nouveaute', raise_if_not_found=False)
     if not tag:
@@ -23,6 +24,53 @@ def _assign_nouveaute_tag(env):
 
     for product in products:
         product.write({'product_tag_ids': [(4, tag.id)]})
+
+
+def _seed_matelas_caracteristiques(env):
+    """Pré-remplit des caractéristiques d'exemple (dimensions, matière,
+    épaisseur, fermeté, garantie) sur les premiers produits publiés, pour
+    que la fiche technique ne soit pas vide dès l'installation. Le maître
+    de stage peut ensuite modifier ces valeurs produit par produit (Ventes
+    > Produits > onglet "Caractéristiques matelas"), sans toucher au code.
+    """
+    exemples = [
+        {
+            'matelas_dimensions': '140 x 190 cm',
+            'matelas_matiere': 'Mousse à mémoire de forme',
+            'matelas_epaisseur': '25 cm',
+            'matelas_fermete': 'medium',
+            'matelas_garantie': '10 ans',
+        },
+        {
+            'matelas_dimensions': '160 x 200 cm',
+            'matelas_matiere': 'Latex naturel',
+            'matelas_epaisseur': '22 cm',
+            'matelas_fermete': 'ferme',
+            'matelas_garantie': '15 ans',
+        },
+        {
+            'matelas_dimensions': '90 x 190 cm',
+            'matelas_matiere': 'Mousse polyuréthane',
+            'matelas_epaisseur': '18 cm',
+            'matelas_fermete': 'souple',
+            'matelas_garantie': '5 ans',
+        },
+        {
+            'matelas_dimensions': '180 x 200 cm',
+            'matelas_matiere': 'Ressorts ensachés + mousse',
+            'matelas_epaisseur': '28 cm',
+            'matelas_fermete': 'medium',
+            'matelas_garantie': '10 ans',
+        },
+    ]
+
+    products = env['product.template'].search([
+        ('is_published', '=', True),
+    ], limit=len(exemples))
+
+    for product, valeurs in zip(products, exemples):
+        if not product.matelas_dimensions:
+            product.write(valeurs)
 
 
 def _ensure_french_is_default_language(env):

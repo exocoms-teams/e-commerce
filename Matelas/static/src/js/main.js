@@ -253,6 +253,25 @@
             });
         }
 
+        // ===== LIEN VERS LA FICHE TECHNIQUE (page produit) =====
+        (function() {
+            const addToCartBtn = document.getElementById('add_to_cart');
+            if (!addToCartBtn) { return; }
+            if (document.querySelector('.matelas-fiche-link')) { return; }
+
+            const match = window.location.pathname.match(/^\/shop\/[\w-]+-(\d+)$/);
+            if (!match) { return; }
+            const productId = match[1];
+
+            const link = document.createElement('a');
+            link.href = '/produit/' + productId + '/fiche';
+            link.className = 'matelas-fiche-link';
+            link.innerHTML = '<i class="bi bi-file-earmark-text"></i> ' +
+                (en ? 'View data sheet' : 'Voir la fiche technique');
+
+            addToCartBtn.insertAdjacentElement('afterend', link);
+        })();
+
         // ===== PRODUITS VUS RÉCEMMENT =====
         (function() {
             const STORAGE_KEY = 'matelas_recently_viewed';

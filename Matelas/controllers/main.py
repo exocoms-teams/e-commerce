@@ -56,3 +56,9 @@ class MatelasVente(http.Controller):
     @http.route('/mentions-legales', auth='public', website=True)
     def mentions_legales(self, **kwargs):
         return request.render('Matelas.mentions_legales', {})
+
+    @http.route('/produit/<model("product.template"):product>/fiche', auth='public', website=True, sitemap=False)
+    def fiche_technique(self, product, **kwargs):
+        return request.render('Matelas.fiche_technique', {
+            'product': product,
+        })
