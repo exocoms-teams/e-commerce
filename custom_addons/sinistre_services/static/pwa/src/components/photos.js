@@ -41,8 +41,8 @@ window.Photos = (() => {
             // Stocker localement
             _localPhotos.push({ type, base64, preview: compressed, uploaded: false });
 
-            // Afficher immédiatement dans l'UI
-            MissionDetail.addPhotoThumb({ type, preview: compressed });
+            // Afficher immédiatement (avant upload)
+            const thumbEl = MissionDetail.addPhotoThumb({ type, preview: compressed, id: null });
 
             // Upload en ligne ou en queue
             const missionId = _currentMissionId;
@@ -54,10 +54,10 @@ window.Photos = (() => {
 
             if (!result?.queued) {
                 Toast.show(`📸 Photo ${type} enregistrée`, 'success');
-                MissionDetail.refreshPhotoCounts();
-                if (result.photo_id) {
-                    MissionDetail.addPhotoThumb({ type, preview: compressed, id: result.photo_id });
+                if (thumbEl && result.photo_id) {
+                    MissionDetail.setPhotoThumbId(thumbEl, result.photo_id);
                 }
+                MissionDetail.refreshPhotoCounts();
             }
         } catch (err) {
             Toast.show('Erreur upload photo: ' + err.message, 'error');
