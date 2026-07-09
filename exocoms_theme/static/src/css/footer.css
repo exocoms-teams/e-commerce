@@ -140,12 +140,20 @@ footer#bottom .o_footer_copyright .js_language_selector a {
    o_cookie_policy_link) injecté automatiquement ailleurs dans le
    footer, pour éviter d'avoir le lien en double sur la page.
 ========================================================= */
-/* CORRECTIF : l'ancien sélecteur "footer#bottom .o_cookie_policy_link"
-   ne matchait JAMAIS, car ce lien natif n'est pas rendu à l'intérieur
-   de <footer id="bottom"> (confirmé via getComputedStyle en console :
-   display restait "inline-block" malgré la règle). On cible donc la
-   classe directement, sans contrainte d'ancêtre. */
-.o_cookie_policy_link {
+/* CORRECTIF 2 : le lien natif est en fait injecté DANS
+   .o_footer_copyright, enveloppé dans un <p> à lui tout seul :
+   <div class="o_footer_copyright ...">...<p><a class="o_cookie_policy_link">...</a></p></div>
+   Le simple sélecteur .o_cookie_policy_link ne suffisait pas à
+   passer devant le CSS natif d'Odoo (même spécificité, chargé après
+   le nôtre). On renforce la spécificité en qualifiant l'ancêtre
+   réel, ET on masque le <p> parent lui-même pour ne pas laisser un
+   paragraphe vide (marge/espace) à la place du lien supprimé. */
+.o_footer_copyright p:has(> a.o_cookie_policy_link) {
+    display: none !important;
+}
+
+.o_footer_copyright a.o_cookie_policy_link,
+a.o_cookie_policy_link {
     display: none !important;
 }
 
