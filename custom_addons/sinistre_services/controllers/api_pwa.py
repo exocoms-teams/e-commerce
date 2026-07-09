@@ -57,6 +57,45 @@ def _check_mission(intervenant, mission_id):
         ('intervenant_id', '=', intervenant.id),
     ], limit=1)
 
+
+def _import_document_from_body(mission, body):
+    """Importe un devis ou une facture externe depuis le corps JSON."""
+    if not hasattr(mission, 'importer_document_externe'):
+        raise UserError(_("Import document non disponible — mettez à jour le module sinistre_services."))
+    type_doc = (body.get('type') or body.get('type_document') or '').strip().lower()
+    if type_doc not in ('devis', 'facture'):
+        raise UserError(_("Type requis : devis ou facture"))
+    ref = (body.get('reference_externe') or body.get('reference') or '').strip()
+    try:
+        montant_ht = float(body.get('montant_ht') or body.get('montant') or 0)
+    except (TypeError, ValueError):
+        raise UserError(_("Montant HT invalide"))
+    montant_ttc = body.get('montant_ttc')
+    if montant_ttc is not None:
+        try:
+            montant_ttc = float(montant_ttc)
+        except (TypeError, ValueError):
+            montant_ttc = None
+    fichier = body.get('fichier') or body.get('fichier_base64') or ''
+    fichier_name = (body.get('fichier_name') or body.get('filename') or '').strip()
+    if fichier and len(fichier) > 7 * 1024 * 1024:
+        raise UserError(_("Fichier trop volumineux (max 5 Mo). Formats : PDF, JPEG, PNG."))
+    result = mission.sudo().importer_document_externe(
+        type_doc, ref, montant_ht,
+        montant_ttc=montant_ttc,
+        fichier=fichier or False,
+        fichier_name=fichier_name,
+    )
+    payload = {'success': True, 'type': type_doc, 'reference': ref}
+    if type_doc == 'devis':
+        payload['devis_id'] = result.id
+        payload['montant_total'] = result.montant_total
+    else:
+        payload['document_id'] = result.id
+    mission.invalidate_recordset()
+    payload['mission'] = _fmt_mission(mission)
+    return _ok(payload, status=201)
+
 def _default_planning_slots():
     return {str(d): {str(h): True for h in range(24)} for d in range(7)}
 
@@ -343,11 +382,16 @@ def _csv_response(filename, rows, headers):
 
 
 def _mission_has_facture(mission):
+    if mission.document_artisan_ids.filtered(lambda d: d.type_document == 'facture'):
+        return True
     return bool(mission.facture_assurance_id or mission.facture_client_id)
 
 
 def _mission_facture_label(mission):
     try:
+        doc = mission.document_artisan_ids.filtered(lambda d: d.type_document == 'facture')[:1]
+        if doc:
+            return doc.reference_externe
         inv = mission.facture_assurance_id or mission.facture_client_id
         if not inv or not inv.exists():
             return ''
@@ -534,6 +578,7 @@ def _comptabilite_payload(intervenant):
 
     pending = terminees.filtered(
         lambda m: not m.facture_assurance_id and not m.facture_client_id
+        and not m.document_artisan_ids.filtered(lambda d: d.type_document == 'facture')
     )
     factures_a_fournir = [{
         'id':                m.id,
@@ -837,6 +882,15 @@ class SinistrePWAController(http.Controller):
         data.update({
             'photos': photos, 'devis': devis_data, 'messages_non_lus': unread,
             'consommables': consommables, 'pense_betes': pense_betes,
+            'documents_importes': [{
+                'id': d.id,
+                'type': d.type_document,
+                'reference': d.reference_externe,
+                'montant_ht': d.montant_ht,
+                'montant_ttc': d.montant_ttc,
+                'fichier_name': d.fichier_name or '',
+                'url': f'/web/content/sinistre.document.artisan/{d.id}/fichier/{d.fichier_name or "document.pdf"}?download=1',
+            } for d in mission.document_artisan_ids],
         })
         return _ok({'success': True, 'mission': data})
 
@@ -999,6 +1053,14 @@ class SinistrePWAController(http.Controller):
             body = json.loads(request.httprequest.data.decode('utf-8'))
         except Exception:
             return _err(400, "Body JSON invalide")
+        if body.get('action') in ('import_document', 'import_externe'):
+            try:
+                return _import_document_from_body(mission, body)
+            except UserError as e:
+                return _err(400, e.args[0] if e.args else str(e))
+            except Exception as e:
+                _logger.error("[sinistre] import_document via devis: %s", e, exc_info=True)
+                return _err(500, str(e))
         lignes = body.get('ligne_ids', [])
         try:
             _validate_devis_lignes(lignes)
@@ -1719,6 +1781,30 @@ class SinistrePWAController(http.Controller):
             )
         except Exception as e:
             _logger.error(f"[sinistre] comptabilite_commissions: {e}", exc_info=True)
+            return _err(500, str(e))
+
+    # ── IMPORT DEVIS / FACTURE EXTERNE ───────────────────────────────
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/import-document',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    @http.route(f'{PREFIX}/intervenant/mission/<int:mission_id>/import_document',
+                type='http', auth='user', methods=['POST'], csrf=False)
+    def import_document_externe(self, mission_id, **kwargs):
+        intervenant = _get_intervenant()
+        if not intervenant:
+            return _err(403, "Accès non autorisé")
+        mission = _check_mission(intervenant, mission_id)
+        if not mission:
+            return _err(404, "Mission introuvable")
+        try:
+            body = json.loads(request.httprequest.data.decode('utf-8'))
+        except Exception:
+            return _err(400, "Body JSON invalide")
+        try:
+            return _import_document_from_body(mission, body)
+        except UserError as e:
+            return _err(400, e.args[0] if e.args else str(e))
+        except Exception as e:
+            _logger.error("[sinistre] import_document: %s", e, exc_info=True)
             return _err(500, str(e))
 
     # ── SUPPRIMER PHOTO ──────────────────────────────────────────────
