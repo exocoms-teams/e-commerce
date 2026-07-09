@@ -550,6 +550,86 @@ class SinistreMission(models.Model):
             'context': {'default_mission_id': self.id},
         }
 
+    def importer_document_externe(self, type_document, reference_externe, montant_ht,
+                                  montant_ttc=None, fichier=None, fichier_name=None):
+        """Importe un devis ou une facture généré dans le logiciel de l'artisan."""
+        self.ensure_one()
+        if not reference_externe or not montant_ht or montant_ht <= 0:
+            raise UserError(_("Référence et montant HT valides requis."))
+        if not self.intervenant_id:
+            raise UserError(_("Aucun artisan assigné à cette mission."))
+
+        tva_map = {'10': 10.0, '20': 20.0, '0': 0.0}
+        taux = tva_map.get(self.tva_client or '20', 20.0) if self.source != 'assurance' else 0.0
+        if montant_ttc is None:
+            montant_ttc = montant_ht * (1 + taux / 100)
+
+        Document = self.env['sinistre.document.artisan']
+        if type_document == 'devis':
+            actifs = self.devis_ids.filtered(lambda d: d.state not in ('brouillon', 'refuse'))
+            if actifs:
+                raise UserError(_("Un devis est déjà en cours (envoyé ou accepté)."))
+            devis = self.devis_ids.filtered(lambda d: d.state == 'brouillon')[:1]
+            ligne_vals = {
+                'description': f"Devis importé — {reference_externe}",
+                'quantite': 1,
+                'prix_unitaire': montant_ht,
+                'unite': 'forfait',
+            }
+            tva_sel = '0' if self.source == 'assurance' else (self.tva_client or '20')
+            if devis:
+                devis = devis[0]
+                devis.ligne_ids.unlink()
+                devis.write({
+                    'ref_externe': reference_externe,
+                    'import_externe': True,
+                    'tva_selection': tva_sel,
+                    'note_client': _('Devis importé depuis logiciel externe'),
+                    'ligne_ids': [(0, 0, ligne_vals)],
+                })
+            else:
+                devis = self.env['sinistre.devis'].create({
+                    'mission_id': self.id,
+                    'ref_externe': reference_externe,
+                    'import_externe': True,
+                    'tva_selection': tva_sel,
+                    'note_client': _('Devis importé depuis logiciel externe'),
+                    'ligne_ids': [(0, 0, ligne_vals)],
+                })
+            if devis.name == _('Nouveau') or not devis.name:
+                devis.name = reference_externe
+            doc = Document.create({
+                'mission_id': self.id,
+                'intervenant_id': self.intervenant_id.id,
+                'devis_id': devis.id,
+                'type_document': 'devis',
+                'reference_externe': reference_externe,
+                'montant_ht': montant_ht,
+                'montant_ttc': montant_ttc,
+                'fichier': fichier,
+                'fichier_name': fichier_name or f"{reference_externe}.pdf",
+            })
+            self.message_post(body=_("Devis importé : %s — %.2f € HT") % (reference_externe, montant_ht))
+            return devis
+
+        if type_document == 'facture':
+            if Document.search([('mission_id', '=', self.id), ('type_document', '=', 'facture')], limit=1):
+                raise UserError(_("Une facture importée existe déjà pour cette mission."))
+            doc = Document.create({
+                'mission_id': self.id,
+                'intervenant_id': self.intervenant_id.id,
+                'type_document': 'facture',
+                'reference_externe': reference_externe,
+                'montant_ht': montant_ht,
+                'montant_ttc': montant_ttc,
+                'fichier': fichier,
+                'fichier_name': fichier_name or f"{reference_externe}.pdf",
+            })
+            self.message_post(body=_("Facture importée : %s — %.2f € HT") % (reference_externe, montant_ht))
+            return doc
+
+        raise UserError(_("Type de document invalide."))
+
     def action_ouvrir_note_interne(self):
         """Ouvre l'onglet notes internes."""
         self.ensure_one()
