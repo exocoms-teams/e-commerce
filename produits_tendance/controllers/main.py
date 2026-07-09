@@ -4,7 +4,7 @@ from odoo.http import request
 
 class TrendIngestController(http.Controller):
 
-    @http.route('/api/trend/ingest', type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/api/trend/ingest', type='jsonrpc', auth='none', methods=['POST'], csrf=False)
     def ingest(self, **kwargs):
         api_key = kwargs.get('api_key')
 
