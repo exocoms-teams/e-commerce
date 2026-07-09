@@ -56,7 +56,8 @@ class InfogeranceContract(models.Model):
     def _compute_ticket_count(self):
         data = self.env['helpdesk.ticket']._read_group(
             [('x_infogerance_contract_id', 'in', self.ids)],
-            ['x_infogerance_contract_id'], ['__count']
+            ['x_infogerance_contract_id', '__count'],
+            ['x_infogerance_contract_id']
         )
         counts = {r['x_infogerance_contract_id'][0]: r['__count']
                   for r in data}
