@@ -243,3 +243,88 @@ window.DevisForm = (() => {
         },
     };
 })();
+
+/**
+ * ImportDoc — Import devis / facture depuis logiciel externe
+ */
+window.ImportDoc = (() => {
+    let _missionId = null;
+    let _type = 'devis';
+    let _fileB64 = null;
+    let _fileName = '';
+
+    function open(missionId, type = 'devis') {
+        _missionId = missionId;
+        _type = type;
+        _fileB64 = null;
+        _fileName = '';
+        const modal = document.getElementById('importDocModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        const title = document.getElementById('importDocTitle');
+        if (title) title.textContent = type === 'facture' ? 'Importer une facture' : 'Importer un devis';
+        const ref = document.getElementById('importDocRef');
+        const ht = document.getElementById('importDocMontant');
+        const fileLabel = document.getElementById('importDocFileLabel');
+        const fileInput = document.getElementById('importDocFile');
+        if (ref) ref.value = '';
+        if (ht) ht.value = '';
+        if (fileLabel) fileLabel.textContent = 'PDF ou image (max 5 Mo)';
+        if (fileInput) fileInput.value = '';
+    }
+
+    function close() {
+        const modal = document.getElementById('importDocModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    async function onFileSelected(input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const ok = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+            || /\.(pdf|jpe?g|png|webp)$/i.test(file.name);
+        if (!ok) {
+            Toast.show('Format accepté : PDF, JPEG, PNG, WebP', 'warning');
+            input.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            Toast.show('Fichier trop volumineux (max 5 Mo)', 'warning');
+            input.value = '';
+            return;
+        }
+        _fileName = file.name;
+        const label = document.getElementById('importDocFileLabel');
+        if (label) label.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            _fileB64 = String(dataUrl).split(',')[1] || '';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function submit() {
+        const ref = (document.getElementById('importDocRef')?.value || '').trim();
+        const montant = parseFloat(document.getElementById('importDocMontant')?.value || '0');
+        if (!ref) { Toast.show('Référence requise', 'warning'); return; }
+        if (!montant || montant <= 0) { Toast.show('Montant HT invalide', 'warning'); return; }
+        if (!_missionId) return;
+        try {
+            await API.importDocument(_missionId, {
+                type: _type,
+                reference_externe: ref,
+                montant_ht: montant,
+                fichier: _fileB64 || '',
+                fichier_name: _fileName || `${ref}.pdf`,
+            });
+            Toast.show(_type === 'facture' ? 'Facture importée' : 'Devis importé', 'success');
+            close();
+            if (window.MissionDetail) await MissionDetail.reload();
+        } catch (err) {
+            Toast.show('Erreur : ' + err.message, 'error');
+        }
+    }
+
+    return { open, close, onFileSelected, submit };
+})();
