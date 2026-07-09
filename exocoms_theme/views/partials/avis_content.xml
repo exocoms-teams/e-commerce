@@ -3,7 +3,9 @@
 
     <!-- CONTENU — stats, filtres, grille d'avis, formulaire de dépôt d'avis.
          avis_list / stats / sent sont fournis par le contrôleur Python
-         (route /avis). Texte français brut, traduction via i18n/en.po. -->
+         (route /avis) — logique dynamique commune aux deux langues.
+         Texte statique dupliqué t-if/t-else fr_FR, comme partout ailleurs
+         dans le thème (features_section, services_content, etc.). -->
     <template id="avis_content" name="Exocoms Avis Content">
         <div class="avis-content">
 
@@ -21,11 +23,21 @@
                                     <i class="fa fa-star-half-o"/>
                                 </t>
                             </div>
-                            <div class="avis-score-total"><t t-out="stats['total']"/> avis vérifiés</div>
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <div class="avis-score-total"><t t-out="stats['total']"/> avis vérifiés</div>
+                            </t>
+                            <t t-else="">
+                                <div class="avis-score-total"><t t-out="stats['total']"/> verified reviews</div>
+                            </t>
                         </t>
                         <t t-else="">
                             <div class="avis-score-big">—</div>
-                            <div class="avis-score-total">Aucun avis pour le moment</div>
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <div class="avis-score-total">Aucun avis pour le moment</div>
+                            </t>
+                            <t t-else="">
+                                <div class="avis-score-total">No reviews yet</div>
+                            </t>
                         </t>
                     </div>
                     <div class="avis-bars-block">
@@ -49,13 +61,24 @@
             <!-- FILTRES -->
             <div class="avis-filters">
                 <div class="container avis-filters-inner">
-                    <span class="avis-filter-label">Filtrer :</span>
-                    <button class="avis-filter-btn active" data-filter="all">Tous les avis</button>
-                    <button class="avis-filter-btn" data-filter="5"><i class="fa fa-star"/> 5 étoiles</button>
-                    <button class="avis-filter-btn" data-filter="4"><i class="fa fa-star"/> 4 étoiles</button>
-                    <button class="avis-filter-btn" data-filter="3"><i class="fa fa-star"/> 3 étoiles</button>
-                    <button class="avis-filter-btn" data-filter="2"><i class="fa fa-star"/> 2 étoiles</button>
-                    <button class="avis-filter-btn" data-filter="1"><i class="fa fa-star"/> 1 étoile</button>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <span class="avis-filter-label">Filtrer :</span>
+                        <button class="avis-filter-btn active" data-filter="all">Tous les avis</button>
+                        <button class="avis-filter-btn" data-filter="5"><i class="fa fa-star"/> 5 étoiles</button>
+                        <button class="avis-filter-btn" data-filter="4"><i class="fa fa-star"/> 4 étoiles</button>
+                        <button class="avis-filter-btn" data-filter="3"><i class="fa fa-star"/> 3 étoiles</button>
+                        <button class="avis-filter-btn" data-filter="2"><i class="fa fa-star"/> 2 étoiles</button>
+                        <button class="avis-filter-btn" data-filter="1"><i class="fa fa-star"/> 1 étoile</button>
+                    </t>
+                    <t t-else="">
+                        <span class="avis-filter-label">Filter:</span>
+                        <button class="avis-filter-btn active" data-filter="all">All reviews</button>
+                        <button class="avis-filter-btn" data-filter="5"><i class="fa fa-star"/> 5 stars</button>
+                        <button class="avis-filter-btn" data-filter="4"><i class="fa fa-star"/> 4 stars</button>
+                        <button class="avis-filter-btn" data-filter="3"><i class="fa fa-star"/> 3 stars</button>
+                        <button class="avis-filter-btn" data-filter="2"><i class="fa fa-star"/> 2 stars</button>
+                        <button class="avis-filter-btn" data-filter="1"><i class="fa fa-star"/> 1 star</button>
+                    </t>
                 </div>
             </div>
 
@@ -81,7 +104,12 @@
                                 <t t-if="avis.product">
                                     <div class="avis-product-tag"><i class="fa fa-tag"/> <t t-out="avis.product"/></div>
                                 </t>
-                                <div class="avis-verified"><i class="fa fa-check-circle"/> Achat vérifié</div>
+                                <t t-if="request.env.lang == 'fr_FR'">
+                                    <div class="avis-verified"><i class="fa fa-check-circle"/> Achat vérifié</div>
+                                </t>
+                                <t t-else="">
+                                    <div class="avis-verified"><i class="fa fa-check-circle"/> Verified purchase</div>
+                                </t>
                             </div>
                         </div>
                     </t>
@@ -91,22 +119,41 @@
             <!-- FORMULAIRE -->
             <div class="avis-form-section" id="avis-form">
                 <div class="container avis-form-inner">
-                    <div class="avis-form-header">
-                        <div class="avis-section-eyebrow">Votre avis compte</div>
-                        <h2 class="avis-form-title">Partagez votre expérience</h2>
-                        <p class="avis-form-sub">Votre retour aide les autres clients à faire le bon choix.</p>
-                    </div>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <div class="avis-form-header">
+                            <div class="avis-section-eyebrow">Votre avis compte</div>
+                            <h2 class="avis-form-title">Partagez votre expérience</h2>
+                            <p class="avis-form-sub">Votre retour aide les autres clients à faire le bon choix.</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="avis-form-header">
+                            <div class="avis-section-eyebrow">Your review matters</div>
+                            <h2 class="avis-form-title">Share your experience</h2>
+                            <p class="avis-form-sub">Your feedback helps other customers make the right choice.</p>
+                        </div>
+                    </t>
                     <div class="avis-form-card">
                         <t t-if="sent">
-                            <div class="avis-success-msg">
-                                <div class="avis-success-icon"><i class="fa fa-check"/></div>
-                                <div class="avis-success-title">Merci pour votre avis !</div>
-                                <p class="avis-success-text">Votre commentaire est en attente de validation<br/>et sera publié prochainement.</p>
-                            </div>
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <div class="avis-success-msg">
+                                    <div class="avis-success-icon"><i class="fa fa-check"/></div>
+                                    <div class="avis-success-title">Merci pour votre avis !</div>
+                                    <p class="avis-success-text">Votre commentaire est en attente de validation<br/>et sera publié prochainement.</p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="avis-success-msg">
+                                    <div class="avis-success-icon"><i class="fa fa-check"/></div>
+                                    <div class="avis-success-title">Thank you for your review!</div>
+                                    <p class="avis-success-text">Your comment is awaiting approval<br/>and will be published shortly.</p>
+                                </div>
+                            </t>
                         </t>
                         <t t-else="">
-                            <form action="/avis/submit" method="post">
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <form action="/avis/submit" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <t t-if="request.env.lang == 'fr_FR'">
                                 <div class="avis-star-picker-wrap">
                                     <label class="avis-star-picker-label">Votre note <span style="color:#ef4444">*</span></label>
                                     <div class="avis-star-picker" id="avis-star-picker">
@@ -136,7 +183,39 @@
                                 <button type="submit" class="avis-submit">
                                     <i class="fa fa-paper-plane"/> Publier mon avis
                                 </button>
-                            </form>
+                            </t>
+                            <t t-else="">
+                                <div class="avis-star-picker-wrap">
+                                    <label class="avis-star-picker-label">Your rating <span style="color:#ef4444">*</span></label>
+                                    <div class="avis-star-picker" id="avis-star-picker">
+                                        <button type="button" class="avis-star-btn" data-val="1">&#xf005;</button>
+                                        <button type="button" class="avis-star-btn" data-val="2">&#xf005;</button>
+                                        <button type="button" class="avis-star-btn" data-val="3">&#xf005;</button>
+                                        <button type="button" class="avis-star-btn" data-val="4">&#xf005;</button>
+                                        <button type="button" class="avis-star-btn" data-val="5">&#xf005;</button>
+                                    </div>
+                                    <div class="avis-star-hint" id="avis-star-hint">Click to rate</div>
+                                    <input type="hidden" name="rating" id="avis-rating-input" value="5" required=""/>
+                                </div>
+                                <div class="avis-form-row">
+                                    <div class="avis-form-group">
+                                        <label class="avis-form-label" for="av_nom">Name<span class="req"> *</span></label>
+                                        <input class="avis-input" type="text" name="name" id="av_nom" required="" placeholder="Your name"/>
+                                    </div>
+                                    <div class="avis-form-group">
+                                        <label class="avis-form-label" for="av_product">Product purchased</label>
+                                        <input class="avis-input" type="text" name="product" id="av_product" placeholder="E.g.: Ingenico payment terminal"/>
+                                    </div>
+                                </div>
+                                <div class="avis-form-group">
+                                    <label class="avis-form-label" for="av_comment">Your comment<span class="req"> *</span></label>
+                                    <textarea class="avis-textarea" name="comment" id="av_comment" required="" placeholder="Describe your experience with this product or our service..." rows="5"/>
+                                </div>
+                                <button type="submit" class="avis-submit">
+                                    <i class="fa fa-paper-plane"/> Publish my review
+                                </button>
+                            </t>
+                        </form>
                         </t>
                     </div>
                 </div>

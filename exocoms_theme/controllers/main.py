@@ -43,6 +43,29 @@ class ExocomsWebsite(Website):
     page/vue spécifique à CE site (website_id du bon site).
     """
 
+    def _get_home_avis_context(self):
+        """Avis publiés du site, pour le carousel témoignages de la home
+        (même source que la page /avis). Les stats portent sur TOUS les
+        avis publiés, mais seuls les 6 plus récents sont affichés en
+        cartes. Scopé website_id comme partout ailleurs."""
+        Avis = request.env['exocoms.avis'].sudo()
+        website = request.website
+        all_avis = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ], order='date desc, id desc')
+
+        home_avis_stats = False
+        if all_avis:
+            total = len(all_avis)
+            avg = sum(a.rating for a in all_avis) / total
+            home_avis_stats = {'avg': round(avg, 1), 'total': total}
+
+        return {
+            'home_avis_list': all_avis[:6],
+            'home_avis_stats': home_avis_stats,
+        }
+
     @http.route()
     def index(self, **kw):
         if not _is_our_site(request):
@@ -50,9 +73,11 @@ class ExocomsWebsite(Website):
             # (chargement de la page d'accueil propre au site demandé).
             return super().index(**kw)
 
+        values = self._get_home_avis_context()
+
         frontend_lang = request.httprequest.cookies.get('frontend_lang')
         if not frontend_lang:
-            response = request.render('exocoms_theme.home', {})
+            response = request.render('exocoms_theme.home', values)
             response.set_cookie(
                 'frontend_lang',
                 'fr_FR',
@@ -60,7 +85,7 @@ class ExocomsWebsite(Website):
                 path='/'
             )
             return response
-        return request.render('exocoms_theme.home', {})
+        return request.render('exocoms_theme.home', values)
 
     # --- Routes propres au thème Exocoms (chemins peu susceptibles
     #     d'exister sur les autres sites, mais on garde la même

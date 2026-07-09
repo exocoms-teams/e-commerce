@@ -2,90 +2,89 @@
 <odoo>
     <template id="features_section">
 
-        <!-- SECTION TÉMOIGNAGES — carousel auto-défilant (même comportement
-             que pm-avis-track sur le site Planet Mobil : boucle infinie,
-             pause au survol). Texte français brut, langue source du site
-             (default_lang_id=fr_FR) — traduction anglaise dans i18n/en.po,
-             plus de duplication t-if fr/en ici. -->
+        <!-- SECTION TÉMOIGNAGES — carousel auto-défilant alimenté par les
+             VRAIS avis publiés (home_avis_list / home_avis_stats fournis
+             par le contrôleur index(), même source que la page /avis).
+             Texte statique dupliqué t-if/t-else fr_FR, comme partout
+             ailleurs dans ce thème. -->
         <div class="exo-testimonials">
             <div class="exo-testimonials-header">
-                <div>
-                    <span class="exo-testimonials-badge">TEMOIGNAGES</span>
-                    <h2>Ce que disent nos clients</h2>
-                </div>
-                <a href="/avis" class="exo-testimonials-voir-tout">
-                    Voir tous les avis <i class="fa fa-arrow-right"></i>
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <div>
+                        <span class="exo-testimonials-badge">TEMOIGNAGES</span>
+                        <h2>Ce que disent nos clients</h2>
+                    </div>
+                    <a href="/avis" class="exo-testimonials-voir-tout">
+                        Voir tous les avis <i class="fa fa-arrow-right"></i>
+                    </a>
+                </t>
+                <t t-else="">
+                    <div>
+                        <span class="exo-testimonials-badge">TESTIMONIALS</span>
+                        <h2>What our clients say</h2>
+                    </div>
+                    <a href="/avis" class="exo-testimonials-voir-tout">
+                        View all reviews <i class="fa fa-arrow-right"></i>
+                    </a>
+                </t>
             </div>
 
-            <div class="exo-testimonials-track-wrap">
-                <div class="exo-testimonials-track" id="exo-testimonials-track">
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Déployé 30 TPE en une semaine pour notre réseau de pharmacies. Zéro panne, zéro stress. Un partenaire de confiance.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#e74c6b;">NK</div>
-                            <div><strong>Nadia K.</strong><span>Responsable IT - Groupe Pharmavie, Lille</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Notre hôtel utilise leurs terminaux depuis 3 saisons. La remontée des paiements en temps réel a changé notre gestion.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#2ecc71;">AC</div>
-                            <div><strong>Alexandre C.</strong><span>Directeur - Hôtel Le Belmont, Nice</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>J'avais des doutes au départ mais l'onboarding était impeccable. Mon équipe a été formée en 2h chrono.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#9b59b6;">RL</div>
-                            <div><strong>Rachid L.</strong><span>Gérant - Boulangerie Artisane, Toulouse</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Le support répond en moins d'une heure même le samedi. Pour une chaîne de 18 restaurants c'est indispensable.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#e67e22;">FD</div>
-                            <div><strong>Fatima D.</strong><span>DSI - Groupe Tacos &amp; Co, Lyon</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Migration de notre ancien système sans aucune interruption de caisse. Impressionnant pour un centre commercial.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#1abc9c;">JM</div>
-                            <div><strong>Julien M.</strong><span>DAF - Galeries du Sud, Montpellier</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Excellent rapport qualité prix. Les terminaux SUNMI sont robustes et le logiciel est intuitif pour mes vendeurs.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#3498db;">SB</div>
-                            <div><strong>Sofia B.</strong><span>Fondatrice - Concept Store Lova, Bordeaux</span></div>
-                        </div>
+            <t t-if="home_avis_list">
+                <div class="exo-testimonials-track-wrap">
+                    <div class="exo-testimonials-track" id="exo-testimonials-track">
+                        <t t-foreach="home_avis_list" t-as="avis">
+                            <div class="exo-testimonial-card">
+                                <div class="exo-testimonial-quote">&#8221;</div>
+                                <div class="exo-stars">
+                                    <t t-foreach="range(avis.rating)" t-as="s">&#9733;</t>
+                                </div>
+                                <blockquote><t t-out="avis.comment"/></blockquote>
+                                <div class="exo-testimonial-author">
+                                    <div class="exo-author-avatar" style="background:#0d4dff;">
+                                        <t t-out="avis.name[0].upper()"/>
+                                    </div>
+                                    <div>
+                                        <strong><t t-out="avis.name"/></strong>
+                                        <t t-if="avis.product">
+                                            <span><t t-out="avis.product"/></span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
                     </div>
                 </div>
-            </div>
 
-            <div class="exo-testimonials-rating">
-                <div class="exo-stars exo-stars-lg">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p><strong>4,9 / 5</strong> — 487 avis vérifiés</p>
-            </div>
+                <div class="exo-testimonials-rating">
+                    <div class="exo-stars exo-stars-lg">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <p><strong><t t-out="home_avis_stats['avg']"/> / 5</strong> — <t t-out="home_avis_stats['total']"/> avis vérifiés</p>
+                    </t>
+                    <t t-else="">
+                        <p><strong><t t-out="home_avis_stats['avg']"/> / 5</strong> — <t t-out="home_avis_stats['total']"/> verified reviews</p>
+                    </t>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <p style="text-align:center;color:#5a6480;">Soyez le premier à partager votre expérience.</p>
+                </t>
+                <t t-else="">
+                    <p style="text-align:center;color:#5a6480;">Be the first to share your experience.</p>
+                </t>
+            </t>
 
             <div class="exo-testimonials-cta">
-                <a href="/avis#avis-form" class="exo-testimonials-write-btn">
-                    <i class="fa fa-pencil"></i> Écrire un avis
-                </a>
+                <t t-if="request.env.lang == 'fr_FR'">
+                    <a href="/avis#avis-form" class="exo-testimonials-write-btn">
+                        <i class="fa fa-pencil"></i> Écrire un avis
+                    </a>
+                </t>
+                <t t-else="">
+                    <a href="/avis#avis-form" class="exo-testimonials-write-btn">
+                        <i class="fa fa-pencil"></i> Write a review
+                    </a>
+                </t>
             </div>
         </div>
 
@@ -93,27 +92,52 @@
 
         <!-- SECTION FEATURES -->
         <section class="exo-features">
-            <div class="exo-feature-item">
-                <i class="fa fa-cube"></i>
-                <div><h4>Retours faciles</h4><p>Retours sous 30 jours avec remboursement rapide.</p></div>
-            </div>
-            <div class="exo-feature-item">
-                <i class="fa fa-truck"></i>
-                <div><h4>Livraison rapide</h4><p>Livraison partout en France et Europe.</p></div>
-            </div>
-            <div class="exo-feature-item">
-                <i class="fa fa-lock"></i>
-                <div><h4>Paiement sécurisé</h4><p>Transactions 100% sécurisées et cryptées.</p></div>
-            </div>
-            <div class="exo-feature-item">
-                <i class="fa fa-shield"></i>
-                <div><h4>Qualité garantie</h4><p>Produits testés et certifiés par nos experts.</p></div>
-            </div>
+            <t t-if="request.env.lang == 'fr_FR'">
+                <div class="exo-feature-item">
+                    <i class="fa fa-cube"></i>
+                    <div><h4>Retours faciles</h4><p>Retours sous 30 jours avec remboursement rapide.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-truck"></i>
+                    <div><h4>Livraison rapide</h4><p>Livraison partout en France et Europe.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-lock"></i>
+                    <div><h4>Paiement sécurisé</h4><p>Transactions 100% sécurisées et cryptées.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-shield"></i>
+                    <div><h4>Qualité garantie</h4><p>Produits testés et certifiés par nos experts.</p></div>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="exo-feature-item">
+                    <i class="fa fa-cube"></i>
+                    <div><h4>Easy returns</h4><p>Returns within 30 days with fast refund.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-truck"></i>
+                    <div><h4>Fast delivery</h4><p>Delivery across France and Europe.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-lock"></i>
+                    <div><h4>Secure payment</h4><p>100% secure and encrypted transactions.</p></div>
+                </div>
+                <div class="exo-feature-item">
+                    <i class="fa fa-shield"></i>
+                    <div><h4>Guaranteed quality</h4><p>Products tested and certified by our experts.</p></div>
+                </div>
+            </t>
         </section>
 
         <!-- BANDE PAIEMENT SÉCURISÉ -->
         <div class="exo-payment-bar">
-            <span class="exo-payment-bar-title">Paiement sécurisé</span>
+            <t t-if="request.env.lang == 'fr_FR'">
+                <span class="exo-payment-bar-title">Paiement sécurisé</span>
+            </t>
+            <t t-else="">
+                <span class="exo-payment-bar-title">Secure payment</span>
+            </t>
             <div class="exo-payment-logos">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" class="exo-pay-logo">
                     <rect width="120" height="80" rx="8" fill="#1a1f71"/>
@@ -139,20 +163,26 @@
                 </svg>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" class="exo-pay-logo">
                     <rect width="120" height="80" rx="8" fill="#0d4dff"/>
-                    <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Virement</text>
-                    <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">bancaire</text>
+                    <t t-if="request.env.lang == 'fr_FR'">
+                        <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Virement</text>
+                        <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">bancaire</text>
+                    </t>
+                    <t t-else="">
+                        <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Bank</text>
+                        <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Transfer</text>
+                    </t>
                 </svg>
             </div>
         </div>
 
-        <!-- SCRIPT — carousel témoignages (défilement auto + pause au survol,
-             même logique que pm-avis-track de Planet Mobil) -->
+        <!-- SCRIPT — carousel témoignages (défilement auto + pause au survol) -->
         <script>
         (function () {
             var track = document.getElementById('exo-testimonials-track');
             if (!track || track.dataset.init) return;
             track.dataset.init = '1';
             var originals = [].slice.call(track.children);
+            if (originals.length &lt; 2) return;
             originals.forEach(function (n) { track.appendChild(n.cloneNode(true)); });
             var paused = false;
             track.addEventListener('mouseenter', function () { paused = true; });

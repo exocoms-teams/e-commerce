@@ -2,15 +2,12 @@
 <odoo>
 
     <!-- HERO — page Avis clients.
-         Image de fond via inline style + classes natives oe_img_bg /
-         o_bg_img_center : c'est le mécanisme natif Odoo (identique à
-         services_hero.xml), donc l'image reste remplaçable directement
-         depuis Site Web > Personnaliser (clic droit > Changer l'image
-         de fond), sans avoir besoin de toucher au code.
-         Texte en français brut (langue source du site, cf.
-         default_lang_id=fr_FR dans __init__.py) — traduction anglaise
-         fournie via i18n/en.po, pas de duplication t-if ici. -->
-    <template id="avis_hero" name="Exocoms Avis Hero">
+         Même schéma que services_hero.xml : deux templates complets
+         (FR/EN) + un aiguilleur qui choisit selon la langue. Image de
+         fond via inline style + classes natives oe_img_bg/o_bg_img_center
+         (remplaçable depuis Site Web > Personnaliser sans toucher au code). -->
+
+    <template id="avis_hero_fr" name="Exocoms Avis Hero FR">
         <section class="s_exocoms_avis_hero o_colored_level pt48 pb40 oe_img_bg o_bg_img_center"
                  data-snippet="s_exocoms_avis_hero"
                  data-name="Exocoms Avis Hero"
@@ -41,6 +38,45 @@
 
             <div class="oe_structure oe_empty" id="oe_structure_avis_hero_extra"/>
         </section>
+    </template>
+
+    <template id="avis_hero_en" name="Exocoms Avis Hero EN">
+        <section class="s_exocoms_avis_hero o_colored_level pt48 pb40 oe_img_bg o_bg_img_center"
+                 data-snippet="s_exocoms_avis_hero"
+                 data-name="Exocoms Avis Hero"
+                 style="background-image: url('/exocoms_theme/static/src/img/heroavis.jpg');">
+
+            <div class="o_we_bg_filter bg-black-50"/>
+
+            <div class="container s_exocoms_avis_hero_inner text-center">
+                <div class="s_exocoms_avis_hero_eyebrow oe_editable">
+                    <span class="s_exocoms_avis_hero_stars">
+                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                    </span>
+                    Verified customer reviews
+                </div>
+
+                <h1 class="text-white oe_editable">
+                    What our<br/><span>customers</span> say
+                </h1>
+
+                <p class="lead text-white-75 oe_editable">
+                    Thousands of professional customers share their experience<br/>with Exocoms Group.
+                </p>
+
+                <a href="#avis-form" class="s_exocoms_avis_hero_btn oe_editable">
+                    <i class="fa fa-pencil"/> Write a review
+                </a>
+            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_avis_hero_extra"/>
+        </section>
+    </template>
+
+    <!-- Aiguilleur — choisit quel template complet appeler selon la langue -->
+    <template id="avis_hero" name="Exocoms Avis Hero">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="exocoms_theme.avis_hero_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="exocoms_theme.avis_hero_en"/>
     </template>
 
 </odoo>
