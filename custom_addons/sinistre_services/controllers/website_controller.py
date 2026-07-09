@@ -29,36 +29,132 @@ _logger = logging.getLogger(__name__)
 _MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 _ALLOWED_EXTENSIONS = {'.pdf', '.jpg', '.jpeg', '.png'}
 
+# SEO par page publique
+_SEO = {
+    '/': {
+        'meta_title': 'Sinistre Services — Intervention urgence sinistre 24h/24',
+        'meta_description': (
+            'Plateforme agréée assurances : serrurier, plombier, chauffagiste, '
+            'électricien disponibles 24h/24. Intervention en moins de 2h, devis gratuit.'
+        ),
+        'meta_keywords': 'sinistre, urgence, serrurier, plombier, dépannage, assurance habitation, 24h',
+        'og_type': 'website',
+    },
+    '/nos-services': {
+        'meta_title': 'Nos services d\'intervention — Serrurerie, Plomberie, Chauffage | Sinistre Services',
+        'meta_description': (
+            'Tous nos corps de métier : serrurerie, plomberie, chauffagiste, électricité, '
+            'assainissement, vitrerie, nuisibles, travaux. Artisans certifiés, intervention 24/7.'
+        ),
+        'meta_keywords': 'serrurerie, plomberie, chauffagiste, vitrier, dératisation, assainissement, dépannage',
+        'og_type': 'website',
+        'json_ld_services': True,
+    },
+    '/assurances': {
+        'meta_title': 'Assurances habitation — Ordres de mission | Sinistre Services',
+        'meta_description': (
+            'Compagnies d\'assurance : déposez vos ordres de mission, suivez les interventions '
+            'et la facturation. API REST, prise en charge 150 € HT.'
+        ),
+        'meta_keywords': 'assurance habitation, ordre de mission, API assurance, sinistre',
+    },
+    '/urgence': {
+        'meta_title': 'Urgence 24h/24 — Intervention immédiate | Sinistre Services',
+        'meta_description': 'Urgence sinistre 24h/24, 7j/7. Serrurier, plombier, électricien en moins de 2 heures partout en France.',
+        'meta_keywords': 'urgence 24h, dépannage nuit, intervention rapide sinistre',
+    },
+    '/demande-intervention': {
+        'meta_title': 'Demande d\'intervention en ligne — Devis gratuit | Sinistre Services',
+        'meta_description': 'Formulaire de demande d\'intervention : particulier, entreprise ou assurance. Réponse rapide, devis gratuit.',
+        'meta_keywords': 'demande intervention, devis gratuit, sinistre habitation',
+    },
+    '/contact': {
+        'meta_title': 'Contact — Sinistre Services',
+        'meta_description': 'Contactez Sinistre Services pour une intervention, un partenariat artisan ou une question assurance.',
+        'meta_keywords': 'contact sinistre services, assistance',
+    },
+    '/rejoindre-le-reseau': {
+        'meta_title': 'Devenir artisan partenaire | Sinistre Services',
+        'meta_description': 'Rejoignez le réseau Sinistre Services : missions assurances et particuliers, application mobile, paiement rapide.',
+        'meta_keywords': 'artisan partenaire, réseau artisans, PWA artisan',
+    },
+    '/intervenant/login': {
+        'meta_title': 'Espace Artisan — Connexion | Sinistre Services',
+        'meta_description': 'Connexion espace professionnel artisans Sinistre Services. Application mobile PWA.',
+        'meta_keywords': 'espace artisan, connexion intervenant',
+    },
+    '/assurances/api-access': {
+        'meta_title': 'Accès API assurance — Sinistre Services',
+        'meta_description': 'Demandez un accès API pour intégrer vos ordres de mission assurance à Sinistre Services.',
+        'meta_keywords': 'API assurance, ordre de mission, intégration sinistre',
+    },
+}
+
 
 class SinistreWebsite(http.Controller):
+
+    def _base_url(self):
+        return (request.httprequest.url_root or '').rstrip('/')
+
+    def _seo_ctx(self, path, **extra):
+        seo = _SEO.get(path, {})
+        ctx = {
+            'year': datetime.datetime.now().year,
+            'meta_title': seo.get('meta_title'),
+            'meta_description': seo.get('meta_description'),
+            'meta_keywords': seo.get('meta_keywords'),
+            'canonical_url': self._base_url() + path,
+            'og_type': seo.get('og_type', 'website'),
+            **extra,
+        }
+        if path == '/':
+            import json
+            ctx['json_ld'] = json.dumps({
+                '@context': 'https://schema.org',
+                '@type': 'LocalBusiness',
+                'name': 'Sinistre Services',
+                'description': seo.get('meta_description', ''),
+                'url': ctx['canonical_url'],
+                'areaServed': 'France',
+                'openingHours': 'Mo-Su 00:00-24:00',
+                'priceRange': '€€',
+            }, ensure_ascii=False)
+        return ctx
+
+    def _render(self, template, path, **extra):
+        return request.render(template, self._seo_ctx(path, **extra))
 
     # ─── ACCUEIL ────────────────────────────────────────────────────
     @http.route('/', type='http', auth='public', website=True)
     def homepage(self, **kwargs):
-        return request.render('sinistre_services.ss_homepage', {
-            'year': datetime.datetime.now().year,
-        })
+        return self._render('sinistre_services.ss_homepage', '/')
 
     # ─── NOS SERVICES ───────────────────────────────────────────────
     @http.route('/nos-services', type='http', auth='public', website=True)
     def nos_services(self, **kwargs):
-        return request.render('sinistre_services.page_nos_services', {
-            'year': datetime.datetime.now().year,
-        })
+        import json
+        return self._render('sinistre_services.page_nos_services', '/nos-services', json_ld=json.dumps({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            'name': 'Services Sinistre Services',
+            'itemListElement': [
+                {'@type': 'ListItem', 'position': i + 1, 'name': n}
+                for i, n in enumerate([
+                    'Serrurerie', 'Plomberie', 'Chauffagiste', 'Électricité',
+                    'Assainissement', 'Vitrerie', 'Nuisibles', 'Travaux',
+                ])
+            ],
+        }, ensure_ascii=False))
 
     # ─── ASSURANCES (particuliers) ──────────────────────────────────
     @http.route('/assurances', type='http', auth='public', website=True)
     def assurances(self, **kwargs):
-        return request.render('sinistre_services.page_assurances', {
-            'year': datetime.datetime.now().year,
-        })
+        return self._render('sinistre_services.page_assurances', '/assurances')
 
     # ─── URGENCE 24/7 ───────────────────────────────────────────────
     @http.route('/urgence', type='http', auth='public', website=True)
     def urgence(self, **kwargs):
-        return request.render('sinistre_services.ss_page_urgence', {
-            'year': datetime.datetime.now().year,
-        })
+        return self._render('sinistre_services.ss_page_urgence', '/urgence')
 
     # ─── FORMULAIRE DE DEMANDE D'INTERVENTION ───────────────────────
     @http.route('/demande-intervention', type='http', auth='public', website=True)
@@ -76,16 +172,10 @@ class SinistreWebsite(http.Controller):
         })
 
     def _demande_render(self, **ctx):
-        defaults = {
-            'year': datetime.datetime.now().year,
-            'type_pre': '',
-            'urgence_pre': '',
-            'form_data': {},
-            'reference': None,
-            'token': None,
-            'error': False,
-            'success': False,
-        }
+        defaults = self._seo_ctx('/demande-intervention', type_pre='', urgency_pre='', form_data={})
+        defaults.update({
+            'error': False, 'success': False, 'reference': None, 'token': None,
+        })
         defaults.update(ctx)
         return request.render('sinistre_services.page_demande', defaults)
 
@@ -233,12 +323,8 @@ class SinistreWebsite(http.Controller):
 
     # ─── CONTACT ────────────────────────────────────────────────────
     def _contact_render(self, **ctx):
-        defaults = {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': False,
-            'form_data': {},
-        }
+        defaults = self._seo_ctx('/contact', form_data={})
+        defaults.update({'error': False, 'success': False})
         defaults.update(ctx)
         return request.render('sinistre_services.page_contact', defaults)
 
@@ -381,18 +467,11 @@ class SinistreWebsite(http.Controller):
 
     # ── REJOINDRE LE RÉSEAU ARTISAN ──────────────────────────────────
     def _rejoindre_render(self, **ctx):
-        defaults = {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'error_msg': '',
-            'success': False,
-            'form_data': {},
-            'specialites_list': request.env['sinistre.specialite'].sudo().search([], order='name'),
-            'departements_list': [
-                {'code': code, 'label': label}
-                for code, label in DEPARTEMENTS_FR
-            ],
-        }
+        defaults = self._seo_ctx('/rejoindre-le-reseau', error=False, error_msg='', success=False, form_data={})
+        defaults['specialites_list'] = request.env['sinistre.specialite'].sudo().search([], order='name')
+        defaults['departements_list'] = [
+            {'code': code, 'label': label} for code, label in DEPARTEMENTS_FR
+        ]
         defaults.update(ctx)
         return request.render('sinistre_services.page_rejoindre', defaults)
 
@@ -553,18 +632,11 @@ class SinistreWebsite(http.Controller):
     # ── ESPACE ARTISAN — LOGIN ───────────────────────────────────────
     @http.route('/intervenant/login', type='http', auth='public', website=True, sitemap=False)
     def intervenant_login(self, **kwargs):
-        return request.render('sinistre_services.page_intervenant_login', {
-            'year': datetime.datetime.now().year,
-        })
+        return self._render('sinistre_services.page_intervenant_login', '/intervenant/login')
 
     # ── Demande d'accès API sandbox (formulaire assurance) ────────────
     def _api_access_render(self, **ctx):
-        defaults = {
-            'year': datetime.datetime.now().year,
-            'error': False,
-            'success': False,
-            'form_data': {},
-        }
+        defaults = self._seo_ctx('/assurances/api-access', error=False, success=False, form_data={})
         defaults.update(ctx)
         return request.render('sinistre_services.page_api_access', defaults)
 
