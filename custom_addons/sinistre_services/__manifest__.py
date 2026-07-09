@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Sinistre Services',
-    'version': '19.0.2.7.1',
+    'version': '19.0.2.7.2',
     'category': 'Services',
     'summary': 'Gestion des interventions sinistres — assurances, particuliers, entreprises',
     'author': 'exocoms',
