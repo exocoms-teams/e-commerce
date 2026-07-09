@@ -525,6 +525,10 @@ window.MissionDetail = (() => {
                     Toast.show('⚠️ Prenez des photos APRÈS les travaux', 'warning');
                     return;
                 }
+                if (!m.signature_apres) {
+                    Toast.show('⚠️ Signature client de fin d\'intervention requise', 'warning');
+                    return;
+                }
                 if (!confirm('Confirmer la clôture de la mission ?')) return;
                 await _action('TERMINER_MISSION', () => API.terminer(m.id), { missionId: m.id });
             }));
