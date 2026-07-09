@@ -114,6 +114,10 @@ class TelecomController(http.Controller):
         cat_labels = self._cat_labels(is_fr)
 
         content = meta.get(lang) or meta['fr_FR']
+        sections = [
+            dict(sec, image='/telecom_services/static/src/img/offers/%s-%d.jpg' % (slug, i + 1))
+            for i, sec in enumerate(content.get('sections', []))
+        ]
         product = {
             'slug': slug,
             'cat': meta['cat'],
@@ -124,7 +128,7 @@ class TelecomController(http.Controller):
             'tagline': content.get('tagline', ''),
             'intro': content.get('intro', ''),
             'benefits': content.get('benefits', []),
-            'sections': content.get('sections', []),
+            'sections': sections,
             'faq': content.get('faq', []),
         }
         related = [
