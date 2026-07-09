@@ -3,7 +3,6 @@ from odoo.http import request
 from datetime import datetime
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.fields import Domain
-from odoo.osv.expression import AND
 
 
 class LuxuryController(WebsiteSale):
