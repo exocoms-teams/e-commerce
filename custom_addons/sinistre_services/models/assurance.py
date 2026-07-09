@@ -183,7 +183,7 @@ class SinistreDevis(models.Model):
 
     def action_envoyer(self):
         from odoo.exceptions import UserError
-        if not self.ligne_ids:
+        if not self.ligne_ids and not self.import_externe:
             raise UserError(_("Ajoutez au moins une ligne."))
         self.write({'state': 'envoye'})
         self.mission_id.write({'state': 'devis_envoye'})
