@@ -31,11 +31,20 @@
                 <div data-bs-ride="carousel" id="s_carousel_new" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="new_chunks" t-as="chunk">
-                            <t t-set="chunk_col" t-value="12 // len(chunk)"/>
+                            <!-- col-3 fixe (25%), jamais recalculé selon le
+                                 nombre d'éléments du chunk : avant, un chunk
+                                 incomplet (moins de 4 produits — quasi
+                                 systématique sur "Vus récemment") donnait un
+                                 col-12/col-6/col-4 qui ne correspond à AUCUNE
+                                 règle responsive (celles-ci ciblent .col-3 en
+                                 dur), d'où la carte unique étirée sur toute
+                                 la largeur. Avec col-3 fixe, les cartes
+                                 gardent toujours la même taille et une ligne
+                                 incomplète laisse juste de l'espace vide. -->
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                             <t t-set="show_new_badge" t-value="True"/>
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
@@ -84,11 +93,20 @@
                 <div data-bs-ride="carousel" id="s_carousel_best" class="carousel slide" data-bs-interval="5000">
                     <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                         <t t-foreach="best_chunks" t-as="chunk">
-                            <t t-set="chunk_col" t-value="12 // len(chunk)"/>
+                            <!-- col-3 fixe (25%), jamais recalculé selon le
+                                 nombre d'éléments du chunk : avant, un chunk
+                                 incomplet (moins de 4 produits — quasi
+                                 systématique sur "Vus récemment") donnait un
+                                 col-12/col-6/col-4 qui ne correspond à AUCUNE
+                                 règle responsive (celles-ci ciblent .col-3 en
+                                 dur), d'où la carte unique étirée sur toute
+                                 la largeur. Avec col-3 fixe, les cartes
+                                 gardent toujours la même taille et une ligne
+                                 incomplète laisse juste de l'espace vide. -->
                             <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                 <div class="s_dynamic_snippet_row row g-3">
                                     <t t-foreach="chunk" t-as="product">
-                                        <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                        <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                             <t t-set="show_new_badge" t-value="False"/>
                                             <t t-call="exocoms_theme.dashboard_product_card"/>
                                         </div>
@@ -143,11 +161,20 @@
                     <div data-bs-ride="carousel" id="s_carousel_recent" class="carousel slide" data-bs-interval="5000">
                         <div role="listbox" aria-label="Carrousel" class="carousel-inner w-100 mx-auto row">
                             <t t-foreach="recent_chunks" t-as="chunk">
-                                <t t-set="chunk_col" t-value="12 // len(chunk)"/>
+                                <!-- col-3 fixe (25%), jamais recalculé selon le
+                                 nombre d'éléments du chunk : avant, un chunk
+                                 incomplet (moins de 4 produits — quasi
+                                 systématique sur "Vus récemment") donnait un
+                                 col-12/col-6/col-4 qui ne correspond à AUCUNE
+                                 règle responsive (celles-ci ciblent .col-3 en
+                                 dur), d'où la carte unique étirée sur toute
+                                 la largeur. Avec col-3 fixe, les cartes
+                                 gardent toujours la même taille et une ligne
+                                 incomplète laisse juste de l'espace vide. -->
                                 <div role="option" t-attf-class="carousel-item#{' active' if chunk_first else ''}" style="min-height: 427px;">
                                     <div class="s_dynamic_snippet_row row g-3">
                                         <t t-foreach="chunk" t-as="product">
-                                            <div t-attf-class="d-flex flex-grow-0 flex-shrink-0 col-#{chunk_col}">
+                                            <div class="d-flex flex-grow-0 flex-shrink-0 col-3">
                                                 <t t-set="show_new_badge" t-value="False"/>
                                                 <t t-call="exocoms_theme.dashboard_product_card"/>
                                             </div>
