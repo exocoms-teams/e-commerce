@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. VUE LISTE (Épurée pour Odoo 19) -->
+    <record id="view_trend_ad_list" model="ir.ui.view">
+        <field name="name">trend.ad.list</field>
+        <field name="model">trend.ad</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="ad_ref"/>
+                <field name="social_network"/>
+                <field name="country"/>
+                <field name="likes_count"/>
+                <field name="shares_count"/>
+                <field name="product_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 2. VUE FORMULAIRE (Épurée pour Odoo 19) -->
+    <record id="view_trend_ad_form" model="ir.ui.view">
+        <field name="name">trend.ad.form</field>
+        <field name="model">trend.ad</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <!-- Colonne de gauche -->
+                        <group>
+                            <field name="ad_ref"/>
+                            <field name="social_network"/>
+                            <field name="country"/>
+                        </group>
+                        <!-- Colonne de droite -->
+                        <group>
+                            <field name="product_id"/>
+                            <field name="likes_count"/>
+                            <field name="shares_count"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. VUE RECHERCHE (Épurée pour Odoo 19) -->
+    <record id="view_trend_ad_search" model="ir.ui.view">
+        <field name="name">trend.ad.search</field>
+        <field name="model">trend.ad</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="social_network"/>
+                <field name="country"/>
+                
+                <!-- Le group_by moderne et strict -->
+                <group>
+                    <filter string="Réseau Social" name="group_by_network" context="{'group_by': 'social_network'}"/>
+                    <filter string="Pays" name="group_by_country" context="{'group_by': 'country'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 4. L'ACTION -->
+    <record id="action_trend_ad" model="ir.actions.act_window">
+        <field name="name">Publicités</field>
+        <field name="res_model">trend.ad</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_trend_ad_search"/>
+    </record>
+
+    <!-- 5. LES MENUS OFFICIELS D'APPLICATION -->
+    <menuitem id="menu_trend_root" name="Produits Tendance" sequence="10"/>
+    <menuitem id="menu_trend_ad" name="Publicités" parent="menu_trend_root" action="action_trend_ad" sequence="20"/>
+
+</odoo>

@@ -8,6 +8,7 @@
     
     'data': [
         'security/ir.model.access.csv',
+        'views/trend_ad_views.xml',
     ],
     
     'installable': True,
