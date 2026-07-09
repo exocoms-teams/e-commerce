@@ -84,6 +84,61 @@ class ExocomsWebsite(Website):
             raise http.NotFound()
         return request.redirect('/shop')
 
+    @http.route('/avis', type='http', auth='public', website=True, sitemap=True)
+    def avis_page(self, **kw):
+        if not _is_our_site(request):
+            raise http.NotFound()
+
+        Avis = request.env['exocoms.avis'].sudo()
+        website = request.website
+        avis_list = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ], order='date desc, id desc')
+
+        stats = False
+        if avis_list:
+            total = len(avis_list)
+            avg = sum(a.rating for a in avis_list) / total
+            dist = {}
+            for star in (5, 4, 3, 2, 1):
+                count = len(avis_list.filtered(lambda a: a.rating == star))
+                dist[star] = round(count * 100 / total)
+            stats = {'avg': round(avg, 1), 'total': total, 'dist': dist}
+
+        return request.render('exocoms_theme.avis_page', {
+            'avis_list': avis_list,
+            'stats': stats,
+            'sent': kw.get('sent') == '1',
+        })
+
+    @http.route('/avis/submit', type='http', auth='public', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def avis_submit(self, **post):
+        if not _is_our_site(request):
+            raise http.NotFound()
+
+        name = (post.get('name') or '').strip()
+        comment = (post.get('comment') or '').strip()
+        product = (post.get('product') or '').strip()
+        try:
+            rating = int(post.get('rating') or 0)
+        except ValueError:
+            rating = 0
+        rating = min(5, max(1, rating)) if rating else 5
+
+        if name and comment:
+            request.env['exocoms.avis'].sudo().create({
+                'name': name,
+                'comment': comment,
+                'product': product,
+                'rating': rating,
+                'website_id': request.website.id,
+                'state': 'pending',
+            })
+
+        return request.redirect('/avis?sent=1')
+
 
 class ExocomsWebsiteSale(WebsiteSale):
     """CORRECTIF : le widget "Vus récemment" (dashbord.xml, section

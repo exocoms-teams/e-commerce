@@ -2,21 +2,19 @@
 <odoo>
     <template id="features_section">
 
-        <!-- SECTION TÉMOIGNAGES -->
+        <!-- SECTION TÉMOIGNAGES — carousel auto-défilant (même comportement
+             que pm-avis-track sur le site Planet Mobil : boucle infinie,
+             pause au survol). Texte français brut, langue source du site
+             (default_lang_id=fr_FR) — traduction anglaise dans i18n/en.po,
+             plus de duplication t-if fr/en ici. -->
         <div class="exo-testimonials">
             <div class="exo-testimonials-header">
-                <t t-if="request.env.lang == 'fr_FR'">
-                    <span class="exo-testimonials-badge">TEMOIGNAGES</span>
-                    <h2>Ce que disent nos clients</h2>
-                </t>
-                <t t-else="">
-                    <span class="exo-testimonials-badge">TESTIMONIALS</span>
-                    <h2>What our clients say</h2>
-                </t>
+                <span class="exo-testimonials-badge">TEMOIGNAGES</span>
+                <h2>Ce que disent nos clients</h2>
             </div>
 
-            <div class="exo-testimonials-grid">
-                <t t-if="request.env.lang == 'fr_FR'">
+            <div class="exo-testimonials-track-wrap">
+                <div class="exo-testimonials-track" id="exo-testimonials-track">
                     <div class="exo-testimonial-card">
                         <div class="exo-testimonial-quote">&#8221;</div>
                         <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -71,73 +69,12 @@
                             <div><strong>Sofia B.</strong><span>Fondatrice - Concept Store Lova, Bordeaux</span></div>
                         </div>
                     </div>
-                </t>
-                <t t-else="">
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Deployed 30 payment terminals in one week for our pharmacy network. Zero downtime, zero stress. A trusted partner.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#e74c6b;">NK</div>
-                            <div><strong>Nadia K.</strong><span>IT Manager - Groupe Pharmavie, Lille</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Our hotel has been using their terminals for 3 seasons. Real-time payment reporting has transformed our management.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#2ecc71;">AC</div>
-                            <div><strong>Alexandre C.</strong><span>Director - Hôtel Le Belmont, Nice</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>I had doubts at first but the onboarding was flawless. My team was trained in just 2 hours.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#9b59b6;">RL</div>
-                            <div><strong>Rachid L.</strong><span>Owner - Artisan Bakery, Toulouse</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Support responds in under an hour even on Saturdays. For a chain of 18 restaurants, that's essential.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#e67e22;">FD</div>
-                            <div><strong>Fatima D.</strong><span>CIO - Groupe Tacos &amp; Co, Lyon</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Migrated our old system with zero cash register downtime. Impressive for a shopping center.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#1abc9c;">JM</div>
-                            <div><strong>Julien M.</strong><span>CFO - Galeries du Sud, Montpellier</span></div>
-                        </div>
-                    </div>
-                    <div class="exo-testimonial-card">
-                        <div class="exo-testimonial-quote">&#8221;</div>
-                        <div class="exo-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                        <blockquote>Excellent value for money. SUNMI terminals are robust and the software is intuitive for my sales staff.</blockquote>
-                        <div class="exo-testimonial-author">
-                            <div class="exo-author-avatar" style="background:#3498db;">SB</div>
-                            <div><strong>Sofia B.</strong><span>Founder - Concept Store Lova, Bordeaux</span></div>
-                        </div>
-                    </div>
-                </t>
+                </div>
             </div>
 
             <div class="exo-testimonials-rating">
                 <div class="exo-stars exo-stars-lg">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <t t-if="request.env.lang == 'fr_FR'">
-                    <p><strong>4,9 / 5</strong> — 487 avis vérifiés</p>
-                </t>
-                <t t-else="">
-                    <p><strong>4.9 / 5</strong> — 487 verified reviews</p>
-                </t>
+                <p><strong>4,9 / 5</strong> — 487 avis vérifiés</p>
             </div>
         </div>
 
@@ -145,52 +82,27 @@
 
         <!-- SECTION FEATURES -->
         <section class="exo-features">
-            <t t-if="request.env.lang == 'fr_FR'">
-                <div class="exo-feature-item">
-                    <i class="fa fa-cube"></i>
-                    <div><h4>Retours faciles</h4><p>Retours sous 30 jours avec remboursement rapide.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-truck"></i>
-                    <div><h4>Livraison rapide</h4><p>Livraison partout en France et Europe.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-lock"></i>
-                    <div><h4>Paiement sécurisé</h4><p>Transactions 100% sécurisées et cryptées.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-shield"></i>
-                    <div><h4>Qualité garantie</h4><p>Produits testés et certifiés par nos experts.</p></div>
-                </div>
-            </t>
-            <t t-else="">
-                <div class="exo-feature-item">
-                    <i class="fa fa-cube"></i>
-                    <div><h4>Easy returns</h4><p>Returns within 30 days with fast refund.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-truck"></i>
-                    <div><h4>Fast delivery</h4><p>Delivery across France and Europe.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-lock"></i>
-                    <div><h4>Secure payment</h4><p>100% secure and encrypted transactions.</p></div>
-                </div>
-                <div class="exo-feature-item">
-                    <i class="fa fa-shield"></i>
-                    <div><h4>Guaranteed quality</h4><p>Products tested and certified by our experts.</p></div>
-                </div>
-            </t>
+            <div class="exo-feature-item">
+                <i class="fa fa-cube"></i>
+                <div><h4>Retours faciles</h4><p>Retours sous 30 jours avec remboursement rapide.</p></div>
+            </div>
+            <div class="exo-feature-item">
+                <i class="fa fa-truck"></i>
+                <div><h4>Livraison rapide</h4><p>Livraison partout en France et Europe.</p></div>
+            </div>
+            <div class="exo-feature-item">
+                <i class="fa fa-lock"></i>
+                <div><h4>Paiement sécurisé</h4><p>Transactions 100% sécurisées et cryptées.</p></div>
+            </div>
+            <div class="exo-feature-item">
+                <i class="fa fa-shield"></i>
+                <div><h4>Qualité garantie</h4><p>Produits testés et certifiés par nos experts.</p></div>
+            </div>
         </section>
 
         <!-- BANDE PAIEMENT SÉCURISÉ -->
         <div class="exo-payment-bar">
-            <t t-if="request.env.lang == 'fr_FR'">
-                <span class="exo-payment-bar-title">Paiement sécurisé</span>
-            </t>
-            <t t-else="">
-                <span class="exo-payment-bar-title">Secure payment</span>
-            </t>
+            <span class="exo-payment-bar-title">Paiement sécurisé</span>
             <div class="exo-payment-logos">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" class="exo-pay-logo">
                     <rect width="120" height="80" rx="8" fill="#1a1f71"/>
@@ -216,17 +128,35 @@
                 </svg>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" class="exo-pay-logo">
                     <rect width="120" height="80" rx="8" fill="#0d4dff"/>
-                    <t t-if="request.env.lang == 'fr_FR'">
-                        <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Virement</text>
-                        <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">bancaire</text>
-                    </t>
-                    <t t-else="">
-                        <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Bank</text>
-                        <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Transfer</text>
-                    </t>
+                    <text x="60" y="34" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">Virement</text>
+                    <text x="60" y="54" font-family="Arial" font-size="14" font-weight="700" fill="white" text-anchor="middle">bancaire</text>
                 </svg>
             </div>
         </div>
 
+        <!-- SCRIPT — carousel témoignages (défilement auto + pause au survol,
+             même logique que pm-avis-track de Planet Mobil) -->
+        <script>
+        (function () {
+            var track = document.getElementById('exo-testimonials-track');
+            if (!track || track.dataset.init) return;
+            track.dataset.init = '1';
+            var originals = [].slice.call(track.children);
+            originals.forEach(function (n) { track.appendChild(n.cloneNode(true)); });
+            var paused = false;
+            track.addEventListener('mouseenter', function () { paused = true; });
+            track.addEventListener('mouseleave', function () { paused = false; });
+            var pos = 0;
+            (function step() {
+                if (!paused) {
+                    pos += 0.6;
+                    var half = track.scrollWidth / 2;
+                    if (half > 0 &amp;&amp; pos >= half) pos -= half;
+                    track.scrollLeft = pos;
+                }
+                requestAnimationFrame(step);
+            })();
+        })();
+        </script>
     </template>
 </odoo>

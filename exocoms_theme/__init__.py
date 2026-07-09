@@ -38,6 +38,10 @@ THEME_CSS_FILES = [
     'exocoms_theme/static/src/css/home_sections.css',
     'exocoms_theme/static/src/css/odoo-integration.css',
     'exocoms_theme/static/src/css/responsive.css',
+    'exocoms_theme/static/src/css/avis_hero.css',
+    'exocoms_theme/static/src/css/avis_content.css',
+    'exocoms_theme/static/src/css/avis_hero.css',
+    'exocoms_theme/static/src/css/avis_content.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',    # toujours en dernier
 ]
 THEME_JS_FILES = [
