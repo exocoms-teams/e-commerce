@@ -35,31 +35,17 @@
         </field>
     </record>
 
-    <record id="helpdesk_ticket_view_kanban_inherit_infogerance" model="ir.ui.view">
-        <field name="name">helpdesk.ticket.kanban.inherit.infogerance</field>
-        <field name="model">helpdesk.ticket</field>
-        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_kanban"/>
-        <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="x_ticket_category"/>
-                <field name="x_infogerance_contract_id"/>
-                <field name="x_intervention_type"/>
-                <field name="x_is_paid_upfront"/>
-            </field>
-        </field>
-    </record>
-
     <record id="helpdesk_ticket_view_tree_inherit_infogerance" model="ir.ui.view">
         <field name="name">helpdesk.ticket.list.inherit.infogerance</field>
         <field name="model">helpdesk.ticket</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
+            <xpath expr="//field[1]" position="after">
                 <field name="x_ticket_category"/>
                 <field name="x_infogerance_contract_id"/>
                 <field name="x_intervention_type"/>
                 <field name="x_is_paid_upfront"/>
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>
