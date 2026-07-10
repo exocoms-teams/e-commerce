@@ -1,6 +1,6 @@
 {
     'name': 'Exocoms Theme',
-    'version': '1.1',
+    'version': '1.2',
     'summary': 'Custom website theme for Exocoms Group',
     'author': 'Exocoms Group',
     'license': 'LGPL-3',
@@ -51,7 +51,7 @@
     # uninstall_hook le sont). On la garde ici sans risque (Odoo
     # l'ignore silencieusement), mais le VRAI déclenchement de
     # post_migrate_hook() passe désormais par le script natif
-    # migrations/1.1/post-migrate.py. À CHAQUE future mise à jour de
+    # migrations/1.2/post-migrate.py. À CHAQUE future mise à jour de
     # post_migrate_hook(), il faudra remonter ce numéro de version ET
     # créer un nouveau dossier migrations/<version>/ correspondant,
     # sinon Odoo ne rejouera jamais le script.
