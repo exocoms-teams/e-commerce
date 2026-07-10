@@ -9,17 +9,25 @@
             <field name="sequence">20</field>
         </record>
 
+        <!-- Odoo 19 : res.groups n'a plus de category_id direct.
+             Il faut passer par un res.groups.privilege qui, lui, porte le category_id. -->
+        <record id="privilege_trend" model="res.groups.privilege">
+            <field name="name">E-Market Intelligence Suite</field>
+            <field name="category_id" ref="module_category_trend"/>
+            <field name="sequence">10</field>
+        </record>
+
         <!-- Groupe 1 : consultation uniquement (lecture seule) -->
         <record id="group_trend_user" model="res.groups">
             <field name="name">Utilisateur standard</field>
-            <field name="category_id" ref="module_category_trend"/>
+            <field name="privilege_id" ref="privilege_trend"/>
             <field name="comment">Peut consulter les produits tendance mais ne peut pas les créer, modifier ou supprimer.</field>
         </record>
 
         <!-- Groupe 2 : écriture complète, réservé au compte technique / API -->
         <record id="group_trend_api" model="res.groups">
             <field name="name">Intégration/API technique</field>
-            <field name="category_id" ref="module_category_trend"/>
+            <field name="privilege_id" ref="privilege_trend"/>
             <field name="comment">Accès complet pour les comptes techniques qui alimentent les données via l'API (scraping, crowdsourcing, etc.).</field>
         </record>
 
