@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Filet de sécurité : rejoue post_migrate_hook() toutes les
+         heures, SANS dépendre d'un bump de version du manifest (voir
+         models/maintenance.py pour l'explication complète du problème
+         que ça résout). Ce fichier est chargé via 'data/' dans le
+         manifest, donc rejoué à CHAQUE mise à jour du module
+         (`-u exocoms_theme`), contrairement aux hooks — l'enregistrement
+         ci-dessous restera donc toujours à jour même si on oublie de
+         remonter la version un jour. -->
+    <record id="ir_cron_exocoms_theme_maintenance" model="ir.cron">
+        <field name="name">Exocoms Theme — Ré-application config (langues, filtres, assets...)</field>
+        <field name="model_id" ref="model_exocoms_theme_maintenance"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="state">code</field>
+        <field name="code">model.run()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

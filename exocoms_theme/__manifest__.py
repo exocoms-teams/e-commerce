@@ -14,6 +14,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/avis_backend.xml',
+        'data/cron.xml',
         'data/website_data.xml',
         'views/pages/home.xml',
         'views/pages/services.xml',
@@ -55,6 +56,14 @@
     # post_migrate_hook(), il faudra remonter ce numéro de version ET
     # créer un nouveau dossier migrations/<version>/ correspondant,
     # sinon Odoo ne rejouera jamais le script.
+    #
+    # FILET DE SÉCURITÉ (depuis 1.2) : un cron (data/cron.xml,
+    # modèle exocoms.theme.maintenance) rejoue aussi post_migrate_hook()
+    # toutes les heures, indépendamment de tout bump de version — si un
+    # jour on oublie la démarche ci-dessus, la configuration se
+    # rattrape quand même automatiquement dans l'heure. Le bump de
+    # version reste utile pour un effet immédiat au déploiement, mais
+    # n'est plus un point de défaillance unique.
     'post_init_hook': 'post_init_hook',
     'post_migrate': 'post_migrate_hook',
     'installable': True,
