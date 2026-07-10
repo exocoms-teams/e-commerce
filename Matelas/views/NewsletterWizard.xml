@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="view_matelas_newsletter_wizard_form" model="ir.ui.view">
+      <field name="name">matelas.newsletter.wizard.form</field>
+      <field name="model">matelas.newsletter.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Générer la newsletter Matelas">
+          <p>
+            Cette action crée un brouillon d'email reprenant automatiquement
+            les nouveautés / produits mis en avant sur le site (aucun envoi
+            n'est effectué). Tu pourras le relire et cliquer sur "Envoyer"
+            depuis Email Marketing quand tu seras prêt.
+          </p>
+          <footer>
+            <button name="action_generate" type="object"
+              string="Générer la newsletter" class="btn-primary"/>
+            <button string="Annuler" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_matelas_newsletter_wizard" model="ir.actions.act_window">
+      <field name="name">Générer la newsletter Matelas</field>
+      <field name="res_model">matelas.newsletter.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_matelas_root" name="Matelas" sequence="50"/>
+    <menuitem id="menu_matelas_newsletter"
+      name="Générer la newsletter"
+      parent="menu_matelas_root"
+      action="action_matelas_newsletter_wizard"
+      sequence="10"/>
+
+  </data>
+</odoo>

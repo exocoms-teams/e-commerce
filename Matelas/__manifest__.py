@@ -11,6 +11,7 @@
         'im_livechat',
         'website_livechat',
         'mass_mailing',
+        'website_mass_mailing',
         'crm',
         'payment_demo',
     ],
@@ -18,21 +19,24 @@
     'license': 'LGPL-3',
 
     'data': [
+        'security/ir.model.access.csv',
         'data/ProductTags.xml',
         'data/LiveChat.xml',
         'data/Languages.xml',
         'data/Payment.xml',
+        'data/Newsletter.xml',
+        'data/Footer.xml',
+        'data/Header.xml',
+        'data/Setting.xml',
         'views/ProductForm.xml',
+        'views/NewsletterWizard.xml',
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
         'views/templates/Mentions_légales.xml',
         'views/templates/Cookies.xml',
         'views/templates/FicheTechnique.xml',
-        'data/Footer.xml',
-        'data/Header.xml',
-        'data/Setting.xml',
-
+       
     ],
     'assets': {
         'web.assets_frontend': [

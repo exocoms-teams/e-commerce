@@ -113,21 +113,60 @@
             });
         });
 
-        // ===== NEWSLETTER =====
+        // ===== NEWSLETTER (vraie inscription via website_mass_mailing) =====
         const btnNewsletter = document.querySelector('.btn-newsletter');
         if (btnNewsletter) {
             btnNewsletter.addEventListener('click', function(e) {
                 e.preventDefault();
                 const input = document.querySelector('.newsletter-input');
-                if (!input || !input.value.trim()) {
-                    alert(en ? 'Please enter your email address.' : 'Merci de saisir votre adresse email.');
+                const email = input ? input.value.trim() : '';
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!email || !emailRegex.test(email)) {
+                    alert(en ? 'Please enter a valid email address.' : 'Merci de saisir une adresse email valide.');
                     return;
                 }
-                input.value = '';
-                btnNewsletter.textContent = en ? '✅ Subscribed!' : '✅ Inscrit !';
-                setTimeout(function() {
-                    btnNewsletter.textContent = en ? 'Sign up →' : "S'inscrire →";
-                }, 3000);
+
+                const listId = input.dataset.listId;
+                if (!listId) {
+                    alert(en ? 'Subscription is temporarily unavailable.' : 'Inscription temporairement indisponible.');
+                    return;
+                }
+
+                fetch('/website_mass_mailing/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        id: Date.now(),
+                        params: {
+                            list_id: listId,
+                            value: email,
+                            subscription_type: 'email'
+                        }
+                    })
+                })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        const result = data && data.result;
+                        if (result && result.toast_type === 'success') {
+                            input.value = '';
+                            btnNewsletter.textContent = en ? '✅ Subscribed!' : '✅ Inscrit !';
+                        } else {
+                            const message = (result && result.toast_content) ||
+                                (en ? 'Something went wrong.' : 'Une erreur est survenue.');
+                            alert(message);
+                        }
+                    })
+                    .catch(function() {
+                        alert(en ? 'Something went wrong.' : 'Une erreur est survenue.');
+                    })
+                    .finally(function() {
+                        setTimeout(function() {
+                            btnNewsletter.textContent = en ? 'Sign up →' : "S'inscrire →";
+                        }, 3000);
+                    });
             });
         }
 
