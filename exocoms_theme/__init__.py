@@ -403,6 +403,74 @@ def _setup_monetique_attributes(env, lang_en):
         get_or_create_value(quantite, fr, en, sequence=i)
 
 
+def _attach_monetique_attributes_to_products(env, website):
+    """CORRECTIF : _setup_monetique_attributes() ci-dessus crée bien les
+    attributs/valeurs (Forfait DATA, Chèques, Garantie, Type de modèle,
+    Quantité), mais uniquement comme catalogue GLOBAL
+    (product.attribute / product.attribute.value) — ils n'étaient
+    jamais rattachés à un produit réel. Or Odoo n'affiche un filtre
+    boutique QUE pour les attributs effectivement portés par au moins
+    un produit du résultat affiché (product.template.attribute_line_ids).
+    Sans ce rattachement, les filtres restent invisibles dans la
+    sidebar boutique même si les attributs existent bien en base —
+    c'est exactement ce qui se passait ici.
+
+    On rattache donc ici ces attributs à TOUS les produits de la gamme
+    Monétique (catégorie 'Monétique' et ses sous-catégories), avec
+    TOUTES leurs valeurs disponibles. Comme ces attributs sont en
+    create_variant='no_variant' (voir ci-dessus), ce rattachement ne
+    crée AUCUNE variante supplémentaire ni de doublon de produit — il
+    rend juste l'attribut visible/filtrable côté boutique. Idempotent :
+    un produit qui a déjà une ligne pour un attribut donné n'est pas
+    retouché (pour ne pas écraser une sélection de valeurs déjà
+    affinée manuellement en backend).
+    """
+    if not website:
+        return
+
+    Category = env['product.public.category']
+    monetique_root = Category.search([
+        ('name', '=', 'Monétique'), ('parent_id', '=', False), ('website_id', '=', website.id),
+    ], limit=1)
+    if not monetique_root:
+        return
+
+    tree = monetique_root | Category.search([('id', 'child_of', monetique_root.ids)])
+    products = env['product.template'].search([
+        ('public_categ_ids', 'in', tree.ids),
+        ('website_id', '=', website.id),
+    ])
+    if not products:
+        return
+
+    attr_names = [
+        'Forfait DATA par TPE', 'Nombre de chèques par mois',
+        'Garantie', 'Type de modèle', 'Quantité',
+    ]
+    attrs = env['product.attribute'].search([('name', 'in', attr_names)])
+    if not attrs:
+        return
+
+    attached = 0
+    for product in products:
+        existing_attr_ids = set(product.attribute_line_ids.mapped('attribute_id').ids)
+        lines_to_add = [
+            (0, 0, {'attribute_id': attr.id, 'value_ids': [(6, 0, attr.value_ids.ids)]})
+            for attr in attrs
+            if attr.id not in existing_attr_ids and attr.value_ids
+        ]
+        if lines_to_add:
+            product.write({'attribute_line_ids': lines_to_add})
+            attached += 1
+
+    if attached:
+        _logger.info(
+            "Attributs Monétique rattachés à %s produit(s) — filtres "
+            "boutique désormais visibles (Forfait DATA, Garantie, etc.).",
+            attached,
+        )
+
+
 def _remove_account_dropdown_duplicate(env, website):
     """CORRECTIF : cette fonction créait auparavant un lien "My Account"
     en double dans le menu déroulant du compte client, en plus du lien
@@ -1310,6 +1378,13 @@ def post_init_hook(env):
     # correspondance par nom de catégorie fonctionne correctement. ===
     _migrate_products_from_legacy_site(env, website)
 
+    # === RATTACHEMENT DES ATTRIBUTS/FILTRES MONÉTIQUE AUX PRODUITS —
+    # appelé ICI, après que la catégorie 'Monétique' et ses produits
+    # (natifs + migrés) existent tous. Voir la docstring de la
+    # fonction : sans ce rattachement, les filtres restent invisibles
+    # dans la boutique malgré des attributs bien créés. ===
+    _attach_monetique_attributes_to_products(env, website)
+
     # === AVIS DE DÉMONSTRATION — uniquement si le site n'en a aucun ===
     _setup_demo_avis(env, website)
 
@@ -1350,6 +1425,13 @@ def post_migrate_hook(env):
 
     # Attributs/filtres maintenus + traduction à chaque update
     _setup_monetique_attributes(env, lang_en)
+
+    # Rattachement aux produits maintenu à chaque update aussi — un
+    # nouveau produit Monétique ajouté/migré entre deux updates doit
+    # récupérer les mêmes filtres que les autres, sans y toucher s'il
+    # les a déjà (voir la fonction : idempotent, ne réécrase jamais
+    # une sélection de valeurs déjà affinée manuellement).
+    _attach_monetique_attributes_to_products(env, website)
 
     # Avis de démonstration — ne fait rien si le site en a déjà (réels
     # ou démo), donc sans danger de relancer ceci à chaque update.
