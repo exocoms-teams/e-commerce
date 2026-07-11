@@ -39,11 +39,15 @@ versions antérieures.
     'author': 'EXOCOMS Group',
     'website': 'https://www.exocoms.fr',
     'license': 'LGPL-3',
-    'depends': ['account', 'sale', 'sale_management', 'mail', 'payment', 'website_sale'],
+    'depends': ['account', 'sale', 'sale_management', 'mail', 'payment', 'website_sale', 'account_edi_ubl_cii'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
+        'data/payment_term_data.xml',
+        'data/ir_cron_data.xml',
         'views/res_partner_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/portal_templates.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
         'views/account_payment_views.xml',
@@ -68,6 +72,7 @@ versions antérieures.
     'assets': {
         'web.assets_backend': [
             'mandat_admin/static/src/css/mandat.css',
+            'mandat_admin/static/src/ribbon.scss',
         ],
         'web.assets_frontend': [
             'mandat_admin/static/src/css/mandat_payment.css',

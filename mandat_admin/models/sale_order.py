@@ -129,6 +129,12 @@ class SaleOrder(models.Model):
 
     note_mandat = fields.Text('Observations / Mentions particulières')
 
+    engagement_juridique = fields.Char(
+        string="N° d'engagement juridique",
+        copy=False,
+        help="Reporté sur la facture pour le dépôt Chorus Pro.",
+    )
+
     # ── Computed ───────────────────────────────────────────────────
 
     @api.depends('date_order', 'delai_paiement_jours')
@@ -261,6 +267,12 @@ class SaleOrder(models.Model):
                     'sale_order_id': self.id,
                     'type_pj': tp, 'libelle': lib, 'obligatoire': obl,
                 })
+
+    def _prepare_invoice(self):
+        vals = super()._prepare_invoice()
+        if self.engagement_juridique:
+            vals['engagement_juridique'] = self.engagement_juridique
+        return vals
 
     def action_print_bca(self):
         return self.env.ref('mandat_admin.action_report_bca').report_action(self)

@@ -20,6 +20,15 @@
                     type="object"
                     string="Annuler le dépôt Chorus Pro"
                     invisible="not is_mandat_administratif or statut_chorus == 'non_envoye'"/>
+            <button name="action_send_to_chorus"
+                    type="object"
+                    string="Envoyer sur Chorus Pro (API)"
+                    class="btn-primary"
+                    invisible="not is_mandat_administratif or statut_chorus != 'non_envoye' or state != 'posted' or move_type not in ('out_invoice', 'out_refund')"/>
+            <button name="action_check_chorus_status"
+                    type="object"
+                    string="Vérifier statut Chorus Pro"
+                    invisible="not chorus_flux_number"/>
         </xpath>
 
         <xpath expr="//field[@name='invoice_payment_term_id']" position="after">
@@ -41,6 +50,9 @@
             <field name="service_chorus"         invisible="not is_mandat_administratif"/>
             <field name="statut_chorus"          invisible="not is_mandat_administratif" widget="badge"/>
             <field name="numero_chorus"          invisible="not is_mandat_administratif or statut_chorus == 'non_envoye'"/>
+            <field name="engagement_juridique"   invisible="not is_mandat_administratif"/>
+            <field name="chorus_flux_number"     invisible="not chorus_flux_number" readonly="1"/>
+            <field name="chorus_flux_status"     invisible="not chorus_flux_number" readonly="1"/>
         </xpath>
 
         <xpath expr="//notebook" position="inside">

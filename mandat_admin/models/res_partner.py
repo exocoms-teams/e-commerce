@@ -3,6 +3,13 @@ import re
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+PUBLIC_ENTITY_TYPES = [
+    ('etat', 'État et établissements publics administratifs (30 j)'),
+    ('collectivite', 'Collectivité territoriale (30 j)'),
+    ('eps', 'Établissement public de santé (50 j)'),
+    ('entreprise_publique', 'Entreprise publique (60 j)'),
+]
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -54,6 +61,25 @@ class ResPartner(models.Model):
     ], string='Régime TVA public', default='non_assujetti')
 
     taux_prorata_tva = fields.Float('Prorata TVA (%)', digits=(5, 2))
+
+    public_entity_type = fields.Selection(PUBLIC_ENTITY_TYPES,
+        string="Type d'entité publique")
+
+    public_payment_delay = fields.Integer(
+        string="Délai global de paiement (jours)",
+        compute='_compute_public_payment_delay', store=True,
+    )
+
+    chorus_engagement_required = fields.Boolean(
+        string="Engagement juridique obligatoire",
+        help="La structure exige un numéro d'engagement juridique pour accepter la facture sur Chorus Pro.",
+    )
+
+    @api.depends('public_entity_type')
+    def _compute_public_payment_delay(self):
+        delays = {'etat': 30, 'collectivite': 30, 'eps': 50, 'entreprise_publique': 60}
+        for p in self:
+            p.public_payment_delay = delays.get(p.public_entity_type, 30) if p.is_organisme_public else 0
 
     @api.constrains('siret_public')
     def _check_siret(self):
