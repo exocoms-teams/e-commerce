@@ -5,12 +5,13 @@
     'author': 'winners',
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale'],
-    
+
     'data': [
-        'security/security.xml',
+        'security/security_groups.xml',
         'security/ir.model.access.csv',
+        'views/trend_ad_views.xml',
     ],
-    
+
     'installable': True,
     'application': False,
 }
