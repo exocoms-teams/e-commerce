@@ -5,80 +5,64 @@ _logger = logging.getLogger(__name__)
 
 def post_init_hook(env):
     """
-    Crée le journal 'Mandats Administratifs' et y rattache
-    la méthode de paiement mandat_administratif à l'installation.
+    Crée (ou récupère) le payment.method et le payment.provider mandat_administratif,
+    crée le journal MA et y rattache la méthode.
+    Idempotent : peut être appelé plusieurs fois sans effet de bord.
     """
+    cr = env.cr
 
-    # --- Nettoyage préventif des orphelins ir.model.data ---
-    # Si une désinstallation précédente a laissé des résidus dans ir.model.data
-    # sans supprimer les enregistrements réels, on nettoie.
-    env.cr.execute("""
-        DELETE FROM ir_model_data
-        WHERE module = 'mandat_admin'
-          AND model IN ('account.payment.method', 'payment.method')
-          AND res_id NOT IN (
-              SELECT id FROM account_payment_method
-              WHERE code = 'mandat_administratif'
-              UNION
-              SELECT id FROM payment_method
-              WHERE code = 'mandat_administratif'
-          )
-    """)
-
-    PaymentMethod = env['account.payment.method']
-    Journal = env['account.journal']
-    company = env.company
-
-    provider = env['payment.provider'].search([
-        ('code', '=', 'mandat_administratif')
-    ], limit=1)
-    if not provider:
-        env['payment.provider'].create({
+    # --- 1. get-or-create payment.method (évite le conflit d'unicité) ---
+    pm = env['payment.method'].search([('code', '=', 'mandat_administratif')], limit=1)
+    if not pm:
+        pm = env['payment.method'].create({
             'name': 'Mandat Administratif',
             'code': 'mandat_administratif',
-            'state': 'enabled',
-            'is_published': True,
         })
+        _logger.info('mandat_admin: payment.method créé (id=%d)', pm.id)
 
-    # Récupère la méthode de paiement créée par payment_method_data.xml
-    method = PaymentMethod.search([('code', '=', 'mandat_administratif')], limit=1)
-    if not method:
-        _logger.warning('mandat_admin: méthode de paiement introuvable, hook ignoré.')
-        return
+    # --- 2. get-or-create payment.provider et lier la méthode ---
+    provider = env['payment.provider'].search([('code', '=', 'mandat_administratif')], limit=1)
+    if provider and pm not in provider.payment_method_ids:
+        provider.write({'payment_method_ids': [(4, pm.id)]})
 
-    # Vérifie si le journal existe déjà (idempotent)
-    journal = Journal.search([
+    # --- 3. get-or-create account.payment.method ---
+    apm = env['account.payment.method'].search([('code', '=', 'mandat_administratif')], limit=1)
+    if not apm:
+        apm = env['account.payment.method'].create({
+            'name': 'Mandat Administratif',
+            'code': 'mandat_administratif',
+            'payment_type': 'outbound',
+        })
+        _logger.info('mandat_admin: account.payment.method créé (id=%d)', apm.id)
+
+    # --- 4. get-or-create journal MA et rattacher la méthode ---
+    company = env.company
+    journal = env['account.journal'].search([
         ('code', '=', 'MA'),
         ('company_id', '=', company.id),
     ], limit=1)
-
     if not journal:
-        journal = Journal.create({
+        journal = env['account.journal'].create({
             'name': 'Mandats Administratifs',
             'code': 'MA',
             'type': 'bank',
             'company_id': company.id,
         })
-        _logger.info('mandat_admin: journal "Mandats Administratifs" créé (id=%d)', journal.id)
-    else:
-        _logger.info('mandat_admin: journal MA déjà existant, rattachement de la méthode.')
+        _logger.info('mandat_admin: journal MA créé (id=%d)', journal.id)
 
-    # Rattache la méthode au journal si pas déjà présente
-    existing = journal.outbound_payment_method_line_ids.mapped(
-        'payment_method_id'
-    )
-    if method not in existing:
+    existing_methods = journal.outbound_payment_method_line_ids.mapped('payment_method_id')
+    if apm not in existing_methods:
         env['account.payment.method.line'].create({
-            'payment_method_id': method.id,
+            'payment_method_id': apm.id,
             'journal_id': journal.id,
         })
-        _logger.info('mandat_admin: méthode "Mandat Administratif" rattachée au journal MA.')
+        _logger.info('mandat_admin: méthode rattachée au journal MA.')
 
 
 def uninstall_hook(env):
-    """Supprime la méthode de paiement via SQL pour éviter le conflit d'unicité à la réinstallation."""
+    """Supprime les méthodes de paiement via SQL pour permettre la réinstallation sans conflit."""
     cr = env.cr
-    # 1. Supprimer les lignes de journal liées (account.payment.method.line)
+    # 1. Supprimer les lignes de journal (account.payment.method.line)
     cr.execute("""
         DELETE FROM account_payment_method_line
         WHERE payment_method_id IN (
@@ -87,7 +71,7 @@ def uninstall_hook(env):
     """)
     # 2. Supprimer account.payment.method
     cr.execute("DELETE FROM account_payment_method WHERE code = 'mandat_administratif'")
-    # 3. Détacher payment.method de tous les providers (table many2many)
+    # 3. Détacher payment.method des providers (many2many)
     cr.execute("""
         DELETE FROM payment_method_payment_provider_rel
         WHERE payment_method_id IN (
@@ -96,3 +80,4 @@ def uninstall_hook(env):
     """)
     # 4. Supprimer payment.method
     cr.execute("DELETE FROM payment_method WHERE code = 'mandat_administratif'")
+    _logger.info('mandat_admin: méthodes de paiement supprimées lors de la désinstallation.')
