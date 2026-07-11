@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_invoice_document_mandat"
+              inherit_id="account.report_invoice_document"
+              name="Facture — bloc mandat administratif">
+        <xpath expr="//div[hasclass('page')]" position="inside">
+            <div t-if="o.is_public_entity_partner and o.move_type in ('out_invoice', 'out_refund')"
+                 name="mandat_administratif_block"
+                 class="mt-4 pt-3"
+                 style="border-top: 1px solid #dee2e6;">
+                <strong>Règlement par mandat administratif — Chorus Pro</strong>
+                <p class="mb-1">
+                    Facture transmise via le portail Chorus Pro et payable par
+                    virement administratif sous
+                    <span t-out="o.partner_id.commercial_partner_id.public_payment_delay or 30"/> jours
+                    (délai global de paiement — art. R. 2192-10 du Code de la
+                    commande publique).
+                </p>
+                <p class="mb-0">
+                    <t t-if="o.partner_id.commercial_partner_id.chorus_siret">
+                        SIRET destinataire :
+                        <span t-field="o.partner_id.commercial_partner_id.chorus_siret"/> —
+                    </t>
+                    <t t-if="o.chorus_service_code">
+                        Code service :
+                        <span t-field="o.chorus_service_code"/> —
+                    </t>
+                    <t t-if="o.engagement_juridique">
+                        N° d'engagement juridique :
+                        <span t-field="o.engagement_juridique"/>
+                    </t>
+                </p>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
