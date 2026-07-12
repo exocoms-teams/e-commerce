@@ -178,8 +178,10 @@ class TravelController(http.Controller):
         product = request.env['product.template'].sudo().browse(product_id)
         if not product.exists():
             return request.redirect('/travels')
+        providers = request.env['travel.payment.provider'].sudo().search([('active', '=', True)])
         return request.render('travel_agency.travel_booking_page', {
             'product': product,
+            'providers': providers,
         })
 
     @http.route('/travels/book/submit', type='http', auth='public', website=True, methods=['POST'])
