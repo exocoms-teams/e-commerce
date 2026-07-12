@@ -400,6 +400,18 @@
                                         <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
                                         <textarea name="notes" class="form-control" rows="3"/>
                                     </div>
+                                     
+                                    <h5 class="mb-3 mt-4">Mode de paiement</h5>
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Prestataire de paiement *</strong></label>
+                                        <select name="payment_provider_id" class="form-select" required="1">
+                                            <option value="">-- Choisir --</option>
+                                            <t t-foreach="providers" t-as="provider">
+                                                <option t-att-value="provider.id"><t t-esc="provider.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+
 
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary btn-lg">
