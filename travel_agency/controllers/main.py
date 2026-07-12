@@ -183,7 +183,47 @@ class TravelController(http.Controller):
             'product': product,
             'providers': providers,
         })
+    @http.route('/travels/payment/<int:transaction_id>', type='http', auth='public', website=True)
+    def travel_payment_page(self, transaction_id, **kwargs):
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists() or transaction.state != 'pending':
+            return request.redirect('/travels')
+        return request.render('travel_agency.travel_payment_page', {
+            'transaction': transaction,
+        })
 
+    @http.route('/travels/payment/submit', type='http', auth='public', website=True, methods=['POST'])
+    def travel_payment_submit(self, **kwargs):
+        transaction_id = int(kwargs.get('transaction_id', 0))
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists():
+            return request.redirect('/travels')
+
+        card_number = kwargs.get('card_number', '').strip()
+        card_last_4 = card_number[-4:] if len(card_number) >= 4 else ''
+
+        # Simulateur : on valide juste que le numéro de carte a bien 16 chiffres
+        if len(card_number.replace(' ', '')) == 16:
+            transaction.write({
+                'state': 'done',
+                'card_last_4': card_last_4,
+            })
+            transaction.action_done()
+            transaction.reservation_id.action_confirm()
+        else:
+            transaction.action_failed()
+            return request.render('travel_agency.travel_payment_page', {
+                'transaction': transaction,
+                'error': 'Numéro de carte invalide (simulateur : 16 chiffres requis).',
+            })
+
+        return request.render('travel_agency.travel_confirm_page', {
+            'reservation': transaction.reservation_id,
+        })
+    
+    
+    
+    
     @http.route('/travels/book/submit', type='http', auth='public', website=True, methods=['POST'])
     def travel_book_submit(self, **kwargs):
         product_id = int(kwargs.get('product_id', 0))
