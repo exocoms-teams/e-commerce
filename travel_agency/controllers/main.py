@@ -238,6 +238,14 @@ class TravelController(http.Controller):
                     pass
             passenger_vals.append((0, 0, vals))
 
+        payment_provider_id = int(kwargs.get('payment_provider_id', 0) or 0)
+        if not payment_provider_id:
+            return request.render('travel_agency.travel_booking_page', {
+                'product': product,
+                'providers': request.env['travel.payment.provider'].sudo().search([('active', '=', True)]),
+                'error': 'Veuillez choisir un prestataire de paiement.',
+            })
+
         reservation = request.env['travel.reservation'].sudo().create({
             'client_firstname': client_firstname,
             'client_lastname': client_lastname,
@@ -251,9 +259,18 @@ class TravelController(http.Controller):
             'nb_enfants': nb_enfants,
             'notes': notes,
             'passenger_ids': passenger_vals,
-            'state': 'draft',
+            'payment_provider_id': payment_provider_id,
+            'state': 'en_attente',
         })
 
-        return request.render('travel_agency.travel_confirm_page', {
-            'reservation': reservation,
+        transaction = request.env['travel.payment.transaction'].sudo().create({
+            'reservation_id': reservation.id,
+            'provider_id': payment_provider_id,
+            'state': 'pending',
+            'first_name': client_firstname,
+            'last_name': client_lastname,
+            'email': client_email,
+            'phone': client_phone,
         })
+
+        return request.redirect('/travels/payment/%d' % transaction.id)
