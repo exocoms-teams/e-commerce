@@ -464,6 +464,35 @@
             </div>
         </t>
     </template>
+     
+    <template id="travel_payment_page" name="Paiement">
+    <t t-call="website.layout">
+        <div class="container mt-5 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <h1 class="mb-4"><i class="fa fa-credit-card me-2"/>Paiement</h1>
+                    <div t-if="error" class="alert alert-danger"><t t-esc="error"/></div>
+                    <div class="card">
+                        <div class="card-body">
+                            <p><strong>Réservation :</strong> <t t-esc="transaction.reservation_id.name"/></p>
+                            <p><strong>Montant :</strong> <t t-esc="transaction.amount"/> €</p>
+                            <p><strong>Prestataire :</strong> <t t-esc="transaction.provider_id.name"/></p>
+                            <form action="/travels/payment/submit" method="POST">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="transaction_id" t-att-value="transaction.id"/>
+                                <div class="mb-3">
+                                    <label class="form-label">Numéro de carte (simulateur, 16 chiffres)</label>
+                                    <input type="text" name="card_number" class="form-control" maxlength="16" required="1"/>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Payer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</template> 
 
     <template id="travel_confirm_page" name="Confirmation réservation">
         <t t-call="website.layout">
