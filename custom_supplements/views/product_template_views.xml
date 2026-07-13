@@ -7,6 +7,23 @@
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         
         <field name="arch" type="xml">
+            
+            <!-- 1. Masquer l'onglet standard des Ventes -->
+            <xpath expr="//page[@name='sales']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- 2. Masquer l'onglet spécifique Travel -->
+            <xpath expr="//page[@string='Travel']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- 3. Masquer l'onglet spécifique Prix -->
+            <xpath expr="//page[@string='Prix']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- 4. Ajout de ton nouvel onglet Infos Nutritionnelles -->
             <xpath expr="//notebook" position="inside">
                 
                 <page string="Infos Nutritionnelles" name="nutritional_info">
