@@ -2,22 +2,102 @@
 <odoo>
 
     <!--
-        La page /contactus livrée par le module website est une page générique
-        vide (formulaire de contact standard). On lui ajoute le bandeau photo
-        avec titre observé sur la démo du 25/06/2026, en l'insérant juste avant
-        #wrap plutôt qu'à l'intérieur : on ne dépend pas de la structure interne
-        (inconnue à l'avance) du contenu par défaut de cette page.
+        Première version (bandeau ajouté juste avant #wrap) laissait apparaître
+        en dessous le contenu par défaut de /contactus (titre "Contact us" en
+        anglais + formulaire non stylé) : les deux se superposaient au lieu de
+        fusionner. On remplace donc #wrap intégralement par une seule section
+        photo pleine largeur avec une carte blanche flottante (titre + intro +
+        formulaire), sur le modèle vu dans la démo du 25/06/2026.
+
+        Le formulaire reprend le contrat HTML standard du bloc natif "Formulaire"
+        d'Odoo (classes s_website_form / s_website_form_field, action
+        /website/form/, data-model_name="mail.mail" - le modèle cible du
+        formulaire de contact par défaut) pour rester fonctionnel sans contrôleur
+        custom. À tester après installation : si l'envoi ne fonctionne pas,
+        supprimer le <section class="s_website_form"> ci-dessous et glisser un
+        bloc "Formulaire" natif à la même place depuis l'éditeur Website.
     -->
-    <template id="contactus_banner" inherit_id="website.contactus" name="BlueSpa - Bannière Contactez-nous">
-        <xpath expr="//div[@id='wrap']" position="before">
-            <section class="s_bluespa_contact_banner d-flex align-items-center justify-content-center text-center">
-                <div class="container position-relative py-5">
-                    <h1 class="s_bluespa_contact_title mb-3">Contactez-nous</h1>
-                    <p class="s_bluespa_contact_subtext mb-0">
-                        Une question, un projet d'installation ? Notre équipe vous répond sous 24h.
-                    </p>
-                </div>
-            </section>
+    <template id="contactus_banner" inherit_id="website.contactus" name="BlueSpa - Contactez-nous">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="s_bluespa_contact_wrap">
+                <section class="s_bluespa_contact_cover d-flex align-items-center"
+                         data-snippet="s_bluespa_contact_cover" data-name="BlueSpa - Contact">
+                    <div class="container">
+                        <div class="row justify-content-end">
+                            <div class="col-lg-6 col-md-8">
+                                <div class="s_bluespa_contact_card">
+                                    <h1 class="s_bluespa_contact_title mb-3">Contactez-nous</h1>
+                                    <p class="s_bluespa_contact_intro mb-4">
+                                        Envoyez-nous un message pour tout ce qui concerne notre
+                                        entreprise ou nos services. Nous ferons de notre mieux
+                                        pour vous répondre dans les plus brefs délais.
+                                    </p>
+
+                                    <section class="s_website_form" data-snippet="s_website_form" data-name="Form">
+                                        <form action="/website/form/" method="post"
+                                              enctype="multipart/form-data" class="o_mark_required"
+                                              data-model_name="mail.mail"
+                                              data-success-page="/contactus-thank-you">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                            <div class="s_website_form_rows row">
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="char">
+                                                    <label class="s_website_form_label" for="bluespa_contact_name">
+                                                        <span class="s_website_form_label_content">Votre nom</span>
+                                                    </label>
+                                                    <input type="text" class="form-control s_website_form_input"
+                                                           name="name" id="bluespa_contact_name" required="required"/>
+                                                </div>
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="tel">
+                                                    <label class="s_website_form_label" for="bluespa_contact_phone">
+                                                        <span class="s_website_form_label_content">Numéro de téléphone</span>
+                                                    </label>
+                                                    <input type="tel" class="form-control s_website_form_input"
+                                                           name="phone" id="bluespa_contact_phone"/>
+                                                </div>
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="email">
+                                                    <label class="s_website_form_label" for="bluespa_contact_email">
+                                                        <span class="s_website_form_label_content">Votre e-mail</span>
+                                                    </label>
+                                                    <input type="email" class="form-control s_website_form_input"
+                                                           name="email_from" id="bluespa_contact_email" required="required"/>
+                                                </div>
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="char">
+                                                    <label class="s_website_form_label" for="bluespa_contact_company">
+                                                        <span class="s_website_form_label_content">Votre société</span>
+                                                    </label>
+                                                    <input type="text" class="form-control s_website_form_input"
+                                                           name="company" id="bluespa_contact_company"/>
+                                                </div>
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="char">
+                                                    <label class="s_website_form_label" for="bluespa_contact_subject">
+                                                        <span class="s_website_form_label_content">Sujet</span>
+                                                    </label>
+                                                    <input type="text" class="form-control s_website_form_input"
+                                                           name="subject" id="bluespa_contact_subject" required="required"/>
+                                                </div>
+                                                <div class="form-group col-12 s_website_form_field mb-3" data-type="text">
+                                                    <label class="s_website_form_label" for="bluespa_contact_question">
+                                                        <span class="s_website_form_label_content">Votre question</span>
+                                                    </label>
+                                                    <textarea class="form-control s_website_form_input"
+                                                              name="description" id="bluespa_contact_question"
+                                                              rows="4" required="required"/>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn s_bluespa_btn_primary s_website_form_send">
+                                                Envoyer
+                                            </button>
+                                            <span id="s_website_form_result" class="mt-2 d-block"/>
+                                        </form>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </xpath>
     </template>
 
