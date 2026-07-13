@@ -3,29 +3,10 @@
     <record id="view_product_template_form_inherit_supplements" model="ir.ui.view">
         <field name="name">product.template.form.inherit.supplements</field>
         <field name="model">product.template</field>
-        
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
-        
         <field name="arch" type="xml">
             
-            <!-- 1. Masquer l'onglet standard des Ventes -->
-            <xpath expr="//page[@name='sales']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <!-- 2. Masquer l'onglet spécifique Travel -->
-            <xpath expr="//page[@string='Travel']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            
-            <!-- 3. Masquer l'onglet spécifique Prix -->
-            <xpath expr="//page[@string='Prix']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <!-- 4. Ajout de ton nouvel onglet Infos Nutritionnelles -->
             <xpath expr="//notebook" position="inside">
-                
                 <page string="Infos Nutritionnelles" name="nutritional_info">
                     <group>
                         <group>
@@ -39,8 +20,8 @@
                         <field name="nutritional_info" nolabel="1" placeholder="Ex: Calories: 380kcal, Protéines: 85g..."/>
                     </group>
                 </page>
-                
             </xpath>
+            
         </field>
     </record>
 </odoo>

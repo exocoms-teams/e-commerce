@@ -1,5 +1,7 @@
 {
-    'name': 'Boutique Compléments Alimentaires',
+   'name': 'Boutique Compléments Alimentaires',
+    'author': 'Yassine Tartor',
+    'license': 'LGPL-3',
     'version': '1.0',
     'summary': 'Vente de protéines, vitamines et gestion des stocks',
     'category': 'eCommerce',
