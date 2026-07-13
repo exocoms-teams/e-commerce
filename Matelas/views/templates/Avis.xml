@@ -32,8 +32,21 @@
       <section class="avis-liste container">
 
 
-        <!-- Les avis s'afficheront ici dynamiquement -->
+        <!-- Avis publiés, chargés depuis la base -->
         <div class="row" id="avis-container">
+          <t t-foreach="avis_list" t-as="avis">
+            <div class="col-md-4 mb-4">
+              <div class="avis-card">
+                <div class="avis-stars">
+                  <t t-esc="'★' * avis.note + '☆' * (5 - avis.note)" />
+                </div>
+                <p class="avis-produit" t-if="avis.titre">🛏️ <t t-esc="avis.titre" /></p>
+                <p class="avis-texte">"<t t-esc="avis.commentaire" />"</p>
+                <strong class="avis-auteur" t-esc="avis.name" />
+                <span class="avis-date"> — <t t-esc="avis.create_date.strftime('%d/%m/%Y')" /></span>
+              </div>
+            </div>
+          </t>
         </div>
 
         <div class="text-center mt-3">

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="view_matelas_avis_list" model="ir.ui.view">
+      <field name="name">matelas.avis.list</field>
+      <field name="model">matelas.avis</field>
+      <field name="arch" type="xml">
+        <list string="Avis clients">
+          <field name="create_date" string="Date"/>
+          <field name="name"/>
+          <field name="note"/>
+          <field name="titre"/>
+          <field name="commentaire"/>
+          <field name="partner_id"/>
+          <field name="is_published"/>
+        </list>
+      </field>
+    </record>
+
+    <record id="view_matelas_avis_form" model="ir.ui.view">
+      <field name="name">matelas.avis.form</field>
+      <field name="model">matelas.avis</field>
+      <field name="arch" type="xml">
+        <form string="Avis client">
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="note"/>
+              <field name="titre"/>
+              <field name="partner_id"/>
+              <field name="is_published"/>
+            </group>
+            <field name="commentaire"/>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_matelas_avis" model="ir.actions.act_window">
+      <field name="name">Avis clients</field>
+      <field name="res_model">matelas.avis</field>
+      <field name="view_mode">list,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Aucun avis pour le moment
+        </p><p>
+          Les avis postés depuis le site (page /avis) apparaîtront ici.
+          Décoche "Publié" pour masquer un avis du site sans le supprimer.
+        </p>
+      </field>
+    </record>
+
+    <menuitem id="menu_matelas_avis"
+      name="Avis clients"
+      parent="menu_matelas_root"
+      action="action_matelas_avis"
+      sequence="5"/>
+
+  </data>
+</odoo>

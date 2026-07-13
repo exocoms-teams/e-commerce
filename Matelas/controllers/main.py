@@ -44,10 +44,51 @@ class MatelasVente(http.Controller):
             ], limit=1)
             a_achete = bool(commandes)
 
+        avis_list = request.env['matelas.avis'].sudo().search([
+            ('is_published', '=', True),
+        ], order='create_date desc', limit=20)
+
         return request.render('Matelas.avis_page', {
             'a_achete': a_achete,
             'user_connected': request.env.user.id != request.env.ref('base.public_user').id,
+            'avis_list': avis_list,
         })
+
+    @http.route('/avis/submit', type='jsonrpc', auth='user', website=True)
+    def avis_submit(self, name=None, note=None, titre=None, commentaire=None, **kwargs):
+        partner = request.env.user.partner_id
+
+        commandes = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', partner.id),
+            ('state', 'in', ['sale', 'done']),
+        ], limit=1)
+        if not commandes:
+            return {
+                'success': False,
+                'error': "Vous devez avoir effectué un achat pour laisser un avis.",
+            }
+
+        if not name or not (commentaire and commentaire.strip()) or not note:
+            return {
+                'success': False,
+                'error': "Merci de remplir tous les champs obligatoires.",
+            }
+
+        try:
+            note = int(note)
+        except (TypeError, ValueError):
+            note = 0
+        note = max(1, min(5, note))
+
+        request.env['matelas.avis'].sudo().create({
+            'name': name,
+            'note': note,
+            'titre': titre or '',
+            'commentaire': commentaire,
+            'partner_id': partner.id,
+        })
+
+        return {'success': True}
 
     @http.route('/contact', auth='public', website=True)
     def contact(self, **kwargs):

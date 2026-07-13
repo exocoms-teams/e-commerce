@@ -29,7 +29,7 @@
             });
         }
 
-        // ===== AVIS =====
+        // ===== AVIS (enregistré réellement en base via /avis/submit) =====
         const btnAvis = document.getElementById('btn-envoyer-avis');
         if (btnAvis) {
             btnAvis.addEventListener('click', function() {
@@ -43,28 +43,62 @@
                     return;
                 }
 
-                const starsHtml = '★'.repeat(parseInt(note)) + '☆'.repeat(5 - parseInt(note));
-                const justNow = en ? 'just now' : "à l'instant";
-                const card = `
-                    <div class="col-md-4 mb-4">
-                        <div class="avis-card">
-                            <div class="avis-stars">${starsHtml}</div>
-                            ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
-                            <p class="avis-texte">"${commentaire}"</p>
-                            <strong class="avis-auteur">${nom}</strong>
-                            <span class="avis-date"> — ${justNow}</span>
-                        </div>
-                    </div>
-                `;
+                btnAvis.disabled = true;
 
-                document.getElementById('avis-container').innerHTML += card;
-                document.getElementById('avis-success').style.display = 'block';
-                document.getElementById('avis-nom').value = '';
-                document.getElementById('avis-note').value = 0;
-                document.getElementById('avis-produit').value = '';
-                document.getElementById('avis-commentaire').value = '';
-                stars.forEach(s => s.classList.remove('active'));
-                document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
+                fetch('/avis/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'call',
+                        id: Date.now(),
+                        params: {
+                            name: nom,
+                            note: parseInt(note),
+                            titre: produit,
+                            commentaire: commentaire
+                        }
+                    })
+                })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        const result = data && data.result;
+                        if (!result || !result.success) {
+                            const message = (result && result.error) ||
+                                (en ? 'Something went wrong.' : 'Une erreur est survenue.');
+                            alert(message);
+                            return;
+                        }
+
+                        const starsHtml = '★'.repeat(parseInt(note)) + '☆'.repeat(5 - parseInt(note));
+                        const justNow = en ? 'just now' : "à l'instant";
+                        const card = `
+                            <div class="col-md-4 mb-4">
+                                <div class="avis-card">
+                                    <div class="avis-stars">${starsHtml}</div>
+                                    ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
+                                    <p class="avis-texte">"${commentaire}"</p>
+                                    <strong class="avis-auteur">${nom}</strong>
+                                    <span class="avis-date"> — ${justNow}</span>
+                                </div>
+                            </div>
+                        `;
+
+                        document.getElementById('avis-container').innerHTML += card;
+                        document.getElementById('avis-success').style.display = 'block';
+                        document.getElementById('avis-nom').value = '';
+                        document.getElementById('avis-note').value = 0;
+                        document.getElementById('avis-produit').value = '';
+                        document.getElementById('avis-commentaire').value = '';
+                        stars.forEach(s => s.classList.remove('active'));
+                        document.getElementById('avis-container').scrollIntoView({ behavior: 'smooth' });
+                    })
+                    .catch(function() {
+                        alert(en ? 'Something went wrong.' : 'Une erreur est survenue.');
+                    })
+                    .finally(function() {
+                        btnAvis.disabled = false;
+                    });
             });
         }
 

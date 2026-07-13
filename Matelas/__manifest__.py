@@ -30,6 +30,7 @@
         'data/Setting.xml',
         'views/ProductForm.xml',
         'views/NewsletterWizard.xml',
+        'views/AvisBackend.xml',
         'views/templates/Home.xml',
         'views/templates/Avis.xml',
         'views/templates/Contact.xml',
