@@ -831,10 +831,42 @@ def _migrate_products_from_legacy_site(env, website):
     for c in our_categories:
         our_by_name_alt.setdefault(_normalize(c.name), []).append(c)
 
-    def _match_category(name):
+    # CORRECTIF (autres noms divergents constatés) : certains noms de
+    # catégorie de l'ancien site n'ont RIEN de commun textuellement avec
+    # le nôtre (pas juste 'et'/'&') -- ex: 'Bases chargeur' (legacy) vs
+    # 'Chargeurs & Alimentations' (nous). Une normalisation de symboles
+    # ne peut pas deviner ça : on maintient donc une liste explicite
+    # d'alias, à compléter au fur et à mesure qu'on en découvre
+    # (comparer visuellement le site EXOCOMS legacy à notre boutique
+    # reste le meilleur moyen de les repérer).
+    CATEGORY_NAME_ALIASES = {
+        'bases chargeur': 'chargeurs & alimentations',
+    }
+
+    # CORRECTIF (collision de noms) : certains noms existent à PLUSIEURS
+    # endroits de notre arborescence (ex: 'Caisse Enregistreuse' existe
+    # à la fois comme grosse catégorie principale ET comme sous-
+    # catégorie de 'Services') -- déjà documenté dans le PDF de
+    # réorganisation ('Ingenico' existe sous 8 branches différentes).
+    # Prendre candidates[0] au hasard pouvait donc envoyer un produit
+    # dans la MAUVAISE branche, tout en laissant la bonne vide. On
+    # départage désormais par le nom du PARENT côté legacy quand
+    # plusieurs candidats existent.
+    def _match_category(name, legacy_parent_name=None):
         key = name.strip().lower()
-        candidates = our_by_name.get(key) or our_by_name_alt.get(_normalize(name))
-        return candidates[0] if candidates else None
+        candidates = (
+            our_by_name.get(key)
+            or our_by_name_alt.get(_normalize(name))
+            or our_by_name.get(CATEGORY_NAME_ALIASES.get(key, ''))
+        )
+        if not candidates:
+            return None
+        if len(candidates) > 1 and legacy_parent_name:
+            parent_key = legacy_parent_name.strip().lower()
+            for c in candidates:
+                if c.parent_id and c.parent_id.name.strip().lower() == parent_key:
+                    return c
+        return candidates[0]
 
     legacy_products.write({'website_id': website.id, 'is_published': True})
 
@@ -847,7 +879,7 @@ def _migrate_products_from_legacy_site(env, website):
             continue
         new_categs = Category
         for oc in old_categs:
-            match = _match_category(oc.name)
+            match = _match_category(oc.name, oc.parent_id.name if oc.parent_id else None)
             if match:
                 new_categs |= match
                 continue
@@ -859,7 +891,8 @@ def _migrate_products_from_legacy_site(env, website):
             ancestor = oc.parent_id
             fallback_match = None
             while ancestor:
-                fallback_match = _match_category(ancestor.name)
+                grandparent_name = ancestor.parent_id.name if ancestor.parent_id else None
+                fallback_match = _match_category(ancestor.name, grandparent_name)
                 if fallback_match:
                     break
                 ancestor = ancestor.parent_id
