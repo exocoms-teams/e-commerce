@@ -372,6 +372,8 @@ document.addEventListener('DOMContentLoaded', function () {
             options.addEventListener('click', e => e.stopPropagation());
         });
 
+        const btn = document.getElementById('tsp-apply-filters');
+
         // Sur mobile : toggle "More filters" pour ne pas noyer les produits
         if (window.innerWidth < 992 && groups.some(g => g !== null)) {
             const toggle = document.createElement('button');
@@ -384,10 +386,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 container.style.display = isOpen ? 'none' : 'flex';
                 toggle.classList.toggle('open', !isOpen);
             });
+            // Bouton Filter après le toggle, toujours visible
+            if (btn) toggle.after(btn);
+        } else {
+            // Desktop : bouton Filter en fin du container catégorie
+            if (btn) container.appendChild(btn);
         }
-
-        const btn = document.getElementById('tsp-apply-filters');
-        if (btn) container.appendChild(btn);
     }
 
     
