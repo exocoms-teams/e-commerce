@@ -386,8 +386,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 container.style.display = isOpen ? 'none' : 'flex';
                 toggle.classList.toggle('open', !isOpen);
             });
-            // Bouton Filter après le toggle, toujours visible
-            if (btn) toggle.after(btn);
+            // Bouton Filter après le container (tout en bas, toujours visible)
+            if (btn) container.after(btn);
         } else {
             // Desktop : bouton Filter en fin du container catégorie
             if (btn) container.appendChild(btn);
