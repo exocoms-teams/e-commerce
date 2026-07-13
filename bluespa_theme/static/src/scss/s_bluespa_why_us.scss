@@ -1,12 +1,21 @@
+// Police chargée via une balise <link> dans <head> (views/layout/fonts.xml),
+// pas via @import ici : un @import dans un fichier .scss doit précéder TOUTE
+// autre règle Sass dans l'ensemble du bundle compilé, ce qui est fragile et
+// dépend de l'ordre de concaténation des fichiers - c'est ce qui a cassé tout
+// le CSS du site la dernière fois. Un <link> dans le head est sans risque.
+.s_bluespa_why_us {
+    font-family: 'Poppins', sans-serif;
+}
+
 .s_bluespa_why_item {
     text-align: left;
 }
 
 .s_bluespa_why_icon {
-    width: 80px;
+    width: 48px;
     height: auto;
-    display: block;
-    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
 }
 
 .s_bluespa_why_title {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Police "Pourquoi nous choisir" (Poppins) chargée via une vraie balise
+        <link> dans le <head>, plutôt qu'un @import dans un fichier .scss :
+        aucun risque de casser la compilation du bundle CSS (voir l'incident
+        précédent où un @import mal placé dans variables.scss avait fait
+        planter tout le CSS du site). On cible web.layout (le template de
+        base commun back/front-office) plutôt que website.layout, qui ne
+        contient pas forcément lui-même la balise <head> en dur.
+    -->
+    <template id="fonts" inherit_id="web.layout" name="BlueSpa - Polices Google Fonts">
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="stylesheet"
+                  href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;display=swap"/>
+        </xpath>
+    </template>
+
+</odoo>

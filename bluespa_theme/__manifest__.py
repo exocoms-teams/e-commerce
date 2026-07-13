@@ -11,7 +11,7 @@ BlueSpa (vente de spas), construits en code pour survivre aux
 rebuilds de la branche Odoo.sh.
 """,
     'author': 'EXOCOMS GROUP',
-    'depends': ['website', 'website_sale', 'mail'],
+    'depends': ['web', 'website', 'website_sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/snippets/snippets.xml',
@@ -22,6 +22,7 @@ rebuilds de la branche Odoo.sh.
         'views/pages/homepage.xml',
         'views/pages/contactus.xml',
         'views/layout/footer.xml',
+        'views/layout/fonts.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'assets': {
