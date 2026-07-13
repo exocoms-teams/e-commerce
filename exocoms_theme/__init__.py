@@ -456,15 +456,17 @@ def _attach_monetique_attributes_to_products(env, website):
     sidebar boutique même si les attributs existent bien en base —
     c'est exactement ce qui se passait ici.
 
-    On rattache donc ici ces attributs à TOUS les produits de la gamme
-    Monétique (catégorie 'Monétique' et ses sous-catégories), avec
-    TOUTES leurs valeurs disponibles. Comme ces attributs sont en
-    create_variant='no_variant' (voir ci-dessus), ce rattachement ne
-    crée AUCUNE variante supplémentaire ni de doublon de produit — il
-    rend juste l'attribut visible/filtrable côté boutique. Idempotent :
-    un produit qui a déjà une ligne pour un attribut donné n'est pas
-    retouché (pour ne pas écraser une sélection de valeurs déjà
-    affinée manuellement en backend).
+    CORRECTIF (pertinence) : chaque attribut n'est plus rattaché à TOUS
+    les produits Monétique en bloc, mais uniquement à la sous-catégorie
+    où il a du sens (ex: 'Nombre de chèques par mois' seulement sur les
+    scanners/lecteurs de chèques, pas sur un TPE) — voir ATTR_SCOPE dans
+    le corps de la fonction. Seul 'Garantie' reste large. Comme ces
+    attributs sont en create_variant='no_variant' (voir ci-dessus), ce
+    rattachement ne crée AUCUNE variante supplémentaire ni de doublon de
+    produit — il rend juste l'attribut visible/filtrable côté boutique.
+    Idempotent : un produit qui a déjà une ligne pour un attribut donné
+    n'est pas retouché (pour ne pas écraser une sélection de valeurs
+    déjà affinée manuellement en backend).
     """
     if not website:
         _logger.warning(
@@ -487,12 +489,20 @@ def _attach_monetique_attributes_to_products(env, website):
         )
         return
 
-    tree = monetique_root | Category.search([('id', 'child_of', monetique_root.ids)])
-    products = env['product.template'].search([
-        ('public_categ_ids', 'in', tree.ids),
-        ('website_id', '=', website.id),
-    ])
-    if not products:
+    def _find_child(name, parent_id):
+        return Category.search([
+            ('name', '=', name), ('parent_id', '=', parent_id), ('website_id', '=', website.id),
+        ], limit=1)
+
+    def _tree_products(root_cat):
+        tree = root_cat | Category.search([('id', 'child_of', root_cat.ids)])
+        return env['product.template'].search([
+            ('public_categ_ids', 'in', tree.ids),
+            ('website_id', '=', website.id),
+        ])
+
+    all_products = _tree_products(monetique_root)
+    if not all_products:
         _logger.warning(
             "_attach_monetique_attributes_to_products : catégorie 'Monétique' "
             "trouvée (id=%s) mais AUCUN produit scopé au site %s (id=%s) "
@@ -502,16 +512,35 @@ def _attach_monetique_attributes_to_products(env, website):
         )
         return
 
-    attr_names = [
-        'Forfait DATA compatible', 'Nombre de chèques par mois',
-        'Garantie', 'Type de modèle', 'Quantité',
-    ]
+    # CORRECTIF (pertinence des filtres) : rattacher les 5 attributs à
+    # TOUS les produits Monétique en bloc faisait apparaître des filtres
+    # hors-sujet (ex: "Nombre de chèques par mois" sur un TPE). Chaque
+    # attribut n'est donc désormais rattaché qu'aux produits de la
+    # sous-catégorie où il a vraiment du sens. 'Garantie' reste large
+    # (pertinent pour tout matériel durable). 'None' = toute la gamme
+    # Monétique. Repose sur la structure de catégories construite par
+    # get_or_create() plus haut dans ce hook (noms/parents identiques).
+    monetique_sub = _find_child('Monetique', monetique_root.id)  # sous-branche TPE
+    monnaie = _find_child('Monnaie & Chèque', monetique_root.id)
+    consommables = _find_child('Consommables', monetique_root.id)
+    accessoires = _find_child('Accessoires', monetique_root.id)
+    cables = _find_child('Cables', accessoires.id) if accessoires else None
+
+    ATTR_SCOPE = {
+        'Garantie': None,
+        'Forfait DATA compatible': monetique_sub,
+        'Nombre de chèques par mois': monnaie,
+        'Type de modèle': cables,
+        'Quantité': consommables,
+    }
+
     # CORRECTIF MAJEUR : _setup_monetique_attributes() crée ces attributs
     # avec .with_context(lang='fr_FR') -- leur nom est donc stocké dans
     # la traduction française. Rechercher par 'name' SANS ce même contexte
     # de langue ne matche pas forcément la bonne traduction sur un champ
     # traduisible, et retournait 0 résultat en conditions réelles (voir
     # logs : "AUCUN attribut trouvé" alors qu'ils existent bien en base).
+    attr_names = list(ATTR_SCOPE.keys())
     attrs = env['product.attribute'].with_context(lang='fr_FR').search([('name', 'in', attr_names)])
     if not attrs:
         _logger.warning(
@@ -553,33 +582,59 @@ def _attach_monetique_attributes_to_products(env, website):
         "_attach_monetique_attributes_to_products : %s produit(s) trouve(s) "
         "sous la categorie Monetique (id=%s) pour le site %s, %s "
         "attribut(s) cible(s) trouve(s) en base.",
-        len(products), monetique_root.id, website.name, len(attrs),
+        len(all_products), monetique_root.id, website.name, len(attrs),
     )
 
-    attached = 0
-    for product in products:
-        existing_attr_ids = set(product.attribute_line_ids.mapped('attribute_id').ids)
-        lines_to_add = [
-            (0, 0, {'attribute_id': attr.id, 'value_ids': [(6, 0, attr.value_ids.ids)]})
-            for attr in attrs
-            if attr.id not in existing_attr_ids and attr.value_ids
-        ]
-        if lines_to_add:
-            product.write({'attribute_line_ids': lines_to_add})
+    total_attached = 0
+    for attr in attrs:
+        scope_cat = ATTR_SCOPE.get(attr.name)
+        if scope_cat is None:
+            products = all_products
+            scope_label = 'toute la gamme Monétique'
+        elif not scope_cat:
+            _logger.warning(
+                "_attach_monetique_attributes_to_products : sous-catégorie "
+                "cible introuvable pour l'attribut '%s' — ignoré (vérifiez "
+                "que l'arborescence de catégories a bien été construite "
+                "avant cet appel).",
+                attr.name,
+            )
+            continue
+        else:
+            products = _tree_products(scope_cat)
+            scope_label = "sous-catégorie '%s' (id=%s)" % (scope_cat.name, scope_cat.id)
+
+        if not products or not attr.value_ids:
+            continue
+
+        attached = 0
+        for product in products:
+            existing_attr_ids = set(product.attribute_line_ids.mapped('attribute_id').ids)
+            if attr.id in existing_attr_ids:
+                continue
+            product.write({'attribute_line_ids': [
+                (0, 0, {'attribute_id': attr.id, 'value_ids': [(6, 0, attr.value_ids.ids)]}),
+            ]})
             attached += 1
 
-    if attached:
+        total_attached += attached
         _logger.info(
-            "Attributs Monétique rattachés à %s produit(s) — filtres "
-            "boutique désormais visibles (Forfait DATA, Garantie, etc.).",
-            attached,
+            "Attribut '%s' rattaché à %s produit(s) (portée : %s).",
+            attr.name, attached, scope_label,
+        )
+
+    if total_attached:
+        _logger.info(
+            "Attributs Monétique rattachés à %s produit(s) au total — "
+            "filtres boutique désormais visibles, chacun sur sa sous-"
+            "catégorie pertinente.",
+            total_attached,
         )
     else:
         _logger.info(
-            "_attach_monetique_attributes_to_products : 0 produit modifie "
-            "sur %s trouves -- ils ont deja tous ces attributs (rien a "
-            "faire), normal si la fonction a deja tourne avec succes.",
-            len(products),
+            "_attach_monetique_attributes_to_products : 0 produit modifié -- "
+            "ils ont déjà tous les attributs pertinents (rien à faire), "
+            "normal si la fonction a déjà tourné avec succès."
         )
 
 
