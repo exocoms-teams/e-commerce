@@ -426,6 +426,10 @@ def _attach_monetique_attributes_to_products(env, website):
     affinée manuellement en backend).
     """
     if not website:
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : aucun site fourni, "
+            "abandon immédiat."
+        )
         return
 
     Category = env['product.public.category']
@@ -433,6 +437,13 @@ def _attach_monetique_attributes_to_products(env, website):
         ('name', '=', 'Monétique'), ('parent_id', '=', False), ('website_id', '=', website.id),
     ], limit=1)
     if not monetique_root:
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : aucune catégorie "
+            "racine 'Monétique' trouvée pour le site %s (id=%s) — "
+            "rattachement abandonné. Vérifiez le nom exact (accent) et le "
+            "website_id de la catégorie en base.",
+            website.name, website.id,
+        )
         return
 
     tree = monetique_root | Category.search([('id', 'child_of', monetique_root.ids)])
@@ -441,6 +452,13 @@ def _attach_monetique_attributes_to_products(env, website):
         ('website_id', '=', website.id),
     ])
     if not products:
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : catégorie 'Monétique' "
+            "trouvée (id=%s) mais AUCUN produit scopé au site %s (id=%s) "
+            "n'y est rattaché — rattachement abandonné. Vérifiez que les "
+            "produits Monétique ont bien website_id=%s.",
+            monetique_root.id, website.name, website.id, website.id,
+        )
         return
 
     attr_names = [
@@ -449,7 +467,29 @@ def _attach_monetique_attributes_to_products(env, website):
     ]
     attrs = env['product.attribute'].search([('name', 'in', attr_names)])
     if not attrs:
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : AUCUN attribut "
+            "trouvé parmi %s — _setup_monetique_attributes() a-t-elle bien "
+            "été appelée avant celle-ci ? Rattachement abandonné.",
+            attr_names,
+        )
         return
+    if len(attrs) < len(attr_names):
+        found_names = set(attrs.mapped('name'))
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : seulement %s/%s "
+            "attributs trouvés (manquants : %s) — noms probablement "
+            "différents en base (accents/casse).",
+            len(attrs), len(attr_names),
+            [n for n in attr_names if n not in found_names],
+        )
+
+    _logger.info(
+        "_attach_monetique_attributes_to_products : %s produit(s) trouve(s) "
+        "sous la categorie Monetique (id=%s) pour le site %s, %s "
+        "attribut(s) cible(s) trouve(s) en base.",
+        len(products), monetique_root.id, website.name, len(attrs),
+    )
 
     attached = 0
     for product in products:
@@ -468,6 +508,13 @@ def _attach_monetique_attributes_to_products(env, website):
             "Attributs Monétique rattachés à %s produit(s) — filtres "
             "boutique désormais visibles (Forfait DATA, Garantie, etc.).",
             attached,
+        )
+    else:
+        _logger.info(
+            "_attach_monetique_attributes_to_products : 0 produit modifie "
+            "sur %s trouves -- ils ont deja tous ces attributs (rien a "
+            "faire), normal si la fonction a deja tourne avec succes.",
+            len(products),
         )
 
 
