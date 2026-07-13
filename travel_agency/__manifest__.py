@@ -4,6 +4,7 @@
     'author': 'ARMOD07',
     'license': 'LGPL-3',
     'category': 'Sales',
+    'description': 'Gestion des reservations pour agence de voyage.',
     'depends': ['base', 'product', 'sale'],
     'data': [
         'security/ir.model.access.csv',
