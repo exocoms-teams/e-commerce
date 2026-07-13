@@ -318,7 +318,7 @@ class TravelController(http.Controller):
     
     @http.route('/recommandation', type='http', auth='public', website=True)
     def recommandation_form(self, **kwargs):
-        return request.render('travel_agency.recommandation_form_page', {})
+        return request.render('travel_agency.recommandation_form_page', {'error': False})
 
     @http.route('/recommandation/resultats', type='http', auth='public', website=True, methods=['POST'])
     def recommandation_resultats(self, **kwargs):
