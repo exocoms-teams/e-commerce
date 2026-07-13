@@ -465,7 +465,13 @@ def _attach_monetique_attributes_to_products(env, website):
         'Forfait DATA par TPE', 'Nombre de chèques par mois',
         'Garantie', 'Type de modèle', 'Quantité',
     ]
-    attrs = env['product.attribute'].search([('name', 'in', attr_names)])
+    # CORRECTIF MAJEUR : _setup_monetique_attributes() crée ces attributs
+    # avec .with_context(lang='fr_FR') -- leur nom est donc stocké dans
+    # la traduction française. Rechercher par 'name' SANS ce même contexte
+    # de langue ne matche pas forcément la bonne traduction sur un champ
+    # traduisible, et retournait 0 résultat en conditions réelles (voir
+    # logs : "AUCUN attribut trouvé" alors qu'ils existent bien en base).
+    attrs = env['product.attribute'].with_context(lang='fr_FR').search([('name', 'in', attr_names)])
     if not attrs:
         _logger.warning(
             "_attach_monetique_attributes_to_products : AUCUN attribut "
