@@ -3,7 +3,7 @@ from odoo.http import request
 from datetime import datetime
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 from odoo.fields import Domain
-from odoo.osv.expression import AND
+#from odoo.osv.expression import AND
 
 
 class LuxuryController(WebsiteSale):
@@ -66,7 +66,7 @@ class LuxuryController(WebsiteSale):
         _logger.warning("LUXURY EXTRA DOMAINS = %s", extra_domains)
     
         if extra_domains:
-            return domain & Domain(AND(extra_domains))
+            return domain & Domain.and_(extra_domains)
     
         return domain
 
