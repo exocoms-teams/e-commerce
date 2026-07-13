@@ -325,6 +325,16 @@ def _setup_monetique_attributes(env, lang_en):
             })
         else:
             attr.with_context(lang='fr_FR').write({'sequence': sequence})
+            # CORRECTIF MAJEUR : un attribut du MÊME NOM peut déjà exister
+            # en base partagée (17 sites), créé par un autre projet avec le
+            # mode par défaut Odoo 'create_variant=always'. Sans cette
+            # correction, on rattachait ensuite cet attribut existant (mode
+            # 'always') à des dizaines de produits avec toutes ses valeurs
+            # -> explosion combinatoire de variantes et erreur "nombre de
+            # variantes supérieur à la limite autorisée". On force donc
+            # TOUJOURS 'no_variant', qu'il ait été créé par nous ou non.
+            if attr.create_variant != 'no_variant':
+                attr.write({'create_variant': 'no_variant'})
 
         attr.with_context(lang='fr_FR').write({'name': name_fr})
         if lang_en and name_en:
