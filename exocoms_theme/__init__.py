@@ -1025,14 +1025,38 @@ def _repair_orphaned_categories(env, website):
     # Les noms les plus longs/précis d'abord, pour ne pas matcher un nom
     # générique court avant un nom plus spécifique qui le contiendrait.
     leaf_cats = leaf_cats.sorted(key=lambda c: -len(c.name))
+    leaf_by_name = {c.name: c for c in leaf_cats}
+
+    # CORRECTIF (mot-clé PARTIEL) : le nom complet d'une catégorie
+    # n'apparaît presque jamais tel quel dans le nom d'un produit (ex:
+    # 'Chargeurs & Alimentations' ne figure jamais dans "Base chargeur
+    # pour TPE Ingenico..."). On ajoute donc une liste de mots-clés
+    # PARTIELS -> catégorie cible, à étendre au fur et à mesure des
+    # produits orphelins repérés dans les logs. Vérifiés dans l'ordre :
+    # le premier mot-clé trouvé dans le nom du produit l'emporte.
+    PRODUCT_KEYWORD_CATEGORY = [
+        ('chargeur', 'Chargeurs & Alimentations'),
+        ('housse', 'Housses & protections'),
+        ('protection', 'Housses & protections'),
+        ('coque', 'Housses & protections'),
+        ('câble', 'Cables'),
+        ('cable', 'Cables'),
+        ('batterie', 'Batteries TPE'),
+    ]
 
     repaired = 0
     still_unmatched = []
     for p in orphaned:
+        pname_lower = p.name.lower()
         match = next(
-            (c for c in leaf_cats if c.name and c.name.lower() in p.name.lower()),
+            (c for c in leaf_cats if c.name and c.name.lower() in pname_lower),
             None,
         )
+        if not match:
+            for kw, target_name in PRODUCT_KEYWORD_CATEGORY:
+                if kw in pname_lower and target_name in leaf_by_name:
+                    match = leaf_by_name[target_name]
+                    break
         if match:
             p.write({'public_categ_ids': [(6, 0, [match.id])]})
             repaired += 1
