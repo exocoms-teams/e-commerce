@@ -380,22 +380,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Init dropdowns marque + couleur
     async function initFilters() {
+        // Lance les filtres catégorie immédiatement sans attendre Brand/Color
+        const categoryPromise = injectCategoryFilters();
+
+        // Brand et Color restent séquentiels (cf. pièges connus CLAUDE.md)
         const brandId = await getAttributeId(['Brand', 'brand', 'Marque', 'marque']);
         const colorId = await getAttributeId(['Color', 'color', 'Couleur', 'couleur']);
 
         if (brandId) {
             const brands = await getAttributeValues(brandId);
             console.log('[PM Filtres] Marques:', brands);
-            populateDropdown('marque', brands, brandId);
+            if (brands.length) populateDropdown('marque', brands, brandId);
         }
 
         if (colorId) {
             const colors = await getAttributeValues(colorId);
             console.log('[PM Filtres] Couleurs:', colors);
-            populateDropdown('couleur', colors, colorId);
+            if (colors.length) populateDropdown('couleur', colors, colorId);
         }
 
-        await injectCategoryFilters();
+        await categoryPromise;
     }
 
     // Récupère les attribs cochés (format "attrId-valueId")
