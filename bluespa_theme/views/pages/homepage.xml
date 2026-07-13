@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        On enrichit la homepage générique d'Odoo (website.homepage, la page "/"
+        livrée par défaut avec le module website) plutôt que de créer une nouvelle
+        page, pour rester la page d'accueil officielle du site sans manipulation
+        supplémentaire côté Réglages > Site Web.
+        Ordre des blocs = ordre observé sur le site original (démo du 25/06/2026).
+    -->
+    <template id="homepage" inherit_id="website.homepage" name="BlueSpa - Accueil">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <t t-call="bluespa_theme.s_bluespa_hero"/>
+            <t t-call="bluespa_theme.s_bluespa_why_us"/>
+            <t t-call="bluespa_theme.s_bluespa_catalog"/>
+            <t t-call="bluespa_theme.s_bluespa_reviews"/>
+        </xpath>
+        <xpath expr="//div[@id='wrap']" position="after">
+            <t t-call="bluespa_theme.s_bluespa_promo_popup"/>
+        </xpath>
+    </template>
+
+</odoo>

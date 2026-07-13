@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Contrairement au snippet natif "Produits dynamiques" (qui repose sur un
+        website.snippet.filter configuré et rechargé en JS), ce bloc interroge
+        directement product.template côté serveur : plus simple à figer dans un
+        module et à faire relire en code review.
+        Tri par prix décroissant pour reproduire l'ordre observé sur le site
+        original (Spa Elite 10 places, Spa Elite 8 places, Spa Prestige 6 places).
+    -->
+    <template id="s_bluespa_catalog" name="BlueSpa - Catalogue populaire">
+        <section class="s_bluespa_catalog o_colored_level pt48 pb48"
+                 data-snippet="s_bluespa_catalog"
+                 data-name="BlueSpa - Catalogue populaire">
+            <div class="container">
+                <div class="d-flex flex-wrap justify-content-between align-items-end mb-2">
+                    <div>
+                        <h2 class="mb-1">Nos spas les plus populaires</h2>
+                        <p class="text-muted mb-0">Découvrez notre sélection haut de gamme, livrée et installée chez vous.</p>
+                    </div>
+                    <a href="/shop" class="s_bluespa_catalog_see_all d-inline-flex align-items-center">
+                        Voir tout <i class="fa fa-long-arrow-right ms-2" role="presentation"/>
+                    </a>
+                </div>
+                <t t-set="bluespa_catalog_products"
+                   t-value="request.env['product.template'].sudo().search(
+                                [('is_published', '=', True), ('sale_ok', '=', True)],
+                                order='list_price desc, id desc', limit=3)"/>
+                <div class="row gy-4 mt-2">
+                    <t t-foreach="bluespa_catalog_products" t-as="bluespa_product">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="s_bluespa_catalog_card h-100">
+                                <a t-att-href="bluespa_product.website_url">
+                                    <img t-att-src="'/web/image/product.template/%s/image_512' % bluespa_product.id"
+                                         class="s_bluespa_catalog_img w-100"
+                                         t-att-alt="bluespa_product.name"/>
+                                </a>
+                                <div class="s_bluespa_catalog_body">
+                                    <h5 class="s_bluespa_catalog_name mb-1">
+                                        <t t-esc="bluespa_product.name"/>
+                                    </h5>
+                                    <p class="s_bluespa_catalog_price mb-3">
+                                        <span t-field="bluespa_product.list_price"
+                                              t-options="{'widget': 'monetary', 'display_currency': bluespa_product.currency_id}"/>
+                                    </p>
+                                    <a t-att-href="bluespa_product.website_url" class="btn s_bluespa_btn_primary w-100">
+                                        <i class="fa fa-shopping-cart me-2" role="presentation"/>Ajouter au panier
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="not bluespa_catalog_products">
+                        <div class="col-12 text-center text-muted py-5">
+                            Aucun produit publié pour le moment — publiez vos spas dans
+                            Boutique &gt; Produits pour les voir apparaître ici.
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+
+</odoo>
