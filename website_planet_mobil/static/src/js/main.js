@@ -323,26 +323,41 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!attributes.length) return;
 
         const container = document.getElementById('tsp-category-filters');
-        if (!container) return; 
+        if (!container) return;
 
-        for (const attr of attributes){
-            const values = await getAttributeValues(attr.id);
-            if (!values.length) continue;
+        // Récupère toutes les valeurs en parallèle (pas d'imbrication → safe)
+        const allValues = await Promise.all(attributes.map(attr => getAttributeValues(attr.id)));
 
-            const group = document.createElement('div')
+        // Construit tous les éléments d'abord, puis injection unique dans le DOM
+        const fragment = document.createDocumentFragment();
+        const groups = [];
+
+        attributes.forEach((attr, i) => {
+            const values = allValues[i];
+            if (!values.length) { groups.push(null); return; }
+
+            const group = document.createElement('div');
             group.className = 'tsp-filter-group';
             group.innerHTML = `
                 <label>${attr.name}</label>
                 <div class="tsp-custom-select" data-filter="${attr.name.toLowerCase()}">
-                    <div class="tsp-custom-selected">${PM_FR ? "Tous" : "All"}<i class="fa fa-chevron-down"></i></div>
+                    <div class="tsp-custom-selected">${PM_FR ? "Tous" : "All"} <i class="fa fa-chevron-down"></i></div>
                     <ul class="tsp-custom-options">
                         <li data-value="">${PM_FR ? "Tous" : "All"}</li>
                     </ul>
                 </div>
             `;
+            fragment.appendChild(group);
+            groups.push({ group, attr, values });
+        });
 
-            container.appendChild(group);
+        // Un seul reflow : tout apparaît d'un coup
+        container.appendChild(fragment);
 
+        // Attache les events et peuple les dropdowns après insertion
+        groups.forEach(item => {
+            if (!item) return;
+            const { group, attr, values } = item;
             populateDropdown(attr.name.toLowerCase(), values, attr.id);
             const select = group.querySelector('.tsp-custom-select');
             const selected = group.querySelector('.tsp-custom-selected');
@@ -355,7 +370,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 select.classList.toggle('open');
             });
             options.addEventListener('click', e => e.stopPropagation());
-        }
+        });
+
         const btn = document.getElementById('tsp-apply-filters');
         if (btn) container.appendChild(btn);
     }
