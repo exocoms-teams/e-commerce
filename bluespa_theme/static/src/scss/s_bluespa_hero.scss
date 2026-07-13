@@ -1,10 +1,16 @@
-// Pas de photo livrée avec le module (aucun asset source disponible) : dégradé de
-// secours en attendant qu'une vraie photo soit posée via l'option "Image de fond"
-// du bloc dans l'éditeur Website (clic droit sur la section > Arrière-plan).
+// Photo spa/lac/montagnes fournie par l'utilisateur (12/07/2026) : à déposer dans
+// static/src/img/hero_bg.jpg (voir README du dossier img). background-color sert
+// de secours si le fichier est absent/pas encore ajouté, pour ne jamais afficher
+// un bloc cassé.
 .s_bluespa_hero_bg {
     position: relative;
     min-height: 640px;
-    background: linear-gradient(160deg, var(--bluespa-navy) 0%, var(--bluespa-navy-dark) 100%);
+    background-color: var(--bluespa-navy);
+    background-image: linear-gradient(180deg, rgba(7, 16, 29, 0.1) 0%, rgba(7, 16, 29, 0.6) 100%),
+                       url('/bluespa_theme/static/src/img/hero_bg.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
     color: var(--bluespa-white);
 }
 
@@ -18,21 +24,21 @@
     font-weight: 700;
     letter-spacing: -1px;
 
-    // Sur la vraie photo (claire), "Blue" était en marine foncé et "Spa" en gris clair.
-    // Sur le dégradé de secours (foncé), on inverse pour rester lisible ; à réajuster
-    // une fois la vraie photo posée en fond.
     .s_bluespa_hero_logo_dark {
         color: var(--bluespa-white);
+        text-shadow: 0 1px 6px rgba(7, 16, 29, 0.5);
     }
 
     .s_bluespa_hero_logo_light {
         color: var(--bluespa-grey-light);
+        text-shadow: 0 1px 6px rgba(7, 16, 29, 0.5);
     }
 }
 
 .s_bluespa_hero_tagline {
     font-size: 2.5rem;
     font-weight: 500;
+    text-shadow: 0 1px 6px rgba(7, 16, 29, 0.5);
 }
 
 .s_bluespa_hero_divider {
@@ -42,6 +48,7 @@
 
 .s_bluespa_hero_subtext {
     font-size: 1.15rem;
+    text-shadow: 0 1px 4px rgba(7, 16, 29, 0.5);
 }
 
 .s_bluespa_btn_primary {
