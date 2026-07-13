@@ -1,13 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="1">
-        <!-- Catégorie produits : id interne (pour referencement interne)-->
+    <data noupdate="1">   
+        <!-- categorie priver (pour referencement interne)-->
         <record id="camera_reseau" model="product.category">
             <field name="name">Caméras réseau</field>
         </record>
+            <record id="cam_dome" model="product.category">
+                <field name="name">Camera Dome</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+            
+            <record id="cam_corner" model="product.category">
+                <field name="name">Camera Coin</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+        
         <record id="stockage_enregistreurs" model="product.category">
             <field name="name">Stockage et enregistreur</field>
         </record>
+            <record id="stockage" model="product.category">
+                <field name="name">Stockage</field>
+                <field name="parent_id" ref="stockage_enregistreurs"/>
+            </record>
+            
+            <record id="enregistreur" model="product.category">
+                <field name="name">Enregistreur</field>
+                <field name="parent_id" ref="stockage_enregistreurs"/>
+            </record>
+        
         <record id="controle_acces" model="product.category">
             <field name="name">Contrôle d'accès</field>
         </record>
@@ -21,24 +41,53 @@
             <field name="name">Accessoires</field>
         </record>
 
-        <!-- Catégorie produits : id eCommerce (pour le filtrage)-->
+        <!-- Catégorie public (ou eCommerce) (pour le filtrage)-->
         <record id="public_camera_reseau" model="product.public.category">
-            <field name="name">Caméras réseaux</field>
+            <field name="name">Caméras réseau</field>
         </record>
+            <record id="public_cam_dome" model="product.public.category">
+                <field name="name">Camera Dome</field>
+                <field name="parent_id" ref="public_camera_reseau"/>
+            </record>
+            
+            <record id="public_cam_corner" model="product.public.category">
+                <field name="name">Camera Coin</field>
+                <field name="parent_id" ref="public_camera_reseau"/>
+            </record>
+        
         <record id="public_stockage_enregistreurs" model="product.public.category">
             <field name="name">Stockage et enregistreur</field>
         </record>
+            <record id="public_stockage" model="product.public.category">
+                <field name="name">Stockage</field>
+                <field name="parent_id" ref="public_stockage_enregistreurs"/>
+            </record>
+            
+            <record id="public_enregistreur" model="product.public.category">
+                <field name="name">Enregistreur</field>
+                <field name="parent_id" ref="public_stockage_enregistreurs"/>
+            </record>
+        
         <record id="public_controle_acces" model="product.public.category">
             <field name="name">Contrôle d'accès</field>
         </record>
+        
         <record id="public_audio_reseau" model="product.public.category">
             <field name="name">Audio réseau</field>
         </record>
+        
         <record id="public_periferiques_radar" model="product.public.category">
             <field name="name">Périfériques radar</field>
         </record>
+        
         <record id="public_accesoires" model="product.public.category">
             <field name="name">Accessoires</field>
+        </record>
+
+
+        <!-- Étiquette pour les marques (pour l'instant) -->
+        <record id="brand_axis" model="product.tag">
+            <field name="name">Marque AXIS</field>
         </record>
     </data>
  </odoo>
