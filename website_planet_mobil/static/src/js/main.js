@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         params: {
                             model: 'product.attribute',
                             method: 'search_read',
-                            args: [[['name', '=', name]]],
+                            args: [[['name', '=', name], ['create_variant', '=', 'no_variant']]],
                             kwargs: { fields: ['id', 'name'], limit: 1 }
                         }
                     })
