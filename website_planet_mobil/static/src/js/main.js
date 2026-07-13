@@ -372,6 +372,20 @@ document.addEventListener('DOMContentLoaded', function () {
             options.addEventListener('click', e => e.stopPropagation());
         });
 
+        // Sur mobile : toggle "More filters" pour ne pas noyer les produits
+        if (window.innerWidth < 992 && groups.some(g => g !== null)) {
+            const toggle = document.createElement('button');
+            toggle.className = 'tsp-cat-filters-toggle';
+            toggle.innerHTML = (PM_FR ? 'Plus de filtres' : 'More filters') + ' <i class="fa fa-chevron-down"></i>';
+            container.before(toggle);
+            container.style.display = 'none';
+            toggle.addEventListener('click', () => {
+                const isOpen = container.style.display !== 'none';
+                container.style.display = isOpen ? 'none' : 'flex';
+                toggle.classList.toggle('open', !isOpen);
+            });
+        }
+
         const btn = document.getElementById('tsp-apply-filters');
         if (btn) container.appendChild(btn);
     }
