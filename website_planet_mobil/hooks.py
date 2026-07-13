@@ -135,6 +135,28 @@ def _archiver_carriers_demo(env):
             _logger.warning("Planet Mobil: carrier '%s' non archive (%s)", carrier.name, e)
 
 
+def _archiver_attributs_brand_doubles(env):
+    """Archive les attributs 'Brand'/'brand' natifs Odoo pour ne garder que le notre.
+    Sans ca, le filtre /shop (limit:1) tombe sur le natif (ID inferieur) et ignore
+    notre attr_brand qui a les vraies valeurs Apple/Samsung/LG.
+    """
+    our_brand = env.ref('website_planet_mobil.attr_brand', raise_if_not_found=False)
+    if not our_brand:
+        _logger.warning("Planet Mobil: attr_brand introuvable, nettoyage Brand ignore.")
+        return
+
+    doublons = env['product.attribute'].with_context(active_test=False).sudo().search([
+        ('name', 'in', ['Brand', 'brand', 'Marque', 'marque']),
+        ('id', '!=', our_brand.id),
+    ])
+    for attr in doublons:
+        try:
+            attr.write({'active': False})
+            _logger.info("Planet Mobil: attribut doublon '%s' (id=%s) archive.", attr.name, attr.id)
+        except Exception as e:
+            _logger.warning("Planet Mobil: attribut '%s' non archive (%s)", attr.name, e)
+
+
 def _activer_virement_bancaire(env):
     """Active le virement bancaire (Wire Transfer) comme moyen de paiement.
     Odoo.sh recrée une base fraiche a chaque push → le provider repasse en
@@ -157,6 +179,7 @@ def _run_hooks(env):
     _configurer_shop(env)
     _activer_cookies_bar(env)
     _archiver_carriers_demo(env)
+    _archiver_attributs_brand_doubles(env)
     _activer_virement_bancaire(env)
 
 
