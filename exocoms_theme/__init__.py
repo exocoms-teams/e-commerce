@@ -814,9 +814,32 @@ def _migrate_products_from_legacy_site(env, website):
     for c in our_categories:
         our_by_name.setdefault(c.name.strip().lower(), []).append(c)
 
+    # CORRECTIF (produits perdus) : deux noms peuvent désigner la même
+    # chose avec une orthographe légèrement différente entre l'ancien
+    # site et notre arborescence (ex: 'Housses et protections' vs
+    # 'Housses & protections') -- une comparaison stricte ne matchait
+    # pas, et le code retirait ALORS la catégorie du produit SANS rien
+    # remettre à la place : le produit se retrouvait sans catégorie du
+    # tout, invisible dans le filtre boutique correspondant (constaté en
+    # conditions réelles sur 'Accessoires'). On normalise donc d'abord
+    # les variantes de connecteurs (' et ' <-> ' & ') avant de comparer.
+    def _normalize(name):
+        n = name.strip().lower()
+        return n.replace(' et ', ' & ').replace(' & ', ' et ')
+
+    our_by_name_alt = {}
+    for c in our_categories:
+        our_by_name_alt.setdefault(_normalize(c.name), []).append(c)
+
+    def _match_category(name):
+        key = name.strip().lower()
+        candidates = our_by_name.get(key) or our_by_name_alt.get(_normalize(name))
+        return candidates[0] if candidates else None
+
     legacy_products.write({'website_id': website.id, 'is_published': True})
 
     remapped = 0
+    fallback_used = 0
     unmatched_names = set()
     for p in legacy_products:
         old_categs = p.public_categ_ids.filtered(lambda c: c.id in legacy_categories.ids)
@@ -824,9 +847,25 @@ def _migrate_products_from_legacy_site(env, website):
             continue
         new_categs = Category
         for oc in old_categs:
-            candidates = our_by_name.get(oc.name.strip().lower())
-            if candidates:
-                new_categs |= candidates[0]
+            match = _match_category(oc.name)
+            if match:
+                new_categs |= match
+                continue
+            # CORRECTIF (repli) : toujours essayer les catégories
+            # ANCÊTRES de oc (dans l'arbre du site legacy) avant
+            # d'abandonner -- mieux vaut rattacher le produit à un
+            # parent large et pertinent (ex: 'Accessoires') que de le
+            # laisser totalement orphelin de catégorie.
+            ancestor = oc.parent_id
+            fallback_match = None
+            while ancestor:
+                fallback_match = _match_category(ancestor.name)
+                if fallback_match:
+                    break
+                ancestor = ancestor.parent_id
+            if fallback_match:
+                new_categs |= fallback_match
+                fallback_used += 1
             else:
                 unmatched_names.add(oc.name)
         kept = p.public_categ_ids - old_categs
@@ -835,15 +874,29 @@ def _migrate_products_from_legacy_site(env, website):
 
     _logger.info(
         "%s produit(s) migré(s) depuis le site préexistant '%s' vers %s "
-        "(%s recatégorisé(s)).",
-        len(legacy_products), LEGACY_SITE_NAME, website.name, remapped,
+        "(%s recatégorisé(s), %s replié(s) sur une catégorie parente).",
+        len(legacy_products), LEGACY_SITE_NAME, website.name, remapped, fallback_used,
     )
     if unmatched_names:
         _logger.warning(
-            "Noms de catégorie sans équivalent lors de la migration "
-            "depuis '%s' : %s. Ajoutez-les dans get_or_create() si "
-            "nécessaire, puis relancez -u.",
+            "Noms de catégorie sans AUCUN équivalent (ni direct ni via un "
+            "parent) lors de la migration depuis '%s' : %s. Ajoutez-les "
+            "dans get_or_create() si nécessaire, puis relancez -u.",
             LEGACY_SITE_NAME, sorted(unmatched_names),
+        )
+
+    # CORRECTIF (audit) : filet de sécurité final -- liste explicitement,
+    # produit par produit, tout ce qui s'est quand même retrouvé sans
+    # AUCUNE catégorie après migration (cas résiduel : produit dont la
+    # seule catégorie legacy n'a ni correspondance directe ni ancêtre
+    # matché). Sans ce log, ce genre de trou n'est visible qu'en cliquant
+    # manuellement site par site, comme ce qui vient de se passer.
+    orphaned = legacy_products.filtered(lambda p: not p.public_categ_ids)
+    if orphaned:
+        _logger.warning(
+            "%s produit(s) migré(s) SANS AUCUNE catégorie après "
+            "migration -- invisibles dans tous les filtres boutique : %s",
+            len(orphaned), orphaned.mapped('name'),
         )
 
     # --- Redistribution fine automatique par mot-clé ---
@@ -895,6 +948,77 @@ def _migrate_products_from_legacy_site(env, website):
                 "vers leur vraie sous-catégorie (Portable/Mobile/Santé/PIN Pad/Logiciel).",
                 redistributed,
             )
+
+
+def _repair_orphaned_categories(env, website):
+    """FILET DE RATTRAPAGE pour des produits déjà passés sur notre site
+    (website_id posé) mais restés SANS AUCUNE catégorie — séquelle du
+    bug de correspondance de noms dans _migrate_products_from_legacy_site()
+    (ex: 'Housses et protections' vs 'Housses & protections' : aucun
+    match, l'ancienne catégorie était retirée SANS rien remettre à la
+    place) survenue lors d'une migration effectuée AVANT ce correctif.
+
+    Pourquoi une fonction séparée : une fois qu'un produit a quitté le
+    site legacy (website_id changé vers le nôtre), le domaine de
+    recherche de _migrate_products_from_legacy_site() ('website_id' =
+    legacy) ne le revoit plus JAMAIS lors d'un rejeu — rejouer cette
+    fonction ne suffit donc pas à réparer les dégâts déjà faits. Ce
+    filet cherche directement, côté NOTRE site, tout produit publié
+    sans aucune catégorie, et tente de le rattacher automatiquement par
+    mot-clé trouvé dans son nom (ex: 'Coque de protection...' contient
+    'Housses & protections'? non — voir la liste de nos catégories
+    feuilles ci-dessous, comparaison insensible à la casse).
+
+    Idempotent : ne retouche jamais un produit qui a déjà au moins une
+    catégorie. Volontairement PRUDENT : si aucun mot-clé ne matche, le
+    produit est juste signalé dans les logs pour une catégorisation
+    manuelle — jamais de repli aveugle sur une catégorie au hasard.
+    """
+    if not website:
+        return
+    Product = env['product.template']
+    Category = env['product.public.category']
+
+    orphaned = Product.search([
+        ('website_id', '=', website.id),
+        ('public_categ_ids', '=', False),
+    ])
+    if not orphaned:
+        return
+
+    all_cats = Category.search([('website_id', '=', website.id)])
+    child_parent_ids = set(all_cats.mapped('parent_id').ids)
+    leaf_cats = all_cats.filtered(lambda c: c.id not in child_parent_ids)
+    # Les noms les plus longs/précis d'abord, pour ne pas matcher un nom
+    # générique court avant un nom plus spécifique qui le contiendrait.
+    leaf_cats = leaf_cats.sorted(key=lambda c: -len(c.name))
+
+    repaired = 0
+    still_unmatched = []
+    for p in orphaned:
+        match = next(
+            (c for c in leaf_cats if c.name and c.name.lower() in p.name.lower()),
+            None,
+        )
+        if match:
+            p.write({'public_categ_ids': [(6, 0, [match.id])]})
+            repaired += 1
+        else:
+            still_unmatched.append(p.name)
+
+    if repaired:
+        _logger.info(
+            "_repair_orphaned_categories : %s produit(s) sans catégorie "
+            "rattaché(s) automatiquement par mot-clé trouvé dans leur nom.",
+            repaired,
+        )
+    if still_unmatched:
+        _logger.warning(
+            "_repair_orphaned_categories : %s produit(s) restent SANS "
+            "AUCUNE catégorie (aucun mot-clé de catégorie détecté dans "
+            "leur nom) -- à catégoriser manuellement en backend : %s",
+            len(still_unmatched), still_unmatched,
+        )
 
 
 def _merge_root_category(env, website, old_name, target_category):
@@ -1545,6 +1669,11 @@ def post_init_hook(env):
     # correspondance par nom de catégorie fonctionne correctement. ===
     _migrate_products_from_legacy_site(env, website)
 
+    # === RATTRAPAGE PRODUITS SANS CATÉGORIE — au cas où la migration
+    # ci-dessus n'ait pas trouvé de correspondance pour certains (voir
+    # la docstring de la fonction). ===
+    _repair_orphaned_categories(env, website)
+
     # === RATTACHEMENT DES ATTRIBUTS/FILTRES MONÉTIQUE AUX PRODUITS —
     # appelé ICI, après que la catégorie 'Monétique' et ses produits
     # (natifs + migrés) existent tous. Voir la docstring de la
@@ -1592,6 +1721,17 @@ def post_migrate_hook(env):
 
     # Attributs/filtres maintenus + traduction à chaque update
     _setup_monetique_attributes(env, lang_en)
+
+    # === RATTRAPAGE PRODUITS SANS CATÉGORIE — CRUCIAL ICI (pas juste
+    # dans post_init_hook) : c'est la SEULE façon de réparer, sur une
+    # base déjà installée, des produits déjà migrés vers notre site
+    # avant ce correctif mais restés sans catégorie (ex: bug 'Housses
+    # et protections' vs 'Housses & protections'). Un rejeu de
+    # _migrate_products_from_legacy_site() seul ne les revoit plus, car
+    # leur website_id a déjà changé -- voir la docstring de
+    # _repair_orphaned_categories(). Idempotent, sans risque à chaque
+    # update. ===
+    _repair_orphaned_categories(env, website)
 
     # Rattachement aux produits maintenu à chaque update aussi — un
     # nouveau produit Monétique ajouté/migré entre deux updates doit
