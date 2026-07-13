@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Remplacement complet du footer par défaut (encore sur "Nom de l'entreprise" /
+        "info@yourcompany.example.com" sur le site original, jamais personnalisé),
+        sur le modèle des 3 colonnes observées dans la démo du 25/06/2026 :
+        Liens utiles / À propos de nous / Rejoignez-nous.
+        On remplace tout le <footer> plutôt que de patcher son contenu interne,
+        pour ne pas dépendre de la structure exacte du template de footer par
+        défaut actif (qui peut varier).
+    -->
+    <template id="layout_footer" inherit_id="website.layout" name="BlueSpa - Footer">
+        <xpath expr="//footer" position="replace">
+            <footer id="footer" class="s_bluespa_footer">
+                <div class="container py-5">
+                    <div class="row gy-4">
+                        <div class="col-lg-4 col-md-6">
+                            <h5 class="s_bluespa_footer_title">Liens utiles</h5>
+                            <ul class="list-unstyled s_bluespa_footer_links">
+                                <li><a href="/">Accueil</a></li>
+                                <li><a href="/shop">Notre catalogue</a></li>
+                                <li><a href="/contactus">Contactez-nous</a></li>
+                                <li><a href="/cgv">CGV</a></li>
+                                <li><a href="/politique-de-confidentialite">Politique de confidentialité</a></li>
+                                <li><a href="/mentions-legales">Mentions légales</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <h5 class="s_bluespa_footer_title">À propos de nous</h5>
+                            <p class="s_bluespa_footer_text">
+                                Spécialistes de la vente et de l'installation de spas depuis plus
+                                de 15 ans, nous accompagnons nos clients de A à Z : du choix du
+                                modèle jusqu'à l'installation à domicile. Notre priorité : votre
+                                bien-être.
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <h5 class="s_bluespa_footer_title">Rejoignez-nous</h5>
+                            <ul class="list-unstyled s_bluespa_footer_contact">
+                                <li>
+                                    <i class="fa fa-comments-o me-2" role="presentation"/>
+                                    <a href="/contactus">Contactez-nous</a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-envelope me-2" role="presentation"/>
+                                    <span t-esc="website.company_id.email or 'contact@bluespa.example.com'"/>
+                                </li>
+                                <li>
+                                    <i class="fa fa-phone me-2" role="presentation"/>
+                                    <span t-esc="website.company_id.phone or '+1 555-555-5556'"/>
+                                </li>
+                            </ul>
+                            <div class="d-flex gap-2 mt-3 s_bluespa_footer_social">
+                                <a href="#" class="s_bluespa_social_icon" aria-label="Facebook">
+                                    <i class="fa fa-facebook" role="presentation"/>
+                                </a>
+                                <a href="#" class="s_bluespa_social_icon" aria-label="X (Twitter)">
+                                    <i class="fa fa-twitter" role="presentation"/>
+                                </a>
+                                <a href="#" class="s_bluespa_social_icon" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin" role="presentation"/>
+                                </a>
+                                <a href="#" class="s_bluespa_social_icon" aria-label="Instagram">
+                                    <i class="fa fa-instagram" role="presentation"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="s_bluespa_footer_hr"/>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center s_bluespa_footer_bottom">
+                        <span>
+                            Copyright © <t t-esc="website.company_id.name or 'BlueSpa'"/>
+                            <t t-esc="datetime.datetime.now().year"/>
+                        </span>
+                        <span>Généré par <a href="https://www.odoo.com/">Odoo</a> - Le #1 Open Source eCommerce</span>
+                    </div>
+                </div>
+            </footer>
+        </xpath>
+    </template>
+
+</odoo>

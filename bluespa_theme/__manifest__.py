@@ -20,6 +20,7 @@ rebuilds de la branche Odoo.sh.
         'views/snippets/s_bluespa_catalog.xml',
         'views/snippets/s_bluespa_reviews.xml',
         'views/pages/homepage.xml',
+        'views/layout/footer.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'assets': {
@@ -29,6 +30,7 @@ rebuilds de la branche Odoo.sh.
             'bluespa_theme/static/src/scss/s_bluespa_why_us.scss',
             'bluespa_theme/static/src/scss/s_bluespa_catalog.scss',
             'bluespa_theme/static/src/scss/s_bluespa_reviews.scss',
+            'bluespa_theme/static/src/scss/footer.scss',
             'bluespa_theme/static/src/scss/shop.scss',
         ],
     },
