@@ -334,7 +334,27 @@ def _setup_monetique_attributes(env, lang_en):
             # variantes supérieur à la limite autorisée". On force donc
             # TOUJOURS 'no_variant', qu'il ait été créé par nous ou non.
             if attr.create_variant != 'no_variant':
-                attr.write({'create_variant': 'no_variant'})
+                try:
+                    attr.write({'create_variant': 'no_variant'})
+                except Exception:
+                    # Filet de sécurité : si CET attribut sert déjà à
+                    # générer de vraies variantes sur un produit existant,
+                    # Odoo refuse le changement de mode (à raison — ça
+                    # casserait ce produit). On logue clairement plutôt
+                    # que de faire planter toute la mise à jour du module :
+                    # dans ce cas, il faut choisir un nom d'attribut
+                    # distinct dans attr_names ci-dessous et dans
+                    # _attach_monetique_attributes_to_products(), comme ça
+                    # a été fait pour 'Forfait DATA par TPE' -> 'Forfait
+                    # DATA compatible'.
+                    _logger.exception(
+                        "Impossible de forcer create_variant='no_variant' "
+                        "sur l'attribut '%s' (id=%s) — probablement déjà "
+                        "utilisé pour générer de vraies variantes sur un "
+                        "produit existant. Utilisez un nom distinct pour "
+                        "l'attribut de filtre boutique.",
+                        name_fr, attr.id,
+                    )
 
         attr.with_context(lang='fr_FR').write({'name': name_fr})
         if lang_en and name_en:
@@ -360,8 +380,19 @@ def _setup_monetique_attributes(env, lang_en):
             val.with_context(lang='en_US').write({'name': name_en})
         return val
 
+    # CORRECTIF MAJEUR : renommé depuis 'Forfait DATA par TPE' -> ce nom
+    # exact est déjà utilisé, configuré MANUELLEMENT en backend, sur le
+    # produit "Connexions monétiques 4G/5G..." pour générer ses 3 VRAIES
+    # variantes de prix (5 Mo/50 Mo/100 Mo) — un attribut en mode
+    # 'Chaque combinaison', légitime pour CE produit précis. Notre usage
+    # ici est différent : un simple filtre boutique (mode 'no_variant')
+    # à rattacher à TOUS les produits Monétique (TPE, etc.). Réutiliser
+    # le même nom réutilisait le MÊME attribut, provoquant soit une
+    # explosion de variantes (si on force son mode), soit un refus
+    # d'Odoo ("vous ne pouvez pas modifier le mode... utilisé sur...").
+    # D'où ce nom distinct, qui ne rentre plus jamais en collision.
     forfait = get_or_create_attribute(
-        'Forfait DATA par TPE', 'TPE Data Plan',
+        'Forfait DATA compatible', 'Compatible Data Plan',
         display_type='radio', sequence=1
     )
     for i, (fr, en) in enumerate([
@@ -472,7 +503,7 @@ def _attach_monetique_attributes_to_products(env, website):
         return
 
     attr_names = [
-        'Forfait DATA par TPE', 'Nombre de chèques par mois',
+        'Forfait DATA compatible', 'Nombre de chèques par mois',
         'Garantie', 'Type de modèle', 'Quantité',
     ]
     # CORRECTIF MAJEUR : _setup_monetique_attributes() crée ces attributs
@@ -499,6 +530,24 @@ def _attach_monetique_attributes_to_products(env, website):
             len(attrs), len(attr_names),
             [n for n in attr_names if n not in found_names],
         )
+
+    # Filet de sécurité : ne JAMAIS rattacher un attribut resté en mode
+    # 'always'/'dynamic' (variante réelle) — même si get_or_create_attribute()
+    # n'a pas réussi à le forcer en 'no_variant' (cf. son propre filet de
+    # sécurité). L'attacher tel quel à des dizaines de produits provoquerait
+    # l'erreur "nombre de variantes supérieur à la limite autorisée".
+    unsafe_attrs = attrs.filtered(lambda a: a.create_variant != 'no_variant')
+    if unsafe_attrs:
+        _logger.warning(
+            "_attach_monetique_attributes_to_products : %s attribut(s) "
+            "ignoré(s) car pas en mode 'no_variant' (%s) — probablement "
+            "déjà utilisé pour de vraies variantes ailleurs. Choisissez un "
+            "nom distinct dans _setup_monetique_attributes().",
+            len(unsafe_attrs), unsafe_attrs.mapped('name'),
+        )
+        attrs = attrs - unsafe_attrs
+    if not attrs:
+        return
 
     _logger.info(
         "_attach_monetique_attributes_to_products : %s produit(s) trouve(s) "
