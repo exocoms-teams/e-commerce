@@ -314,3 +314,28 @@ class TravelController(http.Controller):
         })
 
         return request.redirect('/travels/payment/%d' % transaction.id)
+    
+    
+    @http.route('/recommandation', type='http', auth='public', website=True)
+    def recommandation_form(self, **kwargs):
+        return request.render('travel_agency.recommandation_form_page', {})
+
+    @http.route('/recommandation/resultats', type='http', auth='public', website=True, methods=['POST'])
+    def recommandation_resultats(self, **kwargs):
+        budget_max = float(kwargs.get('budget_max', 0) or 0)
+        nb_personnes = int(kwargs.get('nb_personnes', 1) or 1)
+        etoiles_min = kwargs.get('etoiles_min') or None
+        pays = kwargs.get('pays', '').strip() or None
+        type_voyage = kwargs.get('type_voyage') or None
+
+        engine = request.env['travel.recommendation.engine']
+        recommendations = engine.get_recommendations(
+            budget_max=budget_max,
+            nb_personnes=nb_personnes,
+            etoiles_min=etoiles_min,
+            pays=pays,
+            type_voyage=type_voyage,
+        )
+        return request.render('travel_agency.recommandation_results_page', {
+            'recommendations': recommendations,
+        })
