@@ -27,14 +27,15 @@
         </field>
     </record>
 
-    <!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
+<!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
     <record id="action_supplements_products" model="ir.actions.act_window">
         <field name="name">Compléments Alimentaires</field>
         <field name="res_model">product.template</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <!-- On n'affiche que les produits qui sont des compléments -->
+        
+        <!-- CORRECTION ICI : On utilise "list" au lieu de "tree" -->
+        <field name="view_mode">kanban,list,form</field>
+        
         <field name="domain">[('is_supplement', '=', True)]</field>
-        <!-- Lors de la création depuis ce menu, on coche la case par défaut -->
         <field name="context">{'default_is_supplement': True}</field>
     </record>
 
