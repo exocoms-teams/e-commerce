@@ -1104,10 +1104,23 @@ def _merge_stray_categories(env, website):
         return
     Category = env['product.public.category']
     Product = env['product.template']
+    # La catégorie CIBLE (celle où tout doit atterrir) doit appartenir
+    # explicitement à notre site -- jamais deviner un site absent.
     our_categories = Category.search([('website_id', '=', website.id)])
     by_name = {}
     for c in our_categories:
         by_name.setdefault(c.name.strip().lower(), []).append(c)
+
+    # CORRECTIF : les catégories FANTÔMES elles (celles à fusionner et
+    # vider) peuvent avoir été créées SANS website_id du tout par une
+    # manipulation shell antérieure -- une recherche strictement scopée
+    # à notre site les ratait entièrement, et la fusion ne se déclenchait
+    # jamais (constaté en conditions réelles sur 'Bases chargeur'). On
+    # élargit donc la recherche des fantômes à website_id in [False, nôtre].
+    stray_search_categories = Category.search([('website_id', 'in', [False, website.id])])
+    stray_by_name = {}
+    for c in stray_search_categories:
+        stray_by_name.setdefault(c.name.strip().lower(), []).append(c)
 
     merged_total = 0
     for stray_name, target_name in STRAY_CATEGORY_ALIASES.items():
@@ -1115,7 +1128,7 @@ def _merge_stray_categories(env, website):
         target = targets[0] if targets else None
         if not target:
             continue
-        for stray in by_name.get(stray_name, []):
+        for stray in stray_by_name.get(stray_name, []):
             if stray.id == target.id:
                 continue
             tree = stray | Category.search([('id', 'child_of', stray.ids)])
