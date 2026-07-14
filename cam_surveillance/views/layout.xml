@@ -67,13 +67,14 @@
             </t>
 
         </xpath>
+    </template>
 
-        <!-- Extension du layout global pour ajouter le bandeau de réassurance TOUT EN HAUT -->
+        <!-- Extension du layout global pour ajouter le bandeau de réassurance tout en haut -->
     <template id="cam_promo_banner_global" inherit_id="website.layout" name="Cam Surveillance Global Banner">
-        <!-- On cible l'intérieur de la balise principale <main> pour injecter le bandeau au tout début -->
+        <!-- on l'injecte directement dans le main -->
         <xpath expr="//main" position="inside">
             <t t-if="website and 'Cam Surveillance' in website.name">
-                <!-- Condition pour ne pas l'afficher sur la page d'accueil car elle possède déjà le sien -->
+                <!-- ne pas afficher sur la page d'accueil -->
                 <t t-if="request.httprequest.path != '/'">
                     <div class="cam-promo-banner">
                         <div class="cam-promo-track">
@@ -82,7 +83,7 @@
                             <span>Garantie 5 ans AXIS</span>
                             <span>Revendeur certifié AXIS</span>
                             <span>Expédition sous 24h</span>
-                            <!-- Répétition requise par ton CSS pour assurer le défilement fluide sans coupure -->
+                            <!-- Répétition obligatoire -->
                             <span>Livraison gratuite dès 500€</span>
                             <span>Support technique offert</span>
                             <span>Garantie 5 ans AXIS</span>
