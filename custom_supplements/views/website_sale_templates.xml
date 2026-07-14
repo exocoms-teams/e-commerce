@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- 1. Informations nutritionnelles (On garde ce bloc actif) -->
+    <!-- 1. Informations nutritionnelles (Celui qui fonctionne déjà) -->
     <template id="product_supplements_info" inherit_id="website_sale.product" name="Infos Compléments">
         <xpath expr="//div[@id='product_details']" position="inside">
             <t t-if="product.is_supplement">
@@ -24,17 +24,17 @@
         </xpath>
     </template>
 
-    <!-- 2. Badge Vegan (On le désactive temporairement pour le test) -->
-    <!--
+    <!-- 2. Badge Vegan (Corrigé avec une cible plus robuste) -->
     <template id="products_item_supplements_badge" inherit_id="website_sale.products_item" name="Badge Vegan Shop">
-        <xpath expr="//div[hasclass('oe_product_image')]" position="inside">
+        <!-- On cible le formulaire principal de la carte produit -->
+        <xpath expr="//form" position="inside">
             <t t-if="product.is_vegan">
-                <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 1;">
+                <!-- Positionnement absolu pour le placer par-dessus l'image -->
+                <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
                     <i class="fa fa-leaf"></i> Vegan
                 </span>
             </t>
         </xpath>
     </template>
-    -->
 
 </odoo>
