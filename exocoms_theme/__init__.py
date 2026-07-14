@@ -1104,7 +1104,7 @@ def _merge_stray_categories(env, website):
         return
     Category = env['product.public.category']
     Product = env['product.template']
-    our_categories = Category.search([('website_id', '=', website.id), ('active', '=', True)])
+    our_categories = Category.search([('website_id', '=', website.id)])
     by_name = {}
     for c in our_categories:
         by_name.setdefault(c.name.strip().lower(), []).append(c)
@@ -1133,10 +1133,15 @@ def _merge_stray_categories(env, website):
                     "la catégorie fantôme '%s' (id=%s) vers '%s' (id=%s).",
                     len(products), stray.name, stray.id, target.name, target.id,
                 )
-            stray.write({'active': False})
+            # NOTE : product.public.category n'a PAS de champ 'active' dans
+            # cette version d'Odoo (contrairement à la plupart des modèles)
+            # -- impossible de l'archiver. Sans risque : la catégorie
+            # fantôme reste techniquement présente mais totalement vide
+            # (tous ses produits viennent d'être déplacés ci-dessus), donc
+            # invisible dans les filtres boutique de toute façon.
             _logger.info(
                 "_merge_stray_categories : catégorie fantôme '%s' (id=%s) "
-                "archivée (jamais supprimée, réactivable si besoin).",
+                "vidée de ses produits (reste en base, vide, non affichée).",
                 stray.name, stray.id,
             )
     if merged_total:
@@ -1152,9 +1157,15 @@ def _merge_root_category(env, website, old_name, target_category):
     différent de la nôtre, ex: 'Informatique') en migrant TOUS ses
     produits vers notre catégorie cible (ex: 'Informatique & Réseaux').
     Rien n'est perdu : chaque produit garde ses catégories existantes
-    ET gagne la nouvelle. L'ancienne catégorie racine est ensuite
-    archivée (active=False) pour qu'elle disparaisse du filmstrip —
-    mais elle n'est jamais supprimée, et reste réactivable si besoin.
+    ET gagne la nouvelle.
+
+    CORRECTIF : product.public.category n'a PAS de champ 'active' dans
+    cette version d'Odoo (contrairement à la plupart des modèles) --
+    un vieil appel à old.write({'active': False}) ici plantait toute la
+    mise à jour du module dès qu'une catégorie 'old_name' existait
+    vraiment (ValueError: Invalid field ...active). Retiré : la
+    catégorie reste en base mais vide (tous ses produits migrés
+    ci-dessus), donc invisible dans les filtres boutique de toute façon.
     """
     if not website or not target_category:
         return
@@ -1171,11 +1182,9 @@ def _merge_root_category(env, website, old_name, target_category):
     for p in products:
         new_categs = (p.public_categ_ids - old) | target_category
         p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
-    old.write({'active': False})
     _logger.info(
         "Catégorie '%s' (id=%s) RÉCUPÉRÉE dans '%s' : %s produit(s) "
-        "migré(s), rien perdu. Ancienne catégorie archivée "
-        "(active=False, jamais supprimée).",
+        "migré(s), rien perdu. Ancienne catégorie laissée en base, vide.",
         old_name, old.id, target_category.name, len(products),
     )
 
