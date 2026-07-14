@@ -27,13 +27,10 @@ class TrendProduct(models.Model):
     )
 
     # --- CONTRAINTES SQL ---
-    _sql_constraints = [
-        (
-            'product_ref_source_uniq', 
-            'unique(product_ref, source)', 
-            'Ce produit (référence + source) est déjà enregistré. Impossible de le dupliquer.'
-        )
-    ]
+    _product_ref_source_uniq = models.Constraint(
+        'unique(product_ref, source)',
+        "Ce produit (référence + source) est déjà enregistré. Impossible de le dupliquer.",
+    )
 
     # --- MÉTHODES DE VALIDATION ---
     @api.constrains('sales_count')
