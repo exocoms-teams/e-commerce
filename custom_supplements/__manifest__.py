@@ -13,6 +13,7 @@
     ],
     'data': [
         'views/product_template_views.xml',
+        'views/website_sale_templates.xml', # Ajout du template Frontend
     ],
     'installable': True,
     'application': True,

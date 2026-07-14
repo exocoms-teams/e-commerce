@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- On hérite de la vue standard de la page produit du site web -->
+    <template id="product_supplements_info" inherit_id="website_sale.product" name="Infos Compléments">
+        
+        <!-- On cible la zone des détails du produit (à droite de l'image) -->
+        <xpath expr="//div[@id='product_details']" position="inside">
+            
+            <!-- On n'affiche ce bloc QUE si c'est un complément alimentaire -->
+            <t t-if="product.is_supplement">
+                <div class="alert alert-info mt-4" role="alert">
+                    <h5 class="mb-2">Informations Nutritionnelles</h5>
+                    
+                    <ul class="list-unstyled mb-2">
+                        <!-- Affichage conditionnel pour le Vegan -->
+                        <li t-if="product.is_vegan">
+                            <i class="fa fa-leaf text-success"></i> <strong>100% Vegan</strong>
+                        </li>
+                        
+                        <!-- Affichage conditionnel pour les allergènes -->
+                        <li t-if="product.allergens">
+                            <i class="fa fa-exclamation-triangle text-warning"></i> 
+                            <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
+                        </li>
+                    </ul>
+                    
+                    <!-- Affichage du tableau HTML (on utilise t-out pour interpréter le HTML) -->
+                    <div t-if="product.nutritional_info">
+                        <t t-out="product.nutritional_info"/>
+                    </div>
+                </div>
+            </t>
+            
+        </xpath>
+        
+    </template>
+</odoo>
