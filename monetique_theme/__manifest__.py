@@ -16,9 +16,6 @@
 
 
         'views/pages/home.xml',
-        'views/pages/shop.xml',
-        'views/pages/product.xml',
-        'views/pages/category.xml',
     ],
 
     'assets': {
