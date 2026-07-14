@@ -1078,6 +1078,75 @@ def _repair_orphaned_categories(env, website):
         )
 
 
+# Catégories FANTÔMES constatées en conditions réelles : des catégories
+# portant le nom EXACT de l'ancien site (probablement créées par une
+# manipulation shell antérieure à ce module), séparées de notre propre
+# arborescence construite par get_or_create() plus haut dans ce hook.
+# Des produits s'y retrouvent bel et bien catégorisés (donc invisibles
+# pour _repair_orphaned_categories, qui ne touche que les produits SANS
+# aucune catégorie) mais dans la mauvaise branche, jamais affichée
+# comme filtre boutique. À compléter au fur et à mesure des découvertes.
+STRAY_CATEGORY_ALIASES = {
+    'bases chargeur': 'Chargeurs & Alimentations',
+}
+
+
+def _merge_stray_categories(env, website):
+    """Fusionne les catégories fantômes listées dans
+    STRAY_CATEGORY_ALIASES vers la bonne catégorie de notre arborescence :
+    déplace tous leurs produits (et ceux de leurs éventuelles
+    sous-catégories) vers la cible, puis archive la catégorie fantôme
+    (jamais supprimée, réactivable si besoin — même principe que
+    _merge_root_category ci-dessus). Idempotent : sans effet si la
+    catégorie fantôme n'existe pas ou plus (déjà fusionnée/archivée).
+    """
+    if not website:
+        return
+    Category = env['product.public.category']
+    Product = env['product.template']
+    our_categories = Category.search([('website_id', '=', website.id), ('active', '=', True)])
+    by_name = {}
+    for c in our_categories:
+        by_name.setdefault(c.name.strip().lower(), []).append(c)
+
+    merged_total = 0
+    for stray_name, target_name in STRAY_CATEGORY_ALIASES.items():
+        targets = by_name.get(target_name.strip().lower())
+        target = targets[0] if targets else None
+        if not target:
+            continue
+        for stray in by_name.get(stray_name, []):
+            if stray.id == target.id:
+                continue
+            tree = stray | Category.search([('id', 'child_of', stray.ids)])
+            products = Product.search([
+                ('public_categ_ids', 'in', tree.ids),
+                ('website_id', '=', website.id),
+            ])
+            if products:
+                for p in products:
+                    new_categs = (p.public_categ_ids - tree) | target
+                    p.write({'public_categ_ids': [(6, 0, new_categs.ids)]})
+                merged_total += len(products)
+                _logger.info(
+                    "_merge_stray_categories : %s produit(s) déplacé(s) de "
+                    "la catégorie fantôme '%s' (id=%s) vers '%s' (id=%s).",
+                    len(products), stray.name, stray.id, target.name, target.id,
+                )
+            stray.write({'active': False})
+            _logger.info(
+                "_merge_stray_categories : catégorie fantôme '%s' (id=%s) "
+                "archivée (jamais supprimée, réactivable si besoin).",
+                stray.name, stray.id,
+            )
+    if merged_total:
+        _logger.info(
+            "_merge_stray_categories : %s produit(s) au total réconciliés "
+            "vers l'arborescence officielle.",
+            merged_total,
+        )
+
+
 def _merge_root_category(env, website, old_name, target_category):
     """RÉCUPÈRE une ancienne catégorie racine préexistante (nom
     différent de la nôtre, ex: 'Informatique') en migrant TOUS ses
@@ -1731,6 +1800,12 @@ def post_init_hook(env):
     # la docstring de la fonction). ===
     _repair_orphaned_categories(env, website)
 
+    # === FUSION DES CATÉGORIES FANTÔMES — produits déjà catégorisés
+    # mais dans une branche parallèle (ex: 'Bases chargeur' au lieu de
+    # 'Chargeurs & Alimentations'), donc invisibles à _repair_orphaned_
+    # categories() qui ne cible que les produits SANS aucune catégorie. ===
+    _merge_stray_categories(env, website)
+
     # === RATTACHEMENT DES ATTRIBUTS/FILTRES MONÉTIQUE AUX PRODUITS —
     # appelé ICI, après que la catégorie 'Monétique' et ses produits
     # (natifs + migrés) existent tous. Voir la docstring de la
@@ -1789,6 +1864,11 @@ def post_migrate_hook(env):
     # _repair_orphaned_categories(). Idempotent, sans risque à chaque
     # update. ===
     _repair_orphaned_categories(env, website)
+
+    # Fusion des catégories fantômes maintenue à chaque update aussi
+    # (voir _merge_stray_categories) — indispensable pour rattraper la
+    # production actuelle sans rebuild.
+    _merge_stray_categories(env, website)
 
     # Rattachement aux produits maintenu à chaque update aussi — un
     # nouveau produit Monétique ajouté/migré entre deux updates doit
