@@ -10,6 +10,7 @@
         'security/security_groups.xml',
         'security/ir.model.access.csv',
         'views/trend_ad_views.xml',
+        'views/trend_product_views.xml',
     ],
 
     'installable': True,
