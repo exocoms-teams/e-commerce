@@ -12,15 +12,6 @@
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/search.xml',
-        'views/templates/hero.xml',
-        'views/templates/slider.xml',
-        'views/templates/categories.xml',
-        'views/templates/popular_products.xml',
-        'views/templates/feature_cards.xml',
-        'views/templates/brands.xml',
-        'views/templates/product_card.xml',
-        'views/templates/category_card.xml',
-        'views/templates/newsletter.xml',
         'views/templates/layout.xml',
 
 
@@ -42,12 +33,6 @@
             'monetique_theme/static/src/css/animations.css',
             'monetique_theme/static/src/css/main.css',
 
-            'monetique_theme/static/src/js/header.js',
-            'monetique_theme/static/src/js/slider.js',
-            'monetique_theme/static/src/js/search.js',
-            'monetique_theme/static/src/js/cart.js',
-            'monetique_theme/static/src/js/wishlist.js',
-            'monetique_theme/static/src/js/home.js',
         ],
     },
 
