@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    
+    <!-- 1. Modification de la fiche produit (Onglet Nutrition) -->
     <record id="view_product_template_form_inherit_supplements" model="ir.ui.view">
         <field name="name">product.template.form.inherit.supplements</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
             
-            <!-- CORRECTION : On cible le notebook (le conteneur des onglets) -->
             <xpath expr="//notebook" position="inside">
                 <page string="Infos Nutritionnelles" name="nutritional_info">
                     <group>
@@ -25,4 +26,28 @@
             
         </field>
     </record>
+
+    <!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
+    <record id="action_supplements_products" model="ir.actions.act_window">
+        <field name="name">Compléments Alimentaires</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <!-- On n'affiche que les produits qui sont des compléments -->
+        <field name="domain">[('is_supplement', '=', True)]</field>
+        <!-- Lors de la création depuis ce menu, on coche la case par défaut -->
+        <field name="context">{'default_is_supplement': True}</field>
+    </record>
+
+    <!-- 3. Le Menu Racine (Celui qui apparaîtra sur le tableau de bord) -->
+    <menuitem id="menu_supplements_root" 
+              name="Compléments" 
+              sequence="10"/>
+
+    <!-- 4. Le Sous-Menu (Le lien cliquable dans votre nouvelle application) -->
+    <menuitem id="menu_supplements_products" 
+              name="Catalogue" 
+              parent="menu_supplements_root" 
+              action="action_supplements_products" 
+              sequence="10"/>
+
 </odoo>
