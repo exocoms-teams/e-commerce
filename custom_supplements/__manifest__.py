@@ -13,6 +13,7 @@
     ],
 'data': [
         'data/ecommerce_categories.xml',
+        'data/ecommerce_products.xml', # Nos produits de test
         'views/product_template_views.xml',
         'views/website_sale_templates.xml',
     ],

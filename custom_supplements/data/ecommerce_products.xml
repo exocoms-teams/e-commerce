@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Produit 1 : Protéine Whey (Non-vegan, avec allergènes) -->
+        <record id="demo_product_whey" model="product.template">
+            <field name="name">Whey Protein Isolate - Vanille</field>
+            <field name="list_price">49.99</field>
+            <field name="type">product</field>
+            <!-- Catégorie eCommerce (Liaison avec la catégorie Protéines créée précédemment) -->
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
+            <!-- Rendre visible sur le site web -->
+            <field name="is_published">True</field>
+            
+            <!-- Nos champs personnalisés -->
+            <field name="is_supplement">True</field>
+            <field name="is_vegan">False</field>
+            <field name="allergens">Lait, Traces de Soja</field>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Valeur</th><th>Pour 100g</th><th>Par portion (30g)</th></tr>
+                    <tr><td>Énergie</td><td>375 kcal</td><td>113 kcal</td></tr>
+                    <tr><td>Protéines</td><td>85g</td><td>25.5g</td></tr>
+                    <tr><td>Glucides</td><td>3g</td><td>0.9g</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 2 : Pre-workout (Vegan) -->
+        <record id="demo_product_preworkout" model="product.template">
+            <field name="name">Pre-Workout Extrême - Pomme</field>
+            <field name="list_price">34.50</field>
+            <field name="type">product</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published">True</field>
+            
+            <field name="is_supplement">True</field>
+            <field name="is_vegan">True</field>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (10g)</th></tr>
+                    <tr><td>Caféine</td><td>200mg</td></tr>
+                    <tr><td>Bêta-Alanine</td><td>3000mg</td></tr>
+                    <tr><td>Citrulline</td><td>4000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>
