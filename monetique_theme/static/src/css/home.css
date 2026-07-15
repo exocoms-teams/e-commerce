@@ -1,167 +1,111 @@
 /* ===========================================================
-   HOME PAGE
-   Hero Section
+   HERO SECTION
 =========================================================== */
 
 .sn-hero{
-
     position:relative;
-    width:100%;
-    height:90vh;
     overflow:hidden;
-    background:var(--black);
-
+    background:linear-gradient(135deg,#F9FAFB 0%,#FFFFFF 100%);
+    padding:80px 0;
 }
 
-/* ================= Slider ================= */
-
-.sn-slider{
-
+.sn-hero-slider{
     position:relative;
-    width:100%;
-    height:100%;
-
 }
 
 .sn-slide{
+    display:none;
+    animation:fade .6s ease;
+}
 
-    position:relative;
-    width:100%;
-    height:100%;
+.sn-slide.active{
+    display:block;
+}
 
+/* ===========================================================
+   HERO CONTENT
+=========================================================== */
+
+.sn-slide-content{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:80px;
+}
+
+.sn-slide-text{
+    flex:1;
+    max-width:560px;
 }
 
 .sn-slide-image{
+    flex:1;
+    text-align:center;
+}
 
-    position:absolute;
-
-    inset:0;
-
+.sn-slide-image img{
     width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-}
-
-/* ================= Overlay ================= */
-
-.sn-slide-overlay{
-
-    position:absolute;
-
-    inset:0;
-
-    background:linear-gradient(
-        90deg,
-        rgba(0,0,0,.75) 0%,
-        rgba(0,0,0,.45) 40%,
-        rgba(0,0,0,.20) 100%
-    );
-
-}
-
-/* ================= Content ================= */
-
-.sn-slide-content{
-
-    position:relative;
-
-    z-index:10;
-
     max-width:650px;
-
-    height:90vh;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:flex-start;
-
+    object-fit:contain;
 }
 
-/* Badge */
+/* ===========================================================
+   BADGE
+=========================================================== */
 
 .sn-badge{
-
-    background:var(--primary-color);
-
-    color:var(--white);
-
+    display:inline-block;
     padding:8px 18px;
-
-    border-radius:50px;
-
-    font-size:14px;
-
-    font-weight:600;
-
-    margin-bottom:22px;
-
-}
-
-/* Title */
-
-.sn-slide-content h1{
-
-    font-size:var(--fs-hero);
-
-    font-family:var(--font-title);
-
-    color:var(--white);
-
-    line-height:1.1;
-
-    margin-bottom:24px;
-
-}
-
-.sn-slide-content h1 span{
-
+    background:rgba(255,90,31,.12);
     color:var(--primary-color);
-
+    border-radius:50px;
+    font-weight:600;
+    font-size:14px;
+    margin-bottom:24px;
 }
 
-/* Paragraph */
+/* ===========================================================
+   TITLES
+=========================================================== */
 
-.sn-slide-content p{
+.sn-slide-text h1{
+    font-size:64px;
+    font-family:var(--font-title);
+    font-weight:700;
+    line-height:1.1;
+    color:var(--black);
+    margin-bottom:24px;
+}
 
-    font-size:20px;
+.sn-slide-text h1 span{
+    color:var(--primary-color);
+}
 
-    color:#EEEEEE;
-
+.sn-slide-text p{
+    font-size:18px;
     line-height:1.8;
-
-    max-width:560px;
-
+    color:var(--text-light);
     margin-bottom:40px;
-
 }
 
-/* ================= Buttons ================= */
+/* ===========================================================
+   BUTTONS
+=========================================================== */
 
-.sn-slide-buttons{
-
+.sn-buttons{
     display:flex;
-
+    align-items:center;
     gap:20px;
-
 }
 
 .sn-btn-primary{
 
     display:inline-flex;
-
     align-items:center;
-
     justify-content:center;
 
-    padding:16px 34px;
-
-    border-radius:50px;
+    height:56px;
+    padding:0 36px;
 
     background:var(--primary-color);
 
@@ -169,10 +113,11 @@
 
     text-decoration:none;
 
+    border-radius:50px;
+
     font-weight:600;
 
     transition:var(--transition);
-
 }
 
 .sn-btn-primary:hover{
@@ -183,7 +128,7 @@
 
 }
 
-.sn-btn-secondary{
+.sn-btn-outline{
 
     display:inline-flex;
 
@@ -191,29 +136,35 @@
 
     justify-content:center;
 
-    padding:16px 34px;
+    height:56px;
+
+    padding:0 36px;
+
+    border:2px solid var(--primary-color);
 
     border-radius:50px;
 
-    border:2px solid var(--white);
-
-    color:var(--white);
+    color:var(--primary-color);
 
     text-decoration:none;
+
+    font-weight:600;
 
     transition:var(--transition);
 
 }
 
-.sn-btn-secondary:hover{
+.sn-btn-outline:hover{
 
-    background:var(--white);
+    background:var(--primary-color);
 
-    color:var(--black);
+    color:white;
 
 }
 
-/* ================= Arrows ================= */
+/* ===========================================================
+   NAVIGATION
+=========================================================== */
 
 .sn-slider-prev,
 .sn-slider-next{
@@ -224,19 +175,23 @@
 
     transform:translateY(-50%);
 
-    width:54px;
+    width:56px;
 
-    height:54px;
+    height:56px;
 
     border:none;
 
     border-radius:50%;
 
-    background:rgba(255,255,255,.15);
-
-    color:var(--white);
+    background:white;
 
     cursor:pointer;
+
+    font-size:26px;
+
+    color:var(--primary-color);
+
+    box-shadow:var(--shadow-md);
 
     transition:var(--transition);
 
@@ -246,13 +201,13 @@
 
 .sn-slider-prev{
 
-    left:30px;
+    left:40px;
 
 }
 
 .sn-slider-next{
 
-    right:30px;
+    right:40px;
 
 }
 
@@ -261,37 +216,37 @@
 
     background:var(--primary-color);
 
+    color:white;
+
 }
 
-/* ================= Dots ================= */
+/* ===========================================================
+   DOTS
+=========================================================== */
 
 .sn-slider-dots{
 
-    position:absolute;
-
-    left:50%;
-
-    bottom:35px;
-
-    transform:translateX(-50%);
-
     display:flex;
 
-    gap:12px;
+    justify-content:center;
 
-    z-index:20;
+    align-items:center;
+
+    gap:14px;
+
+    margin-top:40px;
 
 }
 
 .sn-slider-dots span{
 
-    width:12px;
+    width:14px;
 
-    height:12px;
+    height:14px;
 
     border-radius:50%;
 
-    background:rgba(255,255,255,.4);
+    background:#D1D5DB;
 
     cursor:pointer;
 
@@ -303,187 +258,106 @@
 
     background:var(--primary-color);
 
-    width:32px;
+    width:34px;
 
-    border-radius:30px;
+    border-radius:20px;
 
 }
 
-/* ================= Responsive ================= */
+/* ===========================================================
+   ANIMATION
+=========================================================== */
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
 @media(max-width:992px){
 
     .sn-slide-content{
 
-        max-width:100%;
-        padding:0 20px;
+        flex-direction:column-reverse;
+
+        text-align:center;
+
+        gap:40px;
 
     }
 
-    .sn-slide-content h1{
+    .sn-slide-text{
 
-        font-size:52px;
+        max-width:100%;
+
+    }
+
+    .sn-slide-text h1{
+
+        font-size:46px;
+
+    }
+
+    .sn-buttons{
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+    }
+
+    .sn-slider-prev{
+
+        left:10px;
+
+    }
+
+    .sn-slider-next{
+
+        right:10px;
 
     }
 
 }
 
-@media(max-width:768px){
+@media(max-width:576px){
 
-    .sn-hero{
+    .sn-slide-text h1{
 
-        height:75vh;
-
-    }
-
-    .sn-slide-content{
-
-        height:75vh;
-
-        align-items:center;
-        text-align:center;
+        font-size:34px;
 
     }
 
-    .sn-slide-content h1{
-
-        font-size:40px;
-
-    }
-
-    .sn-slide-content p{
+    .sn-slide-text p{
 
         font-size:16px;
 
     }
 
-    .sn-slide-buttons{
-
-        flex-direction:column;
-
-        width:100%;
-
-    }
-
     .sn-btn-primary,
-    .sn-btn-secondary{
+    .sn-btn-outline{
 
         width:100%;
 
     }
-
-    .sn-slider-prev,
-    .sn-slider-next{
-
-        display:none;
-
-    }
-
-}
-
-/* ================= Slider Animation ================= */
-
-.sn-slide{
-
-    position:absolute;
-    inset:0;
-
-    opacity:0;
-    visibility:hidden;
-
-    transition:opacity .6s ease;
-
-}
-
-.sn-slide.active{
-
-    opacity:1;
-    visibility:visible;
-
-}
-
-/* ===========================================================
-   HERO SLIDER ANIMATIONS
-=========================================================== */
-
-.sn-slide{
-
-    position:absolute;
-    inset:0;
-
-    opacity:0;
-    visibility:hidden;
-
-    transition:
-        opacity .8s ease,
-        visibility .8s ease;
-
-}
-
-.sn-slide.active{
-
-    opacity:1;
-    visibility:visible;
-
-}
-
-/* ---------- Animation du contenu ---------- */
-
-.sn-slide-content{
-
-    opacity:0;
-
-    transform:translateY(40px);
-
-    transition:
-        opacity .8s ease,
-        transform .8s ease;
-
-}
-
-.sn-slide.active .sn-slide-content{
-
-    opacity:1;
-
-    transform:translateY(0);
-
-}
-
-/* ---------- Animation des boutons ---------- */
-
-.sn-slide-buttons{
-
-    opacity:0;
-
-    transform:translateY(20px);
-
-    transition:
-        opacity 1s ease .2s,
-        transform 1s ease .2s;
-
-}
-
-.sn-slide.active .sn-slide-buttons{
-
-    opacity:1;
-
-    transform:translateY(0);
-
-}
-
-/* ---------- Effet zoom léger sur l'image ---------- */
-
-.sn-slide-image{
-
-    transform:scale(1);
-
-    transition:transform 6s linear;
-
-}
-
-.sn-slide.active .sn-slide-image{
-
-    transform:scale(1.08);
 
 }
 
@@ -493,57 +367,103 @@
 
 .sn-categories{
 
+    padding:100px 0;
+
     background:var(--secondary-color);
 
 }
+
+/* ===========================================================
+   SECTION HEADER
+=========================================================== */
 
 .sn-section-header{
 
     text-align:center;
 
-    margin-bottom:70px;
+    margin-bottom:60px;
 
 }
 
-.sn-section-tag{
+.sn-section-subtitle{
 
     display:inline-block;
 
     padding:8px 18px;
 
-    border-radius:30px;
-
-    background:rgba(255,90,31,.12);
+    background:rgba(255,90,31,.10);
 
     color:var(--primary-color);
 
+    border-radius:30px;
+
+    font-size:14px;
+
     font-weight:600;
 
-    margin-bottom:18px;
+    margin-bottom:20px;
 
 }
+
+.sn-section-header h2{
+
+    font-size:42px;
+
+    font-family:var(--font-title);
+
+    color:var(--black);
+
+    margin-bottom:20px;
+
+}
+
+.sn-section-header p{
+
+    max-width:650px;
+
+    margin:auto;
+
+    color:var(--text-light);
+
+    line-height:1.8;
+
+    font-size:17px;
+
+}
+
+/* ===========================================================
+   GRID
+=========================================================== */
 
 .sn-categories-grid{
 
     display:grid;
 
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
 
     gap:30px;
 
 }
 
+/* ===========================================================
+   CARD
+=========================================================== */
+
 .sn-category-card{
 
     position:relative;
+
+    display:block;
 
     overflow:hidden;
 
     border-radius:20px;
 
-    min-height:420px;
+    text-decoration:none;
 
-    box-shadow:var(--shadow-md);
+    background:var(--white);
+
+    box-shadow:var(--shadow-sm);
 
     transition:var(--transition);
 
@@ -553,99 +473,97 @@
 
     transform:translateY(-8px);
 
+    box-shadow:var(--shadow-lg);
+
 }
+
+/* ===========================================================
+   IMAGE
+=========================================================== */
 
 .sn-category-card img{
 
     width:100%;
 
-    height:100%;
+    height:320px;
 
     object-fit:cover;
 
-    transition:transform .6s ease;
+    transition:.5s;
 
 }
 
 .sn-category-card:hover img{
 
-    transform:scale(1.12);
+    transform:scale(1.08);
 
 }
+
+/* ===========================================================
+   OVERLAY
+=========================================================== */
 
 .sn-category-overlay{
 
     position:absolute;
 
-    inset:0;
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    padding:30px;
 
     background:linear-gradient(
         to top,
         rgba(0,0,0,.75),
-        rgba(0,0,0,.15)
+        rgba(0,0,0,.05)
+    );
+
+    color:var(--white);
+
+}
+
+.sn-category-overlay h3{
+
+    font-size:28px;
+
+    margin-bottom:10px;
+
+    font-family:var(--font-title);
+
+}
+
+.sn-category-overlay span{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:var(--white);
+
+}
+
+/* ===========================================================
+   HOVER
+=========================================================== */
+
+.sn-category-card:hover .sn-category-overlay{
+
+    background:linear-gradient(
+        to top,
+        rgba(255,90,31,.90),
+        rgba(255,90,31,.10)
     );
 
 }
 
-.sn-category-content{
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
-    position:absolute;
-
-    left:30px;
-
-    bottom:30px;
-
-    z-index:10;
-
-}
-
-.sn-category-content h3{
-
-    color:var(--white);
-
-    font-size:32px;
-
-    font-family:var(--font-title);
-
-    margin-bottom:10px;
-
-}
-
-.sn-category-content span{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:12px 22px;
-
-    border-radius:40px;
-
-    background:var(--primary-color);
-
-    color:var(--white);
-
-    font-size:14px;
-
-    font-weight:600;
-
-    transition:var(--transition);
-
-}
-
-.sn-category-card:hover .sn-category-content span{
-
-    background:var(--white);
-
-    color:var(--primary-color);
-
-}
-
-/* ---------- Responsive ---------- */
-
-@media(max-width:992px){
+@media(max-width:1100px){
 
     .sn-categories-grid{
 
@@ -657,35 +575,47 @@
 
 @media(max-width:768px){
 
+    .sn-categories{
+
+        padding:80px 0;
+
+    }
+
+    .sn-section-header h2{
+
+        font-size:34px;
+
+    }
+
     .sn-categories-grid{
 
         grid-template-columns:1fr;
 
     }
 
-    .sn-category-card{
+    .sn-category-card img{
 
-        min-height:320px;
-
-    }
-
-    .sn-category-content h3{
-
-        font-size:26px;
+        height:260px;
 
     }
 
 }
 
 /* ===========================================================
-   PRODUCTS
+   POPULAR PRODUCTS
 =========================================================== */
 
-.sn-products{
+.sn-popular-products{
 
-    background:#fff;
+    padding:100px 0;
+
+    background:#FFFFFF;
 
 }
+
+/* ===========================================================
+   PRODUCTS GRID
+=========================================================== */
 
 .sn-products-grid{
 
@@ -695,11 +625,95 @@
 
     gap:30px;
 
+    margin-top:60px;
+
 }
+
+/* ===========================================================
+   VIEW ALL BUTTON
+=========================================================== */
+
+.sn-products-button{
+
+    text-align:center;
+
+    margin-top:60px;
+
+}
+
+.sn-products-button .sn-btn-primary{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:16px 40px;
+
+    background:var(--primary-color);
+
+    color:var(--white);
+
+    border-radius:50px;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.sn-products-button .sn-btn-primary:hover{
+
+    background:var(--primary-dark);
+
+    transform:translateY(-3px);
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media(max-width:1200px){
+
+    .sn-products-grid{
+
+        grid-template-columns:repeat(3,1fr);
+
+    }
+
+}
+
+@media(max-width:992px){
+
+    .sn-products-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .sn-products-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+/* ===========================================================
+   PRODUCT CARD
+=========================================================== */
 
 .sn-product-card{
 
-    background:#fff;
+    background:var(--white);
 
     border-radius:20px;
 
@@ -713,11 +727,15 @@
 
 .sn-product-card:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-10px);
 
     box-shadow:var(--shadow-lg);
 
 }
+
+/* ===========================================================
+   IMAGE
+=========================================================== */
 
 .sn-product-image{
 
@@ -725,13 +743,15 @@
 
     overflow:hidden;
 
+    background:#F8F8F8;
+
 }
 
 .sn-product-image img{
 
     width:100%;
 
-    height:320px;
+    height:280px;
 
     object-fit:cover;
 
@@ -745,17 +765,21 @@
 
 }
 
+/* ===========================================================
+   BADGE
+=========================================================== */
+
 .sn-product-badge{
 
     position:absolute;
 
-    top:20px;
+    top:18px;
 
-    left:20px;
+    left:18px;
 
     background:var(--primary-color);
 
-    color:#fff;
+    color:var(--white);
 
     padding:8px 14px;
 
@@ -763,25 +787,37 @@
 
     font-size:12px;
 
-    font-weight:600;
+    font-weight:700;
 
-    z-index:5;
+    z-index:10;
 
 }
+
+/* ===========================================================
+   HOVER ACTIONS
+=========================================================== */
 
 .sn-product-actions{
 
     position:absolute;
 
-    right:20px;
-
     top:20px;
+
+    right:-60px;
 
     display:flex;
 
     flex-direction:column;
 
-    gap:10px;
+    gap:12px;
+
+    transition:.4s;
+
+}
+
+.sn-product-card:hover .sn-product-actions{
+
+    right:20px;
 
 }
 
@@ -795,9 +831,13 @@
 
     border-radius:50%;
 
-    background:#fff;
+    background:var(--white);
 
     cursor:pointer;
+
+    color:var(--black);
+
+    box-shadow:var(--shadow-sm);
 
     transition:.3s;
 
@@ -807,9 +847,13 @@
 
     background:var(--primary-color);
 
-    color:#fff;
+    color:var(--white);
 
 }
+
+/* ===========================================================
+   PRODUCT INFO
+=========================================================== */
 
 .sn-product-info{
 
@@ -817,45 +861,25 @@
 
 }
 
-.sn-product-brand{
+.sn-product-rating{
 
-    color:var(--primary-color);
+    color:#FDBA12;
+
+    margin-bottom:15px;
 
     font-size:14px;
 
-    font-weight:600;
-
 }
 
-.sn-product-title{
-
-    margin:12px 0;
+.sn-product-info h3{
 
     font-size:22px;
 
-    font-family:var(--font-title);
+    margin-bottom:15px;
 
-}
+    color:var(--black);
 
-.sn-product-rating{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:4px;
-
-    color:#FBBF24;
-
-    margin-bottom:18px;
-
-}
-
-.sn-product-rating span{
-
-    color:var(--text-light);
-
-    margin-left:8px;
+    line-height:1.4;
 
 }
 
@@ -875,19 +899,25 @@
 
     font-size:22px;
 
-    font-weight:700;
-
     color:var(--primary-color);
+
+    font-weight:700;
 
 }
 
 .sn-old-price{
 
-    color:#999;
+    color:#9CA3AF;
 
     text-decoration:line-through;
 
+    font-size:16px;
+
 }
+
+/* ===========================================================
+   ADD TO CART
+=========================================================== */
 
 .sn-add-cart{
 
@@ -897,17 +927,21 @@
 
     align-items:center;
 
-    height:50px;
+    width:100%;
 
-    border-radius:50px;
+    height:50px;
 
     background:var(--primary-color);
 
-    color:#fff;
+    color:var(--white);
+
+    border-radius:40px;
+
+    text-decoration:none;
 
     font-weight:600;
 
-    transition:var(--transition);
+    transition:.3s;
 
 }
 
@@ -917,49 +951,41 @@
 
 }
 
-/* ---------- Responsive ---------- */
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
-@media(max-width:1200px){
+@media(max-width:768px){
 
-    .sn-products-grid{
+    .sn-product-image img{
 
-        grid-template-columns:repeat(3,1fr);
-
-    }
-
-}
-
-@media(max-width:900px){
-
-    .sn-products-grid{
-
-        grid-template-columns:repeat(2,1fr);
+        height:240px;
 
     }
 
-}
+    .sn-product-info h3{
 
-@media(max-width:600px){
-
-    .sn-products-grid{
-
-        grid-template-columns:1fr;
+        font-size:20px;
 
     }
 
 }
 
 /* ===========================================================
-   FEATURES
+   FEATURES SECTION
 =========================================================== */
 
 .sn-features{
 
-    background:#ffffff;
-
     padding:100px 0;
 
+    background:var(--secondary-color);
+
 }
+
+/* ===========================================================
+   FEATURES GRID
+=========================================================== */
 
 .sn-features-grid{
 
@@ -969,17 +995,23 @@
 
     gap:30px;
 
+    margin-top:60px;
+
 }
+
+/* ===========================================================
+   FEATURE CARD
+=========================================================== */
 
 .sn-feature-card{
 
-    background:#ffffff;
+    background:var(--white);
+
+    border-radius:20px;
 
     padding:40px 30px;
 
     text-align:center;
-
-    border-radius:20px;
 
     box-shadow:var(--shadow-sm);
 
@@ -989,11 +1021,15 @@
 
 .sn-feature-card:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-10px);
 
     box-shadow:var(--shadow-lg);
 
 }
+
+/* ===========================================================
+   FEATURE ICON
+=========================================================== */
 
 .sn-feature-icon{
 
@@ -1001,19 +1037,17 @@
 
     height:80px;
 
-    margin:auto;
-
-    margin-bottom:25px;
-
-    border-radius:50%;
-
-    background:rgba(255,90,31,.12);
+    margin:0 auto 25px;
 
     display:flex;
 
     align-items:center;
 
     justify-content:center;
+
+    border-radius:50%;
+
+    background:rgba(255,90,31,.10);
 
     color:var(--primary-color);
 
@@ -1027,31 +1061,47 @@
 
     background:var(--primary-color);
 
-    color:#ffffff;
+    color:var(--white);
+
+    transform:rotate(8deg);
 
 }
+
+/* ===========================================================
+   TITLE
+=========================================================== */
 
 .sn-feature-card h3{
 
-    font-family:var(--font-title);
-
     font-size:24px;
 
-    margin-bottom:15px;
+    color:var(--black);
+
+    margin-bottom:18px;
+
+    font-family:var(--font-title);
 
 }
+
+/* ===========================================================
+   DESCRIPTION
+=========================================================== */
 
 .sn-feature-card p{
 
     color:var(--text-light);
 
-    line-height:1.7;
+    line-height:1.8;
+
+    font-size:16px;
 
 }
 
-/* ---------- Responsive ---------- */
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
-@media(max-width:992px){
+@media(max-width:1100px){
 
     .sn-features-grid{
 
@@ -1061,7 +1111,13 @@
 
 }
 
-@media(max-width:640px){
+@media(max-width:768px){
+
+    .sn-features{
+
+        padding:80px 0;
+
+    }
 
     .sn-features-grid{
 
@@ -1069,19 +1125,29 @@
 
     }
 
+    .sn-feature-card{
+
+        padding:35px 25px;
+
+    }
+
 }
 
 /* ===========================================================
-   BRANDS
+   BRANDS SECTION
 =========================================================== */
 
 .sn-brands{
 
     padding:100px 0;
 
-    background:#ffffff;
+    background:#FFFFFF;
 
 }
+
+/* ===========================================================
+   BRANDS GRID
+=========================================================== */
 
 .sn-brands-grid{
 
@@ -1091,27 +1157,33 @@
 
     gap:25px;
 
+    margin-top:60px;
+
 }
+
+/* ===========================================================
+   BRAND CARD
+=========================================================== */
 
 .sn-brand-card{
 
-    background:#ffffff;
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--white);
 
     border:1px solid var(--border-color);
 
     border-radius:18px;
 
-    height:140px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
+    padding:35px 20px;
 
     transition:var(--transition);
 
-    cursor:pointer;
+    box-shadow:var(--shadow-sm);
 
 }
 
@@ -1119,7 +1191,7 @@
 
     transform:translateY(-6px);
 
-    box-shadow:var(--shadow-md);
+    box-shadow:var(--shadow-lg);
 
     border-color:var(--primary-color);
 
@@ -1127,11 +1199,15 @@
 
 .sn-brand-card img{
 
-    width:110px;
+    max-width:120px;
 
-    max-width:70%;
+    max-height:55px;
 
-    opacity:.75;
+    width:100%;
+
+    object-fit:contain;
+
+    filter:grayscale(100%);
 
     transition:var(--transition);
 
@@ -1139,15 +1215,17 @@
 
 .sn-brand-card:hover img{
 
-    opacity:1;
+    filter:grayscale(0%);
 
     transform:scale(1.08);
 
 }
 
-/* ---------- Responsive ---------- */
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
-@media(max-width:1100px){
+@media(max-width:1200px){
 
     .sn-brands-grid{
 
@@ -1157,11 +1235,19 @@
 
 }
 
-@media(max-width:700px){
+@media(max-width:768px){
+
+    .sn-brands{
+
+        padding:80px 0;
+
+    }
 
     .sn-brands-grid{
 
         grid-template-columns:repeat(2,1fr);
+
+        gap:20px;
 
     }
 
@@ -1183,17 +1269,21 @@
 
 .sn-newsletter{
 
-    padding:120px 0;
+    padding:100px 0;
 
     background:linear-gradient(
         135deg,
         var(--primary-color),
-        var(--primary-dark)
+        #ff7848
     );
 
 }
 
-.sn-newsletter-box{
+/* ===========================================================
+   CONTENT
+=========================================================== */
+
+.sn-newsletter-content{
 
     display:flex;
 
@@ -1203,47 +1293,55 @@
 
     gap:60px;
 
-    color:var(--white);
-
 }
 
-.sn-newsletter-content{
+.sn-newsletter-text{
 
     flex:1;
 
 }
 
-.sn-newsletter-content h2{
+.sn-newsletter-text h2{
 
-    font-size:46px;
+    color:var(--white);
 
-    font-family:var(--font-title);
+    font-size:42px;
 
     margin:20px 0;
 
+    font-family:var(--font-title);
+
 }
 
-.sn-newsletter-content p{
+.sn-newsletter-text p{
 
-    max-width:520px;
+    color:rgba(255,255,255,.9);
+
+    font-size:17px;
 
     line-height:1.8;
 
-    opacity:.95;
-
 }
+
+/* ===========================================================
+   FORM
+=========================================================== */
 
 .sn-newsletter-form{
 
     flex:1;
 
+}
+
+.sn-newsletter-form form{
+
     display:flex;
 
     background:var(--white);
 
-    padding:10px;
-
     border-radius:60px;
+
+    overflow:hidden;
 
     box-shadow:var(--shadow-lg);
 
@@ -1257,11 +1355,9 @@
 
     outline:none;
 
-    padding:18px 25px;
+    padding:20px 25px;
 
     font-size:16px;
-
-    background:transparent;
 
 }
 
@@ -1269,15 +1365,13 @@
 
     border:none;
 
-    cursor:pointer;
-
-    padding:18px 40px;
-
-    border-radius:50px;
-
     background:var(--black);
 
     color:var(--white);
+
+    padding:0 40px;
+
+    cursor:pointer;
 
     font-weight:600;
 
@@ -1291,21 +1385,17 @@
 
 }
 
-/* ---------- Responsive ---------- */
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
 
 @media(max-width:992px){
 
-    .sn-newsletter-box{
+    .sn-newsletter-content{
 
         flex-direction:column;
 
         text-align:center;
-
-    }
-
-    .sn-newsletter-content p{
-
-        margin:auto;
 
     }
 
@@ -1317,21 +1407,33 @@
 
 }
 
-@media(max-width:600px){
+@media(max-width:576px){
 
-    .sn-newsletter-form{
+    .sn-newsletter{
+
+        padding:80px 0;
+
+    }
+
+    .sn-newsletter-form form{
 
         flex-direction:column;
 
         border-radius:20px;
 
-        gap:15px;
+    }
+
+    .sn-newsletter-form input{
+
+        width:100%;
 
     }
 
     .sn-newsletter-form button{
 
         width:100%;
+
+        padding:18px;
 
     }
 

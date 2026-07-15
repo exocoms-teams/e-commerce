@@ -1,123 +1,76 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const slider = document.querySelector(".sn-slider");
+    const slides = document.querySelectorAll(".sn-slide");
+    const dots = document.querySelectorAll(".sn-slider-dots span");
+    const nextBtn = document.querySelector(".sn-slider-next");
+    const prevBtn = document.querySelector(".sn-slider-prev");
 
-    if (!slider) return;
+    if (!slides.length) {
+        return;
+    }
 
-    const slides = slider.querySelectorAll(".sn-slide");
-    const dots = slider.querySelectorAll(".sn-slider-dots span");
-    const nextBtn = slider.querySelector(".sn-slider-next");
-    const prevBtn = slider.querySelector(".sn-slider-prev");
+    let currentSlide = 0;
+    const totalSlides = slides.length;
 
-    let current = 0;
-    let timer = null;
+    function showSlide(index) {
 
-    function activateSlide(index){
-
-        slides.forEach((slide)=>{
-
+        slides.forEach((slide) => {
             slide.classList.remove("active");
-
         });
 
-        dots.forEach((dot)=>{
-
+        dots.forEach((dot) => {
             dot.classList.remove("active");
-
         });
 
         slides[index].classList.add("active");
 
-        if(dots[index]){
-
+        if (dots[index]) {
             dots[index].classList.add("active");
-
         }
 
-        current = index;
-
+        currentSlide = index;
     }
 
-    function next(){
+    function nextSlide() {
 
-        current++;
+        let index = currentSlide + 1;
 
-        if(current >= slides.length){
-
-            current = 0;
-
+        if (index >= totalSlides) {
+            index = 0;
         }
 
-        activateSlide(current);
-
+        showSlide(index);
     }
 
-    function previous(){
+    function previousSlide() {
 
-        current--;
+        let index = currentSlide - 1;
 
-        if(current < 0){
-
-            current = slides.length-1;
-
+        if (index < 0) {
+            index = totalSlides - 1;
         }
 
-        activateSlide(current);
-
+        showSlide(index);
     }
 
-    function start(){
-
-        stop();
-
-        timer = setInterval(next,5000);
-
+    if (nextBtn) {
+        nextBtn.addEventListener("click", nextSlide);
     }
 
-    function stop(){
-
-        if(timer){
-
-            clearInterval(timer);
-
-        }
-
+    if (prevBtn) {
+        prevBtn.addEventListener("click", previousSlide);
     }
 
-    nextBtn?.addEventListener("click",()=>{
+    dots.forEach((dot, index) => {
 
-        next();
+        dot.addEventListener("click", () => {
 
-        start();
-
-    });
-
-    prevBtn?.addEventListener("click",()=>{
-
-        previous();
-
-        start();
-
-    });
-
-    dots.forEach((dot,index)=>{
-
-        dot.addEventListener("click",()=>{
-
-            activateSlide(index);
-
-            start();
+            showSlide(index);
 
         });
 
     });
 
-    slider.addEventListener("mouseenter",stop);
-
-    slider.addEventListener("mouseleave",start);
-
-    activateSlide(0);
-
-    start();
+    setInterval(nextSlide, 5000);
 
 });
