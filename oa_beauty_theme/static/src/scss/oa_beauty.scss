@@ -2204,41 +2204,87 @@ html[dir="rtl"] {
 
 .oa-trust-item {
     text-align: center;
-    padding: 25px 15px;
-    transition: all 0.3s ease;
+    padding: 30px 15px;
+    transition: all 0.5s cubic-bezier(0.25, 1.5, 0.5, 1);
+    position: relative;
+    border-radius: 20px;
+    z-index: 1;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at center, rgba(230, 194, 187, 0.15) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: -1;
+    }
 
     &:hover {
-        transform: translateY(-4px);
+        transform: translateY(-8px) scale(1.05);
+
+        &::before {
+            opacity: 1;
+            animation: pulse-glow 2s infinite alternate;
+        }
 
         .oa-trust-icon {
-            transform: scale(1.15);
-            color: var(--oa-lilac);
+            transform: scale(1.2) rotate(5deg);
+            color: var(--oa-champagne);
+            filter: drop-shadow(0 0 15px var(--oa-champagne)) drop-shadow(0 0 5px rgba(255,255,255,0.8));
+        }
+        
+        .oa-trust-value {
+            color: var(--oa-champagne);
+            text-shadow: 0 0 10px rgba(230, 194, 187, 0.5);
         }
     }
 }
 
 .oa-trust-icon {
-    font-size: 2rem;
-    color: var(--oa-mauve);
+    font-size: 2.2rem;
+    color: var(--oa-lilac);
     margin-bottom: 12px;
-    transition: all 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.25, 1.5, 0.5, 1);
     display: block;
+    animation: float-icon 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(210, 180, 222, 0.4));
+}
+
+// Stagger the animation so they don't all float at the exact same time
+.col-6:nth-child(even) .oa-trust-icon {
+    animation-delay: 1s;
+}
+.col-6:nth-child(3n) .oa-trust-icon {
+    animation-delay: 2s;
 }
 
 .oa-trust-label {
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: white;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.85);
+    transition: color 0.3s ease;
 }
 
 .oa-trust-value {
     font-family: var(--oa-font-display);
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 600;
     color: white;
     margin-bottom: 4px;
+    transition: all 0.3s ease;
+}
+
+@keyframes float-icon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.1); opacity: 1; }
 }
 
 // ── ACCESSIBILITY (ARIA & FOCUS STATES) ─────────────────────────
