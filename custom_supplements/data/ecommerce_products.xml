@@ -6,15 +6,15 @@
         <record id="demo_product_whey" model="product.template">
             <field name="name">Whey Protein Isolate - Vanille</field>
             <field name="list_price">49.99</field>
-            <field name="type">product</field>
-            <!-- Catégorie eCommerce (Liaison avec la catégorie Protéines créée précédemment) -->
-            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
-            <!-- Rendre visible sur le site web -->
-            <field name="is_published">True</field>
             
-            <!-- Nos champs personnalisés -->
-            <field name="is_supplement">True</field>
-            <field name="is_vegan">False</field>
+            <!-- Liaison avec la catégorie Protéines -->
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
+            
+            <!-- Syntaxe sécurisée avec eval pour les booléens -->
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="False"/>
+            
             <field name="allergens">Lait, Traces de Soja</field>
             <field name="nutritional_info"><![CDATA[
                 <table class="table table-sm table-bordered">
@@ -30,12 +30,13 @@
         <record id="demo_product_preworkout" model="product.template">
             <field name="name">Pre-Workout Extrême - Pomme</field>
             <field name="list_price">34.50</field>
-            <field name="type">product</field>
-            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
-            <field name="is_published">True</field>
             
-            <field name="is_supplement">True</field>
-            <field name="is_vegan">True</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            
             <field name="nutritional_info"><![CDATA[
                 <table class="table table-sm table-bordered">
                     <tr class="table-light"><th>Composant</th><th>Par portion (10g)</th></tr>
