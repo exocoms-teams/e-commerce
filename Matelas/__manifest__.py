@@ -7,6 +7,7 @@
     'depends': [
         'website',
         'website_sale',
+        'sale',
         'account',
         'im_livechat',
         'website_livechat',
