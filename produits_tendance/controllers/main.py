@@ -13,12 +13,10 @@ class TrendIngestController(http.Controller):
             return self._json_response({'status': 'error', 'code': 'invalid_json'}, 400)
 
         api_key = data.get('api_key')
-
         if not api_key:
             return self._json_response(
                 {'status': 'error', 'code': 'missing_field', 'field': 'api_key'}, 401
             )
-
         if not self._is_valid_api_key(api_key):
             return self._json_response(
                 {'status': 'error', 'code': 'invalid_api_key'}, 403
@@ -37,9 +35,8 @@ class TrendIngestController(http.Controller):
         elif data_type == 'ad':
             return self._handle_ad(payload)
         elif data_type == 'score':
-          return self._handle_score(payload) 
+            return self._handle_score(payload)
 
-    # ---------- Gestion PRODUCT ----------
     def _handle_product(self, payload):
         required_fields = ['name', 'product_ref', 'category', 'country', 'source']
         for field in required_fields:
@@ -79,9 +76,10 @@ class TrendIngestController(http.Controller):
         else:
             record = env['trend.product'].create(vals)
 
-        return self._json_response({'status': 'success', 'type': 'product', 'id': record.id}, 200)
+        return self._json_response(
+            {'status': 'success', 'type': 'product', 'id': record.id}, 200
+        )
 
-    # ---------- Gestion AD ----------
     def _handle_ad(self, payload):
         required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
         for field in required_fields:
@@ -92,7 +90,9 @@ class TrendIngestController(http.Controller):
 
         env = request.env(su=True)
 
-        existing = env['trend.ad'].search([('ad_ref', '=', payload['ad_ref'])], limit=1)
+        existing = env['trend.ad'].search(
+            [('ad_ref', '=', payload['ad_ref'])], limit=1
+        )
 
         vals = {
             'ad_ref': payload['ad_ref'],
@@ -107,39 +107,44 @@ class TrendIngestController(http.Controller):
             existing.write(vals)
             record = existing
         else:
-            record = env['trend.ad'].create(vals)  # la creation auto-lie/cree le produit
+            record = env['trend.ad'].create(vals)
 
-        return self._json_response({'status': 'success', 'type': 'ad', 'id': record.id}, 200)
-    # ---------- Gestion SCORE ----------
-def _handle_score(self, payload):
-    required_fields = ['product_ref', 'computed_score']
-    for field in required_fields:
-        if not payload.get(field):
-            return self._json_response(
-                {'status': 'error', 'code': 'missing_field', 'field': field}, 400
-            )
-
-    env = request.env(su=True)
-
-    product = env['trend.product'].search(
-        [('product_ref', '=', payload['product_ref'])], limit=1
-    )
-    if not product:
         return self._json_response(
-            {'status': 'error', 'code': 'product_not_found', 'product_ref': payload['product_ref']}, 404
+            {'status': 'success', 'type': 'ad', 'id': record.id}, 200
         )
 
-    vals = {
-        'product_id': product.id,
-        'computed_score': payload['computed_score'],
-        'computed_at': payload.get('computed_at'),
-    }
-    vals = {k: v for k, v in vals.items() if v is not None}
+    def _handle_score(self, payload):
+        required_fields = ['product_ref', 'computed_score']
+        for field in required_fields:
+            if not payload.get(field):
+                return self._json_response(
+                    {'status': 'error', 'code': 'missing_field', 'field': field}, 400
+                )
 
-    record = env['trend.score'].create(vals)
+        env = request.env(su=True)
 
-    return self._json_response({'status': 'success', 'type': 'score', 'id': record.id}, 200)
-    # ---------- Utilitaires ----------
+        product = env['trend.product'].search(
+            [('product_ref', '=', payload['product_ref'])], limit=1
+        )
+        if not product:
+            return self._json_response(
+                {'status': 'error', 'code': 'product_not_found',
+                 'product_ref': payload['product_ref']}, 404
+            )
+
+        vals = {
+            'product_id': product.id,
+            'computed_score': payload['computed_score'],
+        }
+        if payload.get('computed_at'):
+            vals['computed_at'] = payload['computed_at']
+
+        record = env['trend.score'].create(vals)
+
+        return self._json_response(
+            {'status': 'success', 'type': 'score', 'id': record.id}, 200
+        )
+
     def _is_valid_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('trend.api_key')
         return valid_key and key == valid_key
