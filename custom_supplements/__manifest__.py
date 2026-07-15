@@ -12,8 +12,9 @@
         'product_expiry', # Ajout du module de gestion des DLC/DLUO
     ],
     'data': [
+        'data/ecommerce_categories.xml', # Ajout de la création automatique des catégories
         'views/product_template_views.xml',
-        'views/website_sale_templates.xml', # Ajout du template Frontend
+        'views/website_sale_templates.xml',
     ],
     'installable': True,
     'application': True,

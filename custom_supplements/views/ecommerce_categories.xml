@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- L'attribut noupdate="1" évite d'écraser les modifications manuelles 
+         faites par l'utilisateur s'il renomme la catégorie plus tard -->
+    <data noupdate="1">
+
+        <!-- 1. Catégorie Parente Principale -->
+        <record id="cat_supplements_main" model="product.public.category">
+            <field name="name">Compléments Alimentaires</field>
+        </record>
+
+        <!-- 2. Sous-catégories -->
+        <record id="cat_proteins" model="product.public.category">
+            <field name="name">Protéines</field>
+            <!-- On lie cette sous-catégorie à la catégorie parente -->
+            <field name="parent_id" ref="cat_supplements_main"/>
+        </record>
+
+        <record id="cat_vitamins" model="product.public.category">
+            <field name="name">Vitamines &amp; Minéraux</field>
+            <field name="parent_id" ref="cat_supplements_main"/>
+        </record>
+        
+        <record id="cat_preworkout" model="product.public.category">
+            <field name="name">Pré-entraînement</field>
+            <field name="parent_id" ref="cat_supplements_main"/>
+        </record>
+
+    </data>
+</odoo>
