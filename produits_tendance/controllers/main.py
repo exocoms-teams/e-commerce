@@ -8,7 +8,7 @@ class TrendIngestController(http.Controller):
     @http.route('/api/trend/ingest', type='http', auth='none', methods=['POST'], csrf=False)
     def ingest(self, **kwargs):
         try:
-            data s= json.loads(request.httprequest.data)
+            data = json.loads(request.httprequest.data)
         except Exception:
             return self._json_response({'status': 'error', 'code': 'invalid_json'}, 400)
 
