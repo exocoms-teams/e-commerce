@@ -13,6 +13,14 @@
         'views/templates/footer.xml',
         'views/templates/search.xml',
         'views/templates/layout.xml',
+        'views/templates/hero.xml',
+        'views/templates/categories.xml',
+        'views/templates/populat_products.xml',
+        'views/templates/product_card.xml',
+        'views/templates/feature_cards.xml',
+        'views/templates/brands.xml',
+        'views/templates/newsletter.xml',
+        
 
 
         'views/pages/home.xml',
@@ -29,6 +37,8 @@
             'monetique_theme/static/src/css/responsive.css',
             'monetique_theme/static/src/css/animations.css',
             'monetique_theme/static/src/css/main.css',
+
+            'monetique_theme/static/src/js/slider.js',
 
         ],
     },
