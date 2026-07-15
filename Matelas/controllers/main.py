@@ -22,14 +22,19 @@ class MatelasVente(http.Controller):
             ], limit=6)
 
         if not nouveautes:
-            
+
             nouveautes = request.env['product.template'].sudo().search([
                 ('is_published', '=', True),
             ], order='create_date desc', limit=6)
 
+        temoignages = request.env['matelas.avis'].sudo().search([
+            ('is_published', '=', True),
+        ], order='note desc, create_date desc', limit=3)
+
         return request.render('Matelas.home', {
             'products': products,
             'nouveautes': nouveautes,
+            'temoignages': temoignages,
         })
 
     @http.route('/avis', auth='public', website=True)

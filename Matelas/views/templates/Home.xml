@@ -252,46 +252,64 @@
         <p class="section-label" t-esc="'TESTIMONIALS' if is_en else 'TÉMOIGNAGES'" />
         <h2 t-esc="'What our customers say about us' if is_en else 'Ce que nos clients disent de nous'" />
         <div class="row">
-          <div class="col-md-4 temoignage-card">
-            <div class="stars">★★★★★</div>
-            <t t-if="is_en">
-              <p>"Finally, truly restorative sleep! The mattress adapted
-              to my body shape within just a few nights."</p>
-              <strong>Sophie M.</strong> — 3 days ago
+
+          <!-- Vrais avis publiés, s'il y en a -->
+          <t t-if="temoignages">
+            <t t-foreach="temoignages" t-as="temoignage">
+              <div class="col-md-4 temoignage-card">
+                <div class="stars">
+                  <t t-esc="'★' * temoignage.note + '☆' * (5 - temoignage.note)" />
+                </div>
+                <p>"<t t-esc="temoignage.commentaire" />"</p>
+                <strong t-esc="temoignage.name" /> — <t t-esc="temoignage.create_date.strftime('%d/%m/%Y')" />
+              </div>
             </t>
-            <t t-else="">
-              <p>"Enfin un vrai sommeil réparateur ! Le matelas s'est
-              adapté à ma morphologie en quelques nuits seulement."</p>
-              <strong>Sophie M.</strong> — il
-              y a 3 jours
-            </t>
-          </div>
-          <div class="col-md-4 temoignage-card">
-            <div class="stars">★★★★★</div>
-            <t t-if="is_en">
-              <p>"Express delivery, easy set-up. Premium quality at a
-                very reasonable price."</p>
-              <strong>Thomas L.</strong> — 1 week ago
-            </t>
-            <t t-else="">
-              <p>"Livraison express, installation facile.
-                Qualité premium pour un prix très raisonnable."</p>
-              <strong>Thomas L.</strong> — il y a
-              1 semaine
-            </t>
-          </div>
-          <div class="col-md-4 temoignage-card">
-            <div class="stars">★★★★☆</div>
-            <t t-if="is_en">
-              <p>"After 2 weeks, I simply can't go without it anymore."</p>
-              <strong>Camille D.</strong> — 2 weeks ago
-            </t>
-            <t t-else="">
-              <p>"Après 2 semaines, je ne peux plus m'en passer."</p>
-              <strong>Camille
-              D.</strong> — il y a 2 semaines
-            </t>
-          </div>
+          </t>
+
+          <!-- Repli : exemples, tant qu'aucun vrai avis n'est publié -->
+          <t t-else="">
+            <div class="col-md-4 temoignage-card">
+              <div class="stars">★★★★★</div>
+              <t t-if="is_en">
+                <p>"Finally, truly restorative sleep! The mattress adapted
+                to my body shape within just a few nights."</p>
+                <strong>Sophie M.</strong> — 3 days ago
+              </t>
+              <t t-else="">
+                <p>"Enfin un vrai sommeil réparateur ! Le matelas s'est
+                adapté à ma morphologie en quelques nuits seulement."</p>
+                <strong>Sophie M.</strong> — il
+                y a 3 jours
+              </t>
+            </div>
+            <div class="col-md-4 temoignage-card">
+              <div class="stars">★★★★★</div>
+              <t t-if="is_en">
+                <p>"Express delivery, easy set-up. Premium quality at a
+                  very reasonable price."</p>
+                <strong>Thomas L.</strong> — 1 week ago
+              </t>
+              <t t-else="">
+                <p>"Livraison express, installation facile.
+                  Qualité premium pour un prix très raisonnable."</p>
+                <strong>Thomas L.</strong> — il y a
+                1 semaine
+              </t>
+            </div>
+            <div class="col-md-4 temoignage-card">
+              <div class="stars">★★★★☆</div>
+              <t t-if="is_en">
+                <p>"After 2 weeks, I simply can't go without it anymore."</p>
+                <strong>Camille D.</strong> — 2 weeks ago
+              </t>
+              <t t-else="">
+                <p>"Après 2 semaines, je ne peux plus m'en passer."</p>
+                <strong>Camille
+                D.</strong> — il y a 2 semaines
+              </t>
+            </div>
+          </t>
+
         </div>
       </section>
 
