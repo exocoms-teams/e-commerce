@@ -8,7 +8,7 @@ class TrendIngestController(http.Controller):
     @http.route('/api/trend/ingest', type='http', auth='none', methods=['POST'], csrf=False)
     def ingest(self, **kwargs):
         try:
-            data = json.loads(request.httprequest.data)
+            data s= json.loads(request.httprequest.data)
         except Exception:
             return self._json_response({'status': 'error', 'code': 'invalid_json'}, 400)
 
@@ -37,10 +37,7 @@ class TrendIngestController(http.Controller):
         elif data_type == 'ad':
             return self._handle_ad(payload)
         elif data_type == 'score':
-            # trend.score n'existe pas encore (ticket WIN-23 en cours)
-            return self._json_response(
-                {'status': 'error', 'code': 'model_not_available', 'field': 'score'}, 501
-            )
+          return self._handle_score(payload) 
 
     # ---------- Gestion PRODUCT ----------
     def _handle_product(self, payload):
@@ -113,7 +110,35 @@ class TrendIngestController(http.Controller):
             record = env['trend.ad'].create(vals)  # la creation auto-lie/cree le produit
 
         return self._json_response({'status': 'success', 'type': 'ad', 'id': record.id}, 200)
+    # ---------- Gestion SCORE ----------
+def _handle_score(self, payload):
+    required_fields = ['product_ref', 'computed_score']
+    for field in required_fields:
+        if not payload.get(field):
+            return self._json_response(
+                {'status': 'error', 'code': 'missing_field', 'field': field}, 400
+            )
 
+    env = request.env(su=True)
+
+    product = env['trend.product'].search(
+        [('product_ref', '=', payload['product_ref'])], limit=1
+    )
+    if not product:
+        return self._json_response(
+            {'status': 'error', 'code': 'product_not_found', 'product_ref': payload['product_ref']}, 404
+        )
+
+    vals = {
+        'product_id': product.id,
+        'computed_score': payload['computed_score'],
+        'computed_at': payload.get('computed_at'),
+    }
+    vals = {k: v for k, v in vals.items() if v is not None}
+
+    record = env['trend.score'].create(vals)
+
+    return self._json_response({'status': 'success', 'type': 'score', 'id': record.id}, 200)
     # ---------- Utilitaires ----------
     def _is_valid_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('trend.api_key')
