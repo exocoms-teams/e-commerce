@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- SerruPro custom layout without Monetique footer -->
+        <template id="serrupro_layout" name="SerruPro Layout" inherit_id="website.layout">
+            <xpath expr="//footer" position="replace"/>
+        </template>
+
         <!-- SerruPro Homepage Template -->
         <template id="homepage" name="SerruPro Homepage">
-            <t t-call="website.layout">
+            <t t-call="serrupro.layout">
 
                 <style>
                     .serrupro-page { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -91,7 +96,13 @@
                     }
                 </style>
 
-                <div class="serrupro-page">
+                <!--
+                    Zone "oe_structure" : c'est ce qui permet a Odoo de reconnaitre
+                    ce bloc comme editable/glissable dans le Site Builder.
+                    L'id doit etre UNIQUE sur tout le site (il sert de cle de stockage
+                    du contenu edite cote base de donnees).
+                -->
+                <div class="serrupro-page oe_structure" id="oe_structure_serrupro_homepage">
 
                     <!-- Hero Section -->
                     <section class="serrupro-hero" style="background: radial-gradient(circle at 20% 20%, #2d2d2d 0%, #141414 60%); color: white; padding: 110px 0 90px; text-align: center;">
@@ -309,7 +320,7 @@
 
         <!-- SerruPro FAQ Page -->
         <template id="faq_page" name="FAQ SerruPro">
-            <t t-call="website.layout">
+            <t t-call="serrupro.layout">
 
                 <style>
                     .serrupro-faq-page { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -340,7 +351,13 @@
                 <div class="serrupro-faq-page">
                     <section class="serrupro-faq" style="padding: 90px 0 70px; background-color: #ffffff;">
                         <div class="container">
-                            <div class="row mb-5">
+
+                            <!--
+                                Seule cette partie (titre + intro) est purement statique :
+                                elle peut devenir editable en Site Builder sans risque.
+                                Id unique obligatoire.
+                            -->
+                            <div class="row mb-5 oe_structure" id="oe_structure_serrupro_faq_intro">
                                 <div class="col-12 text-center">
                                     <span class="serrupro-eyebrow" style="color: #ff4d5e; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.85rem;">Aide &amp; questions</span>
                                     <h1 style="font-size: 2.6rem; font-weight: 800; margin: 12px 0 16px; color: #1a1a1a;">FAQ SerruPro</h1>
@@ -349,6 +366,13 @@
                                     </p>
                                 </div>
                             </div>
+
+                            <!--
+                                A PARTIR D'ICI : contenu 100% dynamique (formulaire + t-foreach).
+                                NE PAS mettre de classe oe_structure ici : une sauvegarde depuis
+                                le builder figerait le HTML et casserait la logique QWeb
+                                (t-if/t-foreach/t-esc) de facon definitive.
+                            -->
                             <div class="row">
                                 <div class="col-md-6 mb-4">
                                     <div style="padding: 34px; border-radius: 16px; background: #f8f9fb; border: 1px solid #f0f0f0;">
