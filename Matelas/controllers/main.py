@@ -29,7 +29,7 @@ class MatelasVente(http.Controller):
 
         temoignages = request.env['matelas.avis'].sudo().search([
             ('is_published', '=', True),
-        ], order='note desc, create_date desc', limit=3)
+        ], order='note desc, create_date desc', limit=30)
 
         return request.render('Matelas.home', {
             'products': products,
