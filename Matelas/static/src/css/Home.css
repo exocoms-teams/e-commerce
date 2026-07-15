@@ -489,6 +489,7 @@ header#top a[href*="contact-us"] {
 .temoignages .row{
     display: flex;
     flex-wrap: nowrap;
+    justify-content: center;
     gap:20px;
 }
 
@@ -498,7 +499,11 @@ header#top a[href*="contact-us"] {
     padding: 1.5rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     margin-bottom:20px;
-    flex: 1;
+    /* Toujours 1/3 de largeur (3 par ligne sur desktop), même s'il y a
+       moins de 3 avis à afficher : on ne laisse plus la carte s'étirer
+       sur toute la largeur quand elle est seule. */
+    flex: 0 1 calc((100% - 40px) / 3);
+    max-width: calc((100% - 40px) / 3);
 }
 
 .stars {
@@ -744,6 +749,7 @@ footer.o_footer a:hover {
 
     .temoignage-card {
         flex: 1 1 45%;
+        max-width: 45%;
     }
 
     .newsletter-box {
@@ -841,6 +847,7 @@ footer.o_footer a:hover {
 
     .temoignage-card {
         flex: 1 1 100%;
+        max-width: 100%;
     }
 
     .promo-banner {
