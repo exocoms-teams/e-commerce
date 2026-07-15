@@ -74,8 +74,8 @@
         <!-- on l'injecte directement a la fin du header -->
         <xpath expr="//header" position="after">
             <t t-if="website and 'Cam Surveillance' in website.name">
-                <!-- ne pas afficher sur la page d'accueil -->
-                <t t-if="request.httprequest.path != '/'">
+                <!-- afficher uniquement sur shop et produit -->
+                <t t-if="request.httprequest.path.startswith('/shop')">
                     <div class="cam-promo-banner">
                         <div class="cam-promo-track">
                             <span>Livraison gratuite dès 500€</span>
