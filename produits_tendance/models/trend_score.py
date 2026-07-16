@@ -32,3 +32,25 @@ class TrendScore(models.Model):
         string="Classement",
         default=0,
     )
+
+    # --- SNAPSHOT DES MÉTRIQUES (période T de ce calcul) ---
+    # Ces champs "gèlent" les valeurs de V_T, L_T, P_T, A_T au moment du calcul.
+    # Nécessaire car trend.product/trend.ad sont mutables (les compteurs
+    # évoluent dans le temps) : sans ce snapshot, il serait impossible de
+    # reconstituer Vol_T_prev lors du calcul suivant pour obtenir Growth_T.
+    metric_sales = fields.Integer(
+        string="Ventes de la période (V_T)",
+        default=0,
+    )
+    metric_likes = fields.Integer(
+        string="Likes de la période (L_T)",
+        default=0,
+    )
+    metric_shares = fields.Integer(
+        string="Partages de la période (P_T)",
+        default=0,
+    )
+    metric_ads_count = fields.Integer(
+        string="Publicités actives de la période (A_T)",
+        default=0,
+    )
