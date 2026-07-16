@@ -128,10 +128,39 @@ header{
    SEARCH
 =========================================================== */
 
+/* ===========================================================
+   TOPBAR ICONS
+=========================================================== */
+
+.sn-topbar-left,
+.sn-topbar-center{
+    gap:8px;
+}
+
+.sn-topbar-left i,
+.sn-topbar-center i{
+    font-size:13px;
+}
+
+/* ===========================================================
+   LOGO
+=========================================================== */
+
+.sn-logo-mark{
+    width:30px;
+    height:30px;
+    color:var(--primary-color);
+    flex-shrink:0;
+}
+
+/* ===========================================================
+   SEARCH + CATEGORY FILTER
+=========================================================== */
+
 .sn-search{
     display:flex;
     align-items:center;
-    width:280px;
+    width:360px;
     height:46px;
     background:var(--secondary-color);
     border:1px solid var(--border-color);
@@ -139,12 +168,26 @@ header{
     overflow:hidden;
 }
 
+.sn-search-category{
+    height:100%;
+    max-width:110px;
+    border:none;
+    border-right:1px solid var(--border-color);
+    background:transparent;
+    outline:none;
+    padding:0 10px;
+    font-size:13px;
+    color:var(--text-color);
+    cursor:pointer;
+}
+
 .sn-search input{
     flex:1;
+    min-width:0;
     border:none;
     background:transparent;
     outline:none;
-    padding:0 18px;
+    padding:0 14px;
 }
 
 .sn-search button{
@@ -154,6 +197,25 @@ header{
     background:transparent;
     color:var(--primary-color);
     cursor:pointer;
+    flex-shrink:0;
+}
+
+@media(max-width:1200px){
+    .sn-search{
+        width:260px;
+    }
+    .sn-search-category{
+        max-width:80px;
+    }
+}
+
+@media(max-width:992px){
+    .sn-search-category{
+        display:none;
+    }
+    .sn-search{
+        width:200px;
+    }
 }
 
 /* ===========================================================

@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const slides = document.querySelectorAll(".sn-slide");
-    const dots = document.querySelectorAll(".sn-slider-dots span");
-    const nextBtn = document.querySelector(".sn-slider-next");
-    const prevBtn = document.querySelector(".sn-slider-prev");
+    const hero = document.querySelector(".sn-hero");
+
+    if (!hero) {
+        return;
+    }
+
+    const slides = hero.querySelectorAll(".sn-slide");
+    const dots = hero.querySelectorAll(".sn-slider-dots span");
+    const nextBtn = hero.querySelector(".sn-slider-next");
+    const prevBtn = hero.querySelector(".sn-slider-prev");
 
     if (!slides.length) {
         return;
@@ -14,13 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showSlide(index) {
 
-        slides.forEach((slide) => {
-            slide.classList.remove("active");
-        });
-
-        dots.forEach((dot) => {
-            dot.classList.remove("active");
-        });
+        slides.forEach((slide) => slide.classList.remove("active"));
+        dots.forEach((dot) => dot.classList.remove("active"));
 
         slides[index].classList.add("active");
 
@@ -32,25 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function nextSlide() {
-
-        let index = currentSlide + 1;
-
-        if (index >= totalSlides) {
-            index = 0;
-        }
-
-        showSlide(index);
+        showSlide((currentSlide + 1) % totalSlides);
     }
 
     function previousSlide() {
-
-        let index = currentSlide - 1;
-
-        if (index < 0) {
-            index = totalSlides - 1;
-        }
-
-        showSlide(index);
+        showSlide((currentSlide - 1 + totalSlides) % totalSlides);
     }
 
     if (nextBtn) {
@@ -62,15 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     dots.forEach((dot, index) => {
-
-        dot.addEventListener("click", () => {
-
-            showSlide(index);
-
-        });
-
+        dot.addEventListener("click", () => showSlide(index));
     });
 
-    setInterval(nextSlide, 5000);
+    // Pas d'auto-défilement : navigation manuelle uniquement (flèches + dots).
 
 });

@@ -36,6 +36,7 @@
             'monetique_theme/static/src/css/product.css',
             'monetique_theme/static/src/css/responsive.css',
             'monetique_theme/static/src/css/animations.css',
+            'monetique_theme/static/src/css/footer.css',
             'monetique_theme/static/src/css/main.css',
 
             'monetique_theme/static/src/js/slider.js',
