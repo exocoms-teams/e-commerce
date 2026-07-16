@@ -1,4 +1,1 @@
-from . import trend_category
-from . import trend_product
-from . import trend_ad
-from . import trend_score
+from . import test_trend_score
