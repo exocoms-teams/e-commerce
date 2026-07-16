@@ -38,7 +38,8 @@
         'views/templates/Mentions_légales.xml',
         'views/templates/Cookies.xml',
         'views/templates/FicheTechnique.xml',
-       
+        'data/SEO.xml',
+
     ],
     'assets': {
         'web.assets_frontend': [
