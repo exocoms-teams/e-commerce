@@ -16,6 +16,16 @@
                 <field name="parent_id" ref="camera_reseau"/>
             </record>
 
+            <record id="cam_tourelle" model="product.category">
+                <field name="name">Camera tourelle</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+
+            <record id="cam_balle" model="product.category">
+                <field name="name">Camera balle</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+
          <!-- ===================== STOCKAGE ET ENREGISTREURS ===================== -->
         <record id="stockage_enregistreurs" model="product.category">
             <field name="name">Stockage et enregistreur</field>
@@ -111,6 +121,16 @@
                         <field name="name">Camera de coin</field>
                         <field name="parent_id" ref="public_camera_reseau"/>
                     </record>
+                    
+                    <record id="public_cam_tourelle" model="product.public.category">
+                        <field name="name">Camera tourelle</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
+        
+                    <record id="public_cam_balle" model="product.public.category">
+                        <field name="name">Camera balle</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
         
                  <record id="public_stockage_enregistreurs" model="product.public.category">
                     <field name="name">Stockage et enregistreur</field>
@@ -189,9 +209,89 @@
                 </record>
 
 
-        <!-- Étiquette pour les marques (pour l'instant) -->
+        <!-- Étiquettes (filtré indépendement du type de camera) -->
         <record id="brand_axis" model="product.tag">
             <field name="name">Marque AXIS</field>
         </record>
+
+        <record id="vision_nocturne" model="product.tag">
+            <field name="name">Vision nocturne</field>
+        </record>
+
+        <record id="interieur" model="product.tag">
+            <field name="name">Interieur</field>
+        </record>
+
+        <record id="exterieur" model="product.tag">
+            <field name="name">Exterieur</field>
+        </record>
+
+
+        <!-- ===================== RÉSOLUTIONS DES CAMERAS =====================-->
+        <record id="camera_resolution" model="product.attribute">
+            <field name="name">Résolution</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="camera_resolution_720p" model="product.attribute.value">
+                <field name="name">720p</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_1080p" model="product.attribute.value">
+                <field name="name">1080p</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_4k" model="product.attribute.value">
+                <field name="name">4K</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_8k" model="product.attribute.value">
+                <field name="name">8K</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+
+        <!-- ===================== CAPACITÉS DE STOCKAGE =====================-->
+        <record id="stockage_capacity" model="product.attribute">
+            <field name="name">Capacité de stockage</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="stockage_capacity_1to" model="product.attribute.value">
+                <field name="name">1 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+    
+            <record id="stockage_capacity_4to" model="product.attribute.value">
+                <field name="name">4 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+    
+            <record id="stockage_capacity_8to" model="product.attribute.value">
+                <field name="name">8 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+
+        <!-- ===================== VOIES D'ENREGISTREMENT =====================-->
+        <record id="nb_voies_enregistrement" model="product.attribute">
+            <field name="name">Voies d'enregistrement</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="nb_voies_enregistrement_8" model="product.attribute.value">
+                <field name="name">8 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+            
+            <record id="nb_voies_enregistrement_16" model="product.attribute.value">
+                <field name="name">16 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+            
     </data>
  </odoo>
