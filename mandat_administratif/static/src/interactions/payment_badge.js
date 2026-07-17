@@ -18,7 +18,7 @@
         if (!input) return;
 
         const label = input.closest("label") || input.parentElement;
-        if (!label || label.querySelector(".o_ma_flag")) return;
+        if (!label || label.querySelector(".o_ma_checkout_badge")) return;
 
         const badge = document.createElement("span");
         badge.className =
