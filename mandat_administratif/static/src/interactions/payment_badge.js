@@ -26,11 +26,9 @@
         badge.textContent = "Entités publiques";
 
         label.classList.add("o_ma_option_label");
-        // L'image peut être dans le label ou dans le conteneur parent
-        const card = input.closest("div") || label.parentElement;
-        const img = card ? card.querySelector("img") : null;
+        const img = label.querySelector("img");
         if (img) {
-            img.parentNode.insertBefore(badge, img);
+            label.insertBefore(badge, img);
         } else {
             label.appendChild(badge);
         }
