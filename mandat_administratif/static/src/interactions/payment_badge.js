@@ -27,7 +27,7 @@
 
         label.classList.add("o_ma_option_label");
         const img = label.querySelector("img");
-        if (img) {
+        if (img && img.parentNode === label) {
             label.insertBefore(badge, img);
         } else {
             label.appendChild(badge);
