@@ -11,17 +11,9 @@
 
         'views/templates/header.xml',
         'views/templates/footer.xml',
-        'views/templates/search.xml',
         'views/templates/layout.xml',
-        'views/templates/hero.xml',
-        'views/templates/categories.xml',
-        'views/templates/popular_products.xml',
         'views/templates/product_card.xml',
-        'views/templates/feature_cards.xml',
-        'views/templates/brands.xml',
-        'views/templates/newsletter.xml',
         
-
 
         'views/pages/home.xml',
     ],
