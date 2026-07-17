@@ -1,5 +1,4 @@
-// Drapeau + badge « Entités publiques » sur l'option de paiement
-// « Mandat administratif » au checkout.
+// Checkout — libellé "Mandat administratif"
 label.o_ma_option_label {
     display: flex;
     align-items: center;
@@ -20,7 +19,16 @@ label.o_ma_option_label {
 .o_ma_checkout_badge {
     font-size: 0.72em;
     letter-spacing: 0.02em;
-    vertical-align: 1px;
+}
+
+// Masquer l'icône PNG affichée par Odoo à droite de l'option mandat
+// (on la remplace par le drapeau FR injecté par le JS)
+.o_payment_option_card[data-payment-method-code="mandat_administratif"],
+.o_payment_option[data-payment-method-code="mandat_administratif"] {
+    img.o_payment_option_icon,
+    img[src*="payment_method_icon"] {
+        display: none;
+    }
 }
 
 // Icône drapeau dans la carte My Account — taille cohérente avec les autres entrées

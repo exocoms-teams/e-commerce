@@ -1,26 +1,24 @@
-import { Interaction } from "@web/public/interaction";
-import { registry } from "@web/core/registry";
-
 /**
- * Ajoute, sur le formulaire de paiement du checkout, un drapeau français
- * puis un badge « Entités publiques » à la suite du libellé de l'option
- * « Mandat administratif ».
+ * Ajoute un drapeau français et un badge « Entités publiques »
+ * à côté du libellé « Mandat administratif » au checkout.
+ * Utilise vanilla JS pour éviter les dépendances OWL/Interaction.
  */
-export class MandatAdministratifPaymentBadge extends Interaction {
-    static selector = "form[name='o_payment_form']";
+(function () {
+    function addMandatBadge() {
+        const selectors = [
+            "input[data-provider-code='mandat_administratif']",
+            "input[data-payment-method-code='mandat_administratif']",
+        ];
 
-    start() {
-        const input = this.el.querySelector(
-            "input[data-provider-code='mandat_administratif']," +
-            " input[data-payment-method-code='mandat_administratif']"
-        );
-        if (!input) {
-            return;
+        let input = null;
+        for (const sel of selectors) {
+            input = document.querySelector(sel);
+            if (input) break;
         }
+        if (!input) return;
+
         const label = input.closest("label") || input.parentElement;
-        if (!label || label.querySelector(".o_ma_flag")) {
-            return;
-        }
+        if (!label || label.querySelector(".o_ma_flag")) return;
 
         const flag = document.createElement("span");
         flag.className = "o_ma_flag ms-2";
@@ -35,15 +33,20 @@ export class MandatAdministratifPaymentBadge extends Interaction {
             "</svg>";
 
         const badge = document.createElement("span");
-        badge.className = "o_ma_checkout_badge badge rounded-pill text-bg-primary ms-auto";
+        badge.className =
+            "o_ma_checkout_badge badge rounded-pill text-bg-primary ms-auto";
         badge.textContent = "Entités publiques";
 
         label.classList.add("o_ma_option_label");
-        this.insert(flag, label, "beforeend");
-        this.insert(badge, label, "beforeend");
+        label.appendChild(flag);
+        label.appendChild(badge);
     }
-}
 
-registry
-    .category("public.interactions")
-    .add("mandat_administratif.payment_badge", MandatAdministratifPaymentBadge);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", addMandatBadge);
+    } else {
+        addMandatBadge();
+    }
+    // Fallback pour les formulaires chargés dynamiquement
+    setTimeout(addMandatBadge, 800);
+})();
