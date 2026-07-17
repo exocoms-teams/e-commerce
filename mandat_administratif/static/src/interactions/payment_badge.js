@@ -26,7 +26,12 @@
         badge.textContent = "Entités publiques";
 
         label.classList.add("o_ma_option_label");
-        label.appendChild(badge);
+        const img = label.querySelector("img");
+        if (img) {
+            label.insertBefore(badge, img);
+        } else {
+            label.appendChild(badge);
+        }
     }
 
     if (document.readyState === "loading") {
