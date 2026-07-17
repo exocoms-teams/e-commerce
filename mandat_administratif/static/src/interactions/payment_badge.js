@@ -27,7 +27,7 @@ export class MandatAdministratifPaymentBadge extends Interaction {
         flag.setAttribute("role", "img");
         flag.setAttribute("aria-label", "France");
         flag.innerHTML =
-            '<svg width="21" height="14" viewBox="0 0 21 14"' +
+            '<svg width="28" height="19" viewBox="0 0 21 14"' +
             ' xmlns="http://www.w3.org/2000/svg">' +
             '<rect width="7" height="14" fill="#0055A4"/>' +
             '<rect x="7" width="7" height="14" fill="#FFFFFF"/>' +
