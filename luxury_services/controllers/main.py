@@ -9,12 +9,16 @@ from odoo.addons.website.controllers.main import Website
 
 class LuxuryController(WebsiteSale):
 
-
+    # Recupere l'enregistrement du site web "VIP" configure dans Odoo.
+    # Sert de reference pour savoir si on est sur le site VIP ou non.
     def _get_vip_website(self):
         return request.env['website'].search(
             [('name', '=', 'VIP')], limit=1
         )
 
+    # Verifie si le site actuellement consulte par le visiteur est bien le site VIP.
+    # Utilisee en garde au debut de la plupart des routes pour bloquer l'acces
+    # aux pages VIP depuis les autres sites.
     def _is_vip_website(self):
         vip = self._get_vip_website()
         if not vip:
@@ -22,6 +26,9 @@ class LuxuryController(WebsiteSale):
         return request.website.id == vip.id
 
 
+    # Ajoute des valeurs supplementaires au contexte de la page shop.
+    # Sur le site VIP, on injecte la liste des destinations actives
+    # pour qu'elles soient disponibles dans le template.
     def _get_additional_shop_values(self, options, **kwargs):
         values = super()._get_additional_shop_values(options, **kwargs)
         
@@ -35,6 +42,10 @@ class LuxuryController(WebsiteSale):
         return values
         
 
+    # Construit le domaine de recherche (filtre ORM) utilise sur la page shop.
+    # Sur le site VIP, on lit les parametres GET de l'URL (type_service,
+    # longueur, capacite, cabines, vitesse, destination) et on les transforme
+    # en conditions de domaine ajoutees au domaine standard d'Odoo.
     def _get_shop_domain(self, search, category, attribute_value_dict, search_in_description=True):
         domain = super()._get_shop_domain(
             search, category, attribute_value_dict, search_in_description
@@ -86,6 +97,10 @@ class LuxuryController(WebsiteSale):
         return domain
 
 
+    # Recupere les produits correspondant a la recherche shop, puis reapplique
+    # en Python (via filtered) les memes filtres luxury deja appliques dans le
+    # domaine ORM ci-dessus (type_service, longueur, capacite, cabines,
+    # vitesse, destination). Recalcule aussi le nombre de produits trouves.
     def _shop_lookup_products(self, options, post, search, website):
         """Override pour appliquer les filtres luxury après la recherche"""
         fuzzy_search_term, product_count, search_result = super()._shop_lookup_products(
@@ -156,6 +171,9 @@ class LuxuryController(WebsiteSale):
     
     
 
+    # Affiche la page de reservation pour un produit donne (yacht, jet, etc.).
+    # Verifie que le produit existe, qu'il est bien proposable a la location
+    # et qu'il est disponible avant d'afficher le formulaire de reservation.
     @http.route('/luxury/reserver/<int:product_id>',
                 type='http',
                 auth='public',
@@ -182,6 +200,10 @@ class LuxuryController(WebsiteSale):
             'destinations': product.destination_ids,
         })
 
+    # Traite la soumission du formulaire de reservation (etape recapitulatif).
+    # Valide les dates saisies, verifie la duree minimum de location et la
+    # disponibilite du produit sur la periode demandee, calcule le prix total,
+    # puis affiche la page de recap avant validation finale.
     @http.route('/luxury/reserver/recap',
                 type='http',
                 auth='public',
@@ -273,6 +295,9 @@ class LuxuryController(WebsiteSale):
             'destination': destination,
         })
 
+    # Enregistre la reservation en base de donnees une fois le recap valide
+    # par le client. Cree l'enregistrement luxury.reservation avec l'etat
+    # "en_attente", puis affiche la page de confirmation.
     @http.route('/luxury/reserver/submit',
                 type='http',
                 auth='public',
@@ -327,6 +352,8 @@ class LuxuryController(WebsiteSale):
             'reservation': reservation,
         })
 
+    # Affiche la page de paiement d'une reservation, uniquement si celle-ci
+    # existe et si elle est bien passee a l'etat "confirmed".
     @http.route('/luxury/paiement/<int:reservation_id>',
                 type='http',
                 auth='public',
@@ -350,6 +377,7 @@ class LuxuryController(WebsiteSale):
         
         
     #url page maintenance
+    # Affiche la page de demande de maintenance, reservee au site VIP.
     @http.route(
         '/maintenance',
         type='http',
@@ -366,6 +394,9 @@ class LuxuryController(WebsiteSale):
         )
         
         
+    # Traite la soumission du formulaire de demande de maintenance.
+    # Verifie les champs obligatoires puis cree une demande en base
+    # avec l'etat "draft" avant d'afficher la confirmation.
     @http.route('/maintenance/submit',
             type='http',
             auth='public',
@@ -414,6 +445,7 @@ class LuxuryController(WebsiteSale):
         
         
     #pge à propos
+    # Affiche la page "A propos" du site VIP.
     @http.route('/a-propos', type='http', auth='public', website=True)
     def about_page(self, **kwargs):
         if not self._is_vip_website():
@@ -422,6 +454,7 @@ class LuxuryController(WebsiteSale):
     
     
     #page destination
+    # Affiche la page listant les destinations proposees par le site VIP.
     @http.route('/destinations', type='http', auth='public', website=True)
     def destinations_page(self, **kwargs):
         if not self._is_vip_website():
@@ -431,6 +464,7 @@ class LuxuryController(WebsiteSale):
     
     
     #page concierge
+    # Affiche la page de presentation du service concierge.
     @http.route('/concierge', type='http', auth='public', website=True)
     def concierge_page(self, **kwargs):
         if not self._is_vip_website():
@@ -438,6 +472,8 @@ class LuxuryController(WebsiteSale):
         return request.render('luxury_services.luxury_concierge_page', {})
 
 
+    # Traite la soumission d'une demande de service concierge et cree
+    # l'enregistrement correspondant avec l'etat "draft".
     @http.route('/concierge/submit', type='http', auth='public',
                 website=True, methods=['POST'])
     def concierge_submit(self, **kwargs):
@@ -463,6 +499,8 @@ class LuxuryController(WebsiteSale):
         
         
     #page d'accueil
+    # Affiche la page d'accueil. Sur le site VIP, on rend le template
+    # luxury dedie, sinon on retombe sur la page d'accueil standard d'Odoo.
     @http.route('/', type='http', auth='public', website=True)
     def home_page(self, **kwargs):
         if not self._is_vip_website():
@@ -475,6 +513,8 @@ class LuxuryController(WebsiteSale):
             PUBLICATIONS D'ANNONCES
             ========================= 
         """
+    # Affiche le formulaire permettant a un proprietaire de publier
+    # une annonce (yacht, jet, hotel, voiture) sur le site VIP.
     @http.route('/vip/demande-annonce', type='http', auth='public', website=True)
     def listing_page(self, **kwargs):
         if not self._is_vip_website():
@@ -486,6 +526,11 @@ class LuxuryController(WebsiteSale):
         })
 
 
+    # Traite la soumission du formulaire de demande d'annonce.
+    # Valide les champs obligatoires et les pieces jointes requises
+    # (identite, justificatif de propriete), construit les valeurs
+    # specifiques selon le type de bien (yacht, jet, hotel, voiture),
+    # cree la demande en base puis rattache les photos envoyees.
     @http.route('/vip/demande-annonce/submit', type='http', auth='public',
                 website=True, methods=['POST'])
     def listing_submit(self, **kwargs):
@@ -624,6 +669,8 @@ class LuxuryController(WebsiteSale):
     
     
     #url vip annonce client
+    # Affiche la liste des annonces publiees, avec gestion des filtres
+    # (type de bien, service, pays, prix max, recherche texte) et du tri.
     @http.route('/vip/annonces', type='http', auth='public', website=True)
     def listings_page(self, **kwargs):
         if not self._is_vip_website():
@@ -677,6 +724,8 @@ class LuxuryController(WebsiteSale):
         =========================
     """
     
+    # Affiche le detail d'une annonce publiee, avec une selection
+    # d'annonces similaires (meme type de bien, annonce courante exclue).
     @http.route('/vip/annonces/<int:listing_id>',
             type='http', auth='public', website=True)
     def listing_detail(self, listing_id, **kwargs):
@@ -701,6 +750,9 @@ class LuxuryController(WebsiteSale):
         })
 
 
+    # Traite le formulaire de contact envoye depuis la page de detail
+    # d'une annonce. Publie le message du visiteur sur le chatter de
+    # l'annonce, a destination du proprietaire.
     @http.route('/vip/annonces/contact',
                 type='http', auth='public', website=True, methods=['POST'])
     def listing_contact(self, **kwargs):
