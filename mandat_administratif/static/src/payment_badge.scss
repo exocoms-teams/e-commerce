@@ -21,13 +21,11 @@ label.o_ma_option_label {
     letter-spacing: 0.02em;
 }
 
-// Masquer l'icône PNG affichée par Odoo à droite de l'option mandat
-// (on la remplace par le drapeau FR injecté par le JS)
-.o_payment_option_card[data-payment-method-code="mandat_administratif"],
-.o_payment_option[data-payment-method-code="mandat_administratif"] {
-    img.o_payment_option_icon,
-    img[src*="payment_method_icon"] {
-        display: none;
+// Masquer toute image (icône + placeholder) dans l'option mandat administratif
+.o_payment_option_card:has(input[data-payment-method-code="mandat_administratif"]),
+.o_payment_option_card:has(input[data-provider-code="mandat_administratif"]) {
+    img {
+        display: none !important;
     }
 }
 
