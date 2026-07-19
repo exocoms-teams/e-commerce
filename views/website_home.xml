@@ -1,0 +1,24 @@
+<odoo>
+
+    <template id="homepage_inherit"
+        inherit_id="website.layout"
+        name="Tire Catalog Homepage">
+
+        <xpath expr="//header" position="after">
+
+            <t t-if="request.httprequest.path == '/'">
+                <section class="">
+                    <section class="block banner">
+                        <t t-call="tire_catalog.home_search_block" />
+                    </section>
+                    <section class="block">
+                        <t t-call="tire_catalog.home_installer_block" />
+                    </section>
+                </section>
+            </t>
+
+        </xpath>
+
+    </template>
+
+</odoo>

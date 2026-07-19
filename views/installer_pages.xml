@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- PAGE DEVENIR INSTALLATEUR -->
+    <template id="installers_page"
+        name="Devenir installateur"
+        t-name="tire_catalog.installers_page">
+
+        <t t-call="website.layout">
+
+            <div id="installer_page" class="container mt-5">
+
+                <div class="text-center mb-5">
+
+                    <h1>Devenir installateur partenaire</h1>
+
+                    <p class="text-muted">
+                        Rejoignez notre réseau et recevez des demandes de montage de pneus des
+                        clients du site.
+                    </p>
+
+                </div>
+
+                <div class="row justify-content-center mb-5">
+
+                    <div class="col-md-8">
+
+                        <div class="card shadow-sm">
+
+                            <div class="card-body bg-light">
+
+                                <h3 class="text-center mb-3">Formulaire d'inscription</h3>
+
+                                <form action="/devenir-installateur/submit" method="post">
+
+                                    <!-- INFORMATIONS LEGALES -->
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-header">
+                                            <h3 class="h5 mb-0">Informations légales</h3>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Nom de l'entreprise <span
+                                                    class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" name="company_name"
+                                                class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Nom commercial (Facultatif)</label>
+                                            <input type="text" name="trade_name"
+                                                class="form-control" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Numéro SIRET <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="siret" class="form-control"
+                                                required="required" pattern="\d{14}" maxlength="14"
+                                                inputmode="numeric"
+                                                oninvalid="this.setCustomValidity('Le numéro de SIRET doit contenir 14 chiffres.')"
+                                                oninput="this.setCustomValidity('')" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label for="legal_status" class="form-label"> Statut
+                                                juridique <span
+                                                    class="text-danger">*</span>
+                                            </label>
+
+                                            <select id="legal_status"
+                                                name="legal_status"
+                                                class="form-select"
+                                                required="required">
+
+                                                <option value="" selected="selected"
+                                                    disabled="disabled">
+                                                    Sélectionnez un statut
+                                                </option>
+
+                                                <option value="micro">Micro-entreprise</option>
+                                                <option value="ei">Entreprise individuelle</option>
+                                                <option value="eurl">EURL</option>
+                                                <option value="sarl">SARL</option>
+                                                <option value="sas">SAS</option>
+                                                <option value="sasu">SASU</option>
+                                                <option value="sa">SA</option>
+                                                <option value="other">Autre</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    id="vat_subject"
+                                                    name="vat_subject" />
+
+                                                <label class="form-check-label" for="vat_subject">
+                                                    Assujetti à la TVA
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div id="vat_container" class="card-body d-none">
+                                            <label class="form-label">Numéro de TVA
+                                                intracommunautaire</label>
+
+                                            <input type="text"
+                                                id="vat"
+                                                name="vat"
+                                                class="form-control"
+                                                placeholder="FR12345678901" />
+                                        </div>
+                                    </div>
+
+                                    <!-- LOCALISATION -->
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-header">
+                                            <h3 class="h5 mb-0">Localisation</h3>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Adresse <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="address" class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Code postal <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="postal_code"
+                                                class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Ville <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="city" class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Pays <span
+                                                    class="text-danger">*</span></label>
+
+                                            <t t-set="default_country"
+                                                t-value="request.env['res.country'].sudo().search([('code','=','FR')], limit=1)" />
+
+                                            <select name="country_id" class="form-select"
+                                                required="1">
+
+                                                <option value="" disabled="disabled">
+                                                    Sélectionnez un pays
+                                                </option>
+
+                                                <t
+                                                    t-foreach="request.env['res.country'].sudo().search([], order='name')"
+                                                    t-as="c">
+                                                    <option t-att-value="c.id"
+                                                        t-att-selected="c.id == default_country.id and 'selected' or None">
+                                                        <t t-esc="c.name" />
+                                                    </option>
+                                                </t>
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- CONTACT PRINCIPAL -->
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-header">
+                                            <h3 class="h5 mb-0">Contact principal</h3>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Prénom <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="firstname" class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Nom <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="role"
+                                                class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Fonction dans l'entreprise <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="city" class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Email professionnel <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="email" name="professional_email"
+                                                class="form-control" required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Téléphone professionnel <span
+                                                    class="text-danger">*</span></label>
+                                            <input
+                                                type="text" name="professional_phone"
+                                                class="form-control" required="required"
+                                                inputmode="tel" />
+                                        </div>
+                                    </div>
+
+                                    <!-- INFORMATIONS DEDIEES AU CLIENT -->
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-header">
+                                            <h3 class="h5 mb-0">Informations dédies au client</h3>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Type d’activité <span
+                                                    class="text-danger">*</span></label>
+
+                                            <select name="activity_type" class="form-select"
+                                                required="required">
+
+                                                <option value="" disabled="disabled"
+                                                    selected="selected">
+                                                    Sélectionnez un type d’activité
+                                                </option>
+
+                                                <option value="garage">Garage automobile</option>
+                                                <option value="centre_auto">Centre auto</option>
+                                                <option value="pneus">Spécialiste pneus</option>
+                                                <option value="mobile">Dépannage mobile</option>
+                                                <option value="other">Autre</option>
+
+                                            </select>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Services proposés :</label>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="service_mounting"
+                                                    id="service_mounting"
+                                                    checked="checked"
+                                                    disabled="disabled" />
+                                                <label class="form-check-label"
+                                                    for="service_mounting">
+                                                    Montage de pneus (inclus)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="service_balancing"
+                                                    id="service_balancing"
+                                                    checked="checked"
+                                                    disabled="disabled" />
+                                                <label class="form-check-label"
+                                                    for="service_balancing">
+                                                    Équilibrage (inclus)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    name="service_runflat" id="service_runflat" />
+                                                <label class="form-check-label"
+                                                    for="service_runflat">
+                                                    Montage RunFlat
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    name="service_storage" id="service_storage" />
+                                                <label class="form-check-label"
+                                                    for="service_storage">
+                                                    Gardiennage de pneus (stockage saisonnier)
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    name="service_mobile" id="service_mobile" />
+                                                <label class="form-check-label" for="service_mobile">
+                                                    Intervention mobile
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Email de contact <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="email" name="email" class="form-control"
+                                                required="required" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Téléphone <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="phone"
+                                                class="form-control"
+                                                required="required" inputmode="tel" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Site web</label>
+                                            <input type="text" name="website"
+                                                class="form-control" />
+                                        </div>
+
+                                        <div id="opening_infos" class="card-body">
+
+                                            <label class="form-label mb-3">
+                                                <div> Horaires d'ouverture <span
+                                                        class="text-danger">*</span>
+                                                </div>
+                                                <div class="text-muted small">(Si journée
+                                                    continue
+                                                    remplir uniquement les horaires d'ouverture et
+                                                    de
+                                                    fermeture)
+                                                </div>
+                                            </label>
+
+                                            <span id="openning-hours-alert"
+                                                class="small text-danger"></span>
+
+                                            <!-- Lundi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="monday_openned"
+                                                        day="Lundi"
+                                                        class="form-check-input" id="monday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Lundi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="monday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="monday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="monday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="monday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mardi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="tuesday_openned"
+                                                        day="Mardi"
+                                                        class="form-check-input"
+                                                        id="tuesday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Mardi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="tuesday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="tuesday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="tuesday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="tuesday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mercredi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="wednesday_openned"
+                                                        day="Mercredi"
+                                                        class="form-check-input"
+                                                        id="wednesday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Mercredi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="wednesday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="wednesday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="wednesday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="wednesday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Jeudi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="thursday_openned"
+                                                        day="Jeudi"
+                                                        class="form-check-input"
+                                                        id="thursday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Jeudi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="thursday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="thursday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="thursday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="thursday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Vendredi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="friday_openned"
+                                                        day="Vendredi"
+                                                        class="form-check-input"
+                                                        id="friday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Vendredi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="friday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="friday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="friday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="friday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Samedi -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="saturday_openned"
+                                                        day="Samedi"
+                                                        class="form-check-input"
+                                                        id="saturday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Samedi</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="saturday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="saturday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="saturday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="saturday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Dimanche -->
+                                            <div
+                                                class="d-flex flex-row">
+                                                <span
+                                                    class="form-check ms-1">
+                                                    <input type="checkbox" name="sunday_openned"
+                                                        day="Dimanche"
+                                                        class="form-check-input"
+                                                        id="sunday_openned" />
+                                                    <label class="form-check-label"></label>
+                                                </span>
+                                                <span class="fw-bold mb-2">Dimanche</span>
+                                            </div>
+                                            <span class="small text-danger"></span>
+                                            <div
+                                                class="d-flex flex-column gap-1 mb-3">
+                                                <!-- Matin -->
+                                                <div>
+                                                    <div class="text-muted">Matin</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="sunday_morning_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="sunday_morning_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                                <!-- Après-midi -->
+                                                <div>
+                                                    <div class="text-muted">Après-midi</div>
+                                                    <div class="d-flex gap-2">
+                                                        <input type="time"
+                                                            name="sunday_afternoon_open"
+                                                            class="form-control" disabled="true" />
+                                                        <input type="time"
+                                                            name="sunday_afternoon_close"
+                                                            class="form-control" disabled="true" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- INFORMATIONS TECHNIQUES -->
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-header">
+                                            <h3 class="h5 mb-0">Informations techniques (limites de
+                                                prise en charge)</h3>
+                                        </div>
+
+                                        <!-- LISTE DEROULANTE ??? -->
+                                        <div class="card-body">
+                                            <label class="form-label">Largeur max. pneu (mm)<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="max_tire_width"
+                                                class="form-control"
+                                                required="required"
+                                                maxlength="3"
+                                                pattern="^[0-9]{1,3}$"
+                                                inputmode="numeric" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Hauteur min. pneu (mm)<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="min_tire_height"
+                                                class="form-control"
+                                                required="required"
+                                                maxlength="2"
+                                                pattern="^[0-9]{1,3}$"
+                                                inputmode="numeric" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label">Diamètre max. jante (pouces)<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" name="max_rim"
+                                                class="form-control"
+                                                required="required"
+                                                maxlength="2"
+                                                pattern="^[0-9]{1,3}$"
+                                                inputmode="numeric" />
+                                        </div>
+
+                                        <div class="card-body">
+                                            <label class="form-label"> Types de pneus pris en charge <span
+                                                    class="text-danger">*</span>
+                                            </label>
+
+                                            <t t-foreach="tire_categories" t-as="category">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input
+                                                            type="checkbox"
+                                                            class="form-check-input"
+                                                            name="tire_types"
+                                                            t-att-value="category.tire_category"
+                                                            t-att-id="'tire_type_' + str(category.id)"
+                                                        />
+
+                                                        <label
+                                                            class="form-check-label"
+                                                            t-att-for="'tire_type_' + str(category.id)"
+                                                        >
+                                                            <t t-esc="category.name" />
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            Envoyer la demande
+                                        </button>
+                                        <span class="ms-3 text-muted small"> Les champs avec une <span
+                                                class="text-danger">*</span> sont obligatoires </span>
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </t>
+
+    </template>
+
+
+    <!-- PAGE CONFIRMATION -->
+    <template id="installer_thanks_page" name="Merci installateur">
+
+        <t t-call="website.layout">
+
+            <div class="container mt-5 text-center">
+
+                <h1>Merci !</h1>
+
+                <p class="text-muted">
+                    Votre demande a bien été envoyée. Nous vous recontacterons rapidement.
+                </p>
+
+                <a href="/" class="btn btn-primary">
+                    Retour à l’accueil
+                </a>
+
+            </div>
+
+        </t>
+
+    </template>
+
+</odoo>

@@ -1,7 +1,7 @@
 {
     "name": "Tire Catalog",
     "version": "1.0",
-    "depends": ["product", "website_sale", "sale_management"],
+    "depends": ["product", "website", "website_sale", "sale_management"],
     "author": "Thomas A.",
     "category": "Sales",
     "description": "Champs produits adaptés aux pneus.",
@@ -13,6 +13,9 @@
         "data/product_category.xml",
         "data/tire_tread_pattern.xml",
         "data/tire_usage.xml",
+        "views/website_blocks.xml",
+        "views/website_home.xml",
+        "views/installer_pages.xml",
         "demo/tags.xml",
         "demo/product_data.xml",
     ],
@@ -23,7 +26,7 @@
     "assets": {
         "web.assets_frontend": [
             "tire_catalog/static/src/css/style.css",
-            # "tire_catalog/static/src/js/script.js",
+            "tire_catalog/static/src/js/script.js",
         ],
     },
 }
