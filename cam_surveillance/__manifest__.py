@@ -13,6 +13,7 @@
         'data/products.xml',
         'views/layout.xml',
         'views/home.xml',
+        'views/counter_stock.xml',
     ],
     'assets': {
         'web.assets_frontend': [
