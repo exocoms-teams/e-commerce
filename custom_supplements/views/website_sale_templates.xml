@@ -53,10 +53,10 @@
         </xpath>
     </template>
 
-    <!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
+<!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <!-- On se place juste en dessous du tableau des totaux -->
-        <xpath expr="//div[@id='cart_total']" position="after">
+        <!-- On cible la racine de la vue parente et on insère à l'intérieur, à la fin -->
+        <xpath expr="." position="inside">
             
             <!-- Boucle Python/QWeb : On vérifie si au moins un article du panier a le champ 'is_supplement' à True -->
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
