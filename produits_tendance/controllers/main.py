@@ -29,14 +29,18 @@ class TrendIngestController(http.Controller):
             )
 
         payload = data.get('data', {})
-
-        if data_type == 'product':
-            return self._handle_product(payload)
-        elif data_type == 'ad':
-            return self._handle_ad(payload)
-        elif data_type == 'score':
-            return self._handle_score(payload)
-
+        return self.route_by_type(data_type, payload)
+    def route_by_type(self, type, data):
+     if type == 'product':
+        return self._handle_product(data)
+     elif type == 'ad':
+        return self._handle_ad(data)
+     elif type == 'score':
+        return self._handle_score(data)
+     else:
+        return self._json_response(
+            {'status': 'error', 'code': 'unknown_type', 'field': 'type', 'received': type}, 400
+        )
     def _handle_product(self, payload):
         required_fields = ['name', 'product_ref', 'category', 'country', 'source']
         for field in required_fields:
