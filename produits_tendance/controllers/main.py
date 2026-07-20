@@ -17,7 +17,7 @@ class TrendIngestController(http.Controller):
             return self._json_response(
                 {'status': 'error', 'code': 'missing_field', 'field': 'api_key'}, 401
             )
-        if not self._is_valid_api_key(api_key):
+        if not self.check_api_key(api_key):
             return self._json_response(
                 {'status': 'error', 'code': 'invalid_api_key'}, 403
             )
@@ -145,8 +145,8 @@ class TrendIngestController(http.Controller):
             {'status': 'success', 'type': 'score', 'id': record.id}, 200
         )
 
-    def _is_valid_api_key(self, key):
-        valid_key = request.env['ir.config_parameter'].sudo().get_param('trend.api_key')
+    def check_api_key(self, key):
+        valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
         return valid_key and key == valid_key
 
     def _json_response(self, payload, status):
