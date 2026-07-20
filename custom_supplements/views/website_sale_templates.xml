@@ -52,4 +52,21 @@
             </div>
         </xpath>
     </template>
+
+    <!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
+    <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
+        <!-- On se place juste en dessous du tableau des totaux -->
+        <xpath expr="//div[@id='cart_total']" position="after">
+            
+            <!-- Boucle Python/QWeb : On vérifie si au moins un article du panier a le champ 'is_supplement' à True -->
+            <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
+            
+            <!-- L'alerte ne s'affiche que si 'has_supplements' est vrai -->
+            <div t-if="has_supplements" class="alert alert-warning mt-3 mb-0 text-start shadow-sm" style="font-size: 0.85rem;" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i> 
+                <strong>Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
+            </div>
+            
+        </xpath>
+    </template>
 </odoo>
