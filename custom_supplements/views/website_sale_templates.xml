@@ -38,14 +38,14 @@
     </template>
 
 
-<!-- 3. Bouton Filtre Vegan au-dessus de la grille -->
+    <!-- 3. Bouton Filtre Vegan à l'intérieur de la grille -->
     <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Filtre Vegan">
-        <!-- On cible la grille des produits et on se place juste avant -->
-        <xpath expr="//div[@id='products_grid']" position="before">
-            <div class="mb-4 mt-3 col-12">
+        <!-- On cible le tout premier élément situé à l'intérieur de products_grid -->
+        <xpath expr="//div[@id='products_grid']/*[1]" position="before">
+            <div class="mb-4 mt-3">
                 <h6 class="mb-2">Régime Spécial</h6>
                 <a t-att-href="keep('/shop', vegan='1' if not request.params.get('vegan') else '')"
-                   t-attf-class="btn btn-{{ 'success' if request.params.get('vegan') else 'outline-success' }} text-start shadow-sm mb-3">
+                   t-attf-class="btn btn-{{ 'success' if request.params.get('vegan') else 'outline-success' }} shadow-sm mb-3">
                     <i class="fa fa-leaf"></i> 100% Vegan
                     <i t-if="request.params.get('vegan')" class="fa fa-times ms-2"></i>
                 </a>
