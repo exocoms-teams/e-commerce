@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue Liste (Tree) -->
+    <!-- Vue Liste (remplacement de tree par list pour Odoo 19) -->
+    <record id="view_trend_submission_list" model="ir.ui.view">
+        <field name="name">trend.submission.list</field>
+        <field name="model">trend.submission</field>
+        <field name="arch" type="xml">
+            <list decoration-info="status == 'pending'" decoration-success="status == 'validated'" decoration-danger="status == 'rejected'">
+                <field name="name"/>
+                <field name="category"/>
+                <field name="country"/>
+                <field name="submission_reason"/>
+                <field name="submitted_by"/>
+                <field name="create_date" string="Date"/>
+                <field name="status" widget="badge" 
+                       decoration-info="status == 'pending'" 
+                       decoration-success="status == 'validated'" 
+                       decoration-danger="status == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue Formulaire -->
+    <record id="view_trend_submission_form" model="ir.ui.view">
+        <field name="name">trend.submission.form</field>
+        <field name="model">trend.submission</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_validate" string="Valider" type="object" class="oe_highlight" invisible="status != 'pending'" groups="base.group_erp_manager"/>
+                    <button name="action_reject" string="Rejeter" type="object" class="btn-danger" invisible="status != 'pending'" groups="base.group_erp_manager"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="status != 'pending'"/>
+                            <field name="product_ref" readonly="status != 'pending'"/>
+                            <field name="category" readonly="status != 'pending'"/>
+                        </group>
+                        <group>
+                            <field name="country" readonly="status != 'pending'"/>
+                            <field name="submission_reason" readonly="status != 'pending'"/>
+                            <field name="submitted_by" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action pour ouvrir les vues -->
+    <record id="action_trend_submission" model="ir.actions.act_window">
+        <field name="name">Modération des soumissions</field>
+        <field name="res_model">trend.submission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menuitem : Note le groups="base.group_erp_manager" qui répond à la contrainte du ticket -->
+    <menuitem id="menu_trend_submission" 
+              name="Modération" 
+              parent="menu_trend_root" 
+              action="action_trend_submission" 
+              groups="base.group_erp_manager" 
+              sequence="20"/>
+</odoo>
