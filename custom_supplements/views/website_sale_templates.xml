@@ -37,4 +37,21 @@
         </xpath>
     </template>
 
+
+    <!-- 3. Bouton Filtre Vegan sur la barre latérale -->
+    <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Filtre Vegan">
+        <!-- On l'ajoute dans la zone de la barre latérale gauche -->
+        <xpath expr="//div[@id='products_grid_before']" position="inside">
+            <div class="mb-4 mt-3">
+                <h6 class="mb-3">Régime Spécial</h6>
+                <!-- La fonction QWeb keep() est géniale : elle conserve la catégorie actuelle dans l'URL tout en ajoutant ou retirant le paramètre vegan -->
+                <a t-att-href="keep('/shop', vegan='1' if not request.params.get('vegan') else '')"
+                   t-attf-class="btn btn-{{ 'success' if request.params.get('vegan') else 'outline-success' }} w-100 text-start shadow-sm">
+                    <i class="fa fa-leaf"></i> 100% Vegan
+                    <!-- Petite croix qui s'affiche seulement si le filtre est actif -->
+                    <i t-if="request.params.get('vegan')" class="fa fa-times float-end mt-1"></i>
+                </a>
+            </div>
+        </xpath>
+    </template>
 </odoo>
