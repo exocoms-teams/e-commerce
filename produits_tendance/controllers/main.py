@@ -23,10 +23,12 @@ class TrendIngestController(http.Controller):
             )
 
         data_type = data.get('type')
-        if data_type not in ('product', 'score', 'ad'):
-            return self._json_response(
-                {'status': 'error', 'code': 'missing_field', 'field': 'type'}, 400
-            )
+        if not data_type:
+           return self._json_response(
+             {'status': 'error', 'code': 'missing_field', 'field': 'type'}, 400
+          )
+
+
 
         payload = data.get('data', {})
         return self.route_by_type(data_type, payload)
