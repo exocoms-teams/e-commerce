@@ -1,6 +1,6 @@
 {
     'name': 'Telecom Services',
-    'version': '19.0.4.0.0',
+    'version': '19.0.5.0.0',
     'summary': 'Vitrine catalogue Télécom KISSGROUP (fiches détaillées + portail de commande)',
     'category': 'Website',
     'author': 'Exocoms',
