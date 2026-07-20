@@ -339,35 +339,22 @@
             <!-- ========================================================= -->
             <!-- PRODUCT TABS                                              -->
             <!-- ========================================================= -->
-
+<!-- 
             <section class="sn-product-tabs">
 
                 <div class="mn-container">
 
-                    <!-- Tabs Navigation -->
+                    
                     <div class="sn-tabs">
 
-                        <button class="active">
+                        <button class="active">Description</button>
 
-                            Description
+                        <button>Specifications</button>
 
-                        </button>
-
-                        <button>
-
-                            Specifications
-
-                        </button>
-
-                        <button>
-
-                            Shipping &amp; Returns
-
-                        </button>
+                        <button>Shipping &amp; Returns</button>
 
                     </div>
 
-                    <!-- Description -->
                     <div class="sn-tab-content active">
 
                         <p>
@@ -381,7 +368,6 @@
 
                     </div>
 
-                    <!-- Specifications -->
                     <div class="sn-tab-content">
 
                         <ul>
@@ -400,7 +386,6 @@
 
                     </div>
 
-                    <!-- Shipping & Returns -->
                     <div class="sn-tab-content">
 
                         <p>
@@ -414,7 +399,59 @@
 
                 </div>
 
-            </section>
+            </section> -->
+            <section class="sn-product-tabs">
+            <div class="mn-container">
+
+                <!-- Onglets -->
+                <div class="sn-tabs">
+                    <button class="active"
+                            t-att-data-tab="'tab-description'">
+                        Description
+                    </button>
+                    <button t-att-data-tab="'tab-specifications'">
+                        Specifications
+                    </button>
+                    <button t-att-data-tab="'tab-reviews'">
+                        Reviews (<t t-out="review_count"/>)
+                    </button>
+                </div>
+
+                <!-- Description -->
+                <div id="tab-description" class="sn-tab-content">
+                    <p><t t-out="product_description"/></p>
+                    <ul>
+                        <t t-foreach="product_features" t-as="feature">
+                            <li><t t-out="feature"/></li>
+                        </t>
+                    </ul>
+                </div>
+
+                <!-- Specifications -->
+                <div id="tab-specifications" class="sn-tab-content" style="display:none">
+                    <p><strong>Brand:</strong> <t t-out="product_brand"/></p>
+                    <p><strong>Model:</strong> <t t-out="product_model"/></p>
+                    <p><strong>Material:</strong> <t t-out="product_material"/></p>
+                    <p><strong>Sole:</strong> <t t-out="product_sole"/></p>
+                    <p><strong>Available Sizes:</strong> <t t-out="product_sizes"/></p>
+                    <p><strong>Weight:</strong> <t t-out="product_weight"/></p>
+                    <p><strong>Origin:</strong> <t t-out="product_origin"/></p>
+                </div>
+
+                <!-- Reviews -->
+                <div id="tab-reviews" class="sn-tab-content" style="display:none">
+                    <t t-foreach="reviews" t-as="review">
+                        <p>
+                            <strong><t t-out="review.stars"/></strong>
+                            — "<t t-out="review.text"/>" —
+                            <t t-out="review.author"/>
+                        </p>
+                        <br/>
+                    </t>
+                </div>
+
+            </div>
+        </section>
 
             <!-- ========================================================= -->
             <!-- RELATED PRODUCTS                                          -->
@@ -425,32 +462,45 @@
                 <div class="mn-container">
 
                     <!-- Section Header -->
-                    <div class="sn-section-header">
-
-                        <span class="sn-section-subtitle">
-
-                            You May Also Like
-
-                        </span>
-
-                        <h2>
-
-                            Related Products
-
-                        </h2>
-
+                    <div class="sn-section-header" style="text-align:center;margin-bottom:45px;">
+                        <span class="sn-section-subtitle">You May Also Like</span>
+                        <h2>Related Products</h2>
                     </div>
 
                     <!-- Products Grid -->
                     <div class="sn-products-grid">
 
-                        <t t-call="monetique_theme.product_card"/>
+                        <t t-call="monetique_theme.product_card">
+                            <t t-set="product_name" t-value="'Nike Air Max 270'"/>
+                            <t t-set="product_price" t-value="'$189.00'"/>
+                            <t t-set="product_old_price" t-value="'$229.00'"/>
+                            <t t-set="product_image" t-value="'/monetique_theme/static/src/img/products/product-1.jpg'"/>
+                            <t t-set="product_badge" t-value="'NEW'"/>
+                        </t>
 
-                        <t t-call="monetique_theme.product_card"/>
+                        <t t-call="monetique_theme.product_card">
+                            <t t-set="product_name" t-value="'Adidas Ultraboost'"/>
+                            <t t-set="product_price" t-value="'$175.00'"/>
+                            <t t-set="product_old_price" t-value="'$210.00'"/>
+                            <t t-set="product_image" t-value="'/monetique_theme/static/src/img/products/product-2.jpg'"/>
+                            <t t-set="product_badge" t-value="'HOT'"/>
+                        </t>
 
-                        <t t-call="monetique_theme.product_card"/>
+                        <t t-call="monetique_theme.product_card">
+                            <t t-set="product_name" t-value="'Puma RS-X'"/>
+                            <t t-set="product_price" t-value="'$160.00'"/>
+                            <t t-set="product_old_price" t-value="'$200.00'"/>
+                            <t t-set="product_image" t-value="'/monetique_theme/static/src/img/products/product-3.jpg'"/>
+                            <t t-set="product_badge" t-value="'SALE'"/>
+                        </t>
 
-                        <t t-call="monetique_theme.product_card"/>
+                        <t t-call="monetique_theme.product_card">
+                            <t t-set="product_name" t-value="'Reebok Classic'"/>
+                            <t t-set="product_price" t-value="'$140.00'"/>
+                            <t t-set="product_old_price" t-value="'$180.00'"/>
+                            <t t-set="product_image" t-value="'/monetique_theme/static/src/img/products/product-4.jpg'"/>
+                            <t t-set="product_badge" t-value="'NEW'"/>
+                        </t>
 
                     </div>
 
