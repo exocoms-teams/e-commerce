@@ -1,17 +1,17 @@
 from odoo import models
 from odoo.http import request
-from odoo.osv import expression
+from odoo.fields import Domain
 
 class Website(models.Model):
     _inherit = 'website'
 
     def sale_product_domain(self):
-        # 1. On récupère le domaine de base (qui est un objet DomainAnd)
+        # 1. On récupère le domaine de base
         domain = super().sale_product_domain()
         
-        # 2. Vérification sécurisée : l'URL contient-elle "?vegan=1" ?
+        # 2. Vérification de l'URL
         if request and hasattr(request, 'params') and request.params.get('vegan'):
-            # 3. On utilise l'outil Odoo pour fusionner le domaine existant avec notre condition
-            domain = expression.AND([domain, [('is_vegan', '=', True)]])
+            # 3. Nouvelle syntaxe Odoo 18/19+ avec l'opérateur & (AND) et l'objet Domain
+            domain = Domain(domain) & Domain([('is_vegan', '=', True)])
             
         return domain
