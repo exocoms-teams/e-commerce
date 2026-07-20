@@ -28,65 +28,122 @@
    CHECKOUT PROGRESS
 ========================================================== */
 
-.sn-checkout-progress {
-    padding-bottom: 40px;
+.sn-checkout-progress{
+
+    margin:70px 0;
+
 }
 
-.sn-progress {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
+.sn-progress-container{
+
+    position:relative;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
 }
 
-.sn-progress-step {
-    flex: 1;
-    text-align: center;
-    position: relative;
+.sn-progress-line{
+
+    position:absolute;
+
+    top:28px;
+
+    left:80px;
+
+    right:80px;
+
+    height:3px;
+
+    background:#e8e8e8;
+
+    z-index:0;
+
 }
 
-.sn-progress-step::after {
-    content: "";
-    position: absolute;
-    top: 22px;
-    left: 60%;
-    width: 80%;
-    height: 2px;
-    background: #e5e7eb;
+.sn-progress-step{
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    z-index:2;
+
 }
 
-.sn-progress-step:last-child::after {
-    display: none;
+.sn-step-circle{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    border:3px solid #d9d9d9;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:1.5rem;
+
+    font-weight:700;
+
+    color:#222;
+
+    transition:.3s;
+
 }
 
-.sn-progress-number {
-    width: 44px;
-    height: 44px;
+.sn-progress-step span{
 
-    margin: 0 auto 12px;
+    margin-top:18px;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-size:1.25rem;
 
-    border-radius: 50%;
+    font-weight:500;
 
-    background: #ececec;
+    color:#222;
 
-    color: var(--text-dark);
-
-    font-weight: 700;
 }
 
-.sn-progress-step.active .sn-progress-number {
-    background: var(--primary-color);
-    color: var(--white);
+.sn-progress-step.active .sn-step-circle{
+
+    background:var(--primary-color);
+
+    border-color:var(--primary-color);
+
+    color:#fff;
+
 }
 
-.sn-progress-step p {
-    font-weight: 600;
-    color: var(--text-dark);
+.sn-progress-step.completed .sn-step-circle{
+
+    background:var(--primary-color);
+
+    border-color:var(--primary-color);
+
+    color:#fff;
+
 }
+
+.sn-progress-step.completed i{
+
+    font-size:1.4rem;
+
+}
+
 
 /* ==========================================================
    CHECKOUT
