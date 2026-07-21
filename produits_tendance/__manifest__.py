@@ -11,6 +11,7 @@
         'security/ir.model.access.csv',
         'views/trend_ad_views.xml',
         'views/website_templates.xml',
+        'views/trend_product_views.xml',
     ],
 
     'installable': True,
