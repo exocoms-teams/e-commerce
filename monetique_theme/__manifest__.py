@@ -26,22 +26,22 @@
     'assets': {
         'web.assets_frontend': [
 
-            'sneakers/static/src/css/variables.css',
-            'sneakers/static/src/css/layout.css',
+            'monetique_theme/static/src/css/variables.css',
+            'monetique_theme/static/src/css/layout.css',
 
-            'sneakers/static/src/css/home.css',
-            'sneakers/static/src/css/shop.css',
-            'sneakers/static/src/css/product.css',
-            'sneakers/static/src/css/cart.css',
-            'sneakers/static/src/css/checkout.css',
-            'sneakers/static/src/css/confirmation.css',
+            'monetique_theme/static/src/css/home.css',
+            'monetique_theme/static/src/css/shop.css',
+            'monetique_theme/static/src/css/product.css',
+            'monetique_theme/static/src/css/cart.css',
+            'monetique_theme/static/src/css/checkout.css',
+            'monetique_theme/static/src/css/confirmation.css',
 
-            'sneakers/static/src/css/footer.css',
-            'sneakers/static/src/css/responsive.css',
-            'sneakers/static/src/css/animations.css',
-            'sneakers/static/src/css/main.css',
+            'monetique_theme/static/src/css/footer.css',
+            'monetique_theme/static/src/css/responsive.css',
+            'monetique_theme/static/src/css/animations.css',
+            'monetique_theme/static/src/css/main.css',
 
-            'sneakers/static/src/js/slider.js',
+            'monetique_theme/static/src/js/slider.js',
 
         ],
     },
