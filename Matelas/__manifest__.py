@@ -50,6 +50,7 @@
             'Matelas/static/src/css/Mentions.css',
             'Matelas/static/src/css/Shop.css',
             'Matelas/static/src/css/FicheTechnique.css',
+            'Matelas/static/src/css/PortalAccount.css',
             'Matelas/static/src/js/main.js',
         ],
     },
