@@ -2,47 +2,371 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Produit 1 : Protéine Whey (Non-vegan, avec allergènes) -->
-        <record id="demo_product_whey" model="product.template">
-            <field name="name">Whey Protein Isolate - Vanille</field>
-            <field name="list_price">49.99</field>
-            
-            <!-- Liaison avec la catégorie Protéines -->
+        <!-- ========================================== -->
+        <!-- CATÉGORIE 1 : PROTÉINES & COLLAGÈNES       -->
+        <!-- ========================================== -->
+
+        <!-- Produit 1 : Whey Isolat Chocolat -->
+        <record id="demo_product_whey_choco" model="product.template">
+            <field name="name">Whey isolat Chocolat</field>
+            <field name="list_price">54.99</field>
             <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
-            
-            <!-- Syntaxe sécurisée avec eval pour les booléens -->
             <field name="is_published" eval="True"/>
             <field name="is_supplement" eval="True"/>
             <field name="is_vegan" eval="False"/>
-            
             <field name="allergens">Lait, Traces de Soja</field>
             <field name="nutritional_info"><![CDATA[
                 <table class="table table-sm table-bordered">
                     <tr class="table-light"><th>Valeur</th><th>Pour 100g</th><th>Par portion (30g)</th></tr>
-                    <tr><td>Énergie</td><td>375 kcal</td><td>113 kcal</td></tr>
-                    <tr><td>Protéines</td><td>85g</td><td>25.5g</td></tr>
-                    <tr><td>Glucides</td><td>3g</td><td>0.9g</td></tr>
+                    <tr><td>Énergie</td><td>378 kcal</td><td>113 kcal</td></tr>
+                    <tr><td>Protéines</td><td>86g</td><td>25.8g</td></tr>
+                    <tr><td>Glucides</td><td>2.5g</td><td>0.7g</td></tr>
+                    <tr><td>Lipides</td><td>1.2g</td><td>0.3g</td></tr>
                 </table>
             ]]></field>
         </record>
 
-        <!-- Produit 2 : Pre-workout (Vegan) -->
-        <record id="demo_product_preworkout" model="product.template">
-            <field name="name">Pre-Workout Extrême - Pomme</field>
-            <field name="list_price">34.50</field>
-            
-            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
-            
+        <!-- Produit 2 : Multi Collagène -->
+        <record id="demo_product_multi_collagen" model="product.template">
+            <field name="name">Multi Collagène</field>
+            <field name="list_price">39.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
             <field name="is_published" eval="True"/>
             <field name="is_supplement" eval="True"/>
-            <field name="is_vegan" eval="True"/>
-            
+            <field name="is_vegan" eval="False"/>
+            <field name="allergens">Poisson, Œuf</field>
             <field name="nutritional_info"><![CDATA[
                 <table class="table table-sm table-bordered">
                     <tr class="table-light"><th>Composant</th><th>Par portion (10g)</th></tr>
-                    <tr><td>Caféine</td><td>200mg</td></tr>
+                    <tr><td>Collagène Bovin (Type I, III)</td><td>5000mg</td></tr>
+                    <tr><td>Collagène Marin (Type I)</td><td>3000mg</td></tr>
+                    <tr><td>Acide Hyaluronique</td><td>120mg</td></tr>
+                    <tr><td>Vitamine C</td><td>80mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 3 : Marine Collagen -->
+        <record id="demo_product_marine_collagen" model="product.template">
+            <field name="name">Marine Collagen</field>
+            <field name="list_price">42.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="False"/>
+            <field name="allergens">Poisson</field>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Valeur</th><th>Pour 100g</th><th>Par portion (10g)</th></tr>
+                    <tr><td>Énergie</td><td>360 kcal</td><td>36 kcal</td></tr>
+                    <tr><td>Protéines (Peptides)</td><td>90g</td><td>9g</td></tr>
+                    <tr><td>Glucides</td><td>0g</td><td>0g</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 4 : Clear Whey -->
+        <record id="demo_product_clear_whey" model="product.template">
+            <field name="name">Protéines de lactosérum Clear Whey</field>
+            <field name="list_price">49.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="False"/>
+            <field name="allergens">Lait</field>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Valeur</th><th>Pour 100g</th><th>Par portion (25g)</th></tr>
+                    <tr><td>Énergie</td><td>340 kcal</td><td>85 kcal</td></tr>
+                    <tr><td>Protéines</td><td>80g</td><td>20g</td></tr>
+                    <tr><td>Glucides</td><td>4g</td><td>1g</td></tr>
+                    <tr><td>Lipides</td><td>0g</td><td>0g</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 5 : Protéine Végétale -->
+        <record id="demo_product_vegan_protein" model="product.template">
+            <field name="name">Protéine Végétale Complète - Pois &amp; Riz</field>
+            <field name="list_price">38.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_proteins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Valeur</th><th>Pour 100g</th><th>Par portion (30g)</th></tr>
+                    <tr><td>Énergie</td><td>390 kcal</td><td>117 kcal</td></tr>
+                    <tr><td>Protéines</td><td>75g</td><td>22.5g</td></tr>
+                    <tr><td>Glucides</td><td>8g</td><td>2.4g</td></tr>
+                    <tr><td>Lipides</td><td>6g</td><td>1.8g</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- ========================================== -->
+        <!-- CATÉGORIE 2 : PRÉ-ENTRAÎNEMENT & AMINOS    -->
+        <!-- ========================================== -->
+
+        <!-- Produit 6 : BCAA 2:1:1 -->
+        <record id="demo_product_bcaa" model="product.template">
+            <field name="name">BCAA 2:1:1</field>
+            <field name="list_price">24.99</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (5g)</th></tr>
+                    <tr><td>L-Leucine</td><td>2500mg</td></tr>
+                    <tr><td>L-Isoleucine</td><td>1250mg</td></tr>
+                    <tr><td>L-Valine</td><td>1250mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 7 : CREATINE -->
+        <record id="demo_product_creatine" model="product.template">
+            <field name="name">CREATINE Monohydrate</field>
+            <field name="list_price">19.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (3g)</th></tr>
+                    <tr><td>Créatine Monohydrate (Creapure®)</td><td>3000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 8 : L-GLUTAMINE -->
+        <record id="demo_product_glutamine" model="product.template">
+            <field name="name">L GLUTAMINE</field>
+            <field name="list_price">22.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (5g)</th></tr>
+                    <tr><td>L-Glutamine pure</td><td>5000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 9 : L-ALANINE -->
+        <record id="demo_product_alanine" model="product.template">
+            <field name="name">L ALANINE</field>
+            <field name="list_price">18.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (3g)</th></tr>
+                    <tr><td>L-Alanine</td><td>3000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 10 : TAURINE - VITAMINE C -->
+        <record id="demo_product_taurine_vitc" model="product.template">
+            <field name="name">TAURINE - VITAMINE C</field>
+            <field name="list_price">21.00</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (2 gélules)</th></tr>
+                    <tr><td>L-Taurine</td><td>1000mg</td></tr>
+                    <tr><td>Vitamine C</td><td>160mg (200% AR)</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 11 : Citrulline Malate -->
+        <record id="demo_product_citrulline" model="product.template">
+            <field name="name">Citrulline malate</field>
+            <field name="list_price">26.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (6g)</th></tr>
+                    <tr><td>L-Citrulline Malate 2:1</td><td>6000mg</td></tr>
+                    <tr><td> dont L-Citrulline</td><td>4000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 12 : PURE PRE-WORKOUT -->
+        <record id="demo_product_pure_preworkout" model="product.template">
+            <field name="name">PURE PRE-WORKOUT</field>
+            <field name="list_price">35.00</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_preworkout')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (15g)</th></tr>
+                    <tr><td>Caféine anhydre</td><td>250mg</td></tr>
                     <tr><td>Bêta-Alanine</td><td>3000mg</td></tr>
-                    <tr><td>Citrulline</td><td>4000mg</td></tr>
+                    <tr><td>AAKG (Arginine Alpha-Kétoglutarate)</td><td>4000mg</td></tr>
+                    <tr><td>L-Tyrosine</td><td>1000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- ========================================== -->
+        <!-- CATÉGORIE 3 : VITAMINES & MINÉRAUX         -->
+        <!-- ========================================== -->
+
+        <!-- Produit 13 : Vitamin C 500mg -->
+        <record id="demo_product_vitc500" model="product.template">
+            <field name="name">Vitamin C 500mg + Rose Hip</field>
+            <field name="list_price">12.99</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par comprimé</th><th>% AR*</th></tr>
+                    <tr><td>Vitamine C (Acide Ascorbique)</td><td>500mg</td><td>625%</td></tr>
+                    <tr><td>Extrait de Cynorrhodon (Rose Hip)</td><td>50mg</td><td>-</td></tr>
+                </table>
+                <small>*Apports de Référence</small>
+            ]]></field>
+        </record>
+
+        <!-- Produit 14 : Vitamine D3 1000UI -->
+        <record id="demo_product_vitd3" model="product.template">
+            <field name="name">Vitamine D3 1000UI</field>
+            <field name="list_price">9.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="False"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par gélule</th><th>% AR*</th></tr>
+                    <tr><td>Vitamine D3 (Cholécalciférol)</td><td>25µg (1000 UI)</td><td>500%</td></tr>
+                    <tr><td>Huile d'olive extra vierge</td><td>150mg</td><td>-</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 15 : Zinc bisglycinate -->
+        <record id="demo_product_zinc" model="product.template">
+            <field name="name">Zinc bisglycinate</field>
+            <field name="list_price">14.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par gélule</th><th>% AR*</th></tr>
+                    <tr><td>Zinc (sous forme de bisglycinate)</td><td>15mg</td><td>150%</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 16 : Magnésium bisglycinate -->
+        <record id="demo_product_magnesium" model="product.template">
+            <field name="name">Magnésium bisglycinate</field>
+            <field name="list_price">19.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (3 gélules)</th><th>% AR*</th></tr>
+                    <tr><td>Magnésium (Bisglycinate)</td><td>300mg</td><td>80%</td></tr>
+                    <tr><td>Vitamine B6 (Pyridoxine)</td><td>1.4mg</td><td>100%</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 17 : OMEGA 3 EPA -->
+        <record id="demo_product_omega3" model="product.template">
+            <field name="name">OMEGA 3 EPA</field>
+            <field name="list_price">25.00</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="False"/>
+            <field name="allergens">Poisson</field>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (2 capsules)</th></tr>
+                    <tr><td>Huile de poisson purifiée</td><td>2000mg</td></tr>
+                    <tr><td> - dont EPA</td><td>800mg</td></tr>
+                    <tr><td> - dont DHA</td><td>400mg</td></tr>
+                    <tr><td>Vitamine E</td><td>10mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 18 : Fer + Vitamine C -->
+        <record id="demo_product_fer" model="product.template">
+            <field name="name">Fer + Vitamine C</field>
+            <field name="list_price">11.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par gélule</th><th>% AR*</th></tr>
+                    <tr><td>Fer (Bisglycinate)</td><td>14mg</td><td>100%</td></tr>
+                    <tr><td>Vitamine C</td><td>80mg</td><td>100%</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 19 : Maca du Pérou -->
+        <record id="demo_product_maca" model="product.template">
+            <field name="name">Maca du Pérou</field>
+            <field name="list_price">16.90</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Composant</th><th>Par portion (4 gélules)</th></tr>
+                    <tr><td>Extrait de racine de Maca (Lepidium meyenii)</td><td>2000mg</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <!-- Produit 20 : Spiruline BIO -->
+        <record id="demo_product_spiruline" model="product.template">
+            <field name="name">Spiruline BIO</field>
+            <field name="list_price">21.50</field>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('cat_vitamins')])]"/>
+            <field name="is_published" eval="True"/>
+            <field name="is_supplement" eval="True"/>
+            <field name="is_vegan" eval="True"/>
+            <field name="nutritional_info"><![CDATA[
+                <table class="table table-sm table-bordered">
+                    <tr class="table-light"><th>Valeur / Composant</th><th>Pour 10g (poudre)</th></tr>
+                    <tr><td>Énergie</td><td>35 kcal</td></tr>
+                    <tr><td>Protéines (Phycocyanine)</td><td>6.5g</td></tr>
+                    <tr><td>Fer</td><td>5mg</td></tr>
+                    <tr><td>Vitamine B12</td><td>16µg</td></tr>
                 </table>
             ]]></field>
         </record>

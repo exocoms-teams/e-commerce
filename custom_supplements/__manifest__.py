@@ -3,7 +3,7 @@
     'author': 'Yassine Tartor',
     'license': 'LGPL-3',
     'version': '1.0',
-    'summary': 'Vente de protéines, vitamines et gestion des stocks',
+    'summary': 'Extension e-commerce pour la vente de compléments alimentaires',
     'category': 'eCommerce',
     'depends': [
         'base',
