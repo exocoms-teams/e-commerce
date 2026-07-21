@@ -15,6 +15,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/templates.xml',
+        'views/homepage_content.xml',
     ],
     'installable': True,
     'application': True,
