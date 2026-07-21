@@ -9,7 +9,7 @@ class SneakersController(http.Controller):
     def home(self, **kwargs):
         return request.render('sneakers.page_home', {})
 
-    @http.route('/shop', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/shop-sneakers', type='http', auth='public', website=True, sitemap=True)
     def shop(self, **kwargs):
         return request.render('sneakers.shop_page', {})
     @http.route('/product', type='http', auth='public', website=True, sitemap=True)
