@@ -1,38 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        PAS de noupdate : versioned, mega_menu_content réappliqué à chaque -u.
+        PAS de noupdate : versioned.
         website_id, parent_id et sequence sont assignés par le post_init/migrate_hook.
 
-        ⚠️ VÉRIFICATION REQUISE avant déploiement :
-        Confirmer via Odoo shell que website.menu possède ces champs en Odoo 19 :
-            env['website.menu'].fields_get(['is_mega_menu', 'mega_menu_content', 'mega_menu_classes'])
-        Si is_mega_menu n'existe pas, supprimer ce record et gérer le menu via le hook Python.
+        Compatibilité Odoo 19 :
+        on évite ici les champs de mega-menu non garantis sur website.menu
+        pour ne pas bloquer l'installation du module.
     -->
     <data>
 
         <record id="menu_telecom" model="website.menu">
             <field name="name">Télécom</field>
-            <field name="url">#</field>
-            <!-- ⚠️ Champs mega-menu : à vérifier en Odoo 19 (cf. commentaire ci-dessus) -->
-            <field name="is_mega_menu">True</field>
-            <field name="mega_menu_classes">o_mega_menu_telecom</field>
-            <field name="mega_menu_content"><![CDATA[
-<div class="container-fluid py-4">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-8">
-            <p class="fw-bold mb-1 o_default_snippet_text">Solutions Télécom pour les professionnels</p>
-            <p class="mb-0 o_default_snippet_text">
-                Voix, mobilité, intelligence conversationnelle, connectivité et cybersécurité —
-                des solutions clés en main pour piloter vos communications d'entreprise.
-            </p>
-        </div>
-        <div class="col-lg-4 text-lg-end">
-            <a href="/telecom" class="btn btn-primary">Passer la commande</a>
-        </div>
-    </div>
-</div>
-            ]]></field>
+            <field name="url">/telecom</field>
         </record>
 
     </data>
