@@ -9,18 +9,18 @@
     'data': [
         'security/ir.model.access.csv',
 
-        'sneakers/views/templates/layout.xml',
-        'sneakers/views/templates/header.xml',
-        'sneakers/views/templates/footer.xml',
-        'sneakers/views/templates/product_card.xml',
+        '/views/templates/layout.xml',
+        '/views/templates/header.xml',
+        '/views/templates/footer.xml',
+        '/views/templates/product_card.xml',
         
 
-        'sneakers/views/pages/home.xml',
-        'sneakers/views/pages/shop.xml',
-        'sneakers/views/pages/product.xml',
-        'sneakers/views/pages/cart.xml',
-        'sneakers/views/pages/checkout.xml',
-        'sneakers/views/pages/confirmation.xml',
+        '/views/pages/home.xml',
+        '/views/pages/shop.xml',
+        '/views/pages/product.xml',
+        '/views/pages/cart.xml',
+        '/views/pages/checkout.xml',
+        '/views/pages/confirmation.xml',
     ],
 
     'assets': {
