@@ -9,18 +9,18 @@
     'data': [
         'security/ir.model.access.csv',
 
-        '/views/templates/layout.xml',
-        '/views/templates/header.xml',
-        '/views/templates/footer.xml',
-        '/views/templates/product_card.xml',
+        'views/templates/layout.xml',
+        'views/templates/header.xml',
+        'views/templates/footer.xml',
+        'views/templates/product_card.xml',
         
 
-        '/views/pages/home.xml',
-        '/views/pages/shop.xml',
-        '/views/pages/product.xml',
-        '/views/pages/cart.xml',
-        '/views/pages/checkout.xml',
-        '/views/pages/confirmation.xml',
+        'views/pages/home.xml',
+        'views/pages/shop.xml',
+        'views/pages/product.xml',
+        'views/pages/cart.xml',
+        'views/pages/checkout.xml',
+        'views/pages/confirmation.xml',
     ],
 
     'assets': {
