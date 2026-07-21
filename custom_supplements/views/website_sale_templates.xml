@@ -70,28 +70,4 @@
         </xpath>
     </template>
 
-    <!-- 5. Affichage du tableau nutritionnel sur la page produit -->
-    <template id="product_nutritional_table" inherit_id="website_sale.product" name="Tableau Nutritionnel Produit">
-        <!-- On cible la zone de détails du produit pour y insérer notre bloc à la fin -->
-        <xpath expr="//div[@id='product_details']" position="inside">
-            
-            <!-- On s'assure que le champ HTML existe et contient des données avant d'afficher la section -->
-            <t t-if="product.nutritional_table">
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h5 class="mb-3"><i class="fa fa-leaf text-success me-2"></i>Informations Nutritionnelles</h5>
-                    
-                    <!-- L'utilisation de t-out est obligatoire sur Odoo 17+ pour afficher du HTML brut stocké en base -->
-                    <div class="table-responsive">
-                        <t t-out="product.nutritional_table"/>
-                    </div>
-                </div>
-            </t>
-            
-        </xpath>
-    </template>
-
-
-
-
-
 </odoo>
