@@ -9,7 +9,8 @@
         <field name="arch" type="xml">
             
             <xpath expr="//notebook" position="inside">
-                <page string="Infos Nutritionnelles" name="nutritional_info">
+                <!-- SÉCURITÉ : L'onglet entier est réservé au groupe Gestionnaire -->
+                <page string="Infos Nutritionnelles" name="nutritional_info" groups="custom_supplements.group_supplement_manager">
                     <group>
                         <group>
                             <field name="is_supplement" widget="boolean_toggle"/>
@@ -27,12 +28,11 @@
         </field>
     </record>
 
-<!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
+    <!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
     <record id="action_supplements_products" model="ir.actions.act_window">
         <field name="name">Compléments Alimentaires</field>
         <field name="res_model">product.template</field>
         
-        <!-- CORRECTION ICI : On utilise "list" au lieu de "tree" -->
         <field name="view_mode">kanban,list,form</field>
         
         <field name="domain">[('is_supplement', '=', True)]</field>
@@ -40,9 +40,11 @@
     </record>
 
     <!-- 3. Le Menu Racine (Celui qui apparaîtra sur le tableau de bord) -->
+    <!-- SÉCURITÉ : L'application n'est visible que par le groupe Gestionnaire -->
     <menuitem id="menu_supplements_root" 
               name="Compléments" 
-              sequence="10"/>
+              sequence="10"
+              groups="custom_supplements.group_supplement_manager"/>
 
     <!-- 4. Le Sous-Menu (Le lien cliquable dans votre nouvelle application) -->
     <menuitem id="menu_supplements_products" 
