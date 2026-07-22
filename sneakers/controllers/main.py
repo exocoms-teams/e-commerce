@@ -27,3 +27,7 @@ class SneakersController(http.Controller):
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
         return request.render('sneakers.page_confirmation', {})
+
+    @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
+    def wishlist(self, **kwargs):
+        return request.render('sneakers.page_wishlist', {})

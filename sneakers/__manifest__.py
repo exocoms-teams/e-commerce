@@ -21,6 +21,7 @@
         'views/pages/cart.xml',
         'views/pages/checkout.xml',
         'views/pages/confirmation.xml',
+        'views/pages/wishlist.xml',
     ],
 
     'assets': {
@@ -35,6 +36,7 @@
             'sneakers/static/src/css/cart.css',
             'sneakers/static/src/css/checkout.css',
             'sneakers/static/src/css/confirmation.css',
+            'sneakers/static/src/css/wishlist.css',
 
             'sneakers/static/src/css/footer.css',
             'sneakers/static/src/css/responsive.css',
