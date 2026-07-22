@@ -24,12 +24,10 @@
         </xpath>
     </template>
 
-    <!-- 2. Badge Vegan (Corrigé avec une cible plus robuste) -->
+    <!-- 2. Badge Vegan -->
     <template id="products_item_supplements_badge" inherit_id="website_sale.products_item" name="Badge Vegan Shop">
-        <!-- On cible le formulaire principal de la carte produit -->
         <xpath expr="//form" position="inside">
             <t t-if="product.is_vegan">
-                <!-- Positionnement absolu pour le placer par-dessus l'image -->
                 <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
                     <i class="fa fa-leaf"></i> Vegan
                 </span>
@@ -37,10 +35,8 @@
         </xpath>
     </template>
 
-
     <!-- 3. Bouton Filtre Vegan à l'intérieur de la grille -->
     <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Filtre Vegan">
-        <!-- On cible le tout premier élément situé à l'intérieur de products_grid -->
         <xpath expr="//div[@id='products_grid']/*[1]" position="before">
             <div class="mb-4 mt-3">
                 <h6 class="mb-2">Régime Spécial</h6>
@@ -53,43 +49,31 @@
         </xpath>
     </template>
 
-<!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
+    <!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <!-- On cible la racine de la vue parente et on insère à l'intérieur, à la fin -->
         <xpath expr="." position="inside">
-            
-            <!-- Boucle Python/QWeb : On vérifie si au moins un article du panier a le champ 'is_supplement' à True -->
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
-            
-            <!-- L'alerte ne s'affiche que si 'has_supplements' est vrai -->
             <div t-if="has_supplements" class="alert alert-warning mt-3 mb-0 text-start shadow-sm" style="font-size: 0.85rem;" role="alert">
                 <i class="fa fa-exclamation-triangle me-2"></i> 
                 <strong>Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
             </div>
-            
         </xpath>
     </template>
 
-    <?xml version="1.0" encoding="utf-8"?>
-
-    <data>
-        <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Nutritional Info Supplements">
-            <xpath expr="//div[@id='product_details']" position="inside">
-                
-                <t t-if="product.is_supplement">
-                    <div class="alert alert-info mt-4" role="alert">
-                        <h5 class="alert-heading"><i class="fa fa-info-circle"/> Informations Nutritionnelles</h5>
-                        <hr/>
-                        <ul class="list-unstyled mb-0">
-                            <!-- Les champs vont maintenant s'afficher correctement -->
-                            <li><strong>Dosage recommandé :</strong> <span t-field="product.dosage"/></li>
-                            <li><strong>Ingrédients actifs :</strong> <span t-field="product.ingredients"/></li>
-                        </ul>
-                    </div>
-                </t>
-                
-            </xpath>
-        </template>
-    </data>    
+    <!-- 5. Nouveaux champs Dosage et Ingrédients -->
+    <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Nutritional Info Supplements">
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <t t-if="product.is_supplement">
+                <div class="alert alert-info mt-4" role="alert">
+                    <h5 class="alert-heading"><i class="fa fa-info-circle"/> Posologie et Composition</h5>
+                    <hr/>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Dosage recommandé :</strong> <span t-field="product.dosage"/></li>
+                        <li><strong>Ingrédients actifs :</strong> <span t-field="product.ingredients"/></li>
+                    </ul>
+                </div>
+            </t>
+        </xpath>
+    </template>
 
 </odoo>
