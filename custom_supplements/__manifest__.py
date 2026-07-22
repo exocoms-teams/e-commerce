@@ -13,6 +13,7 @@
     ],
 'data': [
         'security/security.xml',
+        'data/ir_cron.xml',
         'data/ecommerce_categories.xml',
         'data/ecommerce_products.xml', # Nos produits de test
         'views/product_template_views.xml',

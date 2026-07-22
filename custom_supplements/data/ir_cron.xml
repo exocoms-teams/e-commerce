@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- On utilise noupdate="1" pour que les administrateurs puissent 
+         modifier l'heure d'exécution dans l'interface sans que 
+         le code n'écrase leurs réglages à la prochaine mise à jour -->
+    <data noupdate="1">
+        
+        <record id="ir_cron_check_supplement_expiry" model="ir.cron">
+            <field name="name">Compléments : Vérification des péremptions</field>
+            <!-- Lien vers le modèle de base qui contient notre fonction -->
+            <field name="model_id" ref="stock.model_stock_lot"/>
+            <field name="state">code</field>
+            <!-- Appel direct de la fonction Python -->
+            <field name="code">model._cron_check_expiring_supplements()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field> <!-- -1 = exécution infinie -->
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
