@@ -53,4 +53,28 @@
               action="action_supplements_products" 
               sequence="10"/>
 
+
+    <?xml version="1.0" encoding="utf-8"?>
+    
+    <record id="product_template_only_form_view_supplements" model="ir.ui.view">
+        <field name="name">product.template.product.form.supplements</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Ajout d'un onglet dédié aux compléments -->
+            <xpath expr="//notebook" position="inside">
+                <!-- L'onglet n'apparaît que si is_supplement est coché -->
+                <page string="Infos Nutritionnelles" name="nutritional_info" invisible="not is_supplement">
+                    <group>
+                        <field name="is_supplement"/>
+                        <field name="dosage"/>
+                        <field name="ingredients"/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
 </odoo>

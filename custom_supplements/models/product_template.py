@@ -8,6 +8,8 @@ class ProductTemplate(models.Model):
     allergens = fields.Char(string="Allergènes")
     
     is_supplement = fields.Boolean(string="Est un complément alimentaire", default=False)
+    dosage = fields.Char(string="Dosage recommandé", help="Ex: 2 gélules par jour")
+    ingredients = fields.Text(string="Ingrédients actifs", help="Liste des composants nutritionnels")
 
     # CORRECTION : On utilise le décorateur 'multi' pour gérer les listes
     @api.model_create_multi
