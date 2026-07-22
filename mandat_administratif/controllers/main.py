@@ -19,10 +19,7 @@ class MandatAdministratifController(http.Controller):
         _logger.info(
             "Mandat administratif : données reçues :\n%s", pprint.pformat(post)
         )
-        reference = post.get('reference')
-        tx = request.env['payment.transaction'].sudo().search(
-            [('reference', '=', reference)], limit=1
+        request.env['payment.transaction'].sudo()._process(
+            'mandat_administratif', post
         )
-        if tx:
-            tx._apply_updates(post)
         return request.redirect('/payment/status')
