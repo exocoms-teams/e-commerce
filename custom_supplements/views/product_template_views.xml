@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- 1. Modification de la fiche produit (Onglet Nutrition) -->
+    <!-- 1. Modification de la fiche produit (Onglet Nutrition Complet Unifié) -->
     <record id="view_product_template_form_inherit_supplements" model="ir.ui.view">
         <field name="name">product.template.form.inherit.supplements</field>
         <field name="model">product.template</field>
@@ -11,17 +11,24 @@
             <xpath expr="//notebook" position="inside">
                 <!-- SÉCURITÉ : L'onglet entier est réservé au groupe Gestionnaire -->
                 <page string="Infos Nutritionnelles" name="nutritional_info" groups="custom_supplements.group_supplement_manager">
+                    
+                    <!-- Organisation sur deux colonnes pour une interface plus claire -->
                     <group>
-                        <group>
+                        <group string="Configuration">
                             <field name="is_supplement" widget="boolean_toggle"/>
                             <field name="is_vegan" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Posologie &amp; Composition">
+                            <field name="dosage"/>
                             <field name="allergens"/>
+                            <field name="ingredients"/>
                         </group>
                     </group>
                     
                     <group string="Tableau des Valeurs Nutritionnelles">
                         <field name="nutritional_info" nolabel="1" placeholder="Ex: Calories: 380kcal, Protéines: 85g..."/>
                     </group>
+                    
                 </page>
             </xpath>
             
@@ -32,9 +39,7 @@
     <record id="action_supplements_products" model="ir.actions.act_window">
         <field name="name">Compléments Alimentaires</field>
         <field name="res_model">product.template</field>
-        
         <field name="view_mode">kanban,list,form</field>
-        
         <field name="domain">[('is_supplement', '=', True)]</field>
         <field name="context">{'default_is_supplement': True}</field>
     </record>
@@ -52,29 +57,5 @@
               parent="menu_supplements_root" 
               action="action_supplements_products" 
               sequence="10"/>
-
-
-    <?xml version="1.0" encoding="utf-8"?>
-    
-    <record id="product_template_only_form_view_supplements" model="ir.ui.view">
-        <field name="name">product.template.product.form.supplements</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view"/>
-        <field name="arch" type="xml">
-            
-            <!-- Ajout d'un onglet dédié aux compléments -->
-            <xpath expr="//notebook" position="inside">
-                <!-- L'onglet n'apparaît que si is_supplement est coché -->
-                <page string="Infos Nutritionnelles" name="nutritional_info" invisible="not is_supplement">
-                    <group>
-                        <field name="is_supplement"/>
-                        <field name="dosage"/>
-                        <field name="ingredients"/>
-                    </group>
-                </page>
-            </xpath>
-            
-        </field>
-    </record>
 
 </odoo>
