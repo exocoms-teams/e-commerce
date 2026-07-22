@@ -12,11 +12,11 @@
         'product_expiry', # Ajout du module de gestion des DLC/DLUO
     ],
 'data': [
+        'security/security.xml',
         'data/ecommerce_categories.xml',
         'data/ecommerce_products.xml', # Nos produits de test
         'views/product_template_views.xml',
         'views/website_sale_templates.xml',
-        'security/security.xml',
     ],
     'installable': True,
     'application': True,
