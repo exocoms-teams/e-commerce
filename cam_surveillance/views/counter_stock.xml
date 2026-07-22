@@ -2,26 +2,28 @@
 <odoo>
     <template id="custom_product_stock_qty" inherit_id="website_sale.product" name="Affichage Stock Personnalisé">
         <xpath expr="//div[@id='product_details']" position="inside">
+            
+            <!-- Zone d'affichage du stock -->
             <div class="my-3 custom-stock-counter">
-                <!-- On s'assure que l'objet variant existe et possède bien le champ de stock -->
-                <t t-if="product.product_variant_id and 'qty_available' in product.product_variant_id._fields">
-                    
-                    <!-- Lecture du stock avec .sudo() pour les visiteurs du site -->
-                    <t t-if="product.product_variant_id.sudo().qty_available &gt; 0">
-                        <span class="badge bg-success text-white p-2">
-                            <i class="fa fa-check-circle me-1"/>
-                            <span t-esc="int(product.product_variant_id.sudo().qty_available)"/> unités disponibles
-                        </span>
-                    </t>
-                    <t t-else="">
-                        <span class="badge bg-danger text-white p-2">
-                            <i class="fa fa-exclamation-triangle me-1"/>
-                            Rupture de stock
-                        </span>
-                    </t>
-                    
+                
+                <!-- Si le stock est strictement supérieur à 0 -->
+                <t t-if="product.sudo().qty_available &gt; 0">
+                    <span class="badge bg-success text-white p-2" style="font-size: 0.9rem;">
+                        <i class="fa fa-check-circle me-1"/>
+                        <span t-esc="int(product.sudo().qty_available)"/> unités en stock
+                    </span>
                 </t>
+                
+                <!-- Si le stock est égal ou inférieur à 0 -->
+                <t t-else="">
+                    <span class="badge bg-danger text-white p-2" style="font-size: 0.9rem;">
+                        <i class="fa fa-exclamation-triangle me-1"/>
+                        Rupture de stock
+                    </span>
+                </t>
+
             </div>
+
         </xpath>
     </template>
 </odoo>
