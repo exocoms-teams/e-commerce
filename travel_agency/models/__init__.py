@@ -6,3 +6,4 @@ from . import hotel
 from . import vol
 from . import train
 from . import car
+from . import recommendation_engine

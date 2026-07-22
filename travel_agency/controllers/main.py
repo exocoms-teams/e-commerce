@@ -70,10 +70,52 @@ class TravelController(http.Controller):
         product = request.env['product.template'].sudo().browse(product_id)
         if not product.exists():
             return request.redirect('/travels')
+        providers = request.env['travel.payment.provider'].sudo().search([('active', '=', True)])
         return request.render('travel_agency.travel_booking_page', {
             'product': product,
+            'providers': providers,
+        })
+    @http.route('/travels/payment/<int:transaction_id>', type='http', auth='public', website=True)
+    def travel_payment_page(self, transaction_id, **kwargs):
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists() or transaction.state != 'pending':
+            return request.redirect('/travels')
+        return request.render('travel_agency.travel_payment_page', {
+            'transaction': transaction,
         })
 
+    @http.route('/travels/payment/submit', type='http', auth='public', website=True, methods=['POST'])
+    def travel_payment_submit(self, **kwargs):
+        transaction_id = int(kwargs.get('transaction_id', 0))
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists():
+            return request.redirect('/travels')
+
+        card_number = kwargs.get('card_number', '').strip()
+        card_last_4 = card_number[-4:] if len(card_number) >= 4 else ''
+
+        # Simulateur : on valide juste que le numéro de carte a bien 16 chiffres
+        if len(card_number.replace(' ', '')) == 16:
+            transaction.write({
+                'state': 'done',
+                'card_last_4': card_last_4,
+            })
+            transaction.action_done()
+            transaction.reservation_id.action_confirm()
+        else:
+            transaction.action_failed()
+            return request.render('travel_agency.travel_payment_page', {
+                'transaction': transaction,
+                'error': 'Numéro de carte invalide (simulateur : 16 chiffres requis).',
+            })
+
+        return request.render('travel_agency.travel_confirm_page', {
+            'reservation': transaction.reservation_id,
+        })
+    
+    
+    
+    
     @http.route('/travels/book/submit', type='http', auth='public', website=True, methods=['POST'])
     def travel_book_submit(self, **kwargs):
         product_id = int(kwargs.get('product_id', 0))
@@ -128,6 +170,14 @@ class TravelController(http.Controller):
                     pass
             passenger_vals.append((0, 0, vals))
 
+        payment_provider_id = int(kwargs.get('payment_provider_id', 0) or 0)
+        if not payment_provider_id:
+            return request.render('travel_agency.travel_booking_page', {
+                'product': product,
+                'providers': request.env['travel.payment.provider'].sudo().search([('active', '=', True)]),
+                'error': 'Veuillez choisir un prestataire de paiement.',
+            })
+
         reservation = request.env['travel.reservation'].sudo().create({
             'client_firstname': client_firstname,
             'client_lastname': client_lastname,
@@ -141,9 +191,11 @@ class TravelController(http.Controller):
             'nb_enfants': nb_enfants,
             'notes': notes,
             'passenger_ids': passenger_vals,
-            'state': 'draft',
+            'payment_provider_id': payment_provider_id,
+            'state': 'en_attente',
         })
 
+<<<<<<< HEAD
         return request.render('travel_agency.travel_confirm_page', {
             'reservation': reservation,
         })
@@ -651,4 +703,41 @@ class TravelController(http.Controller):
             'query': query,
             'results': results,
             'total_count': sum(len(results[key]) for key in results)
+=======
+        transaction = request.env['travel.payment.transaction'].sudo().create({
+            'reservation_id': reservation.id,
+            'provider_id': payment_provider_id,
+            'state': 'pending',
+            'first_name': client_firstname,
+            'last_name': client_lastname,
+            'email': client_email,
+            'phone': client_phone,
+        })
+
+        return request.redirect('/travels/payment/%d' % transaction.id)
+    
+    
+    @http.route('/recommandation', type='http', auth='public', website=True)
+    def recommandation_form(self, **kwargs):
+        return request.render('travel_agency.recommandation_form_page', {'error': False})
+
+    @http.route('/recommandation/resultats', type='http', auth='public', website=True, methods=['POST'])
+    def recommandation_resultats(self, **kwargs):
+        budget_max = float(kwargs.get('budget_max', 0) or 0)
+        nb_personnes = int(kwargs.get('nb_personnes', 1) or 1)
+        etoiles_min = kwargs.get('etoiles_min') or None
+        pays = kwargs.get('pays', '').strip() or None
+        type_voyage = kwargs.get('type_voyage') or None
+
+        engine = request.env['travel.recommendation.engine']
+        recommendations = engine.get_recommendations(
+            budget_max=budget_max,
+            nb_personnes=nb_personnes,
+            etoiles_min=etoiles_min,
+            pays=pays,
+            type_voyage=type_voyage,
+        )
+        return request.render('travel_agency.recommandation_results_page', {
+            'recommendations': recommendations,
+>>>>>>> ef5e29ef157ea4354f0c7d9cddede872353beb71
         })
