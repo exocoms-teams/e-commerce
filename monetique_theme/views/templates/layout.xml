@@ -6,124 +6,244 @@
         <xpath expr="//head" position="inside">
             <style>
                 /* ── Menus masqués ── */
-                .o_searchbar_form,
-                .o_header_search_btn,
-                button[data-bs-target="#o_search_modal"],
-                #o_search_modal,
-                .o_header_mobile_search,
-                .o_wsale_my_cart,
-                a[href*="/shop/cart"],
-                .o_header_phone,
-                .js_phone,
-                a[href^="tel:"].o_phone,
-                .o_main_navbar a[href="/contactus"],
-                .o_main_navbar li:has(> a[href="/contactus"]),
-                a.btn[href="/contactus"],
-                .o_main_navbar .btn[href="/contactus"],
-                .o_main_navbar a[href="/shop"],
-                .o_main_navbar li:has(> a[href="/shop"]),
-                .o_extra_menu_items { display: none !important; }
+                .o_searchbar_form,.o_header_search_btn,button[data-bs-target="#o_search_modal"],#o_search_modal,.o_header_mobile_search,.o_wsale_my_cart,a[href*="/shop/cart"],.o_header_phone,.js_phone,a[href^="tel:"].o_phone,.o_main_navbar a[href="/contactus"],.o_main_navbar li:has(> a[href="/contactus"]),a.btn[href="/contactus"],.o_main_navbar .btn[href="/contactus"],.o_main_navbar a[href="/shop"],.o_main_navbar li:has(> a[href="/shop"]),.o_extra_menu_items{display:none !important}
+                #top_menu a[href="/blog"],#top_menu a[href*="/blog/"],#top_menu a[href="/urgence"],#top_menu a[href*="/appointment"],#top_menu a[href="/appointment"],.o_main_navbar a[href="/blog"],.o_main_navbar a[href*="/blog/"],.o_main_navbar a[href="/urgence"],.o_main_navbar a[href*="/appointment"],.o_main_navbar a[href="/appointment"],#top_menu li:has(> a[href="/blog"]),#top_menu li:has(> a[href="/urgence"]),#top_menu li:has(> a[href*="/appointment"]),#top_menu li:has(> a[href="/appointment"]),.o_main_navbar li:has(> a[href="/blog"]),.o_main_navbar li:has(> a[href="/urgence"]),.o_main_navbar li:has(> a[href*="/appointment"]),.o_main_navbar li:has(> a[href="/appointment"]){display:none !important}
+                /* ── Navbar ── */
+                #top_menu .nav-link,.o_main_navbar a.nav-link{position:relative;transition:color .2s}
+                #top_menu .nav-link::after,.o_main_navbar a.nav-link::after{content:'';position:absolute;bottom:-2px;left:50%;right:50%;height:2px;background:#1E40AF;border-radius:2px;transition:left .2s,right .2s}
+                #top_menu .nav-link:hover,.o_main_navbar a.nav-link:hover{color:#1E40AF !important}
+                #top_menu .nav-link:hover::after,.o_main_navbar a.nav-link:hover::after{left:0;right:0}
+                #top_menu .nav-link.active,.o_main_navbar a.nav-link.active,#top_menu .nav-link[aria-current="page"],.o_main_navbar a.nav-link[aria-current="page"]{color:#1E40AF !important;font-weight:700 !important}
+                #top_menu .nav-link.active::after,.o_main_navbar a.nav-link.active::after,#top_menu .nav-link[aria-current="page"]::after,.o_main_navbar a.nav-link[aria-current="page"]::after{left:0 !important;right:0 !important}
+                /* ── Espace Artisan ── */
+                a.o_sign_in,a[href="/web/login"],.o_sign_in_sign_up a,a.o_nav_link_btn{display:inline-flex !important;align-items:center !important;justify-content:center !important;gap:7px !important;background:linear-gradient(135deg,#C62828,#D32F2F) !important;color:white !important;padding:8px 18px !important;border-radius:10px !important;font-weight:700 !important;font-family:'Inter',sans-serif !important;border:none !important;text-decoration:none !important;font-size:0 !important;cursor:pointer !important;box-shadow:0 4px 14px rgba(198,40,40,.35) !important;transition:transform .2s,box-shadow .2s !important;white-space:nowrap !important}
+                a.o_sign_in:hover,a[href="/web/login"]:hover,.o_sign_in_sign_up a:hover,a.o_nav_link_btn:hover{transform:translateY(-1px) !important;box-shadow:0 6px 20px rgba(198,40,40,.45) !important;color:white !important}
+                a.o_sign_in::before,a[href="/web/login"]::before,.o_sign_in_sign_up a::before,a.o_nav_link_btn::before{content:'\f0ad';font-family:FontAwesome;font-size:14px !important}
+                a.o_sign_in::after,a[href="/web/login"]::after,.o_sign_in_sign_up a::after,a.o_nav_link_btn::after{content:'Espace Artisan';font-size:13px !important}
 
-                /* Blog, Urgence, Appointment */
-                #top_menu a[href="/blog"],
-                #top_menu a[href*="/blog/"],
-                #top_menu a[href="/urgence"],
-                #top_menu a[href*="/appointment"],
-                #top_menu a[href="/appointment"],
-                .o_main_navbar a[href="/blog"],
-                .o_main_navbar a[href*="/blog/"],
-                .o_main_navbar a[href="/urgence"],
-                .o_main_navbar a[href*="/appointment"],
-                .o_main_navbar a[href="/appointment"],
-                #top_menu li:has(> a[href="/blog"]),
-                #top_menu li:has(> a[href="/urgence"]),
-                #top_menu li:has(> a[href*="/appointment"]),
-                #top_menu li:has(> a[href="/appointment"]),
-                .o_main_navbar li:has(> a[href="/blog"]),
-                .o_main_navbar li:has(> a[href="/urgence"]),
-                .o_main_navbar li:has(> a[href*="/appointment"]),
-                .o_main_navbar li:has(> a[href="/appointment"]) { display: none !important; }
-
-                /* ── Navbar hover + active ── */
-                #top_menu .nav-link,
-                .o_main_navbar a.nav-link {
-                    position: relative;
-                    transition: color .2s;
+                /* ════ DESIGN SYSTEM ════ */
+                :root{--mn-red:#C62828; --mn-red-dark:#8B0000; --mn-blue:#1E40AF;--mn-blue-light:#3B82F6;--mn-blue-dark:#1E3A8A;--mn-dark:#0F172A;--mn-gray-900:#111827;--mn-gray-700:#374151;--mn-gray-500:#6B7280;--mn-gray-200:#E5E7EB;--mn-gray-50:#F9FAFB;--mn-white:#fff;--mn-green:#10B981;--mn-radius:14px;--mn-radius-lg:22px;--mn-shadow:0 4px 24px rgba(0,0,0,.07);--mn-shadow-lg:0 12px 48px rgba(0,0,0,.12);--mn-shadow-blue:0 8px 32px rgba(30,64,175,.25)}
+                *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+                body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--mn-gray-900);line-height:1.6;-webkit-font-smoothing:antialiased}
+                a{color:inherit;text-decoration:none}ul{list-style:none}img{max-width:100%;display:block}
+                .mn-container{max-width:1200px;margin:0 auto;padding:0 24px}
+                @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+                @keyframes fadeInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+                @keyframes fadeInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+                @keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+                @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.95)}}
+                @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+                @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+                
+                /* ── Navbar active + hover ── */
+                .o_main_navbar .nav-link:hover { color: #1E40AF !important; }
+                .o_main_navbar .nav-link.active,
+                .o_main_navbar .nav-link[aria-current="page"] { 
+                    color: #1E40AF !important; 
+                    border-bottom: 2px solid #1E40AF;
                 }
-                #top_menu .nav-link::after,
-                .o_main_navbar a.nav-link::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -2px; left: 50%; right: 50%;
-                    height: 2px;
-                    background: #1E40AF;
-                    border-radius: 2px;
-                    transition: left .2s, right .2s;
+                
+                .mn-hero{background:linear-gradient(135deg,#EFF6FF 0%,#F0F4FF 40%,#F8FAFF 100%);padding:90px 0 70px;position:relative;overflow:hidden}
+                .mn-hero::before{content:'';position:absolute;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,.15) 0%,transparent 70%);border-radius:50%;animation:float 6s ease-in-out infinite}
+                .mn-hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,64,175,.08) 0%,transparent 70%);border-radius:50%}
+                .mn-hero__inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
+                .mn-hero__badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(59,130,246,.2);padding:7px 16px;border-radius:100px;font-size:13px;font-weight:500;color:var(--mn-blue);margin-bottom:24px;box-shadow:0 2px 12px rgba(59,130,246,.1);animation:fadeInLeft .6s ease forwards}
+                .mn-dot{width:8px;height:8px;background:var(--mn-green);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+                .mn-hero__title{font-size:54px;font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--mn-dark);margin-bottom:20px;animation:fadeInLeft .6s ease .1s forwards;opacity:0}
+                .mn-hero__accent{display:block;background:linear-gradient(135deg,var(--mn-blue) 0%,var(--mn-blue-light) 60%,#60A5FA 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s linear infinite,fadeInLeft .6s ease .2s forwards;opacity:0}
+                .mn-hero__desc{font-size:18px;color:var(--mn-gray-500);margin-bottom:36px;max-width:480px;line-height:1.7;animation:fadeInLeft .6s ease .3s forwards;opacity:0}
+                .mn-hero__actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;animation:fadeInLeft .6s ease .4s forwards;opacity:0}
+                .mn-hero__trust{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;animation:fadeInLeft .6s ease .5s forwards;opacity:0}
+                .mn-hero__trust span{display:flex;align-items:center;gap:6px;color:var(--mn-gray-700);font-weight:500}
+                .mn-hero__visual{animation:fadeInRight .8s ease .3s forwards;opacity:0;filter:drop-shadow(0 20px 40px rgba(30,64,175,.15))}
+                .mn-stats{background:linear-gradient(135deg,var(--mn-dark) 0%,#1E2A4A 100%);padding:32px 0;position:relative;overflow:hidden}
+                .mn-stats__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center;position:relative}
+                .mn-stat{padding:16px 20px;border-right:1px solid rgba(255,255,255,.08);transition:background .3s}
+                .mn-stat:last-child{border-right:none}
+                .mn-stat:hover{background:rgba(255,255,255,.04)}
+                .mn-stat__number{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 0%,#93C5FD 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+                .mn-stat__label{display:block;font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+                .mn-section{padding:80px 0}
+                .mn-section__header{text-align:center;max-width:640px;margin:0 auto 56px}
+                .mn-section__header h2{font-size:38px;font-weight:800;letter-spacing:-.025em;color:var(--mn-dark);margin:10px 0 16px;line-height:1.15}
+                .mn-section__header p{font-size:17px;color:var(--mn-gray-500);line-height:1.7}
+                .mn-section__footer{text-align:center;margin-top:48px}
+                .mn-section--gray{background:var(--mn-gray-50)}
+                
+                .mn-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mn-blue-light);background:rgba(59,130,246,.08);padding:4px 14px;border-radius:100px;border:1px solid rgba(59,130,246,.15)}
+                .mn-grid{display:grid;gap:24px}
+                .mn-grid--4{grid-template-columns:repeat(4,1fr)}
+                .mn-grid--3{grid-template-columns:repeat(3,1fr)}
+                .mn-grid--2{grid-template-columns:repeat(2,1fr)}
+                .mn-card--solution{display:block;background:#fff;border:1px solid var(--mn-gray-200);border-radius:var(--mn-radius);padding:28px;position:relative;transition:all .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+                .mn-card--solution::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(59,130,246,.04) 0%,transparent 60%);opacity:0;transition:opacity .3s}
+                .mn-card--solution::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mn-blue) 0%,var(--mn-blue-light) 100%);transform:scaleX(0);transition:transform .3s ease}
+                .mn-card--solution:hover{border-color:rgba(59,130,246,.3);box-shadow:var(--mn-shadow-blue);transform:translateY(-6px)}
+                .mn-card--solution:hover::before{opacity:1}
+                .mn-card--solution:hover::after{transform:scaleX(1)}
+                .mn-card--solution.mn-card--featured{border-color:rgba(59,130,246,.25);background:linear-gradient(135deg,#EFF6FF 0%,#fff 100%)}
+                .mn-card__icon{width:52px;height:52px;background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--mn-blue);margin-bottom:18px;transition:transform .3s,box-shadow .3s}
+                .mn-card--solution:hover .mn-card__icon{transform:scale(1.1) rotate(-5deg);box-shadow:0 8px 20px rgba(59,130,246,.2)}
+                .mn-card--solution h3{font-size:18px;font-weight:700;color:var(--mn-dark);margin-bottom:8px}
+                .mn-card--solution p{font-size:14px;color:var(--mn-gray-500);margin-bottom:20px;line-height:1.6}
+                .mn-card__arrow{color:var(--mn-blue-light);font-size:20px;display:inline-block;transition:transform .3s}
+                .mn-card--solution:hover .mn-card__arrow{transform:translateX(4px)}
+                .mn-products__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+                .mn-product-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--mn-gray-200);border-radius:var(--mn-radius);overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1);position:relative}
+                .mn-product-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mn-blue) 0%,var(--mn-blue-light) 100%);transform:scaleX(0);transition:transform .3s ease}
+                .mn-product-card:hover{box-shadow:var(--mn-shadow-lg);transform:translateY(-8px);border-color:rgba(59,130,246,.2)}
+                .mn-product-card:hover::after{transform:scaleX(1)}
+                .mn-product-card__img{height:160px;background:linear-gradient(135deg,#F0F4FF 0%,#EFF6FF 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+                .mn-product-card__img img{width:100%;height:100%;object-fit:cover}
+                .mn-product-card__no-img{display:flex;align-items:center;justify-content:center;width:100%;height:100%;position:relative;z-index:1}
+                .mn-product-card:hover .mn-product-card__no-img svg{transform:scale(1.1)}
+                .mn-product-card__no-img svg{transition:transform .3s}
+                .mn-product-card__body{padding:20px;display:flex;flex-direction:column;flex:1}
+                .mn-product-card__body h3{font-size:16px;font-weight:700;color:var(--mn-dark);margin-bottom:8px}
+                .mn-product-card__desc{font-size:13px;color:var(--mn-gray-500);line-height:1.6;flex:1;margin-bottom:16px}
+                .mn-product-card__footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+                .mn-product-card__price{font-size:17px;font-weight:800;color:var(--mn-blue);white-space:nowrap}
+                .mn-review{background:#fff;border:1px solid var(--mn-gray-200);border-radius:var(--mn-radius);padding:28px;position:relative;overflow:hidden;transition:all .3s ease}
+                .mn-review::before{content:'"';position:absolute;top:-10px;right:20px;font-size:120px;color:rgba(59,130,246,.06);font-family:Georgia,serif;line-height:1;pointer-events:none}
+                .mn-review:hover{box-shadow:var(--mn-shadow);border-color:rgba(59,130,246,.15);transform:translateY(-4px)}
+                .mn-review__stars{color:#F59E0B;font-size:16px;margin-bottom:16px;letter-spacing:3px}
+                .mn-review blockquote{font-size:15px;color:var(--mn-gray-700);line-height:1.75;margin-bottom:20px;font-style:italic;position:relative;z-index:1}
+                .mn-review__author{display:flex;align-items:center;gap:12px}
+                .mn-avatar{width:42px;height:42px;background:linear-gradient(135deg,var(--mn-blue) 0%,var(--mn-blue-light) 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;box-shadow:0 4px 12px rgba(30,64,175,.3)}
+                .mn-review__author strong{display:block;font-size:14px;color:var(--mn-dark)}
+                .mn-review__author span{font-size:13px;color:var(--mn-gray-500)}
+                .mn-reviews__score{text-align:center;margin-top:40px;font-size:16px;color:var(--mn-gray-700)}
+                .mn-reviews__stars{color:#F59E0B;font-size:22px;letter-spacing:3px;display:block;margin-bottom:8px}
+                .mn-cta{background:linear-gradient(135deg,var(--mn-blue-dark) 0%,var(--mn-blue) 50%,#2563EB 100%);padding:80px 0;position:relative;overflow:hidden}
+                .mn-cta::before{content:'';position:absolute;top:-50%;right:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);border-radius:50%}
+                .mn-cta::after{content:'';position:absolute;bottom:-30%;left:-5%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);border-radius:50%}
+                .mn-cta__inner{text-align:center;color:#fff;position:relative;z-index:1}
+                .mn-cta__inner h2{font-size:38px;font-weight:800;letter-spacing:-.025em;margin-bottom:14px;line-height:1.2}
+                .mn-cta__inner p{font-size:16px;opacity:.75;margin-bottom:36px}
+                .mn-cta__actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+                .mn-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s ease;border:2px solid transparent;text-decoration:none;position:relative;overflow:hidden}
+                .mn-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);opacity:0;transition:opacity .2s}
+                .mn-btn:hover::before{opacity:1}
+                .mn-btn--lg{padding:16px 32px;font-size:16px;border-radius:12px}
+                .mn-btn--sm{padding:8px 16px;font-size:13px;border-radius:8px}
+                
+                .mn-btn--secondary {
+                    background: var(--mn-red);
+                    color: #fff !important;
+                    border-color: var(--mn-red);
+                    box-shadow: 0 4px 14px rgba(198,40,40,.3);
                 }
-                #top_menu .nav-link:hover,
-                .o_main_navbar a.nav-link:hover { color: #1E40AF !important; }
-                #top_menu .nav-link:hover::after,
-                .o_main_navbar a.nav-link:hover::after { left: 0; right: 0; }
-                #top_menu .nav-link.active,
-                .o_main_navbar a.nav-link.active,
-                #top_menu .nav-link[aria-current="page"],
-                .o_main_navbar a.nav-link[aria-current="page"] {
-                    color: #1E40AF !important;
-                    font-weight: 700 !important;
+                .mn-btn--secondary:hover {
+                    background: var(--mn-red-dark) !important;
+                    border-color: var(--mn-red-dark) !important;
+                    color: #fff !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(139,0,0,.4);
                 }
-                #top_menu .nav-link.active::after,
-                .o_main_navbar a.nav-link.active::after,
-                #top_menu .nav-link[aria-current="page"]::after,
-                .o_main_navbar a.nav-link[aria-current="page"]::after {
-                    left: 0 !important; right: 0 !important;
+                
+                .mn-btn--primary{background:var(--mn-blue);color:#fff;border-color:var(--mn-blue);box-shadow:0 4px 14px rgba(30,64,175,.3)}
+                .mn-btn--primary:hover{background:var(--mn-blue-dark);border-color:var(--mn-blue-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.4)}
+                .mn-btn--outline{background:transparent;color:var(--mn-blue);border-color:var(--mn-blue)}
+                .mn-btn--outline:hover{background:var(--mn-blue);color:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+                .mn-btn--white{background:#fff;color:var(--mn-blue);border-color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+                .mn-btn--white:hover{background:#F0F4FF;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2)}
+                .mn-footer{color:#fff}
+                .mn-footer__top{padding:64px 0}
+                .mn-footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;align-items:start}
+                .mn-footer__logo{font-size:22px;font-weight:800;color:#fff;display:block;margin-bottom:16px}
+                .mn-footer__brand p{font-size:14px;color:rgba(255,255,255,.72);line-height:1.7;margin-bottom:20px}
+                .mn-footer__badges{display:flex;gap:8px;flex-wrap:wrap}
+                .mn-badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:11px;font-weight:600;padding:4px 10px;border-radius:5px;letter-spacing:.05em;border:1px solid rgba(255,255,255,.12);transition:all .2s}
+                .mn-badge:hover{background:rgba(255,255,255,.16);color:#fff}
+                .mn-footer__col{display:flex;flex-direction:column}
+                .mn-footer__col h4{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.78);margin:0 0 16px 0;padding:0}
+                .mn-footer__col ul{display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}
+                .mn-footer__col li{margin:0;padding:0}
+                .mn-footer__col a{font-size:14px;color:rgba(255,255,255,.88);transition:all .2s;display:inline-flex;align-items:center;gap:6px;line-height:1.4}
+                .mn-footer__col a i{width:16px;text-align:center;flex-shrink:0;opacity:.9}
+                .mn-footer__col a:hover{color:#fff;transform:translateX(4px)}
+                .mn-footer__bottom{border-top:1px solid rgba(255,255,255,.12);padding:20px 0}
+                .mn-footer__bottom .mn-container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+                .mn-footer__bottom p{font-size:13px;color:rgba(255,255,255,.68);margin:0}
+                .mn-footer__bottom nav{display:flex;gap:20px}
+                .mn-footer__bottom nav a{font-size:13px;color:rgba(255,255,255,.68);transition:color .2s}
+                .mn-footer__bottom nav a:hover{color:#fff}
+                
+                /* ════════════════════════════════════════════════
+                   FORMULAIRES — classes à ajouter à main.css
+                ════════════════════════════════════════════════ */
+                
+                /* ── Page Hero bleu (pages internes) ── */
+                .mn-page-hero { background: linear-gradient(135deg, var(--mn-blue-dark) 0%, var(--mn-blue) 50%, #2563EB 100%); padding: 60px 0 40px; text-align: center; position: relative; overflow: hidden; }
+                .mn-page-hero::before { content: ''; position: absolute; top: -50%; right: -5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%); border-radius: 50%; }
+                .mn-page-hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -.025em; color: white; margin-bottom: 12px; position: relative; z-index: 1; }
+                .mn-page-hero p { font-size: 17px; color: rgba(255,255,255,.8); max-width: 520px; margin: 0 auto; position: relative; z-index: 1; }
+                
+                /* ── Carte formulaire ── */
+                .mn-form-card { background: white; border: 1px solid #E5E7EB; border-radius: 22px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+                .mn-form-card h2 { font-size: 28px; font-weight: 800; color: #0F172A; margin-bottom: 8px; }
+                .mn-form-sub { font-size: 14px; color: #6B7280; margin-bottom: 28px; display: block; }
+                
+                /* ── Grille 2 colonnes ── */
+                .mn-form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+                
+                /* ── Groupe champ + label ── */
+                .mn-form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+                .mn-form-group label { font-size: 13px; font-weight: 600; color: #374151; }
+                .mn-form-group input,
+                .mn-form-group select,
+                .mn-form-group textarea {
+                    padding: 11px 14px;
+                    border: 1.5px solid #E5E7EB;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-family: 'Inter', sans-serif;
+                    transition: border-color .2s, box-shadow .2s;
+                    outline: none;
+                    width: 100%;
+                    box-sizing: border-box;
+                    background: white;
+                    color: #111827;
                 }
-
-                /* ── Bouton Espace Artisan ── */
-                a.o_sign_in,
-                a[href="/web/login"],
-                .o_sign_in_sign_up a,
-                a.o_nav_link_btn {
-                    display: inline-flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    gap: 7px !important;
-                    background: linear-gradient(135deg, #C62828, #D32F2F) !important;
-                    color: white !important;
-                    padding: 8px 18px !important;
-                    border-radius: 10px !important;
-                    font-weight: 700 !important;
-                    font-family: 'Inter', sans-serif !important;
-                    border: none !important;
-                    text-decoration: none !important;
-                    font-size: 0 !important;
-                    cursor: pointer !important;
-                    box-shadow: 0 4px 14px rgba(198,40,40,.35) !important;
-                    transition: transform .2s, box-shadow .2s !important;
-                    white-space: nowrap !important;
+                .mn-form-group input:focus,
+                .mn-form-group select:focus,
+                .mn-form-group textarea:focus {
+                    border-color: #C62828;
+                    box-shadow: 0 0 0 3px rgba(198,40,40,.08);
                 }
-                a.o_sign_in:hover,
-                a[href="/web/login"]:hover,
-                .o_sign_in_sign_up a:hover,
-                a.o_nav_link_btn:hover {
-                    transform: translateY(-1px) !important;
-                    box-shadow: 0 6px 20px rgba(198,40,40,.45) !important;
-                    color: white !important;
+                .mn-form-group textarea { resize: vertical; min-height: 120px; }
+                .required { color: #C62828; }
+                .mn-form-submit { margin-top: 8px; }
+                
+                /* ── Alertes ── */
+                .mn-form-alert { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+                .mn-form-alert-error { background: #FFF5F5; border: 1px solid #FFCDD2; color: #C62828; }
+                .mn-form-alert-success { background: #F0FDF4; border: 1px solid #A7F3D0; color: #065F46; }
+                
+                /* ── Layout contact (formulaire + sidebar) ── */
+                .mn-contact-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+                .mn-contact-sidebar { display: flex; flex-direction: column; gap: 20px; }
+                
+                /* ── Carte info contact ── */
+                .mn-contact-info-card { background: white; border: 1px solid #E5E7EB; border-radius: 14px; padding: 28px; }
+                .mn-contact-info-card h3 { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 20px; }
+                .mn-contact-detail { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+                .mn-contact-detail:last-child { margin-bottom: 0; }
+                .mn-contact-detail-icon { width: 36px; height: 36px; background: rgba(40,40,198,.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--mn-blue); font-size: 16px; flex-shrink: 0; }
+                .mn-contact-detail-label { font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 2px; }
+                .mn-contact-detail-val { font-size: 14px; font-weight: 600; color: #0F172A; display: block; }
+                .mn-contact-detail-val:hover { color: var(--mn-blue); }
+                
+                /* ── Responsive formulaires ── */
+                @media (max-width: 768px) {
+                    .mn-form-row-2 { grid-template-columns: 1fr; }
+                    .mn-contact-grid { grid-template-columns: 1fr; }
+                    .mn-form-card { padding: 24px; }
+                    .mn-page-hero h1 { font-size: 30px; }
                 }
-                a.o_sign_in::before,
-                a[href="/web/login"]::before,
-                .o_sign_in_sign_up a::before,
-                a.o_nav_link_btn::before {
-                    content: '\f0ad';
-                    font-family: FontAwesome;
-                    font-size: 14px !important;
-                }
-                a.o_sign_in::after,
-                a[href="/web/login"]::after,
-                .o_sign_in_sign_up a::after,
-                a.o_nav_link_btn::after {
-                    content: 'Espace Artisan';
-                    font-size: 13px !important;
-                }
+                
+                @media(max-width:1024px){.mn-grid--4{grid-template-columns:repeat(2,1fr)}.mn-products__grid{grid-template-columns:repeat(2,1fr)}.mn-footer__grid{grid-template-columns:1fr 1fr}.mn-hero__title{font-size:42px}.mn-cta__inner h2{font-size:32px}}
+                @media(max-width:768px){.mn-hero__inner{grid-template-columns:1fr}.mn-hero__visual{display:none}.mn-hero__title{font-size:34px}.mn-stats__grid{grid-template-columns:repeat(2,1fr)}.mn-stat{border-bottom:1px solid rgba(255,255,255,.08)}.mn-grid--3{grid-template-columns:1fr}.mn-grid--4{grid-template-columns:1fr}.mn-products__grid{grid-template-columns:1fr}.mn-footer__grid{grid-template-columns:1fr;gap:32px}.mn-cta__inner h2{font-size:26px}.mn-section__header h2{font-size:30px}}
             </style>
         </xpath>
 
@@ -131,8 +251,7 @@
             <script>
                 function ssInitNav() {
                     var path = window.location.pathname.replace(/\/+$/, '') || '/';
-                    var links = document.querySelectorAll('#top_menu .nav-link, .o_main_navbar .nav-link, #top_menu a.nav-link');
-                    links.forEach(function (link) {
+                    document.querySelectorAll('#top_menu .nav-link, .o_main_navbar .nav-link, #top_menu a.nav-link').forEach(function (link) {
                         var href = (link.getAttribute('href') || '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/';
                         if (!href || href === '#') return;
                         link.classList.remove('active');
@@ -144,13 +263,7 @@
                             link.setAttribute('aria-current', 'page');
                         }
                     });
-                    var artisanSelectors = [
-                        'a[href="/web/login"]',
-                        'a.o_sign_in',
-                        'a.o_nav_link_btn',
-                        '.o_sign_in_sign_up a'
-                    ];
-                    artisanSelectors.forEach(function (sel) {
+                    ['a[href="/web/login"]','a.o_sign_in','a.o_nav_link_btn','.o_sign_in_sign_up a'].forEach(function (sel) {
                         document.querySelectorAll(sel).forEach(function (el) {
                             el.href = '/intervenant/login';
                             el.removeAttribute('data-action');
@@ -162,7 +275,6 @@
             </script>
         </xpath>
 
-        <!-- Footer sinistres -->
         <xpath expr="//footer" position="replace">
             <t t-if="not no_footer" t-call="monetique_theme.footer"/>
         </xpath>
@@ -170,79 +282,65 @@
     </template>
 
     <template id="footer" name="Sinistre Services Footer">
-        <footer class="mn-footer">
-            <div class="mn-footer__top">
-                <div class="mn-container">
-                    <div class="mn-footer__grid">
-                        <div class="mn-footer__brand">
-                            <a href="/" class="mn-footer__logo">Sinistre <span style="color:#C62828">Services</span></a>
-                            <p>Plateforme de gestion des sinistres — Artisans certifies disponibles 24h/24 partout en France depuis 2015.</p>
-                            <div class="mn-footer__badges">
-                                <span class="mn-badge">Agree Assurances</span>
-                                <span class="mn-badge">24h/24</span>
-                                <span class="mn-badge">Artisans Certifies</span>
+        <footer>
+            <section class="mn-footer o_colored_level" data-name="Footer">
+                <div class="mn-footer__top">
+                    <div class="mn-container">
+                        <div class="mn-footer__grid">
+                            <div class="mn-footer__brand">
+                                <a href="/" class="mn-footer__logo">Sinistre <span style="color:#C62828">Services</span></a>
+                                <p>Plateforme de gestion des sinistres — Artisans certifies disponibles 24h/24 partout en France depuis 2015.</p>
+                                <div class="mn-footer__badges">
+                                    <span class="mn-badge">Agree Assurances</span>
+                                    <span class="mn-badge">24h/24</span>
+                                    <span class="mn-badge">Artisans Certifies</span>
+                                </div>
                             </div>
-                            <div style="display:flex;gap:10px;margin-top:20px;">
-                                <a href="#" aria-label="Facebook" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-facebook" aria-hidden="true">&#160;</i>
-                                </a>
-                                <a href="#" aria-label="LinkedIn" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-linkedin" aria-hidden="true">&#160;</i>
-                                </a>
-                                <a href="#" aria-label="Twitter" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:15px;">
-                                    <i class="fa fa-twitter" aria-hidden="true">&#160;</i>
-                                </a>
+                            <div class="mn-footer__col">
+                                <h4>Interventions</h4>
+                                <ul>
+                                    <li><a href="/nos-services#serrurerie"><i class="fa fa-lock" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Serrurerie</a></li>
+                                    <li><a href="/nos-services#plomberie"><i class="fa fa-tint" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Plomberie</a></li>
+                                    <li><a href="/nos-services#menuiserie"><i class="fa fa-home" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Menuiserie</a></li>
+                                    <li><a href="/nos-services#vitrerie"><i class="fa fa-th-large" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Vitrerie</a></li>
+                                    <li><a href="/nos-services#electricite"><i class="fa fa-bolt" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Electricite</a></li>
+                                    <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true">&#160;</i>Urgence 24h/24</a></li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Interventions</h4>
-                            <ul>
-                                <li><a href="/nos-services#serrurerie"><i class="fa fa-lock" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Serrurerie</a></li>
-                                <li><a href="/nos-services#plomberie"><i class="fa fa-tint" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Plomberie</a></li>
-                                <li><a href="/nos-services#menuiserie"><i class="fa fa-home" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Menuiserie</a></li>
-                                <li><a href="/nos-services#vitrerie"><i class="fa fa-th-large" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Vitrerie</a></li>
-                                <li><a href="/nos-services#electricite"><i class="fa fa-bolt" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Electricite</a></li>
-                                <li><a href="/urgence"><i class="fa fa-exclamation-triangle" style="width:14px;margin-right:6px;color:#FCA5A5;" aria-hidden="true">&#160;</i>Urgence 24h/24</a></li>
-                            </ul>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Clients</h4>
-                            <ul>
-                                <li><a href="/demande-intervention">Particuliers</a></li>
-                                <li><a href="/demande-intervention">Entreprises</a></li>
-                                <li><a href="/assurances">Assurances</a></li>
-                                <li><a href="/assurances/api-access">API Assureurs</a></li>
-                                <li><a href="/intervenant/login">Espace Artisan</a></li>
-                                <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
-                            </ul>
-                        </div>
-                        <div class="mn-footer__col">
-                            <h4>Contact</h4>
-                            <ul>
-                                <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>01 XX XX XX XX</a></li>
-                                <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>contact@sinistre-services.fr</a></li>
-                                <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Urgences 24h/24 7j/7</a></li>
-                                <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Nous contacter</a></li>
-                            </ul>
-                            <div style="margin-top:20px;">
-                                <a href="tel:+33100000000" class="mn-btn mn-btn--secondary mn-btn--sm" style="width:100%;justify-content:center;">
-                                    <i class="fa fa-phone" style="color:white;" aria-hidden="true">&#160;</i> Appel urgence
-                                </a>
+                            <div class="mn-footer__col">
+                                <h4>Clients</h4>
+                                <ul>
+                                    <li><a href="/demande-intervention">Particuliers</a></li>
+                                    <li><a href="/demande-intervention">Entreprises</a></li>
+                                    <li><a href="/assurances">Assurances</a></li>
+                                    <li><a href="/assurances/api-access">API Assureurs</a></li>
+                                    <li><a href="/intervenant/login">Espace Artisan</a></li>
+                                    <li><a href="/rejoindre-le-reseau">Rejoindre le reseau</a></li>
+                                </ul>
+                            </div>
+                            <div class="mn-footer__col">
+                                <h4>Contact</h4>
+                                <ul>
+                                    <li><a href="tel:+33100000000"><i class="fa fa-phone" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>01 XX XX XX XX</a></li>
+                                    <li><a href="mailto:contact@sinistre-services.fr"><i class="fa fa-envelope" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>contact@sinistre-services.fr</a></li>
+                                    <li><a href="/urgence"><i class="fa fa-clock-o" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Urgences 24h/24 7j/7</a></li>
+                                    <li><a href="/contact"><i class="fa fa-map-marker" style="width:14px;margin-right:6px;" aria-hidden="true">&#160;</i>Nous contacter</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mn-footer__bottom">
-                <div class="mn-container">
-                    <p>&#169; <t t-esc="datetime.datetime.now().year"/> Sinistre Services. Tous droits reserves.</p>
-                    <nav>
-                        <a href="/page/mentions-legales">Mentions legales</a>
-                        <a href="/page/confidentialite">Confidentialite</a>
-                        <a href="/page/cgv">CGV</a>
-                    </nav>
+                <div class="mn-footer__bottom">
+                    <div class="mn-container">
+                        <p>&#169; <t t-esc="datetime.datetime.now().year"/> Sinistre Services. Tous droits reserves.</p>
+                        <nav>
+                            <a href="/page/mentions-legales">Mentions legales</a>
+                            <a href="/page/confidentialite">Confidentialite</a>
+                            <a href="/page/cgv">CGV</a>
+                        </nav>
+                    </div>
                 </div>
-            </div>
+            </section>
         </footer>
     </template>
 
