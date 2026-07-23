@@ -1,337 +1,195 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preview Premium Home - Custom Supplements</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* =====================================================================
-           DESIGN TOKENS & UTILITAIRES DE BASE
-           ===================================================================== */
-        :root {
-            --cs-primary: #000000;
-            --cs-secondary: #F3F4F6;
-            --cs-accent: #10B981;
-            --cs-bg: #FFFFFF;
-            --cs-radius: 8px;
-        }
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =====================================================================
+         Version premium / créative de la page d'accueil.
+         S'appuie sur les tokens + utilitaires (.cs-kinetic-title, .cs-marquee,
+         .cs-reveal, .cs-bento, .cs-spotlight, .cs-parallax) injectés dans
+         website_sale_templates.xml (website.layout). Toujours 100% Bootstrap 5
+         + palette noir/blanc/émeraude du DESIGN.md — rien n'est inventé,
+         seule la composition devient plus éditoriale.
+         ===================================================================== -->
 
-        body { 
-            background-color: #ffffff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-            overflow-x: hidden;
-        }
+    <template id="homepage_hero_split" inherit_id="website.homepage" name="Hero Premium Créatif">
+        <xpath expr="//div[@id='wrap']" position="inside">
 
-        .cs-font-heading { font-weight: 700; letter-spacing: -0.02em; }
-        .cs-font-body { font-weight: 300; line-height: 1.7; }
-        .cs-badge-accent { background-color: var(--cs-accent) !important; color: #fff; border-radius: var(--cs-radius); }
-        .cs-btn-primary { background-color: var(--cs-primary); color: #fff; border-radius: var(--cs-radius); border: none; }
-        .cs-btn-primary:hover { background-color: #1a1a1a; color: #fff; }
-        .cs-card { border: none; border-radius: calc(var(--cs-radius) * 2); background-color: var(--cs-bg); transition: transform 0.2s ease; }
-        .cs-card:hover { transform: translateY(-5px); }
-        .cs-section-muted { background-color: var(--cs-secondary); }
-        
-        /* Médias */
-        .cs-hero-media { position: relative; overflow: hidden; background-color: #000; }
-        .cs-hero-media video, .cs-hero-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-        .cs-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
-
-        /* =====================================================================
-           CLASSES PREMIUM / CRÉATIVES
-           ===================================================================== */
-        
-        /* Typographie */
-        .cs-kinetic-title { font-weight: 900; letter-spacing: -0.04em; line-height: 0.95; }
-        .cs-outline { color: transparent; -webkit-text-stroke: 1.5px #ffffff; }
-        .cs-eyebrow { text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; font-size: 0.85rem; color: var(--cs-accent); }
-        
-        /* Marquee Animation */
-        .cs-marquee { overflow: hidden; white-space: nowrap; width: 100%; background: #fff; }
-        .cs-marquee-track { display: inline-block; animation: marquee 25s linear infinite; }
-        .cs-marquee-track span { margin: 0 2.5rem; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        /* Bento Grid */
-        .cs-bento { display: grid; gap: 1rem; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 280px); }
-        .cs-bento-tile { position: relative; border-radius: calc(var(--cs-radius) * 2); overflow: hidden; display: block; background: #000; }
-        .cs-bento-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; }
-        .cs-bento-tile:hover img { transform: scale(1.05); opacity: 0.8; }
-        .cs-bento-caption { position: absolute; bottom: 1.5rem; left: 1.5rem; color: #fff; z-index: 2; font-size: 1.5rem; }
-        .cs-bento-lg { grid-column: span 2; grid-row: span 2; }
-        .cs-bento-md { grid-column: span 2; grid-row: span 1; }
-
-        /* Spotlight Callouts */
-        .cs-spotlight { position: relative; }
-        .cs-callout { position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 1.2rem; border-radius: var(--cs-radius); box-shadow: 0 15px 35px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; transition: transform 0.3s ease; }
-        .cs-callout:hover { transform: translateY(-5px); }
-
-        /* Parallax */
-        .cs-parallax { background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; position: relative; }
-        .cs-parallax::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.4); pointer-events: none; }
-        .cs-parallax .container { position: relative; z-index: 2; }
-
-        /* Responsive Fixes */
-        @media (max-width: 992px) {
-            .cs-bento { grid-template-columns: 1fr; grid-template-rows: auto; }
-            .cs-bento-lg { grid-column: span 1; grid-row: span 1; height: 350px; }
-            .cs-bento-md { grid-column: span 1; grid-row: span 1; height: 250px; }
-            .cs-outline { -webkit-text-stroke: 1px #ffffff; }
-            .cs-callout { position: relative !important; top: auto !important; left: auto !important; bottom: auto !important; right: auto !important; margin-bottom: 1rem; width: 100%; transform: none !important; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 1. HERO PLEIN ÉCRAN — typographie kinétique + média cinématique -->
-    <section class="cs-hero-media" style="height:100vh; min-height:720px;">
-        <!-- Placeholder pour la vidéo Higgsfield cinématique (remplacé par image Unsplash premium) -->
-        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop" alt="Hero Background">
-        <div class="cs-hero-overlay"></div>
-        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 p-md-5" style="z-index: 2;">
-            <div class="d-flex justify-content-between align-items-start text-white pt-3">
-                <span class="cs-eyebrow">Collection 2026</span>
-                <span class="cs-font-body small opacity-75 d-none d-md-block" style="letter-spacing: 2px;">Défiler pour explorer ↓</span>
-            </div>
-            <div class="text-white pb-5 pb-md-3">
-                <h1 class="cs-kinetic-title display-1 mb-0" style="font-size: clamp(3.5rem, 8vw, 7rem);">
-                    ÉLEVEZ<br>
-                    <span class="cs-outline">VOTRE</span> STANDARD
-                </h1>
-                <div class="d-flex flex-wrap align-items-center gap-4 mt-4">
-                    <a href="#" class="btn cs-btn-primary btn-lg px-5 py-3 rounded-pill text-uppercase" style="font-size: 0.9rem; letter-spacing: 1px; font-weight: 600;">Explorer la collection</a>
-                    <span class="cs-font-body opacity-75 d-none d-sm-block">Formules cliniquement dosées · Sans additifs</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 2. MARQUEE MARQUES / PRESSE -->
-    <section class="py-4 border-bottom">
-        <div class="cs-marquee">
-            <div class="cs-marquee-track cs-font-heading text-uppercase text-muted" style="font-size:1.1rem; letter-spacing: 1px;">
-                <!-- Répété pour créer le loop infini parfait -->
-                <span>Optimum Series</span>
-                <span>Black Skull Lab</span>
-                <span>Mountain Ops</span>
-                <span>Core Essentials</span>
-                <span>Novoma Wellness</span>
-                <span>Geared Nutrition</span>
-                <span>Optimum Series</span>
-                <span>Black Skull Lab</span>
-                <span>Mountain Ops</span>
-                <span>Core Essentials</span>
-                <span>Novoma Wellness</span>
-                <span>Geared Nutrition</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. MANIFESTE ÉDITORIAL -->
-    <section class="py-5 my-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 offset-lg-2 text-center cs-reveal">
-                    <span class="cs-eyebrow d-block mb-4">Notre exigence</span>
-                    <p class="cs-font-heading mb-0" style="font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.3;">
-                        Nous ne croyons pas aux formules génériques. Chaque référence est pensée
-                        pour une <span style="color:var(--cs-accent);">exigence</span>, un objectif,
-                        un corps — jamais l'inverse.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. BENTO GRID — CATÉGORIES -->
-    <section class="py-5 cs-section-muted">
-        <div class="container py-4">
-            <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
-                <h2 class="cs-font-heading display-6 mb-0">Explorer l'Univers</h2>
-                <a href="#" class="text-decoration-none cs-font-body text-dark fw-bold border-bottom border-dark pb-1 d-none d-sm-block">Catalogue complet <i class="fa fa-arrow-right ms-2"></i></a>
-            </div>
-            
-            <div class="cs-bento cs-reveal">
-                <!-- Bento Large (Catégorie principale) -->
-                <a href="#" class="cs-bento-tile cs-bento-lg">
-                    <img src="https://images.unsplash.com/photo-1579722820308-d74e571900a9?q=80&w=800&auto=format&fit=crop" alt="Protéines">
-                    <div class="cs-bento-caption">
-                        <span class="cs-font-heading d-block mb-1">Protéines Pures</span>
-                        <span class="cs-font-body fs-6 opacity-75">Isolats & Végétales</span>
+            <!-- 1. HERO PLEIN ÉCRAN — typographie kinétique + vidéo cinématique -->
+            <section class="cs-hero-media" style="height:100vh; min-height:720px;">
+                <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
+                       poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
+                    <source src="/custom_supplements/static/src/videos/hero_home_cinematic_bottle_reveal.mp4" type="video/mp4"/>
+                </video>
+                <div class="cs-hero-overlay"/>
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-start text-white">
+                        <span class="cs-eyebrow">Collection 2026</span>
+                        <span class="cs-font-body small opacity-75 d-none d-md-block">Défiler pour explorer ↓</span>
                     </div>
-                </a>
-                <!-- Bento Medium 1 -->
-                <a href="#" class="cs-bento-tile cs-bento-md">
-                    <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=800&auto=format&fit=crop" alt="Pré-workout">
-                    <div class="cs-bento-caption">
-                        <span class="cs-font-heading">Performance & Pré-Workout</span>
-                    </div>
-                </a>
-                <!-- Bento Medium 2 -->
-                <a href="#" class="cs-bento-tile cs-bento-md">
-                    <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=800&auto=format&fit=crop" alt="Santé">
-                    <div class="cs-bento-caption">
-                        <span class="cs-font-heading">Vitamines & Longévité</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. SPOTLIGHT PRODUIT — callouts flottants sur rendu 3D -->
-    <section class="py-5 my-5">
-        <div class="container">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6 cs-spotlight cs-reveal">
-                    <!-- Zone 3D Higgsfield -->
-                    <div class="ratio ratio-1x1" style="border-radius:calc(var(--cs-radius) * 2); overflow:hidden; background:var(--cs-secondary);">
-                        <img src="https://images.unsplash.com/photo-1594824436952-4fe38c4b9d03?q=80&w=800&auto=format&fit=crop" alt="Spotlight Product" style="object-fit:cover; mix-blend-mode: multiply; padding: 2rem;">
-                    </div>
-                    <!-- Callouts -->
-                    <div class="cs-callout d-none d-lg-block" style="top:14%; left:-8%;">
-                        <strong class="cs-font-heading d-block fs-5">100% Traçable</strong>
-                        <span class="cs-font-body small text-muted">Testé en laboratoire indépendant</span>
-                    </div>
-                    <div class="cs-callout d-none d-lg-block" style="bottom:15%; right:-8%;">
-                        <strong class="cs-font-heading d-block fs-5">Absorption+</strong>
-                        <span class="cs-font-body small text-muted">Formulation à haute biodisponibilité</span>
-                    </div>
-                </div>
-                <div class="col-lg-5 offset-lg-1 cs-reveal">
-                    <span class="cs-eyebrow d-block mb-3">Produit signature</span>
-                    <h2 class="cs-font-heading display-5 mb-4">La référence pensée pour durer.</h2>
-                    <p class="cs-font-body text-muted mb-5 fs-5">Un rendu 3D fidèle au grain de l'emballage réel, pour une expérience produit immersive avant même la réception du colis.</p>
-                    <ul class="list-unstyled cs-font-body mb-5 fs-5">
-                        <li class="mb-3"><i class="fa fa-check-circle me-3" style="color:var(--cs-accent);"></i>Sans additifs ni charges inutiles</li>
-                        <li class="mb-3"><i class="fa fa-check-circle me-3" style="color:var(--cs-accent);"></i>Dosage clinique documenté</li>
-                        <li class="mb-3"><i class="fa fa-check-circle me-3" style="color:var(--cs-accent);"></i>Emballage 100% recyclable</li>
-                    </ul>
-                    <a href="#" class="btn cs-btn-primary btn-lg rounded-pill px-5 py-3">Découvrir le produit</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. GRILLE PRODUITS — édition raffinée -->
-    <section class="py-5 cs-section-muted">
-        <div class="container py-4">
-            <h2 class="cs-font-heading mb-5 cs-reveal display-6 text-center text-md-start">Sélection Premium</h2>
-            <div class="row g-4">
-                
-                <!-- Produit Mock 1 -->
-                <div class="col-6 col-md-3 cs-reveal">
-                    <div class="cs-card shadow-sm h-100 position-relative">
-                        <span class="badge cs-badge-accent position-absolute m-3" style="z-index: 2;"><i class="fa fa-leaf me-1"></i>Vegan</span>
-                        <div style="height:240px; background-color:#fff; border-radius:calc(var(--cs-radius) * 2) calc(var(--cs-radius) * 2) 0 0; overflow:hidden;">
-                            <img src="https://images.unsplash.com/photo-1594824436952-4fe38c4b9d03?q=80&w=600&auto=format&fit=crop" alt="Produit" class="w-100 h-100" style="object-fit:contain; padding: 1.5rem; mix-blend-mode: multiply;"/>
+                    <div class="text-white">
+                        <h1 class="cs-kinetic-title display-1 mb-0">
+                            ÉLEVEZ<br/>
+                            <span class="cs-outline">VOTRE</span> STANDARD
+                        </h1>
+                        <div class="d-flex flex-wrap align-items-center gap-4 mt-4">
+                            <a href="/shop" class="btn cs-btn-primary btn-lg px-4 py-2">Explorer la collection</a>
+                            <span class="cs-font-body opacity-75">Formules cliniquement dosées · Sans additifs</span>
                         </div>
-                        <div class="p-4">
-                            <div class="cs-font-body small text-muted text-uppercase mb-1" style="letter-spacing: 1px;">Protéine Pure</div>
-                            <h6 class="cs-font-heading fs-5 mb-4">Isolat de Pois Premium</h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="cs-font-heading fs-5">39,90 €</span>
-                                <a href="#" class="btn btn-sm btn-dark rounded-circle" style="width: 35px; height: 35px; line-height: 22px;"><i class="fa fa-plus"></i></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. MARQUEE MARQUES / PRESSE -->
+            <section class="py-4 border-bottom">
+                <div class="cs-marquee">
+                    <div class="cs-marquee-track cs-font-heading text-uppercase text-muted" style="font-size:1.1rem;">
+                        <t t-foreach="range(2)" t-as="dup">
+                            <span>Optimum Series</span>
+                            <span>Black Skull Lab</span>
+                            <span>Mountain Ops</span>
+                            <span>Core Essentials</span>
+                            <span>Novoma Wellness</span>
+                            <span>Geared Nutrition</span>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. MANIFESTE ÉDITORIAL -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2 text-center cs-reveal">
+                            <span class="cs-eyebrow d-block mb-3">Notre exigence</span>
+                            <p class="cs-font-heading fs-2 mb-0" style="line-height:1.35;">
+                                Nous ne croyons pas aux formules génériques. Chaque référence est pensée
+                                pour une <span style="color:var(--cs-accent);">exigence</span>, un objectif,
+                                un corps — jamais l'inverse.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. BENTO GRID — CATÉGORIES -->
+            <section class="py-5 cs-section-muted">
+                <div class="container">
+                    <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
+                        <h2 class="cs-font-heading mb-0">Explorer l'Univers</h2>
+                        <a href="/shop" class="text-decoration-none cs-font-body text-dark">Catalogue complet <i class="fa fa-arrow-right ms-1"/></a>
+                    </div>
+                    <div class="cs-bento cs-reveal">
+                        <t t-foreach="request.env['product.public.category'].sudo().search([], limit=5)" t-as="categ">
+                            <a t-attf-href="/shop/category/#{categ.id}"
+                               t-attf-class="cs-bento-tile #{'cs-bento-lg' if categ_index == 0 else ('cs-bento-md' if categ_index in (1,2) else '')}">
+                                <img t-attf-src="/custom_supplements/static/src/img/category_#{categ.id}_editorial.jpg" t-attf-alt="#{categ.name}"/>
+                                <div class="cs-bento-caption">
+                                    <span class="cs-font-heading"><t t-esc="categ.name"/></span>
+                                </div>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. SPOTLIGHT PRODUIT — callouts flottants sur rendu 3D -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6 cs-spotlight cs-reveal">
+                            <div class="ratio ratio-1x1" style="border-radius:calc(var(--cs-radius) * 2); overflow:hidden; background:var(--cs-secondary);">
+                                <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" style="object-fit:cover;">
+                                    <source src="/custom_supplements/static/src/videos/product_spotlight_3d_rotation.mp4" type="video/mp4"/>
+                                </video>
+                            </div>
+                            <div class="cs-callout" style="top:14%; left:-8%;">
+                                <strong class="cs-font-heading d-block">100% Traçable</strong>
+                                <span class="cs-font-body text-muted">Testé en laboratoire indépendant</span>
+                            </div>
+                            <div class="cs-callout" style="bottom:20%; right:-8%;">
+                                <strong class="cs-font-heading d-block">Absorption+</strong>
+                                <span class="cs-font-body text-muted">Formulation à haute biodisponibilité</span>
                             </div>
                         </div>
+                        <div class="col-lg-6 cs-reveal">
+                            <span class="cs-eyebrow d-block mb-3">Produit signature</span>
+                            <h2 class="cs-font-heading display-6 mb-4">La référence pensée pour durer.</h2>
+                            <p class="cs-font-body text-muted mb-4">Un rendu 3D fidèle au grain de l'emballage réel, pour une expérience produit fidèle avant même la réception du colis.</p>
+                            <ul class="list-unstyled cs-font-body mb-4">
+                                <li class="mb-2"><i class="fa fa-check-circle me-2" style="color:var(--cs-accent);"/>Sans additifs ni charges inutiles</li>
+                                <li class="mb-2"><i class="fa fa-check-circle me-2" style="color:var(--cs-accent);"/>Dosage clinique documenté</li>
+                                <li class="mb-2"><i class="fa fa-check-circle me-2" style="color:var(--cs-accent);"/>Emballage recyclable</li>
+                            </ul>
+                            <a href="/shop" class="btn cs-btn-primary px-4 py-2">Découvrir le produit</a>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Produit Mock 2 -->
-                <div class="col-6 col-md-3 cs-reveal">
-                    <div class="cs-card shadow-sm h-100 position-relative">
-                        <div style="height:240px; background-color:#fff; border-radius:calc(var(--cs-radius) * 2) calc(var(--cs-radius) * 2) 0 0; overflow:hidden;">
-                            <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=600&auto=format&fit=crop" alt="Produit" class="w-100 h-100" style="object-fit:contain; padding: 1.5rem; mix-blend-mode: multiply;"/>
-                        </div>
-                        <div class="p-4">
-                            <div class="cs-font-body small text-muted text-uppercase mb-1" style="letter-spacing: 1px;">Vitamines</div>
-                            <h6 class="cs-font-heading fs-5 mb-4">Multi-Vitamines Essentielles</h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="cs-font-heading fs-5">24,50 €</span>
-                                <a href="#" class="btn btn-sm btn-dark rounded-circle" style="width: 35px; height: 35px; line-height: 22px;"><i class="fa fa-plus"></i></a>
+            <!-- 6. GRILLE PRODUITS — édition raffinée -->
+            <section class="py-5 cs-section-muted">
+                <div class="container">
+                    <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
+                    <div class="row g-4">
+                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True)], limit=4, order='create_date desc')" t-as="product">
+                            <div class="col-6 col-md-3 cs-reveal">
+                                <div class="cs-card shadow-sm h-100 position-relative">
+                                    <t t-if="product.is_vegan">
+                                        <span class="badge cs-badge-accent position-absolute m-3"><i class="fa fa-leaf me-1"/>Vegan</span>
+                                    </t>
+                                    <div style="height:220px; background-color:#fff; border-radius:calc(var(--cs-radius) * 2) calc(var(--cs-radius) * 2) 0 0; overflow:hidden;">
+                                        <img t-attf-src="/web/image/product.template/#{product.id}/image_1024" t-attf-alt="#{product.name}" class="w-100 h-100" style="object-fit:contain;"/>
+                                    </div>
+                                    <div class="p-3">
+                                        <div class="cs-font-body small text-muted text-uppercase mb-1" t-if="product.is_supplement">Complément Alimentaire</div>
+                                        <h6 class="cs-font-heading mb-2"><t t-esc="product.name"/></h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="cs-font-heading" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                            <a t-attf-href="/shop/#{slug(product)}" class="btn btn-sm cs-btn-primary rounded-pill px-3">Ajouter</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. SECTION PARALLAX — moment cinématique -->
+            <section class="cs-parallax d-flex align-items-center text-center text-white"
+                      style="height:70vh; min-height:480px; background-image:url('/custom_supplements/static/src/img/parallax_performance_editorial.jpg');">
+                <div class="container cs-reveal">
+                    <span class="cs-eyebrow d-block mb-3">Performance Réelle</span>
+                    <h2 class="cs-kinetic-title display-3">CONSTRUIT POUR <span class="cs-outline">DURER</span></h2>
+                </div>
+            </section>
+
+            <!-- 8. BANDE INGRÉDIENTS DE CONFIANCE -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row text-center g-4">
+                        <div class="col-6 col-md-3 cs-reveal">
+                            <i class="fa fa-flask fs-3 mb-3 d-block" style="color:var(--cs-accent);"/>
+                            <span class="cs-font-heading d-block mb-1">Testé en Labo</span>
+                            <span class="cs-font-body small text-muted">Pureté vérifiée par tiers</span>
+                        </div>
+                        <div class="col-6 col-md-3 cs-reveal">
+                            <i class="fa fa-leaf fs-3 mb-3 d-block" style="color:var(--cs-accent);"/>
+                            <span class="cs-font-heading d-block mb-1">Origine Tracée</span>
+                            <span class="cs-font-body small text-muted">Ingrédients sourcés et documentés</span>
+                        </div>
+                        <div class="col-6 col-md-3 cs-reveal">
+                            <i class="fa fa-vial fs-3 mb-3 d-block" style="color:var(--cs-accent);"/>
+                            <span class="cs-font-heading d-block mb-1">Dosage Clinique</span>
+                            <span class="cs-font-body small text-muted">Concentrations documentées</span>
+                        </div>
+                        <div class="col-6 col-md-3 cs-reveal">
+                            <i class="fa fa-recycle fs-3 mb-3 d-block" style="color:var(--cs-accent);"/>
+                            <span class="cs-font-heading d-block mb-1">Emballage Responsable</span>
+                            <span class="cs-font-body small text-muted">Matériaux recyclables</span>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Produit Mock 3 -->
-                <div class="col-6 col-md-3 cs-reveal">
-                    <div class="cs-card shadow-sm h-100 position-relative">
-                        <div style="height:240px; background-color:#fff; border-radius:calc(var(--cs-radius) * 2) calc(var(--cs-radius) * 2) 0 0; overflow:hidden;">
-                            <img src="https://images.unsplash.com/photo-1622484211148-52b8214f5ec9?q=80&w=600&auto=format&fit=crop" alt="Produit" class="w-100 h-100" style="object-fit:contain; padding: 1.5rem; mix-blend-mode: multiply;"/>
-                        </div>
-                        <div class="p-4">
-                            <div class="cs-font-body small text-muted text-uppercase mb-1" style="letter-spacing: 1px;">Acides Aminés</div>
-                            <h6 class="cs-font-heading fs-5 mb-4">Créatine Monohydrate Pure</h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="cs-font-heading fs-5">29,90 €</span>
-                                <a href="#" class="btn btn-sm btn-dark rounded-circle" style="width: 35px; height: 35px; line-height: 22px;"><i class="fa fa-plus"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Produit Mock 4 -->
-                <div class="col-6 col-md-3 cs-reveal">
-                    <div class="cs-card shadow-sm h-100 position-relative">
-                        <span class="badge cs-badge-accent position-absolute m-3" style="z-index: 2;"><i class="fa fa-leaf me-1"></i>Vegan</span>
-                        <div style="height:240px; background-color:#fff; border-radius:calc(var(--cs-radius) * 2) calc(var(--cs-radius) * 2) 0 0; overflow:hidden;">
-                            <img src="https://images.unsplash.com/photo-1550572017-edb799011680?q=80&w=600&auto=format&fit=crop" alt="Produit" class="w-100 h-100" style="object-fit:contain; padding: 1.5rem; mix-blend-mode: multiply;"/>
-                        </div>
-                        <div class="p-4">
-                            <div class="cs-font-body small text-muted text-uppercase mb-1" style="letter-spacing: 1px;">Santé</div>
-                            <h6 class="cs-font-heading fs-5 mb-4">Oméga 3 Végétal Algue</h6>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="cs-font-heading fs-5">32,00 €</span>
-                                <a href="#" class="btn btn-sm btn-dark rounded-circle" style="width: 35px; height: 35px; line-height: 22px;"><i class="fa fa-plus"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. SECTION PARALLAX — moment cinématique -->
-    <section class="cs-parallax d-flex align-items-center text-center text-white" style="height:70vh; min-height:480px; background-image:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1920&auto=format&fit=crop');">
-        <div class="container cs-reveal">
-            <span class="cs-eyebrow d-block mb-4 text-white">Performance Réelle</span>
-            <h2 class="cs-kinetic-title display-2">CONSTRUIT POUR <span class="cs-outline">DURER</span></h2>
-        </div>
-    </section>
-
-    <!-- 8. BANDE INGRÉDIENTS DE CONFIANCE -->
-    <section class="py-5 my-3">
-        <div class="container">
-            <div class="row text-center g-5">
-                <div class="col-6 col-md-3 cs-reveal">
-                    <i class="fa fa-flask fs-1 mb-4 d-block" style="color:var(--cs-accent);"></i>
-                    <span class="cs-font-heading d-block mb-2 fs-5">Testé en Labo</span>
-                    <span class="cs-font-body text-muted">Pureté vérifiée par des tiers indépendants</span>
-                </div>
-                <div class="col-6 col-md-3 cs-reveal">
-                    <i class="fa fa-leaf fs-1 mb-4 d-block" style="color:var(--cs-accent);"></i>
-                    <span class="cs-font-heading d-block mb-2 fs-5">Origine Tracée</span>
-                    <span class="cs-font-body text-muted">Ingrédients sourcés et rigoureusement documentés</span>
-                </div>
-                <div class="col-6 col-md-3 cs-reveal">
-                    <i class="fa fa-vial fs-1 mb-4 d-block" style="color:var(--cs-accent);"></i>
-                    <span class="cs-font-heading d-block mb-2 fs-5">Dosage Clinique</span>
-                    <span class="cs-font-body text-muted">Concentrations alignées sur la littérature</span>
-                </div>
-                <div class="col-6 col-md-3 cs-reveal">
-                    <i class="fa fa-recycle fs-1 mb-4 d-block" style="color:var(--cs-accent);"></i>
-                    <span class="cs-font-heading d-block mb-2 fs-5">Design Responsable</span>
-                    <span class="cs-font-body text-muted">Matériaux premium 100% recyclables</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-</body>
-</html>
+        </xpath>
+    </template>
+</odoo>
