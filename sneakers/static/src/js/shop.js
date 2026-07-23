@@ -294,79 +294,112 @@
         });
     }
 
-    const paginationNav = document.querySelector(".sn-pagination");
-    const productGrid = document.querySelector(".sn-products-grid");
-
-    function updatePaginationArrows() {
-
-        const prevBtn = paginationNav.querySelector(".sn-prev-btn");
-        const nextBtn = paginationNav.querySelector(".sn-next-btn");
-        const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
-
-        if (activeFilters.page === 1) {
-            prevBtn.style.visibility = "hidden";
-        } else {
-            prevBtn.style.visibility = "visible";
-        }
-
-        if (activeFilters.page === lastPage) {
-            nextBtn.style.visibility = "hidden";
-        } else {
-            nextBtn.style.visibility = "visible";
-        }
-
-    }
+    
 
     // Délégation clic pagination
     if (paginationNav) {
-
         paginationNav.addEventListener("click", function (e) {
-
-            const btn = e.target.closest(".sn-page-btn");
+            var btn = e.target.closest(".sn-page-btn");
             if (!btn) return;
 
-            const icon = btn.querySelector("i");
-            const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
+            var text = btn.textContent.trim();
+            var icon = btn.querySelector("i");
 
-            // Calcul de la nouvelle page
             if (icon && icon.classList.contains("fa-chevron-left")) {
-
                 activeFilters.page = Math.max(1, activeFilters.page - 1);
-
             } else if (icon && icon.classList.contains("fa-chevron-right")) {
-
-                activeFilters.page = Math.min(lastPage, activeFilters.page + 1);
-
+                activeFilters.page = activeFilters.page + 1;
             } else {
-
-                const page = parseInt(btn.dataset.page, 10);
-
-                if (!isNaN(page)) {
-                    activeFilters.page = page;
-                }
-
+                var page = parseInt(text, 10);
+                if (!isNaN(page)) activeFilters.page = page;
             }
 
-            // Mise à jour du bouton actif
-            paginationNav.querySelectorAll(".sn-page-btn").forEach(function (b) {
+            applyFilters();
+            if (productGrid) {
+                productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    }
+
+     
+    // Délégation clic pagination
+    if (paginationNav) {
+
+        // Récupérer le nombre total de pages depuis le dernier bouton numéroté
+        function getTotalPages() {
+            var numbered = Array.from(paginationNav.querySelectorAll(".sn-page-btn")).filter(function(b) {
+                return !b.querySelector("i") && !isNaN(parseInt(b.textContent.trim(), 10));
+            });
+            if (!numbered.length) return 1;
+            return parseInt(numbered[numbered.length - 1].textContent.trim(), 10);
+        }
+
+        // Mettre à jour l'état visuel des flèches et du bouton actif
+        function updatePaginationUI(currentPage) {
+            var totalPages = getTotalPages();
+
+            var prevBtn = paginationNav.querySelector(".sn-page-btn .fa-chevron-left");
+            var nextBtn = paginationNav.querySelector(".sn-page-btn .fa-chevron-right");
+
+            if (prevBtn) {
+                prevBtn.closest(".sn-page-btn").style.visibility = currentPage <= 1 ? "hidden" : "visible";
+            }
+            if (nextBtn) {
+                nextBtn.closest(".sn-page-btn").style.visibility = currentPage >= totalPages ? "hidden" : "visible";
+            }
+
+            // Un seul bouton actif à la fois
+            paginationNav.querySelectorAll(".sn-page-btn").forEach(function(b) {
                 b.classList.remove("active");
             });
 
-            const activeBtn = paginationNav.querySelector(
-                `.sn-page-btn[data-page="${activeFilters.page}"]`
-            );
+            // Activer le bouton correspondant à la page actuelle
+            paginationNav.querySelectorAll(".sn-page-btn").forEach(function(b) {
+                if (!b.querySelector("i") && parseInt(b.textContent.trim(), 10) === currentPage) {
+                    b.classList.add("active");
+                }
+            });
+        }
 
-            if (activeBtn) {
-                activeBtn.classList.add("active");
+        // Initialiser l'UI au chargement depuis l'URL
+        var initialPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+        activeFilters.page = initialPage;
+        updatePaginationUI(initialPage);
+
+        paginationNav.addEventListener("click", function (e) {
+            var btn = e.target.closest(".sn-page-btn");
+            if (!btn) return;
+
+            // Ignorer les flèches invisibles
+            if (btn.style.visibility === "hidden") return;
+
+            var icon = btn.querySelector("i");
+            var text = btn.textContent.trim();
+            var totalPages = getTotalPages();
+
+            if (icon && icon.classList.contains("fa-chevron-left")) {
+                if (activeFilters.page <= 1) return;
+                activeFilters.page = activeFilters.page - 1;
+            } else if (icon && icon.classList.contains("fa-chevron-right")) {
+                if (activeFilters.page >= totalPages) return;
+                activeFilters.page = activeFilters.page + 1;
+            } else {
+                var page = parseInt(text, 10);
+                if (!isNaN(page)) activeFilters.page = page;
+                else return;
             }
 
-            // Redirection (temporairement vers la même page)
-            const url = new URL(window.location.href);
+            updatePaginationUI(activeFilters.page);
+
+            // Redirection avec le paramètre de page dans l'URL
+            var url = new URL(window.location.href);
             url.searchParams.set("page", activeFilters.page);
             window.location.href = url.toString();
 
+            if (productGrid) {
+                productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
         });
-
     }
 
     // FILTRE MOBILE
