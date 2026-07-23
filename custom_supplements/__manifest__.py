@@ -11,6 +11,18 @@
         'stock',
         'product_expiry', # Ajout du module de gestion des DLC/DLUO
     ],
+
+        #bloc 'assets' pour charger votre futur design :
+    'assets': {
+        # Surcharge des variables Bootstrap (couleurs primaires, polices)
+        'web._assets_primary_variables': [
+            'custom_supplements/static/src/scss/primary_variables.scss',
+        ],
+        #CSS/SCSS personnalisé pour les pages
+        'web.assets_frontend': [
+            'custom_supplements/static/src/scss/style.scss',
+        ],
+    },
 'data': [
         'security/security.xml',
         'data/ir_cron.xml',
