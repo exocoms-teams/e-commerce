@@ -360,8 +360,6 @@
                 activeBtn.classList.add("active");
             }
 
-            updatePaginationArrows();
-            
             // Redirection (temporairement vers la même page)
             const url = new URL(window.location.href);
             url.searchParams.set("page", activeFilters.page);
