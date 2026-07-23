@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var shopSection = document.querySelector(".sn-shop");
     if (!shopSection) return;
@@ -354,4 +354,4 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialisation
     updateActiveFiltersBar();
 
-});
+})();

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var cartSection = document.querySelector(".sn-cart");
     if (!cartSection) return;
@@ -255,4 +255,4 @@ document.addEventListener("DOMContentLoaded", function () {
     //Initialisation
     updateCartTotals();
 
-});
+})();

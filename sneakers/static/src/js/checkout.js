@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var checkoutSection = document.querySelector(".sn-checkout");
     if (!checkoutSection) return;
@@ -285,4 +285,4 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1200);
     }
 
-});
+})();

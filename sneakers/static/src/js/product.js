@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var productSection = document.querySelector(".sn-product-details");
     if (!productSection) return;
@@ -365,4 +365,4 @@ document.addEventListener("DOMContentLoaded", function () {
         catch (e) { /* ignorer les erreurs de stockage */ }
     }
 
-});
+})();

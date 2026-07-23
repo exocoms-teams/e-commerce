@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var searchForm  = document.querySelector(".sn-search");
     if (!searchForm) return;
@@ -202,4 +202,4 @@ document.addEventListener("DOMContentLoaded", function () {
         closeDropdown();
     });
 
-});
+})();
