@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var wishlistSection = document.querySelector(".sn-wishlist");
     if (!wishlistSection) return;
@@ -147,4 +147,4 @@ document.addEventListener("DOMContentLoaded", function () {
     initHeartStates();
     checkEmptyWishlist();
 
-});
+})();

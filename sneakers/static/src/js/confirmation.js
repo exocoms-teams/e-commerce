@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     var confirmationSection = document.querySelector(".sn-confirmation");
     if (!confirmationSection) return;
@@ -145,4 +145,4 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(function () { container.remove(); }, 5000);
     }
 
-});
+})();

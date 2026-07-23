@@ -1,10 +1,10 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
-    // HEADER STICKY 
+    // HEADER STICKY
     var header = document.querySelector(".sn-header");
 
     if (header) {
-        var STICKY_THRESHOLD = 80; 
+        var STICKY_THRESHOLD = 80;
 
         window.addEventListener("scroll", function () {
             if (window.scrollY > STICKY_THRESHOLD) {
@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.style.overflow = isOpen ? "hidden" : "";
         });
 
-        // Fermer en cliquant à l'extérieur
         document.addEventListener("click", function (e) {
             if (
                 nav.classList.contains("sn-nav--open") &&
@@ -53,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Fermer avec la touche Escape
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape" && nav.classList.contains("sn-nav--open")) {
                 nav.classList.remove("sn-nav--open");
@@ -70,10 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (languageSwitcher) {
         languageSwitcher.addEventListener("change", function () {
             var selectedLang = this.value;
-
-            /* backend */
             console.log("[header.js] Langue sélectionnée :", selectedLang);
         });
     }
 
-});
+})();

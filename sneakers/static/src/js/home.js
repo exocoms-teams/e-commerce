@@ -1,9 +1,9 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
 
     // BOUTONS "AJOUTER AU PANIER"
     initAddToCart();
 
-    // FORMULAIRE NEWSLETTER 
+    // FORMULAIRE NEWSLETTER
     initNewsletter();
 
     // ANIMATION COMPTEURS
@@ -179,4 +179,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-});
+})();
