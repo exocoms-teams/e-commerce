@@ -5,14 +5,16 @@
         <field name="name">trend.product.list</field>
         <field name="model">trend.product</field>
         <field name="arch" type="xml">
-            <list default_order="current_score desc" decoration-info="is_top_10">
+            <list default_order="current_score desc" decoration-info="is_top_10" decoration-success="is_top_3">
+                <field name="is_top_10" column_invisible="True"/>
+                <field name="is_top_3" column_invisible="True"/>
                 <field name="name"/>
                 <field name="category_id"/>
                 <field name="sales_count"/>
                 <field name="score_site_x"/>
                 <field name="country"/>
                 <field name="current_score"/>
-                <field name="rank_number"/>
+                <field name="rank_number" widget="badge"/>
                 <field name="date"/>
             </list>
         </field>

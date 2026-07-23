@@ -50,7 +50,14 @@ class TrendProduct(models.Model):
     is_top_10 = fields.Boolean(
         string="Dans le Top 10",
         compute="_compute_rank_number",
+        search="_search_is_top_10",
         help="Vrai si le produit fait partie des 10 meilleurs scores"
+    )
+    is_top_3 = fields.Boolean(
+        string="Dans le Top 3",
+        compute="_compute_rank_number",
+        search="_search_is_top_3",
+        help="Vrai si le produit fait partie des 3 meilleurs scores"
     )
 
     # --- CONTRAINTES SQL ---
@@ -75,7 +82,7 @@ class TrendProduct(models.Model):
     @api.depends('current_score')
     def _compute_rank_number(self):
         """Compute the rank of each product based on current_score (highest first).
-        Also computes whether the product is in the top 10.
+        Also computes whether the product is in the top 10 and top 3.
         """
         if not self:
             return
@@ -86,6 +93,61 @@ class TrendProduct(models.Model):
         for product in self:
             product.rank_number = rank_map.get(product.id, 0)
             product.is_top_10 = (product.rank_number <= 10)
+            product.is_top_3 = (product.rank_number <= 3)
+
+    # Search methods to make non‑stored boolean fields usable in domains
+    @api.model
+    def _search_is_top_10(self, operator, value):
+        """Convert a domain on is_top_10 into an equivalent domain on current_score."""
+        # Normalise to boolean want_true
+        if isinstance(value, (list, tuple)):
+            want_true = True in value
+        else:
+            want_true = (value is True)
+        if operator == '!=':
+            want_true = not want_true
+        # For other operators (<, >, etc.) we fall back to false domain (should not appear in UI)
+        if operator not in ('=', '!='):
+            return []
+        Product = self.env['trend.product']
+        top = Product.search([], order='current_score desc', limit=10)
+        if not top:
+            return [] if want_true else [('id', '=', False)]
+        if len(top) < 10:
+            # Fewer than 10 records => all are in top 10
+            return [] if want_true else [('id', '=', False)]
+        # 10th highest score
+        sorted_scores = sorted(top.mapped('current_score'), reverse=True)
+        cutoff = sorted_scores[9]  # zero-indexed
+        if want_true:
+            return [('current_score', '>=', cutoff)]
+        else:
+            return [('current_score', '<', cutoff)]
+
+    @api.model
+    def _search_is_top_3(self, operator, value):
+        """Convert a domain on is_top_3 into an equivalent domain on current_score."""
+        if isinstance(value, (list, tuple)):
+            want_true = True in value
+        else:
+            want_true = (value is True)
+        if operator == '!=':
+            want_true = not want_true
+        if operator not in ('=', '!='):
+            return []
+        Product = self.env['trend.product']
+        top = Product.search([], order='current_score desc', limit=3)
+        if not top:
+            return [] if want_true else [('id', '=', False)]
+        if len(top) < 3:
+            return [] if want_true else [('id', '=', False)]
+        # 3rd highest score
+        sorted_scores = sorted(top.mapped('current_score'), reverse=True)
+        cutoff = sorted_scores[2]  # zero-indexed
+        if want_true:
+            return [('current_score', '>=', cutoff)]
+        else:
+            return [('current_score', '<', cutoff)]
 
     # --- MÉTHODES DE VALIDATION ---
     @api.constrains('sales_count')
