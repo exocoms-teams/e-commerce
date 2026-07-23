@@ -366,34 +366,38 @@
         activeFilters.page = initialPage;
         updatePaginationUI(initialPage);
 
+
         paginationNav.addEventListener("click", function (e) {
             var btn = e.target.closest(".sn-page-btn");
             if (!btn) return;
 
-            // Ignorer les flèches invisibles
+            // Ignorer les flèches cachées
             if (btn.style.visibility === "hidden") return;
 
             var icon = btn.querySelector("i");
             var text = btn.textContent.trim();
             var totalPages = getTotalPages();
 
+            // Source de vérité : lire la page courante DEPUIS L'URL, pas depuis activeFilters
+            var currentPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+            var targetPage;
+
             if (icon && icon.classList.contains("fa-chevron-left")) {
-                if (activeFilters.page <= 1) return;
-                activeFilters.page = activeFilters.page - 1;
+                if (currentPage <= 1) return;
+                targetPage = currentPage - 1;
             } else if (icon && icon.classList.contains("fa-chevron-right")) {
-                if (activeFilters.page >= totalPages) return;
-                activeFilters.page = activeFilters.page + 1;
+                if (currentPage >= totalPages) return;
+                targetPage = currentPage + 1;
             } else {
-                var page = parseInt(text, 10);
-                if (!isNaN(page)) activeFilters.page = page;
-                else return;
+                targetPage = parseInt(text, 10);
+                if (isNaN(targetPage)) return;
             }
 
-            updatePaginationUI(activeFilters.page);
+            activeFilters.page = targetPage;
+            updatePaginationUI(targetPage);
 
-            // Redirection avec le paramètre de page dans l'URL
             var url = new URL(window.location.href);
-            url.searchParams.set("page", activeFilters.page);
+            url.searchParams.set("page", targetPage);
             window.location.href = url.toString();
 
             if (productGrid) {
