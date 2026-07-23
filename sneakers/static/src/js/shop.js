@@ -296,28 +296,55 @@
 
     // Délégation clic pagination
     if (paginationNav) {
-        paginationNav.addEventListener("click", function (e) {
-            var btn = e.target.closest(".sn-page-btn");
-            if (!btn) return;
 
-            var text = btn.textContent.trim();
-            var icon = btn.querySelector("i");
+    paginationNav.addEventListener("click", function (e) {
 
-            if (icon && icon.classList.contains("fa-chevron-left")) {
-                activeFilters.page = Math.max(1, activeFilters.page - 1);
-            } else if (icon && icon.classList.contains("fa-chevron-right")) {
-                activeFilters.page = activeFilters.page + 1;
-            } else {
-                var page = parseInt(text, 10);
-                if (!isNaN(page)) activeFilters.page = page;
+        const btn = e.target.closest(".sn-page-btn");
+        if (!btn) return;
+
+        const icon = btn.querySelector("i");
+        const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
+
+        // Calcul de la nouvelle page
+        if (icon && icon.classList.contains("fa-chevron-left")) {
+
+            activeFilters.page = Math.max(1, activeFilters.page - 1);
+
+        } else if (icon && icon.classList.contains("fa-chevron-right")) {
+
+            activeFilters.page = Math.min(lastPage, activeFilters.page + 1);
+
+        } else {
+
+            const page = parseInt(btn.dataset.page, 10);
+
+            if (!isNaN(page)) {
+                activeFilters.page = page;
             }
 
-            applyFilters();
-            if (productGrid) {
-                productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
+        }
+
+        // Mise à jour du bouton actif
+        paginationNav.querySelectorAll(".sn-page-btn").forEach(function (b) {
+            b.classList.remove("active");
         });
-    }
+
+        const activeBtn = paginationNav.querySelector(
+            `.sn-page-btn[data-page="${activeFilters.page}"]`
+        );
+
+        if (activeBtn) {
+            activeBtn.classList.add("active");
+        }
+
+        // Redirection (temporairement vers la même page)
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", activeFilters.page);
+        window.location.href = url.toString();
+
+    });
+
+}
 
     // FILTRE MOBILE
     var filterToggleBtn = document.querySelector(".sn-filter-toggle");
@@ -353,5 +380,13 @@
 
     // Initialisation
     updateActiveFiltersBar();
+
+    // Lire le paramètre page depuis l'URL au chargement
+    var urlPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+    activeFilters.page = urlPage;
+    // Marquer le bon bouton comme actif
+    paginationNav && paginationNav.querySelectorAll(".sn-page-btn").forEach(function(btn) {
+        if (parseInt(btn.textContent, 10) === urlPage) btn.classList.add("active");
+});
 
 })();
