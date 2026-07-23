@@ -3,24 +3,11 @@
 
     <!-- ============================================================
          WIN-47 : Module Connexion / Inscription
-         Hérite du formulaire natif auth_signup pour appliquer la
-         charte graphique Winners (préfixe o_winners_).
-
-         Contrainte CSRF (WIN-47) : vérifiée manuellement sur /web/signup —
-         le token est déjà injecté nativement par Odoo dans oe_signup_form
-         (<input type="hidden" name="csrf_token" .../> présent dans le
-         formulaire natif), aucune surcharge nécessaire ici.
+         TEMPORAIRE : xpath sur field-login retiré, structure réelle
+         du template auth_signup.fields à vérifier avant de le remettre.
     ============================================================ -->
 
     <template id="auth_signup_fields_winners" inherit_id="auth_signup.fields" name="Winners - Champs inscription">
-
-        <!-- Ajout de la classe o_winners_ sur le champ login, conformément
-             à la charte graphique (Confluence : Charte Graphique & Contrat
-             de Nommage CSS - Winners) -->
-        <xpath expr="//div[hasclass('field-login')]" position="attributes">
-            <attribute name="class" add="o_winners_signup_field" separator=" "/>
-        </xpath>
-
     </template>
 
 </odoo>
