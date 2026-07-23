@@ -42,6 +42,16 @@ class TrendProduct(models.Model):
         store=True,
         help="Reflète toujours le dernier score calculé pour ce produit."
     )
+    rank_number = fields.Integer(
+        string="Classement",
+        compute="_compute_rank_number",
+        help="Position dans le classement général par score décroissant"
+    )
+    is_top_10 = fields.Boolean(
+        string="Dans le Top 10",
+        compute="_compute_rank_number",
+        help="Vrai si le produit fait partie des 10 meilleurs scores"
+    )
 
     # --- CONTRAINTES SQL ---
     _product_ref_source_uniq = models.Constraint(
@@ -61,6 +71,21 @@ class TrendProduct(models.Model):
                 product.current_score = latest_score.computed_score if latest_score else 0.0
             else:
                 product.current_score = 0.0
+
+    @api.depends('current_score')
+    def _compute_rank_number(self):
+        """Compute the rank of each product based on current_score (highest first).
+        Also computes whether the product is in the top 10.
+        """
+        if not self:
+            return
+        # Get all products ordered by score descending to compute ranks
+        all_products = self.search([], order='current_score desc, id')
+        # Create a mapping from product ID to rank
+        rank_map = {product.id: idx + 1 for idx, product in enumerate(all_products)}
+        for product in self:
+            product.rank_number = rank_map.get(product.id, 0)
+            product.is_top_10 = (product.rank_number <= 10)
 
     # --- MÉTHODES DE VALIDATION ---
     @api.constrains('sales_count')

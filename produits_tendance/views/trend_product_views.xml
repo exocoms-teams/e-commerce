@@ -5,12 +5,14 @@
         <field name="name">trend.product.list</field>
         <field name="model">trend.product</field>
         <field name="arch" type="xml">
-            <list default_order="date desc">
+            <list default_order="current_score desc" decoration-info="is_top_10">
                 <field name="name"/>
                 <field name="category_id"/>
                 <field name="sales_count"/>
                 <field name="score_site_x"/>
                 <field name="country"/>
+                <field name="current_score"/>
+                <field name="rank_number"/>
                 <field name="date"/>
             </list>
         </field>
@@ -35,6 +37,9 @@
                             <field name="date"/>
                             <field name="score_site_x"/>
                             <field name="source"/>
+                            <field name="current_score"/>
+                            <field name="rank_number"/>
+                            <field name="is_top_10"/>
                         </group>
                     </group>
                 </sheet>
@@ -52,6 +57,8 @@
                 <field name="category_id"/>
                 <field name="sales_count"/>
                 <field name="country"/>
+                <field name="current_score"/>
+                <field name="rank_number"/>
                 <templates>
                     <t t-name="card">
                         <div class="oe_kanban_card oe_kanban_global_click">
@@ -64,6 +71,12 @@
                                 </div>
                                 <div>
                                     Pays : <field name="country"/>
+                                </div>
+                                <div>
+                                    Score : <field name="current_score"/>
+                                </div>
+                                <div>
+                                    Rang : <field name="rank_number"/>
                                 </div>
                             </div>
                         </div>
@@ -83,6 +96,7 @@
                 <field name="category_id"/>
                 <field name="country"/>
                 <group>
+                    <filter string="Top 10" name="top_10" domain="[('is_top_10', '=', True)]"/>
                     <filter string="Catégorie" name="group_by_category" context="{'group_by': 'category_id'}"/>
                     <filter string="Pays" name="group_by_country" context="{'group_by': 'country'}"/>
                 </group>
