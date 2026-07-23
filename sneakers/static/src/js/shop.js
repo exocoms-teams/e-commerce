@@ -294,57 +294,82 @@
         });
     }
 
+    const paginationNav = document.querySelector(".sn-pagination");
+    const productGrid = document.querySelector(".sn-products-grid");
+
+    function updatePaginationArrows() {
+
+        const prevBtn = paginationNav.querySelector(".sn-prev-btn");
+        const nextBtn = paginationNav.querySelector(".sn-next-btn");
+        const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
+
+        if (activeFilters.page === 1) {
+            prevBtn.style.visibility = "hidden";
+        } else {
+            prevBtn.style.visibility = "visible";
+        }
+
+        if (activeFilters.page === lastPage) {
+            nextBtn.style.visibility = "hidden";
+        } else {
+            nextBtn.style.visibility = "visible";
+        }
+
+    }
+
     // Délégation clic pagination
     if (paginationNav) {
 
-    paginationNav.addEventListener("click", function (e) {
+        paginationNav.addEventListener("click", function (e) {
 
-        const btn = e.target.closest(".sn-page-btn");
-        if (!btn) return;
+            const btn = e.target.closest(".sn-page-btn");
+            if (!btn) return;
 
-        const icon = btn.querySelector("i");
-        const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
+            const icon = btn.querySelector("i");
+            const lastPage = paginationNav.querySelectorAll(".sn-page-btn[data-page]").length;
 
-        // Calcul de la nouvelle page
-        if (icon && icon.classList.contains("fa-chevron-left")) {
+            // Calcul de la nouvelle page
+            if (icon && icon.classList.contains("fa-chevron-left")) {
 
-            activeFilters.page = Math.max(1, activeFilters.page - 1);
+                activeFilters.page = Math.max(1, activeFilters.page - 1);
 
-        } else if (icon && icon.classList.contains("fa-chevron-right")) {
+            } else if (icon && icon.classList.contains("fa-chevron-right")) {
 
-            activeFilters.page = Math.min(lastPage, activeFilters.page + 1);
+                activeFilters.page = Math.min(lastPage, activeFilters.page + 1);
 
-        } else {
+            } else {
 
-            const page = parseInt(btn.dataset.page, 10);
+                const page = parseInt(btn.dataset.page, 10);
 
-            if (!isNaN(page)) {
-                activeFilters.page = page;
+                if (!isNaN(page)) {
+                    activeFilters.page = page;
+                }
+
             }
 
-        }
+            // Mise à jour du bouton actif
+            paginationNav.querySelectorAll(".sn-page-btn").forEach(function (b) {
+                b.classList.remove("active");
+            });
 
-        // Mise à jour du bouton actif
-        paginationNav.querySelectorAll(".sn-page-btn").forEach(function (b) {
-            b.classList.remove("active");
+            const activeBtn = paginationNav.querySelector(
+                `.sn-page-btn[data-page="${activeFilters.page}"]`
+            );
+
+            if (activeBtn) {
+                activeBtn.classList.add("active");
+            }
+
+            updatePaginationArrows();
+            
+            // Redirection (temporairement vers la même page)
+            const url = new URL(window.location.href);
+            url.searchParams.set("page", activeFilters.page);
+            window.location.href = url.toString();
+
         });
 
-        const activeBtn = paginationNav.querySelector(
-            `.sn-page-btn[data-page="${activeFilters.page}"]`
-        );
-
-        if (activeBtn) {
-            activeBtn.classList.add("active");
-        }
-
-        // Redirection (temporairement vers la même page)
-        const url = new URL(window.location.href);
-        url.searchParams.set("page", activeFilters.page);
-        window.location.href = url.toString();
-
-    });
-
-}
+    }
 
     // FILTRE MOBILE
     var filterToggleBtn = document.querySelector(".sn-filter-toggle");
