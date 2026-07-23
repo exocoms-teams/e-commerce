@@ -76,12 +76,30 @@
                                             </div>
                                             <div class="cam-product-body">
                                                 <h3 t-esc="product.name"/>
+
+                                                <div class="cam-stock-status mt-1 mb-2">
+                                                    <t t-if="'qty_available' in product._fields">
+                                                        <t t-if="product.sudo().qty_available &gt; 0">
+                                                            <span class="badge bg-success text-white">
+                                                                <i class="fa fa-box me-1"/>
+                                                                <span t-esc="int(product.sudo().qty_available)"/> en stock
+                                                            </span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="badge bg-danger text-white">
+                                                                Rupture
+                                                            </span>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                                
                                                 <div class="cam-product-footer">
                                                    <span class="cam-product-price">
                                                     <span t-field="product.list_price"
                                                         t-options="{
                                                             'widget': 'monetary',
-                                                            'display_currency': website.currency_id
+                                                            'display_currency': website.currency_id,
+                                                            
                                                         }"/>
                                                     <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/>
 </span>

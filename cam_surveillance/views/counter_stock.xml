@@ -27,23 +27,22 @@
         </xpath>
     </template>
 
-    <template id="custom_product_item_stock" inherit_id="website_sale.products_item" name="Stock sur Etiquette Produit Shop et Home">
-            <xpath expr="//div[hasclass('o_wsale_product_information')]" position="inside">
-                <div class="mt-2 custom-shop-stock-badge">
-                    <t t-if="'qty_available' in product._fields">
-                        <t t-if="product.sudo().qty_available &gt; 0">
-                            <span class="badge bg-success text-white">
-                                <i class="fa fa-box me-1"/>
-                                <span t-esc="int(product.sudo().qty_available)"/> en stock
-                            </span>
-                        </t>
-                        <t t-else="">
-                            <span class="badge bg-danger text-white">
-                                Rupture
-                            </span>
-                        </t>
-                    </t>
-                </div>
-            </xpath>
-        </template>
+    <template id="custom_product_item_stock" inherit_id="website_sale.products_item" name="Stock sur Etiquette Produit Shop">
+        <xpath expr="//div[hasclass('o_wsale_product_information')]" position="inside">
+            <t t-set="prod_obj" t-value="product or record"/>
+            <div t-if="prod_obj and 'qty_available' in prod_obj._fields" class="mt-2 custom-shop-stock-badge">
+                <t t-if="prod_obj.sudo().qty_available &gt; 0">
+                    <span class="badge bg-success text-white">
+                        <i class="fa fa-box me-1"/>
+                        <span t-esc="int(prod_obj.sudo().qty_available)"/> en stock
+                    </span>
+                </t>
+                <t t-else="">
+                    <span class="badge bg-danger text-white">
+                        Rupture
+                    </span>
+                </t>
+            </div>
+        </xpath>
+    </template>
 </odoo>
