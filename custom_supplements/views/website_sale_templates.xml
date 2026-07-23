@@ -1,104 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- =====================================================================
-         1. HERO CINÉMATIQUE - Page boutique (/shop)
-         Emplacement stratégique pour les rendus vidéo Higgsfield
-         (plan large multi-marques, scroll produit, etc.)
-         ===================================================================== -->
-    <template id="shop_hero_cinematic" inherit_id="website_sale.products" name="Hero Cinématique Multimarques">
-        <xpath expr="//div[@id='products_grid']" position="before">
-            <div class="cs-hero-media mb-5" style="height:60vh; min-height:420px;">
-                <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" poster="/custom_supplements/static/src/img/hero_multibrand_poster.jpg">
-                    <source src="/custom_supplements/static/src/videos/hero_multibrand_scroll.mp4" type="video/mp4"/>
-                </video>
-                <div class="cs-hero-overlay"/>
-                <div class="position-absolute top-50 start-50 translate-middle text-center text-white px-3" style="max-width:720px;">
-                    <h1 class="cs-font-heading display-4 mb-3">L'excellence, sans concession.</h1>
-                    <p class="cs-font-body fs-5 mb-4 opacity-75">Une sélection premium de compléments, choisis pour leur pureté et leur efficacité.</p>
-                    <a href="#products_grid" class="btn cs-btn-primary btn-lg px-4 py-2">Découvrir la collection</a>
-                </div>
-            </div>
-        </xpath>
-    </template>
-
-    <!-- =====================================================================
-         2. BADGE VEGAN - Grille produits
-         ===================================================================== -->
-    <template id="products_item_supplements_badge" inherit_id="website_sale.products_item" name="Badge Vegan Shop">
-        <xpath expr="//form" position="inside">
-            <t t-if="product.is_vegan">
-                <span class="badge cs-badge-accent position-absolute shadow-sm px-3 py-2" style="top: 12px; right: 12px; z-index: 10; font-weight:400;">
-                    <i class="fa fa-leaf me-1"/>Vegan
-                </span>
-            </t>
-        </xpath>
-    </template>
-
-    <!-- =====================================================================
-         3. FILTRE RÉGIME SPÉCIAL - Sidebar boutique
-         ===================================================================== -->
-    <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Filtre Vegan">
-        <xpath expr="//div[@id='products_grid']/*[1]" position="before">
-            <div class="mb-5 mt-3 cs-section-muted p-4" style="border-radius:var(--cs-radius);">
-                <h6 class="cs-font-heading text-uppercase small mb-3" style="letter-spacing:0.08em;">Régime Spécial</h6>
-                <a t-att-href="keep('/shop', vegan='1' if not request.params.get('vegan') else '')"
-                   t-attf-class="btn #{'cs-btn-primary' if request.params.get('vegan') else 'btn-outline-dark'} rounded-pill px-4 py-2">
-                    <i class="fa fa-leaf me-2"/>100% Vegan
-                    <i t-if="request.params.get('vegan')" class="fa fa-times ms-2"/>
-                </a>
-            </div>
-        </xpath>
-    </template>
-
-    <!-- =====================================================================
-         4. FICHE PRODUIT - Média cinématique + Informations nutritionnelles
-            & Posologie (fusionnées dans une seule carte haut de gamme)
-         ===================================================================== -->
-    <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Fiche Produit Premium Compléments">
-
-        <!-- Média cinématique produit, placé juste avant la fiche technique -->
-        <xpath expr="//div[@id='product_details']" position="before">
-            <t t-if="product.is_supplement">
-                <div class="cs-hero-media mb-4" style="height:45vh; min-height:320px;">
-                    <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-                           t-attf-poster="/custom_supplements/static/src/img/product_#{product.id}_poster.jpg">
-                        <t t-attf-src="/custom_supplements/static/src/videos/product_#{product.id}_cinematic.mp4"/>
-                    </video>
-                </div>
-            </t>
-        </xpath>
-
+    <!-- 1. Informations nutritionnelles (Celui qui fonctionne déjà) -->
+    <template id="product_supplements_info" inherit_id="website_sale.product" name="Infos Compléments">
         <xpath expr="//div[@id='product_details']" position="inside">
             <t t-if="product.is_supplement">
-                <div class="cs-card shadow-sm p-4 p-md-5 mt-4">
-                    <h5 class="cs-font-heading mb-4">Informations Nutritionnelles</h5>
-
-                    <div class="row g-4">
-                        <div class="col-md-6" t-if="product.is_vegan or product.allergens">
-                            <ul class="list-unstyled cs-font-body mb-0">
-                                <li t-if="product.is_vegan" class="mb-2">
-                                    <i class="fa fa-leaf me-2" style="color:var(--cs-accent);"/><strong class="cs-font-heading">100% Vegan</strong>
-                                </li>
-                                <li t-if="product.allergens">
-                                    <i class="fa fa-exclamation-triangle me-2 text-warning"/>
-                                    <strong class="cs-font-heading">Allergènes :</strong> <t t-esc="product.allergens"/>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6" t-if="product.dosage or product.ingredients">
-                            <ul class="list-unstyled cs-font-body mb-0">
-                                <li t-if="product.dosage" class="mb-2">
-                                    <strong class="cs-font-heading">Dosage recommandé :</strong> <span t-field="product.dosage"/>
-                                </li>
-                                <li t-if="product.ingredients">
-                                    <strong class="cs-font-heading">Ingrédients actifs :</strong> <span t-field="product.ingredients"/>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div t-if="product.nutritional_info" class="mt-4 pt-4 border-top cs-font-body">
+                <div class="alert alert-info mt-4" role="alert">
+                    <h5 class="mb-2">Informations Nutritionnelles</h5>
+                    <ul class="list-unstyled mb-2">
+                        <li t-if="product.is_vegan">
+                            <i class="fa fa-leaf text-success"></i> <strong>100% Vegan</strong>
+                        </li>
+                        <li t-if="product.allergens">
+                            <i class="fa fa-exclamation-triangle text-warning"></i> 
+                            <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
+                        </li>
+                    </ul>
+                    <div t-if="product.nutritional_info">
                         <t t-out="product.nutritional_info"/>
                     </div>
                 </div>
@@ -106,44 +24,55 @@
         </xpath>
     </template>
 
-    <!-- =====================================================================
-         5. ALERTE ALLERGÈNES - Résumé panier
-         ===================================================================== -->
-    <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <xpath expr="." position="inside">
-            <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
-            <div t-if="has_supplements" class="cs-section-muted mt-3 mb-0 p-3 text-start cs-font-body" style="font-size: 0.85rem; border-radius:var(--cs-radius);" role="alert">
-                <i class="fa fa-exclamation-triangle me-2"/>
-                <strong class="cs-font-heading">Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
+    <!-- 2. Badge Vegan -->
+    <template id="products_item_supplements_badge" inherit_id="website_sale.products_item" name="Badge Vegan Shop">
+        <xpath expr="//form" position="inside">
+            <t t-if="product.is_vegan">
+                <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
+                    <i class="fa fa-leaf"></i> Vegan
+                </span>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- 3. Bouton Filtre Vegan à l'intérieur de la grille -->
+    <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Filtre Vegan">
+        <xpath expr="//div[@id='products_grid']/*[1]" position="before">
+            <div class="mb-4 mt-3">
+                <h6 class="mb-2">Régime Spécial</h6>
+                <a t-att-href="keep('/shop', vegan='1' if not request.params.get('vegan') else '')"
+                   t-attf-class="btn btn-{{ 'success' if request.params.get('vegan') else 'outline-success' }} shadow-sm mb-3">
+                    <i class="fa fa-leaf"></i> 100% Vegan
+                    <i t-if="request.params.get('vegan')" class="fa fa-times ms-2"></i>
+                </a>
             </div>
         </xpath>
     </template>
 
-    <!-- =====================================================================
-         6. CHATBOT MÉDICAL INTELLIGENT - Bouton flottant global
-         ===================================================================== -->
-    <template id="custom_supplements_medical_chatbot_fab" inherit_id="website.layout" name="Chatbot Médical - Bouton Flottant">
-        <xpath expr="//div[@id='wrapwrap']" position="inside">
-            <div class="cs-chatbot-fab" id="cs_medical_chatbot_fab">
-                <button type="button" class="btn cs-btn-primary" title="Assistant Médical Intelligent" data-bs-toggle="offcanvas" data-bs-target="#cs_medical_chatbot_panel">
-                    <i class="fa fa-comment-medical fs-5"/>
-                </button>
+    <!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
+    <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
+        <xpath expr="." position="inside">
+            <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
+            <div t-if="has_supplements" class="alert alert-warning mt-3 mb-0 text-start shadow-sm" style="font-size: 0.85rem;" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i> 
+                <strong>Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
             </div>
+        </xpath>
+    </template>
 
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="cs_medical_chatbot_panel">
-                <div class="offcanvas-header cs-section-muted">
-                    <h6 class="cs-font-heading mb-0">Assistant Médical Intelligent</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
+    <!-- 5. Nouveaux champs Dosage et Ingrédients -->
+    <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Nutritional Info Supplements">
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <t t-if="product.is_supplement">
+                <div class="alert alert-info mt-4" role="alert">
+                    <h5 class="alert-heading"><i class="fa fa-info-circle"/> Posologie et Composition</h5>
+                    <hr/>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Dosage recommandé :</strong> <span t-field="product.dosage"/></li>
+                        <li><strong>Ingrédients actifs :</strong> <span t-field="product.ingredients"/></li>
+                    </ul>
                 </div>
-                <div class="offcanvas-body d-flex flex-column">
-                    <p class="cs-font-body text-muted small">
-                        Décrivez vos objectifs (sommeil, récupération, performance...) pour être orienté vers les produits adaptés du catalogue.
-                    </p>
-                    <div class="mt-auto text-center text-muted small cs-font-body">
-                        Module de recommandation à connecter.
-                    </div>
-                </div>
-            </div>
+            </t>
         </xpath>
     </template>
 
