@@ -13,12 +13,7 @@
     ],
 
         #bloc 'assets' pour charger votre futur design :
-    'assets': {
-        # Surcharge des variables Bootstrap (couleurs primaires, polices)
-        'web._assets_primary_variables': [
-            'custom_supplements/static/src/scss/primary_variables.scss',
-        ],
-        #CSS/SCSS personnalisé pour les pages
+'assets': {
         'web.assets_frontend': [
             'custom_supplements/static/src/scss/style.scss',
         ],
