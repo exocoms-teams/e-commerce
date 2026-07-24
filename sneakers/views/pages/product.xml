@@ -5,6 +5,7 @@
 
         <t t-call="website.layout">
 
+
             <!-- PRODUCT HEADER -->
             <section class="sn-product-header">
 
@@ -12,15 +13,16 @@
 
                     <div class="sn-section-header">
 
-                        <span class="sn-section-subtitle">Premium Sneakers</span>
+                        <span class="sn-section-subtitle">
+                            Premium Sneakers
+                        </span>
 
-                        <h2>Nike Air Max 270</h2>
+                        <h2>
+                            <t t-out="product.name"/>
+                        </h2>
 
                         <p>
-
-                            Discover premium comfort, lightweight cushioning and
-                            a modern design made for everyday performance.
-
+                            <t t-out="product.description_sale"/>
                         </p>
 
                     </div>
@@ -29,6 +31,7 @@
 
             </section>
 
+
             <!-- PRODUCT DETAILS -->
             <section class="sn-product-details">
 
@@ -36,74 +39,120 @@
 
                     <div class="sn-product-layout">
 
+
+
+
                         <!-- PRODUCT GALLERY -->
-                        <div class="sn-product-gallery">
+<div class="sn-product-gallery">
 
-                            <div class="sn-product-main-image">
 
-                                <img
-                                    src="/sneakers/static/src/img/products/product-1.jpg"
-                                    alt="Nike Air Max 270"/>
+    <!-- MAIN IMAGE -->
+    <div class="sn-product-main-image">
 
-                            </div>
+        <t t-if="product.image_1920">
 
-                            <div class="sn-product-thumbnails">
-                                <div class="sn-product-thumb active">
+            <img
+                t-att-src="'/web/image/product.template/%s/image_1920' % product.id"
+                t-att-alt="product.name"/>
 
-                                    <img
-                                        src="/sneakers/static/src/img/products/product-1.jpg"
-                                        alt="Nike Air Max 270"/>
+        </t>
 
-                                </div>
+        <t t-elif="product.product_template_image_ids">
 
-                                <div class="sn-product-thumb">
+            <img
+                t-att-src="'/web/image/product.image/%s/image_1920' % product.product_template_image_ids[0].id"
+                t-att-alt="product.name"/>
 
-                                    <img
-                                        src="/sneakers/static/src/img/products/product-2.jpg"
-                                        alt="Nike Air Max 270"/>
+        </t>
 
-                                </div>
+        <t t-else="">
 
-                                <div class="sn-product-thumb">
+            <img
+                src="/sneakers/static/src/img/products/product-1.jpg"
+                t-att-alt="product.name"/>
 
-                                    <img
-                                        src="/sneakers/static/src/img/products/product-3.jpg"
-                                        alt="Nike Air Max 270"/>
+        </t>
 
-                                </div>
+    </div>
 
-                                <div class="sn-product-thumb">
 
-                                    <img
-                                        src="/sneakers/static/src/img/products/product-4.jpg"
-                                        alt="Nike Air Max 270"/>
 
-                                </div>
+    <!-- THUMBNAILS -->
+    <div class="sn-product-thumbnails">
 
-                            </div>
 
-                        </div>
+        <!-- Image principale -->
+        <t t-if="product.image_1920">
+
+            <div class="sn-product-thumb active">
+
+                <img
+                    t-att-src="'/web/image/product.template/%s/image_1920' % product.id"
+                    t-att-alt="product.name"/>
+
+            </div>
+
+        </t>
+
+
+
+        <!-- Images eCommerce Media -->
+
+        <t t-foreach="product.product_template_image_ids"
+           t-as="image">
+
+            <div class="sn-product-thumb">
+
+                <img
+                    t-att-src="'/web/image/product.image/%s/image_1920' % image.id"
+                    t-att-alt="product.name"/>
+
+            </div>
+
+        </t>
+
+
+    </div>
+
+
+</div>
+
+
 
                         <!-- PRODUCT INFORMATION -->
-
                         <div class="sn-product-content">
 
-                            <!-- Product Title -->
-                            <div class="sn-product-title">
-                                <span class="sn-product-brand">Nike</span>
 
-                                <h1>Air Max 270</h1>
+                            <!-- TITLE -->
+
+                            <div class="sn-product-title">
+
+                                <span class="sn-product-brand">
+
+                                    <t t-out="product.brand_id.name"/>
+
+                                </span>
+
+
+                                <h1>
+                                    <t t-out="product.name"/>
+                                </h1>
+
 
                                 <span class="sn-product-sku">
 
-                                    SKU : NK-AM270-001
+                                    SKU :
+                                    <t t-out="product.default_code"/>
 
                                 </span>
 
                             </div>
 
+
+
                             <!-- Rating -->
-                             <div class="sn-product-rating">
+
+                            <div class="sn-product-rating">
 
                                 <div class="sn-stars">
 
@@ -115,333 +164,382 @@
 
                                 </div>
 
+
                                 <span class="sn-rating-value">
-
                                     4.9
-
                                 </span>
+
 
                                 <span class="sn-review-count">
-
-                                    (124 Reviews)
-
+                                    Reviews
                                 </span>
+
 
                             </div>
 
-                            <!-- Price -->
+
+
+                            <!-- PRICE -->
+
                             <div class="sn-product-price">
+
 
                                 <span class="sn-current-price">
 
-                                    $180.00
+                                    $
+                                    <t t-out="product.list_price"/>
 
                                 </span>
 
-                                <span class="sn-old-price">
 
-                                    $220.00
+                                <t t-if="product.old_price">
 
-                                </span>
+                                    <span class="sn-old-price">
 
-                                <span class="sn-discount">
+                                        $
+                                        <t t-out="product.old_price"/>
 
-                                    -18%
+                                    </span>
 
-                                </span>
+                                </t>
+
+
 
                             </div>
 
-                            <!-- Short Description -->
+
+
+                            <!-- DESCRIPTION -->
+
                             <div class="sn-product-description-short">
 
                                 <p>
 
-                                    The Nike Air Max 270 combines modern style with exceptional comfort.
-                                    Featuring lightweight cushioning and breathable materials,
-                                    it is designed for everyday wear and athletic performance.
+                                    <t t-out="product.description_sale"/>
 
                                 </p>
 
                             </div>
+<!-- COLORS -->
+<div class="sn-product-colors">
 
-                            <!-- Colors -->
-                            <div class="sn-product-colors">
+    <h4>Color</h4>
 
-                                <h4>Color</h4>
+    <div class="sn-color-options">
 
-                                <div class="sn-color-options">
+        <span class="sn-color active black"></span>
+        <span class="sn-color white"></span>
+        <span class="sn-color blue"></span>
+        <span class="sn-color red"></span>
 
-                                    <span class="sn-color active black"></span>
+    </div>
 
-                                    <span class="sn-color white"></span>
+</div>
 
-                                    <span class="sn-color blue"></span>
 
-                                    <span class="sn-color red"></span>
+<!-- SIZES -->
+<div class="sn-product-sizes">
 
-                                </div>
+    <h4>Size</h4>
 
-                            </div>
+    <div class="sn-size-options">
 
-                            <!-- Sizes -->
-                            <div class="sn-product-sizes">
+        <button>39</button>
+        <button>40</button>
+        <button class="active">41</button>
+        <button>42</button>
+        <button>43</button>
+        <button>44</button>
 
-                                <h4>Size</h4>
+    </div>
 
-                                <div class="sn-size-options">
+</div>
 
-                                    <button>39</button>
 
-                                    <button>40</button>
+<!-- QUANTITY -->
+<div class="sn-product-quantity">
 
-                                    <button class="active">41</button>
+    <h4>Quantity</h4>
 
-                                    <button>42</button>
 
-                                    <button>43</button>
+    <div class="sn-quantity-selector">
 
-                                    <button>44</button>
 
-                                </div>
+        <button class="sn-qty-btn"
+                data-action="decrease">
+            -
+        </button>
 
-                            </div>
 
-                            <!-- Quantity -->
-                            <div class="sn-product-quantity">
 
-                                <h4>Quantity</h4>
+        <input
+            class="sn-qty-input"
+            type="number"
+            value="1"
+            min="1"
+            max="99"/>
 
-                                <div class="sn-quantity-selector">
 
-                                    <button> - </button>
 
-                                    <input
-                                        type="number"
-                                        value="1"
-                                        min="1"/>
+        <button class="sn-qty-btn"
+                data-action="increase">
+            +
+        </button>
 
-                                    <button> + </button>
 
-                                </div>
+    </div>
 
-                            </div>
+</div>
 
-                            <!-- Action Buttons -->
-                            <div class="sn-buttons">
-                                    <a href="/shop-sneakers" class="sn-btn-primary">Add to Cart</a>
-                                    <a href="#categories" class="sn-btn-outline-wl">Buy Now</a>
-                            </div>
 
-                            <!-- Product Meta -->
-                            <div class="sn-product-meta">
 
-                                <div>
+<!-- BUTTONS -->
+<div class="sn-buttons">
 
-                                    <strong>Category :</strong>
+    <button
+        type="button"
+        class="sn-btn-primary sn-add-to-cart-btn"
+        t-att-data-product-id="product.product_variant_id.id">
 
-                                    Running
+        Add to Cart
 
-                                </div>
+    </button>
 
-                                <div>
+    <a href="#categories"
+       class="sn-btn-outline-wl">
+        Buy Now
+    </a>
 
-                                    <strong>Brand :</strong>
+</div>
 
-                                    Nike
 
-                                </div>
 
-                                <div>
+<!-- PRODUCT META -->
+<div class="sn-product-meta">
 
-                                    <strong>Availability :</strong>
 
-                                    In Stock
+    <div>
 
-                                </div>
+        <strong>Category :</strong>
 
-                            </div>
+        <t t-foreach="product.public_categ_ids"
+           t-as="category">
 
-                        </div>
+            <span>
+                <t t-out="category.name"/>
+            </span>
 
-                    </div>
+        </t>
 
-                </div>
+    </div>
 
-            </section>
 
-            <!-- ========================================================= -->
-            <!-- PRODUCT TABS                                              -->
-            <!-- ========================================================= -->
-<!-- 
-            <section class="sn-product-tabs">
 
-                <div class="mn-container">
+    <div>
 
-                    
-                    <div class="sn-tabs">
+        <strong>Brand :</strong>
 
-                        <button class="active">Description</button>
+        <t t-out="product.brand_id.name"/>
 
-                        <button>Specifications</button>
+    </div>
 
-                        <button>Shipping &amp; Returns</button>
 
-                    </div>
 
-                    <div class="sn-tab-content active">
+    <div>
 
-                        <p>
+    
 
-                            Designed for comfort and performance,
-                            the Nike Air Max 270 features a breathable upper,
-                            responsive cushioning and a durable rubber outsole
-                            suitable for everyday activities.
+    <strong>Availability :</strong>
 
-                        </p>
+    In Stock
 
-                    </div>
 
-                    <div class="sn-tab-content">
+    </div>
 
-                        <ul>
 
-                            <li>Upper : Mesh Textile</li>
+</div>
 
-                            <li>Sole : Rubber</li>
 
-                            <li>Weight : 320 g</li>
+</div>
+</div>
+</div>
+</section>
 
-                            <li>Closure : Lace-up</li>
 
-                            <li>Gender : Unisex</li>
 
-                        </ul>
+<!-- PRODUCT TABS -->
 
-                    </div>
+<section class="sn-product-tabs">
 
-                    <div class="sn-tab-content">
+    <div class="mn-container">
 
-                        <p>
+        <div class="sn-tabs">
 
-                            Free shipping on orders over $100.
-                            Returns accepted within 30 days after delivery.
 
-                        </p>
+            <button class="sn-tab-btn active"
+                    data-tab="description"
+                    aria-selected="true">
 
-                    </div>
+                Description
 
-                </div>
+            </button>
 
-            </section> -->
-            <section class="sn-product-tabs">
-            <div class="mn-container">
 
-                <!-- Onglets -->
-                <div class="sn-tabs">
-                    <button class="active"
-                            t-att-data-tab="'tab-description'">
-                        Description
-                    </button>
-                    <button t-att-data-tab="'tab-specifications'">
-                        Specifications
-                    </button>
-                    <button t-att-data-tab="'tab-reviews'">
-                        Reviews (<t t-out="review_count"/>)
-                    </button>
-                </div>
+            <button class="sn-tab-btn"
+                    data-tab="specifications"
+                    aria-selected="false">
 
-                <!-- Description -->
-                <div id="tab-description" class="sn-tab-content">
-                    <p><t t-out="product_description"/></p>
-                    <ul>
-                        <t t-foreach="product_features" t-as="feature">
-                            <li><t t-out="feature"/></li>
-                        </t>
-                    </ul>
-                </div>
+                Specifications
 
-                <!-- Specifications -->
-                <div id="tab-specifications" class="sn-tab-content" style="display:none">
-                    <p><strong>Brand:</strong> <t t-out="product_brand"/></p>
-                    <p><strong>Model:</strong> <t t-out="product_model"/></p>
-                    <p><strong>Material:</strong> <t t-out="product_material"/></p>
-                    <p><strong>Sole:</strong> <t t-out="product_sole"/></p>
-                    <p><strong>Available Sizes:</strong> <t t-out="product_sizes"/></p>
-                    <p><strong>Weight:</strong> <t t-out="product_weight"/></p>
-                    <p><strong>Origin:</strong> <t t-out="product_origin"/></p>
-                </div>
+            </button>
 
-                <!-- Reviews -->
-                <div id="tab-reviews" class="sn-tab-content" style="display:none">
-                    <t t-foreach="reviews" t-as="review">
-                        <p>
-                            <strong><t t-out="review.stars"/></strong>
-                            — "<t t-out="review.text"/>" —
-                            <t t-out="review.author"/>
-                        </p>
-                        <br/>
-                    </t>
-                </div>
 
-            </div>
-        </section>
+            <button class="sn-tab-btn"
+                    data-tab="reviews"
+                    aria-selected="false">
+
+                Reviews
+
+            </button>
+
+
+        </div>
+
+
+
+        <div id="tab-description"
+             class="sn-tab-panel active">
+
+            <p>
+                <t t-out="product.description_sale"/>
+            </p>
+
+        </div>
+
+
+
+        <div id="tab-specifications"
+             class="sn-tab-panel"
+             hidden="hidden">
+
+            <p>
+                <strong>Brand:</strong>
+                <t t-out="product.brand_id.name"/>
+            </p>
+
+
+            <p>
+                <strong>SKU:</strong>
+                <t t-out="product.default_code"/>
+            </p>
+
+
+            <p>
+                <strong>Price:</strong>
+                <t t-out="product.list_price"/>
+            </p>
+
+        </div>
+
+
+
+        <div id="tab-reviews"
+             class="sn-tab-panel"
+             hidden="hidden">
+
+            <p>
+                No reviews available yet.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
 
             <!-- RELATED PRODUCTS -->
 
             <section class="sn-related-products">
 
-                <div class="mn-container">
 
-                    <!-- Section Header -->
-                    <div class="sn-section-header" style="text-align:center;margin-bottom:45px;">
-                        <span class="sn-section-subtitle">You May Also Like</span>
-                        <h2>Related Products</h2>
-                    </div>
+            <div class="mn-container">
 
-                    <!-- Products Grid -->
-                    <div class="sn-products-grid">
 
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Nike Air Max 270'"/>
-                            <t t-set="product_price" t-value="'$189.00'"/>
-                            <t t-set="product_old_price" t-value="'$229.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-1.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
-                        </t>
+            <div class="sn-section-header"
+                style="text-align:center;margin-bottom:45px;">
 
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Adidas Ultraboost'"/>
-                            <t t-set="product_price" t-value="'$175.00'"/>
-                            <t t-set="product_old_price" t-value="'$210.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-2.jpg'"/>
-                            <t t-set="product_badge" t-value="'HOT'"/>
-                        </t>
 
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Puma RS-X'"/>
-                            <t t-set="product_price" t-value="'$160.00'"/>
-                            <t t-set="product_old_price" t-value="'$200.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-3.jpg'"/>
-                            <t t-set="product_badge" t-value="'SALE'"/>
-                        </t>
+            <span class="sn-section-subtitle">
 
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Reebok Classic'"/>
-                            <t t-set="product_price" t-value="'$140.00'"/>
-                            <t t-set="product_old_price" t-value="'$180.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-4.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
-                        </t>
+            You May Also Like
 
-                    </div>
+            </span>
 
-                </div>
+
+            <h2>
+
+            Related Products
+
+            </h2>
+
+
+            </div>
+
+
+
+            <div class="sn-products-grid">
+
+
+            <t t-foreach="similar_products"
+            t-as="similar">
+
+
+            <t t-call="sneakers.product_card">
+
+            <t t-set="product_id"
+            t-value="similar.id"/>
+            
+            <t t-set="product_name"
+            t-value="similar.name"/>
+
+
+            <t t-set="product_price"
+            t-value="similar.list_price"/>
+
+
+            <t t-set="product_old_price"
+            t-value="similar.old_price"/>
+
+
+            <t t-set="product_badge"
+            t-value="similar.badge"/>
+
+
+            <t t-set="product_image"
+            t-value="'/web/image/product.template/%s/image_1920' % similar.id"/>
+
+
+            </t>
+
+
+            </t>
+
+
+            </div>
+
+
+            </div>
+
 
             </section>
 
-        </t>
 
-    </template>
+
+</t>
+
+</template>
 
 </odoo>

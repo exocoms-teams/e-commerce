@@ -270,31 +270,99 @@
         });
     }
 
-    function addToCartFromProduct(productId, qty, size, color, btn) {
+        function addToCartFromProduct(productId, qty, size, color, btn) {
+
         var originalText = btn.textContent;
-        btn.textContent  = "Adding...";
-        btn.disabled     = true;
 
-        /* BACKEND — Ajouter au panier Odoo (website_sale) */
+        btn.textContent = "Adding...";
+        btn.disabled = true;
 
-        setTimeout(function () {
-            btn.textContent = "✓ Added to Cart!";
-            btn.classList.add("sn-btn--success");
 
-            var badge = document.querySelector(".sn-cart-count");
-            if (badge) {
-                badge.textContent = (parseInt(badge.textContent, 10) || 0) + qty;
-                badge.style.display = "flex";
+        fetch("/shop/cart/add", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+
+                jsonrpc: "2.0",
+
+                method: "call",
+
+                params: {
+
+                    product_template_id: parseInt(productId),
+
+                    product_id: parseInt(productId),
+
+                    quantity: qty
+
+                }
+
+            })
+
+        })
+
+        .then(function(response){
+
+            return response.json();
+
+        })
+
+
+        .then(function(result){
+
+            console.log("CART RESPONSE :", result);
+
+
+            if(result.error){
+
+                console.error(result.error);
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+                return;
             }
 
-            if (window.snShowToast) window.snShowToast("Produit ajouté au panier !");
 
-            setTimeout(function () {
-                btn.textContent = originalText;
-                btn.disabled    = false;
-                btn.classList.remove("sn-btn--success");
-            }, 2500);
-        }, 700);
+            btn.textContent = "✓ Added to Cart!";
+
+            btn.classList.add("sn-btn--success");
+
+
+            if(window.snShowToast){
+
+                window.snShowToast(
+                    "Produit ajouté au panier !"
+                );
+
+            }
+
+
+            setTimeout(function(){
+
+                window.location.href="/cart";
+
+            },1000);
+
+
+        })
+
+
+        .catch(function(error){
+
+            console.error("ADD CART ERROR :", error);
+
+            btn.textContent = originalText;
+
+            btn.disabled=false;
+
+        });
+
     }
 
     function initTabs() {
