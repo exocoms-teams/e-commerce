@@ -19,7 +19,7 @@ class WinnersAuthSignup(AuthSignupHome):
                 limit=1,
             )
             if user_sudo:
-                group_free = request.env.ref('produits_tendance.group_trend_free')
-                user_sudo.sudo().write({'groups_id': [(4, group_free.id)]})
+               group_free = request.env.ref('produits_tendance.group_trend_free')
+               user_sudo.sudo().write({'group_ids': [(4, group_free.id)]})
 
         return response
