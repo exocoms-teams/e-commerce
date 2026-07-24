@@ -34,8 +34,13 @@ class PaymentProvider(models.Model):
         providers = super()._get_compatible_providers(
             company_id, partner_id, amount, **kwargs
         )
+
+        # Récupération sécurisée du partenaire commercial racine
         partner = self.env['res.partner'].browse(partner_id).exists()
-        if not partner or not partner.commercial_partner_id.is_public_entity:
+        commercial_partner = partner.commercial_partner_id if partner else False
+
+        # Vérification si c'est une entité publique
+        if not commercial_partner or not commercial_partner.is_public_entity:
             providers = providers.filtered(
                 lambda p: p.code != 'mandat_administratif'
             )
