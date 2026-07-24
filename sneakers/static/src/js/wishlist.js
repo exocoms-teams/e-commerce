@@ -113,6 +113,14 @@
 
         saveLocalWishlist(wl);
 
+        // Mettre à jour le badge wishlist dans le header
+        var wlBadge = document.querySelector('.sn-wishlist-count');
+        if (wlBadge) {
+            var newWl = getLocalWishlist();
+            wlBadge.textContent = newWl.length;
+            wlBadge.style.display = newWl.length > 0 ? 'flex' : 'none';
+        }
+
         /* backend */
     });
 

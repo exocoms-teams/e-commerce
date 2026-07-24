@@ -294,6 +294,8 @@
         });
     }
 
+    
+
     // Délégation clic pagination
     if (paginationNav) {
         paginationNav.addEventListener("click", function (e) {
@@ -313,6 +315,91 @@
             }
 
             applyFilters();
+            if (productGrid) {
+                productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    }
+
+     
+    // Délégation clic pagination
+    if (paginationNav) {
+
+        // Récupérer le nombre total de pages depuis le dernier bouton numéroté
+        function getTotalPages() {
+            var numbered = Array.from(paginationNav.querySelectorAll(".sn-page-btn")).filter(function(b) {
+                return !b.querySelector("i") && !isNaN(parseInt(b.textContent.trim(), 10));
+            });
+            if (!numbered.length) return 1;
+            return parseInt(numbered[numbered.length - 1].textContent.trim(), 10);
+        }
+
+        // Mettre à jour l'état visuel des flèches et du bouton actif
+        function updatePaginationUI(currentPage) {
+            var totalPages = getTotalPages();
+
+            var prevBtn = paginationNav.querySelector(".sn-page-btn .fa-chevron-left");
+            var nextBtn = paginationNav.querySelector(".sn-page-btn .fa-chevron-right");
+
+            if (prevBtn) {
+                prevBtn.closest(".sn-page-btn").style.visibility = currentPage <= 1 ? "hidden" : "visible";
+            }
+            if (nextBtn) {
+                nextBtn.closest(".sn-page-btn").style.visibility = currentPage >= totalPages ? "hidden" : "visible";
+            }
+
+            // Un seul bouton actif à la fois
+            paginationNav.querySelectorAll(".sn-page-btn").forEach(function(b) {
+                b.classList.remove("active");
+            });
+
+            // Activer le bouton correspondant à la page actuelle
+            paginationNav.querySelectorAll(".sn-page-btn").forEach(function(b) {
+                if (!b.querySelector("i") && parseInt(b.textContent.trim(), 10) === currentPage) {
+                    b.classList.add("active");
+                }
+            });
+        }
+
+        // Initialiser l'UI au chargement depuis l'URL
+        var initialPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+        activeFilters.page = initialPage;
+        updatePaginationUI(initialPage);
+
+
+        paginationNav.addEventListener("click", function (e) {
+            var btn = e.target.closest(".sn-page-btn");
+            if (!btn) return;
+
+            // Ignorer les flèches cachées
+            if (btn.style.visibility === "hidden") return;
+
+            var icon = btn.querySelector("i");
+            var text = btn.textContent.trim();
+            var totalPages = getTotalPages();
+
+            // Source de vérité : lire la page courante DEPUIS L'URL, pas depuis activeFilters
+            var currentPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+            var targetPage;
+
+            if (icon && icon.classList.contains("fa-chevron-left")) {
+                if (currentPage <= 1) return;
+                targetPage = currentPage - 1;
+            } else if (icon && icon.classList.contains("fa-chevron-right")) {
+                if (currentPage >= totalPages) return;
+                targetPage = currentPage + 1;
+            } else {
+                targetPage = parseInt(text, 10);
+                if (isNaN(targetPage)) return;
+            }
+
+            activeFilters.page = targetPage;
+            updatePaginationUI(targetPage);
+
+            var url = new URL(window.location.href);
+            url.searchParams.set("page", targetPage);
+            window.location.href = url.toString();
+
             if (productGrid) {
                 productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
             }
@@ -353,5 +440,13 @@
 
     // Initialisation
     updateActiveFiltersBar();
+
+    // Lire le paramètre page depuis l'URL au chargement
+    var urlPage = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+    activeFilters.page = urlPage;
+    // Marquer le bon bouton comme actif
+    paginationNav && paginationNav.querySelectorAll(".sn-page-btn").forEach(function(btn) {
+        if (parseInt(btn.textContent, 10) === urlPage) btn.classList.add("active");
+});
 
 })();
