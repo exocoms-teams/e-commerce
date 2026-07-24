@@ -197,6 +197,8 @@
         var emptyMsg = document.querySelector(".sn-cart-empty");
 
         if (!items.length) {
+            var cartLayout = document.querySelector(".sn-cart-layout");
+            if (cartLayout) cartLayout.style.gridTemplateColumns = "1fr";
             var cartItems = document.querySelector(".sn-cart-items");
             if (cartItems && !emptyMsg) {
                 cartItems.innerHTML =
