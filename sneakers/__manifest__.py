@@ -4,10 +4,13 @@
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
+    'depends': ['website', 'website_sale','sale', 'product',],
 
     'data': [
         'security/ir.model.access.csv',
+        'data/category_data.xml',
+        'data/brand_data.xml',
+        'data/product_data.xml',
 
         'views/templates/layout.xml',
         'views/templates/header.xml',
