@@ -122,36 +122,13 @@
                                     <p>Large gamme de produits IP à plateforme ouverte AXIS</p>
                                 </div>
                                 <div class="cam-cat-grid">
-                                    <a href="/shop/category/cameras-reseaux-1" class="cam-cat-card">
-                                        <h3>Caméras réseau</h3>
-                                        <p>Innovation, qualité et performance</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/stockage_enregistreurs-2" class="cam-cat-card">
-                                        <h3>Stockage et enregistreurs</h3>
-                                        <p>Solutions cloud, edge et on-site</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/controle_acces-3" class="cam-cat-card cam-cat-featured">
-                                        <h3>Contrôle d'accès</h3>
-                                        <p>Flexible et sécurisé</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/audio_reseau-4" class="cam-cat-card">
-                                        <h3>Audio réseau</h3>
-                                        <p>Le son chic et facile</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/periferiques_radar-5" class="cam-cat-card">
-                                        <h3>Périphériques radar</h3>
-                                        <p>Protection étendue</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/accesoires-6" class="cam-cat-card">
-                                        <h3>Accessoires</h3>
-                                        <p>Tout pour compléter vos systèmes</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
+                                    <t t-foreach="request.env['product.public.category'].search([('parent_id', '=', False)])" t-as="cat">
+                                        <a t-attf-href="#{cat.website_url}" class="cam-cat-card">
+                                            <h3 t-field="cat.name"/>
+                                            <p>Découvrez notre gamme</p>
+                                            <span class="cam-cat-link">Voir</span>
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
                         </section>
