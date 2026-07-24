@@ -202,18 +202,24 @@
                 cartItems.innerHTML =
                     '<div class="sn-cart-empty">' +
                         '<i class="fa fa-shopping-cart"></i>' +
-                        '<h3>Votre panier est vide</h3>' +
-                        '<p>Parcourez notre catalogue et ajoutez vos sneakers préférées.</p>' +
-                        '<a href="/shop-sneakers" class="sn-btn-primary">Continuer vos achats</a>' +
+                        '<h3>Your cart is empty</h3>' +
+                        '<p>Browse our catalog and add your favorite sneakers.</p>' +
+                        '<a href="/shop-sneakers" class="sn-btn-primary">Continue Shopping</a>' +
                     '</div>';
             }
-
+            // masquer l'order summary
+            var summaryCard = document.querySelector(".sn-summary-card");
+            if (summaryCard) summaryCard.style.display = "none";
+            //Masquer la promo card si elle existe
+            var promoCard = document.querySelector(".sn-promo-card");
+            if (promoCard) promoCard.style.display = "none";
             // Désactive le bouton checkout
             var checkoutBtn = document.querySelector(".sn-checkout-btn");
             if (checkoutBtn) {
                 checkoutBtn.disabled = true;
-                checkoutBtn.textContent = "Panier vide";
+                checkoutBtn.textContent = "Empty cart";
             }
+            
         }
 
         updateCartTotals();
