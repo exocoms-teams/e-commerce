@@ -60,6 +60,7 @@ On a les VOIES D'ENREGISTREMENT suivantes :
 <odoo>
     <data noupdate="1">   
         <!-- categorie priver (pour referencement interne)-->
+        <!-- ===================== CAMÉRA RÉSEAU ===================== -->
         <record id="camera_reseau" model="product.category">
             <field name="name">Caméras réseau</field>
         </record>
@@ -69,10 +70,21 @@ On a les VOIES D'ENREGISTREMENT suivantes :
             </record>
             
             <record id="cam_corner" model="product.category">
-                <field name="name">Camera Coin</field>
+                <field name="name">Camera de coin</field>
                 <field name="parent_id" ref="camera_reseau"/>
             </record>
-        
+
+            <record id="cam_tourelle" model="product.category">
+                <field name="name">Camera tourelle</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+
+            <record id="cam_balle" model="product.category">
+                <field name="name">Camera balle</field>
+                <field name="parent_id" ref="camera_reseau"/>
+            </record>
+
+         <!-- ===================== STOCKAGE ET ENREGISTREURS ===================== -->
         <record id="stockage_enregistreurs" model="product.category">
             <field name="name">Stockage et enregistreur</field>
         </record>
@@ -80,12 +92,30 @@ On a les VOIES D'ENREGISTREMENT suivantes :
                 <field name="name">Stockage</field>
                 <field name="parent_id" ref="stockage_enregistreurs"/>
             </record>
+                <record id="disques_dur" model="product.category">
+                    <field name="name">Disques dur</field>
+                    <field name="parent_id" ref="stockage"/>
+                </record>
             
             <record id="enregistreur" model="product.category">
                 <field name="name">Enregistreur</field>
                 <field name="parent_id" ref="stockage_enregistreurs"/>
             </record>
-        
+                <record id="enregistreur_nvr" model="product.category">
+                    <field name="name">Enregistreur NVR</field>
+                    <field name="parent_id" ref="enregistreur"/>
+                </record>
+                <record id="enregistreur_dvr" model="product.category">
+                    <field name="name">Enregistreur DVR</field>
+                    <field name="parent_id" ref="enregistreur"/>
+                </record>
+                <record id="enregistreur_xvr" model="product.category">
+                    <field name="name">Enregistreur XVR</field>
+                    <field name="parent_id" ref="enregistreur"/>
+                </record>
+                
+
+        <!-- ===================== CONTRÔLE D'ACCÈS ===================== -->
         <record id="controle_acces" model="product.category">
             <field name="name">Contrôle d'accès</field>
         </record>
@@ -140,49 +170,186 @@ On a les VOIES D'ENREGISTREMENT suivantes :
         <record id="public_camera_reseau" model="product.public.category">
             <field name="name">Caméras réseau</field>
         </record>
-            <record id="public_cam_dome" model="product.public.category">
-                <field name="name">Camera Dome</field>
-                <field name="parent_id" ref="public_camera_reseau"/>
-            </record>
-            
-            <record id="public_cam_corner" model="product.public.category">
-                <field name="name">Camera Coin</field>
-                <field name="parent_id" ref="public_camera_reseau"/>
-            </record>
+                    <record id="public_cam_dome" model="product.public.category">
+                        <field name="name">Camera Dome</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
+                    
+                    <record id="public_cam_corner" model="product.public.category">
+                        <field name="name">Camera de coin</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
+                    
+                    <record id="public_cam_tourelle" model="product.public.category">
+                        <field name="name">Camera tourelle</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
         
-        <record id="public_stockage_enregistreurs" model="product.public.category">
-            <field name="name">Stockage et enregistreur</field>
-        </record>
-            <record id="public_stockage" model="product.public.category">
-                <field name="name">Stockage</field>
-                <field name="parent_id" ref="public_stockage_enregistreurs"/>
-            </record>
-            
-            <record id="public_enregistreur" model="product.public.category">
-                <field name="name">Enregistreur</field>
-                <field name="parent_id" ref="public_stockage_enregistreurs"/>
-            </record>
+                    <record id="public_cam_balle" model="product.public.category">
+                        <field name="name">Camera balle</field>
+                        <field name="parent_id" ref="public_camera_reseau"/>
+                    </record>
         
-        <record id="public_controle_acces" model="product.public.category">
-            <field name="name">Contrôle d'accès</field>
-        </record>
+                 <record id="public_stockage_enregistreurs" model="product.public.category">
+                    <field name="name">Stockage et enregistreur</field>
+                </record>
+                    <record id="public_stockage" model="product.public.category">
+                        <field name="name">Stockage</field>
+                        <field name="parent_id" ref="public_stockage_enregistreurs"/>
+                    </record>
+                        <record id="public_disques_dur" model="product.public.category">
+                            <field name="name">Disques dur</field>
+                            <field name="parent_id" ref="public_stockage"/>
+                        </record>
+                    
+                    <record id="public_enregistreur" model="product.public.category">
+                        <field name="name">Enregistreur</field>
+                        <field name="parent_id" ref="public_stockage_enregistreurs"/>
+                    </record>
+                        <record id="public_enregistreur_nvr" model="product.public.category">
+                            <field name="name">Enregistreur NVR</field>
+                            <field name="parent_id" ref="public_enregistreur"/>
+                        </record>
+                        <record id="public_enregistreur_dvr" model="product.public.category">
+                            <field name="name">Enregistreur DVR</field>
+                            <field name="parent_id" ref="public_enregistreur"/>
+                        </record>
+                        <record id="public_enregistreur_xvr" model="product.public.category">
+                            <field name="name">Enregistreur XVR</field>
+                            <field name="parent_id" ref="public_enregistreur"/>
+                        </record>
+                        
         
-        <record id="public_audio_reseau" model="product.public.category">
-            <field name="name">Audio réseau</field>
-        </record>
+                <record id="public_controle_acces" model="product.public.category">
+                    <field name="name">Contrôle d'accès</field>
+                </record>
+                    <record id="public_lecteurs" model="product.public.category">
+                        <field name="name">Lecteurs RFID</field>
+                        <field name="parent_id" ref="public_controle_acces"/>
+                    </record>
+                        <record id="public_lecteurs_cartes" model="product.public.category">
+                            <field name="name">Lecteurs Carte</field>
+                            <field name="parent_id" ref="public_lecteurs"/>
+                        </record>
+                        <record id="public_lecteurs_badges" model="product.public.category">
+                            <field name="name">Lecteurs badges</field>
+                            <field name="parent_id" ref="public_lecteurs"/>
+                        </record>
+                        
+                    <record id="public_interphones" model="product.public.category">
+                        <field name="name">Interphones</field>
+                        <field name="parent_id" ref="public_controle_acces"/>
+                    </record>
+                        <record id="public_interphones_video" model="product.public.category">
+                            <field name="name">Interphones video</field>
+                            <field name="parent_id" ref="public_interphones"/>
+                        </record>
         
-        <record id="public_periferiques_radar" model="product.public.category">
-            <field name="name">Périfériques radar</field>
-        </record>
+                    <record id="public_clavier_a_code" model="product.public.category">
+                        <field name="name">Clavier à code</field>
+                        <field name="parent_id" ref="public_controle_acces"/>
+                    </record>
+                    <record id="public_gache_electrique" model="product.public.category">
+                        <field name="name">Gâche électrique</field>
+                        <field name="parent_id" ref="public_controle_acces"/>
+                    </record>
         
-        <record id="public_accesoires" model="product.public.category">
-            <field name="name">Accessoires</field>
-        </record>
+                <record id="public_audio_reseau" model="product.public.category">
+                    <field name="name">Audio réseau</field>
+                </record>
+        
+                <record id="public_periferiques_radar" model="product.public.category">
+                    <field name="name">Périfériques radar</field>
+                </record>
+        
+                <record id="public_accesoires" model="product.public.category">
+                    <field name="name">Accessoires</field>
+                </record>
 
 
-        <!-- Étiquette pour les marques (pour l'instant) -->
+        <!-- Étiquettes (filtré indépendement du type de camera) -->
         <record id="brand_axis" model="product.tag">
             <field name="name">Marque AXIS</field>
         </record>
+
+        <record id="vision_nocturne" model="product.tag">
+            <field name="name">Vision nocturne</field>
+        </record>
+
+        <record id="interieur" model="product.tag">
+            <field name="name">Interieur</field>
+        </record>
+
+        <record id="exterieur" model="product.tag">
+            <field name="name">Exterieur</field>
+        </record>
+
+
+        <!-- ===================== RÉSOLUTIONS DES CAMERAS =====================-->
+        <record id="camera_resolution" model="product.attribute">
+            <field name="name">Résolution</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="camera_resolution_720p" model="product.attribute.value">
+                <field name="name">720p</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_1080p" model="product.attribute.value">
+                <field name="name">1080p</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_4k" model="product.attribute.value">
+                <field name="name">4K</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+    
+            <record id="camera_resolution_8k" model="product.attribute.value">
+                <field name="name">8K</field>
+                <field name="attribute_id" ref="camera_resolution"/>
+            </record>
+
+        <!-- ===================== CAPACITÉS DE STOCKAGE =====================-->
+        <record id="stockage_capacity" model="product.attribute">
+            <field name="name">Capacité de stockage</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="stockage_capacity_1to" model="product.attribute.value">
+                <field name="name">1 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+    
+            <record id="stockage_capacity_4to" model="product.attribute.value">
+                <field name="name">4 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+    
+            <record id="stockage_capacity_8to" model="product.attribute.value">
+                <field name="name">8 To</field>
+                <field name="attribute_id" ref="stockage_capacity"/>
+            </record>
+
+        <!-- ===================== VOIES D'ENREGISTREMENT =====================-->
+        <record id="nb_voies_enregistrement" model="product.attribute">
+            <field name="name">Voies d'enregistrement</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="nb_voies_enregistrement_8" model="product.attribute.value">
+                <field name="name">8 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+            
+            <record id="nb_voies_enregistrement_16" model="product.attribute.value">
+                <field name="name">16 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+            
     </data>
  </odoo>
