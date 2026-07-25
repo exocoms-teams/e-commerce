@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-from .trend_score_calculator import compute_product_trend_score
+from .services.scoring_engine import ScoringEngine
 
 
 class TrendProduct(models.Model):
@@ -164,5 +164,26 @@ class TrendProduct(models.Model):
         score.md) en croisant sales_count/score_site_x (trend.product) avec
         les likes_count/shares_count agrégés des trend.ad liés.
         """
+        # Create ScoringEngine instance
+        scoring_engine = ScoringEngine()
+
+        # Handle the case where previous_metrics is None (convert to required dict)
+        if previous_metrics is None:
+            previous_metrics = {'ventes': 0, 'likes': 0, 'partages': 0, 'ads': 0}
+
+        # Build current metrics (same logic as in trend_score_calculator.build_current_metrics)
+        current_metrics = {
+            'ventes': self.sales_count or 0,
+            'likes': sum(self.ad_ids.mapped('likes_count')),
+            'partages': sum(self.ad_ids.mapped('shares_count')),
+            'ads': len(self.ad_ids),
+        }
+
+        # Normalize source score (same logic as in trend_score_calculator.normalize_source_score)
+        source_score = 0.0
+        if self.score_site_x:
+            source_score = max(0.0, min(self.score_site_x / 10.0, 1.0))
+
         self.ensure_one()
-        return compute_product_trend_score(self, previous_metrics=previous_metrics)
+        # Calculate score using ScoringEngine
+        return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
