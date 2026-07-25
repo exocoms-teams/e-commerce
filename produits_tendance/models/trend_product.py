@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-from .services.scoring_engine import ScoringEngine
+from odoo.addons.produits_tendance.services.scoring_engine import ScoringEngine
 
 
 class TrendProduct(models.Model):
