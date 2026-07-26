@@ -11,7 +11,41 @@ class SneakersController(http.Controller):
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True, sitemap=True)
     def shop(self, **kwargs):
-        return request.render('sneakers.shop_page', {})
+
+        Product = request.env['product.template'].sudo()
+
+
+        products = Product.search([
+            ('sale_ok', '=', True)
+        ])
+
+
+        categories = request.env['product.public.category'].sudo().search([])
+
+
+        print("DATABASE :", request.env.cr.dbname)
+        brands = request.env['product.brand'].sudo().search([])
+
+        print("BRANDS =", brands)
+        for b in brands:
+            print(b.id, b.name)
+        values = {
+
+            'products': products,
+
+            'categories': categories,
+
+            'brands': brands,
+
+            'product_count': len(products),
+
+        }
+
+
+        return request.render(
+            'sneakers.shop_page',
+            values
+        )
 
     
     @http.route('/product/<int:product_id>', type='http', auth='public', website=True, sitemap=True)
@@ -24,8 +58,9 @@ class SneakersController(http.Controller):
 
 
         similar_products = request.env['product.template'].sudo().search([
+            ('id', '!=', product.id),
             ('public_categ_ids', 'in', product.public_categ_ids.ids),
-            ('id', '!=', product.id)
+            ('sale_ok', '=', True),
         ], limit=4)
 
         return request.render('sneakers.page_product', {

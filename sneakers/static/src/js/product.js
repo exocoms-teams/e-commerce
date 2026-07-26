@@ -1,21 +1,29 @@
 (function () {
 
     var productSection = document.querySelector(".sn-product-details");
-    if (!productSection) return;
 
-    initGallery();
-    
-    initSizeSelection();
 
-    initColorSelection();
+    if (productSection) {
 
-    initQuantitySelector();
+        initGallery();
 
-    initAddToCartProduct();
+        initSizeSelection();
 
-    initTabs();
+        initColorSelection();
 
-    initWishlistToggle();
+        initQuantitySelector();
+
+        initAddToCartProduct();
+
+        initTabs();
+
+        initWishlistToggle();
+
+    }
+
+
+    initAddToCartCards();
+
 
     // GALERIE PRODUIT
     function initGallery() {
@@ -432,5 +440,43 @@
         try { localStorage.setItem("sn_wishlist", JSON.stringify(wl)); }
         catch (e) { /* ignorer les erreurs de stockage */ }
     }
+// AJOUT PANIER DEPUIS PRODUCT CARD (RELATED PRODUCTS)
+function initAddToCartCards() {
 
+    document.addEventListener("click", function (e) {
+
+        var btn = e.target.closest(".sn-add-to-cart-btn");
+
+        if (!btn) {
+            return;
+        }
+
+
+        // éviter de traiter deux fois le bouton de la fiche produit
+        if (btn.closest(".sn-product-details")) {
+            return;
+        }
+
+
+        e.preventDefault();
+
+
+        var productId = btn.dataset.productId;
+
+
+        console.log("RELATED PRODUCT ADD CART");
+        console.log("PRODUCT ID :", productId);
+
+
+        addToCartFromProduct(
+            productId,
+            1,
+            "",
+            "",
+            btn
+        );
+
+    });
+
+}
 })();
