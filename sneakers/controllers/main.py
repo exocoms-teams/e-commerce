@@ -5,9 +5,27 @@ from odoo.http import request
 class SneakersController(http.Controller):
 
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/', type='http', auth='public', website=True)
     def home(self, **kwargs):
-        return request.render('sneakers.page_home', {})
+
+        products = request.env['product.template'].sudo().search([
+            ('sale_ok', '=', True)
+        ], limit=8)
+
+
+        brands = request.env['product.brand'].sudo().search([])
+
+
+        values = {
+            'products': products,
+            'brands': brands,
+        }
+
+
+        return request.render(
+            'sneakers.page_home',
+            values
+        )
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True, sitemap=True)
     def shop(self, **kwargs):
@@ -21,14 +39,8 @@ class SneakersController(http.Controller):
 
 
         categories = request.env['product.public.category'].sudo().search([])
-
-
-        print("DATABASE :", request.env.cr.dbname)
         brands = request.env['product.brand'].sudo().search([])
 
-        print("BRANDS =", brands)
-        for b in brands:
-            print(b.id, b.name)
         values = {
 
             'products': products,
@@ -85,6 +97,14 @@ class SneakersController(http.Controller):
     def confirmation(self, **kwargs):
         return request.render('sneakers.page_confirmation', {})
 
-    @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
-    def wishlist(self, **kwargs):
-        return request.render('sneakers.page_wishlist', {})
+    @http.route('/wishlist', type='http', auth='public', website=True)
+    def wishlist(self):
+
+        wishlist_products = request.env['product.template'].search([], limit=6)
+
+        return request.render(
+            'sneakers.page_wishlist',
+            {
+                'wishlist_products': wishlist_products,
+            }
+        )
