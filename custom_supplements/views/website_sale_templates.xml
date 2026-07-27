@@ -213,12 +213,14 @@
                 </div>
             </section>
 
-            <!-- 6. GRILLE PRODUITS -->
+<!-- 6. GRILLE PRODUITS -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
                     <div class="row g-4">
+                        <!-- Début de la balise t -->
                         <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True), ('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
+                            <div class="col-6 col-md-3 cs-reveal">
                                 <div class="cs-card shadow-sm h-100 position-relative">
                                     <t t-if="product.is_vegan">
                                         <span class="badge cs-badge-accent position-absolute m-3"><i class="fa fa-leaf me-1"/>Vegan</span>
@@ -236,6 +238,7 @@
                                     </div>
                                 </div>
                             </div>
+                        <!-- Fin de la balise t (C'est souvent elle qui saute lors d'un copier-coller !) -->
                         </t>
                     </div>
                 </div>
