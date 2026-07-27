@@ -1,8 +1,37 @@
+import json
 from odoo import http
 from odoo.http import request
-import json
+
+# -----------------------------------------------------------
+# 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
+# -----------------------------------------------------------
+class TrendSubmissionController(http.Controller):
+
+    # Route pour AFFICHER le formulaire (GET)
+    @http.route('/submit-trend', type='http', auth='public', website=True)
+    def submit_trend_form(self, **kwargs):
+        return request.render('produits_tendance.template_submit_trend_form', {})
+
+    # Route pour TRAITER le formulaire (POST)
+    @http.route('/submit-trend/process', type='http', auth='public', website=True, methods=['POST'], csrf=True)
+    def submit_trend_process(self, **post):
+        if post:
+            # sudo() permet au visiteur non connecté de créer l'enregistrement sans bloquer sur les droits
+            request.env['trend.submission'].sudo().create({
+                'name': post.get('name'),
+                'product_ref': post.get('product_ref'),
+                'category': post.get('category'),
+                'country': post.get('country'),
+                'submission_reason': post.get('submission_reason'),
+                'submitted_by': request.env.user.name if request.env.user.name != 'Public user' else 'Visiteur Anonyme',
+            })
+        # Redirection vers la page avec un message de succès
+        return request.redirect('/submit-trend?success=1')
 
 
+# -----------------------------------------------------------
+# 2. CONTROLEUR DE L'API (Réception des données de l'extension)
+# -----------------------------------------------------------
 class TrendIngestController(http.Controller):
 
     @http.route('/api/trend/ingest', type='http', auth='none', methods=['POST'], csrf=False)
@@ -24,25 +53,25 @@ class TrendIngestController(http.Controller):
 
         data_type = data.get('type')
         if not data_type:
-           return self._json_response(
-             {'status': 'error', 'code': 'missing_field', 'field': 'type'}, 400
-          )
-
-
+            return self._json_response(
+                {'status': 'error', 'code': 'missing_field', 'field': 'type'}, 400
+            )
 
         payload = data.get('data', {})
         return self.route_by_type(data_type, payload)
+
     def route_by_type(self, type, data):
-     if type == 'product':
-        return self._handle_product(data)
-     elif type == 'ad':
-        return self._handle_ad(data)
-     elif type == 'score':
-        return self._handle_score(data)
-     else:
-        return self._json_response(
-            {'status': 'error', 'code': 'unknown_type', 'field': 'type', 'received': type}, 400
-        )
+        if type == 'product':
+            return self._handle_product(data)
+        elif type == 'ad':
+            return self._handle_ad(data)
+        elif type == 'score':
+            return self._handle_score(data)
+        else:
+            return self._json_response(
+                {'status': 'error', 'code': 'unknown_type', 'field': 'type', 'received': type}, 400
+            )
+
     def _handle_product(self, payload):
         required_fields = ['name', 'product_ref', 'category', 'country', 'source']
         for field in required_fields:

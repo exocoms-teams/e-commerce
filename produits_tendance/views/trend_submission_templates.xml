@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="template_submit_trend_form" name="Audit de produit">
+        <t t-call="website.layout">
+            <!-- Ajout de la police Inter depuis Google Fonts -->
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;display=swap');
+            </style>
+
+            <!-- Conteneur principal avec la classe racine o_winners -->
+            <div id="wrap" class="container mt-5 mb-5 o_winners_submission_form">
+                
+                <!-- Utilisation du BEM : double underscore pour le header -->
+                <div class="text-center mb-5 o_winners_submission_form__header">
+                    <h1>Testez le potentiel d'un produit</h1>
+                    <p>Vous avez une idée en tête ou par expérience ? Laissez notre algorithme analyser les tendances pour vous.</p>
+                </div>
+                
+                <div t-if="request.params.get('success')" class="alert alert-success mt-3 text-center">
+                    <strong>C'est noté !</strong> Votre demande d'audit est en cours. Notre équipe modère le lien avant de lancer les calculs de tendance.
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <!-- Utilisation du BEM : double underscore pour la card -->
+                        <form action="/submit-trend/process" method="POST" class="o_winners_submission_form__card">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Dites-nous en plus sur ce produit :</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason1" value="intuition" checked="1"/>
+                                    <label class="form-check-label" for="reason1">C'est une intuition, j'ai ce produit en tête.</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason2" value="experience"/>
+                                    <label class="form-check-label" for="reason2">Par expérience, c'est une niche que je connais bien.</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="submission_reason" id="reason3" value="spotted"/>
+                                    <label class="form-check-label" for="reason3">Je l'ai vu passer massivement sur les réseaux sociaux.</label>
+                                </div>
+                            </div>
+
+                            <hr/>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Quel est le nom du produit ?</label>
+                                <input type="text" class="form-control" name="name" placeholder="Ex: Correcteur de posture intelligent" required="1"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="product_ref" class="form-label">Où l'avez-vous vu ? (Lien URL ou Référence)</label>
+                                <input type="text" class="form-control" name="product_ref" placeholder="https://..." required="1"/>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="category" class="form-label">Catégorie cible</label>
+                                    <input type="text" class="form-control" name="category" placeholder="Ex: Santé &amp; Bien-être" required="1"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="country" class="form-label">Pays ciblé (Code à 2 lettres)</label>
+                                    <input type="text" class="form-control" name="country" placeholder="Ex: FR, US, MA" required="1" maxlength="2"/>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <!-- Utilisation du BEM : double underscore pour le bouton -->
+                                <button type="submit" class="o_winners_submission_form__submit_btn">Lancer l'audit du produit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
