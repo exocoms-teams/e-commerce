@@ -1,79 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-<template id="product_card" name="Sneakers Product Card">
-<t t-if="product">
+    <template id="product_card" name="Sneakers Product Card">
 
-<div class="sn-product-card">
+        <div class="sn-product-card">
 
+            <!-- Product Image -->
+            <div class="sn-product-image">
 
-    <div class="sn-product-image">
+                <a href="/product">
 
-        <a t-att-href="'/product/%s' % product.id">
+                    <span class="sn-product-badge">
+                        <t t-out="product_badge"/>
+                    </span>
 
+                    <img
+                        t-att-src="product_image"
+                        t-att-alt="product_name"/>
 
-            <span class="sn-product-badge">
-                NEW
-            </span>
+                </a>
 
+                <!-- Hover Actions -->
+                <div class="sn-product-actions">
 
-            <img
-                t-if="product.image_1920"
-                t-att-src="'/web/image/product.template/%s/image_1920' % product.id"
-                t-att-alt="product.name"/>
+                    <button class="sn-action-btn"
+                        title="Wishlist" 
+                        t-att-data-product-id="product_id" 
+                        aria-pressed="false">
 
+                        <i class="fa fa-heart"/>
 
-        </a>
+                    </button>
+                    
+                </div>
 
+            </div>
 
-    </div>
+            <!-- Product Information -->
+            <div class="sn-product-info">
 
+                <div class="sn-product-rating">
 
+                    <i class="fa fa-star"/>
+                    <i class="fa fa-star"/>
+                    <i class="fa fa-star"/>
+                    <i class="fa fa-star"/>
+                    <i class="fa fa-star"/>
 
-    <div class="sn-product-info">
+                </div>
 
+                <h3>
 
-        <span class="sn-product-brand"
-              t-if="product.brand_id">
+                    <t t-out="product_name"/>
 
-            <t t-out="product.brand_id.name"/>
+                </h3>
 
-        </span>
+                <div class="sn-product-price">
 
+                    <span class="sn-current-price">
 
+                        <t t-out="product_price"/>
 
-        <h3>
-            <t t-out="product.name"/>
-        </h3>
+                    </span>
 
+                    <span class="sn-old-price">
 
+                        <t t-out="product_old_price"/>
 
-        <div class="sn-product-price">
+                    </span>
 
-            $
+                </div>
 
-            <t t-out="product.list_price"/>
+                <div class="sn-add-cart">
+
+                    Add to Cart
+
+                </div>
+
+            </div>
 
         </div>
 
-
-
-        <button
-            type="button"
-            class="sn-add-cart sn-add-to-cart-btn"
-            t-att-data-product-id="product.product_variant_id.id">
-
-            Add to Cart
-
-        </button>
-
-
-    </div>
-
-
-</div>
-
-</t>
-</template>
+    </template>
 
 </odoo>

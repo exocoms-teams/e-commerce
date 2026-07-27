@@ -46,187 +46,115 @@
 
                                 <div class="sn-cart-items">
 
-                                    <div class="sn-cart-items">
+                                    <div class="sn-cart-items">  
                                     
+                                        <!-- product 1 -->
 
-                                    <t t-if="order and order.order_line.filtered(lambda l: l.product_id)">
+                                    <article class="sn-cart-item">
 
-                                    <t t-foreach="order.order_line.filtered(lambda l: l.product_id)" t-as="line">
-
-
-                                    <article
-                                        class="sn-cart-item"
-                                        t-att-data-line-id="line.id"
-                                        t-att-data-product-id="line.product_id.id">
-                                    
-
-                                        <!-- IMAGE -->
                                         <div class="sn-cart-image">
 
-                                            <img
-                                                t-att-src="line.product_id.image_128 
-                                                    and '/web/image/product.product/%s/image_128' % line.product_id.id 
-                                                    or '/web/static/img/placeholder.png'"
-                                                t-att-alt="line.product_id.name"/>
+                                            <img src="/sneakers/static/src/img/products/product-1.jpg"
+                                                alt="Nike Air Max"/>
 
                                         </div>
 
-
-
-                                        <!-- INFO -->
                                         <div class="sn-cart-info">
 
+                                            <span class="sn-cart-category">Running Shoes</span>
 
-                                            <!-- CATEGORY -->
-                                            <span class="sn-cart-category">
-
-                                                <t t-foreach="line.product_id.product_tmpl_id.public_categ_ids"
-                                                t-as="cat">
-
-                                                    <span class="sn-category">
-                                                        <t t-out="cat.name"/>
-                                                    </span>
-
-                                                </t>
-
-                                            </span>
-
-
-
-                                            <!-- PRODUCT NAME -->
-                                            <h3>
-                                                <t t-out="line.product_id.name"/>
-                                            </h3>
-
-
-
-                                            <!-- ATTRIBUTES SIZE / COLOR -->
+                                            <h3>Nike Air Max 270</h3>
 
                                             <div class="sn-cart-attributes">
 
-                                                <t t-if="line.product_template_attribute_value_ids">
+                                                <span>Size : 42</span>
 
-                                                    <t t-foreach="line.product_template_attribute_value_ids"
-                                                    t-as="attribute">
-
-                                                        <span>
-                                                            <t t-out="attribute.attribute_id.name"/>
-                                                            :
-                                                            <t t-out="attribute.name"/>
-                                                        </span>
-
-                                                    </t>
-
-                                                </t>
+                                                <span>Color : Black</span>
 
                                             </div>
 
-
-
-                                            <!-- PRICE -->
-                                            <div class="sn-cart-price">
-
-                                                $
-                                                <t t-out="line.price_unit"/>
-
-                                            </div>
-
+                                            <div class="sn-cart-price">$180.00</div>
 
                                         </div>
 
-
-
-
-                                        <!-- QUANTITY -->
                                         <div class="sn-cart-quantity">
 
-
-                                            <button
-                                                class="sn-qty-btn"
-                                                data-action="decrease">
-
-                                                -
-
-                                            </button>
-
-
+                                            <button class="sn-qty-btn"> - </button>
 
                                             <input
-                                                class="sn-qty-input"
                                                 type="number"
-                                                t-att-value="line.product_uom_qty"
+                                                value="1"
                                                 min="1"/>
 
-
-
-                                            <button
-                                                class="sn-qty-btn"
-                                                data-action="increase">
-
-                                                +
-
-                                            </button>
-
+                                            <button class="sn-qty-btn"> + </button>
 
                                         </div>
 
+                                       <div class="sn-cart-total">$180.00</div>
 
-
-
-                                        <!-- TOTAL -->
-
-                                        <div class="sn-cart-total">
-
-                                            $
-                                            <t t-out="line.price_subtotal"/>
-
-                                        </div>
-
-
-
-
-                                        <!-- REMOVE -->
-
-                                        <button
-                                            class="sn-cart-remove"
-                                            type="button">
+                                        
+                                        <button class="sn-cart-remove">
 
                                             <i class="fa fa-trash"></i>
 
                                         </button>
 
-
                                     </article>
 
+                                    <!-- product 2 -->
 
-                                                                                </t>
+                                    <article class="sn-cart-item">
+                                         <div class="sn-cart-image">
 
-
-                                                                            </t>
-
-
-                                                                            <t t-else="">
-
-                                        <div class="sn-cart-empty">
-
-                                            <i class="fa fa-shopping-cart"></i>
-
-                                            <h3>Your cart is empty</h3>
-
-                                            <p>
-                                                Browse our catalog and add your favorite sneakers.
-                                            </p>
-
-                                            <a href="/shop-sneakers" class="sn-btn-primary">
-                                                Continue Shopping
-                                            </a>
+                                            <img src="/sneakers/static/src/img/products/product-2.jpg"
+                                                alt="Adidas Ultraboost"/>
 
                                         </div>
 
-                                    </t>
+                                        <div class="sn-cart-info">
 
+                                            <span class="sn-cart-category">
+                                                Lifestyle
+                                            </span>
 
-                                    </div>
+                                            <h3>Adidas Ultraboost </h3>
+
+                                            <div class="sn-cart-attributes">
+
+                                                <span>Size : 41</span>
+
+                                                <span>Color : White</span>
+
+                                            </div>
+
+                                            <div class="sn-cart-price">$220.00</div>
+
+                                        </div>
+
+                                        <div class="sn-cart-quantity">
+
+                                            <button class="sn-qty-btn"> - </button>
+
+                                            <input
+                                                type="number"
+                                                value="2"
+                                                min="1"/>
+
+                                            <button class="sn-qty-btn"> + </button>
+
+                                        </div>
+
+                                        <div class="sn-cart-total">$440.00</div>
+
+                                        <button class="sn-cart-remove">
+
+                                            <i class="fa fa-trash"></i>
+
+                                        </button>
+
+                                    </article>
+
+                                </div>
 
                                 </div>
                                 <!-- ORDER SUMMARY -->                       
@@ -245,21 +173,15 @@
 
                                                 <span>Subtotal</span>
 
-                                                <span>
-                                                    $
-                                                    <t t-out="order.amount_untaxed if order else 0"/>
-                                                </span>
+                                                <span>$620.00</span>
 
                                             </div>
 
-                                           <div class="sn-summary-row">
+                                            <div class="sn-summary-row">
 
                                                 <span>Shipping</span>
 
-                                                <span>
-                                                    $
-                                                    <t t-out="order.amount_delivery if order else 0"/>
-                                                </span>
+                                                <span>Free</span>
 
                                             </div>
 
@@ -267,10 +189,7 @@
 
                                                 <span>Estimated Tax</span>
 
-                                                <span>
-                                                    $
-                                                    <t t-out="order.amount_tax if order else 0"/>
-                                                </span>
+                                                <span>$24.00</span>
 
                                             </div>
 
@@ -280,10 +199,7 @@
 
                                                 <span>Total</span>
 
-                                                <span>
-                                                    $
-                                                    <t t-out="order.amount_total if order else 0"/>
-                                                </span>
+                                                <span>$644.00</span>
 
                                             </div>
                                             
