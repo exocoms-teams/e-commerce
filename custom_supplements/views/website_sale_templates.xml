@@ -145,23 +145,56 @@
                 </div>
             </section>
 
-            <!-- 4. BENTO GRID — CATÉGORIES -->
+<!-- 4. BENTO GRID — CATÉGORIES (Adapté Compléments Alimentaires) -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
                         <h2 class="cs-font-heading mb-0">Explorer l'Univers</h2>
                         <a href="/shop" class="text-decoration-none cs-font-body text-dark">Catalogue complet <i class="fa fa-arrow-right ms-1"/></a>
                     </div>
+                    
                     <div class="cs-bento cs-reveal">
-                        <t t-foreach="request.env['product.public.category'].sudo().search([], limit=5)" t-as="categ">
-                            <a t-attf-href="/shop/category/#{categ.id}"
-                               t-attf-class="cs-bento-tile #{'cs-bento-lg' if categ_index == 0 else ('cs-bento-md' if categ_index in (1,2) else '')}">
-                                <img t-attf-src="/custom_supplements/static/src/img/category_#{categ.id}_editorial.jpg" t-attf-alt="#{categ.name}"/>
-                                <div class="cs-bento-caption">
-                                    <span class="cs-font-heading"><t t-esc="categ.name"/></span>
-                                </div>
-                            </a>
-                        </t>
+                        <!-- Bento Large (Catégorie principale) -->
+                        <a href="/shop" class="cs-bento-tile cs-bento-lg">
+                            <!-- Attention : Le symbole & dans les URL doit toujours s'écrire &amp; en XML -->
+                            <img src="https://images.unsplash.com/photo-1579722820308-d74e571900a9?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Protéines Pures"/>
+                            <div class="cs-bento-caption">
+                                <span class="cs-font-heading d-block mb-1">Protéines Pures</span>
+                                <span class="cs-font-body fs-6 opacity-75">Isolats &amp; Formules Végétales</span>
+                            </div>
+                        </a>
+                        
+                        <!-- Bento Medium 1 -->
+                        <a href="/shop" class="cs-bento-tile cs-bento-md">
+                            <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Performance"/>
+                            <div class="cs-bento-caption">
+                                <span class="cs-font-heading">Performance &amp; Pré-Workout</span>
+                            </div>
+                        </a>
+                        
+                        <!-- Bento Medium 2 -->
+                        <a href="/shop" class="cs-bento-tile cs-bento-md">
+                            <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Vitamines"/>
+                            <div class="cs-bento-caption">
+                                <span class="cs-font-heading">Vitamines &amp; Santé</span>
+                            </div>
+                        </a>
+
+                        <!-- Bento Small 1 -->
+                        <a href="/shop" class="cs-bento-tile">
+                            <img src="https://images.unsplash.com/photo-1622484211148-52b8214f5ec9?q=80&amp;w=600&amp;auto=format&amp;fit=crop" alt="Acides Aminés"/>
+                            <div class="cs-bento-caption">
+                                <span class="cs-font-heading fs-5">Acides Aminés</span>
+                            </div>
+                        </a>
+
+                        <!-- Bento Small 2 -->
+                        <a href="/shop" class="cs-bento-tile">
+                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&amp;w=600&amp;auto=format&amp;fit=crop" alt="Récupération"/>
+                            <div class="cs-bento-caption">
+                                <span class="cs-font-heading fs-5">Récupération</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </section>
