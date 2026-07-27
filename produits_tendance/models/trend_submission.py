@@ -4,6 +4,8 @@ from odoo.exceptions import UserError
 class TrendSubmission(models.Model):
     _name = 'trend.submission'
     _description = 'Soumission de Produit Tendance'
+    _order = 'create_date desc'
+
 
     name = fields.Char(string='Nom du produit', required=True)
     product_ref = fields.Char(string='Lien/Description du produit')
@@ -22,7 +24,7 @@ class TrendSubmission(models.Model):
         ('pending', 'En attente'),
         ('validated', 'Validé'),
         ('rejected', 'Rejeté')
-    ], string='Statut', default='pending', tracking=True)
+    ], string='Statut', default='pending')
 
     def action_reject(self):
         """ Rejette la soumission et envoie un email """
