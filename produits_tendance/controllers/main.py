@@ -2,6 +2,8 @@ import json
 from odoo import http
 from odoo.http import request
 
+from .dashboard_api import TrendDashboardAPI
+
 # -----------------------------------------------------------
 # 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
 # -----------------------------------------------------------
@@ -30,7 +32,23 @@ class TrendSubmissionController(http.Controller):
 
 
 # -----------------------------------------------------------
-# 2. CONTROLEUR DE L'API (Réception des données de l'extension)
+# 2. CONTROLEUR FICHE PRODUIT DETAILLEE (Frontend)
+# -----------------------------------------------------------
+class TrendProductDetailController(http.Controller):
+
+    @http.route('/product/<int:id>', type='http', auth='public', website=True)
+    def product_detail(self, id, **kwargs):
+        # NB : get_product_detail lève werkzeug.exceptions.NotFound si
+        # l'id n'existe pas. On laisse volontairement l'exception remonter :
+        # sur une route website=True, Odoo l'intercepte lui-même et affiche
+        # la page 404 du thème (pas de try/except ici, pas de stacktrace).
+        api = TrendDashboardAPI(request.env)
+        data = api.get_product_detail(id)
+        return request.render('produits_tendance.template_product_detail', data)
+
+
+# -----------------------------------------------------------
+# 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
 class TrendIngestController(http.Controller):
 
