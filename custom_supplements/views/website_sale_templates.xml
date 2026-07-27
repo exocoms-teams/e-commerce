@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- =====================================================================
-         PARTIE 1 : FONCTIONNALITÉS BOUTIQUE ET PRODUITS (Votre code original)
+         PARTIE 1 : FONCTIONNALITÉS BOUTIQUE ET PRODUITS 
          ===================================================================== -->
 
     <!-- 1. Informations nutritionnelles -->
@@ -13,10 +13,10 @@
                     <h5 class="mb-2">Informations Nutritionnelles</h5>
                     <ul class="list-unstyled mb-2">
                         <li t-if="product.is_vegan">
-                            <i class="fa fa-leaf text-success"></i> <strong>100% Vegan</strong>
+                            <i class="fa fa-leaf text-success"/> <strong>100% Vegan</strong>
                         </li>
                         <li t-if="product.allergens">
-                            <i class="fa fa-exclamation-triangle text-warning"></i> 
+                            <i class="fa fa-exclamation-triangle text-warning"/> 
                             <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
                         </li>
                     </ul>
@@ -33,7 +33,7 @@
         <xpath expr="//form" position="inside">
             <t t-if="product.is_vegan">
                 <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
-                    <i class="fa fa-leaf"></i> Vegan
+                    <i class="fa fa-leaf"/> Vegan
                 </span>
             </t>
         </xpath>
@@ -46,8 +46,8 @@
                 <h6 class="mb-2">Régime Spécial</h6>
                 <a t-att-href="keep('/shop', vegan='1' if not request.params.get('vegan') else '')"
                    t-attf-class="btn btn-{{ 'success' if request.params.get('vegan') else 'outline-success' }} shadow-sm mb-3">
-                    <i class="fa fa-leaf"></i> 100% Vegan
-                    <i t-if="request.params.get('vegan')" class="fa fa-times ms-2"></i>
+                    <i class="fa fa-leaf"/> 100% Vegan
+                    <i t-if="request.params.get('vegan')" class="fa fa-times ms-2"/>
                 </a>
             </div>
         </xpath>
@@ -58,7 +58,7 @@
         <xpath expr="." position="inside">
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
             <div t-if="has_supplements" class="alert alert-warning mt-3 mb-0 text-start shadow-sm" style="font-size: 0.85rem;" role="alert">
-                <i class="fa fa-exclamation-triangle me-2"></i> 
+                <i class="fa fa-exclamation-triangle me-2"/> 
                 <strong>Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
             </div>
         </xpath>
@@ -144,7 +144,8 @@
                     </div>
                 </div>
             </section>
-<!-- 4. BENTO GRID — CATÉGORIES -->
+
+            <!-- 4. BENTO GRID — CATÉGORIES -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
@@ -187,7 +188,8 @@
                     </div>
                 </div>
             </section>
-<!-- 5. SPOTLIGHT TECH : ASSISTANT IA -->
+
+            <!-- 5. SPOTLIGHT TECH : ASSISTANT IA -->
             <section class="py-5">
                 <div class="container">
                     <div class="row align-items-center g-5">
@@ -235,12 +237,11 @@
                 </div>
             </section>
 
-<!-- 6. GRILLE PRODUITS -->
+            <!-- 6. GRILLE PRODUITS -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
                     <div class="row g-4">
-                        <!-- Début de la balise t -->
                         <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True), ('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
                             <div class="col-6 col-md-3 cs-reveal">
                                 <div class="cs-card shadow-sm h-100 position-relative">
@@ -260,7 +261,6 @@
                                     </div>
                                 </div>
                             </div>
-                        <!-- Fin de la balise t (C'est souvent elle qui saute lors d'un copier-coller !) -->
                         </t>
                     </div>
                 </div>
@@ -268,7 +268,7 @@
 
             <!-- 7. SECTION PARALLAX -->
             <section class="cs-parallax d-flex align-items-center text-center text-white"
-                      style="height:70vh; min-height:480px; background-image:url('/custom_supplements/static/src/img/parallax_performance_editorial.jpg');">
+                     style="height:70vh; min-height:480px; background-image:url('/custom_supplements/static/src/img/parallax_performance_editorial.jpg');">
                 <div class="container cs-reveal">
                     <span class="cs-eyebrow d-block mb-3">Performance Réelle</span>
                     <h2 class="cs-kinetic-title display-3">CONSTRUIT POUR <span class="cs-outline">DURER</span></h2>
