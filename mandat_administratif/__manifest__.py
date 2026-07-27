@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Mandat administratif (Chorus Pro)",
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Accounting/Payment Providers',
     'summary': "Paiement par mandat administratif pour les entités publiques françaises — dépôt des factures sur Chorus Pro",
     'description': """
