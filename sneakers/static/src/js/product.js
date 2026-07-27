@@ -351,11 +351,10 @@
             }
 
 
-            setTimeout(function(){
-
-                window.location.href="/cart";
-
-            },1000);
+           // Mise à jour du compteur panier sans redirection
+            if (window.updateCartBadge) {
+                window.updateCartBadge();
+            }
 
 
         })

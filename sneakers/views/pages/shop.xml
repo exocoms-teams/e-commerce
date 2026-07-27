@@ -54,28 +54,35 @@
 
                             <div class="sn-filter-box">
 
-                                <h3>Categories</h3>
+                    <h3>Categories</h3>
 
-                                
-                                    <ul class="sn-filter-list">
+                    <ul class="sn-filter-list">
 
-                                        <t t-foreach="categories" t-as="category">
+                        <!-- Toutes les catégories -->
+                        <li>
+                            <a href="/shop-sneakers">
+                                All
+                            </a>
+                        </li>
 
-                                            <li>
 
-                                                <a t-att-href="'/shop-sneakers?category=%s' % category.id">
+                        <t t-foreach="categories" t-as="category">
 
-                                                    <t t-out="category.name"/>
+                            <li t-att-class="'active' if selected_category == category.id else ''">
 
-                                                </a>
+                                <a t-att-href="'/shop-sneakers?category_id=%s' % category.id">
 
-                                            </li>
+                                    <t t-out="category.name"/>
 
-                                        </t>
+                                </a>
 
-                                    </ul>
+                            </li>
 
-                            </div>
+                        </t>
+
+                    </ul>
+
+                </div>
 
                             <div class="sn-filter-box">
 

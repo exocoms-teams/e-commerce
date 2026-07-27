@@ -28,18 +28,36 @@ class SneakersController(http.Controller):
         )
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True, sitemap=True)
-    def shop(self, **kwargs):
+    def shop(self, category_id=None, brand_id=None, **kwargs):
 
         Product = request.env['product.template'].sudo()
 
-
-        products = Product.search([
+        domain = [
             ('sale_ok', '=', True)
-        ])
+        ]
+
+
+        # Filtrage par catégorie
+        if category_id:
+            domain.append(
+                ('public_categ_ids', 'in', [int(category_id)])
+            )
+
+
+        # Filtrage par marque (pour préparer la suite)
+        if brand_id:
+            domain.append(
+                ('brand_id', '=', int(brand_id))
+            )
+
+
+        products = Product.search(domain)
 
 
         categories = request.env['product.public.category'].sudo().search([])
+
         brands = request.env['product.brand'].sudo().search([])
+
 
         values = {
 
@@ -50,6 +68,10 @@ class SneakersController(http.Controller):
             'brands': brands,
 
             'product_count': len(products),
+
+            'selected_category': int(category_id) if category_id else False,
+
+            'selected_brand': int(brand_id) if brand_id else False,
 
         }
 
