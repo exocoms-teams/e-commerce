@@ -57,6 +57,15 @@
                 checkoutBtn.textContent = "Empty cart";
             }
 
+            var cartLayout = document.querySelector(".sn-cart-layout");
+            if (cartLayout) cartLayout.style.gridTemplateColumns = "1fr";
+
+            var cartTitle = document.querySelector(".sn-cart-header h2");
+            if (cartTitle) cartTitle.style.display = "none";
+            
+            var cartSubtitle = document.querySelector(".sn-cart-header p");
+            if (cartSubtitle) cartSubtitle.style.display = "none";
+
             updateOrderSummary(cart);
             return;
         }
@@ -186,10 +195,7 @@
         syncCartFromDOM();
     });
 
-    // ================================================
     // SAISIE DIRECTE DANS L'INPUT
-    // ================================================
-
     cartSection.addEventListener("change", function (e) {
         if (e.target.type !== "number") return;
 
@@ -203,10 +209,7 @@
         syncCartFromDOM();
     });
 
-    // ================================================
     // SUPPRESSION D'UN ARTICLE
-    // ================================================
-
     cartSection.addEventListener("click", function (e) {
         var removeBtn = e.target.closest(".sn-cart-remove");
         if (!removeBtn) return;
