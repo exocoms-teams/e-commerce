@@ -94,7 +94,9 @@
                        poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
                     <source src="/custom_supplements/static/src/videos/hero_home_cinematic_bottle_reveal.mp4" type="video/mp4"/>
                 </video>
-                <div class="cs-hero-overlay"/>
+                <div class="cs-hero-overlay">
+                    <img src="https://images.unsplash.com/photo-1713630356122-e2e6626e05db?q=80&amp;w=1932&amp;auto=format&amp;fit=crop" alt="Joggeur à l'aube">
+                <div />
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 p-md-5">
                     <div class="d-flex justify-content-between align-items-start text-white">
                         <span class="cs-eyebrow">Collection 2026</span>
@@ -238,7 +240,7 @@
                 <div class="container">
                     <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
                     <div class="row g-4">
-                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True)], limit=4, order='create_date desc')" t-as="product">
+                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True),('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
                             <div class="col-6 col-md-3 cs-reveal">
                                 <div class="cs-card shadow-sm h-100 position-relative">
                                     <t t-if="product.is_vegan">
@@ -263,7 +265,7 @@
             </section>
 
             <!-- 7. SECTION PARALLAX -->
-            <section class="cs-parallax d-flex align-items-center text-center text-white"
+            <section class="cs-parallax d-flex align-items-center text-center"
                       style="height:70vh; min-height:480px; background-image:url('/custom_supplements/static/src/img/parallax_performance_editorial.jpg');">
                 <div class="container cs-reveal">
                     <span class="cs-eyebrow d-block mb-3">Performance Réelle</span>
