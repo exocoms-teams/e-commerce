@@ -144,7 +144,6 @@
                     </div>
                 </div>
             </section>
-
 <!-- 4. BENTO GRID — CATÉGORIES -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
@@ -153,9 +152,16 @@
                         <a href="/shop" class="text-decoration-none cs-font-body text-dark">Catalogue complet <i class="fa fa-arrow-right ms-1"/></a>
                     </div>
                     
+                    <!-- Récupération dynamique des catégories Odoo par leur nom exact -->
+                    <t t-set="cat_prot" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Protéines')], limit=1)"/>
+                    <t t-set="cat_pre" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Pré-entraînement')], limit=1)"/>
+                    <t t-set="cat_vit" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Vitamines')], limit=1)"/>
+                    <t t-set="cat_bcaa" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Acides')], limit=1)"/>
+                    <t t-set="cat_recup" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Récupération')], limit=1)"/>
+
                     <div class="cs-bento cs-reveal">
-                        <!-- Remplacez "proteines-1" par le vrai slug de votre catégorie -->
-                        <a href="/shop/category/proteines-1" class="cs-bento-tile cs-bento-lg">
+                        <!-- 1. Protéines -->
+                        <a t-att-href="cat_prot and '/shop/category/%s' % slug(cat_prot) or '/shop'" class="cs-bento-tile cs-bento-lg">
                             <img src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Protéines Pures"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading d-block mb-1">Protéines Pures</span>
@@ -163,14 +169,16 @@
                             </div>
                         </a>
                         
-                        <a href="/shop/category/pre-workout-2" class="cs-bento-tile cs-bento-md">
+                        <!-- 2. Pré-entraînement -->
+                        <a t-att-href="cat_pre and '/shop/category/%s' % slug(cat_pre) or '/shop'" class="cs-bento-tile cs-bento-md">
                             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Performance"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Performance &amp; Pré-Workout</span>
                             </div>
                         </a>
                         
-                        <a href="/shop/category/vitamines-3" class="cs-bento-tile cs-bento-md">
+                        <!-- 3. Vitamines & Minéraux -->
+                        <a t-att-href="cat_vit and '/shop/category/%s' % slug(cat_vit) or '/shop'" class="cs-bento-tile cs-bento-md">
                             <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Vitamines"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Vitamines &amp; Santé</span>
