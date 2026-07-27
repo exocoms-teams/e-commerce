@@ -145,7 +145,7 @@
                 </div>
             </section>
 
-<!-- 4. BENTO GRID — CATÉGORIES (Adapté Compléments Alimentaires) -->
+<!-- 4. BENTO GRID — CATÉGORIES -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
@@ -154,8 +154,8 @@
                     </div>
                     
                     <div class="cs-bento cs-reveal">
-                        <!-- Bento Large (Catégorie principale - Protéines) -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-lg">
+                        <!-- Remplacez "proteines-1" par le vrai slug de votre catégorie -->
+                        <a href="/shop/category/proteines-1" class="cs-bento-tile cs-bento-lg">
                             <img src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Protéines Pures"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading d-block mb-1">Protéines Pures</span>
@@ -163,21 +163,19 @@
                             </div>
                         </a>
                         
-                        <!-- Bento Medium 1 (Pré-Workout) -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-md">
+                        <a href="/shop/category/pre-workout-2" class="cs-bento-tile cs-bento-md">
                             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Performance"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Performance &amp; Pré-Workout</span>
                             </div>
                         </a>
                         
-                        <!-- Bento Medium 2 (Vitamines - Image conservée) -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-md">
+                        <a href="/shop/category/vitamines-3" class="cs-bento-tile cs-bento-md">
                             <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Vitamines"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Vitamines &amp; Santé</span>
                             </div>
-                        </a>                        
+                        </a>
                     </div>
                 </div>
             </section>
@@ -220,8 +218,7 @@
                 <div class="container">
                     <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
                     <div class="row g-4">
-                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True)], limit=4, order='create_date desc')" t-as="product">
-                            <div class="col-6 col-md-3 cs-reveal">
+                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True), ('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
                                 <div class="cs-card shadow-sm h-100 position-relative">
                                     <t t-if="product.is_vegan">
                                         <span class="badge cs-badge-accent position-absolute m-3"><i class="fa fa-leaf me-1"/>Vegan</span>
