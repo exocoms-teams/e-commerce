@@ -31,7 +31,14 @@ class TravelReservation(models.Model):
     def _compute_duration(self):
         for rec in self:
             if rec.date_depart and rec.date_retour:
-                rec.nb_jours = (rec.date_retour - rec.date_depart).days
+                # Ensure we work with date objects (fields.Date can be strings in some contexts)
+                try:
+                    start = fields.Date.from_string(rec.date_depart) if isinstance(rec.date_depart, str) else rec.date_depart
+                    end = fields.Date.from_string(rec.date_retour) if isinstance(rec.date_retour, str) else rec.date_retour
+                    rec.nb_jours = (end - start).days if start and end else 0
+                except Exception:
+                    # Fallback in case of unexpected types
+                    rec.nb_jours = 0
             else:
                 rec.nb_jours = 0
 

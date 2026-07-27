@@ -1,4 +1,4 @@
-from odoo import models, fields
+﻿from odoo import models, fields
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -34,23 +34,27 @@ class ProductTemplate(models.Model):
     disponible = fields.Boolean(string='Disponible', default=True)
 
     def is_available_for_dates(self, date_debut, date_fin):
-        """Vérifie si le produit est disponible pour des dates données"""
+        """Vérifie si le produit est disponible pour des dates données.
+        Accepte des dates en objet date ou en chaîne 'YYYY-MM-DD'."""
         self.ensure_one()
-        
-        # Vérifier si le modèle travel.reservation existe
+
+        # Normaliser les dates en chaînes 'YYYY-MM-DD' pour la recherche
         try:
-            ReservationModel = self.env['travel.reservation']
-        except KeyError:
-            # Le modèle n'est pas encore chargé, on considère disponible
+            if not date_debut or not date_fin:
+                return True
+            start = date_debut if isinstance(date_debut, str) else fields.Date.to_string(date_debut)
+            end = date_fin if isinstance(date_fin, str) else fields.Date.to_string(date_fin)
+        except Exception:
+            # Si la conversion échoue, considérer disponible pour éviter blocage
             return True
-        
+
         # Rechercher les réservations confirmées qui chevauchent la période
         try:
-            reservations = ReservationModel.search([
+            reservations = self.env['travel.reservation'].search([
                 ('product_id', '=', self.id),
                 ('state', '=', 'confirmed'),
-                ('date_depart', '<', date_fin),
-                ('date_retour', '>', date_debut),
+                ('date_depart', '<', end),
+                ('date_retour', '>', start),
             ])
             return len(reservations) == 0
         except Exception:
