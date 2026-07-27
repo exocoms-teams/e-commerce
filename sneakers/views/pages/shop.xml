@@ -54,69 +54,56 @@
 
                             <div class="sn-filter-box">
 
-                                <h3>Categories</h3>
+                    <h3>Categories</h3>
 
-                                <ul class="sn-filter-list">
+                    <ul class="sn-filter-list">
 
-                                    <li><a href="#">Running</a></li>
+                        <!-- Toutes les catégories -->
+                        <li>
+                            <a href="/shop-sneakers">
+                                All
+                            </a>
+                        </li>
 
-                                    <li><a href="#">Basketball</a></li>
 
-                                    <li><a href="#">Lifestyle</a></li>
+                        <t t-foreach="categories" t-as="category">
 
-                                    <li><a href="#">Training</a></li>
+                            <li t-att-class="'active' if selected_category == category.id else ''">
 
-                                    <li><a href="#">Skateboarding</a></li>
+                                <a t-att-href="'/shop-sneakers?category_id=%s' % category.id">
 
-                                    <li><a href="#">Outdoor</a></li>
+                                    <t t-out="category.name"/>
 
-                                </ul>
+                                </a>
 
-                            </div>
+                            </li>
+
+                        </t>
+
+                    </ul>
+
+                </div>
 
                             <div class="sn-filter-box">
 
                                 <h3>Brands</h3>
 
-                                <label class="sn-checkbox">
+                                <t t-foreach="brands" t-as="brand">
 
-                                    <input type="checkbox"/>
+                                    <label class="sn-checkbox">
 
-                                    Nike
+                                        <input
+                                            type="checkbox"
+                                            class="brand-filter"
+                                            t-att-value="brand.id"/>
 
-                                </label>
 
-                                <label class="sn-checkbox">
+                                        <t t-out="brand.name"/>
 
-                                    <input type="checkbox"/>
 
-                                    Adidas
+                                    </label>
 
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Puma
-
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    New Balance
-
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Converse
-
-                                </label>
+                                </t>
 
                             </div>
 
@@ -215,9 +202,11 @@
                                     <p>
 
                                         Showing
-                                        <strong>1 - 12</strong>
-                                        of
-                                        <strong>120</strong>
+
+                                        <strong>
+                                            <t t-esc="len(products)"/>
+                                        </strong>
+
                                         products
 
                                     </p>
@@ -297,11 +286,15 @@
 
                             <div class="sn-product-grid">
 
-                                <t t-foreach="range(12)" t-as="product">
+                                <t t-foreach="products" t-as="product">
 
-                                    <t t-call="sneakers.product_card"/>
+                                    <t t-call="sneakers.product_card">
+                                        <t t-set="product" t-value="product"/>
+                                    </t>
 
                                 </t>
+
+
 
                             </div>
 

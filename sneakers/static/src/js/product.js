@@ -1,21 +1,29 @@
 (function () {
 
     var productSection = document.querySelector(".sn-product-details");
-    if (!productSection) return;
 
-    initGallery();
-    
-    initSizeSelection();
 
-    initColorSelection();
+    if (productSection) {
 
-    initQuantitySelector();
+        initGallery();
 
-    initAddToCartProduct();
+        initSizeSelection();
 
-    initTabs();
+        initColorSelection();
 
-    initWishlistToggle();
+        initQuantitySelector();
+
+        initAddToCartProduct();
+
+        initTabs();
+
+        initWishlistToggle();
+
+    }
+
+
+    initAddToCartCards();
+
 
     // GALERIE PRODUIT
     function initGallery() {
@@ -270,31 +278,98 @@
         });
     }
 
-    function addToCartFromProduct(productId, qty, size, color, btn) {
+        function addToCartFromProduct(productId, qty, size, color, btn) {
+
         var originalText = btn.textContent;
-        btn.textContent  = "Adding...";
-        btn.disabled     = true;
 
-        /* BACKEND — Ajouter au panier Odoo (website_sale) */
+        btn.textContent = "Adding...";
+        btn.disabled = true;
 
-        setTimeout(function () {
-            btn.textContent = "✓ Added to Cart!";
-            btn.classList.add("sn-btn--success");
 
-            var badge = document.querySelector(".sn-cart-count");
-            if (badge) {
-                badge.textContent = (parseInt(badge.textContent, 10) || 0) + qty;
-                badge.style.display = "flex";
+        fetch("/shop/cart/add", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+
+                jsonrpc: "2.0",
+
+                method: "call",
+
+                params: {
+
+                    product_template_id: parseInt(productId),
+
+                    product_id: parseInt(productId),
+
+                    quantity: qty
+
+                }
+
+            })
+
+        })
+
+        .then(function(response){
+
+            return response.json();
+
+        })
+
+
+        .then(function(result){
+
+            console.log("CART RESPONSE :", result);
+
+
+            if(result.error){
+
+                console.error(result.error);
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+                return;
             }
 
-            if (window.snShowToast) window.snShowToast("Produit ajouté au panier !");
 
-            setTimeout(function () {
-                btn.textContent = originalText;
-                btn.disabled    = false;
-                btn.classList.remove("sn-btn--success");
-            }, 2500);
-        }, 700);
+            btn.textContent = "✓ Added to Cart!";
+
+            btn.classList.add("sn-btn--success");
+
+
+            if(window.snShowToast){
+
+                window.snShowToast(
+                    "Produit ajouté au panier !"
+                );
+
+            }
+
+
+           // Mise à jour du compteur panier sans redirection
+            if (window.updateCartBadge) {
+                window.updateCartBadge();
+            }
+
+
+        })
+
+
+        .catch(function(error){
+
+            console.error("ADD CART ERROR :", error);
+
+            btn.textContent = originalText;
+
+            btn.disabled=false;
+
+        });
+
     }
 
     function initTabs() {
@@ -364,5 +439,43 @@
         try { localStorage.setItem("sn_wishlist", JSON.stringify(wl)); }
         catch (e) { /* ignorer les erreurs de stockage */ }
     }
+// AJOUT PANIER DEPUIS PRODUCT CARD (RELATED PRODUCTS)
+function initAddToCartCards() {
 
+    document.addEventListener("click", function (e) {
+
+        var btn = e.target.closest(".sn-add-to-cart-btn");
+
+        if (!btn) {
+            return;
+        }
+
+
+        // éviter de traiter deux fois le bouton de la fiche produit
+        if (btn.closest(".sn-product-details")) {
+            return;
+        }
+
+
+        e.preventDefault();
+
+
+        var productId = btn.dataset.productId;
+
+
+        console.log("RELATED PRODUCT ADD CART");
+        console.log("PRODUCT ID :", productId);
+
+
+        addToCartFromProduct(
+            productId,
+            1,
+            "",
+            "",
+            btn
+        );
+
+    });
+
+}
 })();
