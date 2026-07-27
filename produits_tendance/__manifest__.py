@@ -4,8 +4,7 @@
     'category': 'Website',
     'author': 'winners',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
-
+    'depends': ['website', 'website_sale', 'auth_signup'],
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -14,6 +13,7 @@
         'views/trend_product_views.xml',
         'views/trend_submission_views.xml',
         'views/trend_submission_templates.xml',
+        'views/auth_templates.xml',   # WIN-47
     ],
     'assets': {
         'web.assets_frontend': [
@@ -21,7 +21,6 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
         ],
     },
-
     'installable': True,
     'application': False,
 }
