@@ -1,8 +1,7 @@
 (function () {
 
     var cartSection = document.querySelector(".sn-cart");
-    if (cartSection) {
-
+    if (!cartSection) return;
 
     // BOUTONS +/- QUANTITÉ 
     cartSection.addEventListener("click", function (e) {
@@ -44,7 +43,7 @@
         updateCartTotals();
         syncWithBackend(cartItem, val);
     });
-    
+
     // SUPPRESSION D'UN ARTICLE
     cartSection.addEventListener("click", function (e) {
 
@@ -56,61 +55,18 @@
 
         // Animation de sortie
         cartItem.style.transition = "opacity 0.3s, transform 0.3s";
-        cartItem.style.opacity = "0";
-        cartItem.style.transform = "translateX(40px)";
+        cartItem.style.opacity    = "0";
+        cartItem.style.transform  = "translateX(40px)";
 
+        /* backend */
 
-        var lineId = cartItem.dataset.lineId;
-
-
-        fetch("/shop/cart/update", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            },
-
-
-            body: JSON.stringify({
-
-                jsonrpc: "2.0",
-                method: "call",
-
-                params: {
-                    line_id: parseInt(lineId),
-                    quantity: 0
-                }
-
-            })
-
-        })
-
-
-        .then(function(response){
-
-            return response.json();
-
-        })
-
-
-        .then(function(data){
-
-            console.log("Removed:", data);
-
-            location.reload();
-
-        })
-
-
-        .catch(function(error){
-
-            console.error("Remove error:", error);
-
-        });
+        setTimeout(function () {
+            cartItem.remove();
+            updateCartTotals();
+            checkEmptyCart();
+        }, 300);
     });
-    }
+
     // CALCUL TOTAL PAR ARTICLE 
     function updateItemTotal(cartItem, qty) {
         var priceEl = cartItem.querySelector(".sn-cart-price");
@@ -278,65 +234,10 @@
 
     // SYNC BACKEND 
     function syncWithBackend(cartItem, qty) {
-
-    var lineId = cartItem.dataset.lineId;
-
-    if (!lineId) {
-        console.error("Cart line id missing");
-        return;
+        var productId = cartItem.dataset.productId || "0";
+        /* backend */
+        console.log("[cart.js] Sync backend : productId=" + productId + ", qty=" + qty);
     }
-
-
-    fetch("/shop/cart/update", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest"
-        },
-
-
-        body: JSON.stringify({
-
-            jsonrpc: "2.0",
-            method: "call",
-
-            params: {
-
-                line_id: parseInt(lineId),
-                quantity: parseInt(qty)
-
-            }
-
-        })
-
-    })
-
-
-    .then(function(response) {
-
-        return response.json();
-
-    })
-
-
-    .then(function(data) {
-
-        console.log("Cart updated:", data);
-
-        window.location.reload();
-
-    })
-
-
-    .catch(function(error) {
-
-        console.error("Cart update error:", error);
-
-    });
-
-}
 
     function parsePrice(str) {
         return parseFloat((str || "0").replace(/[^0-9.]/g, "")) || 0;
@@ -353,94 +254,5 @@
 
     //Initialisation
     updateCartTotals();
-        // ===============================
-    // ADD TO CART PARTOUT
-    // ===============================
-
-
-    document.addEventListener("click", function (e) {
-
-
-        var btn = e.target.closest(".sn-add-to-cart-btn");
-
-
-        if (!btn) {
-            return;
-        }
-
-
-        console.log("BUTTON CLICKED", btn);
-        var productId = btn.dataset.productId;
-
-
-        console.log(
-            "ADD TO CART PRODUCT:",
-            productId
-        );
-
-
-        fetch("/shop/cart/update_json", {
-
-            method: "POST",
-
-            headers: {
-
-                "Content-Type": "application/json",
-
-                "X-Requested-With": "XMLHttpRequest"
-
-            },
-
-
-            body: JSON.stringify({
-
-                jsonrpc: "2.0",
-
-                method: "call",
-
-                params: {
-
-                    product_id: parseInt(productId),
-
-                    add_qty: 1
-
-                }
-
-            })
-
-        })
-
-
-        .then(function(response){
-
-            return response.json();
-
-        })
-
-
-        .then(function(data){
-
-            console.log(
-                "CART RESPONSE:",
-                data
-            );
-
-
-            window.location.reload();
-
-        })
-
-
-        .catch(function(error){
-
-            console.error(
-                "ADD CART ERROR:",
-                error
-            );
-
-        });
-
-
-    });
 
 })();
