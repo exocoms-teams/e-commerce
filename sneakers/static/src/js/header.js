@@ -72,23 +72,62 @@
         });
     }
 
-})();
+    (function initCartBadge() {
+        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
+        var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
+        var badge = document.querySelector('.sn-cart-count');
+        if (!badge) return;
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    })();
 
-// Initialiser le badge panier depuis localStorage
-(function initCartBadge() {
-    var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
-    var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
-    var badge = document.querySelector('.sn-cart-count');
-    if (!badge) return;
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'flex' : 'none';
-})();
+    (function initWishlistBadge() {
+        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
+        var badge = document.querySelector('.sn-wishlist-count');
+        if (!badge) return;
+        badge.textContent = wl.length;
+        badge.style.display = wl.length > 0 ? 'flex' : 'none';
+    })();
 
-// Initialiser le badge wishlist depuis localStorage
-(function initWishlistBadge() {
-    var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
-    var badge = document.querySelector('.sn-wishlist-count');
-    if (!badge) return;
-    badge.textContent = wl.length;
-    badge.style.display = wl.length > 0 ? 'flex' : 'none';
+    document.addEventListener("click", function(e) {
+        var btn = e.target.closest(".sn-add-cart");
+        if (!btn) return;
+        e.preventDefault();
+
+        var productId = btn.dataset.productId || "0";
+        var productName = btn.dataset.productName || "Produit";
+        var qty = 1;
+
+        // Lire et mettre à jour le panier localStorage
+        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
+        var existing = cart.find(function(i) { return i.productId === productId; });
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            cart.push({ productId: productId, name: productName, qty: qty });
+        }
+        localStorage.setItem('sn_cart', JSON.stringify(cart));
+
+        // Mettre à jour le badge
+        var count = cart.reduce(function(acc, i) { return acc + i.qty; }, 0);
+        var badge = document.querySelector('.sn-cart-count');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = 'flex';
+            badge.classList.remove('sn-cart-count--bump');
+            void badge.offsetWidth;
+            badge.classList.add('sn-cart-count--bump');
+        }
+
+        // Feedback visuel
+        var orig = btn.textContent;
+        btn.textContent = "✓ Added!";
+        btn.disabled = true;
+        setTimeout(function() { btn.textContent = orig; btn.disabled = false; }, 1800);
+
+        if (window.snShowToast) window.snShowToast("Produit ajouté au panier !");
+
+        /* BACKEND : appeler /shop/cart/update avec product_id et qty */
+    });
+
 })();
