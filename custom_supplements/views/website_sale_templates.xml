@@ -146,8 +146,7 @@
                     </div>
                 </div>
             </section>
-
-<!-- 4. BENTO GRID — CATÉGORIES (Adapté Compléments Alimentaires) -->
+<!-- 4. BENTO GRID — CATÉGORIES -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-end mb-5 cs-reveal">
@@ -155,52 +154,41 @@
                         <a href="/shop" class="text-decoration-none cs-font-body text-dark">Catalogue complet <i class="fa fa-arrow-right ms-1"/></a>
                     </div>
                     
+                    <!-- Récupération dynamique des catégories Odoo par leur nom exact -->
+                    <t t-set="cat_prot" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Protéines')], limit=1)"/>
+                    <t t-set="cat_pre" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Pré-entraînement')], limit=1)"/>
+                    <t t-set="cat_vit" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Vitamines')], limit=1)"/>
+                    <t t-set="cat_bcaa" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Acides')], limit=1)"/>
+                    <t t-set="cat_recup" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Récupération')], limit=1)"/>
+
                     <div class="cs-bento cs-reveal">
-                        <!-- Bento Large (Catégorie principale) -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-lg">
-                            <!-- Attention : Le symbole & dans les URL doit toujours s'écrire &amp; en XML -->
-                            <img src="https://images.unsplash.com/photo-1579722820308-d74e571900a9?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Protéines Pures"/>
+                        <!-- 1. Protéines -->
+                        <a t-att-href="cat_prot and '/shop/category/%s' % slug(cat_prot) or '/shop'" class="cs-bento-tile cs-bento-lg">
+                            <img src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Protéines Pures"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading d-block mb-1">Protéines Pures</span>
                                 <span class="cs-font-body fs-6 opacity-75">Isolats &amp; Formules Végétales</span>
                             </div>
                         </a>
                         
-                        <!-- Bento Medium 1 -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-md">
-                            <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Performance"/>
+                        <!-- 2. Pré-entraînement -->
+                        <a t-att-href="cat_pre and '/shop/category/%s' % slug(cat_pre) or '/shop'" class="cs-bento-tile cs-bento-md">
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Performance"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Performance &amp; Pré-Workout</span>
                             </div>
                         </a>
                         
-                        <!-- Bento Medium 2 -->
-                        <a href="/shop" class="cs-bento-tile cs-bento-md">
+                        <!-- 3. Vitamines & Minéraux -->
+                        <a t-att-href="cat_vit and '/shop/category/%s' % slug(cat_vit) or '/shop'" class="cs-bento-tile cs-bento-md">
                             <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Vitamines"/>
                             <div class="cs-bento-caption">
                                 <span class="cs-font-heading">Vitamines &amp; Santé</span>
                             </div>
                         </a>
-
-                        <!-- Bento Small 1 -->
-                        <a href="/shop" class="cs-bento-tile">
-                            <img src="https://images.unsplash.com/photo-1622484211148-52b8214f5ec9?q=80&amp;w=600&amp;auto=format&amp;fit=crop" alt="Acides Aminés"/>
-                            <div class="cs-bento-caption">
-                                <span class="cs-font-heading fs-5">Acides Aminés</span>
-                            </div>
-                        </a>
-
-                        <!-- Bento Small 2 -->
-                        <a href="/shop" class="cs-bento-tile">
-                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&amp;w=600&amp;auto=format&amp;fit=crop" alt="Récupération"/>
-                            <div class="cs-bento-caption">
-                                <span class="cs-font-heading fs-5">Récupération</span>
-                            </div>
-                        </a>
                     </div>
                 </div>
             </section>
-
             <!-- 5. SPOTLIGHT PRODUIT -->
             <section class="py-5">
                 <div class="container">
@@ -235,12 +223,13 @@
                 </div>
             </section>
 
-            <!-- 6. GRILLE PRODUITS -->
+<!-- 6. GRILLE PRODUITS -->
             <section class="py-5 cs-section-muted">
                 <div class="container">
                     <h2 class="cs-font-heading mb-5 cs-reveal">Sélection Premium</h2>
                     <div class="row g-4">
-                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True),('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
+                        <!-- Début de la balise t -->
+                        <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True), ('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
                             <div class="col-6 col-md-3 cs-reveal">
                                 <div class="cs-card shadow-sm h-100 position-relative">
                                     <t t-if="product.is_vegan">
@@ -259,6 +248,7 @@
                                     </div>
                                 </div>
                             </div>
+                        <!-- Fin de la balise t (C'est souvent elle qui saute lors d'un copier-coller !) -->
                         </t>
                     </div>
                 </div>
