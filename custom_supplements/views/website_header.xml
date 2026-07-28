@@ -15,20 +15,9 @@
                         _nav_class.f="me-auto">
                         <!-- Menu -->
                         <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                            <li>
-                                <table>
-                                    <t t-foreach="submenu._fields" t-as="field">
-                                        <tr>
-                                            <td>
-                                                <t t-esc="field" />
-                                            </td>
-                                            <td>
-                                                <t t-esc="submenu[field]" />
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </table>
-                            </li>
+                            <t t-call="website.submenu"
+                                item_class.f="nav-item"
+                                link_class.f="nav-link"/>
                         </t>
                     </t>
                     <!-- Extra elements -->
