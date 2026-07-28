@@ -15,10 +15,20 @@
                         _nav_class.f="me-auto">
                         <!-- Menu -->
                         <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                            <t t-call="website.submenu"
-                                item_class.f="nav-item"
-                                link_class.f="nav-link"/>
-                        </t>
+                            <li>
+                                <table>
+                                    <t t-foreach="submenu._fields" t-as="field">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="field" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="product[field]" />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </li>
                     </t>
                     <!-- Extra elements -->
                     <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end ps-3">
