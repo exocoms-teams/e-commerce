@@ -75,6 +75,7 @@ class TravelController(http.Controller):
             'product': product,
             'providers': providers,
         })
+
     @http.route('/travels/payment/<int:transaction_id>', type='http', auth='public', website=True)
     def travel_payment_page(self, transaction_id, **kwargs):
         transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
@@ -112,10 +113,7 @@ class TravelController(http.Controller):
         return request.render('travel_agency.travel_confirm_page', {
             'reservation': transaction.reservation_id,
         })
-    
-    
-    
-    
+
     @http.route('/travels/book/submit', type='http', auth='public', website=True, methods=['POST'])
     def travel_book_submit(self, **kwargs):
         product_id = int(kwargs.get('product_id', 0))
@@ -195,10 +193,17 @@ class TravelController(http.Controller):
             'state': 'en_attente',
         })
 
-<<<<<<< HEAD
-        return request.render('travel_agency.travel_confirm_page', {
-            'reservation': reservation,
+        transaction = request.env['travel.payment.transaction'].sudo().create({
+            'reservation_id': reservation.id,
+            'provider_id': payment_provider_id,
+            'state': 'pending',
+            'first_name': client_firstname,
+            'last_name': client_lastname,
+            'email': client_email,
+            'phone': client_phone,
         })
+
+        return request.redirect('/travels/payment/%d' % transaction.id)
 
     # ============================================
     # ROUTES EXISTANTES - HÔTELS
@@ -344,7 +349,6 @@ class TravelController(http.Controller):
         """
         domain = [('active', '=', True)]
 
-        # Filtrage par catégorie
         category_id = kwargs.get('category_id', '').strip()
         if category_id:
             try:
@@ -352,14 +356,12 @@ class TravelController(http.Controller):
             except ValueError:
                 pass
 
-        # Recherche par nom ou description
         search = kwargs.get('search', '').strip()
         if search:
             domain += ['|',
                        ('name', 'ilike', search),
                        ('description', 'ilike', search)]
 
-        # Filtrer par prix max
         price_max = kwargs.get('price_max', '').strip()
         if price_max:
             try:
@@ -368,8 +370,6 @@ class TravelController(http.Controller):
                 pass
 
         guides = request.env['travel.guide'].sudo().search(domain)
-        
-        # Récupérer les catégories pour le filtre
         categories = request.env['product.category'].sudo().search([])
         
         return request.render('travel_agency.website_guide_list', {
@@ -390,7 +390,6 @@ class TravelController(http.Controller):
         if not guide.active:
             return request.redirect('/guides')
         
-        # Guides similaires (même catégorie)
         similar_guides = request.env['travel.guide'].sudo().search([
             ('active', '=', True),
             ('category_id', '=', guide.category_id.id),
@@ -414,7 +413,6 @@ class TravelController(http.Controller):
         """
         domain = [('active', '=', True)]
 
-        # Filtrage par catégorie
         category_id = kwargs.get('category_id', '').strip()
         if category_id:
             try:
@@ -422,14 +420,12 @@ class TravelController(http.Controller):
             except ValueError:
                 pass
 
-        # Recherche par nom ou description
         search = kwargs.get('search', '').strip()
         if search:
             domain += ['|',
                        ('name', 'ilike', search),
                        ('description', 'ilike', search)]
 
-        # Filtrer par âge minimum
         min_age = kwargs.get('min_age', '').strip()
         if min_age:
             try:
@@ -437,7 +433,6 @@ class TravelController(http.Controller):
             except ValueError:
                 pass
 
-        # Filtrer par prix max
         price_max = kwargs.get('price_max', '').strip()
         if price_max:
             try:
@@ -446,8 +441,6 @@ class TravelController(http.Controller):
                 pass
 
         leisures = request.env['travel.leisure'].sudo().search(domain)
-        
-        # Récupérer les catégories pour le filtre
         categories = request.env['product.category'].sudo().search([])
         
         return request.render('travel_agency.website_leisure_list', {
@@ -468,7 +461,6 @@ class TravelController(http.Controller):
         if not leisure.active:
             return request.redirect('/loisirs')
         
-        # Loisirs similaires (même catégorie)
         similar_leisures = request.env['travel.leisure'].sudo().search([
             ('active', '=', True),
             ('category_id', '=', leisure.category_id.id),
@@ -492,19 +484,16 @@ class TravelController(http.Controller):
         """
         domain = [('active', '=', True)]
 
-        # Filtrage par localisation
         location = kwargs.get('location', '').strip()
         if location:
             domain.append(('location', 'ilike', location))
 
-        # Recherche par nom ou description
         search = kwargs.get('search', '').strip()
         if search:
             domain += ['|',
                        ('name', 'ilike', search),
                        ('description', 'ilike', search)]
 
-        # Filtrer par capacité minimum
         capacity_min = kwargs.get('capacity_min', '').strip()
         if capacity_min:
             try:
@@ -512,7 +501,6 @@ class TravelController(http.Controller):
             except ValueError:
                 pass
 
-        # Filtrer par nombre de chambres
         bedrooms = kwargs.get('bedrooms', '').strip()
         if bedrooms:
             try:
@@ -520,7 +508,6 @@ class TravelController(http.Controller):
             except ValueError:
                 pass
 
-        # Filtrer par prix max
         price_max = kwargs.get('price_max', '').strip()
         if price_max:
             try:
@@ -547,7 +534,6 @@ class TravelController(http.Controller):
         if not rental.active:
             return request.redirect('/locations')
         
-        # Locations similaires (même localisation)
         similar_rentals = request.env['travel.rental'].sudo().search([
             ('active', '=', True),
             ('location', '=', rental.location),
@@ -641,7 +627,6 @@ class TravelController(http.Controller):
         }
         
         if query:
-            # Recherche dans les guides
             results['guides'] = request.env['travel.guide'].sudo().search([
                 ('active', '=', True),
                 '|',
@@ -649,7 +634,6 @@ class TravelController(http.Controller):
                 ('description', 'ilike', query)
             ])
             
-            # Recherche dans les loisirs
             results['leisures'] = request.env['travel.leisure'].sudo().search([
                 ('active', '=', True),
                 '|',
@@ -657,7 +641,6 @@ class TravelController(http.Controller):
                 ('description', 'ilike', query)
             ])
             
-            # Recherche dans les locations
             results['rentals'] = request.env['travel.rental'].sudo().search([
                 ('active', '=', True),
                 '|',
@@ -666,7 +649,6 @@ class TravelController(http.Controller):
                 ('location', 'ilike', query)
             ])
             
-            # Recherche dans les hôtels
             results['hotels'] = request.env['travel.hotel'].sudo().search([
                 ('disponible', '=', True),
                 '|',
@@ -675,7 +657,6 @@ class TravelController(http.Controller):
                 ('pays', 'ilike', query)
             ])
             
-            # Recherche dans les vols
             results['vols'] = request.env['travel.vol'].sudo().search([
                 ('disponible', '=', True),
                 '|',
@@ -683,7 +664,6 @@ class TravelController(http.Controller):
                 ('pays_arrivee', 'ilike', query)
             ])
             
-            # Recherche dans les trains
             results['trains'] = request.env['travel.train'].sudo().search([
                 ('disponible', '=', True),
                 '|',
@@ -691,7 +671,6 @@ class TravelController(http.Controller):
                 ('pays_arrivee', 'ilike', query)
             ])
             
-            # Recherche dans les voitures
             results['cars'] = request.env['travel.car'].sudo().search([
                 ('disponible', '=', True),
                 '|',
@@ -703,20 +682,12 @@ class TravelController(http.Controller):
             'query': query,
             'results': results,
             'total_count': sum(len(results[key]) for key in results)
-=======
-        transaction = request.env['travel.payment.transaction'].sudo().create({
-            'reservation_id': reservation.id,
-            'provider_id': payment_provider_id,
-            'state': 'pending',
-            'first_name': client_firstname,
-            'last_name': client_lastname,
-            'email': client_email,
-            'phone': client_phone,
         })
 
-        return request.redirect('/travels/payment/%d' % transaction.id)
-    
-    
+    # ============================================
+    # ROUTES - MOTEUR DE RECOMMANDATION
+    # ============================================
+
     @http.route('/recommandation', type='http', auth='public', website=True)
     def recommandation_form(self, **kwargs):
         return request.render('travel_agency.recommandation_form_page', {'error': False})
@@ -739,5 +710,4 @@ class TravelController(http.Controller):
         )
         return request.render('travel_agency.recommandation_results_page', {
             'recommendations': recommendations,
->>>>>>> ef5e29ef157ea4354f0c7d9cddede872353beb71
         })
