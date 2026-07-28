@@ -2287,6 +2287,329 @@ html[dir="rtl"] {
     100% { transform: scale(1.1); opacity: 1; }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// SCROLL-REVEAL ANIMATIONS
+// ═══════════════════════════════════════════════════════════════
+
+.oa-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &.oa-revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Staggered reveal for children
+.oa-reveal-stagger {
+    .oa-reveal-child {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &.oa-revealed .oa-reveal-child {
+        opacity: 1;
+        transform: translateY(0);
+
+        @for $i from 1 through 8 {
+            &:nth-child(#{$i}) {
+                transition-delay: #{$i * 0.1}s;
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MARQUEE / SCROLLING TEXT BAND
+// ═══════════════════════════════════════════════════════════════
+
+.oa-marquee-section {
+    overflow: hidden;
+    background: var(--oa-prune);
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.oa-marquee-track {
+    display: flex;
+    width: max-content;
+    animation: oa-marquee-scroll 25s linear infinite;
+
+    &:hover {
+        animation-play-state: paused;
+    }
+}
+
+.oa-marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 30px;
+    white-space: nowrap;
+    font-family: var(--oa-font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    .oa-marquee-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--oa-lilac);
+        flex-shrink: 0;
+    }
+}
+
+@keyframes oa-marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CATEGORY CARDS (DRIBBBLE STYLE)
+// ═══════════════════════════════════════════════════════════════
+
+.oa-category-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 280px;
+    display: block;
+    text-decoration: none !important;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 40%, rgba(54, 34, 59, 0.85) 100%);
+        z-index: 1;
+        transition: all 0.4s ease;
+    }
+
+    .oa-category-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .oa-category-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 25px;
+        z-index: 2;
+        transform: translateY(8px);
+        transition: transform 0.4s ease;
+    }
+
+    .oa-category-name {
+        font-family: var(--oa-font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 4px;
+    }
+
+    .oa-category-count {
+        font-family: var(--oa-font-body);
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.65);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+    }
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px rgba(54, 34, 59, 0.2);
+
+        &::before {
+            background: linear-gradient(180deg, transparent 20%, rgba(54, 34, 59, 0.9) 100%);
+        }
+
+        .oa-category-img {
+            transform: scale(1.08);
+        }
+
+        .oa-category-info {
+            transform: translateY(0);
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UPGRADED PRODUCT CARDS
+// ═══════════════════════════════════════════════════════════════
+
+.oa-product-card {
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+
+    .oa-product-img {
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(54, 34, 59, 0.0);
+            transition: background 0.4s ease;
+        }
+    }
+
+    .oa-quick-add {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+        background: white;
+        color: var(--oa-prune);
+        font-family: var(--oa-font-body);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        z-index: 3;
+
+        &:hover {
+            background: var(--oa-prune);
+            color: white;
+            transform: translateX(-50%) translateY(18px) scale(1.03);
+        }
+    }
+
+    .oa-product-stars {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 6px;
+
+        .fa-star {
+            font-size: 0.7rem;
+            color: #e0d5c9;
+
+            &.filled {
+                color: #e8b86d;
+            }
+        }
+    }
+
+    &:hover {
+        transform: translateY(-6px);
+
+        .oa-product-img::after {
+            background: rgba(54, 34, 59, 0.08);
+        }
+
+        .oa-quick-add {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UPGRADED TESTIMONIALS (GLASSMORPHISM + QUOTES)
+// ═══════════════════════════════════════════════════════════════
+
+.oa-testimonial-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px 30px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    height: 100%;
+
+    &::before {
+        content: '\201C';
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-family: var(--oa-font-display);
+        font-size: 5rem;
+        line-height: 1;
+        color: var(--oa-lilac);
+        opacity: 0.25;
+        pointer-events: none;
+    }
+
+    .oa-testimonial-text {
+        font-style: italic;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: rgba(255,255,255,0.9);
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .oa-testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .oa-testimonial-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--oa-mauve), var(--oa-lilac));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-family: var(--oa-font-display);
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .oa-testimonial-name {
+        font-weight: 700;
+        color: var(--oa-lilac);
+        font-size: 0.9rem;
+    }
+
+    .oa-testimonial-badge {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    &:hover {
+        transform: translateY(-4px);
+        border-color: rgba(193, 169, 208, 0.3);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+
+        &::before {
+            opacity: 0.4;
+        }
+    }
+}
+
 // ── ACCESSIBILITY (ARIA & FOCUS STATES) ─────────────────────────
 :focus-visible {
     outline: 2px solid var(--oa-mauve) !important;
