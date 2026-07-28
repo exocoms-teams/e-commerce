@@ -155,7 +155,6 @@
                         <a href="/shop" class="text-decoration-none cs-font-body text-dark">Catalogue complet <i class="fa fa-arrow-right ms-1"/></a>
                     </div>
                     
-                    <!-- Récupération dynamique des catégories Odoo -->
                     <t t-set="cat_prot" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Protéines')], limit=1)"/>
                     <t t-set="cat_pre" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Pré-entraînement')], limit=1)"/>
                     <t t-set="cat_vit" t-value="request.env['product.public.category'].sudo().search([('name', 'ilike', 'Vitamines')], limit=1)"/>
@@ -195,18 +194,19 @@
             <section class="py-5">
                 <div class="container">
                     <div class="row align-items-center g-5">
-                        <div class="col-lg-6 cs-spotlight cs-reveal">
-                            <!-- Nouvelle Image : Focus sur l'athlète et l'application -->
+                        <div class="col-lg-6 cs-spotlight cs-reveal position-relative">
+                            <!-- Image d'illustration IA / Data -->
                             <div class="ratio ratio-1x1" style="border-radius:16px; overflow:hidden; background:#F3F4F6; box-shadow: 0 20px 40px rgba(0,0,0,0.08);">
                                 <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&amp;w=800&amp;auto=format&amp;fit=crop" alt="Athlète consultant ses recommandations" class="w-100 h-100" style="object-fit:cover;"/>
                             </div>
                             
-                            <!-- Badges flottants orientés bénéfices -->
-                            <div class="cs-callout shadow-sm" style="top:14%; left:-8%; background: white; padding: 12px 20px; border-radius: 8px; position: absolute;">
+                            <!-- Badges flottants réajustés -->
+                            <div class="cs-callout shadow-sm" style="top:15%; left:-5%; background: white; padding: 12px 20px; border-radius: 8px; position: absolute; z-index:2;">
                                 <strong class="cs-font-heading d-block" style="color: #10B981;">Dosage Ultra-Précis</strong>
                                 <span class="cs-font-body text-muted small">Calculé pour votre métabolisme</span>
                             </div>
-                            <div class="cs-callout shadow-sm" style="bottom:20%; right:-8%; background: white; padding: 12px 20px; border-radius: 8px; position: absolute;">
+                            <!-- Ce badge a été remonté à top:55% pour ne plus superposer le sol sombre -->
+                            <div class="cs-callout shadow-sm" style="top:55%; right:-6%; background: white; padding: 12px 20px; border-radius: 8px; position: absolute; z-index:2;">
                                 <strong class="cs-font-heading d-block">Protocoles Sur-Mesure</strong>
                                 <span class="cs-font-body text-muted small">Vos synergies idéales</span>
                             </div>
@@ -228,8 +228,13 @@
                                     <i class="fa fa-balance-scale me-3 fs-5" style="color:#10B981; width: 24px; text-align: center;"/>
                                     <span>Calcul dynamique des cycles et posologies</span>
                                 </li>
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="fa fa-check-circle me-3 fs-5" style="color:#10B981; width: 24px; text-align: center;"/>
+                                    <span>Élimination des compléments inutiles pour votre objectif</span>
+                                </li>
                             </ul>
-                            <a href="/contact" class="btn cs-btn-primary btn-lg px-4 py-3 shadow-sm" style="border-radius: 8px;">Démarrer mon diagnostic</a>
+                            <!-- Bouton renommé -->
+                            <a href="/contact" class="btn cs-btn-primary btn-lg px-4 py-3 shadow-sm" style="border-radius: 8px;">Consulter l'Assistant</a>
                         </div>
                     </div>
                 </div>
@@ -303,4 +308,28 @@
 
         </xpath>
     </template>
+
+    <!-- =====================================================================
+         PARTIE 3 : WIDGET GLOBAL ASSISTANT IA (AJOUTÉ)
+         ===================================================================== -->
+    
+    <!-- En héritant de 'website.layout', ce bouton sera injecté sur toutes les pages du site -->
+    <template id="global_ai_assistant_widget" inherit_id="website.layout" name="Widget Assistant Flottant">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+            <a href="/contact" class="d-flex align-items-center justify-content-center cs-reveal"
+               style="position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; background-color: #10B981; color: white; border-radius: 50%; z-index: 1050; text-decoration: none; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); transition: transform 0.3s ease; border: 2px solid white;">
+                <!-- Icône médicale/chat pour l'assistant -->
+                <i class="fa fa-comment-medical fs-3"/>
+            </a>
+            
+            <!-- Petit effet de style pour le survol du widget -->
+            <style>
+                a[href="/contact"]:hover i.fa-comment-medical {
+                    transform: scale(1.1);
+                    transition: transform 0.2s ease;
+                }
+            </style>
+        </xpath>
+    </template>
+
 </odoo>
