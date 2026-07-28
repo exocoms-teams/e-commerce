@@ -55,7 +55,7 @@
             var btn1        = document.createElement("button");
             btn1.className  = "sn-btn-primary sn-step-next-btn";
             btn1.type       = "button";
-            btn1.textContent = "Continuer";
+            btn1.textContent = "Continue";
             card1.appendChild(btn1);
             btn1.addEventListener("click", function () {
                 if (validateStep(card1, 1)) goToStep(2);
@@ -67,7 +67,7 @@
             var btn2        = document.createElement("button");
             btn2.className  = "sn-btn-primary sn-step-next-btn";
             btn2.type       = "button";
-            btn2.textContent = "Continuer";
+            btn2.textContent = "Continue";
             card2.appendChild(btn2);
             btn2.addEventListener("click", function () {
                 if (validateStep(card2, 2)) goToStep(3);
@@ -312,7 +312,7 @@
 
     function submitOrder(btn) {
         btn.disabled    = true;
-        btn.textContent = "Traitement en cours...";
+        btn.textContent = "Processing in progress...";
 
         /* backend */
         
