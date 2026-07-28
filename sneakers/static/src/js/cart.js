@@ -157,7 +157,7 @@
         var badge = document.querySelector(".sn-cart-count");
         if (!badge) return;
         badge.textContent   = count;
-        badge.style.display = count > 0 ? "flex" : "none";
+        badge.style.display = "flex";
         badge.classList.remove("sn-cart-count--bump");
         void badge.offsetWidth;
         badge.classList.add("sn-cart-count--bump");
