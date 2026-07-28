@@ -109,6 +109,14 @@ class ResCompany(models.Model):
             raise UserError(_(
                 "Connexion à PISTE impossible : %s", error,
             )) from error
+        if response.status_code == 401:
+            raise UserError(_(
+                "Authentification PISTE échouée (401) : Vérifiez le Client ID et le Client Secret."
+            ))
+        elif response.status_code == 403:
+            raise UserError(_(
+                "Accès refusé par Chorus Pro (403) : Vérifiez vos CGU et les droits associés à votre compte technique."
+            ))
         if response.status_code != 200:
             raise UserError(_(
                 "Échec de l'authentification PISTE (HTTP %(code)s) : "

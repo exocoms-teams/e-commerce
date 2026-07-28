@@ -30,17 +30,15 @@ class PaymentProvider(models.Model):
 
     @api.model
     def _get_compatible_providers(self, company_id, partner_id, amount, **kwargs):
-        """N'afficher le mandat administratif qu'aux entités publiques."""
+        """N'afficher le mandat administratif qu'aux entités publiques et si publié/actif."""
         providers = super()._get_compatible_providers(
             company_id, partner_id, amount, **kwargs
         )
-
-        # Récupération sécurisée du partenaire commercial racine
+        # Filtrer d'abord pour ne garder que ce qui est publié/actif
+        # Note: _get_compatible_providers de Odoo base gère déjà is_published/state.
+        # Nous ajoutons notre contrainte métier spécifique.
         partner = self.env['res.partner'].browse(partner_id).exists()
-        commercial_partner = partner.commercial_partner_id if partner else False
-
-        # Vérification si c'est une entité publique
-        if not commercial_partner or not commercial_partner.is_public_entity:
+        if not partner or not partner.commercial_partner_id.is_public_entity:
             providers = providers.filtered(
                 lambda p: p.code != 'mandat_administratif'
             )

@@ -49,9 +49,17 @@ class MandatAdministratifPortal(http.Controller):
                          != values['chorus_siret'])
                 )
                 try:
+                    # Avant de modifier, vérifier l'état actuel pour savoir si on notifie
+                    was_public = partner.is_public_entity
                     partner.sudo().write(values)
                     partner.sudo()._apply_public_payment_term()
-                    if declaration_changed:
+
+                    # Notifier si devient public OU si données Chorus changent (même si déjà public)
+                    if values['is_public_entity'] and (
+                        not was_public
+                        or partner.public_entity_type != values.get('public_entity_type')
+                        or partner.chorus_siret != values.get('chorus_siret')
+                    ):
                         partner.sudo()._notify_public_entity_declaration()
                     success = True
                 except ValidationError as error:
