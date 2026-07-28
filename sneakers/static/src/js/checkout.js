@@ -28,67 +28,104 @@
     }
 
     function setupStepNavigation() {
-
         var checkoutCards = checkoutSection.querySelectorAll(".sn-checkout-card");
-
+        // Bouton retour + clic sur cercle de progression pour toutes les cartes
         checkoutCards.forEach(function (card, i) {
             var stepNum = i + 1;
             card.dataset.step = stepNum;
-
             card.style.display = (stepNum === currentStep) ? "block" : "none";
-
-            if (stepNum < TOTAL_STEPS && !card.querySelector(".sn-step-next-btn")) {
-                var nextBtn = document.createElement("button");
-                nextBtn.className   = "sn-btn-primary sn-step-next-btn";
-                nextBtn.type        = "button";
-                nextBtn.textContent = stepNum === TOTAL_STEPS - 1
-                                        ? "Proceed to payment"
-                                        : "Continue";
-                card.appendChild(nextBtn);
-
-                nextBtn.addEventListener("click", function () {
-                    if (validateStep(card, stepNum)) {
-                        goToStep(stepNum + 1);
-                    }
-                });
-            }
-
             if (stepNum > 1 && !card.querySelector(".sn-step-prev-btn")) {
-                var prevBtn = document.createElement("button");
-                prevBtn.className   = "sn-step-prev-btn";
-                prevBtn.type        = "button";
-                prevBtn.textContent = "← Back";
+                var prevBtn       = document.createElement("button");
+                prevBtn.className = "sn-step-prev-btn";
+                prevBtn.type      = "button";
+                prevBtn.textContent = "← Retour";
                 card.insertBefore(prevBtn, card.firstChild);
-
-                prevBtn.addEventListener("click", function () {
-                    goToStep(stepNum - 1);
-                });
+                prevBtn.addEventListener("click", function () { goToStep(stepNum - 1); });
             }
-
             if (progressSteps[i]) {
                 progressSteps[i].addEventListener("click", function () {
-                    if (stepNum < currentStep) {
-                        goToStep(stepNum);
-                    }
+                    if (stepNum < currentStep) goToStep(stepNum);
                 });
                 progressSteps[i].style.cursor = "pointer";
             }
         });
+        // Carte 1 — Billing Address : "Continuer"
+        var card1 = checkoutCards[0];
+        if (card1 && !card1.querySelector(".sn-step-next-btn")) {
+            var btn1        = document.createElement("button");
+            btn1.className  = "sn-btn-primary sn-step-next-btn";
+            btn1.type       = "button";
+            btn1.textContent = "Continuer";
+            card1.appendChild(btn1);
+            btn1.addEventListener("click", function () {
+                if (validateStep(card1, 1)) goToStep(2);
+            });
+        }
+        // Carte 2 — Shipping Method : "Continuer"
+        var card2 = checkoutCards[1];
+        if (card2 && !card2.querySelector(".sn-step-next-btn")) {
+            var btn2        = document.createElement("button");
+            btn2.className  = "sn-btn-primary sn-step-next-btn";
+            btn2.type       = "button";
+            btn2.textContent = "Continuer";
+            card2.appendChild(btn2);
+            btn2.addEventListener("click", function () {
+                if (validateStep(card2, 2)) goToStep(3);
+            });
+        }
+        // Carte 3 — Payment Method : bouton dynamique selon choix
+        var card3 = checkoutCards[2];
+        if (card3) setupPaymentMethodCard(card3, checkoutCards[3]);
+        // Carte 4 — Payment Details : "Confirm my order"
+        var card4 = checkoutCards[3];
+        if (card4) setupPaymentDetailsCard(card4);
+    }
 
-        var lastCard = checkoutCards[checkoutCards.length - 1];
-        if (lastCard && !lastCard.querySelector(".sn-confirm-order-btn")) {
-            var confirmBtn = lastCard.querySelector(".sn-checkout-btn") ||
-                            createConfirmButton();
-            if (confirmBtn) {
-                confirmBtn.addEventListener("click", function (e) {
-                    e.preventDefault();
-                    if (validateStep(lastCard, TOTAL_STEPS)) {
-                        submitOrder(confirmBtn);
+    function setupPaymentMethodCard(card, card4) {
+        var actionWrap       = document.createElement("div");
+        actionWrap.className = "sn-payment-action-wrap";
+        card.appendChild(actionWrap);
+        function refreshButton() {
+            var selected = card.querySelector("input[name='payment']:checked");
+            actionWrap.innerHTML = "";
+            if (!selected) return;
+            var btn       = document.createElement("button");
+            btn.type      = "button";
+            btn.className = "sn-btn-primary sn-step-next-btn";
+            if (selected.value === "cash") {
+                btn.textContent = "Confirm my order";
+                btn.addEventListener("click", function () { submitOrder(btn); });
+            } else {
+                btn.textContent = "Proceed to payment";
+                btn.addEventListener("click", function () {
+                    // Affiche la bonne section dans la carte 4
+                    if (card4) {
+                        card4.querySelectorAll(".sn-payment-section").forEach(function (s) {
+                            s.style.display = "none";
+                        });
+                        var target = card4.querySelector(".sn-payment-section--" + selected.value);
+                        if (target) target.style.display = "block";
                     }
+                    goToStep(4);
                 });
             }
+            actionWrap.appendChild(btn);
         }
+        card.querySelectorAll("input[name='payment']").forEach(function (radio) {
+            radio.addEventListener("change", refreshButton);
+        });
     }
+
+    function setupPaymentDetailsCard(card) {
+        var confirmBtn        = document.createElement("button");
+        confirmBtn.className  = "sn-btn-primary sn-confirm-order-btn";
+        confirmBtn.type       = "button";
+        confirmBtn.textContent = "Confirm my order";
+        card.appendChild(confirmBtn);
+        confirmBtn.addEventListener("click", function () { submitOrder(confirmBtn); });
+    }
+
+
 
     function goToStep(step) {
         step = Math.max(1, Math.min(TOTAL_STEPS, step));
