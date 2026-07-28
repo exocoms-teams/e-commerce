@@ -131,6 +131,11 @@
         var maxLabel = document.querySelector(".sn-price-label-max");
         if (minLabel) minLabel.textContent = "$" + activeFilters.priceMin;
         if (maxLabel) maxLabel.textContent = "$" + activeFilters.priceMax;
+
+        if (priceRangeSlider) {
+            var pct = (activeFilters.priceMin / parseInt(priceRangeSlider.max, 10)) * 100;
+            priceRangeSlider.style.setProperty('--min-pct', pct + '%');
+        }
     }
 
     // FILTRE DISPONIBILITÉ 
@@ -447,6 +452,8 @@
     // Marquer le bon bouton comme actif
     paginationNav && paginationNav.querySelectorAll(".sn-page-btn").forEach(function(btn) {
         if (parseInt(btn.textContent, 10) === urlPage) btn.classList.add("active");
-});
+    });
+    
+    updatePriceDisplay();
 
 })();
