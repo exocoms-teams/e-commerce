@@ -22,7 +22,7 @@
             var progressLine = document.querySelector(".sn-progress-line");
             if (progressLine && TOTAL_STEPS > 1) {
                 var pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
-                progressLine.style.width = pct + "%";
+                progressLine.style.width = "calc(" + pct + "% * (1 - 55px / 100%) + " + (pct / 100 * 27.5) + "px)";
             }
         });
     }
