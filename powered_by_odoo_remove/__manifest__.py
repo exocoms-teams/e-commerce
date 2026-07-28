@@ -42,7 +42,7 @@
     'license': 'OPL-1',
     'sequence': 10,
     'category': 'Tools',
-    'depends': ['portal'],
+    'depends': ['portal', 'web', 'website'],
     'data': [
         'views/login_layout.xml',
         'views/portal_record_sidebar.xml',
