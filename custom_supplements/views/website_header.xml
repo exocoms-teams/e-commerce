@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="template_header_default" inherit_id="website.layout" name="Template Header Default" active="True">
+        <xpath expr="//header[@id='top']//nav" position="replace">
+            <t t-call="website.navbar">
+                <t t-set="_navbar_classes" t-valuef="d-none d-lg-block shadow-sm"/>
+
+                <div id="o_main_nav" t-attf-class="o_main_nav #{header_content_width}">
+                    <!-- Brand -->
+                    <t t-call="website.placeholder_header_brand"
+                        _link_class.f="me-4"/>
+                    <!-- Navbar -->
+                    <t t-call="website.navbar_nav"
+                        _nav_class.f="me-auto">
+                        <!-- Menu -->
+                        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                            <t t-call="website.submenu"
+                                item_class.f="nav-item"
+                                link_class.f="nav-link"/>
+                        </t>
+                    </t>
+                    <!-- Extra elements -->
+                    <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end ps-3">
+                        <!-- Search Bar -->
+                        <t t-call="website.placeholder_header_search_box"
+                            _layout.f="modal"
+                            _input_classes.f="border border-end-0 p-3"
+                            _submit_classes.f="border border-start-0 px-4 bg-o-color-4"
+                            _button_classes.f="o_navlink_background text-reset"/>
+                        <!-- Text element -->
+                        <t t-call="website.placeholder_header_text_element"/>
+                        <!-- Social -->
+                        <t t-call="website.placeholder_header_social_links"/>
+                        <!-- Language Selector -->
+                        <t t-call="website.placeholder_header_language_selector"
+                            _btn_class="_additional_btn_color or 'nav-link'"
+                            _dropdown_menu_class.f="dropdown-menu-end"/>
+                        <!-- Sign In -->
+                        <t t-call="portal.placeholder_user_sign_in"
+                            _link_class="_additional_btn_color or 'o_nav_link_btn nav-link border px-3'"/>
+                        <!-- User Dropdown -->
+                        <t t-call="portal.user_dropdown"
+                            _user_name="True"
+                            _item_class.f="dropdown"
+                            _link_class.f="{{_additional_btn_color or 'nav-link'}} border-0"
+                            _dropdown_menu_class.f="dropdown-menu-end"/>
+                        <!-- Call To Action -->
+                        <t t-call="website.placeholder_header_call_to_action"/>
+                    </ul>
+                </div>
+            </t>
+            <t t-call="website.template_header_mobile"/>
+        </xpath>
+    </template>
+</odoo>
