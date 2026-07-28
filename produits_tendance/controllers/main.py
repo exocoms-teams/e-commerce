@@ -16,13 +16,29 @@ class TrendSubmissionController(http.Controller):
     @http.route('/submit-trend/process', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def submit_trend_process(self, **post):
         if post:
+            # --- NOUVELLE LOGIQUE : Tri intelligent Lien ou Description ---
+            # On récupère le champ unique du formulaire web
+            user_input = post.get('link_or_desc', '').strip()
+            final_ref = False
+            final_desc = False
+            
+            # Si ça commence par http et qu'il n'y a pas d'espaces, c'est un lien
+            if user_input.startswith('http') and ' ' not in user_input:
+                final_ref = user_input
+            # Sinon, on considère que c'est une description texte
+            else:
+                final_desc = user_input
+            # --------------------------------------------------------------
+
             # sudo() permet au visiteur non connecté de créer l'enregistrement sans bloquer sur les droits
             request.env['trend.submission'].sudo().create({
                 'name': post.get('name'),
-                'product_ref': post.get('product_ref'),
+                'product_ref': final_ref,  # Sera rempli si c'est un lien (sinon False)
+                'description': final_desc, # Sera rempli si c'est du texte (sinon False)
                 'category': post.get('category'),
                 'country': post.get('country'),
                 'submission_reason': post.get('submission_reason'),
+                'email': post.get('email'),
                 'submitted_by': request.env.user.name if request.env.user.name != 'Public user' else 'Visiteur Anonyme',
             })
         # Redirection vers la page avec un message de succès

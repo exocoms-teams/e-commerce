@@ -16,8 +16,11 @@
                     <p>Vous avez une idée en tête ou par expérience ? Laissez notre algorithme analyser les tendances pour vous.</p>
                 </div>
                 
-                <div t-if="request.params.get('success')" class="alert alert-success mt-3 text-center">
-                    <strong>C'est noté !</strong> Votre demande d'audit est en cours. Notre équipe modère le lien avant de lancer les calculs de tendance.
+                <div t-if="request.params.get('success')" class="alert alert-success mt-4" role="alert">
+                    <h4 class="alert-heading">Merci pour votre contribution ! 🎉</h4>
+                    <p>Votre suggestion a bien été enregistrée. Notre équipe de modération va l'étudier dans les plus brefs délais.</p>
+                    <hr/>
+                    <p class="mb-0">Vous recevrez un email de notre part dès que votre produit aura été examiné pour vous tenir informé du résultat.</p>
                 </div>
 
                 <div class="row justify-content-center">
@@ -45,23 +48,27 @@
                             <hr/>
 
                             <div class="mb-3">
-                                <label for="name" class="form-label">Quel est le nom du produit ?</label>
+                                <label for="name" class="form-label">Quel est le nom du produit ?<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="name" placeholder="Ex: Correcteur de posture intelligent" required="1"/>
                             </div>
                             <div class="mb-3">
-                                <label for="product_ref" class="form-label">Où l'avez-vous vu ? (Lien URL ou Référence)</label>
-                                <input type="text" class="form-control" name="product_ref" placeholder="https://..." required="1"/>
+                                <label for="link_or_desc" class="form-label">Lien ou Description du produit <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="link_or_desc" rows="2" placeholder="Collez l'URL du produit ou décrivez-le ici..." required="required"></textarea>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="category" class="form-label">Catégorie cible</label>
+                                    <label for="category" class="form-label">Catégorie cible <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="category" placeholder="Ex: Santé &amp; Bien-être" required="1"/>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="country" class="form-label">Pays ciblé (Code à 2 lettres)</label>
+                                    <label for="country" class="form-label">Pays ciblé (Code à 2 lettres) <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="country" placeholder="Ex: FR, US, MA" required="1" maxlength="2"/>
                                 </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Votre adresse email (pour recevoir l'audit)</label>
+                                <input type="email" class="form-control" name="email" placeholder="exemple@email.com"/>
                             </div>
                             
                             <div class="d-grid mt-4">
