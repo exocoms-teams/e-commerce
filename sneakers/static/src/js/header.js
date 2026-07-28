@@ -1,5 +1,22 @@
 (function () {
 
+    (function initCartBadge() {
+        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
+        var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
+        var badge = document.querySelector('.sn-cart-count');
+        if (!badge) return;
+        badge.textContent = count;
+        badge.style.display = 'flex';
+    })();
+
+    (function initWishlistBadge() {
+        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
+        var badge = document.querySelector('.sn-wishlist-count');
+        if (!badge) return;
+        badge.textContent = wl.length;
+        badge.style.display = 'flex';
+    })();
+
     // HEADER STICKY
     var header = document.querySelector(".sn-header");
 
@@ -72,22 +89,6 @@
         });
     }
 
-    (function initCartBadge() {
-        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
-        var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
-        var badge = document.querySelector('.sn-cart-count');
-        if (!badge) return;
-        badge.textContent = count;
-        badge.style.display = count > 0 ? 'flex' : 'none';
-    })();
-
-    (function initWishlistBadge() {
-        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
-        var badge = document.querySelector('.sn-wishlist-count');
-        if (!badge) return;
-        badge.textContent = wl.length;
-        badge.style.display = wl.length > 0 ? 'flex' : 'none';
-    })();
 
     document.addEventListener("click", function(e) {
         var btn = e.target.closest(".sn-add-cart");
