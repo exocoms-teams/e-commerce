@@ -2,24 +2,37 @@
 <odoo>
 
     <template id="custom_navbar" inherit_id="website.navbar">
-        <xpath expr="." position="replace">
-            <header class="my-header">
-                <div class="container">
+        <xpath expr=".[hasclass('o_header_mobile')]" position="replace">
+                <nav class="navbar d-none d-lg-block">
                     <a href="/" class="navbar-brand">
-                        My Logo
+                        My Logo (Mobile)
                     </a>
+                </nav>
+        </xpath>
+        <xpath expr=".[hasclass('')]" position="replace">
+                <nav class="navbar navbar-expand-lg d-block d-lg-none ">
+                    <div class="container">
 
-                    <nav>
-                        <a href="/">Home</a>
-                        <a href="/shop">Shop</a>
-                        <a href="/contactus">Contact</a>
-                    </nav>
-                </div>
-            </header>
+                        <a href="/" class="navbar-brand">
+                            My Logo (Desktop)
+                        </a>
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                            <a href="/shop">Shop</a>
+                            </li>
+                            <li class="nav-item">
+                            <a href="/contactus">Contact Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                <nav>
         </xpath>
     </template>
 
-    <template id="product_supplements_info" inherit_id="website.layout" priority="1000">
+    <template id="custom_footer" inherit_id="website.layout" priority="1000">
         <xpath expr="//footer" position="replace">
             <footer>
                 <h1>FOOTER HERE</h1>
