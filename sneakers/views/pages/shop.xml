@@ -1,344 +1,747 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <template id="shop_page" name="Sneakers Shop">
+<template id="shop_page" name="Sneakers Shop">
 
-        <t t-call="website.layout">
+<t t-call="website.layout">
 
-            <div class="oe_structure oe_empty"/>
+    <div class="oe_structure oe_empty"/>
 
-            <!-- SHOP BANNER -->
+
+    <!-- SHOP BANNER -->
+
             <section class="sn-shop-banner oe_structure oe_empty">
 
-                <div class="mn-container">
 
-                    <div class="sn-shop-banner__content">
+        <div class="mn-container">
 
-                        <span class="sn-shop-subtitle">
-                            Sneakers Collection
-                        </span>
 
-                        <h1>
-                            Shop All Sneakers
-                        </h1>
+            <div class="sn-shop-banner__content">
 
-                        <p>
-                            Discover our latest collection with premium quality,
-                            modern design and exclusive offers.
-                        </p>
 
-                        <!-- Breadcrumb -->
+                <span class="sn-shop-subtitle">
 
-                        <div class="sn-breadcrumb">
+                    Sneakers Collection
 
-                            <a href="/">Home</a>
+                </span>
 
-                            <span>/</span>
 
-                            <span>Shop</span>
 
-                        </div>
+                <h1>
 
-                    </div>
+                    Shop All Sneakers
+
+                </h1>
+
+
+
+                <p>
+
+                    Discover our latest collection with premium quality,
+                    modern design and exclusive offers.
+
+                </p>
+
+
+
+
+                <!-- Breadcrumb -->
+
+
+                <div class="sn-breadcrumb">
+
+
+                    <a href="/">
+                        Home
+                    </a>
+
+
+                    <span>
+                        /
+                    </span>
+
+
+                    <span>
+                        Shop
+                    </span>
+
+
 
                 </div>
 
-            </section>
 
-            <!-- SHOP CONTENT -->
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+
+
+    <!-- SHOP CONTENT -->
+
+
             <section class="sn-shop oe_structure oe_empty">
 
-                <div class="mn-container">
 
-                    <div class="sn-shop-layout">
+        <div class="mn-container">
 
-                        <aside class="sn-shop-sidebar">
 
-                            <div class="sn-filter-box">
+            <div class="sn-shop-layout">
 
-                                <h3>Categories</h3>
 
-                                <ul class="sn-filter-list">
 
-                                    <li><a href="#">Running</a></li>
 
-                                    <li><a href="#">Basketball</a></li>
 
-                                    <li><a href="#">Lifestyle</a></li>
+                <!-- SIDEBAR -->
 
-                                    <li><a href="#">Training</a></li>
 
-                                    <li><a href="#">Skateboarding</a></li>
+                <aside class="sn-shop-sidebar">
 
-                                    <li><a href="#">Outdoor</a></li>
 
-                                </ul>
 
-                            </div>
+                    <!-- Categories -->
 
-                            <div class="sn-filter-box">
 
-                                <h3>Brands</h3>
+                    <div class="sn-filter-box">
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                        <h3>
+                            Categories
+                        </h3>
 
-                                    Nike
 
-                                </label>
 
-                                <label class="sn-checkbox">
+                        <ul class="sn-filter-list">
 
-                                    <input type="checkbox"/>
 
-                                    Adidas
 
-                                </label>
+                            <t t-foreach="categories" t-as="category">
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                                <li>
 
-                                    Puma
 
-                                </label>
+                                    <a href="#"
+                                       t-att-data-category-id="category.id">
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                                        <t t-out="category.name"/>
 
-                                    New Balance
 
-                                </label>
+                                    </a>
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                                </li>
 
-                                    Converse
 
-                                </label>
 
-                            </div>
+                            </t>
 
-                            <div class="sn-filter-box">
 
-                                <h3>Sizes</h3>
 
-                                <div class="sn-size-list">
+                        </ul>
 
-                                    <button>39</button>
 
-                                    <button>40</button>
 
-                                    <button>41</button>
+                    </div>
 
-                                    <button>42</button>
 
-                                    <button>43</button>
 
-                                    <button>44</button>
 
-                                </div>
 
-                            </div>
+                    <!-- Brands -->
 
-                            <div class="sn-filter-box">
 
-                                <h3>Colors</h3>
+                    <div class="sn-filter-box">
 
-                                <div class="sn-color-list">
 
-                                    <span class="sn-color black"></span>
+                        <h3>
+                            Brands
+                        </h3>
 
-                                    <span class="sn-color white"></span>
 
-                                    <span class="sn-color orange"></span>
 
-                                    <span class="sn-color blue"></span>
+                        <t t-foreach="brands" t-as="brand">
 
-                                    <span class="sn-color red"></span>
 
-                                    <span class="sn-color green"></span>
+                            <label class="sn-checkbox">
 
-                                </div>
 
-                            </div>
+                                <input type="checkbox"
+                                       t-att-value="brand.id"/>
 
-                            <div class="sn-filter-box">
 
-                                <h3>Price</h3>
 
-                                <div class="sn-price-filter">
-                                    <div class="sn-price-labels">
-                                        <span class="sn-price-label-min">$0</span>
-                                        <span class="sn-price-label-max">$500</span>
-                                    </div>
-                                    <div class="sn-price-range-wrap">
-                                        <input type="range" class="sn-price-min"
-                                            min="0" max="500" value="0" step="5"/>
-                                        <input type="range" class="sn-price-slider"
-                                            min="0" max="500" value="500" step="5"/>
-                                    </div>
-                                </div>
+                                <t t-out="brand.name"/>
 
-                            </div>
 
-                            <div class="sn-filter-box">
 
-                                <h3>Availability</h3>
+                            </label>
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
 
-                                    In Stock
+                        </t>
 
-                                </label>
 
-                                <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                    </div>
 
-                                    Out of Stock
 
-                                </label>
 
-                            </div>
 
-                        </aside>
 
-                        <!-- PRODUCTS -->
 
-                        <div class="sn-shop-products">
 
-                            <!-- Sorting Bar -->
+                    <!-- Sizes -->
 
-                            <div class="sn-sorting-bar">
 
-                                <!-- Products Counter -->
+                    <div class="sn-filter-box">
 
-                                <div class="sn-products-count">
 
-                                    <p>
+                        <h3>
+                            Sizes
+                        </h3>
 
-                                        Showing
-                                        <strong>1 - 12</strong>
-                                        of
-                                        <strong>120</strong>
-                                        products
 
-                                    </p>
 
-                                </div>
+                        <div class="sn-size-list">
 
-                                <!-- Actions -->
 
-                                <div class="sn-sorting-actions">
 
-                                    <!-- Sort -->
+                            <t t-foreach="sizes" t-as="size">
 
-                                    <div class="sn-sort-box">
 
-                                        <label for="sort-products">
+                                <button
+                                    t-att-data-size="size.id">
 
-                                            Sort by
 
-                                        </label>
+                                    <t t-out="size.name"/>
 
-                                        <select id="sort-products">
 
-                                            <option value="popular">
+                                </button>
 
-                                                Popularity
 
-                                            </option>
 
-                                            <option value="newest">
+                            </t>
 
-                                                Newest
-
-                                            </option>
-
-                                            <option value="price-low">
-
-                                                Price : Low to High
-
-                                            </option>
-
-                                            <option value="price-high">
-
-                                                Price : High to Low
-
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-                                    <!-- View Mode list -->
-
-                                    <div class="sn-view-mode">
-
-                                        <button
-                                            aria-label="List View">
-
-                                            <i class="fa-solid fa-list"></i>
-
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- Active Filters -->
-
-                            <div class="sn-active-filters">
-
-                                <button class="sn-clear-filters">Clear All</button>
-
-                            </div>
-
-                            <!-- Product Grid -->
-
-                            <div class="sn-product-grid">
-
-                                <t t-foreach="range(12)" t-as="product">
-
-                                    <t t-call="sneakers.product_card"/>
-
-                                </t>
-
-                            </div>
-
-                            <!-- Pagination -->
-
-                            <div class="sn-shop-pagination">
-                                <nav class="sn-pagination">
-                                    <button class="sn-page-btn"><i class="fa fa-chevron-left"></i></button>
-                                    <button class="sn-page-btn active">1</button>
-                                    <button class="sn-page-btn">2</button>
-                                    <button class="sn-page-btn">3</button>
-                                    <span class="sn-pagination-dots">...</span>
-                                    <button class="sn-page-btn">10</button>
-                                    <button class="sn-page-btn"><i class="fa fa-chevron-right"></i></button>
-                                </nav>
-                            </div>
 
 
                         </div>
 
+
+
                     </div>
 
-                </div>
 
-            </section>
+
+
+
+
+
+                    <!-- Colors -->
+
+
+                    <div class="sn-filter-box">
+
+
+                        <h3>
+                            Colors
+                        </h3>
+
+
+
+                        <div class="sn-color-list">
+
+
+
+                            <t t-foreach="colors" t-as="color">
+
+
+                                <span class="sn-color"
+
+
+                                    t-att-title="color.name"
+
+
+                                    t-att-data-color-id="color.id"
+
+
+                                    t-att-style="
+                                    'background-color:%s;%s' % (
+                                        color.html_color,
+                                        'border:1px solid #d1d5db;'
+                                        if color.html_color in [
+                                        '#FFFFFF',
+                                        '#ffffff',
+                                        'white'
+                                        ]
+                                        else ''
+                                    )">
+
+
+                                </span>
+
+
+
+                            </t>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                    <!-- Price -->
+
+
+                    <div class="sn-filter-box">
+
+
+                        <h3>
+                            Price
+                        </h3>
+
+
+
+                        <div class="sn-price-filter">
+
+
+                            <div class="sn-price-labels">
+
+
+                                <span class="sn-price-label-min">
+
+                                    $0
+
+                                </span>
+
+
+
+                                <span class="sn-price-label-max">
+
+                                    $500
+
+                                </span>
+
+
+
+                            </div>
+
+
+
+                            <div class="sn-price-range-wrap">
+
+
+                                <input type="range"
+                                       class="sn-price-min"
+                                       min="0"
+                                       max="500"
+                                       value="0"
+                                       step="5"/>
+
+
+
+                                <input type="range"
+                                       class="sn-price-slider"
+                                       min="0"
+                                       max="500"
+                                       value="500"
+                                       step="5"/>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+                    <!-- Availability -->
+
+
+                    <div class="sn-filter-box">
+
+
+                        <h3>
+                            Availability
+                        </h3>
+
+
+
+                        <label class="sn-checkbox">
+
+
+                            <input type="checkbox"/>
+
+
+                            In Stock
+
+
+                        </label>
+
+
+
+
+                        <label class="sn-checkbox">
+
+
+                            <input type="checkbox"/>
+
+
+                            Out of Stock
+
+
+                        </label>
+
+
+
+                    </div>
+
+
+
+                </aside>
+                                <!-- PRODUCTS -->
+
+
+                <div class="sn-shop-products">
+
+
+
+                    <!-- Sorting Bar -->
+
+
+                    <div class="sn-sorting-bar">
+
+
+
+                        <!-- Products Counter -->
+
+
+                        <div class="sn-products-count">
+
+
+                            <p>
+
+
+                                Showing
+
+
+                                <strong>
+
+                                    <t t-out="len(products)"/>
+
+                                </strong>
+
+
+
+                                products
+
+
+
+                            </p>
+
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <!-- Actions -->
+
+
+                        <div class="sn-sorting-actions">
+
+
+
+
+
+                            <!-- Sort -->
+
+
+                            <div class="sn-sort-box">
+
+
+                                <label for="sort-products">
+
+
+                                    Sort by
+
+
+                                </label>
+
+
+
+                                <select id="sort-products">
+
+
+                                    <option value="popular">
+
+                                        Popularity
+
+                                    </option>
+
+
+
+                                    <option value="newest">
+
+                                        Newest
+
+                                    </option>
+
+
+
+                                    <option value="price-low">
+
+                                        Price : Low to High
+
+                                    </option>
+
+
+
+                                    <option value="price-high">
+
+                                        Price : High to Low
+
+                                    </option>
+
+
+
+                                </select>
+
+
+
+                            </div>
+
+
+
+
+
+
+
+                            <!-- View Mode -->
+
+
+                            <div class="sn-view-mode">
+
+
+                                <button aria-label="List View">
+
+
+                                    <i class="fa-solid fa-list"></i>
+
+
+                                </button>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- Active Filters -->
+
+
+                    <div class="sn-active-filters">
+
+
+                        <button class="sn-clear-filters">
+
+
+                            Clear All
+
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                    <!-- PRODUCT GRID -->
+
+<div class="sn-product-grid">
+
+
+    <t t-foreach="products" t-as="p">
+
+
+        <t t-call="sneakers.product_card">
+
+            <t t-set="product" t-value="p"/>
 
         </t>
 
-    </template>
+
+    </t>
+
+
+</div>
+
+                                        <!-- Pagination -->
+
+
+                    <div class="sn-shop-pagination">
+
+
+                        <nav class="sn-pagination">
+
+
+
+                            <button class="sn-page-btn">
+
+
+                                <i class="fa fa-chevron-left"></i>
+
+
+                            </button>
+
+
+
+
+
+                            <button class="sn-page-btn active">
+
+                                1
+
+                            </button>
+
+
+
+
+
+                            <button class="sn-page-btn">
+
+                                2
+
+                            </button>
+
+
+
+
+
+                            <button class="sn-page-btn">
+
+                                3
+
+                            </button>
+
+
+
+
+
+                            <span class="sn-pagination-dots">
+
+                                ...
+
+                            </span>
+
+
+
+
+
+                            <button class="sn-page-btn">
+
+                                10
+
+                            </button>
+
+
+
+
+
+                            <button class="sn-page-btn">
+
+
+                                <i class="fa fa-chevron-right"></i>
+
+
+                            </button>
+
+
+
+
+
+                        </nav>
+
+
+
+                    </div>
+
+
+
+
+
+                </div>
+                <!-- END sn-shop-products -->
+
+
+
+
+            </div>
+            <!-- END sn-shop-layout -->
+
+
+
+        </div>
+        <!-- END mn-container -->
+
+
+
+    </section>
+    <!-- END sn-shop -->
+
+
+
+</t>
+
+
+</template>
+
 
 </odoo>

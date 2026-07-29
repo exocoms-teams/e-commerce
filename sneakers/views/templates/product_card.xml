@@ -5,40 +5,77 @@
 
         <div class="sn-product-card">
 
+
             <!-- Product Image -->
             <div class="sn-product-image">
 
-                <a href="/product">
 
+                <a t-att-href="'/product/%s' % (product.id if product else product_id)">
+
+
+                    <!-- Badge -->
+                    <t t-if="product">
+                    <t t-if="product.website_published">
+                        <span class="sn-product-badge">New</span>
+                    </t>
+                </t>
+
+                <t t-if="not product and product_badge">
                     <span class="sn-product-badge">
                         <t t-out="product_badge"/>
                     </span>
+                </t>
 
-                    <img
-                        t-att-src="product_image"
-                        t-att-alt="product_name"/>
+
+                    <!-- Main Image -->
+                    <t t-if="product">
+
+                        <img
+                            t-att-src="'/web/image/product.template/%s/image_256' % product.id"
+                            t-att-alt="product.name"/>
+
+                    </t>
+
+                    <t t-if="not product and product_image">
+
+                        <img
+                            t-att-src="product_image"
+                            t-att-alt="product_name"/>
+
+                    </t>
+
 
                 </a>
+
 
                 <!-- Hover Actions -->
                 <div class="sn-product-actions">
 
+
                     <button class="sn-action-btn"
-                        title="Wishlist" 
-                        t-att-data-product-id="product_id" 
-                        aria-pressed="false">
+                            title="Wishlist"
+                             t-att-data-product-id="product.id if product else product_id"
+                            aria-pressed="false">
+
 
                         <i class="fa fa-heart"/>
 
+
                     </button>
-                    
+
+
                 </div>
 
+
             </div>
+
+
 
             <!-- Product Information -->
             <div class="sn-product-info">
 
+
+                <!-- Rating -->
                 <div class="sn-product-rating">
 
                     <i class="fa fa-star"/>
@@ -49,40 +86,81 @@
 
                 </div>
 
+
+
+                <!-- Name -->
                 <h3>
 
-                    <t t-out="product_name"/>
+                    <t t-out="product.name if product else product_name"/>
 
                 </h3>
 
+
+
+                <!-- Price -->
                 <div class="sn-product-price">
+
 
                     <span class="sn-current-price">
 
-                        <t t-out="product_price"/>
+                        $
+                        <t t-if="product">
+                            <t t-out="'%.2f' % product.list_price"/>
+                        </t>
+
+                        <t t-if="not product">
+                            <t t-out="product_price"/>
+                        </t>
 
                     </span>
 
-                    <span class="sn-old-price">
 
-                        <t t-out="product_old_price"/>
 
-                    </span>
+                    <t t-if="product and product.compare_list_price">
+
+                        <span class="sn-old-price">
+
+                            $
+                            <t t-if="product and product.compare_list_price">
+                                ...
+                            </t>
+
+                            <t t-if="not product and product_old_price">
+                                <span class="sn-old-price">
+                                    <t t-out="product_old_price"/>
+                                </span>
+                            </t>
+
+                        </span>
+
+                    </t>
+
 
                 </div>
 
-                <button class="sn-add-cart" 
-                        t-att-data-product-id="product_id"
-                        t-att-data-product-name="product_name"
-                        t-att-data-product-price="product_price"
-                        t-att-data-product-image="product_image">
+
+
+                <!-- Add Cart -->
+                <button class="sn-add-cart"
+
+                        t-att-data-product-id="product.product_variant_id.id if product else product_id"
+                        t-att-data-template-id="product.id if product else product_id"
+                        t-att-data-product-name="product.name if product else product_name"
+                        t-att-data-product-price="product.list_price if product else product_price"
+                        t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image">
+
                     Add to Cart
+
                 </button>
+
 
             </div>
 
+
         </div>
 
+
     </template>
+
 
 </odoo>
