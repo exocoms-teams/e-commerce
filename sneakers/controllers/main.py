@@ -147,9 +147,9 @@ class SneakersController(http.Controller):
     def cart(self, **kwargs):
 
         order = request.cart
-        delivery_installed = _is_module_installed('website_sale_delivery')
+        delivery_installed = _is_module_installed('delivery')
 
-        # Handle delivery method selection
+        delivery_methods = []
         if delivery_installed:
             if request.httprequest.method == 'POST':
                 carrier_id = kwargs.get('carrier_id')
@@ -157,15 +157,17 @@ class SneakersController(http.Controller):
                     carrier = request.env['delivery.carrier'].sudo().browse(int(carrier_id))
                     if carrier.exists():
                         order.sudo().carrier_id = carrier.id
-                        order.sudo()._compute_delivery_price()
-                        order.sudo()._compute_amounts()
 
-            delivery_methods = request.env['delivery.carrier'].sudo().search([
-                ('website_published', '=', True),
-                ('company_id', 'in', [request.env.company.id, False]),
-            ])
-        else:
-            delivery_methods = []
+            try:
+                delivery_methods = request.env['delivery.carrier'].sudo().search([
+                    ('website_published', '=', True),
+                    ('company_id', 'in', [request.env.company.id, False]),
+                ])
+            except Exception:
+                delivery_methods = request.env['delivery.carrier'].sudo().search([
+                    ('company_id', 'in', [request.env.company.id, False]),
+                    ('active', '=', True),
+                ])
 
         values = {
             'order': order,
