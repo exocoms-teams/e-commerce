@@ -1,10 +1,19 @@
 (function () {
 
     var productSection = document.querySelector(".sn-product-details");
-    if (!productSection) return;
+    
+    
+
+    var selectedSizeId = null;
+    var selectedSize = null;
+
+    var selectedColorId = null;
+    var selectedColor = null;
+
+    if (productSection) {
 
     initGallery();
-    
+
     initSizeSelection();
 
     initColorSelection();
@@ -17,6 +26,113 @@
 
     initWishlistToggle();
 
+}
+
+
+// Cards produit
+initAddToCartCards();
+
+function initAddToCartCards() {
+
+    var buttons = document.querySelectorAll(
+        ".sn-product-card .sn-add-cart"
+    );
+
+    buttons.forEach(function(btn){
+
+        btn.addEventListener("click", function(e){
+
+            e.preventDefault();
+
+
+           var productId = this.dataset.productId;
+            var templateId = this.dataset.templateId;
+
+            fetch('/shop/cart/add', {
+
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    jsonrpc: "2.0",
+                    method: "call",
+
+                    params: {
+                        product_id: parseInt(productId),
+    product_template_id: parseInt(templateId),
+    add_qty: 1,
+    quantity: 1
+                    }
+
+                })
+
+            })
+
+            .then(function(response){
+                return response.json();
+            })
+
+            .then(function(data){
+
+
+                
+    if (data.error) {
+
+        console.error(
+            "ODOO ERROR MESSAGE :",
+            data.error.message
+        );
+
+        console.error(
+            "ODOO ERROR DATA :",
+            data.error.data
+        );
+
+        console.error(
+            "ODOO DEBUG :",
+            data.error.data.debug
+        );
+
+        return;
+    }
+
+
+    if(data.result){
+
+        btn.textContent = "✓ Added";
+
+        var badge = document.querySelector(".sn-cart-count");
+
+        if(badge){
+
+            badge.textContent = data.result.cart_quantity;
+            badge.style.display = "flex";
+
+        }
+
+    }
+
+})
+
+            .catch(function(error){
+
+                console.error(
+                    "CARD ADD CART ERROR:",
+                    error
+                );
+
+            });
+
+
+        });
+
+    });
+
+}
     // GALERIE PRODUIT
     function initGallery() {
 
@@ -172,10 +288,10 @@
                 sizeOptions.forEach(function (b) { b.classList.remove("active"); });
                 this.classList.add("active");
 
-                var selectedSize = this.dataset.size || this.textContent.trim();
+                selectedSizeId = Number(this.dataset.sizeId);
 
-                /* BACKEND — Mise à jour prix/stock selon la taille */
-                console.log("[product.js] Taille sélectionnée :", selectedSize);
+                selectedSize = this.dataset.size || this.textContent.trim();
+
             });
         });
     }
@@ -183,23 +299,40 @@
 
     // SÉLECTION COULEUR 
     function initColorSelection() {
-        var colorDots = document.querySelectorAll(".sn-color-options .sn-color-dot");
-        if (!colorDots.length) return;
 
-        colorDots.forEach(function (dot) {
-            dot.addEventListener("click", function () {
-                colorDots.forEach(function (d) { d.classList.remove("active"); });
-                this.classList.add("active");
+    var colorDots = document.querySelectorAll(".sn-color-options .sn-color");
 
-                var selectedColor = this.dataset.color || this.title || "";
-                var colorLabel    = document.querySelector(".sn-selected-color-label");
-                if (colorLabel) colorLabel.textContent = selectedColor;
+    if (!colorDots.length) return;
 
-                /* BACKEND — Changer les images galerie selon couleur */
-                console.log("[product.js] Couleur sélectionnée :", selectedColor);
+
+    colorDots.forEach(function (dot) {
+
+        dot.addEventListener("click", function () {
+
+            colorDots.forEach(function (d) {
+                d.classList.remove("active");
             });
+
+
+            this.classList.add("active");
+
+
+            selectedColorId = Number(this.dataset.colorId);
+
+            selectedColor = this.dataset.color || this.title || "";
+
+            var colorLabel = document.querySelector(".sn-selected-color-label");
+
+            if (colorLabel) {
+                colorLabel.textContent = selectedColor;
+            }
+
+
         });
-    }
+
+    });
+
+}
 
 
     // SÉLECTEUR DE QUANTITÉ
@@ -234,8 +367,13 @@
 
     // AJOUTER AU PANIER depuis la fiche produit (EF-008)
     function initAddToCartProduct() {
-        var addBtn = document.querySelector(".sn-add-to-cart-btn, .sn-btn-add-cart");
-        if (!addBtn) return;
+
+        var addBtn = productSection.querySelector(".sn-add-cart");
+
+
+        if (!addBtn) {
+            return;
+        }
 
         addBtn.addEventListener("click", function (e) {
             e.preventDefault();
@@ -259,68 +397,221 @@
                 return;
             }
 
-            var productId  = addBtn.dataset.productId || "0";
-            var qty        = parseInt(document.querySelector(".sn-qty-input") ?
-                             document.querySelector(".sn-qty-input").value : "1", 10);
-            var sizeVal    = selectedSize ? selectedSize.dataset.size || selectedSize.textContent.trim() : "";
-            var colorVal   = (document.querySelector(".sn-color-dot.active") || {}).dataset
-                             ? document.querySelector(".sn-color-dot.active").dataset.color : "";
+            var productId = addBtn.dataset.productId || "0";
 
-            addToCartFromProduct(productId, qty, sizeVal, colorVal, addBtn);
-        });
-    }
+            var templateId = addBtn.dataset.templateId || "0";
 
-    function addToCartFromProduct(productId, qty, size, color, btn) {
-        var originalText = btn.textContent;
-        btn.textContent  = "Adding...";
-        btn.disabled     = true;
 
-        /* BACKEND — Ajouter au panier Odoo (website_sale) */
+            var qty = parseInt(
+                document.querySelector(".sn-qty-input")
+                ? document.querySelector(".sn-qty-input").value
+                : "1",
+                10
+            );
 
-        setTimeout(function () {
-            btn.textContent = "✓ Added to Cart!";
-            btn.classList.add("sn-btn--success");
 
-            var badge = document.querySelector(".sn-cart-count");
-            if (badge) {
-                badge.textContent = (parseInt(badge.textContent, 10) || 0) + qty;
-                badge.style.display = "flex";
+            if (!selectedSizeId && sizeOptions.length > 0) {
+
+                return;
+
             }
 
-            if (window.snShowToast) window.snShowToast("Produit ajouté au panier !");
 
-            setTimeout(function () {
-                btn.textContent = originalText;
-                btn.disabled    = false;
-                btn.classList.remove("sn-btn--success");
-            }, 2500);
-        }, 700);
-    }
-
-    function initTabs() {
-        var tabBtns   = document.querySelectorAll(".sn-tab-btn");
-        var tabPanels = document.querySelectorAll(".sn-tab-panel");
-        if (!tabBtns.length) return;
-
-        tabBtns.forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                var target = this.dataset.tab;
-
-                tabBtns.forEach(function (b)   { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
-                tabPanels.forEach(function (p)  { p.classList.remove("active"); p.hidden = true; });
-
-                this.classList.add("active");
-                this.setAttribute("aria-selected", "true");
-
-                var panel = document.getElementById("tab-" + target) ||
-                            document.querySelector('[data-tab-panel="' + target + '"]');
-                if (panel) {
-                    panel.classList.add("active");
-                    panel.hidden = false;
-                }
-            });
+            getVariantAndAddCart(
+            templateId,
+            qty,
+            selectedSizeId,
+            selectedColorId,
+            addBtn
+        );
         });
     }
+
+    function getVariantAndAddCart(templateId, qty, sizeId, colorId, btn) {
+
+    fetch('/get-product-variant', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+
+            jsonrpc: "2.0",
+
+            method: "call",
+
+            params: {
+                template_id: templateId,
+                attribute_value_ids: [
+                    parseInt(colorId),
+                    parseInt(sizeId)
+                ]
+            }
+
+        })
+
+    })
+
+    .then(function(response){
+        return response.json();
+    })
+
+    .then(function(data){
+
+       if (!data.result || !data.result.product_id) {
+
+    console.error(
+        "NO VARIANT FOUND",
+        data
+    );
+
+    return;
+
+}
+
+        addToCartFromProduct(
+            data.result.product_id,
+            templateId,
+            qty,
+            btn
+        );
+
+
+    });
+
+}
+
+    function addToCartFromProduct(productId, templateId, qty, btn) {
+
+    var originalText = btn.textContent;
+
+    btn.textContent = "Adding...";
+    btn.disabled = true;
+
+    fetch('/shop/cart/add', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+
+            jsonrpc: "2.0",
+
+            method: "call",
+
+            params: {
+            product_id: parseInt(productId),
+            product_template_id: parseInt(templateId),
+            add_qty: qty,
+            quantity: qty
+            }
+        })
+
+    })
+
+    .then(function(response){
+
+        return response.json();
+
+    })
+
+    .then(function(data){
+
+
+        if (data.error) {
+            console.error(
+                "ODOO ERROR DETAILS :",
+                data.error.data
+            );
+        }
+
+
+        if(data.result){
+
+            btn.textContent = "✓ Added to Cart!";
+
+
+            var badge = document.querySelector(".sn-cart-count");
+
+            if(badge){
+
+                badge.textContent = data.result.cart_quantity;
+
+                badge.style.display = "flex";
+
+            }
+
+        }
+
+
+        btn.disabled = false;
+
+
+    })
+
+    .catch(function(error){
+
+        console.error("ADD CART ERROR :", error);
+
+        btn.textContent = originalText;
+
+        btn.disabled = false;
+
+    });
+
+}
+
+    function initTabs() {
+
+        var tabBtns = document.querySelectorAll(".sn-tabs button");
+        var tabPanels = document.querySelectorAll(".sn-tab-content");
+
+        if (!tabBtns.length || !tabPanels.length) {
+            return;
+        }
+
+
+        tabBtns.forEach(function (btn) {
+
+            btn.addEventListener("click", function () {
+
+            var target = this.dataset.tab;
+
+
+            // Désactiver tous les boutons
+            tabBtns.forEach(function (b) {
+                b.classList.remove("active");
+            });
+
+
+            // Cacher tous les contenus
+            tabPanels.forEach(function (panel) {
+                panel.style.display = "none";
+            });
+
+
+            // Activer le bouton cliqué
+            this.classList.add("active");
+
+
+            // Afficher le contenu correspondant
+            var panel = document.getElementById(target);
+
+            if (panel) {
+                panel.style.display = "block";
+            }
+
+        });
+
+    });
+
+}
 
 
     function initWishlistToggle() {

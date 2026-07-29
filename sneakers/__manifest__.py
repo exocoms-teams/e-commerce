@@ -9,6 +9,10 @@
     'data': [
         'security/ir.model.access.csv',
 
+        'data/product_brand_data.xml',
+        'data/product_category_data.xml',
+        'data/product_demo.xml',
+
         'views/templates/layout.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
