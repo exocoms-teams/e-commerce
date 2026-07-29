@@ -4,144 +4,15 @@ Liste des produits disponibles sur le /shop
 
 Les images des produits sont en .webp
 Voir categories.xml pour plus d'information sur les filtres
-
 -->
-
 
 <odoo>
     <data noupdate="1">
 
-       <!-- ===================== CAMÉRAS DE SURVEILLANCE ===================== -->
-
-        <!-- PRODUIT 1 -->
-        <record id="cam_product_1" model="product.template">
-                <field name="name">AXIS M3905-R Dome Camera</field>
-                <field name="list_price">450.00</field>
-                <field name="type">consu</field>
-                <field name="is_storable">True</field>
-                <field name="is_published">True</field>
-                <field name="website_id" ref="cam_surveillance_website"/>
-                <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam1.webp"/>
-                <field name="description_sale">Caméra dôme de surveillance embarquée pour intérieur, vidéo HDTV 2 MP.</field>
-                <field name="categ_id" ref="cam_dome"/>
-                <field name="public_categ_ids" eval="[(4, ref('public_cam_dome'))]"/>
-                <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('interieur')])]"/>
-                <field name="attribute_line_ids" eval="[
-                        (0, 0, {
-                            'attribute_id': ref('camera_resolution'),
-                            'value_ids': [(6, 0, [ref('camera_resolution_1080p')])]
-                        })
-                    ]"/>
-            </record>
-
-        <!-- PRODUIT 2 -->
-        <record id="cam_product_2" model="product.template">
-            <field name="name">AXIS P9117-PV Corner Camera</field>
-            <field name="list_price">890.00</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam2.webp"/>
-            <field name="description_sale">Caméra d'angle 6 MP sans angle mort, idéale pour les zones sensibles.</field>
-            <field name="categ_id" ref="cam_corner"/>
-            <field name="public_categ_ids" eval="[(4, ref('public_cam_corner'))]"/>
-            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis')])]"/>
-            <field name="attribute_line_ids" eval="[
-                    (0, 0, {
-                        'attribute_id': ref('camera_resolution'),
-                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
-                    })
-                ]"/>
-        </record>
-
-        <!-- PRODUIT 3 -->
-        <record id="cam_product_3" model="product.template">
-            <field name="name">AXIS Q9227-SLV Corner Camera</field>
-            <field name="list_price">1290.00</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam3.webp"/>
-            <field name="description_sale">Caméra 5 MP anti-ligature résistante aux chocs, acier inoxydable.</field>
-            <field name="categ_id" ref="cam_corner"/>
-            <field name="public_categ_ids" eval="[(4, ref('public_cam_corner'))]"/>
-            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('exterieur')])]"/>
-            <field name="attribute_line_ids" eval="[
-                    (0, 0, {
-                        'attribute_id': ref('camera_resolution'),
-                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
-                    })
-                ]"/>
-        </record>
-
-        <!-- PRODUIT 4 -->
-        <record id="cam_product_4" model="product.template">
-            <field name="name">AXIS Q9307-LV Dome Camera</field>
-            <field name="list_price">99.99</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam4.webp"/>
-            <field name="description_sale">Caméra dôme fixe avec vision nocturne et grand angle, idéale en intérieur.</field>
-            <field name="categ_id" ref="cam_dome"/>
-            <field name="public_categ_ids" eval="[(4, ref('public_cam_dome'))]"/>
-            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('interieur'), ref('vision_nocturne')])]"/>
-            <field name="attribute_line_ids" eval="[
-                    (0, 0, {
-                        'attribute_id': ref('camera_resolution'),
-                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
-                    })
-                ]"/>
-        </record>
-
-        <!-- ===================== CONTRÔLE D'ACCÈS ===================== -->
-
-        <!-- PRODUIT 5 -->
-        <record id="cam_product_5" model="product.template">
-            <field name="name">Lecteur de badge RFID</field>
-            <field name="list_price">149.00</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="categ_id" ref="lecteurs_badges"/>
-            <field name="public_categ_ids" eval="[(6, 0, [ref('public_lecteurs_badges')])]"/>
-            <field name="description_sale">Lecteur de badge RFID pour contrôle d'accès, compatible cartes et badges de proximité 13.56 MHz.</field>
-        </record>
-
-        <!-- PRODUIT 6 -->
-        <record id="cam_product_6" model="product.template">
-            <field name="name">Interphone vidéo IP</field>
-            <field name="list_price">329.00</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="categ_id" ref="interphones_video"/>
-            <field name="public_categ_ids" eval="[(6, 0, [ref('public_interphones_video')])]"/>
-            <field name="description_sale">Interphone vidéo IP avec caméra grand angle, audio bidirectionnel et intégration réseau.</field>
-        </record>
-
-        <!-- PRODUIT 7 -->
-        <record id="cam_product_7" model="product.template">
-            <field name="name">Gâche électrique 12V</field>
-            <field name="list_price">79.00</field>
-            <field name="type">consu</field>
-            <field name="is_storable">True</field>
-            <field name="is_published">True</field>
-            <field name="website_id" ref="cam_surveillance_website"/>
-            <field name="categ_id" ref="gache_electrique"/>
-            <field name="public_categ_ids" eval="[(6, 0, [ref('public_gache_electrique')])]"/>
-            <field name="description_sale">Gâche électrique 12V pour portes et portails, compatible avec la plupart des systèmes de contrôle d'accès.</field>
-        </record>
-
         <!-- ===================== STOCKAGE ET ENREGISTREURS ===================== -->
 
         <!-- PRODUIT 8 -->
-        <record id="cam_product_8" model="product.template">
+        <record id="nvr_8" model="product.template">
             <field name="name">Enregistreur NVR 8 voies</field>
             <field name="list_price">399.00</field>
             <field name="type">consu</field>
@@ -160,7 +31,7 @@ Voir categories.xml pour plus d'information sur les filtres
         </record>
 
         <!-- PRODUIT 9 -->
-        <record id="cam_product_9" model="product.template">
+        <record id="disque_4to" model="product.template">
             <field name="name">Disque dur surveillance 4 To</field>
             <field name="list_price">129.00</field>
             <field name="type">consu</field>
@@ -179,7 +50,7 @@ Voir categories.xml pour plus d'information sur les filtres
         </record>
 
         <!-- PRODUIT 10 -->
-        <record id="cam_product_10" model="product.template">
+        <record id="nvr_16" model="product.template">
             <field name="name">Enregistreur NVR 16 voies</field>
             <field name="list_price">699.00</field>
             <field name="type">consu</field>
@@ -194,6 +65,158 @@ Voir categories.xml pour plus d'information sur les filtres
                         'attribute_id': ref('nb_voies_enregistrement'),
                         'value_ids': [(6, 0, [ref('nb_voies_enregistrement_16')])]
                     })
+                ]"/>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('disque_4to'))
+                ]"/>
+        </record>
+
+        <!-- ===================== CONTRÔLE D'ACCÈS ===================== -->
+
+        <!-- PRODUIT 5 -->
+        <record id="lecteur_badge_rfid" model="product.template">
+            <field name="name">Lecteur de badge RFID</field>
+            <field name="list_price">149.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="categ_id" ref="lecteurs_badges"/>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('public_lecteurs_badges')])]"/>
+            <field name="description_sale">Lecteur de badge RFID pour contrôle d'accès, compatible cartes et badges de proximité 13.56 MHz.</field>
+        </record>
+
+        <!-- PRODUIT 6 -->
+        <record id="interphone_video_ip" model="product.template">
+            <field name="name">Interphone vidéo IP</field>
+            <field name="list_price">329.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="categ_id" ref="interphones_video"/>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('public_interphones_video')])]"/>
+            <field name="description_sale">Interphone vidéo IP avec caméra grand angle, audio bidirectionnel et intégration réseau.</field>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('lecteur_badge_rfid'))
+                ]"/>
+        </record>
+
+        <!-- PRODUIT 7 -->
+        <record id="gache_12v" model="product.template">
+            <field name="name">Gâche électrique 12V</field>
+            <field name="list_price">79.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="categ_id" ref="gache_electrique"/>
+            <field name="public_categ_ids" eval="[(6, 0, [ref('public_gache_electrique')])]"/>
+            <field name="description_sale">Gâche électrique 12V pour portes et portails, compatible avec la plupart des systèmes de contrôle d'accès.</field>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('lecteur_badge_rfid')),
+                    (4, ref('interphone_video_ip'))
+                ]"/>
+        </record>
+
+        <!-- ===================== CAMÉRAS DE SURVEILLANCE ===================== -->
+
+        <!-- PRODUIT 1 -->
+        <record id="cam_axis_m3905" model="product.template">
+            <field name="name">AXIS M3905-R Dome Camera</field>
+            <field name="list_price">450.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam1.webp"/>
+            <field name="description_sale">Caméra dôme de surveillance embarquée pour intérieur, vidéo HDTV 2 MP.</field>
+            <field name="categ_id" ref="cam_dome"/>
+            <field name="public_categ_ids" eval="[(4, ref('public_cam_dome'))]"/>
+            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('interieur')])]"/>
+            <field name="attribute_line_ids" eval="[
+                    (0, 0, {
+                        'attribute_id': ref('camera_resolution'),
+                        'value_ids': [(6, 0, [ref('camera_resolution_1080p')])]
+                    })
+                ]"/>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('nvr_8')),
+                    (4, ref('disque_4to'))
+                ]"/>
+        </record>
+
+        <!-- PRODUIT 2 -->
+        <record id="cam_axis_p9117" model="product.template">
+            <field name="name">AXIS P9117-PV Corner Camera</field>
+            <field name="list_price">890.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam2.webp"/>
+            <field name="description_sale">Caméra d'angle 6 MP sans angle mort, idéale pour les zones sensibles.</field>
+            <field name="categ_id" ref="cam_corner"/>
+            <field name="public_categ_ids" eval="[(4, ref('public_cam_corner'))]"/>
+            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis')])]"/>
+            <field name="attribute_line_ids" eval="[
+                    (0, 0, {
+                        'attribute_id': ref('camera_resolution'),
+                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
+                    })
+                ]"/>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('nvr_16')),
+                    (4, ref('disque_4to'))
+                ]"/>
+        </record>
+
+        <!-- PRODUIT 3 -->
+        <record id="cam_axis_Q9227" model="product.template">
+            <field name="name">AXIS Q9227-SLV Corner Camera</field>
+            <field name="list_price">1290.00</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam3.webp"/>
+            <field name="description_sale">Caméra 5 MP anti-ligature résistante aux chocs, acier inoxydable.</field>
+            <field name="categ_id" ref="cam_corner"/>
+            <field name="public_categ_ids" eval="[(4, ref('public_cam_corner'))]"/>
+            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('exterieur')])]"/>
+            <field name="attribute_line_ids" eval="[
+                    (0, 0, {
+                        'attribute_id': ref('camera_resolution'),
+                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
+                    })
+                ]"/>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('nvr_8')),
+                    (4, ref('disque_4to'))
+                ]"/>
+        </record>
+
+        <!-- PRODUIT 4 -->
+        <record id="cam_axis_q9307" model="product.template">
+            <field name="name">AXIS Q9307-LV Dome Camera</field>
+            <field name="list_price">99.99</field>
+            <field name="type">consu</field>
+            <field name="is_storable">True</field>
+            <field name="is_published">True</field>
+            <field name="website_id" ref="cam_surveillance_website"/>
+            <field name="image_1920" type="base64" file="cam_surveillance/static/src/img/cam4.webp"/>
+            <field name="description_sale">Caméra dôme fixe avec vision nocturne et grand angle, idéale en intérieur.</field>
+            <field name="categ_id" ref="cam_dome"/>
+            <field name="public_categ_ids" eval="[(4, ref('public_cam_dome'))]"/>
+            <field name="product_tag_ids" eval="[(6, 0, [ref('brand_axis'), ref('interieur'), ref('vision_nocturne')])]"/>
+            <field name="attribute_line_ids" eval="[
+                    (0, 0, {
+                        'attribute_id': ref('camera_resolution'),
+                        'value_ids': [(6, 0, [ref('camera_resolution_4k')])]
+                    })
+                ]"/>
+            <field name="alternative_product_ids" eval="[
+                    (4, ref('nvr_16'))
                 ]"/>
         </record>
 
