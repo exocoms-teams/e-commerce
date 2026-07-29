@@ -37,8 +37,8 @@
         
         # NOUVEAUX MODULES - Vues website
         'views/website_guide.xml',           # Website guide
-        'views/website_leisure.xml',         # Website loisirs
-        'views/website_rental.xml',          # Website locations
+        # 'views/website_leisure.xml',       # TODO: fichier manquant - a creer (templates travel_agency.website_leisure_list/detail attendus par controllers/main.py)
+        # 'views/website_rental.xml',        # TODO: fichier manquant - a creer (templates travel_agency.website_rental_list/detail attendus par controllers/main.py)
         
         # Menu et rapports
         'views/website_menu.xml',
