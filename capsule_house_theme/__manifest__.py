@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Capsule House Theme',
-    'version': '19.0.1.0.5',
+    'version': '19.0.1.0.6',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
