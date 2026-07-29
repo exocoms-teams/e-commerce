@@ -14,13 +14,34 @@ class CapsuleHouseWebsite(Website):
     contente d'y ajouter du contexte si besoin plus tard). Les autres pages
     (Services, Contact, À propos) seront ajoutées au fur et à mesure.
 
-    Règle de sécurité multi-site : `request.website` est déjà résolu par
-    Odoo selon le domaine HTTP entrant, donc systématiquement NOTRE site
-    (ou un autre site de la base mutualisée si le contrôleur venait à être
-    appelé dans un autre contexte). On ne suppose donc jamais qu'un produit
-    ou une donnée est "à nous" sans filtrer explicitement par
-    `request.website.id`.
+    RÈGLE DE SÉCURITÉ MULTI-SITE CRITIQUE : contrairement aux vues QWeb et
+    aux ir.asset (scopables via website_id), une route HTTP Python héritée
+    comme `homepage()` ci-dessous s'applique à TOUTE la base mutualisée dès
+    lors qu'elle réutilise le même chemin ('/') que le contrôleur natif de
+    `website` — donc à TOUS les ~17 sites de l'instance, pas seulement à
+    Capsule House. `request.website` n'est PAS forcément notre site : c'est
+    le site résolu pour la requête en cours, qui peut être n'importe lequel
+    des sites de la base (le visiteur peut arriver sur le domaine d'un
+    autre site, ou sur l'URL de preview par défaut). Chaque route qui
+    surcharge un comportement existant du contrôleur Website DOIT donc
+    vérifier `_is_our_website()` et retomber sur `super()` sinon — sans
+    quoi elle casse la page d'accueil des 16 autres sites de la base.
     """
+
+    def _is_our_website(self, website):
+        """True seulement si `website` est CELUI créé par ce module.
+
+        Même logique que `_get_website()` dans __init__.py : comparaison
+        stricte à l'id mémorisé dans ir.config_parameter
+        (`capsule_house_theme.website_id`), jamais par nom ni par
+        déduction implicite.
+        """
+        icp = request.env['ir.config_parameter'].sudo()
+        our_id = icp.get_param('capsule_house_theme.website_id')
+        try:
+            return bool(our_id) and int(our_id) == website.id
+        except (TypeError, ValueError):
+            return False
 
     def _serialize_products(self, products):
         """Aplati les product.template en dicts simples pour les templates.
@@ -63,6 +84,12 @@ class CapsuleHouseWebsite(Website):
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def homepage(self, **kwargs):
         website = request.website
+        if not self._is_our_website(website):
+            # Un des ~17 autres sites de la base mutualisée (ou le site
+            # générique de preview) : on ne touche à rien, comportement
+            # natif du module website.
+            return super().homepage(**kwargs)
+
         Product = request.env['product.template'].sudo()
         domain = [
             ('website_id', '=', website.id),
