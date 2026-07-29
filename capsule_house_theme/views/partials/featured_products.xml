@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        "Meilleures ventes" — attend `featured_products`, une liste de dicts
+        déjà aplatis par CapsuleHouseWebsite._serialize_products()
+        (controllers/main.py), elle-même construite à partir de produits
+        filtrés sur request.website.id (voir homepage()).
+
+        Les étoiles ne s'affichent que si rating_count > 0 (vraie donnée,
+        pas de note fabriquée). Le prix barré ne s'affiche que si un vrai
+        compare_list_price existe et dépasse le prix courant. Scopé à
+        notre site via _scope_layout_views() (external id
+        capsule_house_theme.partial_featured_products).
+    -->
+    <template id="partial_featured_products" name="Capsule House - Meilleures ventes">
+        <section class="ch-bestsellers">
+            <div class="container">
+                <div class="ch-bestsellers-head">
+                    <h2 class="ch-section-title">Meilleures ventes</h2>
+                    <a href="/shop" class="ch-see-all">Voir tous les modèles →</a>
+                </div>
+                <div class="ch-bestsellers-grid" t-if="featured_products">
+                    <t t-foreach="featured_products" t-as="item">
+                        <div class="ch-product-card">
+                            <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-img">
+                                <img t-attf-src="/web/image/product.template/#{ item['id'] }/image_512"
+                                     t-att-alt="item['name']"/>
+                            </a>
+                            <div class="ch-product-card-body">
+                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-name" t-esc="item['name']"/>
+                                <span class="ch-product-card-spec" t-if="item['category_name']" t-esc="item['category_name']"/>
+                                <div class="ch-product-card-rating" t-if="item['rating_count']">
+                                    <i class="fa fa-star"/>
+                                    <span t-esc="'(%s)' % item['rating_count']"/>
+                                </div>
+                                <div class="ch-product-card-price-row">
+                                    <span class="ch-product-card-price"
+                                          t-esc="item['price']"
+                                          t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
+                                    <span class="ch-product-card-compare-price" t-if="item['has_discount']"
+                                          t-esc="item['compare_price']"
+                                          t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
+                                </div>
+                            </div>
+                            <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
+                                <i class="fa fa-plus"/>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+                <p t-else="" class="ch-featured-empty">
+                    Les modules Capsule House arrivent très bientôt.
+                </p>
+            </div>
+        </section>
+    </template>
+</odoo>

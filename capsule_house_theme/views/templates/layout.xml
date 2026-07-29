@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Hérite de website.layout (vue GLOBALE partagée par les ~17 sites de
+        la base mutualisée). C'est la vue la plus sensible du module :
+        website_id DOIT être posé sur notre site après installation
+        (_scope_layout_views dans __init__.py, external id
+        capsule_house_theme.theme_layout), sinon ce xpath s'appliquerait au
+        header/footer de TOUS les sites de la base, pas seulement au nôtre.
+    -->
+    <template id="theme_layout" name="Capsule House - Layout" inherit_id="website.layout">
+        <xpath expr="//header[@id='top']" position="replace">
+            <t t-call="capsule_house_theme.theme_header"/>
+        </xpath>
+        <xpath expr="//footer" position="replace">
+            <t t-call="capsule_house_theme.theme_footer"/>
+        </xpath>
+    </template>
+</odoo>

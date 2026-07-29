@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Template autonome (pas d'inherit_id) : il est simplement t-call-é
+        depuis theme_layout. Scopé à notre site via _scope_layout_views()
+        dans __init__.py après installation (external id
+        capsule_house_theme.theme_header) — sans quoi il serait, comme
+        toute vue avec website_id=False, disponible pour tous les sites
+        de la base mutualisée.
+
+        Structure calquée sur la maquette de référence : bandeau d'annonce
+        sombre, logo bicolore, "Tous les pods" en pastille pleine + reste
+        du menu piloté par website.menu (donc par _setup_menus() dans
+        __init__.py — ajouter une catégorie là-bas suffit à l'ajouter ici).
+
+        NB : le texte du bandeau d'annonce ci-dessous ("Livraison &amp;
+        installation offertes...") est repris tel quel de la maquette
+        fournie — à confirmer/ajuster avec le client avant mise en ligne,
+        ce n'est pas une donnée business vérifiée par ce module.
+    -->
+    <template id="theme_header" name="Capsule House - Header">
+        <div class="ch-announce">
+            <div class="container">
+                Livraison &amp; installation offertes dès 25 000 € d'achat — Livraison sous 6 semaines
+            </div>
+        </div>
+        <header id="ch-header" class="ch-header">
+            <div class="ch-header-inner container">
+                <a href="/" class="ch-logo">
+                    <span class="ch-logo-mark"/>
+                    <span class="ch-logo-text">
+                        capsule<br/>
+                        <span class="ch-logo-text-accent">house</span>
+                    </span>
+                </a>
+
+                <nav class="ch-nav" id="chNav">
+                    <a href="/shop" class="ch-nav-pill">Tous les pods</a>
+                    <t t-foreach="request.website.menu_id.child_id.filtered(lambda m: m.url != '/shop').sorted('sequence')" t-as="menu_item">
+                        <t t-if="menu_item.url not in ('/',)">
+                            <a t-att-href="menu_item.url" class="ch-nav-link">
+                                <t t-esc="menu_item.name"/>
+                            </a>
+                        </t>
+                    </t>
+                </nav>
+
+                <div class="ch-header-actions">
+                    <a href="/shop" class="ch-icon-link" title="Rechercher">
+                        <i class="fa fa-search"/>
+                    </a>
+                    <!-- Décoratif pour l'instant : la wishlist nécessite le
+                         module 'website_sale_wishlist' (pas dans depends).
+                         À ajouter aux dépendances si la fonctionnalité est
+                         confirmée côté client. -->
+                    <a href="/shop/wishlist" class="ch-icon-link" title="Mes favoris">
+                        <i class="fa fa-heart-o"/>
+                    </a>
+                    <a href="/shop/cart" class="ch-icon-link ch-cart-link" title="Panier">
+                        <i class="fa fa-shopping-cart"/>
+                        <!-- .my_cart_quantity : classe standard website_sale, mise à
+                             jour automatiquement par son propre JS après un ajout
+                             au panier. Pas de JS custom nécessaire ici. -->
+                        <sup class="my_cart_quantity ch-cart-badge">0</sup>
+                    </a>
+                    <button type="button" class="ch-burger" id="chBurger" aria-expanded="false">
+                        <span/><span/><span/>
+                    </button>
+                </div>
+            </div>
+        </header>
+    </template>
+</odoo>

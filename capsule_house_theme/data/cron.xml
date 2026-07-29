@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            Filet de sécurité horaire, indépendant du versioning des
+            migrations : rejoue toute la logique multi-site du thème
+            (get_or_create site/société, scope des vues, nettoyage strict
+            de démo, menus, publication produits) via
+            capsule.house.theme.maintenance.run(). Idempotent, voir
+            __init__.py / models/maintenance.py.
+        -->
+        <record id="cron_theme_maintenance" model="ir.cron">
+            <field name="name">Capsule House Theme: maintenance horaire</field>
+            <field name="model_id" ref="model_capsule_house_theme_maintenance"/>
+            <field name="state">code</field>
+            <field name="code">model.run()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

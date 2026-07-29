@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Partiel réutilisable (t-call), pas de page à part entière. Scopé à
+        notre site via _scope_layout_views() (external id
+        capsule_house_theme.partial_hero). Structure calquée sur la
+        maquette de référence.
+
+        Attend, fournis par CapsuleHouseWebsite.homepage()
+        (controllers/main.py) :
+        - featured_products (product.template) : utilisés pour les 2
+          cartes flottantes de l'illustration (rien n'est fabriqué : si le
+          catalogue est vide, les cartes ne s'affichent simplement pas).
+        - rating_value / rating_count : lus depuis ir.config_parameter,
+          absents par défaut. La maquette affichait "4.9 · 2 340 avis" en
+          dur ; ce ne sont pas des chiffres vérifiés par ce module, donc le
+          badge reste masqué tant que le client n'a pas renseigné de vrais
+          chiffres (voir README).
+        - published_products_count : vrai comptage (dynamique) de produits
+          publiés sur notre site.
+
+        Les textes marketing statiques ci-dessous (pastilles, réassurance,
+        garantie) sont repris tels quels de la maquette fournie — à
+        confirmer avec le client avant mise en ligne.
+    -->
+    <template id="partial_hero" name="Capsule House - Hero">
+        <section class="ch-hero">
+            <div class="container ch-hero-grid">
+                <div class="ch-hero-content">
+                    <div class="ch-rating-badge" t-if="rating_value">
+                        <i class="fa fa-star"/>
+                        <span t-esc="rating_value"/>
+                        <span class="ch-rating-sep">·</span>
+                        <span t-esc="'%s avis' % rating_count"/>
+                    </div>
+
+                    <h1 class="ch-hero-title">
+                        Le pod design fait pour<br/>
+                        <span class="ch-hero-title-accent">votre terrain</span>
+                    </h1>
+                    <p class="ch-hero-subtitle">
+                        Comparez nos modèles, configurez le vôtre et commandez en
+                        ligne. Livraison, installation et garantie 10 ans incluses.
+                    </p>
+
+                    <form action="/shop" method="get" class="ch-hero-search">
+                        <input type="text" name="search" placeholder="Chercher un modèle, une taille..."/>
+                        <button type="submit" class="ch-btn ch-btn-black">Rechercher</button>
+                    </form>
+
+                    <div class="ch-hero-pills">
+                        <span class="ch-pill">18-40 m²</span>
+                        <span class="ch-pill">Livré en 6 semaines</span>
+                        <span class="ch-pill">Financement possible</span>
+                    </div>
+
+                    <div class="ch-hero-stats">
+                        <div class="ch-hero-stat">
+                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-label">modèles disponibles</span>
+                        </div>
+                        <!-- "pods installés" : métrique commerciale non vérifiée
+                             par ce module, masquée tant qu'elle n'est pas
+                             renseignée (ir.config_parameter). -->
+                        <div class="ch-hero-stat" t-if="units_installed_count">
+                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                            <span class="ch-hero-stat-label">pods installés</span>
+                        </div>
+                        <div class="ch-hero-stat">
+                            <span class="ch-hero-stat-number">10 ans</span>
+                            <span class="ch-hero-stat-label">garantie</span>
+                        </div>
+                    </div>
+
+                    <div class="ch-trust-row">
+                        <span class="ch-trust-item"><i class="fa fa-truck"/> Livraison &amp; installation offertes</span>
+                        <span class="ch-trust-item"><i class="fa fa-shield"/> Garantie constructeur 10 ans</span>
+                        <span class="ch-trust-item"><i class="fa fa-credit-card"/> Paiement sécurisé, 3x sans frais</span>
+                        <span class="ch-trust-item"><i class="fa fa-map-marker"/> Installation partout en France</span>
+                    </div>
+                </div>
+
+                <div class="ch-hero-visual">
+                    <div class="ch-hero-illustration">
+                        <div class="ch-pod-shape">
+                            <div class="ch-pod-circle-main"/>
+                            <div class="ch-pod-circle-small"/>
+                        </div>
+                    </div>
+
+                    <t t-if="featured_products">
+                        <t t-foreach="featured_products[:2]" t-as="hero_product">
+                            <a t-attf-href="/shop/#{ hero_product['url'] }"
+                               t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
+                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">Nouveau</span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Promo</span>
+                                <div class="ch-hero-float-img">
+                                    <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
+                                         t-att-alt="hero_product['name']"/>
+                                </div>
+                                <div class="ch-hero-float-body">
+                                    <span class="ch-hero-float-name" t-esc="hero_product['name']"/>
+                                    <span class="ch-hero-float-price"
+                                          t-esc="hero_product['price']"
+                                          t-options="{'widget': 'monetary', 'display_currency': hero_product['currency']}"/>
+                                </div>
+                            </a>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>

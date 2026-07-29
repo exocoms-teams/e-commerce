@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Personnalisation légère de la page boutique native website_sale
+        (/shop). website_sale.products est une vue GLOBALE partagée par
+        tous les sites de la base mutualisée : website_id DOIT être posé
+        sur notre site après installation (_scope_layout_views dans
+        __init__.py, external id capsule_house_theme.page_shop), sinon ce
+        xpath s'appliquerait à la boutique de TOUS les sites, pas
+        seulement au nôtre.
+
+        NB : la classe CSS ciblée par le xpath ci-dessous
+        ('o_wsale_products_page') correspond à la structure standard
+        website_sale en v16. À vérifier/ajuster après la première
+        installation sur l'instance réelle si la version diffère.
+    -->
+    <template id="page_shop" name="Capsule House - Boutique"
+              inherit_id="website_sale.products" priority="20">
+        <xpath expr="//div[hasclass('o_wsale_products_page')]" position="before">
+            <section class="ch-shop-hero">
+                <div class="container">
+                    <h1 class="ch-shop-hero-title">Nos modules Capsule House</h1>
+                    <p class="ch-shop-hero-subtitle">
+                        Studio, duo ou famille — trouvez le module qui vous
+                        correspond.
+                    </p>
+                </div>
+            </section>
+        </xpath>
+    </template>
+</odoo>

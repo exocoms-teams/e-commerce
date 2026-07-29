@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Idem header.xml : template autonome, scopé à notre site via
+        _scope_layout_views() (external id capsule_house_theme.theme_footer).
+
+        Structure calquée sur la maquette de référence : newsletter,
+        colonne marque + réseaux sociaux (liés aux vrais champs
+        social_* de request.website, masqués si non renseignés — pas de
+        lien '#' factice), colonnes BOUTIQUE / AIDE / ENTREPRISE, badges
+        moyens de paiement, bandeau bas.
+
+        NB : les liens AIDE (Livraison/Retours/Garantie/FAQ) et ENTREPRISE
+        (À propos/Le concept/Contact) pointent vers des pages qui ne sont
+        pas encore livrées (au fur et à mesure, cf. README) — ils
+        renverront un 404 tant que ces pages n'existent pas.
+    -->
+    <template id="theme_footer" name="Capsule House - Footer">
+        <footer class="ch-footer">
+            <div class="container ch-footer-newsletter">
+                <div>
+                    <h3 class="ch-newsletter-title">Restez informé des nouveaux modèles</h3>
+                    <p class="ch-newsletter-sub">Offres, nouveautés et conseils d'installation, une fois par mois.</p>
+                </div>
+                <form action="/newsletter/subscribe" method="post" class="ch-newsletter-form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="email" name="email" placeholder="Votre email" required="required"/>
+                    <button type="submit" class="ch-btn ch-btn-primary">S'inscrire</button>
+                </form>
+            </div>
+
+            <div class="container ch-footer-inner">
+                <div class="ch-footer-col ch-footer-col-brand">
+                    <span class="ch-footer-brand">
+                        capsule<span class="ch-footer-brand-accent">house</span>
+                    </span>
+                    <p class="ch-footer-desc">
+                        La boutique en ligne des pods design, configurables et
+                        livrés partout en France.
+                    </p>
+                    <div class="ch-footer-social">
+                        <a t-if="request.website.social_linkedin" t-att-href="request.website.social_linkedin"
+                           target="_blank" class="ch-footer-social-link" title="LinkedIn">in</a>
+                        <a t-if="request.website.social_instagram" t-att-href="request.website.social_instagram"
+                           target="_blank" class="ch-footer-social-link" title="Instagram">ig</a>
+                        <a t-if="request.website.social_facebook" t-att-href="request.website.social_facebook"
+                           target="_blank" class="ch-footer-social-link" title="Facebook">fb</a>
+                    </div>
+                </div>
+
+                <div class="ch-footer-col">
+                    <h4>Boutique</h4>
+                    <a href="/shop">Tous les pods</a>
+                    <a href="/shop?promotions=1">Promotions</a>
+                </div>
+
+                <div class="ch-footer-col">
+                    <h4>Aide</h4>
+                    <a href="/livraison">Livraison</a>
+                    <a href="/retours">Retours</a>
+                    <a href="/garantie">Garantie</a>
+                    <a href="/faq">FAQ</a>
+                </div>
+
+                <div class="ch-footer-col">
+                    <h4>Entreprise</h4>
+                    <a href="/a-propos">À propos</a>
+                    <a href="/le-concept">Le concept</a>
+                    <a href="/contact">Contact</a>
+                    <div class="ch-footer-payment">
+                        <span class="ch-payment-badge">VISA</span>
+                        <span class="ch-payment-badge">MC</span>
+                        <span class="ch-payment-badge">PAYPAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ch-footer-bottom container">
+                <span>© <t t-esc="datetime.datetime.now().year"/> Capsule House. Tous droits réservés.</span>
+                <div class="ch-footer-legal">
+                    <a href="/mentions-legales">Mentions légales</a>
+                    <a href="/cgv">CGV</a>
+                    <a href="/confidentialite">Confidentialité</a>
+                </div>
+            </div>
+        </footer>
+    </template>
+</odoo>

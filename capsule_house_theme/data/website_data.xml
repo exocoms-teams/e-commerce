@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Volontairement vide de website.menu / website.page statiques.
+
+        Sur cette base mutualisée, un website.menu (ou toute donnée scopée
+        site) créé ici en XML data aurait website_id=False au moment du
+        chargement — le site "Capsule House" n'existe pas encore à ce
+        stade, il est créé dynamiquement par _get_website() dans
+        __init__.py. Un menu avec website_id=False serait rattaché au menu
+        racine générique et pourrait fuiter vers d'autres sites de la base.
+
+        La création du site, de son company_id, de son logo et de son menu
+        (Accueil, Boutique) est donc entièrement gérée par le hook Python
+        (post_init_hook -> run_theme_maintenance -> _get_website /
+        _setup_menus), qui pose website_id explicitement à chaque étape.
+        Voir __init__.py pour le détail.
+    -->
+    <data noupdate="1"/>
+</odoo>
