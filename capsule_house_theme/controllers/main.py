@@ -9,23 +9,27 @@ from odoo.addons.website.controllers.main import Website
 class CapsuleHouseWebsite(Website):
     """Contrôleurs frontend du site Capsule House.
 
-    Pages livrées pour l'instant : Accueil (/) et Boutique (/shop, gérée
-    nativement par website_sale — pas de route custom nécessaire ici, on se
-    contente d'y ajouter du contexte si besoin plus tard). Les autres pages
-    (Services, Contact, À propos) seront ajoutées au fur et à mesure.
+    Pages livrées pour l'instant : Accueil et Boutique (/shop, gérée
+    nativement par website_sale — pas de route custom nécessaire ici). Les
+    autres pages (Services, Contact, À propos) seront ajoutées au fur et à
+    mesure.
 
-    RÈGLE DE SÉCURITÉ MULTI-SITE CRITIQUE : contrairement aux vues QWeb et
-    aux ir.asset (scopables via website_id), une route HTTP Python héritée
-    comme `homepage()` ci-dessous s'applique à TOUTE la base mutualisée dès
-    lors qu'elle réutilise le même chemin ('/') que le contrôleur natif de
-    `website` — donc à TOUS les ~17 sites de l'instance, pas seulement à
-    Capsule House. `request.website` n'est PAS forcément notre site : c'est
-    le site résolu pour la requête en cours, qui peut être n'importe lequel
-    des sites de la base (le visiteur peut arriver sur le domaine d'un
-    autre site, ou sur l'URL de preview par défaut). Chaque route qui
-    surcharge un comportement existant du contrôleur Website DOIT donc
-    vérifier `_is_our_website()` et retomber sur `super()` sinon — sans
-    quoi elle casse la page d'accueil des 16 autres sites de la base.
+    RÈGLE DE SÉCURITÉ MULTI-SITE CRITIQUE, apprise à la dure : une route
+    HTTP Python enregistrée sur le chemin '/' s'applique à TOUTE la base
+    mutualisée (~17 sites), pas seulement à Capsule House — contrairement
+    aux vues QWeb et aux ir.asset, qui eux sont scopables via website_id.
+    Une première version de ce contrôleur surchargeait directement '/' et
+    cassait donc la page d'accueil des 16 autres sites (et tentait
+    d'appeler `super().homepage()`, qui n'existe même pas sur le
+    contrôleur `Website` natif — `AttributeError` en prod).
+
+    La page d'accueil est donc servie sur une route dédiée et unique
+    (`/capsule-house/home`, jamais réutilisée ailleurs dans la base), et
+    c'est le champ natif `website.homepage_url` — déjà scopé par site,
+    aucun risque de fuite — qui indique à Odoo de servir cette route
+    quand un visiteur de NOTRE site demande '/'. Posé par
+    `_setup_homepage()` dans __init__.py. On ne touche donc JAMAIS au
+    routing partagé du contrôleur Website natif.
     """
 
     def _is_our_website(self, website):
@@ -81,14 +85,15 @@ class CapsuleHouseWebsite(Website):
             })
         return items
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/capsule-house/home', type='http', auth='public',
+                website=True, sitemap=False)
     def homepage(self, **kwargs):
         website = request.website
         if not self._is_our_website(website):
-            # Un des ~17 autres sites de la base mutualisée (ou le site
-            # générique de preview) : on ne touche à rien, comportement
-            # natif du module website.
-            return super().homepage(**kwargs)
+            # Route unique à ce module : ne devrait jamais être atteinte
+            # pour un autre site. Filet de sécurité si jamais un admin
+            # pointait par erreur le homepage_url d'un autre site ici.
+            return request.redirect('/')
 
         Product = request.env['product.template'].sudo()
         domain = [
@@ -122,9 +127,13 @@ class CapsuleHouseWebsite(Website):
     def newsletter_subscribe(self, email=None, **kwargs):
         """Inscription newsletter (footer).
 
+        Route neuve (pas de collision possible avec un autre site) : pas
+        besoin de garde `_is_our_website`, elle n'est de toute façon
+        appelée que depuis notre propre template de footer.
+
         'mass_mailing' n'est pas dans les dépendances de ce thème : on
         détecte s'il est installé (mailing.list/mailing.contact
-        disponibles) et on s'en sert si oui : sinon, on retombe sur un
+        disponibles) et on s'en sert si oui, sinon on retombe sur un
         simple mail.mail de notification à l'adresse du site, pour que le
         formulaire reste fonctionnel sans dépendance supplémentaire.
         Idempotent : ne crée pas de doublon de contact pour un même email.
@@ -132,7 +141,7 @@ class CapsuleHouseWebsite(Website):
         email = (email or '').strip()
         website = request.website
         if not email:
-            return request.redirect('/?newsletter=error')
+            return request.redirect('/capsule-house/home?newsletter=error')
 
         env = request.env
         # Registry se comporte comme un Mapping {nom_modele: classe} : c'est
@@ -166,4 +175,4 @@ class CapsuleHouseWebsite(Website):
                 'email_to': website.email or 'contact@capsule-house.fr',
             }).send()
 
-        return request.redirect('/?newsletter=ok')
+        return request.redirect('/capsule-house/home?newsletter=ok')

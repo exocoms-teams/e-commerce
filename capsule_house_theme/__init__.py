@@ -34,6 +34,10 @@ CONFIG_WEBSITE_ID_KEY = 'capsule_house_theme.website_id'
 COMPANY_NAME = 'Exocoms Group'
 WEBSITE_NAME = 'Capsule House'
 WEBSITE_DOMAIN = 'capsule-house.fr'
+# Route dédiée et unique à ce module (jamais '/', qui est partagée par tous
+# les sites de la base mutualisée) : voir _setup_homepage() et le docstring
+# de CapsuleHouseWebsite dans controllers/main.py pour le pourquoi.
+HOMEPAGE_ROUTE = '/capsule-house/home'
 
 THEME_ASSETS = {
     'variables.css': 'capsule_house_theme/static/src/css/variables.css',
@@ -170,6 +174,25 @@ def _set_logo(env, website):
         _logger.exception(
             "capsule_house_theme: échec non bloquant lors de la pose du logo "
             "sur le site id=%s.", website.id,
+        )
+
+
+def _setup_homepage(env, website):
+    """Fait pointer l'accueil de NOTRE site vers notre route dédiée.
+
+    Ne touche JAMAIS à la route '/' elle-même (partagée par tous les sites
+    de la base mutualisée) : on se contente d'écrire le champ natif
+    `website.homepage_url` sur NOTRE enregistrement website, qui est par
+    construction scopé (c'est un champ sur le record `website`, pas une
+    donnée recherchée par domaine). Odoo gère nativement la redirection
+    interne de '/' vers cette URL pour les visiteurs de ce site
+    uniquement. Idempotent : simple write, sans effet si déjà à jour.
+    """
+    if website.homepage_url != HOMEPAGE_ROUTE:
+        website.write({'homepage_url': HOMEPAGE_ROUTE})
+        _logger.info(
+            "capsule_house_theme: homepage_url du site id=%s pointée vers "
+            "%s.", website.id, HOMEPAGE_ROUTE,
         )
 
 
@@ -457,6 +480,7 @@ def run_theme_maintenance(env):
     company = _get_company(env)
     website = _get_website(env, company)
     _set_logo(env, website)
+    _setup_homepage(env, website)
     _setup_theme_assets(env, website)
     _scope_layout_views(env, website)
     _clean_demo_data(env, website)
