@@ -283,18 +283,16 @@
 
                                     <span class="sn-order-shipping">
 
-                                        <t t-if="order and order.carrier_id and hasattr(order, 'delivery_price')">
-                                            $<t t-esc="order.delivery_price"/>
+                                        <t t-if="delivery_price > 0">
+                                            $<t t-esc="delivery_price"/>
                                         </t>
 
                                         <t t-elif="order and order.carrier_id">
-                                            $0.00
+                                            Free
                                         </t>
 
                                         <t t-else="">
-
                                             Not selected
-
                                         </t>
 
 

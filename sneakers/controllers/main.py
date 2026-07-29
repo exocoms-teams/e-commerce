@@ -169,9 +169,17 @@ class SneakersController(http.Controller):
                     ('active', '=', True),
                 ])
 
+        delivery_price = 0
+        if delivery_installed and order and order.carrier_id:
+            try:
+                delivery_price = order.delivery_price
+            except Exception:
+                delivery_price = 0
+
         values = {
             'order': order,
             'delivery_methods': delivery_methods,
+            'delivery_price': delivery_price,
         }
 
         return request.render(
