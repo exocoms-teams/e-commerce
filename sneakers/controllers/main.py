@@ -169,12 +169,14 @@ class SneakersController(http.Controller):
                     ('active', '=', True),
                 ])
 
+        # Compute delivery price safely
         delivery_price = 0
         if delivery_installed and order and order.carrier_id:
             try:
+                order.sudo()._compute_delivery_price()
                 delivery_price = order.delivery_price
             except Exception:
-                delivery_price = 0
+                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
 
         values = {
             'order': order,
