@@ -73,13 +73,60 @@
     }
 
     (function initCartBadge() {
-        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
-        var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
-        var badge = document.querySelector('.sn-cart-count');
-        if (!badge) return;
-        badge.textContent = count;
-        badge.style.display = count > 0 ? 'flex' : 'none';
-    })();
+
+    var badge = document.querySelector('.sn-cart-count');
+
+    if (!badge) return;
+
+
+    fetch('/shop/cart/quantity', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "call",
+            params: {}
+        })
+
+    })
+    .then(function(response){
+
+        return response.json();
+
+    })
+    .then(function(data){
+
+        console.log("ODOO CART QUANTITY :", data);
+
+
+        var quantity = data.result || 0;
+
+
+        if(quantity > 0){
+
+            badge.textContent = quantity;
+            badge.style.display = 'flex';
+
+        }else{
+
+            badge.style.display = 'none';
+
+        }
+
+    })
+    .catch(function(error){
+
+        console.error("CART BADGE ERROR", error);
+
+    });
+
+
+})();
 
     (function initWishlistBadge() {
         var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
@@ -89,50 +136,6 @@
         badge.style.display = wl.length > 0 ? 'flex' : 'none';
     })();
 
-    document.addEventListener("click", function(e) {
-        var btn = e.target.closest(".sn-add-cart");
-        if (!btn) return;
-        e.preventDefault();
-
-        var productId    = btn.dataset.productId    || "0";
-        var productName  = btn.dataset.productName  || "Produit";
-        var productPrice = btn.dataset.productPrice || "0";
-        var productImage = btn.dataset.productImage || "";
-        var qty          = 1;
-
-        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
-        var existing = cart.find(function(i) { return i.productId === productId; });
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            cart.push({
-                productId    : productId,
-                name         : productName,
-                price        : parseFloat(productPrice.replace(/[^0-9.]/g, '')) || 0,
-                image        : productImage,
-                qty          : qty
-            });
-        }
-        localStorage.setItem('sn_cart', JSON.stringify(cart));
-
-        // Badge
-        var count = cart.reduce(function(acc, i) { return acc + i.qty; }, 0);
-        var badge = document.querySelector('.sn-cart-count');
-        if (badge) {
-            badge.textContent = count;
-            badge.style.display = 'flex';
-            badge.classList.remove('sn-cart-count--bump');
-            void badge.offsetWidth;
-            badge.classList.add('sn-cart-count--bump');
-        }
-
-        var orig = btn.textContent;
-        btn.textContent = "✓ Added!";
-        btn.disabled = true;
-        setTimeout(function() { btn.textContent = orig; btn.disabled = false; }, 1800);
-
-        if (window.snShowToast) window.snShowToast("Produit ajouté au panier !");
-    });
     /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
 })();

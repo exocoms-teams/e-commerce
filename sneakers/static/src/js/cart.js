@@ -17,99 +17,18 @@
         if (el) el.textContent = text;
     }
 
-    function getCart() {
-        try { return JSON.parse(localStorage.getItem("sn_cart") || "[]"); }
-        catch (e) { return []; }
-    }
-
-    function saveCart(cart) {
-        localStorage.setItem("sn_cart", JSON.stringify(cart));
-    }
-
-    function getAppliedDiscount() {
-        try { return parseFloat(localStorage.getItem("sn_discount") || "0") || 0; }
-        catch (e) { return 0; }
-    }
-
-    // ================================================
-    // RENDU DES ARTICLES DEPUIS LOCALSTORAGE
-    // ================================================
-
-    function renderCartItems() {
-        var cartItemsWrapper = document.querySelector(".sn-cart-items");
-        if (!cartItemsWrapper) return;
-
-        var cart = getCart();
-
-        cartItemsWrapper.innerHTML = "";
-
-        if (!cart.length) {
-            cartItemsWrapper.innerHTML =
-                '<div class="sn-cart-empty">' +
-                    '<i class="fa fa-shopping-cart"></i>' +
-                    '<h3>Your cart is empty</h3>' +
-                    '<p>Browse our catalog and add your favorite sneakers.</p>' +
-                    '<a href="/shop-sneakers" class="sn-btn-primary">Continue Shopping</a>' +
-                '</div>';
-
-            var summaryCard = document.querySelector(".sn-summary-card");
-            if (summaryCard) summaryCard.style.display = "none";
-
-            var promoCard = document.querySelector(".sn-promo-card");
-            if (promoCard) promoCard.style.display = "none";
-
-            var checkoutBtn = document.querySelector(".sn-checkout-btn");
-            if (checkoutBtn) {
-                checkoutBtn.disabled    = true;
-                checkoutBtn.textContent = "Empty cart";
-            }
-
-            updateOrderSummary(cart);
-            return;
-        }
-
-        // Afficher le summary si caché
-        var summaryCard = document.querySelector(".sn-summary-card");
-        if (summaryCard) summaryCard.style.display = "";
-
-        var promoCard = document.querySelector(".sn-promo-card");
-        if (promoCard) promoCard.style.display = "";
-
-        cart.forEach(function (item) {
-            var article = document.createElement("article");
-            article.className         = "sn-cart-item";
-            article.dataset.productId = item.productId;
-            article.innerHTML =
-                '<div class="sn-cart-image">' +
-                    '<img src="' + (item.image || "") + '" alt="' + item.name + '"/>' +
-                '</div>' +
-                '<div class="sn-cart-info">' +
-                    '<h3>' + item.name + '</h3>' +
-                    '<div class="sn-cart-price">' + formatPrice(item.price) + '</div>' +
-                '</div>' +
-                '<div class="sn-cart-quantity">' +
-                    '<button class="sn-qty-btn" data-action="decrease">-</button>' +
-                    '<input type="number" value="' + item.qty + '" min="1"/>' +
-                    '<button class="sn-qty-btn" data-action="increase">+</button>' +
-                '</div>' +
-                '<div class="sn-cart-total">' + formatPrice(item.price * item.qty) + '</div>' +
-                '<button class="sn-cart-remove" aria-label="Supprimer">' +
-                    '<i class="fa fa-trash"></i>' +
-                '</button>';
-            cartItemsWrapper.appendChild(article);
-        });
-
-        updateOrderSummary(cart);
-    }
 
     // ================================================
     // ORDER SUMMARY — totaux + liste articles sidebar
     // ================================================
 
     function updateOrderSummary(cart) {
+        if (!cart) {
+        cart = [];
+        }
         var subtotal  = cart.reduce(function (acc, i) { return acc + i.price * i.qty; }, 0);
         var shipping  = subtotal > 0 && subtotal >= 100 ? 0 : (subtotal > 0 ? 15 : 0);
-        var discount  = getAppliedDiscount();
+        var discount  = 0;
         var total     = Math.max(0, subtotal - discount + shipping);
         var itemCount = cart.reduce(function (acc, i) { return acc + i.qty; }, 0);
 
@@ -162,8 +81,8 @@
                 qty       : parseInt(input.value, 10) || 1
             });
         });
-        saveCart(cart);
         updateOrderSummary(cart);
+        return cart;
     }
 
     // ================================================
@@ -193,14 +112,44 @@
     }
 
     // ================================================
+// UPDATE CART ODOO BACKEND
+// ================================================
+
+function updateCartBackend(lineId, qty) {
+
+    fetch('/shop/cart/update', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+                line_id: parseInt(lineId),
+                quantity: parseInt(qty)
+            }
+        })
+    })
+    .then(function(response){
+        return response.json();
+    })
+    .catch(function(error){
+
+        console.error("CART UPDATE ERROR :", error);
+
+    });
+
+}
+
+    // ================================================
     // INITIALISATION
     // ================================================
 
     var cartSection = document.querySelector(".sn-cart");
     if (!cartSection) return;
 
-    // Rendre les articles depuis localStorage au chargement
-    renderCartItems();
 
     // ================================================
     // BOUTONS +/- QUANTITÉ
@@ -225,8 +174,16 @@
         }
 
         updateItemTotal(cartItem, input.value);
+        var lineId = cartItem.dataset.lineId;
+
+        updateCartBackend(
+            lineId,
+            input.value
+        );
         syncCartFromDOM();
     });
+
+
 
     // ================================================
     // SAISIE DIRECTE DANS L'INPUT
@@ -242,36 +199,78 @@
         if (isNaN(val) || val < 1) { e.target.value = 1; val = 1; }
 
         updateItemTotal(cartItem, val);
+
+
+        var lineId = cartItem.dataset.lineId;
+        var productId = cartItem.dataset.productId;
+
+        updateCartBackend(
+            lineId,
+            val
+        );
+
+
         syncCartFromDOM();
     });
 
     // ================================================
-    // SUPPRESSION D'UN ARTICLE
-    // ================================================
+// SUPPRESSION D'UN ARTICLE
+// ================================================
 
-    cartSection.addEventListener("click", function (e) {
-        var removeBtn = e.target.closest(".sn-cart-remove");
-        if (!removeBtn) return;
+cartSection.addEventListener("click", function (e) {
 
-        var cartItem = removeBtn.closest(".sn-cart-item");
-        if (!cartItem) return;
+    var removeBtn = e.target.closest(".sn-cart-remove");
 
-        cartItem.style.transition = "opacity 0.3s, transform 0.3s";
-        cartItem.style.opacity    = "0";
-        cartItem.style.transform  = "translateX(40px)";
+    if (!removeBtn) return;
 
-        /* BACKEND — supprimer la ligne dans sale.order */
 
-        setTimeout(function () {
-            cartItem.remove();
-            syncCartFromDOM();
+    var cartItem = removeBtn.closest(".sn-cart-item");
 
-            // Si panier vide après suppression, re-rendre l'état vide
-            if (!cartSection.querySelectorAll(".sn-cart-item").length) {
-                renderCartItems();
-            }
-        }, 300);
-    });
+    if (!cartItem) return;
+
+
+    var lineId = cartItem.dataset.lineId;
+    var productId = cartItem.dataset.productId;
+
+
+    // suppression côté Odoo
+    updateCartBackend(lineId, 0);
+
+
+    cartItem.style.opacity = "0";
+
+
+    setTimeout(function(){
+
+        cartItem.remove();
+
+
+        syncCartFromDOM();
+
+
+        if (!cartSection.querySelector(".sn-cart-item")) {
+
+            document.querySelector(".sn-cart-items").innerHTML =
+            `
+            <div class="sn-cart-empty">
+                <i class="fa fa-shopping-cart"></i>
+                <h3>Your cart is empty</h3>
+                <p>Browse our catalog and add your favorite sneakers.</p>
+                <a href="/shop-sneakers" class="sn-btn-primary">
+                    Continue Shopping
+                </a>
+            </div>
+            `;
+
+
+            updateCartBadge(0);
+
+        }
+
+    },300);
+
+
+});
 
     // ================================================
     // CODE PROMO
@@ -308,19 +307,42 @@
                 return;
             }
 
-            var subtotal    = getCart().reduce(function (acc, i) { return acc + i.price * i.qty; }, 0);
+            var cart = [];
+
+            cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
+
+                var price = parsePrice(
+                    item.querySelector(".sn-cart-price").textContent
+                );
+
+                var qty = parseInt(
+                    item.querySelector("input[type='number']").value,
+                    10
+                ) || 1;
+
+                cart.push({
+                    price: price,
+                    qty: qty
+                });
+
+            });
+
+
+            var subtotal = cart.reduce(function(acc, i){
+                return acc + i.price * i.qty;
+            }, 0);
+
+
             var discountAmt = promo.type === "percent"
                 ? (subtotal * promo.value / 100)
                 : promo.value;
-
-            localStorage.setItem("sn_discount", discountAmt);
-
+            window.sn_discount = discountAmt;
             msgEl.textContent    = promo.msg;
             msgEl.className      = "sn-promo-message sn-promo-message--success";
             promoInput.value     = "";
             promoInput.disabled  = true;
 
-            updateOrderSummary(getCart());
+            updateOrderSummary(syncCartFromDOM());
         }
 
         promoForm.addEventListener("submit", function (e) {
