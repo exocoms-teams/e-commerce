@@ -6,6 +6,22 @@ même instance). Cible **Odoo 19.0** (version du manifest : `19.0.1.0.0`) —
 c'est la version réellement utilisée par cette instance, pas 16.0 comme
 supposé au tout début du projet.
 
+## Passer le domaine en production
+
+Le site est créé SANS `domain` posé automatiquement (`_setup_domain()`
+dans `__init__.py`) : un domaine posé avant que le DNS ne pointe vraiment
+dessus casse le sélecteur de site et la preview dans le backend
+(`DNS_PROBE_FINISHED_NXDOMAIN` en environnement de dev/staging). Une fois
+`capsule-house.fr` réellement configuré en DNS vers cette instance,
+activer :
+
+```
+ir.config_parameter: capsule_house_theme.domain_live = 1
+```
+
+Le prochain passage du hook (cron horaire, ou réinstallation) posera alors
+`website.domain = 'capsule-house.fr'` automatiquement.
+
 ## Périmètre actuel
 
 Pages livrées : **Accueil** (`/`) et **Boutique** (`/shop`, native

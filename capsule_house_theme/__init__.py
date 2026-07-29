@@ -33,11 +33,19 @@ from . import models
 CONFIG_WEBSITE_ID_KEY = 'capsule_house_theme.website_id'
 COMPANY_NAME = 'Exocoms Group'
 WEBSITE_NAME = 'Capsule House'
-WEBSITE_DOMAIN = 'capsule-house.fr'
+
 # Route dédiée et unique à ce module (jamais '/', qui est partagée par tous
 # les sites de la base mutualisée) : voir _setup_homepage() et le docstring
 # de CapsuleHouseWebsite dans controllers/main.py pour le pourquoi.
 HOMEPAGE_ROUTE = '/capsule-house/home'
+
+# Domaine de prod cible. Volontairement PAS posé automatiquement sur le
+# site tant que ir.config_parameter 'capsule_house_theme.domain_live'
+# n'est pas explicitement mis à '1' : voir _setup_domain(). Un domaine posé
+# avant que le DNS ne pointe vraiment dessus casse le sélecteur de site /
+# la preview sur l'environnement de dev-staging (DNS_PROBE_FINISHED_NXDOMAIN).
+WEBSITE_DOMAIN = 'capsule-house.fr'
+CONFIG_DOMAIN_LIVE_KEY = 'capsule_house_theme.domain_live'
 
 THEME_ASSETS = {
     'variables.css': 'capsule_house_theme/static/src/css/variables.css',
@@ -135,7 +143,10 @@ def _get_website(env, company):
     )
     website = Website.create({
         'name': WEBSITE_NAME,
-        'domain': WEBSITE_DOMAIN,
+        # Pas de 'domain' ici : voir _setup_domain(), qui ne le pose que
+        # lorsque le DNS de capsule-house.fr est confirmé en production.
+        # Un domaine posé trop tôt casse le sélecteur de site / la preview
+        # sur l'environnement de dev/staging (DNS_PROBE_FINISHED_NXDOMAIN).
         'company_id': company.id,
     })
     ICP.set_param(CONFIG_WEBSITE_ID_KEY, str(website.id))
@@ -193,6 +204,43 @@ def _setup_homepage(env, website):
         _logger.info(
             "capsule_house_theme: homepage_url du site id=%s pointée vers "
             "%s.", website.id, HOMEPAGE_ROUTE,
+        )
+
+
+def _setup_domain(env, website):
+    """Ne pose `website.domain` que si le DNS est confirmé en production.
+
+    Un `domain` posé sur le site avant que le DNS de capsule-house.fr ne
+    pointe réellement vers cette instance casse le sélecteur de site et la
+    preview dans le backend (Odoo essaie de rediriger vers ce domaine —
+    NXDOMAIN sur un environnement de dev/staging). Ce module ne pose donc
+    le domaine que si `ir.config_parameter`
+    (`capsule_house_theme.domain_live`) vaut explicitement '1' — à activer
+    manuellement le jour où le DNS est confirmé.
+
+    Idempotent et corrige aussi une éventuelle valeur posée par erreur lors
+    d'une version antérieure de ce hook (rejoué par le cron horaire /
+    post-migrate) : si le domaine vaut encore notre valeur par défaut alors
+    que le DNS n'est pas confirmé, on le vide pour restaurer la preview.
+    """
+    domain_live = env['ir.config_parameter'].sudo().get_param(CONFIG_DOMAIN_LIVE_KEY)
+    if domain_live == '1':
+        if website.domain != WEBSITE_DOMAIN:
+            website.write({'domain': WEBSITE_DOMAIN})
+            _logger.info(
+                "capsule_house_theme: domaine %s confirmé (DNS live), posé "
+                "sur le site id=%s.", WEBSITE_DOMAIN, website.id,
+            )
+        return
+
+    if website.domain == WEBSITE_DOMAIN:
+        website.write({'domain': False})
+        _logger.warning(
+            "capsule_house_theme: domaine %s retiré du site id=%s — DNS "
+            "pas confirmé (%s absent/différent de '1'). Sélecteur de "
+            "site/preview restaurés. Mettre ce paramètre à '1' une fois le "
+            "DNS réellement en place.", WEBSITE_DOMAIN, website.id,
+            CONFIG_DOMAIN_LIVE_KEY,
         )
 
 
@@ -481,6 +529,7 @@ def run_theme_maintenance(env):
     website = _get_website(env, company)
     _set_logo(env, website)
     _setup_homepage(env, website)
+    _setup_domain(env, website)
     _setup_theme_assets(env, website)
     _scope_layout_views(env, website)
     _clean_demo_data(env, website)
