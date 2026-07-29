@@ -4,7 +4,7 @@
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale','stock'],
+    'depends': ['website', 'website_sale'],
 
     'data': [
         'security/ir.model.access.csv',
