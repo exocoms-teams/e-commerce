@@ -22,7 +22,7 @@
             var progressLine = document.querySelector(".sn-progress-line");
             if (progressLine && TOTAL_STEPS > 1) {
                 var pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
-                progressLine.style.width = pct + "%";
+                progressLine.style.width = "calc(" + pct + "% * (1 - 55px / 100%) + " + (pct / 100 * 27.5) + "px)";
             }
         });
     }
@@ -42,8 +42,8 @@
                 nextBtn.className   = "sn-btn-primary sn-step-next-btn";
                 nextBtn.type        = "button";
                 nextBtn.textContent = stepNum === TOTAL_STEPS - 1
-                                        ? "Procéder au paiement"
-                                        : "Continuer";
+                                        ? "Proceed to payment"
+                                        : "Continue";
                 card.appendChild(nextBtn);
 
                 nextBtn.addEventListener("click", function () {
@@ -57,7 +57,7 @@
                 var prevBtn = document.createElement("button");
                 prevBtn.className   = "sn-step-prev-btn";
                 prevBtn.type        = "button";
-                prevBtn.textContent = "← Retour";
+                prevBtn.textContent = "← Back";
                 card.insertBefore(prevBtn, card.firstChild);
 
                 prevBtn.addEventListener("click", function () {
@@ -108,7 +108,7 @@
         var btn = document.createElement("button");
         btn.className   = "sn-checkout-btn sn-confirm-order-btn";
         btn.type        = "button";
-        btn.textContent = "Confirmer ma commande";
+        btn.textContent = "Confirm my order";
         var lastCard    = checkoutSection.querySelectorAll(".sn-checkout-card");
         var last        = lastCard[lastCard.length - 1];
         if (last) last.appendChild(btn);

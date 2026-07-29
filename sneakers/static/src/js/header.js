@@ -1,5 +1,22 @@
 (function () {
 
+    (function initCartBadge() {
+        var cart = JSON.parse(localStorage.getItem('sn_cart') || '[]');
+        var count = cart.reduce(function(acc, item) { return acc + (item.qty || 1); }, 0);
+        var badge = document.querySelector('.sn-cart-count');
+        if (!badge) return;
+        badge.textContent = count;
+        badge.style.display = 'flex';
+    })();
+
+    (function initWishlistBadge() {
+        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
+        var badge = document.querySelector('.sn-wishlist-count');
+        if (!badge) return;
+        badge.textContent = wl.length;
+        badge.style.display = 'flex';
+    })();
+
     // HEADER STICKY
     var header = document.querySelector(".sn-header");
 
@@ -72,69 +89,6 @@
         });
     }
 
-    (function initCartBadge() {
-
-    var badge = document.querySelector('.sn-cart-count');
-
-    if (!badge) return;
-
-
-    fetch('/shop/cart/quantity', {
-
-        method: 'POST',
-
-        headers: {
-            'Content-Type': 'application/json',
-        },
-
-        body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "call",
-            params: {}
-        })
-
-    })
-    .then(function(response){
-
-        return response.json();
-
-    })
-    .then(function(data){
-
-        console.log("ODOO CART QUANTITY :", data);
-
-
-        var quantity = data.result || 0;
-
-
-        if(quantity > 0){
-
-            badge.textContent = quantity;
-            badge.style.display = 'flex';
-
-        }else{
-
-            badge.style.display = 'none';
-
-        }
-
-    })
-    .catch(function(error){
-
-        console.error("CART BADGE ERROR", error);
-
-    });
-
-
-})();
-
-    (function initWishlistBadge() {
-        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
-        var badge = document.querySelector('.sn-wishlist-count');
-        if (!badge) return;
-        badge.textContent = wl.length;
-        badge.style.display = wl.length > 0 ? 'flex' : 'none';
-    })();
 
     /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
