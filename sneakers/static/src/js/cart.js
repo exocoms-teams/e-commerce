@@ -262,6 +262,26 @@ cartSection.addEventListener("click", function (e) {
             </div>
             `;
 
+            var summaryCard = document.querySelector(".sn-summary-card");
+            if (summaryCard) summaryCard.style.display = "none";
+
+            var promoCard = document.querySelector(".sn-promo-card");
+            if (promoCard) promoCard.style.display = "none";
+
+            var checkoutBtn = document.querySelector(".sn-checkout-btn");
+            if (checkoutBtn) {
+                checkoutBtn.disabled    = true;
+                checkoutBtn.textContent = "Empty cart";
+            }
+
+            var cartLayout = document.querySelector(".sn-cart-layout");
+            if (cartLayout) cartLayout.style.gridTemplateColumns = "1fr";
+
+            var cartTitle = document.querySelector(".sn-cart-header h2");
+            if (cartTitle) cartTitle.style.display = "none";
+            
+            var cartSubtitle = document.querySelector(".sn-cart-header p");
+            if (cartSubtitle) cartSubtitle.style.display = "none";
 
             updateCartBadge(0);
 
