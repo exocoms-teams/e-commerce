@@ -101,8 +101,7 @@
                                                             'display_currency': website.currency_id,
                                                             
                                                         }"/>
-                                                    <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/>
-</span>
+                                                    <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/></span>
                                                     <span class="cam-btn-sm">Voir</span>
                                                 </div>
                                             </div>
@@ -123,36 +122,13 @@
                                     <p>Large gamme de produits IP à plateforme ouverte AXIS</p>
                                 </div>
                                 <div class="cam-cat-grid">
-                                    <a href="/shop/category/cameras-reseaux-1" class="cam-cat-card">
-                                        <h3>Caméras réseau</h3>
-                                        <p>Innovation, qualité et performance</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/stockage_enregistreurs-2" class="cam-cat-card">
-                                        <h3>Stockage et enregistreurs</h3>
-                                        <p>Solutions cloud, edge et on-site</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/controle_acces-3" class="cam-cat-card cam-cat-featured">
-                                        <h3>Contrôle d'accès</h3>
-                                        <p>Flexible et sécurisé</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/audio_reseau-4" class="cam-cat-card">
-                                        <h3>Audio réseau</h3>
-                                        <p>Le son chic et facile</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/periferiques_radar-5" class="cam-cat-card">
-                                        <h3>Périphériques radar</h3>
-                                        <p>Protection étendue</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
-                                    <a href="/shop/category/accesoires-6" class="cam-cat-card">
-                                        <h3>Accessoires</h3>
-                                        <p>Tout pour compléter vos systèmes</p>
-                                        <span class="cam-cat-link">Voir</span>
-                                    </a>
+                                    <t t-foreach="request.env['product.public.category'].search([('parent_id', '=', False)])" t-as="cat">
+                                        <a t-attf-href="/shop/category/#{slug(cat)}" class="cam-cat-card">
+                                            <h3 t-field="cat.name"/>
+                                            <p>Découvrez notre gamme</p>
+                                            <span class="cam-cat-link">Voir</span>
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
                         </section>
@@ -184,7 +160,50 @@
                                 </div>
                             </div>
                         </section>
+                        <!-- test Avis clients -->
+                        <t t-if="env['ir.module.module'].sudo().search([('name', '=', 'portal_rating'), ('state', '=', 'installed')])">
+                            <section class="cam-reviews-simple py-5">
+                                <div class="cam-container text-center">
+                                    <!-- En-tête avec note globale -->
+                                    <div class="cam-section-header mb-4">
+                                        <h2>Ce que dicen nos clients</h2>
+                                        <div class="cam-global-rating mt-2">
+                                            <span class="cam-rating-stars">
+                                                <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                            </span>
+                                            <span class="cam-rating-text"><strong>4,8/5</strong> — 312 avis vérifiés</span>
+                                        </div>
+                                    </div>
 
+                                    <!-- 3 Témoignages simples -->
+                                    <div class="cam-reviews-grid">
+                                        <div class="cam-review-card">
+                                            <div class="cam-review-stars">
+                                                <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                            </div>
+                                            <p class="cam-review-comment">"Matériel parfait et livraison très rapide."</p>
+                                            <strong>Jean-Marc D.</strong>
+                                        </div>
+
+                                        <div class="cam-review-card">
+                                            <div class="cam-review-stars">
+                                                <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                            </div>
+                                            <p class="cam-review-comment">"Service client réactif et très professionnel."</p>
+                                            <strong>Sophie L.</strong>
+                                        </div>
+
+                                        <div class="cam-review-card">
+                                            <div class="cam-review-stars">
+                                                <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                                            </div>
+                                            <p class="cam-review-comment">"Produits AXIS de qualité, je recommande."</p>
+                                            <strong>Pierre M.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </t>
                     </div>
                 </t>
             </t>
