@@ -8,7 +8,16 @@
     <template id="page_home" name="Capsule House - Accueil">
         <t t-call="website.layout">
             <t t-set="title">Capsule House — Maisons modulaires</t>
-            <div id="wrap" class="ch-home">
+            <!--
+                class="oe_structure" : marque cette zone comme un conteneur de
+                blocs natif Odoo. Sans elle, le panneau "Blocks" du website
+                builder ne propose pas d'insérer/réorganiser des sections ici
+                par glisser-déposer. Les data-oe-* qui permettent la sauvegarde
+                inline (Save natif) sont injectés automatiquement par Odoo au
+                rendu (ir.qweb) pour toute vue réelle comme celle-ci — inutile
+                et risqué de les écrire à la main dans le XML source.
+            -->
+            <div id="wrap" class="ch-home oe_structure">
                 <t t-call="capsule_house_theme.partial_hero"/>
                 <t t-call="capsule_house_theme.partial_featured_products"/>
             </div>
