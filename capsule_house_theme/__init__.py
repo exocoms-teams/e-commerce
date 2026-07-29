@@ -422,6 +422,8 @@ def _setup_menus(env, website, categories):
     # fois le mécanisme de promotion du client confirmé.
     entries.append(('Promotions', '/shop?promotions=1', sequence))
 
+    known_urls = {url for _, url, _ in entries}
+    kept_menu_ids = set()
     for name, url, seq in entries:
         existing = Menu.search([
             ('url', '=', url),
@@ -429,18 +431,38 @@ def _setup_menus(env, website, categories):
         ], limit=1)
         if existing:
             existing.write({'name': name, 'sequence': seq})
+            kept_menu_ids.add(existing.id)
         else:
-            Menu.create({
+            created = Menu.create({
                 'name': name,
                 'url': url,
                 'sequence': seq,
                 'website_id': website.id,
                 'parent_id': website.menu_id.id,
             })
+            kept_menu_ids.add(created.id)
     _logger.info(
         "capsule_house_theme: menu du site id=%s synchronisé (%d entrées).",
         website.id, len(entries),
     )
+
+    # Odoo pré-remplit automatiquement un menu par défaut (ex: "Contact
+    # Us") à la création de tout nouveau site — jamais nettoyé ailleurs.
+    # On retire ici tout enfant DIRECT de notre menu racine qui ne fait pas
+    # partie de notre nav définie ci-dessus, en se limitant strictement aux
+    # menus scopés sur website_id = le nôtre (jamais touché sur un autre
+    # site) et de premier niveau (pas de sous-menus imbriqués par d'autres
+    # modules).
+    stray_menus = website.menu_id.child_id.filtered(
+        lambda m: m.id not in kept_menu_ids and m.url not in known_urls
+    )
+    if stray_menus:
+        _logger.warning(
+            "capsule_house_theme: suppression de %d menu(s) par défaut non "
+            "reconnu(s) sur le site id=%s : %s.",
+            len(stray_menus), website.id, stray_menus.mapped('name'),
+        )
+        stray_menus.unlink()
 
 
 def _setup_shop_filters(env):
