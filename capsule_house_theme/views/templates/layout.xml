@@ -9,6 +9,32 @@
         header/footer de TOUS les sites de la base, pas seulement au nôtre.
     -->
     <template id="theme_layout" name="Capsule House - Layout" inherit_id="website.layout">
+        <xpath expr="//head" position="inside">
+            <!--
+                Filet de secours, indépendant du bundle compilé web.assets_frontend
+                (voir _setup_theme_assets dans __init__.py pour l'enregistrement
+                normal via ir.asset). Diagnostic terrain : le bundle compilé pour
+                CE site contient un @import Google Font mal formé (généré par
+                Odoo lui-même — absent de tout notre code — voir README section
+                "Inspiré du module de référence exocoms_theme" / point de
+                vérification CSS) qui casse le parsing CSS de TOUT le reste du
+                bundle à partir de ce point, y compris nos règles .ch-* pourtant
+                bien enregistrées.
+
+                On charge donc aussi nos 5 fichiers CSS directement en <link>
+                individuels : chacun est un fichier complet et valide en soi,
+                servi tel quel par Odoo (fichier statique du module), donc
+                totalement indépendant du bundle partagé et de son bug — notre
+                thème s'affiche correctement quel que soit l'état de ce bundle.
+                Le paramètre ?v= est la version installée du module (change à
+                chaque bump de version, cf. "À chaque bump de version" du
+                README), pour invalider le cache navigateur à chaque mise à jour.
+            -->
+            <t t-set="ch_theme_version" t-value="request.env['ir.module.module'].sudo().search([('name', '=', 'capsule_house_theme')], limit=1).installed_version or '1'"/>
+            <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css']" t-as="ch_css_file">
+                <link rel="stylesheet" t-attf-href="/capsule_house_theme/static/src/css/#{ch_css_file}?v=#{ch_theme_version}"/>
+            </t>
+        </xpath>
         <xpath expr="//header[@id='top']" position="replace">
             <t t-call="capsule_house_theme.theme_header"/>
         </xpath>
