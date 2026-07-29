@@ -286,14 +286,14 @@
 
                                         <t t-if="order and order.carrier_id">
 
-                                            <t t-esc="order.delivery_price"/>
+                                            $<t t-esc="order.delivery_price"/>
 
                                         </t>
 
 
                                         <t t-else="">
 
-                                            Free
+                                            Not selected
 
                                         </t>
 
@@ -302,6 +302,64 @@
 
 
                                 </div>
+
+
+
+                                <!-- DELIVERY METHOD SELECTOR -->
+
+                                <t t-if="delivery_methods">
+
+                                    <form method="POST" action="/cart" class="sn-delivery-form">
+
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="sn-delivery-options">
+
+                                            <t t-foreach="delivery_methods" t-as="method">
+
+                                                <label class="sn-delivery-option">
+
+                                                    <input type="radio"
+
+                                                           name="carrier_id"
+
+                                                           t-att-value="method.id"
+
+                                                           t-att-checked="order and order.carrier_id and order.carrier_id.id == method.id"
+
+                                                           onchange="this.form.submit()"/>
+
+                                                    <span class="sn-delivery-name">
+
+                                                        <t t-esc="method.name"/>
+
+                                                    </span>
+
+                                                    <span class="sn-delivery-price">
+
+                                                        <t t-if="method.fixed_price &gt; 0">
+
+                                                            $<t t-esc="method.fixed_price"/>
+
+                                                        </t>
+
+                                                        <t t-else="">
+
+                                                            Free
+
+                                                        </t>
+
+                                                    </span>
+
+                                                </label>
+
+                                            </t>
+
+                                        </div>
+
+                                    </form>
+
+                                </t>
 
 
 

@@ -93,6 +93,16 @@ class SneakersController(http.Controller):
             ('product_tmpl_id', '=', product.id)
         ])
 
+        # Stock info
+        stock_qty = product_variant.qty_available if product_variant else 0
+        stock_state = 'in_stock'
+        if product.website_availability == 'never':
+            stock_state = 'hidden'
+        elif product.website_availability == 'threshold':
+            if stock_qty <= 0:
+                stock_state = 'out_of_stock'
+            elif stock_qty <= product.stock_threshold:
+                stock_state = 'low_stock'
 
         values = {
             'product': product,
@@ -102,7 +112,6 @@ class SneakersController(http.Controller):
             'colors': color_ptavs,
             'sizes': size_ptavs,
 
-            # tes autres valeurs
             'review_count': '',
             'reviews': [],
             'product_description': product.description_sale,
@@ -119,6 +128,11 @@ class SneakersController(http.Controller):
                 .value_ids
                 .mapped('name')
             ),
+
+            # Stock
+            'stock_qty': stock_qty,
+            'stock_state': stock_state,
+            'allow_out_of_stock_order': product.allow_out_of_stock_order,
         }
 
 
@@ -127,13 +141,30 @@ class SneakersController(http.Controller):
             values
         )
 
-    @http.route('/cart', type='http', auth='public', website=True)
+    @http.route('/cart', type='http', auth='public', website=True, methods=['GET', 'POST'])
     def cart(self, **kwargs):
 
         order = request.cart
 
+        # Handle delivery method selection
+        if request.httprequest.method == 'POST':
+            carrier_id = kwargs.get('carrier_id')
+            if carrier_id and order:
+                carrier = request.env['delivery.carrier'].sudo().browse(int(carrier_id))
+                if carrier.exists():
+                    order.sudo().carrier_id = carrier.id
+                    order.sudo()._compute_delivery_price()
+                    order.sudo()._compute_amounts()
+
+        # Available delivery methods
+        delivery_methods = request.env['delivery.carrier'].sudo().search([
+            ('website_published', '=', True),
+            ('company_id', 'in', [request.env.company.id, False]),
+        ])
+
         values = {
             'order': order,
+            'delivery_methods': delivery_methods,
         }
 
         return request.render(
