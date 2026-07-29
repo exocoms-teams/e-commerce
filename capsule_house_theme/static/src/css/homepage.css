@@ -13,8 +13,22 @@
 .ch-hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-areas: "hero-text hero-visual";
+    direction: ltr;
     gap: 48px;
     align-items: center;
+}
+
+/* Assignation explicite par nom de zone plutôt que de compter sur le seul
+   ordre du DOM pour le placement automatique de la grille : plus robuste
+   si un style hérité (direction, écriture verticale, etc.) venait à
+   perturber l'auto-placement par défaut de CSS Grid. */
+.ch-hero-content {
+    grid-area: hero-text;
+}
+
+.ch-hero-visual {
+    grid-area: hero-visual;
 }
 
 .ch-hero-title {

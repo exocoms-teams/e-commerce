@@ -51,7 +51,15 @@
                 <div class="ch-footer-col">
                     <h4>Boutique</h4>
                     <a href="/shop">Tous les pods</a>
+                    <a href="/shop?order=create_date desc">Nouveautés</a>
                     <a href="/shop?promotions=1">Promotions</a>
+                    <!-- Lien réel vers la catégorie Accessoires (créée par
+                         _setup_shop_categories dans __init__.py) si elle
+                         existe déjà pour notre site — jamais de lien en dur
+                         vers un id de catégorie qui pourrait ne pas exister
+                         ou appartenir à un autre site. -->
+                    <t t-set="ch_footer_accessoires_cat" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Accessoires'), ('website_id', '=', request.website.id)], limit=1)"/>
+                    <a t-if="ch_footer_accessoires_cat" t-attf-href="/shop/category/#{ch_footer_accessoires_cat.id}">Accessoires</a>
                 </div>
 
                 <div class="ch-footer-col">
