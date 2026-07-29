@@ -1,36 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <template id="custom_header" inherit_id="website.template_header_default">
+    <template id="template_header_supplements" inherit_id="website.layout"
+        name="Supplements Header" active="True">
 
         <xpath expr="//header//nav" position="replace">
-            <nav class="navbar navbar-expand-lg d-none d-lg-block">
+
+            <t t-call="website.navbar">
+                <t t-set="_navbar_classes" t-valuef="shadow-sm bg-white"/>
+
                 <div class="container">
-                    <a href="/">
-                        Desktop Header
-                    </a>
-                    <ul class="nav navbar-nav">
-                        <li class="nav-item">
-                            <a href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/shop">Shop</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/contactus">Contact Us</a>
-                        </li>
-                    </ul>
-                    
-                </div>
-            </nav>
-        </xpath>
-    </template>    
-    <template id="custom_mobile_header" inherit_id="website.template_header_mobile">
 
-        <xpath expr="//header//nav" position="replace">
-            <h1>MOBILE HEADER HERE</h1>
+                    <!-- Logo -->
+                    <t t-call="website.placeholder_header_brand"/>
+
+                    <!-- Menu -->
+                    <t t-call="website.navbar_nav"
+                    _nav_class="me-auto">
+
+                        <t t-foreach="website.menu_id.child_id"
+                        t-as="submenu">
+
+                            <t t-call="website.submenu"
+                            item_class="nav-item"
+                            link_class="nav-link"/>
+
+                        </t>
+
+                    </t>
+
+                    <!-- Right side -->
+                    <ul class="navbar-nav ms-auto align-items-center">
+
+                        <t t-call="website.placeholder_header_search_box"/>
+
+                        <t t-call="website.placeholder_header_language_selector"/>
+
+                        <t t-call="portal.placeholder_user_sign_in"/>
+
+                        <t t-call="portal.user_dropdown"/>
+
+                        <!-- website_sale placeholder -->
+                        <t t-call="website_sale.header_cart_link"/>
+
+                    </ul>
+
+                </div>
+
+            </t>
+
         </xpath>
+
     </template>
+
 
     <template id="custom_footer" inherit_id="website.layout" priority="1000">
         <xpath expr="//footer" position="replace">
