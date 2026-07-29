@@ -40,3 +40,16 @@ class TestDashboardAPI(TransactionCase):
         self.assertEqual(len(result), 5)
         # Les 5 produits retournés doivent être les mieux scorés (6, 5, 4, 3, 2).
         self.assertEqual(result.mapped('current_score'), [6.0, 5.0, 4.0, 3.0, 2.0])
+
+    def test_get_dashboard_products_works_without_sudo_for_freemium_user(self):
+        """group_trend_free implique group_trend_user (lecture) : un compte
+        Freemium doit pouvoir lire trend.product sans AccessError, avec ses
+        propres droits (pas de sudo dans get_dashboard_products)."""
+        free_user = self.env['res.users'].create({
+            'name': 'Freemium Test User',
+            'login': 'freemium_test_user@example.com',
+            'group_ids': [(6, 0, [self.env.ref('produits_tendance.group_trend_free').id])],
+        })
+        api = TrendDashboardAPI(self.env(user=free_user))
+        result = api.get_dashboard_products(limit=5)
+        self.assertEqual(len(result), 5)
