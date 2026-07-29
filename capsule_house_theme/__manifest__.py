@@ -4,24 +4,11 @@
     'version': '19.0.1.0.0',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
-    'description': """
-Capsule House Theme
-====================
-Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté
-sur la base Odoo mutualisée multi-sites (~17 sites sur la même instance).
+    'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
-Ce module ne doit JAMAIS impacter les autres sites de la base partagée :
-- Pas d'assets globaux (`web.assets_frontend`) : le CSS/JS est enregistré
-  dynamiquement via `ir.asset` scopé à notre `website_id` uniquement
-  (voir `_setup_theme_assets` dans `__init__.py`).
-- Tous les hooks retrouvent NOTRE site uniquement via son id, mémorisé dans
-  `ir.config_parameter` (clé `capsule_house_theme.website_id`), jamais par
-  nom (un site homonyme peut déjà exister dans la base partagée).
-- Toute requête sur un modèle scopé site est filtrée explicitement sur
-  `website_id` (et `company_id` exact, jamais de fallback `company_id=False`).
+Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique.
-Pages à venir (au fur et à mesure) : Services, Contact, À propos.
+Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mesure : Services, Contact, À propos.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
