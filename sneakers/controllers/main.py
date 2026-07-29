@@ -2,6 +2,14 @@ from odoo import http
 from odoo.http import request
 
 
+def _is_module_installed(module_name):
+    mod = request.env['ir.module.module'].sudo().search([
+        ('name', '=', module_name),
+        ('state', '=', 'installed'),
+    ], limit=1)
+    return bool(mod)
+
+
 class SneakersController(http.Controller):
 
 
@@ -20,8 +28,6 @@ class SneakersController(http.Controller):
 
         brands = request.env['product.brand'].sudo().search([])
 
-
-        # Récupérer les attributs
         size_attribute = request.env['product.attribute'].sudo().search([
             ('name', '=', 'Size')
         ], limit=1)
@@ -30,28 +36,20 @@ class SneakersController(http.Controller):
             ('name', '=', 'Color')
         ], limit=1)
 
-
         sizes = request.env['product.attribute.value'].sudo().search([
             ('attribute_id', '=', size_attribute.id)
         ]) if size_attribute else []
-
 
         colors = request.env['product.attribute.value'].sudo().search([
             ('attribute_id', '=', color_attribute.id)
         ]) if color_attribute else []
 
         values = {
-
             'products': products,
-
             'categories': categories,
-
             'brands': brands,
-
             'sizes': sizes,
-
             'colors': colors,
-
         }
         return request.render(
             'sneakers.shop_page',
@@ -69,7 +67,6 @@ class SneakersController(http.Controller):
             ('public_categ_ids', 'in', product.public_categ_ids.ids)
         ], limit=4)
 
-
         color_values = product.attribute_line_ids.filtered(
             lambda line: line.attribute_id.name == "Color"
         ).value_ids
@@ -83,7 +80,6 @@ class SneakersController(http.Controller):
             ('product_attribute_value_id', 'in', color_values.ids)
         ])
 
-
         size_ptavs = request.env['product.template.attribute.value'].sudo().search([
             ('product_tmpl_id', '=', product.id),
             ('product_attribute_value_id', 'in', size_values.ids)
@@ -93,16 +89,23 @@ class SneakersController(http.Controller):
             ('product_tmpl_id', '=', product.id)
         ])
 
-        # Stock info
-        stock_qty = product_variant.qty_available if product_variant else 0
-        stock_state = 'in_stock'
-        if product.website_availability == 'never':
-            stock_state = 'hidden'
-        elif product.website_availability == 'threshold':
-            if stock_qty <= 0:
-                stock_state = 'out_of_stock'
-            elif stock_qty <= product.stock_threshold:
-                stock_state = 'low_stock'
+        # Stock info — soft dependency on stock module
+        stock_installed = _is_module_installed('stock')
+        stock_qty = 0
+        stock_state = 'hidden'
+        if stock_installed and product_variant:
+            stock_qty = product_variant.qty_available or 0
+            if product.website_availability == 'always':
+                stock_state = 'in_stock'
+            elif product.website_availability == 'threshold':
+                if stock_qty <= 0:
+                    stock_state = 'out_of_stock'
+                elif stock_qty <= product.stock_threshold:
+                    stock_state = 'low_stock'
+                else:
+                    stock_state = 'in_stock'
+            elif product.website_availability == 'never':
+                stock_state = 'hidden'
 
         values = {
             'product': product,
@@ -135,7 +138,6 @@ class SneakersController(http.Controller):
             'allow_out_of_stock_order': product.allow_out_of_stock_order,
         }
 
-
         return request.render(
             'sneakers.page_product',
             values
@@ -145,22 +147,25 @@ class SneakersController(http.Controller):
     def cart(self, **kwargs):
 
         order = request.cart
+        delivery_installed = _is_module_installed('website_sale_delivery')
 
         # Handle delivery method selection
-        if request.httprequest.method == 'POST':
-            carrier_id = kwargs.get('carrier_id')
-            if carrier_id and order:
-                carrier = request.env['delivery.carrier'].sudo().browse(int(carrier_id))
-                if carrier.exists():
-                    order.sudo().carrier_id = carrier.id
-                    order.sudo()._compute_delivery_price()
-                    order.sudo()._compute_amounts()
+        if delivery_installed:
+            if request.httprequest.method == 'POST':
+                carrier_id = kwargs.get('carrier_id')
+                if carrier_id and order:
+                    carrier = request.env['delivery.carrier'].sudo().browse(int(carrier_id))
+                    if carrier.exists():
+                        order.sudo().carrier_id = carrier.id
+                        order.sudo()._compute_delivery_price()
+                        order.sudo()._compute_amounts()
 
-        # Available delivery methods
-        delivery_methods = request.env['delivery.carrier'].sudo().search([
-            ('website_published', '=', True),
-            ('company_id', 'in', [request.env.company.id, False]),
-        ])
+            delivery_methods = request.env['delivery.carrier'].sudo().search([
+                ('website_published', '=', True),
+                ('company_id', 'in', [request.env.company.id, False]),
+            ])
+        else:
+            delivery_methods = []
 
         values = {
             'order': order,
@@ -195,6 +200,7 @@ class SneakersController(http.Controller):
         return {
             "product_id": False
         }
+
     @http.route('/checkout', type='http', auth='public', website=True, sitemap=True)
     def checkout(self, **kwargs):
         return request.render('sneakers.page_checkout', {})
