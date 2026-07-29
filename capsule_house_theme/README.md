@@ -2,7 +2,9 @@
 
 Thème frontend Odoo pour le site **Capsule House** (société **Exocoms
 Group**), déployé sur une base Odoo mutualisée multi-sites (~17 sites sur la
-même instance).
+même instance). Cible **Odoo 19.0** (version du manifest : `19.0.1.0.0`) —
+c'est la version réellement utilisée par cette instance, pas 16.0 comme
+supposé au tout début du projet.
 
 ## Périmètre actuel
 
@@ -112,7 +114,7 @@ capsule_house_theme/
 ├── security/ir.model.access.csv
 ├── static/src/{css,js,img}
 ├── i18n/en.po
-└── migrations/16.0.1.0.0/post-migrate.py
+└── migrations/19.0.1.0.0/post-migrate.py
 ```
 
 ## À chaque bump de version
@@ -126,6 +128,24 @@ initiale.
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
-(`//div[hasclass('o_wsale_products_page')]`) cible la structure standard de
-`website_sale.products` en v16. À vérifier après la première installation
-sur l'instance réelle et ajuster si la version d'Odoo diffère.
+(`//div[hasclass('o_wsale_products_page')]`) a été écrit d'après la
+structure `website_sale.products` telle que connue à la rédaction de ce
+module ; il n'a pas été vérifié contre le DOM réel généré par cette
+instance Odoo 19. À contrôler à la première installation (inspecter la
+page `/shop` rendue) et ajuster le xpath si la classe a changé entre
+versions.
+
+## Compatibilité de version
+
+Ce module cible **Odoo 19.0**. Deux points à surveiller si l'instance
+change de version majeure un jour :
+- `__manifest__.py` → `version` doit toujours commencer par le numéro de
+  série exact du serveur (`19.0.x.y.z`) : Odoo désactive
+  silencieusement (`installable=False`, sans erreur bloquante) tout module
+  dont le préfixe de version ne correspond pas à la série en cours — c'est
+  ce qui s'est produit une première fois ici avec un manifest resté à
+  `16.0.x`.
+- `post_init_hook` utilise la signature `(env)` (Odoo 17+). Sur une
+  instance antérieure à 17, il faudrait repasser à `(cr, registry)` et
+  reconstruire l'environnement soi-même via `api.Environment(cr,
+  SUPERUSER_ID, {})`.

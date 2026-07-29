@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Capsule House Theme',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """

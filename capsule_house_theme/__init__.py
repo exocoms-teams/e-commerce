@@ -25,8 +25,6 @@ Toute la logique ci-dessous respecte les règles de sécurité multi-site :
 """
 import logging
 
-from odoo import api, SUPERUSER_ID
-
 _logger = logging.getLogger(__name__)
 
 from . import controllers
@@ -473,7 +471,12 @@ def run_theme_maintenance(env):
     return website
 
 
-def post_init_hook(cr, registry):
-    """Hook d'installation Odoo standard (signature cr, registry en v16)."""
-    env = api.Environment(cr, SUPERUSER_ID, {})
+def post_init_hook(env):
+    """Hook d'installation Odoo standard.
+
+    Signature `(env)` : depuis Odoo 17, les hooks pre_init/post_init/
+    uninstall reçoivent directement un `api.Environment`, plus `(cr,
+    registry)` comme avant. Ce module cible Odoo 19 (voir __manifest__.py),
+    d'où cette signature.
+    """
     run_theme_maintenance(env)

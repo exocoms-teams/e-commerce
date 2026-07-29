@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Rejoue run_theme_maintenance() après une mise à jour du module vers la
-version 16.0.1.0.0.
+version 19.0.1.0.0.
 
 IMPORTANT : Odoo ne déclenche `post_init_hook` qu'à l'INSTALLATION initiale
 du module, jamais lors d'une simple mise à jour (-u capsule_house_theme).
@@ -14,6 +14,11 @@ ce dossier sous `migrations/<nouvelle_version>/post-migrate.py` (même
 contenu, il suffit d'appeler run_theme_maintenance). Le cron horaire
 (data/cron.xml) sert de filet de sécurité indépendant en complément, pas en
 remplacement de ce mécanisme.
+
+NB : contrairement à post_init_hook (signature `(env)` depuis Odoo 17), les
+scripts de migration `migrate(cr, version)` gardent la signature `cr` :
+c'est un mécanisme différent (odoo/modules/migration.py), pas affecté par
+le changement de signature des hooks pre/post_init.
 """
 import logging
 
@@ -27,7 +32,7 @@ def migrate(cr, version):
 
     env = api.Environment(cr, SUPERUSER_ID, {})
     _logger.info(
-        "capsule_house_theme: post-migrate 16.0.1.0.0 — rejeu de "
+        "capsule_house_theme: post-migrate 19.0.1.0.0 — rejeu de "
         "run_theme_maintenance()."
     )
     run_theme_maintenance(env)
