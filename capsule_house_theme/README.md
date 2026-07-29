@@ -141,6 +141,26 @@ Dupliquer `migrations/<ancienne_version>/post-migrate.py` sous
 lors d'une mise à jour (`-u capsule_house_theme`), seulement à l'install
 initiale.
 
+## Inspiré du module de référence exocoms_theme
+
+Deux correctifs ajoutés directement grâce à l'historique de bugs déjà
+documenté dans `exocoms_theme` (l'autre thème Exocoms Group sur cette
+même base mutualisée) :
+
+- **`_invalidate_frontend_assets()`** (v19.0.1.0.1) : supprime le/les
+  `ir.attachment` du bundle `web.assets_frontend` compilé pour notre site
+  s'il a été mis en cache de façon incomplète/corrompue (diagnostiqué en
+  conditions réelles : le CSS du thème n'était pas du tout appliqué à
+  l'écran alors qu'il était bien présent, complet, dans une requête brute
+  sur l'URL du bundle). Une seule fois par garde-fou `ir.config_parameter`.
+- **`_attach_shop_filters_to_products()`** (v19.0.1.0.2) : rattache
+  l'attribut filtre 'Surface (m²)' aux produits publiés. Sans cette étape
+  (absente de la première version de ce module), Odoo n'affiche jamais un
+  filtre boutique pour un attribut qui n'est pas porté par au moins un
+  `product.template.attribute_line_ids` — exactement le bug qu'
+  `exocoms_theme` a dû corriger pour ses propres filtres Monétique
+  (`_attach_monetique_attributes_to_products`).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

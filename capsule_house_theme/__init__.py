@@ -31,6 +31,11 @@ from . import controllers
 from . import models
 
 CONFIG_WEBSITE_ID_KEY = 'capsule_house_theme.website_id'
+
+# Garde-fou pour _invalidate_frontend_assets() : ce nettoyage ne doit
+# tourner qu'UNE SEULE FOIS (pas à chaque passage du cron horaire), voir le
+# docstring de cette fonction pour le contexte du bug qu'elle corrige.
+CONFIG_ASSETS_FIX_KEY = 'capsule_house_theme.frontend_assets_regenerated_v1'
 COMPANY_NAME = 'Exocoms Group'
 WEBSITE_NAME = 'Capsule House'
 
@@ -281,6 +286,54 @@ def _setup_theme_assets(env, website):
     )
 
 
+def _invalidate_frontend_assets(env, website):
+    """Force la régénération du bundle web.assets_frontend de NOTRE site.
+
+    Contexte du bug corrigé : diagnostic navigateur (DevTools) confirmé —
+    la balise <link> réelle chargée par la page ne parse que 2 règles CSS
+    (les @import Google Fonts) alors qu'une requête brute sur la même URL
+    renvoie le fichier complet et correct (nos règles .ch-* y sont bien).
+    Signe d'un ir.attachment de bundle compilé une fois de façon
+    incomplète/corrompue (probablement un timeout de compilation SCSS sur
+    l'environnement dev.odoo.com) et resservi tel quel tant que son hash de
+    cache ne change pas — un simple rechargement navigateur ne corrige donc
+    rien, il faut changer le hash côté serveur.
+
+    On supprime les `ir.attachment` du bundle compilé pour NOTRE site
+    uniquement (filtré sur `/web/assets/<website.id>/` ET sur le nom du
+    bundle `web.assets_frontend`) : Odoo les régénère automatiquement,
+    sous un nouveau hash, au prochain chargement de page. Comme ce bundle
+    est mutualisé (~17 sites sur la même base), on ne le fait qu'UNE FOIS
+    (garde via ir.config_parameter) pour ne pas forcer une recompilation en
+    boucle à chaque passage du cron horaire.
+    """
+    ICP = env['ir.config_parameter'].sudo()
+    if ICP.get_param(CONFIG_ASSETS_FIX_KEY) == '1':
+        return
+
+    Attachment = env['ir.attachment'].sudo()
+    stale = Attachment.search([
+        ('url', 'like', '/web/assets/%s/' % website.id),
+        ('url', 'like', 'web.assets_frontend'),
+    ])
+    if stale:
+        _logger.warning(
+            "capsule_house_theme: suppression de %d ir.attachment de bundle "
+            "web.assets_frontend potentiellement corrompu(s) pour le site "
+            "id=%s (%s) — régénération forcée sous un nouveau hash au "
+            "prochain chargement de page.",
+            len(stale), website.id, stale.mapped('name'),
+        )
+        stale.unlink()
+    else:
+        _logger.info(
+            "capsule_house_theme: aucun ir.attachment de bundle "
+            "web.assets_frontend trouvé pour le site id=%s (rien à "
+            "régénérer, ou pas encore compilé).", website.id,
+        )
+    ICP.set_param(CONFIG_ASSETS_FIX_KEY, '1')
+
+
 def _scope_layout_views(env, website):
     """Force website_id sur les vues livrées par ce module.
 
@@ -508,6 +561,74 @@ def _setup_shop_filters(env):
             )
 
 
+def _attach_shop_filters_to_products(env, website):
+    """Rattache l'attribut filtre 'Surface (m²)' aux produits publiés.
+
+    Leçon tirée telle quelle du module de référence exocoms_theme
+    (_attach_monetique_attributes_to_products) : Odoo n'affiche un filtre
+    dans la sidebar boutique QUE pour un attribut effectivement porté par
+    au moins un produit affiché (product.template.attribute_line_ids).
+    _setup_shop_filters() ci-dessus ne crée que le catalogue global
+    (product.attribute / product.attribute.value) — sans ce rattachement,
+    le filtre 'Surface (m²)' resterait invisible côté boutique bien
+    qu'existant en base, exactement le bug documenté et corrigé une
+    première fois dans exocoms_theme.
+
+    Appelée volontairement APRÈS _publish_our_products() dans
+    run_theme_maintenance() : il faut que les produits soient déjà
+    scopés à notre website_id et publiés pour être trouvés ici.
+
+    Idempotent : ne retouche jamais un produit qui a déjà une ligne pour
+    cet attribut (ne réécrase jamais une sélection de valeurs déjà
+    affinée manuellement en backend). Filet de sécurité : ignore tout
+    attribut qui ne serait plus en mode 'no_variant' (cf. le même filet
+    dans _setup_shop_filters) pour ne jamais provoquer une explosion de
+    variantes en le rattachant tel quel.
+    """
+    Attribute = env['product.attribute'].sudo()
+    Product = env['product.template'].sudo()
+    for attr_name in SHOP_FILTER_ATTRIBUTES:
+        attribute = Attribute.search([('name', '=', attr_name)], limit=1)
+        if not attribute or not attribute.value_ids:
+            continue
+        if attribute.create_variant != 'no_variant':
+            _logger.warning(
+                "capsule_house_theme: attribut filtre '%s' pas en mode "
+                "'no_variant' — rattachement aux produits ignoré (voir le "
+                "même garde-fou dans _setup_shop_filters).", attr_name,
+            )
+            continue
+
+        products = Product.search([
+            ('website_id', '=', website.id),
+            ('is_published', '=', True),
+        ])
+        attached = 0
+        for product in products:
+            existing_attr_ids = set(product.attribute_line_ids.mapped('attribute_id').ids)
+            if attribute.id in existing_attr_ids:
+                continue
+            product.write({'attribute_line_ids': [
+                (0, 0, {
+                    'attribute_id': attribute.id,
+                    'value_ids': [(6, 0, attribute.value_ids.ids)],
+                }),
+            ]})
+            attached += 1
+        if attached:
+            _logger.info(
+                "capsule_house_theme: attribut filtre '%s' rattaché à %d "
+                "produit(s) du site id=%s (filtre désormais visible côté "
+                "boutique).", attr_name, attached, website.id,
+            )
+        else:
+            _logger.info(
+                "capsule_house_theme: attribut filtre '%s' déjà rattaché à "
+                "tous les produits pertinents du site id=%s (rien à faire).",
+                attr_name, website.id,
+            )
+
+
 def _publish_our_products(env, website, company):
     """Publie sur NOTRE site les produits de NOTRE société uniquement.
 
@@ -553,12 +674,14 @@ def run_theme_maintenance(env):
     _setup_homepage(env, website)
     _setup_domain(env, website)
     _setup_theme_assets(env, website)
+    _invalidate_frontend_assets(env, website)
     _scope_layout_views(env, website)
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)
     _setup_menus(env, website, categories)
     _setup_shop_filters(env)
     _publish_our_products(env, website, company)
+    _attach_shop_filters_to_products(env, website)
     _logger.info(
         "capsule_house_theme: run_theme_maintenance terminé (website_id=%s, "
         "company_id=%s).", website.id, company.id,
