@@ -161,6 +161,33 @@ même base mutualisée) :
   `exocoms_theme` a dû corriger pour ses propres filtres Monétique
   (`_attach_monetique_attributes_to_products`).
 
+### Bug CSS "le style ne s'applique pas" — cause racine réelle (v19.0.1.0.5)
+
+`_invalidate_frontend_assets()` (ci-dessus) partait d'un diagnostic
+incomplet. La vraie cause, confirmée en conditions réelles en comparant
+le bundle compilé de notre site à celui d'un autre site de la base
+mutualisée : `variables.css` chargeait Google Fonts via `@import
+url('...css2?family=Inter:wght@400;500;600;700;800;900...')` — la
+syntaxe "poids variable" de l'API css2 utilise des **points-virgules à
+l'intérieur même de l'URL**. Le minifieur CSS d'Odoo scanne le fichier
+de façon naïve et coupe la règle `@import` au premier `;` rencontré, y
+compris ceux dans l'URL, produisant un `@import` tronqué (sans guillemet
+ni parenthèse fermante) qui cassait le parsing de TOUT ce qui suit dans
+le bundle partagé — pas seulement nos règles `.ch-*`, mais aussi
+Bootstrap et le CSS natif Odoo pour ce site entier.
+
+Corrigé à la source : `variables.css` utilise désormais la syntaxe
+historique (virgules, sans point-virgule dans l'URL), qui se compile et
+se parse correctement. Le contournement `<link>` direct dans
+`views/templates/layout.xml` (ajouté en 19.0.1.0.3, avant que la vraie
+cause soit identifiée) reste en place par sécurité, en plus de l'`ir.asset`
+normal.
+
+**Leçon pour tout futur `@import` ajouté à ce thème** : ne jamais utiliser
+la syntaxe css2 à poids variable avec point-virgule dans l'URL
+(`wght@400;700`) — toujours la syntaxe historique par virgules
+(`family=Police:400,700`), plus sûre vis-à-vis du minifieur d'Odoo.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

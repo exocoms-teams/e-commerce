@@ -7,7 +7,20 @@
    les autres sites de la base mutualisée.
 ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/* CORRECTIF MAJEUR (diagnostic terrain) : l'ancien @import ci-dessous
+   utilisait la syntaxe css2 à poids variable avec des POINTS-VIRGULES à
+   l'intérieur de l'URL (wght@400;500;600;700;800;900) — hors, le
+   minifieur CSS d'Odoo scanne le fichier de façon naïve et coupe la
+   règle @import au premier ';' rencontré, y compris ceux DANS l'URL.
+   Résultat confirmé en conditions réelles : le bundle compilé
+   web.assets_frontend contenait un @import tronqué juste après "wght@400"
+   (sans guillemet ni parenthèse fermante), ce qui cassait le parsing CSS
+   de TOUT ce qui suit dans le bundle partagé — pas seulement nos règles
+   .ch-*, mais aussi Bootstrap et le CSS natif Odoo pour ce site.
+   Remplacé par la syntaxe historique (virgules, sans point-virgule dans
+   l'URL) qui, elle, se compile et se parse correctement — vérifié sur le
+   bundle réel après ce correctif. */
+@import url('https://fonts.googleapis.com/css?family=Inter:400,500,600,700,800,900&display=swap');
 
 :root {
     /* Couleurs officielles (:root de la maquette) */

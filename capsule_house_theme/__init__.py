@@ -58,6 +58,7 @@ THEME_ASSETS = {
     'layout.css': 'capsule_house_theme/static/src/css/layout.css',
     'homepage.css': 'capsule_house_theme/static/src/css/homepage.css',
     'shop.css': 'capsule_house_theme/static/src/css/shop.css',
+    'odoo-integration.css': 'capsule_house_theme/static/src/css/odoo-integration.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
 }
 

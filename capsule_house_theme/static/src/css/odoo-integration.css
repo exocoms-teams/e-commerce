@@ -1,0 +1,253 @@
+/* ============================================================
+   INTÉGRATION ODOO NATIF — pages/éléments non custom du thème
+   ============================================================
+   Contrairement à shop.css (page /shop, notre bannière + la grille
+   produits), ce fichier couvre tout ce qui reste 100% natif Odoo mais
+   que le thème doit quand même harmoniser visuellement : en-tête de
+   grille boutique (recherche/tri/filtre prix), fiche produit, panier,
+   checkout, formulaires, alertes, badges/notes/avis. Inspiré du même
+   fichier (odoo-integration.css) du module de référence exocoms_theme,
+   adapté à nos propres variables (--ch-*) et à notre palette.
+
+   Règle inchangée : rien ici n'est dans web.assets_frontend global —
+   fichier enregistré via ir.asset scopé website_id (_setup_theme_assets
+   dans __init__.py), donc appliqué uniquement sur le site Capsule House.
+============================================================ */
+
+/* ========================================
+   EN-TÊTE GRILLE BOUTIQUE — recherche / tri / filtre prix
+   ======================================== */
+
+#o_wsale_products_header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.o_wsale_products_header_search_form_container input,
+#o_wsale_products_header input[type="text"] {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    padding: 8px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+}
+
+.o_wsale_products_header_search_form_container button,
+#o_wsale_products_header form button {
+    background: var(--ch-ink);
+    color: var(--ch-white);
+    border: none;
+    border-radius: var(--r-md);
+    padding: 8px 16px;
+    font-weight: 600;
+}
+
+.o_wsale_products_price_filter {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    padding: 6px 12px;
+    background: var(--ch-white);
+}
+
+.o_wsale_products_sort .dropdown-toggle,
+.o_wsale_products_sort .btn {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    color: var(--ch-ink);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* ========================================
+   FICHE PRODUIT — badges / prix / note
+   ======================================== */
+
+.product_ribbon {
+    border-radius: var(--r-sm);
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+.product_ribbon.sale { background: var(--ch-terracotta); color: var(--ch-white); }
+.product_ribbon.new { background: var(--ch-green); color: var(--ch-white); }
+.product_ribbon.out_of_stock { background: var(--ch-fog); color: var(--ch-white); }
+
+.o_product_price .oe_currency_value,
+.product_price .oe_currency_value {
+    color: var(--ch-ink);
+    font-family: var(--font-head);
+    font-weight: 800;
+}
+
+.o_wsale_product_information .o_reviews_rating i,
+.product-rating i,
+.o_portal_chatter_rating_stars i {
+    color: var(--ch-amber);
+}
+
+/* Boutons ajout panier / wishlist / comparaison — cohérents avec ch-btn-* */
+a.btn-primary.o_add_to_cart_btn,
+.o_wsale_product_btn .btn-primary,
+#add_to_cart,
+#products_grid .btn-primary {
+    background: var(--ch-ink) !important;
+    border-color: var(--ch-ink) !important;
+    border-radius: var(--r-pill) !important;
+    font-family: var(--font-body) !important;
+    font-weight: 600 !important;
+}
+a.btn-primary.o_add_to_cart_btn:hover,
+.o_wsale_product_btn .btn-primary:hover,
+#add_to_cart:hover {
+    background: var(--ch-terracotta) !important;
+    border-color: var(--ch-terracotta) !important;
+}
+
+.o_wsale_compare,
+.o_add_wishlist_dyn,
+a.o_wish_add,
+a.o_wish_rm {
+    color: var(--ch-ink);
+    border-color: var(--ch-gray-border);
+    border-radius: var(--r-pill);
+    background: var(--ch-white);
+}
+.o_wsale_compare:hover,
+.o_add_wishlist_dyn:hover {
+    color: var(--ch-terracotta);
+    border-color: var(--ch-terracotta);
+}
+
+/* ========================================
+   PANIER (/shop/cart)
+   ======================================== */
+
+.oe_website_sale .table thead,
+#cart_products thead {
+    background: var(--ch-ink);
+    color: var(--ch-white);
+}
+.oe_website_sale .table thead th {
+    border: none;
+    font-weight: 600;
+}
+.oe_website_sale .table tbody td {
+    vertical-align: middle;
+    border-color: var(--ch-gray-border);
+}
+.oe_website_sale .table tbody tr:hover {
+    background: var(--ch-bg-soft);
+}
+.oe_website_sale input[type="number"] {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-sm);
+    max-width: 80px;
+}
+
+/* ========================================
+   CHECKOUT (/shop/checkout, /shop/payment)
+   ======================================== */
+
+.o_wizard,
+#wizard_step_addresses,
+#wizard_step_payment {
+    font-family: var(--font-body);
+}
+.checkout_autoformat .card,
+.oe_cart .card {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+}
+.checkout_step_title,
+.card-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--ch-ink);
+}
+#o_payment_form .o_payment_option_card {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+}
+#o_payment_form .o_payment_option_card.o_payment_option_selected {
+    border-color: var(--ch-terracotta);
+    box-shadow: 0 0 0 2px rgba(193, 105, 79, 0.15);
+}
+
+/* ========================================
+   FORMULAIRES NATIFS (contact, newsletter native, portail)
+   ======================================== */
+
+.oe_website_sale .form-control,
+.o_portal_wrap .form-control,
+form.s_website_form .form-control {
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    font-family: var(--font-body);
+}
+.oe_website_sale .form-control:focus,
+.o_portal_wrap .form-control:focus,
+form.s_website_form .form-control:focus {
+    border-color: var(--ch-terracotta);
+    box-shadow: 0 0 0 3px rgba(193, 105, 79, 0.12);
+}
+.form-check-input:checked {
+    background-color: var(--ch-terracotta);
+    border-color: var(--ch-terracotta);
+}
+
+/* ========================================
+   ALERTES (messages panier/checkout/portail)
+   ======================================== */
+
+.alert {
+    border-radius: var(--r-md);
+    border-left: 4px solid;
+    font-family: var(--font-body);
+}
+.alert-info { border-color: #3B82F6; }
+.alert-success { border-color: var(--ch-green); }
+.alert-warning { border-color: var(--ch-amber); }
+.alert-danger { border-color: var(--ch-terracotta); }
+
+/* ========================================
+   PORTAIL CLIENT (/my/*) — Mes commandes, Mon compte
+   ======================================== */
+
+.o_portal_wrap h1,
+.o_portal_wrap h2,
+.o_portal_wrap h3 {
+    font-family: var(--font-head);
+    color: var(--ch-ink);
+}
+.o_portal_wrap .btn-primary {
+    background: var(--ch-ink);
+    border-color: var(--ch-ink);
+    border-radius: var(--r-pill);
+}
+.o_portal_wrap .btn-primary:hover {
+    background: var(--ch-terracotta);
+    border-color: var(--ch-terracotta);
+}
+.o_portal_wrap .table thead {
+    background: var(--ch-panel);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    #o_wsale_products_header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .o_wsale_products_price_filter {
+        width: 100%;
+    }
+}
