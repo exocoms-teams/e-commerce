@@ -5,7 +5,7 @@ class TravelReservationPassenger(models.Model):
     _name = 'travel.reservation.passenger'
     _description = 'Travel Reservation Passenger'
 
-    reservation_id = fields.Many2one('travel.reservation', string='Reservation',
+    reservation_id = fields.Many2one('travel.reservation', string='Réservation',
                                       required=True, ondelete='cascade')
     prenom = fields.Char(string='Prénom', required=True)
     nom = fields.Char(string='Nom', required=True)

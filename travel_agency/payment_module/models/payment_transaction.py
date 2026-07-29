@@ -4,24 +4,24 @@ class TravelPaymentTransaction(models.Model):
     _name = 'travel.payment.transaction'
     _description = 'Travel Payment Transaction'
 
-    name = fields.Char(string='Transaction Reference', required=True, default='New')
-    reservation_id = fields.Many2one('travel.reservation', string='Reservation')
-    provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider')
-    amount = fields.Float(string='Amount', related='reservation_id.prix_total', store=True)
+    name = fields.Char(string='Référence transaction', required=True, default='New')
+    reservation_id = fields.Many2one('travel.reservation', string='Réservation')
+    provider_id = fields.Many2one('travel.payment.provider', string='Prestataire de paiement')
+    amount = fields.Float(string='Montant', related='reservation_id.prix_total', store=True)
     commission = fields.Float(string='Commission', related='reservation_id.commission_amount', store=True)
     currency = fields.Selection([
         ('EUR', 'Euro €'),
         ('USD', 'Dollar $'),
         ('DZD', 'Dinar DZD'),
-    ], string='Currency', default='EUR')
+    ], string='Devise', default='EUR')
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('pending', 'Pending'),
-        ('done', 'Done'),
-        ('failed', 'Failed'),
-        ('cancelled', 'Cancelled'),
-    ], string='Status', default='draft')
-    date_transaction = fields.Datetime(string='Transaction Date')
+        ('draft', 'Brouillon'),
+        ('pending', 'En attente'),
+        ('done', 'Terminé'),
+        ('failed', 'Échoué'),
+        ('cancelled', 'Annulé'),
+    ], string='Statut', default='draft')
+    date_transaction = fields.Datetime(string='Date de transaction')
     notes = fields.Text(string='Notes')
     first_name = fields.Char(string='Prénom')
     last_name = fields.Char(string='Nom')

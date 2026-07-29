@@ -3,31 +3,32 @@ from odoo import models, fields, api
 class TravelReservation(models.Model):
     _name = 'travel.reservation'
     _description = 'Travel Reservation'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string='Reference', required=True, copy=False, readonly=True, default='New')
-    client_firstname = fields.Char(string='Client Firstname', required=True)
-    client_lastname = fields.Char(string='Client Lastname', required=True)
-    client_name = fields.Char(string='Client Name', compute='_compute_client_name', store=True)
+    name = fields.Char(string='Référence', required=True, copy=False, readonly=True, default='New')
+    client_firstname = fields.Char(string='Prénom du client', required=True)
+    client_lastname = fields.Char(string='Nom du client', required=True)
+    client_name = fields.Char(string='Nom du client', compute='_compute_client_name', store=True)
     client_email = fields.Char(string='Email')
-    client_phone = fields.Char(string='Phone')
-    client_country = fields.Char(string='Country')
-    product_id = fields.Many2one('product.template', string='Travel Package')
-    date_depart = fields.Date(string='Departure Date')
-    date_retour = fields.Date(string='Return Date')
-    nb_jours = fields.Integer(string='Duration', compute='_compute_duration', store=True)
-    nb_adultes = fields.Integer(string='Adults', default=1)
-    nb_enfants = fields.Integer(string='Children', default=0)
-    nb_voyageurs = fields.Integer(string='Total Travelers', compute='_compute_total', store=True)
-    prix_total = fields.Float(string='Total Price', compute='_compute_prix_total', store=True)
-    payment_provider_id = fields.Many2one('travel.payment.provider', string='Payment Provider')
-    commission_amount = fields.Float(string='Commission Amount', compute='_compute_commission', store=True)
-    passenger_ids = fields.One2many('travel.reservation.passenger', 'reservation_id', string='Passengers')
+    client_phone = fields.Char(string='Téléphone')
+    client_country = fields.Char(string='Pays')
+    product_id = fields.Many2one('product.template', string='Offre de voyage')
+    date_depart = fields.Date(string='Date de départ')
+    date_retour = fields.Date(string='Date de retour')
+    nb_jours = fields.Integer(string='Durée', compute='_compute_duration', store=True)
+    nb_adultes = fields.Integer(string='Adultes', default=1)
+    nb_enfants = fields.Integer(string='Enfants', default=0)
+    nb_voyageurs = fields.Integer(string='Total voyageurs', compute='_compute_total', store=True)
+    prix_total = fields.Float(string='Prix total', compute='_compute_prix_total', store=True)
+    payment_provider_id = fields.Many2one('travel.payment.provider', string='Prestataire de paiement')
+    commission_amount = fields.Float(string='Montant de la commission', compute='_compute_commission', store=True)
+    passenger_ids = fields.One2many('travel.reservation.passenger', 'reservation_id', string='Passagers')
     notes = fields.Text(string='Notes')
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('en_attente', 'Waiting'),
-        ('confirmed', 'Confirmed'),
-        ('cancel', 'Cancelled')
+        ('draft', 'Brouillon'),
+        ('en_attente', 'En attente'),
+        ('confirmed', 'Confirmée'),
+        ('cancel', 'Annulée')
     ], default='draft')
 
     @api.depends('client_firstname', 'client_lastname')
