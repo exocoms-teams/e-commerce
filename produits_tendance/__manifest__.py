@@ -21,6 +21,12 @@
             'produits_tendance/static/src/scss/_winners_variables.scss',
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
+            'produits_tendance/static/src/scss/trend_chart.scss',
+            # WIN-52 : Chart.js + adaptateur Luxon, déjà bundlés par Odoo (web).
+            'web/static/lib/luxon/luxon.js',
+            'web/static/lib/Chart/Chart.js',
+            'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
+            'produits_tendance/static/src/js/trend_chart.js',
         ],
     },
     'installable': True,

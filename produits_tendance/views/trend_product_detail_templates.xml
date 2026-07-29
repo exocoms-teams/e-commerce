@@ -71,6 +71,18 @@
                         </div>
                     </div>
 
+                    <!-- Courbe de tendance (WIN-52) : historique du computed_score,
+                         un point par date (agrégé côté ORM, voir get_score_history)
+                         pour alléger le rendu DOM. Rendu via Chart.js (widget public
+                         o_winners_trend_chart, static/src/js/trend_chart.js). -->
+                    <div class="o_winners_trend_chart mt-4" t-if="score_history">
+                        <h3>Évolution du score de tendance</h3>
+                        <div class="o_winners_trend_chart__canvas_wrapper"
+                             t-att-data-history="score_history_json">
+                            <canvas class="o_winners_trend_chart__canvas"/>
+                        </div>
+                    </div>
+
                     <div class="o_winners_product_detail__ads mt-4" t-if="ads">
                         <h3>Publicités liées</h3>
                         <div class="o_winners_product_detail__ads_summary">
