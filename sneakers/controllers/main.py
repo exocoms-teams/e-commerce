@@ -174,14 +174,20 @@ class SneakersController(http.Controller):
         if delivery_installed and order and order.carrier_id:
             try:
                 order.sudo()._compute_delivery_price()
+                order.sudo()._compute_amounts()
                 delivery_price = order.delivery_price
             except Exception:
                 delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
+
+        order_total = order.amount_total if order else 0
+        if delivery_price and order_total:
+            order_total += delivery_price
 
         values = {
             'order': order,
             'delivery_methods': delivery_methods,
             'delivery_price': delivery_price,
+            'order_total': order_total,
         }
 
         return request.render(
