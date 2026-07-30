@@ -12,8 +12,13 @@
             <field name="implied_ids" eval="[(4, ref('product.group_product_variant'))]"/>
         </record>
 
-        <record id="product.list0" model="product.pricelist">
-            <field name="company_id" eval="False"/>
-        </record>
+        <!-- 3. Passe toutes les listes de prix existantes en "Toutes sociétés" (company_id = False) -->
+        <function model="product.pricelist" name="search">
+            <value eval="[('company_id', '!=', False)]"/>
+        </function>
+        <function model="product.pricelist" name="write">
+            <value model="product.pricelist" eval="obj().search([('company_id', '!=', False)]).ids"/>
+            <value eval="{'company_id': False}"/>
+        </function>
     </data>
 </odoo>
