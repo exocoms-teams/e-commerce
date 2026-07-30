@@ -44,10 +44,23 @@ function initAddToCartCards() {
 
             e.preventDefault();
 
+            var card = btn.closest('.sn-product-card');
             var templateId = this.dataset.templateId;
-            if (!templateId) return;
+            if (!templateId || !card) return;
 
-            openVariantModal(parseInt(templateId), this);
+            // Read variant data from DOM (no network call)
+            var sizes = [];
+            var colors = [];
+            try { sizes = JSON.parse(card.dataset.sizes || '[]'); } catch(ex) {}
+            try { colors = JSON.parse(card.dataset.colors || '[]'); } catch(ex) {}
+
+            openVariantModal(parseInt(templateId), this, {
+                name: this.dataset.productName || '',
+                price: this.dataset.productPrice || '0',
+                image_url: this.dataset.productImage || '',
+                sizes: sizes,
+                colors: colors,
+            });
 
         });
 
@@ -55,151 +68,139 @@ function initAddToCartCards() {
 
 }
 
-function openVariantModal(templateId, triggerBtn) {
+function openVariantModal(templateId, triggerBtn, info) {
     var modal = document.getElementById('sn-variant-modal');
     if (!modal) return;
 
-    // Fetch variant data
-    fetch('/get-product-variants/' + templateId, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: {} })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-        var info = data.result || data;
-        if (info.error) return;
+    // Populate modal
+    modal.querySelector('.sn-variant-modal-image img').src = info.image_url;
+    modal.querySelector('.sn-variant-modal-image img').alt = info.name;
+    modal.querySelector('.sn-variant-modal-name').textContent = info.name;
+    modal.querySelector('.sn-variant-modal-price').textContent = '$' + parseFloat(info.price).toFixed(2);
 
-        // Populate modal
-        modal.querySelector('.sn-variant-modal-image img').src = info.image_url;
-        modal.querySelector('.sn-variant-modal-image img').alt = info.name;
-        modal.querySelector('.sn-variant-modal-name').textContent = info.name;
-        modal.querySelector('.sn-variant-modal-price').textContent = '$' + parseFloat(info.price).toFixed(2);
-
-        // Sizes
-        var sizeContainer = modal.querySelector('.sn-variant-modal-size-options');
-        sizeContainer.innerHTML = '';
-        info.sizes.forEach(function(size) {
-            var btn = document.createElement('button');
-            btn.className = 'sn-variant-modal-size-btn';
-            btn.textContent = size.name;
-            btn.dataset.sizeId = size.id;
-            btn.addEventListener('click', function() {
-                sizeContainer.querySelectorAll('.sn-variant-modal-size-btn').forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-            });
-            sizeContainer.appendChild(btn);
+    // Sizes
+    var sizeContainer = modal.querySelector('.sn-variant-modal-size-options');
+    sizeContainer.innerHTML = '';
+    info.sizes.forEach(function(size) {
+        var btn = document.createElement('button');
+        btn.className = 'sn-variant-modal-size-btn';
+        btn.textContent = size.name;
+        btn.dataset.sizeId = size.id;
+        btn.addEventListener('click', function() {
+            sizeContainer.querySelectorAll('.sn-variant-modal-size-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
         });
+        sizeContainer.appendChild(btn);
+    });
 
-        // Colors
-        var colorContainer = modal.querySelector('.sn-variant-modal-color-options');
-        colorContainer.innerHTML = '';
-        info.colors.forEach(function(color) {
-            var dot = document.createElement('span');
-            dot.className = 'sn-variant-modal-color-dot';
-            dot.title = color.name;
-            dot.dataset.colorId = color.id;
-            var borderColor = (color.html_color || '').toLowerCase() === '#ffffff' || (color.html_color || '').toLowerCase() === 'white'
-                ? 'border:1px solid #d1d5db;' : '';
-            dot.style.cssText = 'background-color:' + (color.html_color || '#999') + ';' + borderColor;
-            dot.addEventListener('click', function() {
-                colorContainer.querySelectorAll('.sn-variant-modal-color-dot').forEach(function(d) { d.classList.remove('active'); });
-                dot.classList.add('active');
-            });
-            colorContainer.appendChild(dot);
+    // Colors
+    var colorContainer = modal.querySelector('.sn-variant-modal-color-options');
+    colorContainer.innerHTML = '';
+    info.colors.forEach(function(color) {
+        var dot = document.createElement('span');
+        dot.className = 'sn-variant-modal-color-dot';
+        dot.title = color.name;
+        dot.dataset.colorId = color.id;
+        var c = color.color || '#999';
+        var borderColor = c.toLowerCase() === '#ffffff' || c.toLowerCase() === 'white'
+            ? 'border:1px solid #d1d5db;' : '';
+        dot.style.cssText = 'background-color:' + c + ';' + borderColor;
+        dot.addEventListener('click', function() {
+            colorContainer.querySelectorAll('.sn-variant-modal-color-dot').forEach(function(d) { d.classList.remove('active'); });
+            dot.classList.add('active');
         });
+        colorContainer.appendChild(dot);
+    });
 
-        // Reset qty
-        modal.querySelector('.sn-variant-modal-qty-input').value = 1;
+    // Reset qty
+    modal.querySelector('.sn-variant-modal-qty-input').value = 1;
 
-        // Store template id
-        modal.dataset.templateId = templateId;
+    // Store template id
+    modal.dataset.templateId = templateId;
 
-        // Show
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    // Show
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 
-        // Bind add button
-        var addBtn = modal.querySelector('.sn-variant-modal-add-btn');
-        addBtn.onclick = function() {
-            var selectedSize = sizeContainer.querySelector('.sn-variant-modal-size-btn.active');
-            var selectedColor = colorContainer.querySelector('.sn-variant-modal-color-dot.active');
-            var qty = parseInt(modal.querySelector('.sn-variant-modal-qty-input').value, 10) || 1;
+    // Bind add button
+    var addBtn = modal.querySelector('.sn-variant-modal-add-btn');
+    addBtn.onclick = function() {
+        var selectedSize = sizeContainer.querySelector('.sn-variant-modal-size-btn.active');
+        var selectedColor = colorContainer.querySelector('.sn-variant-modal-color-dot.active');
+        var qty = parseInt(modal.querySelector('.sn-variant-modal-qty-input').value, 10) || 1;
 
-            var attributeIds = [];
-            if (selectedColor) attributeIds.push(parseInt(selectedColor.dataset.colorId));
-            if (selectedSize) attributeIds.push(parseInt(selectedSize.dataset.sizeId));
+        var attributeIds = [];
+        if (selectedColor) attributeIds.push(parseInt(selectedColor.dataset.colorId));
+        if (selectedSize) attributeIds.push(parseInt(selectedSize.dataset.sizeId));
 
-            if (info.sizes.length > 0 && !selectedSize) {
-                if (window.snShowToast) window.snShowToast("Please select a size.", "error");
+        if (info.sizes.length > 0 && !selectedSize) {
+            if (window.snShowToast) window.snShowToast("Please select a size.", "error");
+            return;
+        }
+
+        addBtn.textContent = 'Adding...';
+        addBtn.disabled = true;
+
+        // Get variant then add to cart
+        fetch('/get-product-variant', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: { template_id: templateId, attribute_value_ids: attributeIds }
+            })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(vData) {
+            var result = vData.result || vData;
+            if (!result.product_id) {
+                if (window.snShowToast) window.snShowToast("This variant is not available.", "error");
+                addBtn.textContent = 'Add to Cart';
+                addBtn.disabled = false;
                 return;
             }
 
-            addBtn.textContent = 'Adding...';
-            addBtn.disabled = true;
-
-            // Get variant then add to cart
-            fetch('/get-product-variant', {
+            fetch('/shop/cart/add', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     jsonrpc: "2.0",
                     method: "call",
-                    params: { template_id: templateId, attribute_value_ids: attributeIds }
+                    params: {
+                        product_id: result.product_id,
+                        product_template_id: templateId,
+                        add_qty: qty,
+                        quantity: qty
+                    }
                 })
             })
             .then(function(r) { return r.json(); })
-            .then(function(vData) {
-                var result = vData.result || vData;
-                if (!result.product_id) {
-                    if (window.snShowToast) window.snShowToast("This variant is not available.", "error");
-                    addBtn.textContent = 'Add to Cart';
-                    addBtn.disabled = false;
-                    return;
-                }
-
-                fetch('/shop/cart/add', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: "2.0",
-                        method: "call",
-                        params: {
-                            product_id: result.product_id,
-                            product_template_id: templateId,
-                            add_qty: qty,
-                            quantity: qty
-                        }
-                    })
-                })
-                .then(function(r) { return r.json(); })
-                .then(function(cartData) {
-                    if (cartData.result) {
-                        var badge = document.querySelector('.sn-cart-count');
-                        if (badge) {
-                            badge.textContent = cartData.result.cart_quantity;
-                            badge.style.display = 'flex';
-                        }
-                        if (triggerBtn) {
-                            triggerBtn.textContent = '✓ Added';
-                            setTimeout(function() { triggerBtn.textContent = 'Add to Cart'; }, 1500);
-                        }
-                        closeVariantModal(modal);
-                        if (window.snShowToast) window.snShowToast("Added to cart!", "success");
+            .then(function(cartData) {
+                if (cartData.result) {
+                    var badge = document.querySelector('.sn-cart-count');
+                    if (badge) {
+                        badge.textContent = cartData.result.cart_quantity;
+                        badge.style.display = 'flex';
                     }
-                    addBtn.textContent = 'Add to Cart';
-                    addBtn.disabled = false;
-                });
-            })
-            .catch(function() {
+                    if (triggerBtn) {
+                        triggerBtn.textContent = 'Added';
+                        setTimeout(function() { triggerBtn.textContent = 'Add to Cart'; }, 1500);
+                    }
+                    closeVariantModal(modal);
+                    if (window.snShowToast) window.snShowToast("Added to cart!", "success");
+                }
                 addBtn.textContent = 'Add to Cart';
                 addBtn.disabled = false;
             });
-        };
-    });
+        })
+        .catch(function() {
+            addBtn.textContent = 'Add to Cart';
+            addBtn.disabled = false;
+        });
+    };
 }
 
 function closeVariantModal(modal) {
