@@ -7,8 +7,8 @@ class TravelReservation(models.Model):
 
     name = fields.Char(string='Référence', required=True, copy=False, readonly=True, default='New')
     client_firstname = fields.Char(string='Prénom du client', required=True)
-    client_lastname = fields.Char(string='Nom du client', required=True)
-    client_name = fields.Char(string='Nom du client', compute='_compute_client_name', store=True)
+    client_lastname = fields.Char(string='Nom de famille du client', required=True)
+    client_name = fields.Char(string='Nom complet du client', compute='_compute_client_name', store=True)
     client_email = fields.Char(string='Email')
     client_phone = fields.Char(string='Téléphone')
     client_country = fields.Char(string='Pays')
