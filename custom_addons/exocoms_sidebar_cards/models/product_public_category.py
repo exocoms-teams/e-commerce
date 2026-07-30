@@ -95,6 +95,8 @@ class ProductPublicCategory(models.Model):
 
         def serialize(cat, depth):
             nb, qty = self._exocoms_category_stats(cat, website)
+            if nb == 0 and depth == 1:
+                return None
             node = {
                 "id": cat.id,
                 "name": cat.name,
@@ -108,8 +110,9 @@ class ProductPublicCategory(models.Model):
             if depth < max_depth:
                 children = cat.child_id.sorted(lambda c: (c.sequence, c.name))
                 node["children"] = [
-                    serialize(child, depth + 1) for child in children
+                    c for c in [serialize(child, depth + 1) for child in children]
+                    if c is not None
                 ]
             return node
 
-        return [serialize(root, 1) for root in roots]
+        return [n for n in [serialize(root, 1) for root in roots] if n is not None]
