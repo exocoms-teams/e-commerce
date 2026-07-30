@@ -236,6 +236,39 @@ class SneakersController(http.Controller):
             "available": False,
         }
 
+    @http.route('/get-product-variants/<int:template_id>', type='json', auth='public', website=True)
+    def get_product_variants(self, template_id, **kwargs):
+        template = request.env['product.template'].sudo().browse(template_id)
+        if not template.exists():
+            return {'error': 'Product not found'}
+
+        sizes = []
+        colors = []
+        for line in template.attribute_line_ids:
+            if line.attribute_id.name == 'Size':
+                for val in line.value_ids:
+                    sizes.append({'id': val.id, 'name': val.name})
+            elif line.attribute_id.name == 'Color':
+                for val in line.value_ids:
+                    colors.append({'id': val.id, 'name': val.name, 'html_color': val.html_color or ''})
+
+        # Build variant map: {frozenset(ptav_ids): variant_id}
+        variant_map = {}
+        for variant in template.product_variant_ids:
+            key = frozenset(variant.product_template_attribute_value_ids.ids)
+            variant_map[key] = variant.id
+
+        image_url = '/web/image/product.template/%s/image_256' % template.id
+
+        return {
+            'name': template.name,
+            'price': template.list_price,
+            'image_url': image_url,
+            'sizes': sizes,
+            'colors': colors,
+            'variant_map': {str(list(k)): v for k, v in variant_map.items()},
+        }
+
     @http.route('/checkout', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
     def checkout(self, **kwargs):
         order = request.cart

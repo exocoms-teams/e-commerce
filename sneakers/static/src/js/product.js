@@ -29,7 +29,7 @@
 }
 
 
-// Cards produit
+// Cards produit — open variant modal
 initAddToCartCards();
 
 function initAddToCartCards() {
@@ -44,107 +44,203 @@ function initAddToCartCards() {
 
             e.preventDefault();
 
-            if(!currentVariantAvailable){
-
-                if(window.snShowToast){
-                    window.snShowToast(
-                        "Cette variante n'est pas disponible.",
-                        "error"
-                    );
-                }
-
-                return;
-            }
-
-
-           var productId = this.dataset.productId;
             var templateId = this.dataset.templateId;
+            if (!templateId) return;
 
-            fetch('/shop/cart/add', {
-
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    jsonrpc: "2.0",
-                    method: "call",
-
-                    params: {
-                        product_id: parseInt(productId),
-    product_template_id: parseInt(templateId),
-    add_qty: 1,
-    quantity: 1
-                    }
-
-                })
-
-            })
-
-            .then(function(response){
-                return response.json();
-            })
-
-            .then(function(data){
-
-
-                
-    if (data.error) {
-
-        console.error(
-            "ODOO ERROR MESSAGE :",
-            data.error.message
-        );
-
-        console.error(
-            "ODOO ERROR DATA :",
-            data.error.data
-        );
-
-        console.error(
-            "ODOO DEBUG :",
-            data.error.data.debug
-        );
-
-        return;
-    }
-
-
-    if(data.result){
-
-        btn.textContent = "✓ Added";
-
-        var badge = document.querySelector(".sn-cart-count");
-
-        if(badge){
-
-            badge.textContent = data.result.cart_quantity;
-            badge.style.display = "flex";
-
-        }
-
-    }
-
-})
-
-            .catch(function(error){
-
-                console.error(
-                    "CARD ADD CART ERROR:",
-                    error
-                );
-
-            });
-
+            openVariantModal(parseInt(templateId), this);
 
         });
 
     });
 
 }
+
+function openVariantModal(templateId, triggerBtn) {
+    var modal = document.getElementById('sn-variant-modal');
+    if (!modal) return;
+
+    // Fetch variant data
+    fetch('/get-product-variants/' + templateId, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: {} })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var info = data.result || data;
+        if (info.error) return;
+
+        // Populate modal
+        modal.querySelector('.sn-variant-modal-image img').src = info.image_url;
+        modal.querySelector('.sn-variant-modal-image img').alt = info.name;
+        modal.querySelector('.sn-variant-modal-name').textContent = info.name;
+        modal.querySelector('.sn-variant-modal-price').textContent = '$' + parseFloat(info.price).toFixed(2);
+
+        // Sizes
+        var sizeContainer = modal.querySelector('.sn-variant-modal-size-options');
+        sizeContainer.innerHTML = '';
+        info.sizes.forEach(function(size) {
+            var btn = document.createElement('button');
+            btn.className = 'sn-variant-modal-size-btn';
+            btn.textContent = size.name;
+            btn.dataset.sizeId = size.id;
+            btn.addEventListener('click', function() {
+                sizeContainer.querySelectorAll('.sn-variant-modal-size-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+            });
+            sizeContainer.appendChild(btn);
+        });
+
+        // Colors
+        var colorContainer = modal.querySelector('.sn-variant-modal-color-options');
+        colorContainer.innerHTML = '';
+        info.colors.forEach(function(color) {
+            var dot = document.createElement('span');
+            dot.className = 'sn-variant-modal-color-dot';
+            dot.title = color.name;
+            dot.dataset.colorId = color.id;
+            var borderColor = (color.html_color || '').toLowerCase() === '#ffffff' || (color.html_color || '').toLowerCase() === 'white'
+                ? 'border:1px solid #d1d5db;' : '';
+            dot.style.cssText = 'background-color:' + (color.html_color || '#999') + ';' + borderColor;
+            dot.addEventListener('click', function() {
+                colorContainer.querySelectorAll('.sn-variant-modal-color-dot').forEach(function(d) { d.classList.remove('active'); });
+                dot.classList.add('active');
+            });
+            colorContainer.appendChild(dot);
+        });
+
+        // Reset qty
+        modal.querySelector('.sn-variant-modal-qty-input').value = 1;
+
+        // Store template id
+        modal.dataset.templateId = templateId;
+
+        // Show
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Bind add button
+        var addBtn = modal.querySelector('.sn-variant-modal-add-btn');
+        addBtn.onclick = function() {
+            var selectedSize = sizeContainer.querySelector('.sn-variant-modal-size-btn.active');
+            var selectedColor = colorContainer.querySelector('.sn-variant-modal-color-dot.active');
+            var qty = parseInt(modal.querySelector('.sn-variant-modal-qty-input').value, 10) || 1;
+
+            var attributeIds = [];
+            if (selectedColor) attributeIds.push(parseInt(selectedColor.dataset.colorId));
+            if (selectedSize) attributeIds.push(parseInt(selectedSize.dataset.sizeId));
+
+            if (info.sizes.length > 0 && !selectedSize) {
+                if (window.snShowToast) window.snShowToast("Please select a size.", "error");
+                return;
+            }
+
+            addBtn.textContent = 'Adding...';
+            addBtn.disabled = true;
+
+            // Get variant then add to cart
+            fetch('/get-product-variant', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: "call",
+                    params: { template_id: templateId, attribute_value_ids: attributeIds }
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(vData) {
+                var result = vData.result || vData;
+                if (!result.product_id) {
+                    if (window.snShowToast) window.snShowToast("This variant is not available.", "error");
+                    addBtn.textContent = 'Add to Cart';
+                    addBtn.disabled = false;
+                    return;
+                }
+
+                fetch('/shop/cart/add', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        method: "call",
+                        params: {
+                            product_id: result.product_id,
+                            product_template_id: templateId,
+                            add_qty: qty,
+                            quantity: qty
+                        }
+                    })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(cartData) {
+                    if (cartData.result) {
+                        var badge = document.querySelector('.sn-cart-count');
+                        if (badge) {
+                            badge.textContent = cartData.result.cart_quantity;
+                            badge.style.display = 'flex';
+                        }
+                        if (triggerBtn) {
+                            triggerBtn.textContent = '✓ Added';
+                            setTimeout(function() { triggerBtn.textContent = 'Add to Cart'; }, 1500);
+                        }
+                        closeVariantModal(modal);
+                        if (window.snShowToast) window.snShowToast("Added to cart!", "success");
+                    }
+                    addBtn.textContent = 'Add to Cart';
+                    addBtn.disabled = false;
+                });
+            })
+            .catch(function() {
+                addBtn.textContent = 'Add to Cart';
+                addBtn.disabled = false;
+            });
+        };
+    });
+}
+
+function closeVariantModal(modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Modal close handlers
+document.addEventListener('click', function(e) {
+    var modal = document.getElementById('sn-variant-modal');
+    if (!modal || modal.style.display === 'none') return;
+
+    if (e.target.classList.contains('sn-variant-modal-overlay') ||
+        e.target.classList.contains('sn-variant-modal-close')) {
+        closeVariantModal(modal);
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var modal = document.getElementById('sn-variant-modal');
+        if (modal && modal.style.display !== 'none') {
+            closeVariantModal(modal);
+        }
+    }
+});
+
+// Modal qty buttons
+document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.sn-variant-qty-btn');
+    if (!btn) return;
+    var modal = document.getElementById('sn-variant-modal');
+    if (!modal) return;
+    var input = modal.querySelector('.sn-variant-modal-qty-input');
+    var val = parseInt(input.value, 10) || 1;
+    if (btn.dataset.action === 'increase') {
+        input.value = val + 1;
+    } else if (btn.dataset.action === 'decrease' && val > 1) {
+        input.value = val - 1;
+    }
+});
     // GALERIE PRODUIT
     function initGallery() {
 
