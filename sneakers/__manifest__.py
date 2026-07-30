@@ -27,6 +27,7 @@
         'views/pages/confirmation.xml',
         'views/pages/wishlist.xml',
         'views/pages/contact.xml',
+        'views/pages/terms.xml',
     ],
 
     'assets': {

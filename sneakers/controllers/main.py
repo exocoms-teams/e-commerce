@@ -251,3 +251,7 @@ class SneakersController(http.Controller):
     @http.route('/contact', type='http', auth='public', website=True, sitemap=True)
     def contact(self, **kwargs):
         return request.render('sneakers.page_contact', {})
+
+    @http.route('/terms', type='http', auth='public', website=True, sitemap=True)
+    def terms(self, **kwargs):
+        return request.render('sneakers.page_terms', {})
