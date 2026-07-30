@@ -181,7 +181,8 @@
                                         type="number"
                                         value="1"
                                         min="1"
-                                        max="99"/>
+                                        t-att-max="stock_qty"
+                                        t-att-data-stock="str(stock_qty)"/>
                                     <button
                                         class="sn-qty-btn"
                                         data-action="increase">
@@ -193,12 +194,12 @@
                             <!-- Action Buttons -->
                             <div class="sn-buttons">
                                 <t t-if="stock_state == 'out_of_stock' and not allow_out_of_stock_order">
-                                    <button class="sn-btn-primary sn-add-cart" disabled="disabled">
+                                    <button style="width:50%" class="sn-btn-primary sn-add-cart" disabled="disabled">
                                         Out of Stock
                                     </button>
                                 </t>
                                 <t t-else="">
-                                    <button
+                                    <button style="width:50%"
                                         class="sn-btn-primary sn-add-cart"
                                         t-att-data-template-id="product.id">
                                         <t t-if="stock_state == 'out_of_stock'">

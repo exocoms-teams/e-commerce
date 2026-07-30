@@ -96,7 +96,10 @@ class SneakersController(http.Controller):
         if stock_installed and product_variant:
             stock_qty = product_variant.qty_available or 0
             if product.website_availability == 'always':
-                stock_state = 'in_stock'
+                if stock_qty > 0:
+                    stock_state = 'in_stock'
+                else:
+                    stock_state = 'out_of_stock'
             elif product.website_availability == 'threshold':
                 if stock_qty <= 0:
                     stock_state = 'out_of_stock'
@@ -212,11 +215,16 @@ class SneakersController(http.Controller):
 
             if set(variant_ptavs.ids) == set(selected_ptavs.ids):
                 return {
-                    "product_id": variant.id
+                    "product_id": variant.id,
+                    "qty_available": variant.qty_available,
+                    "available": variant.qty_available > 0
+                
                 }
 
         return {
-            "product_id": False
+            "product_id": False,
+            "qty_available": 0,
+            "available": False,
         }
 
     @http.route('/checkout', type='http', auth='public', website=True, sitemap=True)
