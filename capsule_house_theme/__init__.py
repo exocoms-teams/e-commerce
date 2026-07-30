@@ -84,6 +84,8 @@ SHOP_CATEGORIES = ['Studio', 'Duo', 'Panorama', 'Accessoires']
 # variantes) : nom -> liste de valeurs.
 SHOP_FILTER_ATTRIBUTES = {
     'Surface (m²)': ['15-20 m²', '20-30 m²', '30-45 m²'],
+    'Delais (jours)' : ['1 ou 2 jours', '3 à 6 jours', '7 jours ou plus'],
+    'Materiaux' : ['Bois', 'Verre', 'Fer'],
 }
 
 
