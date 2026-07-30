@@ -12,6 +12,7 @@
         'data/product_brand_data.xml',
         'data/product_category_data.xml',
         'data/product_demo.xml',
+        'data/rating_data.xml',
 
         'views/templates/layout.xml',
         'views/templates/header.xml',

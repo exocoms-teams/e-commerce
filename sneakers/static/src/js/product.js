@@ -40,6 +40,19 @@ function initAddToCartCards() {
 
     buttons.forEach(function(btn){
 
+        var stock = parseInt(btn.dataset.stock,10);
+
+        if(!isNaN(stock) && stock <= 0){
+
+            btn.disabled = true;
+            btn.textContent = "Out of stock";
+
+        }
+
+    });
+
+    buttons.forEach(function(btn){
+
         btn.addEventListener("click", function(e){
 
             e.preventDefault();
@@ -57,8 +70,36 @@ function initAddToCartCards() {
             }
 
 
-           var productId = this.dataset.productId;
+            var productId = this.dataset.productId;
             var templateId = this.dataset.templateId;
+
+            // Vérification stock depuis le bouton
+            var stock = parseInt(this.dataset.stock, 10);
+
+
+            if (isNaN(stock)) {
+
+                stock = 0;
+
+            }
+
+
+            console.log("CARD STOCK :", stock);
+
+
+            if(stock <= 0){
+
+                if(window.snShowToast){
+
+                    window.snShowToast(
+                        "Produit hors stock",
+                        "error"
+                    );
+
+                }
+
+                return;
+            }
 
             fetch('/shop/cart/add', {
 
@@ -75,9 +116,9 @@ function initAddToCartCards() {
 
                     params: {
                         product_id: parseInt(productId),
-    product_template_id: parseInt(templateId),
-    add_qty: 1,
-    quantity: 1
+                        product_template_id: parseInt(templateId),
+                        add_qty: 1,
+                        quantity: 1
                     }
 
                 })
@@ -89,33 +130,48 @@ function initAddToCartCards() {
             })
 
             .then(function(data){
-
-
                 
-    if (data.error) {
+                if (data.error) {
 
-        console.error(
-            "ODOO ERROR MESSAGE :",
-            data.error.message
-        );
+                    console.error(
+                        "ODOO ERROR MESSAGE :",
+                        data.error.message
+                    );
 
-        console.error(
-            "ODOO ERROR DATA :",
-            data.error.data
-        );
+                    console.error(
+                        "ODOO ERROR DATA :",
+                        data.error.data
+                    );
 
-        console.error(
-            "ODOO DEBUG :",
-            data.error.data.debug
-        );
+                    console.error(
+                        "ODOO DEBUG :",
+                        data.error.data.debug
+                    );
 
-        return;
-    }
+                    return;
+                }
+            // Vérification warning Odoo (stock insuffisant par exemple)
+            if(data.result && data.result.warning){
+
+                if(window.snShowToast){
+
+                    window.snShowToast(
+                        data.result.warning,
+                        "error"
+                    );
+
+                }
+
+                return;
+            }
 
 
-    if(data.result){
+        if(data.result){
+
+        var originalText = btn.textContent;
 
         btn.textContent = "✓ Added";
+
 
         var badge = document.querySelector(".sn-cart-count");
 
@@ -125,6 +181,13 @@ function initAddToCartCards() {
             badge.style.display = "flex";
 
         }
+
+
+        setTimeout(function(){
+
+            btn.textContent = originalText;
+
+        },2000);
 
     }
 
@@ -597,7 +660,7 @@ function initAddToCartCards() {
             currentVariantAvailable = false;
 
             addBtn.disabled = true;
-            addBtn.textContent = "Rupture de stock";
+            addBtn.textContent = "Out of stock";
 
         }
         else{
@@ -605,7 +668,10 @@ function initAddToCartCards() {
             currentVariantAvailable = true;
 
             addBtn.disabled = false;
-            addBtn.textContent = "Ajouter au panier";
+             // Réactiver les boutons quantité
+            document.querySelectorAll(".sn-qty-btn").forEach(function(btn){
+                btn.disabled = false;
+            });
 
         }
         
@@ -757,14 +823,17 @@ function initAddToCartCards() {
 
     })
 
-    .then(function(data){
-
+        .then(function(data){
 
         if (data.error) {
             console.error(
                 "ODOO ERROR DETAILS :",
                 data.error.data
             );
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
         }
 
 
@@ -772,22 +841,24 @@ function initAddToCartCards() {
 
             btn.textContent = "✓ Added to Cart!";
 
-
             var badge = document.querySelector(".sn-cart-count");
 
             if(badge){
 
                 badge.textContent = data.result.cart_quantity;
-
                 badge.style.display = "flex";
 
             }
 
+
+            setTimeout(function(){
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+            },2000);
+
         }
-
-
-        btn.disabled = false;
-
 
     })
 

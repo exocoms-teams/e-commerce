@@ -76,17 +76,27 @@
 
 
                 <!-- Rating -->
-                <div class="sn-product-rating">
+            <div class="sn-product-rating">
 
-                    <i class="fa fa-star"/>
-                    <i class="fa fa-star"/>
-                    <i class="fa fa-star"/>
-                    <i class="fa fa-star"/>
-                    <i class="fa fa-star"/>
-
-                </div>
+                <t t-set="rating"
+                t-value="product_ratings.get(product.id, 0) if product_ratings else 0"/>
 
 
+                <t t-foreach="[1,2,3,4,5]" t-as="star">
+
+                    <i t-att-class="
+                        'fa fa-star'
+                        if star &lt;= rating
+                        else 'fa fa-star-o'
+                    "/>
+
+                </t>
+
+                <span class="sn-rating-value">
+                    (<t t-out="'%.1f' % rating"/>)
+                </span>
+
+            </div>
 
                 <!-- Name -->
                 <h3>
@@ -98,45 +108,40 @@
 
 
                 <!-- Price -->
-                <div class="sn-product-price">
+                    <div class="sn-product-price">
 
-
-                    <span class="sn-current-price">
-
-                        $
-                        <t t-if="product">
-                            <t t-out="'%.2f' % product.list_price"/>
-                        </t>
-
-                        <t t-if="not product">
-                            <t t-out="product_price"/>
-                        </t>
-
-                    </span>
-
-
-
-                    <t t-if="product and product.compare_list_price">
-
-                        <span class="sn-old-price">
-
+                        <span class="sn-current-price">
                             $
-                            <t t-if="product and product.compare_list_price">
-                                ...
+                            <t t-if="product">
+                                <t t-out="'%.2f' % product.list_price"/>
                             </t>
 
-                            <t t-if="not product and product_old_price">
-                                <span class="sn-old-price">
-                                    <t t-out="product_old_price"/>
-                                </span>
+                            <t t-if="not product">
+                                <t t-out="product_price"/>
                             </t>
-
                         </span>
 
-                    </t>
+
+                        <t t-if="product and product.compare_list_price">
+
+                            <span class="sn-old-price">
+                                $
+                                <t t-out="'%.2f' % product.compare_list_price"/>
+                            </span>
+
+                        </t>
 
 
-                </div>
+                        <t t-if="not product and product_old_price">
+
+                            <span class="sn-old-price">
+                                $
+                                <t t-out="product_old_price"/>
+                            </span>
+
+                        </t>
+
+                    </div>
 
 
 
@@ -147,7 +152,8 @@
                         t-att-data-template-id="product.id if product else product_id"
                         t-att-data-product-name="product.name if product else product_name"
                         t-att-data-product-price="product.list_price if product else product_price"
-                        t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image">
+                        t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image"
+                        t-att-data-stock="product.product_variant_id.qty_available if product else 0">
 
                     Add to Cart
 
