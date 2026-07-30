@@ -10,15 +10,11 @@
                     <div class="container">
                         <t t-call="website.placeholder_header_brand"/>
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/">Accueil</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/shop">Boutique</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/contactus">Contactez nous</a>
-                            </li>
+                                <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                    <t t-call="website.submenu"
+                                    item_class="nav-item"
+                                    link_class="nav-link"/>
+                                </t>
                         </ul>
                         <ul class="navbar-nav align-items-center ms-auto gap-2">
                             <li class="nav-item">
@@ -61,22 +57,18 @@
                             aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"/>
                         </button>
-                        <div class="offcanvas offcanvas-start" id="mobile_menu">
+                        <div class="offcanvas offcanvas-end" id="mobile_menu">
                             <div class="offcanvas-header">
                                 <t t-call="website.placeholder_header_search_box"/>
                                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
                             </div>
                             <div class="offcanvas-body">
                                 <ul class="navbar-nav">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/">Accueil</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/shop">Boutique</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/contactus">Contactez nous</a>
-                                    </li>
+                                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                        <t t-call="website.submenu"
+                                        item_class="nav-item"
+                                        link_class="nav-link"/>
+                                    </t>
                                 </ul>
                             </div>
                         </div>
