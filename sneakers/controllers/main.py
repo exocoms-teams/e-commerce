@@ -236,9 +236,67 @@ class SneakersController(http.Controller):
             "available": False,
         }
 
-    @http.route('/checkout', type='http', auth='public', website=True, sitemap=True)
+    @http.route('/checkout', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
     def checkout(self, **kwargs):
-        return request.render('sneakers.page_checkout', {})
+        order = request.cart
+
+        # Payment providers (only published, website-enabled)
+        payment_providers = request.env['payment.provider'].sudo().search([
+            ('state', 'in', ['enabled', 'test']),
+            ('website_id', 'in', [request.website.id, False]),
+        ]) if order else request.env['payment.provider'].sudo().browse()
+
+        # Delivery methods (soft dep on delivery module)
+        delivery_installed = _is_module_installed('delivery')
+        delivery_methods = []
+        if delivery_installed and order:
+            try:
+                delivery_methods = request.env['delivery.carrier'].sudo().search([
+                    ('website_published', '=', True),
+                    ('company_id', 'in', [request.env.company.id, False]),
+                ])
+            except Exception:
+                pass
+
+        # Delivery price
+        delivery_price = 0
+        if delivery_installed and order and order.carrier_id:
+            try:
+                order.sudo()._compute_delivery_price()
+                order.sudo()._compute_amounts()
+                delivery_price = order.delivery_price
+            except Exception:
+                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
+
+        # Countries for address form
+        countries = request.env['res.country'].sudo().search([])
+
+        # Order lines
+        order_lines = order.order_line if order else request.env['sale.order.line'].sudo().browse()
+
+        # Totals
+        subtotal = order.amount_untaxed if order else 0
+        tax = order.amount_tax if order else 0
+        total = order.amount_total if order else 0
+        if delivery_price and order:
+            total += delivery_price
+
+        # Partner (for pre-filling address)
+        partner = order.partner_id if order else request.env.user.partner_id
+
+        values = {
+            'order': order,
+            'order_lines': order_lines,
+            'payment_providers': payment_providers,
+            'delivery_methods': delivery_methods,
+            'delivery_price': delivery_price,
+            'countries': countries,
+            'partner': partner,
+            'subtotal': subtotal,
+            'tax': tax,
+            'total': total,
+        }
+        return request.render('sneakers.page_checkout', values)
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):

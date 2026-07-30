@@ -108,122 +108,90 @@
 
                                         <div class="sn-form-group">
                                             <label>First Name</label>
-                                            <input type="text" placeholder="John"/>
+                                            <input type="text" name="name" t-att-value="partner.name or ''" placeholder="John"/>
                                         </div>
 
                                         <div class="sn-form-group">
-                                            <label>Last Name</label>
-                                            <input type="text" placeholder="Doe"/>
-                                        </div>
-
-                                        <div class="sn-form-group full">
                                             <label>Email Address</label>
-                                            <input type="email" placeholder="john@example.com"/>
+                                            <input type="email" name="email" t-att-value="partner.email or ''" placeholder="john@example.com"/>
                                         </div>
 
                                         <div class="sn-form-group full">
                                             <label>Phone Number</label>
-                                            <input type="tel" placeholder="+212 6 00 00 00 00"/>
+                                            <input type="tel" name="phone" t-att-value="partner.phone or ''" placeholder="+212 6 00 00 00 00"/>
                                         </div>
 
                                         <div class="sn-form-group full">
                                             <label>Street Address</label>
-                                            <input type="text" placeholder="123 Main Street"/>
+                                            <input type="text" name="street" t-att-value="partner.street or ''" placeholder="123 Main Street"/>
                                         </div>
 
                                         <div class="sn-form-group">
                                             <label>City</label>
-                                            <input type="text" placeholder="Casablanca"/>
+                                            <input type="text" name="city" t-att-value="partner.city or ''" placeholder="Casablanca"/>
                                         </div>
 
                                         <div class="sn-form-group">
                                             <label>Postal Code</label>
-                                            <input type="text" placeholder="20000"/>
+                                            <input type="text" name="zip" t-att-value="partner.zip or ''" placeholder="20000"/>
                                         </div>
 
-                                        <div class="sn-form-group full">
-                                            <label>Country</label>
-                                            <select>
-                                                <option>Morocco</option>
-                                                <option>France</option>
-                                                <option>Spain</option>
-                                            </select>
-                                        </div>
+                                    <div class="sn-form-group full">
+                                        <label>Country</label>
+                                        <select name="country_id">
+                                            <t t-foreach="countries" t-as="country">
+                                                <option t-att-value="country.id"
+                                                        t-att-selected="partner.country_id and partner.country_id.id == country.id">
+                                                    <t t-out="country.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
 
                                     </div>
 
                                 </div>
 
                                 <!-- SHIPPING METHOD -->
-                                <div class="sn-checkout-card">
+                                <div class="sn-checkout-card" t-if="delivery_methods">
 
                                     <h3>Shipping Method</h3>
 
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping" checked="checked"/>
-
-                                        <div>
-                                            <strong>Standard Delivery</strong>
-                                            <p>3-5 business days</p>
-                                        </div>
-
-                                        <span>Free</span>
-
-                                    </label>
-
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping"/>
-
-                                        <div>
-                                            <strong>Express Delivery</strong>
-                                            <p>24-48 hours</p>
-                                        </div>
-
-                                        <span>$15.00</span>
-
-                                    </label>
+                                    <t t-foreach="delivery_methods" t-as="method">
+                                        <label class="sn-radio-card">
+                                            <input type="radio" name="carrier_id"
+                                                   t-att-value="method.id"
+                                                   t-att-checked="order.carrier_id and order.carrier_id.id == method.id"/>
+                                            <div>
+                                                <strong t-out="method.name"/>
+                                                <p t-if="method.fixed_price">
+                                                    <t t-out="'%.2f' % method.fixed_price"/> $
+                                                </p>
+                                                <p t-else="">Free</p>
+                                            </div>
+                                        </label>
+                                    </t>
 
                                 </div>
 
                                 <!-- PAYMENT METHOD -->
-                                <div class="sn-checkout-card">
+                                <div class="sn-checkout-card" t-if="payment_providers">
 
                                     <h3>Payment Method</h3>
 
-                                    <label class="sn-radio-card">
-                                        <input type="radio" name="payment" value="wire" checked="checked"/>
-                                        <div>
-                                            <div class="sn-radio-title">
-                                                <i class="fa fa-university"></i>
-                                                <strong>Bank Transfer</strong>
+                                    <t t-foreach="payment_providers" t-as="provider">
+                                        <label class="sn-radio-card">
+                                            <input type="radio" name="payment_provider_id"
+                                                   t-att-value="provider.id"
+                                                   t-att-checked="provider.code == 'wire_transfer'"/>
+                                            <div>
+                                                <div class="sn-radio-title">
+                                                    <strong t-out="provider.name"/>
+                                                </div>
+                                                <p t-if="provider.auth_msg" t-out="provider.auth_msg"/>
                                             </div>
-                                            <p>Pay via bank transfer. Order ships after payment confirmation.</p>
-                                        </div>
-                                    </label>
-
-                                    <label class="sn-radio-card">
-                                        <input type="radio" name="payment" value="card"/>
-                                        <div>
-                                            <div class="sn-radio-title">
-                                                <i class="fa fa-credit-card"></i>
-                                                <strong>Credit Card</strong>
-                                            </div>
-                                            <p>Visa, Mastercard, American Express</p>
-                                        </div>
-                                    </label>
-
-                                    <label class="sn-radio-card">
-                                        <input type="radio" name="payment" value="paypal"/>
-                                        <div>
-                                            <div class="sn-radio-title">
-                                                <i class="fa fa-paypal"></i>
-                                                <strong>PayPal</strong>
-                                            </div>
-                                            <p>Pay via your PayPal account</p>
-                                        </div>
-                                    </label>
+                                        </label>
+                                    </t>
 
                                 </div>
 
@@ -234,114 +202,67 @@
                        <aside class="sn-checkout-summary">
                             <div class="sn-summary-card">
 
-                                <h3>
-                                    Order Summary
-                                </h3>
+                                <h3>Order Summary</h3>
 
-                                <!-- Product -->
-
-                                <div class="sn-summary-product">
-
-                                    <img src="/sneakers/static/src/img/products/product-1.jpg"
-                                        alt="Nike Air Max"/>
-
-                                    <div>
-
-                                        <h4>Nike Air Max 270</h4>
-
-                                        <span>Qty : 1</span>
-
-                                    </div>
-
-                                    <strong>$180.00</strong>
-
-                                </div>
-
-                                <div class="sn-summary-product">
-
-                                    <img src="/sneakers/static/src/img/products/product-2.jpg"
-                                        alt="Adidas Ultraboost"/>
-
-                                    <div>
-
-                                        <h4>Adidas Ultraboost</h4>
-
-                                        <span>Qty : 2</span>
-
-                                    </div>
-
-                                    <strong>$440.00</strong>
-
-                                </div>
+                                <!-- Order Lines -->
+                                <t t-if="order_lines">
+                                    <t t-foreach="order_lines" t-as="line">
+                                        <div class="sn-summary-product">
+                                            <img t-if="line.product_id.image_256"
+                                                 t-att-src="'/web/image/product.product/%d/image_256' % line.product_id.id"
+                                                 t-att-alt="line.product_id.name"/>
+                                            <img t-else=""
+                                                 src="/sneakers/static/src/img/products/product-1.jpg"
+                                                 t-att-alt="line.product_id.name"/>
+                                            <div>
+                                                <h4 t-out="line.name"/>
+                                                <span>Qty: <t t-out="line.product_uom_qty"/></span>
+                                            </div>
+                                            <strong t-out="'%.2f $' % line.price_subtotal"/>
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <p style="color:#999;text-align:center;padding:20px 0;">Your cart is empty</p>
+                                </t>
 
                                 <!-- Totals -->
-
-                                <div class="sn-summary-divider"></div>
+                                <div class="sn-summary-divider"/>
 
                                 <div class="sn-summary-row">
-
                                     <span>Subtotal</span>
-
-                                    <span>$620.00</span>
-
+                                    <span t-out="'%.2f $' % subtotal"/>
                                 </div>
 
-                                <div class="sn-summary-row">
-
+                                <div class="sn-summary-row" t-if="delivery_price > 0">
                                     <span>Shipping</span>
-
+                                    <span t-out="'%.2f $' % delivery_price"/>
+                                </div>
+                                <div class="sn-summary-row" t-else="">
+                                    <span>Shipping</span>
                                     <span>Free</span>
-
                                 </div>
 
-                                <div class="sn-summary-row">
-
-                                    <span>Estimated Tax</span>
-
-                                    <span>$24.00</span>
-
+                                <div class="sn-summary-row" t-if="tax > 0">
+                                    <span>Tax</span>
+                                    <span t-out="'%.2f $' % tax"/>
                                 </div>
 
-                                <div class="sn-summary-divider"></div>
+                                <div class="sn-summary-divider"/>
 
                                 <div class="sn-summary-row sn-summary-total">
-
                                     <span>Total</span>
-
-                                    <span>$644.00</span>
-
-                                </div>
-
-                                <!-- Promo Code -->
-
-                                <div class="sn-promo-form">
-
-                                    <input
-                                        type="text"
-                                        placeholder="Promo Code"/>
-
-                                    <button>
-
-                                        Apply
-
-                                    </button>
-
+                                    <span t-out="'%.2f $' % total"/>
                                 </div>
 
                                 <!-- Place Order -->
-                                 
-                                <button class="sn-place-order-btn">
-                                    <a href="/confirmation">
-                                        Place Order
-                                    </a>
+                                <button class="sn-place-order-btn" type="submit" form="sn-checkout-form">
+                                    Place Order
                                 </button>
 
                                 <!-- Back -->
-
                                 <a href="/cart" class="sn-back-cart">
-
                                     ← Back to Cart
-
                                 </a>
 
                             </div>
