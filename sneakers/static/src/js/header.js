@@ -139,4 +139,3 @@
     /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
 })();
-

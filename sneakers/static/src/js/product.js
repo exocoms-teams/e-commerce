@@ -342,25 +342,60 @@ function initAddToCartCards() {
         if (!qtyInput || !qtyBtns.length) return;
 
         qtyBtns.forEach(function (btn) {
+
             btn.addEventListener("click", function () {
+
                 var current = parseInt(qtyInput.value, 10) || 1;
-                var delta   = this.dataset.action === "increase" || this.textContent.trim() === "+"
-                              ? 1 : -1;
-                var min     = parseInt(qtyInput.min, 10) || 1;
-                var max     = parseInt(qtyInput.max, 10) || 99;
-                var next    = Math.min(max, Math.max(min, current + delta));
+
+                var delta = this.dataset.action === "increase" ||
+                            this.textContent.trim() === "+"
+                            ? 1
+                            : -1;
+
+                var min = parseInt(qtyInput.min, 10) || 1;
+
+                var max = qtyInput.max
+                    ? parseInt(qtyInput.max, 10)
+                    : null;
+
+
+                var next = current + delta;
+
+
+                if (max !== null) {
+                    next = Math.min(max, next);
+                }
+
+
+                next = Math.max(min, next);
+
 
                 qtyInput.value = next;
+
             });
+
         });
 
         // Validation saisie directe
         qtyInput.addEventListener("change", function () {
+
             var val = parseInt(this.value, 10);
+
             var min = parseInt(this.min, 10) || 1;
-            var max = parseInt(this.max, 10) || 99;
-            if (isNaN(val) || val < min) this.value = min;
-            if (val > max) this.value = max;
+
+            var max = this.max
+                ? parseInt(this.max, 10)
+                : null;
+
+
+            if (isNaN(val) || val < min) {
+                this.value = min;
+            }
+
+            if (max !== null && val > max) {
+                this.value = max;
+            }
+
         });
     }
 
@@ -428,6 +463,15 @@ function initAddToCartCards() {
     }
 
     function getVariantAndAddCart(templateId, qty, sizeId, colorId, btn) {
+        var attributeIds = [];
+
+        if (colorId) {
+            attributeIds.push(parseInt(colorId));
+        }
+
+        if (sizeId) {
+            attributeIds.push(parseInt(sizeId));
+        }
 
     fetch('/get-product-variant', {
 
@@ -445,10 +489,7 @@ function initAddToCartCards() {
 
             params: {
                 template_id: templateId,
-                attribute_value_ids: [
-                    parseInt(colorId),
-                    parseInt(sizeId)
-                ]
+                attribute_value_ids: attributeIds
             }
 
         })
@@ -461,16 +502,33 @@ function initAddToCartCards() {
 
     .then(function(data){
 
-       if (!data.result || !data.result.product_id) {
+        if (!data.result || !data.result.product_id) {
+            console.error("NO VARIANT FOUND", data);
+            return;
+        }
 
-    console.error(
-        "NO VARIANT FOUND",
-        data
-    );
 
-    return;
+        if(data.result.qty_available !== undefined){
 
-}
+            if(data.result.qty_available <= 0){
+                console.error("Produit hors stock");
+                return;
+            }
+
+            qty = Math.min(
+                qty,
+                data.result.qty_available
+            );
+
+            var qtyInput = document.querySelector(".sn-qty-input");
+
+            if(qtyInput){
+                qtyInput.max = data.result.qty_available;
+                qtyInput.value = qty;
+            }
+
+        }
+
 
         addToCartFromProduct(
             data.result.product_id,
@@ -478,7 +536,6 @@ function initAddToCartCards() {
             qty,
             btn
         );
-
 
     });
 
