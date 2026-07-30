@@ -47,12 +47,12 @@
                         <t t-call="website.placeholder_header_brand"/>
                         <ul class="navbar-nav">
                             <t t-call="website_sale.header_cart_link">
-                            <t t-set="_item_class">nav-item</t>
-                            <t t-set="_link_class">nav-link</t>
-                            <t t-set="_icon_wrap_class">position-relative</t>
-                            <t t-set="_badge_class">position-absolute top-0 start-100 translate-middle</t>
-                            <t t-set="_icon" t-value="True"/>
-                            <t t-set="_text" t-value="False"/>
+                                <t t-set="_item_class">nav-item</t>
+                                <t t-set="_link_class">nav-link</t>
+                                <t t-set="_icon_wrap_class">position-relative</t>
+                                <t t-set="_badge_class">position-absolute top-0 start-100 translate-middle</t>
+                                <t t-set="_icon" t-value="True"/>
+                                <t t-set="_text" t-value="False"/>
                             </t>
                             <button class="navbar-toggler"
                                 type="button"
@@ -90,14 +90,56 @@
 
         </xpath>
 
-</template>
-
-
-    <template id="custom_footer" inherit_id="website.layout" priority="1000">
-        <xpath expr="//footer" position="replace">
-            <footer>
-                <h1>FOOTER HERE</h1>
-            </footer>
+        <xpath expr="//div[@id='footer']" position="replace">
+            <div id="footer" class="oe_structure oe_structure_solo border text-break" t-ignore="true" t-if="not no_footer" style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
+                <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-2 pt24 pb24">
+                                <h5>Useful Links</h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="#">About us</a></li>
+                                    <li><a href="#">Products</a></li>
+                                    <li><a href="#">Legal</a></li>
+                                    <t t-set="configurator_footer_links" t-value="[]"/>
+                                    <li t-foreach="configurator_footer_links" t-as="link">
+                                        <a t-att-href="link['href']" t-out="link['text']"/>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-5 pt24 pb24">
+                                <h5>A Propos</h5>
+                                <p>Nous croyons que le bien-être commence de l’intérieur. Notre mission est de vous proposer des compléments alimentaires de qualité, conçus pour accompagner votre santé, votre énergie et votre bien-être au quotidien. 
+                                <br/><br/>Des ingrédients soigneusement sélectionnés et des formules fiables pour vous aider à prendre soin de vous, simplement.</p>
+                            </div>
+                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                                <h5>Connect with us</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fa fa-comment fa-fw me-2"/><a href="/contactus">Contact us</a></li>
+                                    <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:info@yourcompany.example.com">info@yourcompany.example.com</a></li>
+                                    <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:+1 555-555-5556"><span class="o_force_ltr">+1 555-555-5556</span></a></li>
+                                </ul>
+                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media" contenteditable="false">
+                                    <h5 class="s_social_media_title d-none" contenteditable="true">Follow us</h5>
+                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook">
+                                        <i class="fa fa-facebook rounded-circle shadow-sm o_editable_media"/>
+                                    </a>
+                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X">
+                                        <i class="fa fa-twitter rounded-circle shadow-sm o_editable_media"/>
+                                    </a>
+                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn">
+                                        <i class="fa fa-linkedin rounded-circle shadow-sm o_editable_media"/>
+                                    </a>
+                                    <a href="/" class="text-800" aria-label="Extra page">
+                                        <i class="fa fa-home rounded-circle shadow-sm o_editable_media"/>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </xpath>
     </template>
 
