@@ -22,6 +22,24 @@ class TestSubscriptionGroupAssignment(TransactionCase):
             'login': 'win66.client@example.com',
         })
 
+        # Une base fraîche n'a pas forcément de journal "vente" configuré
+        # pour la société tant que le plan comptable de démo n'est pas
+        # chargé (ce qui arrive APRÈS ce test lors de l'install) : account.move
+        # ne peut alors pas deviner de journal via _search_default_journal().
+        # On en crée un explicitement pour ne pas dépendre de cet ordre de
+        # chargement.
+        cls.sale_journal = cls.env['account.journal'].search([
+            ('type', '=', 'sale'),
+            ('company_id', '=', cls.env.company.id),
+        ], limit=1)
+        if not cls.sale_journal:
+            cls.sale_journal = cls.env['account.journal'].create({
+                'name': 'Test Sales Journal (WIN-66)',
+                'type': 'sale',
+                'code': 'TSJ66',
+                'company_id': cls.env.company.id,
+            })
+
     def _create_subscription_invoice(self, product):
         """Crée une commande d'abonnement minimale (plan_id fixé directement,
         sans passer par action_confirm() ni le workflow de paiement — notre
@@ -41,6 +59,7 @@ class TestSubscriptionGroupAssignment(TransactionCase):
         return self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': self.user.partner_id.id,
+            'journal_id': self.sale_journal.id,
             'invoice_line_ids': [(0, 0, {
                 'product_id': product.product_variant_id.id,
                 'quantity': 1,
@@ -79,6 +98,7 @@ class TestSubscriptionGroupAssignment(TransactionCase):
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': self.user.partner_id.id,
+            'journal_id': self.sale_journal.id,
             'invoice_line_ids': [(0, 0, {
                 'name': 'Produit hors abonnement',
                 'quantity': 1,
