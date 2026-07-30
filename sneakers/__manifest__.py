@@ -44,7 +44,6 @@
 
             'sneakers/static/src/css/footer.css',
             'sneakers/static/src/css/responsive.css',
-            'sneakers/static/src/css/animations.css',
             'sneakers/static/src/css/main.css',
 
             'sneakers/static/src/css/js-ui.css',
