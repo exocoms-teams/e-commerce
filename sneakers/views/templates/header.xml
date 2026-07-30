@@ -118,7 +118,9 @@
 
                         <a href="/cart" class="sn-icon" aria-label="Cart">
                             <i class="fa fa-shopping-cart" aria-hidden="true"/>
-                            <span class="sn-cart-count">0</span>
+                            <span class="sn-cart-count"
+                                t-att-style="'' if request.cart and request.cart.cart_quantity else 'display:none'"
+                                t-out="request.cart.cart_quantity if request.cart else 0"/>
                         </a>
 
                     </div>

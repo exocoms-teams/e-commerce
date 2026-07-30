@@ -58,17 +58,21 @@
 
                                 <ul class="sn-filter-list">
 
-                                    <li><a href="#">Running</a></li>
+                                    <li>
+                                        <a t-att-href="all_categories_url"
+                                            t-att-class="'active' if not active_category_id else None"
+                                            t-att-aria-current="'page' if not active_category_id else None">All</a>
+                                    </li>
 
-                                    <li><a href="#">Basketball</a></li>
-
-                                    <li><a href="#">Lifestyle</a></li>
-
-                                    <li><a href="#">Training</a></li>
-
-                                    <li><a href="#">Skateboarding</a></li>
-
-                                    <li><a href="#">Outdoor</a></li>
+                                    <t t-foreach="category_links" t-as="category">
+                                        <li>
+                                            <a t-att-href="category['url']"
+                                                t-att-class="'active' if category['active'] else None"
+                                                t-att-aria-current="'page' if category['active'] else None">
+                                                <t t-out="category['name']"/>
+                                            </a>
+                                        </li>
+                                    </t>
 
                                 </ul>
 
@@ -78,45 +82,17 @@
 
                                 <h3>Brands</h3>
 
-                                <label class="sn-checkbox">
+                                <t t-foreach="brand_links" t-as="brand_link">
+                                    <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                                        <input type="checkbox"
+                                            t-att-checked="'checked' if brand_link['active'] else None"
+                                            t-attf-onchange="location.href='#{brand_link['url']}'"/>
 
-                                    Nike
+                                        <t t-out="brand_link['label']"/>
 
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Adidas
-
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Puma
-
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    New Balance
-
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Converse
-
-                                </label>
+                                    </label>
+                                </t>
 
                             </div>
 
@@ -126,17 +102,12 @@
 
                                 <div class="sn-size-list">
 
-                                    <button>39</button>
-
-                                    <button>40</button>
-
-                                    <button>41</button>
-
-                                    <button>42</button>
-
-                                    <button>43</button>
-
-                                    <button>44</button>
+                                    <t t-foreach="size_links" t-as="size_link">
+                                        <button t-attf-class="#{'active' if size_link['active'] else ''}"
+                                            t-attf-onclick="location.href='#{size_link['url']}'">
+                                            <t t-out="size_link['label']"/>
+                                        </button>
+                                    </t>
 
                                 </div>
 
@@ -148,17 +119,11 @@
 
                                 <div class="sn-color-list">
 
-                                    <span class="sn-color black"></span>
-
-                                    <span class="sn-color white"></span>
-
-                                    <span class="sn-color orange"></span>
-
-                                    <span class="sn-color blue"></span>
-
-                                    <span class="sn-color red"></span>
-
-                                    <span class="sn-color green"></span>
+                                    <t t-foreach="color_links" t-as="color_link">
+                                        <span t-attf-class="sn-color #{color_link['key']} #{'active' if color_link['active'] else ''}"
+                                            t-att-title="color_link['label']"
+                                            t-attf-onclick="location.href='#{color_link['url']}'"></span>
+                                    </t>
 
                                 </div>
 
@@ -168,9 +133,36 @@
 
                                 <h3>Price</h3>
 
-                                <div class="sn-price-slider">
+                                <div class="sn-price-range">
 
-                                    Price Slider
+                                    <div class="sn-price-range-values">
+                                        <span>$<t t-out="active_price_min"/></span>
+                                        <span>$<t t-out="active_price_max"/></span>
+                                    </div>
+
+                                    <div class="sn-price-range-slider">
+
+                                        <div class="sn-price-range-track"></div>
+                                        <div class="sn-price-range-fill"
+                                            t-attf-style="left:#{price_min_pct}%;right:#{100 - price_max_pct}%;"></div>
+
+                                        <input type="range"
+                                            class="sn-price-range-min"
+                                            t-att-min="catalog_price_min"
+                                            t-att-max="catalog_price_max"
+                                            t-att-value="active_price_min"
+                                            aria-label="Prix minimum"
+                                            onchange="var u=new window.URL(window.location.href); u.searchParams.set('price_min', Math.min(this.value, u.searchParams.get('price_max') || this.max)); u.searchParams.delete('page'); window.location.href=u.toString();"/>
+
+                                        <input type="range"
+                                            class="sn-price-range-max"
+                                            t-att-min="catalog_price_min"
+                                            t-att-max="catalog_price_max"
+                                            t-att-value="active_price_max"
+                                            aria-label="Prix maximum"
+                                            onchange="var u=new window.URL(window.location.href); u.searchParams.set('price_max', Math.max(this.value, u.searchParams.get('price_min') || this.min)); u.searchParams.delete('page'); window.location.href=u.toString();"/>
+
+                                    </div>
 
                                 </div>
 
@@ -180,21 +172,17 @@
 
                                 <h3>Availability</h3>
 
-                                <label class="sn-checkbox">
+                                <t t-foreach="availability_links" t-as="avail_link">
+                                    <label class="sn-checkbox">
 
-                                    <input type="checkbox"/>
+                                        <input type="checkbox"
+                                            t-att-checked="'checked' if avail_link['active'] else None"
+                                            t-attf-onchange="location.href='#{avail_link['url']}'"/>
 
-                                    In Stock
+                                        <t t-out="avail_link['label']"/>
 
-                                </label>
-
-                                <label class="sn-checkbox">
-
-                                    <input type="checkbox"/>
-
-                                    Out of Stock
-
-                                </label>
+                                    </label>
+                                </t>
 
                             </div>
 
@@ -215,10 +203,11 @@
                                     <p>
 
                                         Showing
-                                        <strong>1 - 12</strong>
+                                        <strong><t t-out="range_start"/> - <t t-out="range_end"/></strong>
                                         of
-                                        <strong>120</strong>
+                                        <strong><t t-out="total_products"/></strong>
                                         products
+                                        <t t-if="search"> for "<t t-out="search"/>"</t>
 
                                     </p>
 
@@ -238,31 +227,16 @@
 
                                         </label>
 
-                                        <select id="sort-products">
+                                        <select id="sort-products"
+                                            onchange="window.location.href = this.options[this.selectedIndex].dataset.url;">
 
-                                            <option value="popular">
-
-                                                Popularity
-
-                                            </option>
-
-                                            <option value="newest">
-
-                                                Newest
-
-                                            </option>
-
-                                            <option value="price-low">
-
-                                                Price : Low to High
-
-                                            </option>
-
-                                            <option value="price-high">
-
-                                                Price : High to Low
-
-                                            </option>
+                                            <t t-foreach="sort_links" t-as="sort_option">
+                                                <option t-att-value="sort_option['value']"
+                                                    t-att-data-url="sort_option['url']"
+                                                    t-att-selected="'selected' if sort_option['value'] == sort_by else None">
+                                                    <t t-out="sort_option['label']"/>
+                                                </option>
+                                            </t>
 
                                         </select>
 
@@ -287,9 +261,16 @@
 
                             <!-- Active Filters -->
 
-                            <div class="sn-active-filters">
+                            <div class="sn-active-filters" t-if="has_active_filters">
 
-                                <button class="sn-clear-filters">Clear All</button>
+                                <t t-foreach="active_filter_tags" t-as="filter_tag">
+                                    <a class="sn-filter-chip" t-att-href="filter_tag['url']">
+                                        <t t-out="filter_tag['label']"/>
+                                        <span aria-hidden="true">×</span>
+                                    </a>
+                                </t>
+
+                                <a class="sn-clear-filters" t-att-href="clear_filters_url">Clear All</a>
 
                             </div>
 
@@ -297,9 +278,21 @@
 
                             <div class="sn-product-grid">
 
-                                <t t-foreach="range(12)" t-as="product">
+                                <t t-foreach="products" t-as="product">
 
-                                    <t t-call="sneakers.product_card"/>
+                                    <t t-call="sneakers.product_card">
+                                        <t t-set="product_id" t-value="product['product_id']"/>
+                                        <t t-set="product_name" t-value="product['product_name']"/>
+                                        <t t-set="product_image" t-value="product['product_image']"/>
+                                        <t t-set="product_price" t-value="product['product_price']"/>
+                                        <t t-set="product_old_price" t-value="product['product_old_price']"/>
+                                        <t t-set="product_badge" t-value="product['product_badge']"/>
+                                        <t t-set="product_url" t-value="product['product_url']"/>
+                                        <t t-set="product_brand" t-value="product['product_brand']"/>
+                                        <t t-set="product_color" t-value="product['product_color']"/>
+                                        <t t-set="product_size" t-value="product['product_size']"/>
+                                        <t t-set="product_in_stock" t-value="product['product_in_stock']"/>
+                                    </t>
 
                                 </t>
 
@@ -307,17 +300,20 @@
 
                             <!-- Pagination -->
 
-                            <div class="sn-shop-pagination">
-                                <nav class="sn-pagination">
-                                    <button class="sn-page-btn"><i class="fa fa-chevron-left"></i></button>
-                                    <button class="sn-page-btn active">1</button>
-                                    <button class="sn-page-btn">2</button>
-                                    <button class="sn-page-btn">3</button>
-                                    <span class="sn-pagination-dots">...</span>
-                                    <button class="sn-page-btn">10</button>
-                                    <button class="sn-page-btn"><i class="fa fa-chevron-right"></i></button>
-                                </nav>
-                            </div>
+                            <t t-if="total_pages > 1">
+                                <div class="sn-shop-pagination">
+                                    <nav class="sn-pagination">
+                                        <a t-if="prev_url" t-att-href="prev_url" class="sn-page-btn"><i class="fa fa-chevron-left"></i></a>
+                                        <t t-foreach="pages" t-as="page_link">
+                                            <a t-att-href="page_link['url']"
+                                                t-attf-class="sn-page-btn#{' active' if page_link['active'] else ''}">
+                                                <t t-out="page_link['number']"/>
+                                            </a>
+                                        </t>
+                                        <a t-if="next_url" t-att-href="next_url" class="sn-page-btn"><i class="fa fa-chevron-right"></i></a>
+                                    </nav>
+                                </div>
+                            </t>
 
 
                         </div>

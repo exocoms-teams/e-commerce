@@ -14,7 +14,7 @@
 
                         <span class="sn-section-subtitle">Premium Sneakers</span>
 
-                        <h2>Nike Air Max 270</h2>
+                        <h2><t t-out="product_name"/></h2>
 
                         <p>
 
@@ -42,8 +42,8 @@
                             <div class="sn-product-main-image">
 
                                 <img
-                                    src="/sneakers/static/src/img/products/product-1.jpg"
-                                    alt="Nike Air Max 270"/>
+                                    t-att-src="product_image"
+                                    t-att-alt="product_name"/>
 
                             </div>
 
@@ -90,13 +90,13 @@
 
                             <!-- Product Title -->
                             <div class="sn-product-title">
-                                <span class="sn-product-brand">Nike</span>
+                                <span class="sn-product-brand"><t t-out="product_brand"/></span>
 
-                                <h1>Air Max 270</h1>
+                                <h1><t t-out="product_name"/></h1>
 
-                                <span class="sn-product-sku">
+                                <span class="sn-product-sku" t-if="product.default_code">
 
-                                    SKU : NK-AM270-001
+                                    SKU : <t t-out="product.default_code"/>
 
                                 </span>
 
@@ -106,25 +106,20 @@
                              <div class="sn-product-rating">
 
                                 <div class="sn-stars">
-
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-
+                                    <t t-foreach="range(5)" t-as="star_index">
+                                        <i t-attf-class="fa fa-star#{'' if star_index &lt; round(rating_avg) else '-o'}"/>
+                                    </t>
                                 </div>
 
-                                <span class="sn-rating-value">
+                                <span class="sn-rating-value" t-if="rating_count">
 
-                                    4.9
+                                    <t t-out="'%.1f' % rating_avg"/>
 
                                 </span>
 
                                 <span class="sn-review-count">
-
-                                    (124 Reviews)
-
+                                    <t t-if="rating_count">(<t t-out="rating_count"/> Reviews)</t>
+                                    <t t-else="">No reviews yet</t>
                                 </span>
 
                             </div>
@@ -134,7 +129,7 @@
 
                                 <span class="sn-current-price">
 
-                                    $180.00
+                                    <t t-out="product_price_html"/>
 
                                 </span>
 
@@ -153,26 +148,24 @@
                             </div>
 
                             <!-- Short Description -->
-                            <div class="sn-product-description-short">
+                            <div class="sn-product-description-short" t-if="product_description">
 
                                 <p>
 
-                                    The Nike Air Max 270 combines modern style with exceptional comfort.
-                                    Featuring lightweight cushioning and breathable materials,
-                                    it is designed for everyday wear and athletic performance.
+                                    <t t-out="product_description"/>
 
                                 </p>
 
                             </div>
 
                             <!-- Colors -->
-                            <div class="sn-product-colors">
+                            <div class="sn-product-colors" t-if="product_color">
 
                                 <h4>Color</h4>
 
                                 <div class="sn-color-options">
 
-                                    <span class="sn-color active black"></span>
+                                    <span t-attf-class="sn-color active #{product_color_key}"></span>
 
                                     <span class="sn-color white"></span>
 
@@ -185,7 +178,7 @@
                             </div>
 
                             <!-- Sizes -->
-                            <div class="sn-product-sizes">
+                            <div class="sn-product-sizes" t-if="product_size">
 
                                 <h4>Size</h4>
 
@@ -195,7 +188,7 @@
 
                                     <button>40</button>
 
-                                    <button class="active">41</button>
+                                    <button class="active"><t t-out="product_size"/></button>
 
                                     <button>42</button>
 
@@ -229,18 +222,21 @@
 
                             <!-- Action Buttons -->
                             <div class="sn-buttons">
-                                    <a href="/shop-sneakers" class="sn-btn-primary">Add to Cart</a>
+                                    <form t-attf-action="/cart/add/#{product.id}" method="post" class="sn-add-to-cart-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="sn-btn-primary">Add to Cart</button>
+                                    </form>
                                     <a href="#categories" class="sn-btn-outline-wl">Buy Now</a>
                             </div>
 
                             <!-- Product Meta -->
                             <div class="sn-product-meta">
 
-                                <div>
+                                <div t-if="product_category">
 
                                     <strong>Category :</strong>
 
-                                    Running
+                                    <t t-out="product_category"/>
 
                                 </div>
 
@@ -248,7 +244,7 @@
 
                                     <strong>Brand :</strong>
 
-                                    Nike
+                                    <t t-out="product_brand"/>
 
                                 </div>
 
@@ -256,7 +252,7 @@
 
                                     <strong>Availability :</strong>
 
-                                    In Stock
+                                    <t t-out="'In Stock' if product_in_stock else 'Out of Stock'"/>
 
                                 </div>
 
@@ -402,36 +398,20 @@
                     <!-- Products Grid -->
                     <div class="sn-products-grid">
 
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Nike Air Max 270'"/>
-                            <t t-set="product_price" t-value="'$189.00'"/>
-                            <t t-set="product_old_price" t-value="'$229.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-1.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
-                        </t>
-
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Adidas Ultraboost'"/>
-                            <t t-set="product_price" t-value="'$175.00'"/>
-                            <t t-set="product_old_price" t-value="'$210.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-2.jpg'"/>
-                            <t t-set="product_badge" t-value="'HOT'"/>
-                        </t>
-
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Puma RS-X'"/>
-                            <t t-set="product_price" t-value="'$160.00'"/>
-                            <t t-set="product_old_price" t-value="'$200.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-3.jpg'"/>
-                            <t t-set="product_badge" t-value="'SALE'"/>
-                        </t>
-
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_name" t-value="'Reebok Classic'"/>
-                            <t t-set="product_price" t-value="'$140.00'"/>
-                            <t t-set="product_old_price" t-value="'$180.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-4.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
+                        <t t-foreach="related_cards" t-as="card">
+                            <t t-call="sneakers.product_card">
+                                <t t-set="product_id" t-value="card['product_id']"/>
+                                <t t-set="product_name" t-value="card['product_name']"/>
+                                <t t-set="product_price" t-value="card['product_price']"/>
+                                <t t-set="product_old_price" t-value="card['product_old_price']"/>
+                                <t t-set="product_image" t-value="card['product_image']"/>
+                                <t t-set="product_badge" t-value="card['product_badge']"/>
+                                <t t-set="product_url" t-value="card['product_url']"/>
+                                <t t-set="product_brand" t-value="card['product_brand']"/>
+                                <t t-set="product_color" t-value="card['product_color']"/>
+                                <t t-set="product_size" t-value="card['product_size']"/>
+                                <t t-set="product_in_stock" t-value="card['product_in_stock']"/>
+                            </t>
                         </t>
 
                     </div>

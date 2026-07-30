@@ -3,7 +3,7 @@
     var cartSection = document.querySelector(".sn-cart");
     if (!cartSection) return;
 
-    // BOUTONS +/- QUANTITÉ 
+    // BOUTONS +/- QUANTITÉ
     cartSection.addEventListener("click", function (e) {
 
         var btn = e.target.closest(".sn-qty-btn");
@@ -25,7 +25,6 @@
         }
 
         updateItemTotal(cartItem, input.value);
-        updateCartTotals();
         syncWithBackend(cartItem, input.value);
     });
 
@@ -40,7 +39,6 @@
         if (isNaN(val) || val < 1) { e.target.value = 1; val = 1; }
 
         updateItemTotal(cartItem, val);
-        updateCartTotals();
         syncWithBackend(cartItem, val);
     });
 
@@ -53,21 +51,23 @@
         var cartItem = removeBtn.closest(".sn-cart-item");
         if (!cartItem) return;
 
-        // Animation de sortie
-        cartItem.style.transition = "opacity 0.3s, transform 0.3s";
-        cartItem.style.opacity    = "0";
-        cartItem.style.transform  = "translateX(40px)";
+        var lineId = cartItem.dataset.lineId;
 
-        /* backend */
+        removeLineBackend(lineId).then(function (data) {
+            // Animation de sortie
+            cartItem.style.transition = "opacity 0.3s, transform 0.3s";
+            cartItem.style.opacity    = "0";
+            cartItem.style.transform  = "translateX(40px)";
 
-        setTimeout(function () {
-            cartItem.remove();
-            updateCartTotals();
-            checkEmptyCart();
-        }, 300);
+            setTimeout(function () {
+                cartItem.remove();
+                applyCartTotals(data);
+                checkEmptyCart();
+            }, 300);
+        });
     });
 
-    // CALCUL TOTAL PAR ARTICLE 
+    // CALCUL TOTAL PAR ARTICLE (estimation optimiste en attendant la réponse serveur)
     function updateItemTotal(cartItem, qty) {
         var priceEl = cartItem.querySelector(".sn-cart-price");
         var totalEl = cartItem.querySelector(".sn-cart-total");
@@ -79,43 +79,15 @@
         totalEl.textContent = formatPrice(total);
     }
 
-    // CALCUL TOTAUX GÉNÉRAUX
-    function updateCartTotals() {
-        var items        = cartSection.querySelectorAll(".sn-cart-item");
-        var subtotal     = 0;
+    // MISE À JOUR DES TOTAUX GÉNÉRAUX À PARTIR DE LA RÉPONSE SERVEUR (source de vérité)
+    function applyCartTotals(data) {
+        if (!data) return;
 
-        items.forEach(function (item) {
-            var input    = item.querySelector("input[type='number']");
-            var priceEl  = item.querySelector(".sn-cart-price");
-            if (!input || !priceEl) return;
+        setHtmlIfExists(".sn-order-subtotal", data.subtotal_html);
+        setHtmlIfExists(".sn-order-tax",      data.tax_html);
+        setHtmlIfExists(".sn-order-total",    data.total_html);
 
-            var price = parsePrice(priceEl.textContent);
-            var qty   = parseInt(input.value, 10) || 1;
-            subtotal += price * qty;
-        });
-
-        // Livraison
-        var shippingRate  = subtotal >= 100 ? 0 : 15;
-        var discount      = getAppliedDiscount();
-        var total         = Math.max(0, subtotal - discount + shippingRate);
-        var itemCount     = Array.from(items).reduce(function (acc, item) {
-            var input = item.querySelector("input[type='number']");
-            return acc + (input ? parseInt(input.value, 10) || 1 : 1);
-        }, 0);
-
-        // Mise à jour DOM
-        setTextIfExists(".sn-order-subtotal",  formatPrice(subtotal));
-        setTextIfExists(".sn-order-shipping",  shippingRate === 0 ? "Free" : formatPrice(shippingRate));
-        setTextIfExists(".sn-order-discount",  discount > 0 ? "-" + formatPrice(discount) : "-");
-        setTextIfExists(".sn-order-total",     formatPrice(total));
-
-        // Badge panier dans le header
-        updateCartBadge(itemCount);
-    }
-
-    function getAppliedDiscount() {
-        var discountEl = document.querySelector(".sn-promo-discount");
-        return discountEl ? parsePrice(discountEl.textContent) : 0;
+        updateCartBadge(data.cart_quantity);
     }
 
     // CODE PROMO
@@ -151,7 +123,7 @@
 
         /* backend */
 
-        // Codes démo frontend 
+        // Codes démo frontend
         var PROMO_CODES = {
             "SNEAKERS10": { type: "percent", value: 10, msg: "10% de réduction appliquée !" },
             "SUMMER20":   { type: "percent", value: 20, msg: "20% de réduction Summer Sale !" },
@@ -187,8 +159,6 @@
         msgEl.className     = "sn-promo-message sn-promo-message--success";
         input.value         = "";
         input.disabled      = true;
-
-        updateCartTotals();
     }
 
     // PANIER VIDE
@@ -215,11 +185,9 @@
                 checkoutBtn.textContent = "Panier vide";
             }
         }
-
-        updateCartTotals();
     }
 
-    // BADGE PANIER 
+    // BADGE PANIER (header, présent sur toutes les pages)
     function updateCartBadge(count) {
         var badge = document.querySelector(".sn-cart-count");
         if (!badge) return;
@@ -232,11 +200,31 @@
         badge.classList.add("sn-cart-count--bump");
     }
 
-    // SYNC BACKEND 
+    // SYNC BACKEND — vrai panier Odoo (sale.order via /cart/update_line)
     function syncWithBackend(cartItem, qty) {
-        var productId = cartItem.dataset.productId || "0";
-        /* backend */
-        console.log("[cart.js] Sync backend : productId=" + productId + ", qty=" + qty);
+        var lineId = cartItem.dataset.lineId;
+        if (!lineId) return;
+
+        jsonRpc("/cart/update_line", { line_id: lineId, qty: qty }).then(function (data) {
+            if (!data || data.error) return;
+            var totalEl = cartItem.querySelector(".sn-cart-total");
+            if (totalEl && data.line_total_html) totalEl.innerHTML = data.line_total_html;
+            applyCartTotals(data);
+        });
+    }
+
+    function removeLineBackend(lineId) {
+        return jsonRpc("/cart/remove_line", { line_id: lineId });
+    }
+
+    function jsonRpc(url, params) {
+        return fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: params }),
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) { return data.result; });
     }
 
     function parsePrice(str) {
@@ -247,12 +235,12 @@
         return "$" + amount.toFixed(2);
     }
 
-    function setTextIfExists(selector, text) {
+    function setHtmlIfExists(selector, html) {
         var el = document.querySelector(selector);
-        if (el) el.textContent = text;
+        if (el && html != null) el.innerHTML = html;
     }
 
     //Initialisation
-    updateCartTotals();
+    checkEmptyCart();
 
 })();
