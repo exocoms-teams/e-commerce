@@ -41,12 +41,26 @@
     border-color: var(--travel-primary) !important;
 }
 
-// Barre de statut (statusbar widget)
+// Barre de statut (statusbar widget) - couleur generique de secours
 .o_statusbar_status .o_arrow_button_current,
 .o_form_statusbar .o_arrow_button_current,
 .o_arrow_button.o_arrow_button_current {
     background-color: var(--travel-primary) !important;
     color: #fff !important;
+}
+
+// Barre de statut Travel Reservation - couleur specifique par etat (guide equipe, page 3)
+// Ordre : draft, en_attente, confirmed, cancel (statusbar_visible dans travel_reservation_views.xml)
+// Cible par position car Odoo ne pose pas de classe stable par valeur de selection sur ce widget.
+// A verifier visuellement : si la position ne correspond pas (ex: bouton retour au brouillon
+// modifie l'ordre affiche), ajuster les nth-child ci-dessous.
+.o_statusbar_status, .o_form_statusbar {
+    .o_arrow_button_current {
+        &:nth-child(1) { background-color: #E2E8F0 !important; color: #475569 !important; }
+        &:nth-child(2) { background-color: #FEF3C7 !important; color: #B45309 !important; }
+        &:nth-child(3) { background-color: #DCFCE7 !important; color: #15803D !important; }
+        &:nth-child(4) { background-color: #FEE2E2 !important; color: #B91C1C !important; }
+    }
 }
 
 // Titres de formulaire
