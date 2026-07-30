@@ -23,6 +23,7 @@ Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mes
         'data/website_data.xml',
         'data/seo_data.xml',
         'data/cron.xml',
+        'data/time_to_build.xml',
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/layout.xml',

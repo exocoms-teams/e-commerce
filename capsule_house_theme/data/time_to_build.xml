@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 1. Création de l'attribut Durée -->
+        <record id="product_attribute_duree" model="product.attribute">
+            <field name="name">Durée</field>
+            <field name="display_type">radio</field>
+            <field name="create_variant">always</field>
+        </record>
+
+        <!-- 2. Création des valeurs pour l'attribut -->
+        <record id="product_attribute_value_1h" model="product.attribute.value">
+            <field name="name">1 Heure</field>
+            <field name="attribute_id" ref="product_attribute_duree"/>
+        </record>
+
+        <record id="product_attribute_value_1d" model="product.attribute.value">
+            <field name="name">1 Jour</field>
+            <field name="attribute_id" ref="product_attribute_duree"/>
+        </record>
+    </data>
+</odoo>
