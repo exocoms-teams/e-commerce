@@ -250,7 +250,27 @@ class SneakersController(http.Controller):
 
     @http.route('/contact', type='http', auth='public', website=True, sitemap=True)
     def contact(self, **kwargs):
-        return request.render('sneakers.page_contact', {})
+        company = request.env.company
+        company_name = company.name
+        company_phone = company.phone or ''
+        company_email = company.email or ''
+        company_street = company.street or ''
+        company_street2 = company.street2 or ''
+        company_city = company.city or ''
+        company_zip = company.zip or ''
+        company_state = company.state_id.name if company.state_id else ''
+        company_country = company.country_id.name if company.country_id else ''
+
+        address_parts = [p for p in [company_street, company_street2, company_city, company_zip, company_state, company_country] if p]
+        company_address = ', '.join(address_parts) if address_parts else ''
+
+        values = {
+            'company_name': company_name,
+            'company_phone': company_phone,
+            'company_email': company_email,
+            'company_address': company_address,
+        }
+        return request.render('sneakers.page_contact', values)
 
     @http.route('/terms', type='http', auth='public', website=True, sitemap=True)
     def terms(self, **kwargs):
