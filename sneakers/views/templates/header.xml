@@ -23,11 +23,14 @@
 
                     <div class="sn-topbar-right">
 
-                        <select class="sn-language-switcher" aria-label="Change language">
-                            <option value="en">English</option>
-                            <option value="ar">العربية</option>
-                            <option value="fr">Français</option>
-                        </select>
+                        <form method="post" action="/website/lang/set" class="sn-language-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.session.csrf_token"/>
+                            <select name="lang" class="sn-language-switcher" aria-label="Change language" onchange="this.form.submit()">
+                                <option value="en" t-att-selected="'en' == request.context.get('lang', 'en')">English</option>
+                                <option value="fr" t-att-selected="'fr' == request.context.get('lang', 'en')">Français</option>
+                                <option value="ar" t-att-selected="'ar' == request.context.get('lang', 'en')">العربية</option>
+                            </select>
+                        </form>
 
                     </div>
 

@@ -44,6 +44,7 @@
             'sneakers/static/src/css/confirmation.css',
             'sneakers/static/src/css/wishlist.css',
             'sneakers/static/src/css/contact.css',
+            'sneakers/static/src/css/rtl.css',
 
             'sneakers/static/src/css/footer.css',
             'sneakers/static/src/css/responsive.css',
