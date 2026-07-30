@@ -4,7 +4,7 @@
     'summary': 'Gestion des yachts, jets et services VIP',
     'author': 'Exocoms',
     'category': 'eCommerce',
-    'depends': ['product', 'website_sale'],
+    'depends': ['product', 'website_sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/product_views.xml',
