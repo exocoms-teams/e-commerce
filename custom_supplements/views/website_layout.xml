@@ -11,9 +11,13 @@
                         <t t-call="website.placeholder_header_brand"/>
                         <ul class="navbar-nav me-auto">
                                 <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                    <t t-call="website.submenu"
-                                    item_class="nav-item"
-                                    link_class="nav-link"/>
+                                    <t t-call="website.submenu">
+                                        <t t-set="is_mobile" t-value="False"/>
+                                        <t t-set="is_vertical_nav" t-value="False"/>
+                                        <t t-set="offcanvas_is_leftside" t-value="False"/>
+                                        <t t-set="item_class" t-value="'nav-item'"/>
+                                        <t t-set="link_class" t-value="'nav-link'"/>
+                                    </t>
                                 </t>
                         </ul>
                         <ul class="navbar-nav align-items-center ms-auto gap-2">
@@ -38,7 +42,7 @@
                         </ul>
                     </div>
                 </nav>
-                <nav class="d-lg-none d-block navbar">
+                <nav class="cs-header d-lg-none d-block navbar">
                     <div class="container flex-wrap justify-content-between">
                         <t t-call="website.placeholder_header_brand"/>
                         <t t-call="website_sale.header_cart_link">
@@ -64,10 +68,12 @@
                             </div>
                             <div class="offcanvas-body">
                                 <ul class="navbar-nav">
-                                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                        <t t-call="website.submenu"
-                                        item_class="nav-item"
-                                        link_class="nav-link"/>
+                                    <t t-call="website.submenu">
+                                        <t t-set="is_mobile" t-value="True"/>
+                                        <t t-set="is_vertical_nav" t-value="False"/>
+                                        <t t-set="offcanvas_is_leftside" t-value="False"/>
+                                        <t t-set="item_class" t-value="'nav-item'"/>
+                                        <t t-set="link_class" t-value="'nav-link'"/>
                                     </t>
                                 </ul>
                             </div>
