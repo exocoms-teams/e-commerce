@@ -284,132 +284,71 @@
 
             <!-- 2. Styles CSS unifiés pour la boutique -->
             <style>
-                /* --- A. FOND GLOBAL ET BARRE DE RECHERCHE --- */
-                body #wrapwrap, main {
-                    background-color: #111827 !important;
-                    color: #E5E7EB !important;
-                }
-                form.o_wsale_products_searchbar_form {
-                    display: none !important; /* Cache la recherche */
-                }
-
-                /* --- B. CARTES PRODUITS (Bento Dark Style) --- */
-                .o_wsale_products_main_row .oe_product_cart {
-                    border: 1px solid #374151 !important;
-                    border-radius: 16px !important;
-                    background-color: #1F2937 !important;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
-                    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
-                    overflow: hidden;
-                    margin-bottom: 1rem;
-                }
-                .o_wsale_products_main_row .oe_product_cart:hover {
-                    transform: translateY(-8px) !important;
-                    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15) !important;
-                    border-color: #10B981 !important;
+                /* =========================================
+                   1. PADDING DU TEXTE DES CARTES PRODUITS
+                   ========================================= */
+                /* Ajoute un bel espace autour du titre et du prix */
+                .o_wsale_products_main_row .oe_product_cart .o_wsale_product_information {
+                    padding: 1.25rem !important;
+                    background-color: #1F2937 !important; /* S'assure que le fond reste sombre */
                 }
 
-                /* --- C. TEXTES ET PRIX DES PRODUITS --- */
-                /* Forcer les titres en blanc clair */
-                .o_wsale_products_main_row .oe_product_cart h6 a,
-                .o_wsale_products_main_row .oe_product_cart .h6 a,
-                .o_wsale_products_main_row .oe_product_cart .o_wsale_products_item_title a,
-                .o_wsale_products_main_row .oe_product_cart a.text-primary,
-                .o_wsale_products_main_row .oe_product_cart a.text-dark,
-                .o_wsale_products_main_row .oe_product_cart a.text-body {
-                    font-weight: 700 !important;
-                    color: #F9FAFB !important;
-                    text-decoration: none !important;
+                /* =========================================
+                   2. DÉPLACEMENT DU TAG (Vegan)
+                   ========================================= */
+                /* Déplace les badges vers le bas à droite pour libérer le coeur (Wishlist) */
+                .o_wsale_products_main_row .oe_product_cart .oe_product_image .badge,
+                .o_wsale_products_main_row .oe_product_cart .oe_product_image .o_ribbon {
+                    top: auto !important;
+                    bottom: 15px !important;
+                    right: 15px !important;
+                    left: auto !important;
+                    z-index: 10 !important;
                 }
-                /* Prix actuel en vert */
-                .o_wsale_products_main_row .oe_product_cart .product_price,
-                .o_wsale_products_main_row .oe_product_cart .oe_currency_value {
+
+                /* =========================================
+                   3. FIL D'ARIANE (BREADCRUMB)
+                   ========================================= */
+                /* Styliser les liens de navigation (Home > Shop) en vert */
+                .breadcrumb .breadcrumb-item a {
                     color: #10B981 !important;
-                    font-weight: 700 !important;
-                }
-                /* Ancien prix barré en gris */
-                .o_wsale_products_main_row .oe_product_cart .text-danger,
-                .o_wsale_products_main_row .oe_product_cart del,
-                .o_wsale_products_main_row .oe_product_cart .text-muted {
-                    color: #9CA3AF !important; 
-                }
-
-                /* --- D. BOUTONS DE CATÉGORIES (Pilules) --- */
-                .o_wsale_products_main_row .nav-pills .nav-link {
-                    border-radius: 30px !important;
-                    padding: 10px 24px !important;
                     font-weight: 600 !important;
+                    text-decoration: none !important;
+                    transition: color 0.2s ease;
+                }
+                .breadcrumb .breadcrumb-item a:hover {
+                    color: #059669 !important; /* Vert plus foncé au survol */
+                }
+                /* Élément actif (page courante) en gris clair */
+                .breadcrumb .breadcrumb-item.active {
                     color: #9CA3AF !important;
-                    background-color: #1F2937 !important;
-                    border: 1px solid #374151 !important;
-                    margin-right: 8px;
-                    margin-bottom: 8px;
-                    transition: all 0.3s ease;
                 }
-                .o_wsale_products_main_row .nav-pills .nav-link.active {
-                    background-color: #10B981 !important;
-                    color: white !important;
-                    border-color: #10B981 !important;
-                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
-                }
-                .o_wsale_products_main_row .nav-pills .nav-link:hover:not(.active) {
-                    background-color: #374151 !important;
-                    color: #F9FAFB !important;
+                /* Séparateurs (/) en gris */
+                .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+                    color: #6B7280 !important;
                 }
 
-                /* --- E. BARRE LATÉRALE ET FILTRES --- */
-                /* Enlever bordure du titre principal */
-                .o_wsale_products_main_row .border-bottom {
-                    border-bottom: none !important;
+                /* =========================================
+                   4. FORÇAGE EXTRÊME DU SLIDER DE PRIX
+                   ========================================= */
+                /* Odoo utilise parfois des variables CSS globales ou de nouveaux sélecteurs pour les sliders */
+                .o_wsale_products_main_row {
+                    --primary: #10B981 !important; 
+                    --form-range-thumb-bg: #10B981 !important;
                 }
-                /* Titres principaux (All products, etc) */
-                .o_wsale_products_main_row h6, 
-                .o_wsale_products_main_row h3, 
-                #products_grid_before h6 {
-                    font-weight: 800 !important;
-                    letter-spacing: -0.5px;
-                    color: #F9FAFB !important;
-                }
-                /* Structure des accordéons de filtres */
-                #products_grid_before .accordion-item {
-                    background-color: transparent !important;
-                    border: none !important;
-                    border-bottom: 1px solid #374151 !important;
-                }
-                /* Titres des filtres (Color, Size...) */
-                #products_grid_before .accordion-button {
-                    color: #F9FAFB !important;
-                    background-color: transparent !important;
-                    box-shadow: none !important;
-                    font-weight: 700 !important;
-                    padding-left: 0 !important;
-                }
-                /* Flèche (chevron) blanche */
-                #products_grid_before .accordion-button::after {
-                    filter: brightness(0) invert(1);
-                }
-                /* Texte des options (ex: Vegan) */
-                #products_grid_before .form-check-label {
-                    color: #D1D5DB !important;
-                }
-
-                /* --- F. SLIDER DE PRIX (Passage au vert) --- */
-                .irs-line { background-color: #374151 !important; }
-                .irs-bar { background-color: #10B981 !important; }
-                .irs-handle { 
-                    border: 2px solid #10B981 !important; 
-                    background-color: #ffffff !important; 
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
-                    cursor: pointer !important;
-                }
-                .irs-from, .irs-to, .irs-single { 
+                /* Ciblage des thèmes spécifiques IonRangeSlider d'Odoo */
+                .irs--square .irs-bar, .irs--round .irs-bar, .irs-bar { 
                     background-color: #10B981 !important; 
-                    border-radius: 20px !important; 
-                    color: #ffffff !important; 
                 }
-                .irs-min, .irs-max { 
-                    color: #6B7280 !important; 
-                    background-color: transparent !important; 
+                .irs--square .irs-handle, .irs--round .irs-handle, .irs-handle { 
+                    border-color: #10B981 !important; 
+                }
+                /* Ciblage des sliders HTML natifs (au cas où Odoo 19 a changé son moteur) */
+                input[type=range]::-webkit-slider-thumb {
+                    background: #10B981 !important;
+                }
+                input[type=range]::-moz-range-thumb {
+                    background: #10B981 !important;
                 }
             </style>
         </xpath>
