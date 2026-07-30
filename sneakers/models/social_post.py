@@ -21,7 +21,7 @@ class SocialPost(models.Model):
     ], default='draft', required=True, index=True)
     post_url = fields.Char(readonly=True)
     published_date = fields.Datetime()
-    image_ids = fields.Many2many('ir.attachment', string='Images')
+    image_ids = fields.Many2many('ir.attachment', relation='social_post_attachment_rel', string='Images')
 
     def action_mark_published(self, url=False):
         self.write({
