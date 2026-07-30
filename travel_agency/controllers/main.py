@@ -550,7 +550,7 @@ class TravelController(http.Controller):
     # ROUTES API (JSON) pour chargement asynchrone
     # ============================================
     
-    @http.route('/api/guides', type='json', auth='public', methods=['GET'], website=True)
+    @http.route('/api/guides', type='jsonrpc', auth='public', methods=['GET'], website=True)
     def api_guides_list(self, **kwargs):
         """
         API JSON pour la liste des guides
@@ -568,7 +568,7 @@ class TravelController(http.Controller):
             } for guide in guides]
         }
 
-    @http.route('/api/leisures', type='json', auth='public', methods=['GET'], website=True)
+    @http.route('/api/leisures', type='jsonrpc', auth='public', methods=['GET'], website=True)
     def api_leisures_list(self, **kwargs):
         """
         API JSON pour la liste des loisirs
@@ -586,7 +586,7 @@ class TravelController(http.Controller):
             } for leisure in leisures]
         }
 
-    @http.route('/api/rentals', type='json', auth='public', methods=['GET'], website=True)
+    @http.route('/api/rentals', type='jsonrpc', auth='public', methods=['GET'], website=True)
     def api_rentals_list(self, **kwargs):
         """
         API JSON pour la liste des locations
