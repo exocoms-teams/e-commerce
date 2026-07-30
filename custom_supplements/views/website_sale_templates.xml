@@ -263,13 +263,13 @@
 
 
 <!-- =====================================================================
-         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (/SHOP) (DARK MODE COMPLET)
+         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (DARK MODE COMPLET)
          ===================================================================== -->
     
     <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
         
-        <!-- Injection au tout début du conteneur principal de la page (#wrap) -->
-        <xpath expr="//div[@id='wrap']/*[1]" position="before">
+        <!-- Injection hyper-stable : juste avant le conteneur principal -->
+        <xpath expr="//div[@id='wrap']" position="before">
             
             <!-- 1. Bannière d'en-tête de la boutique -->
             <section class="cs-shop-header py-5 text-center text-white" style="background-color: #111827; width: 100%;">
@@ -282,7 +282,7 @@
                 </div>
             </section>
 
-            <!-- 2. Styles CSS unifiés pour la boutique -->
+            <!-- 2. Styles CSS unifiés (Inclus : Padding, Breadcrumb, Tags, Tri) -->
             <style>
                 /* --- A. FOND GLOBAL ET BARRE DE RECHERCHE --- */
                 body #wrapwrap, main {
@@ -290,10 +290,10 @@
                     color: #E5E7EB !important;
                 }
                 form.o_wsale_products_searchbar_form {
-                    display: none !important; /* Cache la recherche */
+                    display: none !important;
                 }
 
-                /* --- B. CARTES PRODUITS (Bento Dark Style) --- */
+                /* --- B. CARTES PRODUITS (Bento Dark Style + Padding) --- */
                 .o_wsale_products_main_row .oe_product_cart {
                     border: 1px solid #374151 !important;
                     border-radius: 16px !important;
@@ -308,9 +308,24 @@
                     box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15) !important;
                     border-color: #10B981 !important;
                 }
+                /* Padding pour aérer le texte dans la carte */
+                .o_wsale_products_main_row .oe_product_cart .o_wsale_product_information {
+                    padding: 1.25rem !important;
+                    background-color: #1F2937 !important;
+                }
 
-                /* --- C. TEXTES ET PRIX DES PRODUITS --- */
-                /* Forcer les titres en blanc clair */
+                /* --- C. DÉPLACEMENT DU TAG (Vegan, etc.) EN HAUT À GAUCHE --- */
+                /* Libère la Wishlist (haut-droite) et le Panier (bas-gauche) */
+                .o_wsale_products_main_row .oe_product_cart .oe_product_image .badge,
+                .o_wsale_products_main_row .oe_product_cart .oe_product_image .o_ribbon {
+                    top: 15px !important;
+                    left: 15px !important;
+                    bottom: auto !important;
+                    right: auto !important;
+                    z-index: 10 !important;
+                }
+
+                /* --- D. TEXTES ET PRIX DES PRODUITS --- */
                 .o_wsale_products_main_row .oe_product_cart h6 a,
                 .o_wsale_products_main_row .oe_product_cart .h6 a,
                 .o_wsale_products_main_row .oe_product_cart .o_wsale_products_item_title a,
@@ -321,20 +336,18 @@
                     color: #F9FAFB !important;
                     text-decoration: none !important;
                 }
-                /* Prix actuel en vert */
                 .o_wsale_products_main_row .oe_product_cart .product_price,
                 .o_wsale_products_main_row .oe_product_cart .oe_currency_value {
                     color: #10B981 !important;
                     font-weight: 700 !important;
                 }
-                /* Ancien prix barré en gris */
                 .o_wsale_products_main_row .oe_product_cart .text-danger,
                 .o_wsale_products_main_row .oe_product_cart del,
                 .o_wsale_products_main_row .oe_product_cart .text-muted {
                     color: #9CA3AF !important; 
                 }
 
-                /* --- D. BOUTONS DE CATÉGORIES (Pilules) --- */
+                /* --- E. BOUTONS DE CATÉGORIES (Pilules) --- */
                 .o_wsale_products_main_row .nav-pills .nav-link {
                     border-radius: 30px !important;
                     padding: 10px 24px !important;
@@ -357,26 +370,18 @@
                     color: #F9FAFB !important;
                 }
 
-                /* --- E. BARRE LATÉRALE ET FILTRES --- */
-                /* Enlever bordure du titre principal */
-                .o_wsale_products_main_row .border-bottom {
-                    border-bottom: none !important;
-                }
-                /* Titres principaux (All products, etc) */
-                .o_wsale_products_main_row h6, 
-                .o_wsale_products_main_row h3, 
-                #products_grid_before h6 {
+                /* --- F. BARRE LATÉRALE ET FILTRES --- */
+                .o_wsale_products_main_row .border-bottom { border-bottom: none !important; }
+                .o_wsale_products_main_row h6, .o_wsale_products_main_row h3, #products_grid_before h6 {
                     font-weight: 800 !important;
                     letter-spacing: -0.5px;
                     color: #F9FAFB !important;
                 }
-                /* Structure des accordéons de filtres */
                 #products_grid_before .accordion-item {
                     background-color: transparent !important;
                     border: none !important;
                     border-bottom: 1px solid #374151 !important;
                 }
-                /* Titres des filtres (Color, Size...) */
                 #products_grid_before .accordion-button {
                     color: #F9FAFB !important;
                     background-color: transparent !important;
@@ -384,19 +389,28 @@
                     font-weight: 700 !important;
                     padding-left: 0 !important;
                 }
-                /* Flèche (chevron) blanche */
-                #products_grid_before .accordion-button::after {
-                    filter: brightness(0) invert(1);
-                }
-                /* Texte des options (ex: Vegan) */
-                #products_grid_before .form-check-label {
-                    color: #D1D5DB !important;
-                }
+                #products_grid_before .accordion-button::after { filter: brightness(0) invert(1); }
+                #products_grid_before .form-check-label { color: #D1D5DB !important; }
 
-                /* --- F. SLIDER DE PRIX (Passage au vert) --- */
+                /* --- G. FIL D'ARIANE (BREADCRUMB) --- */
+                .breadcrumb .breadcrumb-item a {
+                    color: #10B981 !important;
+                    font-weight: 600 !important;
+                    text-decoration: none !important;
+                    transition: color 0.2s ease;
+                }
+                .breadcrumb .breadcrumb-item a:hover { color: #059669 !important; }
+                .breadcrumb .breadcrumb-item.active { color: #9CA3AF !important; }
+                .breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: #6B7280 !important; }
+
+                /* --- H. FORÇAGE EXTRÊME DU SLIDER DE PRIX --- */
+                .o_wsale_products_main_row {
+                    --primary: #10B981 !important; 
+                    --form-range-thumb-bg: #10B981 !important;
+                }
                 .irs-line { background-color: #374151 !important; }
-                .irs-bar { background-color: #10B981 !important; }
-                .irs-handle { 
+                .irs--square .irs-bar, .irs--round .irs-bar, .irs-bar { background-color: #10B981 !important; }
+                .irs--square .irs-handle, .irs--round .irs-handle, .irs-handle { 
                     border: 2px solid #10B981 !important; 
                     background-color: #ffffff !important; 
                     box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
@@ -407,9 +421,16 @@
                     border-radius: 20px !important; 
                     color: #ffffff !important; 
                 }
-                .irs-min, .irs-max { 
-                    color: #6B7280 !important; 
-                    background-color: transparent !important; 
+                .irs-min, .irs-max { color: #6B7280 !important; background-color: transparent !important; }
+                input[type=range]::-webkit-slider-thumb { background: #10B981 !important; }
+                input[type=range]::-moz-range-thumb { background: #10B981 !important; }
+
+                /* --- I. RENDRE LE TEXTE "SORT BY" (TRI) VISIBLE --- */
+                .o_sortby_dropdown > a, 
+                .o_sortby_dropdown .dropdown-toggle,
+                .o_wsale_apply_layout .btn,
+                .o_wsale_apply_layout .dropdown-toggle {
+                    color: #F9FAFB !important; 
                 }
             </style>
         </xpath>
