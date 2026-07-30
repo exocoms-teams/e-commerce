@@ -49,6 +49,18 @@ class TestSubscriptionGroupAssignment(TransactionCase):
             'account_type': 'income',
         })
 
+        # Même raison encore : la ligne "à recevoir" générée automatiquement
+        # par account.move (display_type='payment_term') a besoin du compte
+        # client du partenaire (property_account_receivable_id), qui n'a pas
+        # de valeur par défaut sans plan comptable chargé.
+        cls.receivable_account = cls.env['account.account'].create({
+            'name': 'Test Receivable Account (WIN-66)',
+            'code': 'TESTREC66',
+            'account_type': 'asset_receivable',
+            'reconcile': True,
+        })
+        cls.user.partner_id.property_account_receivable_id = cls.receivable_account.id
+
     def _create_subscription_invoice(self, product):
         """Crée une commande d'abonnement minimale (plan_id fixé directement,
         sans passer par action_confirm() ni le workflow de paiement — notre
