@@ -263,12 +263,11 @@
 
 
 <!-- =====================================================================
-         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (DARK MODE COMPLET).
+         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (DARK MODE COMPLET)
          ===================================================================== -->
     
     <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
         
-        <!-- Injection hyper-stable : juste avant le conteneur principal -->
         <xpath expr="//div[@id='wrap']" position="before">
             
             <!-- 1. Bannière d'en-tête de la boutique -->
@@ -282,8 +281,9 @@
                 </div>
             </section>
 
-            <!-- 2. Styles CSS unifiés (Inclus : Padding, Breadcrumb, Tags, Tri) -->
+            <!-- 2. Styles CSS unifiés (Protégés par CDATA contre les crashs XML) -->
             <style>
+                <![CDATA[
                 /* --- A. FOND GLOBAL ET BARRE DE RECHERCHE --- */
                 body #wrapwrap, main {
                     background-color: #111827 !important;
@@ -308,14 +308,12 @@
                     box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15) !important;
                     border-color: #10B981 !important;
                 }
-                /* Padding pour aérer le texte dans la carte */
                 .o_wsale_products_main_row .oe_product_cart .o_wsale_product_information {
                     padding: 1.25rem !important;
                     background-color: #1F2937 !important;
                 }
 
-                /* --- C. DÉPLACEMENT DU TAG (Vegan, etc.) EN HAUT À GAUCHE --- */
-                /* Libère la Wishlist (haut-droite) et le Panier (bas-gauche) */
+                /* --- C. DÉPLACEMENT DU TAG EN HAUT À GAUCHE --- */
                 .o_wsale_products_main_row .oe_product_cart .oe_product_image .badge,
                 .o_wsale_products_main_row .oe_product_cart .oe_product_image .o_ribbon {
                     top: 15px !important;
@@ -432,6 +430,7 @@
                 .o_wsale_apply_layout .dropdown-toggle {
                     color: #F9FAFB !important; 
                 }
+                ]]>
             </style>
         </xpath>
     </template>
