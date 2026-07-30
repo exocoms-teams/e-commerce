@@ -1,0 +1,162 @@
+/* ================================ */
+/* ANIMATIONS                       */
+/* ================================ */
+
+/* Scroll reveal */
+.sn-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.sn-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered children reveal */
+.sn-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.sn-stagger.revealed > *:nth-child(1) { transition-delay: 0.05s; }
+.sn-stagger.revealed > *:nth-child(2) { transition-delay: 0.1s; }
+.sn-stagger.revealed > *:nth-child(3) { transition-delay: 0.15s; }
+.sn-stagger.revealed > *:nth-child(4) { transition-delay: 0.2s; }
+.sn-stagger.revealed > *:nth-child(5) { transition-delay: 0.25s; }
+.sn-stagger.revealed > *:nth-child(6) { transition-delay: 0.3s; }
+
+.sn-stagger.revealed > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade in up */
+@keyframes sn-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sn-fade-in-up {
+    animation: sn-fade-in-up 0.6s ease forwards;
+}
+
+/* Scale in */
+@keyframes sn-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.sn-scale-in {
+    animation: sn-scale-in 0.4s ease forwards;
+}
+
+/* Slide in from left */
+@keyframes sn-slide-left {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Slide in from right */
+@keyframes sn-slide-right {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Pulse for notifications */
+@keyframes sn-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.sn-pulse {
+    animation: sn-pulse 0.3s ease;
+}
+
+/* Shimmer loading */
+@keyframes sn-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.sn-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: sn-shimmer 1.5s infinite;
+}
+
+/* Button press effect */
+.sn-btn-press:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/* Card hover lift */
+.sn-card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sn-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Image zoom on hover */
+.sn-img-zoom {
+    overflow: hidden;
+}
+
+.sn-img-zoom img {
+    transition: transform 0.4s ease;
+}
+
+.sn-img-zoom:hover img {
+    transform: scale(1.05);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .sn-reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    .sn-stagger > * {
+        opacity: 1;
+        transform: none;
+    }
+}
