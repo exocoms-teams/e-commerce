@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_login" name="Sneakers Login">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'Sign In | SNEAKERS'"/>
+            <t t-set="description" t-value="'Sign in to your SNEAKERS account.'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <section class="sn-auth-page oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-auth-card">
+
+                        <div class="sn-auth-header">
+                            <h2>Sign In</h2>
+                            <p>Welcome back! Sign in to your account.</p>
+                        </div>
+
+                        <t t-if="error">
+                            <div class="sn-auth-error">
+                                <t t-esc="error"/>
+                            </div>
+                        </t>
+
+                        <form method="POST" action="/my/login" class="sn-auth-form">
+
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="sn-form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" placeholder="john@example.com" required="required"/>
+                            </div>
+
+                            <div class="sn-form-group">
+                                <label>Password</label>
+                                <input type="password" name="password" placeholder="Your password" required="required"/>
+                            </div>
+
+                            <button type="submit" class="sn-btn-primary sn-auth-btn">
+                                Sign In
+                            </button>
+
+                        </form>
+
+                        <div class="sn-auth-footer">
+                            <p>Don't have an account? <a href="/my/register">Create one</a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>

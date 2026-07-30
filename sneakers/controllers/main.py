@@ -266,6 +266,47 @@ class SneakersController(http.Controller):
     def checkout(self, **kwargs):
         order = request.cart
 
+        if request.httprequest.method == 'POST' and order:
+            # Update partner info
+            partner = order.partner_id
+            vals = {}
+            if kwargs.get('name'):
+                vals['name'] = kwargs['name']
+            if kwargs.get('email'):
+                vals['email'] = kwargs['email']
+            if kwargs.get('phone'):
+                vals['phone'] = kwargs['phone']
+            if kwargs.get('street'):
+                vals['street'] = kwargs['street']
+            if kwargs.get('city'):
+                vals['city'] = kwargs['city']
+            if kwargs.get('zip'):
+                vals['zip'] = kwargs['zip']
+            if kwargs.get('country_id'):
+                vals['country_id'] = int(kwargs['country_id'])
+            if vals:
+                partner.sudo().write(vals)
+
+            # Set delivery method
+            if kwargs.get('carrier_id'):
+                carrier = request.env['delivery.carrier'].sudo().browse(int(kwargs['carrier_id']))
+                if carrier.exists():
+                    order.sudo().carrier_id = carrier.id
+
+            # Set payment provider
+            payment_provider_id = kwargs.get('payment_provider_id')
+            if payment_provider_id:
+                order.sudo().payment_provider_id = int(payment_provider_id)
+
+                # Confirm order (wire transfer / manual payment)
+                provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
+                if provider.exists() and provider.code == 'wire_transfer':
+                    order.sudo().action_confirm()
+                    return request.redirect('/confirmation')
+
+            # If no payment provider selected, still try to confirm
+            return request.redirect('/confirmation')
+
         # Payment providers (only published, website-enabled)
         payment_providers = request.env['payment.provider'].sudo().search([
             ('state', 'in', ['enabled', 'test']),
@@ -413,3 +454,102 @@ class SneakersController(http.Controller):
             'platform': platform,
         })
         return {'status': 'ok', 'post_id': post.id}
+
+    # ==========================================
+    # CUSTOMER ACCOUNT (SNEEK-33 to SNEEK-36)
+    # ==========================================
+
+    @http.route('/my/register', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def register(self, **kwargs):
+        if request.httprequest.method == 'POST':
+            name = kwargs.get('name', '').strip()
+            email = kwargs.get('email', '').strip()
+            password = kwargs.get('password', '')
+
+            if not name or not email or not password:
+                return request.render('sneakers.page_register', {'error': 'All fields are required.'})
+
+            # Check if email already exists
+            existing = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
+            if existing:
+                return request.render('sneakers.page_register', {'error': 'An account with this email already exists.'})
+
+            # Create user
+            user = request.env['res.users'].sudo().create({
+                'name': name,
+                'login': email,
+                'password': password,
+                'email': email,
+            })
+
+            # Log in
+            request.session.authenticate(request.db, email, password)
+            return request.redirect('/my/account')
+
+        return request.render('sneakers.page_register', {})
+
+    @http.route('/my/login', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def login(self, redirect='/my/account', **kwargs):
+        if request.httprequest.method == 'POST':
+            email = kwargs.get('email', '').strip()
+            password = kwargs.get('password', '')
+
+            if not email or not password:
+                return request.render('sneakers.page_login', {'error': 'Email and password are required.'})
+
+            try:
+                request.session.authenticate(request.db, email, password)
+                return request.redirect(redirect)
+            except Exception:
+                return request.render('sneakers.page_login', {'error': 'Invalid email or password.'})
+
+        return request.render('sneakers.page_login', {})
+
+    @http.route('/my/logout', type='http', auth='user', website=True)
+    def logout(self, **kwargs):
+        request.session.logout()
+        return request.redirect('/')
+
+    @http.route('/my/account', type='http', auth='user', website=True, methods=['GET', 'POST'])
+    def my_account(self, **kwargs):
+        user = request.env.user
+        partner = user.partner_id
+
+        if request.httprequest.method == 'POST':
+            vals = {}
+            if kwargs.get('name'):
+                vals['name'] = kwargs['name']
+            if kwargs.get('phone'):
+                vals['phone'] = kwargs['phone']
+            if kwargs.get('street'):
+                vals['street'] = kwargs['street']
+            if kwargs.get('city'):
+                vals['city'] = kwargs['city']
+            if kwargs.get('zip'):
+                vals['zip'] = kwargs['zip']
+            if kwargs.get('country_id'):
+                vals['country_id'] = int(kwargs['country_id'])
+            if vals:
+                partner.sudo().write(vals)
+
+            return request.render('sneakers.page_account', {
+                'partner': partner,
+                'countries': request.env['res.country'].sudo().search([]),
+                'success': 'Profile updated successfully.',
+            })
+
+        return request.render('sneakers.page_account', {
+            'partner': partner,
+            'countries': request.env['res.country'].sudo().search([]),
+        })
+
+    @http.route('/my/orders', type='http', auth='user', website=True)
+    def my_orders(self, **kwargs):
+        orders = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', request.env.user.partner_id.id),
+            ('state', 'in', ['sale', 'done']),
+        ], order='date_order desc')
+
+        return request.render('sneakers.page_orders', {
+            'orders': orders,
+        })

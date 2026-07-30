@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_register" name="Sneakers Register">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'Create Account | SNEAKERS'"/>
+            <t t-set="description" t-value="'Create your SNEAKERS account.'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <section class="sn-auth-page oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-auth-card">
+
+                        <div class="sn-auth-header">
+                            <h2>Create Account</h2>
+                            <p>Join SNEAKERS and start shopping.</p>
+                        </div>
+
+                        <t t-if="error">
+                            <div class="sn-auth-error">
+                                <t t-esc="error"/>
+                            </div>
+                        </t>
+
+                        <form method="POST" action="/my/register" class="sn-auth-form">
+
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="sn-form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="name" placeholder="John Doe" required="required"/>
+                            </div>
+
+                            <div class="sn-form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" placeholder="john@example.com" required="required"/>
+                            </div>
+
+                            <div class="sn-form-group">
+                                <label>Password</label>
+                                <input type="password" name="password" placeholder="Min. 6 characters" required="required"/>
+                            </div>
+
+                            <button type="submit" class="sn-btn-primary sn-auth-btn">
+                                Create Account
+                            </button>
+
+                        </form>
+
+                        <div class="sn-auth-footer">
+                            <p>Already have an account? <a href="/my/login">Sign in</a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>

@@ -28,6 +28,10 @@
         'views/pages/wishlist.xml',
         'views/pages/contact.xml',
         'views/pages/terms.xml',
+        'views/pages/register.xml',
+        'views/pages/login.xml',
+        'views/pages/account.xml',
+        'views/pages/orders.xml',
     ],
 
     'assets': {
@@ -44,6 +48,7 @@
             'sneakers/static/src/css/confirmation.css',
             'sneakers/static/src/css/wishlist.css',
             'sneakers/static/src/css/contact.css',
+            'sneakers/static/src/css/account.css',
             'sneakers/static/src/css/rtl.css',
 
             'sneakers/static/src/css/footer.css',
