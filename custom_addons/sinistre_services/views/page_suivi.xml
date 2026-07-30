@@ -17,7 +17,7 @@
                 <h2>Suivi mission <t t-esc="mission.reference"/></h2>
                 <p class="text-muted">Code d'accès : <strong t-esc="mission.code_acces"/></p>
 
-                <div class="card mb-3">
+                <section class="card mb-3 o_colored_level" data-name="Carte Etat Mission">
                     <div class="card-body">
                         <p><strong>État :</strong> <t t-esc="mission.state"/></p>
                         <p><strong>Adresse :</strong> <t t-esc="mission.adresse_intervention"/></p>
@@ -27,11 +27,11 @@
                             </p>
                         </t>
                     </div>
-                </div>
+                </section>
 
                 <t t-set="devis" t-value="mission.devis_ids.sorted('date_devis', reverse=True)[:1]"/>
                 <t t-if="devis and devis.state in ('envoye', 'en_revision')">
-                    <div class="card mb-3 border-primary">
+                    <section class="card mb-3 border-primary o_colored_level" data-name="Carte Devis a Signer">
                         <div class="card-header bg-primary text-white">Devis à signer</div>
                         <div class="card-body">
                             <p>Montant total : <strong><t t-esc="'%.2f' % devis.montant_total"/> €</strong></p>
@@ -43,11 +43,11 @@
                             <a t-attf-href="/devis/signer/{{mission.token_api}}/{{devis.id}}"
                                class="btn btn-primary btn-lg w-100">Signer le devis</a>
                         </div>
-                    </div>
+                    </section>
                 </t>
 
                 <t t-if="mission.state in ('termine', 'facture', 'clos') and not mission.avis_ids">
-                    <div class="card mb-3">
+                    <section class="card mb-3 o_colored_level" data-name="Carte Avis Artisan">
                         <div class="card-header">Noter votre artisan</div>
                         <div class="card-body">
                             <form t-attf-action="/suivi/{{mission.token_api}}/avis" method="post" class="o_website_form">
@@ -66,7 +66,7 @@
                                 <button type="submit" class="btn btn-success w-100">Envoyer mon avis</button>
                             </form>
                         </div>
-                    </div>
+                    </section>
                 </t>
             </div>
         </t>
@@ -80,16 +80,17 @@
                 <p>Montant : <strong><t t-esc="'%.2f' % devis.montant_total"/> € TTC</strong></p>
 
                 <t t-if="mission.source == 'assurance'">
-                    <div class="alert alert-info">
+                    <section class="alert alert-info o_colored_level" data-name="Alerte Assurance Devis">
                         Prise en charge assurance : <strong><t t-esc="mission.montant_garanti or 150"/> € HT</strong>.
                         La signature est obligatoire même en cas de garantie.
                         <t t-if="mission.devis_depasse_garantie">
                             <br/>Reste à charge si acceptation :
                             <strong><t t-esc="'%.2f' % mission.reste_a_charge"/> €</strong>
                         </t>
-                    </div>
+                    </section>
                 </t>
 
+                <!-- Carte signature — NON modifiée (canvas lié au JS par ID) -->
                 <div class="card mb-3">
                     <div class="card-body">
                         <canvas id="signCanvas" width="600" height="200"
