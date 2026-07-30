@@ -117,11 +117,17 @@
     }
 
     function setupPaymentDetailsCard(card) {
+        var wrapper = document.createElement("div");
+        wrapper.className = "sn-confirm-order-wrapper";
+
         var confirmBtn        = document.createElement("button");
         confirmBtn.className  = "sn-btn-primary sn-confirm-order-btn";
         confirmBtn.type       = "button";
         confirmBtn.textContent = "Confirm my order";
+
+        wrapper.appendChild(confirmBtn);
         card.appendChild(confirmBtn);
+        
         confirmBtn.addEventListener("click", function () { submitOrder(confirmBtn); });
     }
 
