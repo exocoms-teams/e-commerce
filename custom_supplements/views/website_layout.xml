@@ -45,26 +45,30 @@
                 <nav class="cs-header d-lg-none d-block navbar">
                     <div class="container flex-wrap justify-content-between">
                         <t t-call="website.placeholder_header_brand"/>
-                        <t t-call="website_sale.header_cart_link">
+                        <ul class="navbar-nav">
+                            <t t-call="website_sale.header_cart_link">
                             <t t-set="_item_class">nav-item</t>
                             <t t-set="_link_class">nav-link</t>
                             <t t-set="_icon_wrap_class">position-relative</t>
                             <t t-set="_badge_class">position-absolute top-0 start-100 translate-middle</t>
                             <t t-set="_icon" t-value="True"/>
                             <t t-set="_text" t-value="False"/>
-                        </t>
-                        <button class="navbar-toggler"
-                            type="button"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#mobile_menu"
-                            aria-controls="mobile_menu"
-                            aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"/>
-                        </button>
+                            </t>
+                            <button class="navbar-toggler"
+                                type="button"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#mobile_menu"
+                                aria-controls="mobile_menu"
+                                aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"/>
+                            </button>
+                        </ul>
                         <div class="offcanvas offcanvas-end" id="mobile_menu">
                             <div class="offcanvas-header">
-                                <t t-call="website.placeholder_header_search_box"/>
-                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
+                                <ul class="navbar-nav">
+                                    <t t-call="website.placeholder_header_search_box"/>
+                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
+                                </ul>
                             </div>
                             <div class="offcanvas-body">
                                 <ul class="navbar-nav">
