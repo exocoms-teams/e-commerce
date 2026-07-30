@@ -19,6 +19,21 @@ class TrendDashboardAPI:
         self.env = env
 
     # ------------------------------------------------------------------
+    # Garde-fou abonnement (WIN-66)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def is_pro_user(env):
+        """Garde-fou réutilisable pour toute future fonctionnalité réservée
+        aux abonnés Pro (ex: données prédictives du dashboard, WIN-66).
+
+        N'est appelé par aucune page existante pour l'instant : le dashboard
+        WIN-48 reste géré par sa propre logique de limite Freemium. Ce
+        utilitaire est prêt à être branché (`if not TrendDashboardAPI.is_pro_user(request.env): ...`)
+        par un futur contrôleur sans modifier de comportement déjà livré.
+        """
+        return env.user.has_group('produits_tendance.group_trend_pro')
+
+    # ------------------------------------------------------------------
     # Fiche produit détaillée
     # ------------------------------------------------------------------
     def get_product_detail(self, product_id):

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WIN-66 : articles d'abonnement (Standard, Pro). Pas d'article
+         "Gratuit" : group_trend_free est déjà attribué automatiquement à
+         l'inscription (WIN-47), aucun achat n'est nécessaire pour ce tier.
+
+         ⚠️ Les prix ci-dessous (fixed_price) sont des valeurs d'exemple à
+         faire valider par l'équipe/le produit avant mise en production —
+         pas de grille tarifaire officielle communiquée dans le ticket. -->
+
+    <record id="product_tier_standard" model="product.template">
+        <field name="name">Tendance Standard</field>
+        <field name="type">service</field>
+        <field name="recurring_invoice" eval="True"/>
+        <field name="sale_ok" eval="True"/>
+        <field name="website_published" eval="True"/>
+        <field name="winners_subscription_group_id" ref="produits_tendance.group_trend_standard"/>
+    </record>
+
+    <record id="product_tier_pro" model="product.template">
+        <field name="name">Tendance Pro</field>
+        <field name="type">service</field>
+        <field name="recurring_invoice" eval="True"/>
+        <field name="sale_ok" eval="True"/>
+        <field name="website_published" eval="True"/>
+        <field name="winners_subscription_group_id" ref="produits_tendance.group_trend_pro"/>
+    </record>
+
+    <!-- Règles de prix par plan (product.pricelist.item avec plan_id, sans
+         pricelist_id — autorisé car "generic" quand un plan est défini). -->
+    <record id="pricelist_item_standard_monthly" model="product.pricelist.item">
+        <field name="product_tmpl_id" ref="product_tier_standard"/>
+        <field name="plan_id" ref="subscription_plan_monthly"/>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">19.0</field>
+    </record>
+
+    <record id="pricelist_item_standard_yearly" model="product.pricelist.item">
+        <field name="product_tmpl_id" ref="product_tier_standard"/>
+        <field name="plan_id" ref="subscription_plan_yearly"/>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">190.0</field>
+    </record>
+
+    <record id="pricelist_item_pro_monthly" model="product.pricelist.item">
+        <field name="product_tmpl_id" ref="product_tier_pro"/>
+        <field name="plan_id" ref="subscription_plan_monthly"/>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">49.0</field>
+    </record>
+
+    <record id="pricelist_item_pro_yearly" model="product.pricelist.item">
+        <field name="product_tmpl_id" ref="product_tier_pro"/>
+        <field name="plan_id" ref="subscription_plan_yearly"/>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">490.0</field>
+    </record>
+</odoo>
