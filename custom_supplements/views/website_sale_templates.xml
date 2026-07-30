@@ -263,10 +263,10 @@
 
 
 <!-- =====================================================================
-         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (/SHOP)
+         PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (/SHOP) (DARK MODE COMPLET)
          ===================================================================== -->
     
-   <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
+    <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
         
         <!-- Injection au tout début du conteneur principal de la page (#wrap) -->
         <xpath expr="//div[@id='wrap']/*[1]" position="before">
@@ -282,20 +282,18 @@
                 </div>
             </section>
 
-            <!-- 2. Styles CSS pour restyler les éléments natifs Odoo en MODE SOMBRE -->
+            <!-- 2. Styles CSS unifiés pour la boutique -->
             <style>
-                /* Fond de page sombre pour tout le corps de la boutique */
+                /* --- A. FOND GLOBAL ET BARRE DE RECHERCHE --- */
                 body #wrapwrap, main {
                     background-color: #111827 !important;
                     color: #E5E7EB !important;
                 }
-
-                /* CACHER LA BARRE DE RECHERCHE */
                 form.o_wsale_products_searchbar_form {
-                    display: none !important;
+                    display: none !important; /* Cache la recherche */
                 }
 
-                /* Transformation des cartes produits pour le thème sombre */
+                /* --- B. CARTES PRODUITS (Bento Dark Style) --- */
                 .o_wsale_products_main_row .oe_product_cart {
                     border: 1px solid #374151 !important;
                     border-radius: 16px !important;
@@ -305,29 +303,38 @@
                     overflow: hidden;
                     margin-bottom: 1rem;
                 }
-                
-                /* Effet de survol sur les produits (Glow vert) */
                 .o_wsale_products_main_row .oe_product_cart:hover {
                     transform: translateY(-8px) !important;
                     box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15) !important;
                     border-color: #10B981 !important;
                 }
 
-                /* Typographie des titres produits (Blanc clair) */
-                .o_wsale_products_main_row .oe_product_cart h6 a {
+                /* --- C. TEXTES ET PRIX DES PRODUITS --- */
+                /* Forcer les titres en blanc clair */
+                .o_wsale_products_main_row .oe_product_cart h6 a,
+                .o_wsale_products_main_row .oe_product_cart .h6 a,
+                .o_wsale_products_main_row .oe_product_cart .o_wsale_products_item_title a,
+                .o_wsale_products_main_row .oe_product_cart a.text-primary,
+                .o_wsale_products_main_row .oe_product_cart a.text-dark,
+                .o_wsale_products_main_row .oe_product_cart a.text-body {
                     font-weight: 700 !important;
                     color: #F9FAFB !important;
                     text-decoration: none !important;
                 }
-
-                /* Prix du produit en vert accentué */
+                /* Prix actuel en vert */
                 .o_wsale_products_main_row .oe_product_cart .product_price,
                 .o_wsale_products_main_row .oe_product_cart .oe_currency_value {
                     color: #10B981 !important;
                     font-weight: 700 !important;
                 }
+                /* Ancien prix barré en gris */
+                .o_wsale_products_main_row .oe_product_cart .text-danger,
+                .o_wsale_products_main_row .oe_product_cart del,
+                .o_wsale_products_main_row .oe_product_cart .text-muted {
+                    color: #9CA3AF !important; 
+                }
 
-                /* Boutons de catégories (Protéines, Vitamines...) en mode sombre */
+                /* --- D. BOUTONS DE CATÉGORIES (Pilules) --- */
                 .o_wsale_products_main_row .nav-pills .nav-link {
                     border-radius: 30px !important;
                     padding: 10px 24px !important;
@@ -339,49 +346,70 @@
                     margin-bottom: 8px;
                     transition: all 0.3s ease;
                 }
-                
-                /* Catégorie active */
                 .o_wsale_products_main_row .nav-pills .nav-link.active {
                     background-color: #10B981 !important;
                     color: white !important;
                     border-color: #10B981 !important;
                     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
                 }
-                
-                /* Survol des catégories inactives */
                 .o_wsale_products_main_row .nav-pills .nav-link:hover:not(.active) {
                     background-color: #374151 !important;
                     color: #F9FAFB !important;
                 }
 
-                /* Curseur de filtre de prix */
-                .irs-bar { background-color: #10B981 !important; }
-                .irs-handle { border-color: #10B981 !important; background-color: #111827 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important; }
-                .irs-from, .irs-to, .irs-single { background-color: #10B981 !important; border-radius: 20px !important; color: #ffffff !important; }
-                .irs-min, .irs-max { color: #6B7280 !important; background-color: transparent !important; }
-
-                /* Cacher la bordure moche par défaut du titre "All products" */
+                /* --- E. BARRE LATÉRALE ET FILTRES --- */
+                /* Enlever bordure du titre principal */
                 .o_wsale_products_main_row .border-bottom {
                     border-bottom: none !important;
                 }
-                
-                /* Typographie des titres produits (Forçage en blanc clair) */
-                .o_wsale_products_main_row .oe_product_cart h6 a,
-                .o_wsale_products_main_row .oe_product_cart .h6 a,
-                .o_wsale_products_main_row .oe_product_cart .o_wsale_products_item_title a,
-                .o_wsale_products_main_row .oe_product_cart a.text-primary,
-                .o_wsale_products_main_row .oe_product_cart a.text-dark,
-                .o_wsale_products_main_row .oe_product_cart a.text-body {
-                    font-weight: 700 !important;
+                /* Titres principaux (All products, etc) */
+                .o_wsale_products_main_row h6, 
+                .o_wsale_products_main_row h3, 
+                #products_grid_before h6 {
+                    font-weight: 800 !important;
+                    letter-spacing: -0.5px;
                     color: #F9FAFB !important;
-                    text-decoration: none !important;
+                }
+                /* Structure des accordéons de filtres */
+                #products_grid_before .accordion-item {
+                    background-color: transparent !important;
+                    border: none !important;
+                    border-bottom: 1px solid #374151 !important;
+                }
+                /* Titres des filtres (Color, Size...) */
+                #products_grid_before .accordion-button {
+                    color: #F9FAFB !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    font-weight: 700 !important;
+                    padding-left: 0 !important;
+                }
+                /* Flèche (chevron) blanche */
+                #products_grid_before .accordion-button::after {
+                    filter: brightness(0) invert(1);
+                }
+                /* Texte des options (ex: Vegan) */
+                #products_grid_before .form-check-label {
+                    color: #D1D5DB !important;
                 }
 
-                /* Rendre l'ancien prix barré plus lisible sur fond sombre */
-                .o_wsale_products_main_row .oe_product_cart .text-danger,
-                .o_wsale_products_main_row .oe_product_cart del,
-                .o_wsale_products_main_row .oe_product_cart .text-muted {
-                    color: #9CA3AF !important; 
+                /* --- F. SLIDER DE PRIX (Passage au vert) --- */
+                .irs-line { background-color: #374151 !important; }
+                .irs-bar { background-color: #10B981 !important; }
+                .irs-handle { 
+                    border: 2px solid #10B981 !important; 
+                    background-color: #ffffff !important; 
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+                    cursor: pointer !important;
+                }
+                .irs-from, .irs-to, .irs-single { 
+                    background-color: #10B981 !important; 
+                    border-radius: 20px !important; 
+                    color: #ffffff !important; 
+                }
+                .irs-min, .irs-max { 
+                    color: #6B7280 !important; 
+                    background-color: transparent !important; 
                 }
             </style>
         </xpath>
