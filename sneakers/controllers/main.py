@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import http, fields
 from odoo.http import request
 
 
@@ -255,3 +255,57 @@ class SneakersController(http.Controller):
     @http.route('/terms', type='http', auth='public', website=True, sitemap=True)
     def terms(self, **kwargs):
         return request.render('sneakers.page_terms', {})
+
+    # Newsletter webhooks — N8N integration points
+
+    @http.route('/newsletter/subscribe', type='json', auth='public', website=True)
+    def newsletter_subscribe(self, email, name='', **kwargs):
+        if not email or '@' not in email:
+            return {'status': 'error', 'message': 'Invalid email'}
+        existing = request.env['newsletter.subscriber'].sudo().search([
+            ('email', '=', email.strip().lower())
+        ], limit=1)
+        if existing:
+            if existing.state == 'subscribed':
+                return {'status': 'ok', 'message': 'Already subscribed'}
+            existing.sudo().write({'state': 'subscribed', 'subscribed_date': fields.Datetime.now})
+            return {'status': 'ok', 'message': 'Re-subscribed'}
+        request.env['newsletter.subscriber'].sudo().create({
+            'email': email.strip().lower(),
+            'name': name,
+        })
+        return {'status': 'ok', 'message': 'Subscribed'}
+
+    @http.route('/newsletter/unsubscribe', type='json', auth='public', website=True)
+    def newsletter_unsubscribe(self, email, **kwargs):
+        if not email:
+            return {'status': 'error', 'message': 'Email required'}
+        subscriber = request.env['newsletter.subscriber'].sudo().search([
+            ('email', '=', email.strip().lower())
+        ], limit=1)
+        if subscriber:
+            subscriber.action_unsubscribe()
+        return {'status': 'ok', 'message': 'Unsubscribed'}
+
+    @http.route('/newsletter/subscribers', type='json', auth='user', website=True)
+    def newsletter_subscribers(self, **kwargs):
+        """N8N calls this to get all active subscribers for campaign sending."""
+        subscribers = request.env['newsletter.subscriber'].sudo().search([
+            ('state', '=', 'subscribed')
+        ])
+        return {
+            'count': len(subscribers),
+            'subscribers': [{'email': s.email, 'name': s.name} for s in subscribers],
+        }
+
+    # Social media webhook — N8N integration point
+
+    @http.route('/social/publish', type='json', auth='user', website=True)
+    def social_publish(self, name, content, platform, image_ids=None, **kwargs):
+        """Create a social post record. N8N picks it up and publishes."""
+        post = request.env['social.post'].sudo().create({
+            'name': name,
+            'content': content,
+            'platform': platform,
+        })
+        return {'status': 'ok', 'post_id': post.id}
