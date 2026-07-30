@@ -252,12 +252,6 @@ class SneakersController(http.Controller):
                 for val in line.value_ids:
                     colors.append({'id': val.id, 'name': val.name, 'html_color': val.html_color or ''})
 
-        # Build variant map: {frozenset(ptav_ids): variant_id}
-        variant_map = {}
-        for variant in template.product_variant_ids:
-            key = frozenset(variant.product_template_attribute_value_ids.ids)
-            variant_map[key] = variant.id
-
         image_url = '/web/image/product.template/%s/image_256' % template.id
 
         return {
@@ -266,7 +260,6 @@ class SneakersController(http.Controller):
             'image_url': image_url,
             'sizes': sizes,
             'colors': colors,
-            'variant_map': {str(list(k)): v for k, v in variant_map.items()},
         }
 
     @http.route('/checkout', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
