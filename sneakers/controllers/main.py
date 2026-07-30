@@ -20,9 +20,17 @@ class SneakersController(http.Controller):
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop(self, **kwargs):
 
-        products = request.env['product.template'].sudo().search([
-            ('sale_ok', '=', True)
-        ])
+        domain = [('sale_ok', '=', True)]
+
+        category_slug = kwargs.get('category', '').strip().lower()
+        if category_slug:
+            category = request.env['product.public.category'].sudo().search([
+                ('name', '=ilike', category_slug)
+            ], limit=1)
+            if category:
+                domain.append(('public_categ_ids', 'in', category.id))
+
+        products = request.env['product.template'].sudo().search(domain)
 
         categories = request.env['product.public.category'].sudo().search([])
 
@@ -50,6 +58,7 @@ class SneakersController(http.Controller):
             'brands': brands,
             'sizes': sizes,
             'colors': colors,
+            'active_category': category_slug,
         }
         return request.render(
             'sneakers.shop_page',
