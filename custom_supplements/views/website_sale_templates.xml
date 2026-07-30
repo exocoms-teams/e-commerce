@@ -266,112 +266,120 @@
          PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (/SHOP)
          ===================================================================== -->
     
-    <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
+   <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
         
         <!-- Injection au tout début du conteneur principal de la page (#wrap) -->
         <xpath expr="//div[@id='wrap']/*[1]" position="before">
             
             <!-- 1. Bannière d'en-tête de la boutique -->
-            <section class="cs-shop-header py-5 text-center text-white mb-5" style="background: linear-gradient(135deg, #111827 0%, #1F2937 100%); width: 100%;">
+            <section class="cs-shop-header py-5 text-center text-white" style="background-color: #111827; width: 100%;">
                 <div class="container py-4 cs-reveal">
                     <span class="text-uppercase mb-2 d-block" style="color: #10B981; font-weight: 700; letter-spacing: 2px; font-size: 0.85rem;">Catalogue</span>
                     <h1 class="display-4 fw-bold mb-3">La Performance à l'État Pur</h1>
                     <p class="lead opacity-75 mx-auto" style="max-width: 600px; font-size: 1.1rem;">
-                        Trouvez la synergie parfaite pour votre métabolisme. Des formulations cliniques, sans compromis.
+                        L'essentiel pour vos performances sportives. Des formules pures, efficaces et adaptées à vos objectifs.
                     </p>
                 </div>
             </section>
 
-            <!-- 2. Styles CSS pour restyler les éléments natifs Odoo -->
+            <!-- 2. Styles CSS pour restyler les éléments natifs Odoo en MODE SOMBRE -->
             <style>
-                /* Fond de page légèrement gris pour faire ressortir les cartes blanches */
-                body #wrapwrap {
-                    background-color: #F9FAFB;
+                /* Fond de page sombre pour tout le corps de la boutique */
+                body #wrapwrap, main {
+                    background-color: #111827 !important;
+                    color: #E5E7EB !important;
                 }
 
-                /* Transformation des cartes produits (Bento style) */
+                /* CACHER LA BARRE DE RECHERCHE */
+                form.o_wsale_products_searchbar_form {
+                    display: none !important;
+                }
+
+                /* Transformation des cartes produits pour le thème sombre */
                 .o_wsale_products_main_row .oe_product_cart {
-                    border: none !important;
+                    border: 1px solid #374151 !important;
                     border-radius: 16px !important;
-                    background: #ffffff !important;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.04) !important;
+                    background-color: #1F2937 !important;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
                     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
                     overflow: hidden;
                     margin-bottom: 1rem;
                 }
                 
-                /* Effet de survol sur les produits */
+                /* Effet de survol sur les produits (Glow vert) */
                 .o_wsale_products_main_row .oe_product_cart:hover {
                     transform: translateY(-8px) !important;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+                    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15) !important;
+                    border-color: #10B981 !important;
                 }
 
-                /* Typographie des titres produits */
+                /* Typographie des titres produits (Blanc clair) */
                 .o_wsale_products_main_row .oe_product_cart h6 a {
                     font-weight: 700 !important;
-                    color: #111827 !important;
+                    color: #F9FAFB !important;
                     text-decoration: none !important;
                 }
 
-                /* Boutons de catégories (Protéines, Vitamines...) */
+                /* Prix du produit en vert accentué */
+                .o_wsale_products_main_row .oe_product_cart .product_price,
+                .o_wsale_products_main_row .oe_product_cart .oe_currency_value {
+                    color: #10B981 !important;
+                    font-weight: 700 !important;
+                }
+
+                /* Boutons de catégories (Protéines, Vitamines...) en mode sombre */
                 .o_wsale_products_main_row .nav-pills .nav-link {
                     border-radius: 30px !important;
                     padding: 10px 24px !important;
                     font-weight: 600 !important;
-                    color: #4B5563 !important;
-                    background-color: #F3F4F6 !important;
+                    color: #9CA3AF !important;
+                    background-color: #1F2937 !important;
+                    border: 1px solid #374151 !important;
                     margin-right: 8px;
                     margin-bottom: 8px;
                     transition: all 0.3s ease;
-                    border: 1px solid transparent;
                 }
                 
                 /* Catégorie active */
                 .o_wsale_products_main_row .nav-pills .nav-link.active {
                     background-color: #10B981 !important;
                     color: white !important;
+                    border-color: #10B981 !important;
                     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
                 }
                 
+                /* Survol des catégories inactives */
                 .o_wsale_products_main_row .nav-pills .nav-link:hover:not(.active) {
-                    background-color: #E5E7EB !important;
-                    border-color: #D1D5DB;
-                }
-
-                /* Barre de recherche arrondie */
-                form.o_wsale_products_searchbar_form .input-group {
-                    border-radius: 30px !important;
-                    overflow: hidden;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-                }
-                form.o_wsale_products_searchbar_form input {
-                    border: none !important;
-                    background-color: #ffffff !important;
-                    padding-left: 20px;
-                }
-                form.o_wsale_products_searchbar_form .btn {
-                    background-color: #ffffff !important;
-                    border: none !important;
-                    color: #10B981 !important;
+                    background-color: #374151 !important;
+                    color: #F9FAFB !important;
                 }
 
                 /* Curseur de filtre de prix */
                 .irs-bar { background-color: #10B981 !important; }
-                .irs-handle { border-color: #10B981 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important; }
-                .irs-from, .irs-to, .irs-single { background-color: #10B981 !important; border-radius: 20px !important; }
+                .irs-handle { border-color: #10B981 !important; background-color: #111827 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important; }
+                .irs-from, .irs-to, .irs-single { background-color: #10B981 !important; border-radius: 20px !important; color: #ffffff !important; }
+                .irs-min, .irs-max { color: #6B7280 !important; background-color: transparent !important; }
 
                 /* Cacher la bordure moche par défaut du titre "All products" */
                 .o_wsale_products_main_row .border-bottom {
                     border-bottom: none !important;
                 }
                 
-                /* Titre "All products" en H2 stylé */
-                .o_wsale_products_main_row h6, .o_wsale_products_main_row h3 {
+                /* Titre "All products" et textes de la sidebar (Régime Spécial, etc.) en clair */
+                .o_wsale_products_main_row h6, 
+                .o_wsale_products_main_row h3, 
+                #products_grid_before h6,
+                #products_grid_before .accordion-button {
                     font-weight: 800 !important;
                     letter-spacing: -0.5px;
-                    color: #111827 !important;
-                    font-size: 2rem !important;
-                    margin-bottom: 1.5rem !important;
+                    color: #F9FAFB !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                }
+                
+                /* Couleur des textes de la barre latérale */
+                #products_grid_before {
+                    color: #9CA3AF !important;
                 }
             </style>
         </xpath>
