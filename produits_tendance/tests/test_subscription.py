@@ -40,6 +40,15 @@ class TestSubscriptionGroupAssignment(TransactionCase):
                 'company_id': cls.env.company.id,
             })
 
+        # Même raison : sans plan comptable chargé, aucun compte de produits
+        # n'est disponible pour déterminer account_id sur les lignes de
+        # facture (contrainte SQL account_move_line_check_accountable_required_fields).
+        cls.income_account = cls.env['account.account'].create({
+            'name': 'Test Income Account (WIN-66)',
+            'code': 'TESTINC66',
+            'account_type': 'income',
+        })
+
     def _create_subscription_invoice(self, product):
         """Crée une commande d'abonnement minimale (plan_id fixé directement,
         sans passer par action_confirm() ni le workflow de paiement — notre
@@ -64,6 +73,7 @@ class TestSubscriptionGroupAssignment(TransactionCase):
                 'product_id': product.product_variant_id.id,
                 'quantity': 1,
                 'price_unit': product.list_price,
+                'account_id': self.income_account.id,
                 'sale_line_ids': [(6, 0, [order_line.id])],
             })],
         })
@@ -103,6 +113,7 @@ class TestSubscriptionGroupAssignment(TransactionCase):
                 'name': 'Produit hors abonnement',
                 'quantity': 1,
                 'price_unit': 10.0,
+                'account_id': self.income_account.id,
             })],
         })
         invoice.action_post()
