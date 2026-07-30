@@ -268,11 +268,11 @@
     
     <template id="custom_shop_premium_design" inherit_id="website_sale.products" name="Shop Premium Design">
         
-        <!-- Injection de notre design au-dessus de la grille de la boutique -->
-        <xpath expr="//div[hasclass('oe_website_sale')]" position="before">
+        <!-- Injection au tout début du conteneur principal de la page (#wrap) -->
+        <xpath expr="//div[@id='wrap']/*[1]" position="before">
             
             <!-- 1. Bannière d'en-tête de la boutique -->
-            <section class="cs-shop-header py-5 text-center text-white mb-5" style="background: linear-gradient(135deg, #111827 0%, #1F2937 100%);">
+            <section class="cs-shop-header py-5 text-center text-white mb-5" style="background: linear-gradient(135deg, #111827 0%, #1F2937 100%); width: 100%;">
                 <div class="container py-4 cs-reveal">
                     <span class="text-uppercase mb-2 d-block" style="color: #10B981; font-weight: 700; letter-spacing: 2px; font-size: 0.85rem;">Catalogue</span>
                     <h1 class="display-4 fw-bold mb-3">La Performance à l'État Pur</h1>
@@ -290,7 +290,7 @@
                 }
 
                 /* Transformation des cartes produits (Bento style) */
-                .oe_website_sale .oe_product_cart {
+                .o_wsale_products_main_row .oe_product_cart {
                     border: none !important;
                     border-radius: 16px !important;
                     background: #ffffff !important;
@@ -301,20 +301,20 @@
                 }
                 
                 /* Effet de survol sur les produits */
-                .oe_website_sale .oe_product_cart:hover {
+                .o_wsale_products_main_row .oe_product_cart:hover {
                     transform: translateY(-8px) !important;
                     box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
                 }
 
                 /* Typographie des titres produits */
-                .oe_website_sale .oe_product_cart h6 a {
+                .o_wsale_products_main_row .oe_product_cart h6 a {
                     font-weight: 700 !important;
                     color: #111827 !important;
                     text-decoration: none !important;
                 }
 
                 /* Boutons de catégories (Protéines, Vitamines...) */
-                .oe_website_sale .nav-pills .nav-link {
+                .o_wsale_products_main_row .nav-pills .nav-link {
                     border-radius: 30px !important;
                     padding: 10px 24px !important;
                     font-weight: 600 !important;
@@ -327,38 +327,38 @@
                 }
                 
                 /* Catégorie active */
-                .oe_website_sale .nav-pills .nav-link.active {
+                .o_wsale_products_main_row .nav-pills .nav-link.active {
                     background-color: #10B981 !important;
                     color: white !important;
                     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
                 }
                 
-                .oe_website_sale .nav-pills .nav-link:hover:not(.active) {
+                .o_wsale_products_main_row .nav-pills .nav-link:hover:not(.active) {
                     background-color: #E5E7EB !important;
                     border-color: #D1D5DB;
                 }
 
                 /* Barre de recherche arrondie */
-                .oe_website_sale form.o_wsale_products_searchbar_form .input-group {
+                form.o_wsale_products_searchbar_form .input-group {
                     border-radius: 30px !important;
                     overflow: hidden;
                     box-shadow: 0 4px 10px rgba(0,0,0,0.03);
                 }
-                .oe_website_sale form.o_wsale_products_searchbar_form input {
+                form.o_wsale_products_searchbar_form input {
                     border: none !important;
                     background-color: #ffffff !important;
                     padding-left: 20px;
                 }
-                .oe_website_sale form.o_wsale_products_searchbar_form .btn {
+                form.o_wsale_products_searchbar_form .btn {
                     background-color: #ffffff !important;
                     border: none !important;
                     color: #10B981 !important;
                 }
 
                 /* Curseur de filtre de prix */
-                .oe_website_sale .irs-bar { background-color: #10B981 !important; }
-                .oe_website_sale .irs-handle { border-color: #10B981 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important; }
-                .oe_website_sale .irs-from, .oe_website_sale .irs-to, .oe_website_sale .irs-single { background-color: #10B981 !important; border-radius: 20px !important; }
+                .irs-bar { background-color: #10B981 !important; }
+                .irs-handle { border-color: #10B981 !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important; }
+                .irs-from, .irs-to, .irs-single { background-color: #10B981 !important; border-radius: 20px !important; }
 
                 /* Cacher la bordure moche par défaut du titre "All products" */
                 .o_wsale_products_main_row .border-bottom {
