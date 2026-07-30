@@ -29,7 +29,7 @@ class TravelReservation(models.Model):
         ('en_attente', 'En attente'),
         ('confirmed', 'Confirmée'),
         ('cancel', 'Annulée')
-    ], default='draft')
+    ], string='Statut', default='draft')
 
     @api.depends('client_firstname', 'client_lastname')
     def _compute_client_name(self):

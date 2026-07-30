@@ -1,0 +1,62 @@
+// ============================================================
+// Palette Travel — Jour 1, section 0.1 du guide d'equipe
+// Remplace le violet Odoo par defaut (menus, boutons, barre de statut, titres)
+// Portee : globale a tout le backend Odoo (decision validee)
+// ============================================================
+
+:root {
+    --travel-primary: #2563EB;      // Bleu Horizon
+    --travel-secondary: #0EA5E9;    // Turquoise Voyage
+    --travel-accent: #F97316;       // Corail Soleil
+    --travel-text: #0F172A;         // Texte principal
+    --travel-text-secondary: #64748B; // Texte secondaire
+    --travel-bg: #F8FAFC;           // Fond clair
+    --travel-border: #E2E8F0;       // Bordure
+
+    // Variables Bootstrap utilisees par le client web Odoo
+    --bs-primary: var(--travel-primary);
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-link-color: var(--travel-primary);
+}
+
+// Barre d'application (menu du haut)
+.o_main_navbar {
+    background-color: var(--travel-primary) !important;
+}
+
+// Boutons primaires (formulaires, headers de vue)
+.btn-primary {
+    background-color: var(--travel-primary) !important;
+    border-color: var(--travel-primary) !important;
+
+    &:hover {
+        filter: brightness(0.9);
+    }
+}
+
+// Boutons secondaires
+.btn-outline-primary,
+.btn-secondary.o_btn_secondary_travel {
+    color: var(--travel-primary) !important;
+    border-color: var(--travel-primary) !important;
+}
+
+// Barre de statut (statusbar widget)
+.o_statusbar_status .o_arrow_button_current,
+.o_form_statusbar .o_arrow_button_current,
+.o_arrow_button.o_arrow_button_current {
+    background-color: var(--travel-primary) !important;
+    color: #fff !important;
+}
+
+// Titres de formulaire
+.oe_title h1,
+.o_form_sheet h1 {
+    color: var(--travel-text);
+}
+
+// Liens et icones actives
+.o_menu_sections .dropdown-toggle.active,
+a:not(.btn) {
+    color: var(--travel-primary);
+}
