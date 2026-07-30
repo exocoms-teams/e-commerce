@@ -247,3 +247,7 @@ class SneakersController(http.Controller):
     @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
     def wishlist(self, **kwargs):
         return request.render('sneakers.page_wishlist', {})
+
+    @http.route('/contact', type='http', auth='public', website=True, sitemap=True)
+    def contact(self, **kwargs):
+        return request.render('sneakers.page_contact', {})
