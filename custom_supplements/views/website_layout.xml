@@ -54,6 +54,7 @@
                             <t t-set="_icon" t-value="True"/>
                             <t t-set="_text" t-value="False"/>
                             </t>
+                            <li class="nav-item">
                             <button class="navbar-toggler"
                                 type="button"
                                 data-bs-toggle="offcanvas"
@@ -62,22 +63,28 @@
                                 aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"/>
                             </button>
+                            </li>
                         </ul>
                         <div class="offcanvas offcanvas-end" id="mobile_menu">
                             <div class="offcanvas-header">
                                 <ul class="navbar-nav">
                                     <t t-call="website.placeholder_header_search_box"/>
-                                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
+                                    
+                                    <li class="nav-item">
+                                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="offcanvas-body">
                                 <ul class="navbar-nav">
-                                    <t t-call="website.submenu">
-                                        <t t-set="is_mobile" t-value="True"/>
-                                        <t t-set="is_vertical_nav" t-value="False"/>
-                                        <t t-set="offcanvas_is_leftside" t-value="False"/>
-                                        <t t-set="item_class" t-value="'nav-item'"/>
-                                        <t t-set="link_class" t-value="'nav-link'"/>
+                                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                                        <t t-call="website.submenu">
+                                            <t t-set="is_mobile" t-value="True"/>
+                                            <t t-set="is_vertical_nav" t-value="False"/>
+                                            <t t-set="offcanvas_is_leftside" t-value="False"/>
+                                            <t t-set="item_class" t-value="'nav-item'"/>
+                                            <t t-set="link_class" t-value="'nav-link'"/>
+                                        </t>
                                     </t>
                                 </ul>
                             </div>
