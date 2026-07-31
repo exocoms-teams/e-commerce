@@ -475,24 +475,36 @@
                 .o_wsale_apply_layout .dropdown-toggle {
                     color: #F9FAFB !important; 
                 }
-                /* --- J. CORRECTION DU TABLEAU NUTRITIONNEL --- */
-                /* Rendre le fond du tableau transparent pour éviter les conflits */
+              /* --- j. CORRECTION ULTIME DU TABLEAU NUTRITIONNEL --- */
+                /* Enlever le fond du tableau global */
                 #product_detail .alert-info table {
                     background-color: transparent !important;
                 }
-                /* Cibler spécifiquement la première ligne (les en-têtes) */
-                #product_detail .alert-info table thead th,
-                #product_detail .alert-info table thead td,
+                
+                /* Forcer le fond sombre sur la première ligne entière ET ses cellules */
+                #product_detail .alert-info table tr:first-child,
+                #product_detail .alert-info table thead tr,
                 #product_detail .alert-info table tr:first-child th,
                 #product_detail .alert-info table tr:first-child td {
-                    background-color: #374151 !important; /* Fond gris foncé pour contraster */
-                    color: #F9FAFB !important; /* Texte blanc éclatant */
-                    font-weight: 700 !important;
-                    border-bottom: 2px solid #10B981 !important; /* Soulignement vert premium */
+                    background-color: #374151 !important;
+                    border-bottom: 2px solid #10B981 !important;
                 }
-                /* S'assurer que le reste des cellules garde un fond sombre */
-                #product_detail .alert-info table tbody td {
+
+                /* Forcer la couleur du texte sur les cellules ET tous les éléments enfants (p, span, div, strong...) */
+                #product_detail .alert-info table tr:first-child th,
+                #product_detail .alert-info table tr:first-child td,
+                #product_detail .alert-info table tr:first-child th *,
+                #product_detail .alert-info table tr:first-child td * {
+                    color: #F9FAFB !important; /* Texte blanc */
+                    background-color: transparent !important; /* Tue les fonds blancs résiduels sur les span */
+                    font-weight: 700 !important;
+                }
+
+                /* Le reste du tableau */
+                #product_detail .alert-info table tbody tr:not(:first-child) td,
+                #product_detail .alert-info table tr:not(:first-child) td {
                     background-color: #1F2937 !important;
+                    color: #E5E7EB !important;
                 }
                 ]]>
             </style>
