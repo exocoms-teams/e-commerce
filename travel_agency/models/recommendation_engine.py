@@ -12,7 +12,9 @@ class TravelRecommendationEngine(models.AbstractModel):
                 ('disponible', '=', True),
             ]
         if nb_personnes:
-            domain.append(('nombre_personnes_max', '>=', nb_personnes))
+            domain += ['|',
+                    ('nombre_personnes_max', '=', 0),
+                    ('nombre_personnes_max', '>=', nb_personnes)]
         
         if pays:
             domain.append(('pays_destination', 'ilike', pays))
