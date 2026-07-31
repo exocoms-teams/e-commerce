@@ -448,6 +448,50 @@ def _setup_languages(env, website):
         )
 
 
+def _reload_native_translations(env):
+    """Recharge les traductions françaises OFFICIELLES d'Odoo pour les
+    modules natifs utilisés par le header/portail — même pattern que
+    exocoms_theme (__init__.py, appelé depuis leur post_init_hook).
+
+    Retour client : "tu vois ça ne suit pas la langue" — capture du
+    menu déroulant du compte natif (icône profil) affichant "My
+    Account" / "Logout" en ANGLAIS alors que le site est en français
+    (sélecteur de langue sur "Français"). Ce menu n'est PAS un template
+    à nous : c'est le dropdown natif Odoo du module `portal`
+    (`portal.user_dropdown_link_account` et consorts, déjà référencé
+    dans `_remove_account_dropdown_duplicate` plus bas). Sur une base
+    mutualisée où le français a pu être activé après coup sur certains
+    modules, les traductions officielles de ces chaînes natives
+    peuvent ne jamais avoir été chargées en base pour fr_FR — d'où le
+    repli sur l'anglais par défaut malgré une langue de site correcte.
+
+    Sans danger : ne fait qu'installer/rafraîchir des fichiers de
+    traduction officiels Odoo (aucune donnée business, aucune config),
+    et se limite volontairement aux modules natifs concernés (mêmes
+    noms que chez exocoms) plutôt qu'à TOUS les modules installés sur
+    cette base mutualisée à ~17 sites — inutile et plus lent de
+    recharger les traductions de modules sans rapport avec ce thème.
+    """
+    try:
+        mods = env['ir.module.module'].search([
+            ('name', 'in', [
+                'base', 'web', 'website', 'website_sale',
+                'portal', 'auth_signup', 'mail', 'sale',
+            ]),
+            ('state', '=', 'installed'),
+        ])
+        mods._update_translations('fr_FR')
+        _logger.info(
+            "capsule_house_theme: traductions fr_FR rechargées pour %d "
+            "module(s) natif(s) (menu compte, portail...).", len(mods),
+        )
+    except Exception:
+        _logger.exception(
+            "capsule_house_theme: échec rechargement traductions fr_FR "
+            "des modules natifs."
+        )
+
+
 LOGO_PATH = ('static', 'src', 'img', 'capsule-house-logo.png')
 
 
@@ -1195,6 +1239,7 @@ def run_theme_maintenance(env):
     website = _get_website(env, company)
     _setup_pricelist(env, website, company)
     _setup_languages(env, website)
+    _reload_native_translations(env)
     _set_logo(env, website)
     _setup_homepage(env, website)
     _setup_domain(env, website)

@@ -929,6 +929,41 @@ existe déjà, on s'assure que sa classe grid porte bien
 `o_wsale_products_opt_design_chips` — jamais de vue créée, jamais la
 vue générique partagée par les 17 sites touchée.
 
+## Menu compte en anglais + couleurs pages de connexion, d'après exocoms_theme (v19.0.1.0.42)
+
+Client, capture du menu déroulant du compte natif : "tu vois ça ne suit
+pas la langue [My Account / Logout en anglais malgré le site en
+français], va regarder sur exocoms_theme, j'ai aussi géré l'affichage
+du header lorsqu'on se déconnecte, mais les couleurs des pages de
+connexion et déconnexion sur exocoms_theme, sur le init, regarde bien,
+gère bien."
+
+Recherche menée dans le code réel d'exocoms_theme (pas deviné) :
+
+1. **Menu compte natif en anglais** : ce dropdown "My Account"/"Logout"
+   n'est pas un template à nous, c'est le menu natif du module
+   `portal`. exocoms_theme force le rechargement des traductions
+   françaises officielles d'Odoo pour les modules natifs concernés
+   (`mods._update_translations('fr_FR')` sur base/web/website/
+   website_sale/portal/auth_signup/mail/sale) — sans quoi ces chaînes
+   natives peuvent rester en anglais sur une base mutualisée où le
+   français a été activé après coup. Repris à l'identique dans une
+   nouvelle fonction `_reload_native_translations(env)`, appelée après
+   `_setup_languages()`.
+2. **Couleurs des pages /web/login, /web/signup, etc.** : exocoms_theme
+   n'a PAS de règle dédiée à ces pages — ils ont un `.btn-primary`
+   GLOBAL non scopé à un conteneur (layout.css), sans `!important`, qui
+   retombe donc naturellement sur toute page native non déjà couverte
+   par une règle plus spécifique. Chez nous, toutes les règles
+   `.btn-primary` existantes étaient scopées (`.oe_website_sale`,
+   `.o_wsale_product_btn`, `#products_grid`, `.o_portal_wrap`) :
+   aucune ne couvrait `/web/login`, resté sur le bleu/violet par défaut
+   d'Odoo. Ajout d'une règle globale équivalente dans
+   `odoo-integration.css` avec `--ch-terracotta` — sa spécificité plus
+   faible que les règles existantes garantit qu'elle ne s'applique que
+   là où rien de plus spécifique n'est déjà défini, sans régression
+   ailleurs sur le site.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

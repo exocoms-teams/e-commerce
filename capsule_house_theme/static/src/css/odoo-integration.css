@@ -383,6 +383,48 @@ form.s_website_form .form-control:focus {
 }
 
 /* ========================================
+   PAGES NATIVES ODOO (connexion, inscription, mot de passe oublié,
+   déconnexion) — /web/login, /web/signup, /web/reset_password...
+   ======================================== */
+
+/* v19.0.1.0.42 — retour client : "les couleurs des pages de connexion
+   et déconnexion sur exocoms_theme, regarde bien, gère bien". Ces
+   pages natives Odoo (web.login, etc.) ne sont dans AUCUN des
+   conteneurs déjà stylés ailleurs (.oe_website_sale, .o_wsale_
+   product_btn, #products_grid, .o_portal_wrap) : leur bouton restait
+   donc sur le bleu/violet par défaut d'Odoo, hors charte.
+
+   Vérifié sur exocoms_theme (static/src/css/layout.css) : ils n'ont
+   PAS de règle dédiée à /web/login — ils ont un unique `.btn-primary`
+   GLOBAL, non scopé à un conteneur, qui retombe donc naturellement
+   sur toutes les pages natives non couvertes ailleurs (dont /web/
+   login), sans `!important`. Repris ici à l'identique dans son
+   principe (règle globale, pas de !important) mais avec nos couleurs
+   --ch-* : comme les règles plus spécifiques du thème (shop.css,
+   .o_wsale_product_btn, .o_portal_wrap...) ont toutes une spécificité
+   CSS supérieure (classe supplémentaire et/ou !important), cette
+   règle globale ne s'applique QUE là où rien de plus spécifique
+   n'existe déjà — donc uniquement sur les pages natives non couvertes,
+   sans risque de régression sur le reste du site. */
+.btn-primary,
+.btn.btn-primary,
+a.btn-primary,
+button.btn-primary {
+    background: var(--ch-terracotta);
+    border-color: var(--ch-terracotta);
+    color: var(--ch-white);
+}
+
+.btn-primary:hover,
+.btn.btn-primary:hover,
+a.btn-primary:hover,
+button.btn-primary:hover {
+    background: var(--ch-terracotta-mid);
+    border-color: var(--ch-terracotta-mid);
+    color: var(--ch-white);
+}
+
+/* ========================================
    RESPONSIVE
    ======================================== */
 
