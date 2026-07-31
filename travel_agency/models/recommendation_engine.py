@@ -8,13 +8,12 @@ class TravelRecommendationEngine(models.AbstractModel):
     @api.model
     def get_recommendations(self, budget_max, nb_personnes, etoiles_min=None, pays=None, type_voyage=None):
         domain = [
-            ('is_travel_product', '=', True),
-            ('disponible', '=', True),
-        ]
+                ('prix_par_personne', '>', 0),
+                ('disponible', '=', True),
+            ]
         if nb_personnes:
             domain.append(('nombre_personnes_max', '>=', nb_personnes))
-        if type_voyage:
-            domain.append(('type_voyage', '=', type_voyage))
+        
         if pays:
             domain.append(('pays_destination', 'ilike', pays))
 
