@@ -877,6 +877,23 @@ largeur, pas la carte). Le halo continue de déborder librement à
 l'intérieur de la section (rendu visuel inchangé, vérifié par capture
 avant/après), sans plus jamais dépasser les bords réels de la page.
 
+## Pastille "Tous les pods"/"All pods" absente en anglais (v19.0.1.0.40)
+
+Client, sur deux captures EN vs FR de la home : "je parle au niveau de
+all pods" — la pastille noire pleine (reprise de la maquette) était
+présente sur "Tous les pods" en français mais absente sur "All pods"
+en anglais.
+
+Cause (confirmée en inspectant `#top_menu li` en direct sur les deux
+URLs) : le style vient de `layout.css`, ciblé par
+`.nav-link[href="/shop"]` — correspondance EXACTE. Odoo préfixe
+automatiquement les liens internes avec le code langue hors langue par
+défaut : le lien devient `/en/shop` en anglais, qui ne matche plus
+`"/shop"`. Fix : sélecteur de suffixe `[href$="/shop"]`, qui matche
+quel que soit le préfixe de langue, sans faux positif possible (aucune
+autre URL du menu ne se termine par `/shop`). Vérifié en direct par
+injection CSS avant d'être reporté dans le fichier.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

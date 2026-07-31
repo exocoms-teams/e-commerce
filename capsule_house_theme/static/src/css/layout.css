@@ -113,14 +113,26 @@ header#top #top_menu .nav-item .nav-link.active {
 
 /* "Tous les pods" (/shop) en pastille pleine, comme sur la maquette —
    ciblé par attribut href, jamais par ordre/position (le menu natif
-   peut être réordonné en backend sans casser ce style). */
-header#top #top_menu .nav-item .nav-link[href="/shop"] {
+   peut être réordonné en backend sans casser ce style).
+
+   Bug réel trouvé en v.40 (retour client : "je parle au niveau de all
+   pods" — capture EN vs FR montrant la pastille noire présente en
+   français mais absente en anglais) : le sélecteur utilisait
+   [href="/shop"], une correspondance EXACTE. Or Odoo préfixe l'URL
+   avec le code langue quand ce n'est pas la langue par défaut du
+   site : le lien devient /en/shop en anglais, qui ne correspond plus
+   à "/shop" exact — d'où le style perdu uniquement en anglais.
+   Corrigé avec un sélecteur de suffixe ($=) qui matche l'URL quel que
+   soit le préfixe de langue (/shop, /en/shop, /fr/shop...), sans
+   risque de faux positif : aucune autre URL du menu (/shop/category/X,
+   /shop?promotions=1) ne SE TERMINE par "/shop". */
+header#top #top_menu .nav-item .nav-link[href$="/shop"] {
     background: var(--ch-ink) !important;
     color: var(--ch-white) !important;
     font-weight: 600 !important;
 }
 
-header#top #top_menu .nav-item .nav-link[href="/shop"]:hover {
+header#top #top_menu .nav-item .nav-link[href$="/shop"]:hover {
     background: #000000 !important;
     color: var(--ch-white) !important;
 }
