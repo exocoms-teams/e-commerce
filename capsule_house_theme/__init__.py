@@ -605,6 +605,54 @@ def _setup_domain(env, website):
         )
 
 
+def _setup_website_priority(env, website):
+    """Donne à NOTRE site la priorité (sequence basse) dans le
+    départage natif Odoo entre sites candidats, sans domaine posé.
+
+    Contexte du bug (v19.0.1.0.43) : retour client capture à l'appui —
+    en cliquant "Déconnexion", l'utilisateur atterrissait sur le site
+    Odoo générique par défaut ("My Website" — logo placeholder, menu
+    Home/Shop/Contact us) au lieu de rester sur Capsule House, alors
+    que la page d'accueil (`/`) résolvait, elle, correctement vers
+    Capsule House sur la même URL. Diagnostic mené EN LISANT LE CODE
+    (pas en modifiant quoi que ce soit sur l'instance) : `/web/login`
+    et `/web/session/logout` sont des routes natives Odoo qui ne
+    passent pas par le même mécanisme de résolution "site courant" que
+    les pages de contenu — sans `website.domain` posé (notre cas tant
+    que le DNS n'est pas confirmé, voir `_setup_domain()` ci-dessus),
+    Odoo les départage entre sites candidats via `website.sequence`
+    (plus bas = prioritaire), pas par nom d'hôte.
+
+    Vérifié en lisant les enregistrements `website` réels d'une autre
+    base (exocoms_theme, à titre de comparaison) : tous les sites
+    partagent la même `sequence` par défaut (10) posée par Odoo à la
+    création — rien dans LEUR code ne la modifie non plus (recherche
+    exhaustive dans exocoms_theme : aucune occurrence de `sequence`
+    sur le modèle `website`, aucune route de login/logout personnalisée).
+    Le comportement qu'on cherche à obtenir n'est donc pas une astuce
+    qu'ils auraient codée et qu'on aurait ratée — c'est un réglage à
+    poser nous-mêmes, ici, pour NOTRE site.
+
+    Fix : poser `website.sequence` à une valeur strictement plus basse
+    que la valeur par défaut (10) partagée par tous les sites non
+    configurés (dont le site générique "My Website"), pour que Capsule
+    House gagne systématiquement ce départage — y compris sur les
+    routes natives comme `/web/login`/`/web/session/logout`. Portée
+    strictement limitée à NOTRE enregistrement website (jamais touché
+    ailleurs), donc sans risque pour les autres sites de la base.
+    Idempotent : no-op si déjà posé.
+    """
+    if website.sequence >= 10:
+        website.write({'sequence': 1})
+        _logger.info(
+            "capsule_house_theme: sequence du site id=%s abaissée à 1 "
+            "(était %s) — priorité sur le site générique par défaut "
+            "pour les routes natives sans résolution par domaine "
+            "(/web/login, /web/session/logout...).",
+            website.id, website.sequence,
+        )
+
+
 def _setup_theme_assets(env, website):
     """Enregistre le CSS/JS du thème via ir.asset, scopé à NOTRE site.
 
@@ -1243,6 +1291,7 @@ def run_theme_maintenance(env):
     _set_logo(env, website)
     _setup_homepage(env, website)
     _setup_domain(env, website)
+    _setup_website_priority(env, website)
     _setup_theme_assets(env, website)
     _invalidate_frontend_assets(env, website)
     _scope_layout_views(env, website)

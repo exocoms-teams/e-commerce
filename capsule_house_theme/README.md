@@ -964,6 +964,32 @@ Recherche menée dans le code réel d'exocoms_theme (pas deviné) :
    là où rien de plus spécifique n'est déjà défini, sans régression
    ailleurs sur le site.
 
+## Déconnexion envoyait sur le mauvais site (v19.0.1.0.43)
+
+Suite du diagnostic "où ça m'envoie lorsque je me déconnecte" : `/web/
+login` et `/web/session/logout` atterrissaient sur le site générique
+par défaut ("My Website") au lieu de Capsule House, alors que `/`
+résolvait correctement.
+
+Le client a demandé de rester sur une analyse du CODE local
+d'exocoms_theme, pas de manipulation sur l'instance Odoo.sh —
+recherche exhaustive faite dans ce sens (`__init__.py` complet :
+aucune occurrence de `sequence` sur le modèle `website`, aucune classe
+`ir.http`/`website` personnalisée, aucune route de login/logout ;
+`controllers/main.py`, `models/`, `data/website_data.xml` : rien non
+plus). Rien dans leur code ne gère spécifiquement ce cas — ce n'est
+donc pas une technique qu'on aurait ratée chez eux, c'est un réglage à
+poser nous-mêmes.
+
+Sans `website.domain` posé (notre cas tant que le DNS n'est pas
+confirmé), Odoo départage les sites candidats pour les routes natives
+comme `/web/login` via `website.sequence` (plus bas = prioritaire).
+Tous les sites non configurés partagent la même valeur par défaut
+(10), y compris le site générique. Fix : nouvelle fonction
+`_setup_website_priority()`, qui pose `website.sequence = 1` sur
+NOTRE site uniquement (jamais touché ailleurs), pour qu'il gagne
+systématiquement ce départage.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
