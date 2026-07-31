@@ -12,6 +12,7 @@
         'mandat_administratif'
     ],
     'data': [
+        'data/product_data.xml',
         'views/layout.xml',
         'views/snippets/s_hero.xml',
         'views/snippets/s_pourquoi.xml',
@@ -27,6 +28,8 @@
         'web.assets_frontend': [
             'theme_exocoms_monetique/static/src/scss/variables.scss',
             'theme_exocoms_monetique/static/src/scss/base.scss',
+            'theme_exocoms_monetique/static/src/scss/premium.scss',
+            'theme_exocoms_monetique/static/src/js/main.js',
         ],
     },
     'installable': True,
