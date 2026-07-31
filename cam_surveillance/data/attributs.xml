@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ===================== RÉSOLUTIONS DES CAMERAS =====================-->
+        <record id="product_attribute_resolution" model="product.attribute">
+            <field name="name">Résolution</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="attrib_value_720p" model="product.attribute.value">
+                <field name="name">720p</field>
+                <field name="attribute_id" ref="product_attribute_resolution"/>
+            </record>
+    
+            <record id="attrib_value_1080p" model="product.attribute.value">
+                <field name="name">1080p</field>
+                <field name="attribute_id" ref="product_attribute_resolution"/>
+            </record>
+    
+            <record id="attrib_value_4k" model="product.attribute.value">
+                <field name="name">4K</field>
+                <field name="attribute_id" ref="product_attribute_resolution"/>
+            </record>
+    
+            <record id="attrib_value_8k" model="product.attribute.value">
+                <field name="name">8K</field>
+                <field name="attribute_id" ref="product_attribute_resolution"/>
+            </record>
+
+        <!-- ===================== CAPACITÉS DE STOCKAGE =====================-->
+        <record id="product_attribute_capacite_stockage" model="product.attribute">
+            <field name="name">Capacité de stockage</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="attrib_value_1to" model="product.attribute.value">
+                <field name="name">1 To</field>
+                <field name="attribute_id" ref="product_attribute_capacite_stockage"/>
+            </record>
+    
+            <record id="attrib_value_4to" model="product.attribute.value">
+                <field name="name">4 To</field>
+                <field name="attribute_id" ref="product_attribute_capacite_stockage"/>
+            </record>
+    
+            <record id="attrib_value_8to" model="product.attribute.value">
+                <field name="name">8 To</field>
+                <field name="attribute_id" ref="product_attribute_capacite_stockage"/>
+            </record>
+
+        <!-- ===================== VOIES D'ENREGISTREMENT =====================-->
+        <record id="nb_voies_enregistrement" model="product.attribute">
+            <field name="name">Voies d'enregistrement</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+
+            <record id="nb_voies_enregistrement_8" model="product.attribute.value">
+                <field name="name">8 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+            
+            <record id="nb_voies_enregistrement_16" model="product.attribute.value">
+                <field name="name">16 voies</field>
+                <field name="attribute_id" ref="nb_voies_enregistrement"/>
+            </record>
+
+        <!-- ===================== MARQUES =====================-->
+        <record id="product_attribute_marque" model="product.attribute">
+            <field name="name">Marque</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+            <record id="attrib_value_marque_axis" model="product.attribute.value">
+                <field name="name">AXIS</field>
+                <field name="attribute_id" ref="product_attribute_marque"/>
+            </record>
+
+        <!-- ===================== VISIONS =====================-->
+        <record id="product_attribute_vision_nocturne" model="product.attribute">
+            <field name="name">Vision</field>
+            <field name="display_type">radio</field> 
+            <field name="visibility">visible</field> 
+        </record>
+            <record id="attrib_value_vision_nocturne_oui" model="product.attribute.value">
+                <field name="name">Vision nocturne</field>
+                <field name="attribute_id" ref="product_attribute_vision_nocturne"/>
+            </record>
+            <record id="attrib_value_vision_thermique_oui" model="product.attribute.value">
+                <field name="name">Vision thermique</field>
+                <field name="attribute_id" ref="product_attribute_vision_nocturne"/>
+            </record>
+
+        <!-- ===================== TYPE CAMERA (UTILISATION) =====================-->
+        <record id="product_attribute_usage" model="product.attribute">
+            <field name="name">Type d'utilisation de la caméra</field>
+            <field name="display_type">select</field> 
+            <field name="visibility">visible</field> 
+        </record>
+            <record id="attrib_value_interieur" model="product.attribute.value">
+                <field name="name">Intérieur</field>
+                <field name="attribute_id" ref="product_attribute_usage"/>
+            </record>
+            <record id="attrib_value_exterieur" model="product.attribute.value">
+                <field name="name">Extérieur</field>
+                <field name="attribute_id" ref="product_attribute_usage"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : TYPE DE CAMÉRA RÉSEAU ===================== -->
+        <record id="product_attribute_camera_reseau" model="product.attribute">
+            <field name="name">Type de Caméra réseau</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_cam_dome" model="product.attribute.value">
+                <field name="name">Camera Dome</field>
+                <field name="attribute_id" ref="product_attribute_camera_reseau"/>
+            </record>
+    
+            <record id="attrib_value_cam_corner" model="product.attribute.value">
+                <field name="name">Camera de coin</field>
+                <field name="attribute_id" ref="product_attribute_camera_reseau"/>
+            </record>
+    
+            <record id="attrib_value_cam_tourelle" model="product.attribute.value">
+                <field name="name">Camera tourelle</field>
+                <field name="attribute_id" ref="product_attribute_camera_reseau"/>
+            </record>
+    
+            <record id="attrib_value_cam_balle" model="product.attribute.value">
+                <field name="name">Camera balle</field>
+                <field name="attribute_id" ref="product_attribute_camera_reseau"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : TYPE DE STOCKAGE ===================== -->
+        <record id="product_attribute_stockage" model="product.attribute">
+            <field name="name">Type de Stockage</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_disques_dur" model="product.attribute.value">
+                <field name="name">Disques dur</field>
+                <field name="attribute_id" ref="product_attribute_stockage"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : TYPE D'ENREGISTREUR ===================== -->
+        <record id="product_attribute_enregistreur" model="product.attribute">
+            <field name="name">Type d'Enregistreur</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_enregistreur_nvr" model="product.attribute.value">
+                <field name="name">Enregistreur NVR</field>
+                <field name="attribute_id" ref="product_attribute_enregistreur"/>
+            </record>
+    
+            <record id="attrib_value_enregistreur_dvr" model="product.attribute.value">
+                <field name="name">Enregistreur DVR</field>
+                <field name="attribute_id" ref="product_attribute_enregistreur"/>
+            </record>
+    
+            <record id="attrib_value_enregistreur_xvr" model="product.attribute.value">
+                <field name="name">Enregistreur XVR</field>
+                <field name="attribute_id" ref="product_attribute_enregistreur"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : LECTEURS RFID ===================== -->
+        <record id="product_attribute_lecteurs" model="product.attribute">
+            <field name="name">Type de Lecteur RFID</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_lecteurs_cartes" model="product.attribute.value">
+                <field name="name">Lecteurs Carte</field>
+                <field name="attribute_id" ref="product_attribute_lecteurs"/>
+            </record>
+    
+            <record id="attrib_value_lecteurs_badges" model="product.attribute.value">
+                <field name="name">Lecteurs badges</field>
+                <field name="attribute_id" ref="product_attribute_lecteurs"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : INTERPHONES ===================== -->
+        <record id="product_attribute_interphones" model="product.attribute">
+            <field name="name">Type d'Interphone</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_interphones_video" model="product.attribute.value">
+                <field name="name">Interphones video</field>
+                <field name="attribute_id" ref="product_attribute_interphones"/>
+            </record>
+
+        <!-- ===================== ATTRIBUT : AUTRES ÉQUIPEMENTS CONTRÔLE D'ACCÈS ===================== -->
+        <record id="product_attribute_autres_controle_acces" model="product.attribute">
+            <field name="name">Équipement Contrôle d'accès</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+            <record id="attrib_value_clavier_a_code" model="product.attribute.value">
+                <field name="name">Clavier à code</field>
+                <field name="attribute_id" ref="product_attribute_autres_controle_acces"/>
+            </record>
+    
+            <record id="attrib_value_gache_electrique" model="product.attribute.value">
+                <field name="name">Gâche électrique</field>
+                <field name="attribute_id" ref="product_attribute_autres_controle_acces"/>
+            </record>
+
+        <!-- ===================== ATTRIBUTS GÉNÉRAUX SANS SOUS-TYPES ===================== -->
+        <record id="product_attribute_audio_reseau" model="product.attribute">
+            <field name="name">Audio réseau</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+
+        <record id="product_attribute_periferiques_radar" model="product.attribute">
+            <field name="name">Périfériques radar</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+    
+        <record id="product_attribute_accessoires" model="product.attribute">
+            <field name="name">Accessoires</field>
+            <field name="display_type">select</field>
+            <field name="create_variant">always</field>
+        </record>
+    </data>
+</odoo>
