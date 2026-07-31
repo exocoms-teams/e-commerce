@@ -687,11 +687,10 @@ class SneakersController(http.Controller):
 
                     if provider.code == 'wire_transfer':
                         order.sudo().action_confirm()
-                        return request.redirect('/confirmation')
+                        return request.redirect('/confirmation?order_id=%d' % order.id)
 
-            # If no payment provider selected, still try to confirm
-            order.sudo().action_confirm()
-            return request.redirect('/confirmation')
+            # No valid payment provider selected — stay on checkout, don't confirm
+            return request.redirect('/checkout?error=payment_required')
 
         # Payment providers (only published, website-enabled)
         payment_providers = request.env['payment.provider'].sudo().search([
@@ -753,7 +752,33 @@ class SneakersController(http.Controller):
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
-        return request.render('sneakers.page_confirmation', {})
+        order = request.env['sale.order'].sudo().browse()
+        order_id = kwargs.get('order_id')
+        if order_id:
+            order = request.env['sale.order'].sudo().browse(int(order_id))
+            if not order.exists() or order.state != 'sale':
+                order = request.env['sale.order'].sudo().browse()
+
+        # Fallback: find last confirmed order for current partner
+        if not order or not order.exists():
+            partner = request.env.user.partner_id
+            order = request.env['sale.order'].sudo().search([
+                ('partner_id', '=', partner.id),
+                ('state', '=', 'sale'),
+            ], limit=1, order='confirmation_date desc')
+
+        # Fetch transaction for payment info
+        transaction = request.env['payment.transaction'].sudo().browse()
+        if order and order.exists():
+            transaction = request.env['payment.transaction'].sudo().search([
+                ('sale_order_ids', 'in', order.id),
+            ], limit=1)
+
+        values = {
+            'order': order,
+            'transaction': transaction,
+        }
+        return request.render('sneakers.page_confirmation', values)
 
     @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
     def wishlist(self, **kwargs):
