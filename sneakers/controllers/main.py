@@ -297,7 +297,7 @@ class SneakersController(http.Controller):
             'brands': brands,
             'sizes': sizes,
             'colors': colors,
-            'active_category': category_slug,
+            'active_category': category_name,
             'product_ratings': product_ratings,
             'subcategories': subcategories,
             'selected_category': selected_category,
