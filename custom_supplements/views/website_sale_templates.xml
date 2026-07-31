@@ -521,13 +521,14 @@
             </style>
         </xpath>
     </template>
- <!-- =====================================================================
+<!-- =====================================================================
          PARTIE 4 : DESIGN PREMIUM DE LA PAGE PRODUIT DÉTAILLÉE (DARK MODE)
          ===================================================================== -->
 
     <template id="custom_product_premium_design" inherit_id="website_sale.product" name="Product Premium Design">
-        <!-- MODIFICATION ICI : On cible product_detail et on injecte "before" (beaucoup plus sûr) -->
-        <xpath expr="//div[@id='product_detail']" position="before">
+        <!-- SOLUTION : Utilisation de '*' pour éviter le conflit div/section, 
+             et 'inside' pour ne pas casser l'arbre QWeb -->
+        <xpath expr="//*[@id='wrap']" position="inside">
             <style>
                 <![CDATA[
                 /* --- A. FOND DE LA PAGE ET TEXTE GLOBAL --- */
