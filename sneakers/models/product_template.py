@@ -38,3 +38,13 @@ class ProductTemplate(models.Model):
         string="Low Stock Threshold",
         default=5
     )
+
+
+    # =====================
+    # Soukaina / PRD fields
+    # =====================
+
+    country_of_origin = fields.Many2one(
+        "res.country",
+        string="Country of Origin",
+    )
