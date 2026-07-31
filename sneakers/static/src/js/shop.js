@@ -22,37 +22,207 @@
     var priceMinInput    = document.querySelector(".sn-price-min");
     var priceMaxInput    = document.querySelector(".sn-price-max");
     var priceRangeSlider = document.querySelector(".sn-price-slider");
-    var availToggle      = document.querySelector(".sn-availability-toggle");
+    var availToggles     = document.querySelectorAll(".sn-availability-toggle");
     var sortSelect       = document.querySelector(".sn-sort-select");
     var clearFiltersBtn  = document.querySelector(".sn-clear-filters");
     var activeFiltersBar = document.querySelector(".sn-active-filters");
     var productGrid      = document.querySelector(".sn-product-grid");
     var paginationNav    = document.querySelector(".sn-pagination");
 
-    // FILTRES MARQUE (checkboxes) 
-    brandCheckboxes.forEach(function (checkbox) {
-        checkbox.addEventListener("change", function () {
-            var brand = this.closest(".sn-checkbox").textContent.trim();
+    // ================================================
+    // RESTAURER LES BRANDS DEPUIS L'URL
+    // ================================================
 
-            if (this.checked) {
-                if (activeFilters.brands.indexOf(brand) === -1) {
-                    activeFilters.brands.push(brand);
-                }
-            } else {
-                activeFilters.brands = activeFilters.brands.filter(function (b) {
-                    return b !== brand;
+    var urlParams = new URLSearchParams(window.location.search);
+
+    urlParams.getAll("brand").forEach(function(id){
+
+        var checkbox = document.querySelector(
+            '.sn-filter-box .sn-checkbox input[value="' + id + '"]'
+        );
+
+        if(checkbox){
+
+            checkbox.checked = true;
+
+            activeFilters.brands.push({
+                id: id,
+                name: checkbox.dataset.brandName
+            });
+
+        }
+
+    });
+
+    function loadFiltersFromURL() {
+
+        var params = new URLSearchParams(window.location.search);
+
+
+        // BRANDS
+        activeFilters.brands = [];
+
+        params.getAll("brand").forEach(function(id){
+
+            var checkbox = document.querySelector(
+                '.sn-checkbox input[value="' + id + '"]'
+            );
+
+            if(checkbox){
+
+                checkbox.checked = true;
+
+                activeFilters.brands.push({
+                    id: id,
+                    name: checkbox.dataset.brandName
                 });
+
             }
 
-            activeFilters.page = 1;
-            applyFilters();
         });
+
+
+
+        // SIZES
+        activeFilters.sizes = [];
+
+        params.getAll("size").forEach(function(sizeId){
+
+            activeFilters.sizes.push(sizeId);
+
+            var btn = document.querySelector(
+                '.sn-size-btn[data-size="' + sizeId + '"]'
+            );
+
+            if(btn){
+                btn.classList.add("active");
+            }
+
+        });
+
+
+
+        // COLORS
+        activeFilters.colors = [];
+
+        params.getAll("color").forEach(function(colorId){
+
+            activeFilters.colors.push(colorId);
+
+            var swatch = document.querySelector(
+                '.sn-color-swatch[data-color-id="' + colorId + '"]'
+            );
+
+            if(swatch){
+                swatch.classList.add("active");
+            }
+
+        });
+
+
+
+        // PRICE
+
+        activeFilters.priceMin =
+            parseInt(
+                params.get("price_min") || 0
+            );
+
+
+        activeFilters.priceMax =
+            parseInt(
+                params.get("price_max") || 500
+            );
+
+
+
+        if(priceMinInput){
+            priceMinInput.value = activeFilters.priceMin;
+        }
+
+
+        if(priceMaxInput){
+            priceMaxInput.value = activeFilters.priceMax;
+        }
+
+
+
+        // AVAILABILITY
+
+        activeFilters.availability =
+            params.get("availability") || false;
+
+
+        if(activeFilters.availability){
+
+            var radio = document.querySelector(
+                '.sn-availability-toggle[value="' +
+                activeFilters.availability +
+                '"]'
+            );
+
+
+            if(radio){
+                radio.checked = true;
+            }
+
+        }
+
+        // SORT
+
+        activeFilters.sortBy =
+            params.get("sort") || "popular";
+
+
+        if(sortSelect){
+
+            sortSelect.value = activeFilters.sortBy;
+
+        }
+
+    }
+
+    // FILTRES MARQUE (checkboxes) 
+    brandCheckboxes.forEach(function (checkbox) {
+
+        checkbox.addEventListener("change", function () {
+
+            var brandId = this.value;
+            var brandName = this.dataset.brandName;
+
+
+            if (this.checked) {
+
+                activeFilters.brands.push({
+                    id: brandId,
+                    name: brandName
+                });
+
+
+            } else {
+
+                activeFilters.brands =
+                    activeFilters.brands.filter(function (brand) {
+
+                        return brand.id !== brandId;
+
+                    });
+
+            }
+
+
+            activeFilters.page = 1;
+
+            applyFilters();
+
+        });
+
     });
 
     //  FILTRES TAILLE
     sizeButtons.forEach(function (btn) {
         btn.addEventListener("click", function () {
-            var size = this.textContent.trim();
+            var size = this.dataset.size;
             this.classList.toggle("active");
 
             if (this.classList.contains("active")) {
@@ -72,23 +242,33 @@
 
     // FILTRES COULEUR 
     colorSwatches.forEach(function (swatch) {
+
         swatch.addEventListener("click", function () {
-            var color = this.dataset.color || this.title || this.getAttribute("aria-label") || "";
+
+            var colorId = this.dataset.colorId;
+
             this.classList.toggle("active");
 
-            if (this.classList.contains("active")) {
-                if (activeFilters.colors.indexOf(color) === -1) {
-                    activeFilters.colors.push(color);
+            if(this.classList.contains("active")){
+
+                if(activeFilters.colors.indexOf(colorId) === -1){
+                    activeFilters.colors.push(colorId);
                 }
-            } else {
-                activeFilters.colors = activeFilters.colors.filter(function (c) {
-                    return c !== color;
+
+            }else{
+
+                activeFilters.colors =
+                activeFilters.colors.filter(function(c){
+                    return c !== colorId;
                 });
+
             }
 
             activeFilters.page = 1;
             applyFilters();
+
         });
+
     });
 
     // FILTRE PRIX 
@@ -139,12 +319,22 @@
     }
 
     // FILTRE DISPONIBILITÉ 
-    if (availToggle) {
-        availToggle.addEventListener("change", function () {
-            activeFilters.availability = this.checked;
-            activeFilters.page         = 1;
-            applyFilters();
+    if (availToggles.length) {
+
+        availToggles.forEach(function(toggle){
+
+            toggle.addEventListener("change", function(){
+
+                activeFilters.availability = this.value;
+
+                activeFilters.page = 1;
+
+                applyFilters();
+
+            });
+
         });
+
     }
 
     // TRI 
@@ -177,7 +367,9 @@
         brandCheckboxes.forEach(function (cb) { cb.checked = false; });
         sizeButtons.forEach(function (btn)     { btn.classList.remove("active"); });
         colorSwatches.forEach(function (sw)    { sw.classList.remove("active"); });
-        if (availToggle) availToggle.checked = false;
+        availToggles.forEach(function(r){
+            r.checked = false;
+        });
         if (sortSelect)  sortSelect.value    = "default";
         if (priceRangeSlider) priceRangeSlider.value = priceRangeSlider.max;
 
@@ -220,16 +412,31 @@
         }
 
         activeFilters.brands.forEach(function (brand) {
-            addTag(brand, function () {
-                activeFilters.brands = activeFilters.brands.filter(function (b) { return b !== brand; });
-                // Décocher la checkbox correspondante
-                brandCheckboxes.forEach(function (cb) {
-                    if (cb.closest(".sn-checkbox").textContent.trim() === brand) {
+
+            addTag(brand.name, function () {
+
+
+                activeFilters.brands =
+                    activeFilters.brands.filter(function (b) {
+
+                        return b.id !== brand.id;
+
+                    });
+
+
+                brandCheckboxes.forEach(function(cb){
+
+                    if(cb.value === brand.id){
                         cb.checked = false;
                     }
+
                 });
+
+
                 applyFilters();
+
             });
+
         });
 
         activeFilters.sizes.forEach(function (size) {
@@ -242,8 +449,16 @@
             });
         });
 
-        activeFilters.colors.forEach(function (color) {
-            addTag(color, function () {
+        activeFilters.colors.forEach(function (colorId) {
+
+            var swatch = document.querySelector(
+                '.sn-color-swatch[data-color-id="' + colorId + '"]'
+            );
+
+            var colorName = swatch ? swatch.title : colorId;
+
+
+            addTag(colorName, function () {
                 activeFilters.colors = activeFilters.colors.filter(function (c) { return c !== color; });
                 colorSwatches.forEach(function (sw) {
                     if ((sw.dataset.color || sw.title) === color) sw.classList.remove("active");
@@ -261,12 +476,26 @@
             });
         }
 
-        if (activeFilters.availability) {
-            addTag("En stock", function () {
-                activeFilters.availability = false;
-                if (availToggle) availToggle.checked = false;
+        if(activeFilters.availability){
+
+            var label =
+                activeFilters.availability === "in_stock"
+                ? "In Stock"
+                : "Out of Stock";
+
+
+            addTag(label,function(){
+
+                activeFilters.availability=false;
+
+                availToggles.forEach(function(r){
+                    r.checked=false;
+                });
+
                 applyFilters();
+
             });
+
         }
 
         if (clearFiltersBtn) {
@@ -276,17 +505,116 @@
 
     // 10. APPEL PRODUITS (avec filtres)
     function fetchProducts() {
-        if (productGrid) {
-            productGrid.classList.add("sn-product-grid--loading");
+
+        var params = new URLSearchParams(window.location.search);
+
+
+        // =====================
+        // BRANDS
+        // =====================
+
+        params.delete("brand");
+
+        activeFilters.brands.forEach(function(brand){
+
+            params.append(
+                "brand",
+                brand.id
+            );
+
+        });
+
+
+        // =====================
+        // SIZES
+        // =====================
+
+        params.delete("size");
+
+        activeFilters.sizes.forEach(function(size){
+
+            params.append(
+                "size",
+                size
+            );
+
+        });
+
+
+
+        // =====================
+        // COLORS
+        // =====================
+
+        params.delete("color");
+
+        activeFilters.colors.forEach(function(color){
+
+            params.append(
+                "color",
+                color
+            );
+
+        });
+
+
+
+        // =====================
+        // PRICE
+        // =====================
+
+        params.set(
+            "price_min",
+            activeFilters.priceMin
+        );
+
+
+        params.set(
+            "price_max",
+            activeFilters.priceMax
+        );
+
+
+
+        // =====================
+        // AVAILABILITY
+        // =====================
+
+        if(activeFilters.availability){
+
+            params.set(
+                "availability",
+                activeFilters.availability
+            );
+
+        }
+        else{
+
+            params.delete("availability");
+
         }
 
-        /* BACKEND — Récupérer les produits filtrés*/
 
-        // Simulation frontend
-        setTimeout(function () {
-            if (productGrid) productGrid.classList.remove("sn-product-grid--loading");
-            updatePaginationUI(1, 3); // page 1 sur 3 (démo)
-        }, 500);
+
+        params.set(
+            "page",
+            activeFilters.page
+        );
+
+        // SORT
+
+        if(activeFilters.sortBy){
+
+            params.set(
+                "sort",
+                activeFilters.sortBy
+            );
+
+        }
+
+        window.location.href =
+            "/shop-sneakers?" + params.toString();
+
     }
 
     // PAGINATION
@@ -444,6 +772,9 @@
     }
 
     // Initialisation
+    
+    loadFiltersFromURL();
+
     updateActiveFiltersBar();
 
     // Lire le paramètre page depuis l'URL au chargement

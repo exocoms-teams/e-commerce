@@ -61,7 +61,7 @@
     }
 
     // ================================================
-    // SYNC DOM → LOCALSTORAGE (après +/- ou suppression)
+    // SYNC DOM → (après +/- ou suppression)
     // ================================================
 
     function syncCartFromDOM() {
@@ -151,6 +151,58 @@ function updateCartBackend(lineId, qty) {
 
     var cartSection = document.querySelector(".sn-cart");
     if (!cartSection) return;
+
+
+    // ================================================
+    // EMPTY CART UI
+    // ================================================
+
+    function handleEmptyCartUI(){
+
+        if(cartSection.querySelector(".sn-cart-item")){
+            return;
+        }
+
+
+        var summaryCard = document.querySelector(".sn-summary-card");
+        if(summaryCard){
+            summaryCard.style.display = "none";
+        }
+
+
+        var promoCard = document.querySelector(".sn-promo-card");
+        if(promoCard){
+            promoCard.style.display = "none";
+        }
+
+
+        var checkoutBtn = document.querySelector(".sn-checkout-btn");
+        if(checkoutBtn){
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = "Empty cart";
+        }
+
+
+        var cartLayout = document.querySelector(".sn-cart-layout");
+        if(cartLayout){
+            cartLayout.style.gridTemplateColumns = "1fr";
+        }
+
+
+        var cartTitle = document.querySelector(".sn-cart-header h2");
+        if(cartTitle){
+            cartTitle.style.display = "none";
+        }
+
+
+        var cartSubtitle = document.querySelector(".sn-cart-header p");
+        if(cartSubtitle){
+            cartSubtitle.style.display = "none";
+        }
+
+    }
+
+    handleEmptyCartUI();
     cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
 
         updateIncreaseButtonState(item);
@@ -321,53 +373,53 @@ function updateCartBackend(lineId, qty) {
     });
 
     // ================================================
-// SUPPRESSION D'UN ARTICLE
-// ================================================
+    // SUPPRESSION D'UN ARTICLE
+    // ================================================
 
-cartSection.addEventListener("click", function (e) {
+    cartSection.addEventListener("click", function (e) {
 
-    var removeBtn = e.target.closest(".sn-cart-remove");
+        var removeBtn = e.target.closest(".sn-cart-remove");
 
-    if (!removeBtn) return;
-
-
-    var cartItem = removeBtn.closest(".sn-cart-item");
-
-    if (!cartItem) return;
+        if (!removeBtn) return;
 
 
-    var lineId = cartItem.dataset.lineId;
-    var productId = cartItem.dataset.productId;
+        var cartItem = removeBtn.closest(".sn-cart-item");
+
+        if (!cartItem) return;
 
 
-    // suppression côté Odoo
-    updateCartBackend(lineId, 0);
+        var lineId = cartItem.dataset.lineId;
+        var productId = cartItem.dataset.productId;
 
 
-    cartItem.style.opacity = "0";
+        // suppression côté Odoo
+        updateCartBackend(lineId, 0);
 
 
-    setTimeout(function(){
-
-        cartItem.remove();
+        cartItem.style.opacity = "0";
 
 
-        syncCartFromDOM();
+        setTimeout(function(){
+
+            cartItem.remove();
 
 
-        if (!cartSection.querySelector(".sn-cart-item")) {
+            syncCartFromDOM();
 
-            document.querySelector(".sn-cart-items").innerHTML =
-            `
-            <div class="sn-cart-empty">
-                <i class="fa fa-shopping-cart"></i>
-                <h3>Your cart is empty</h3>
-                <p>Browse our catalog and add your favorite sneakers.</p>
-                <a href="/shop-sneakers" class="sn-btn-primary">
-                    Continue Shopping
-                </a>
-            </div>
-            `;
+
+            if (!cartSection.querySelector(".sn-cart-item")) {
+
+        document.querySelector(".sn-cart-items").innerHTML =
+        `
+        <div class="sn-cart-empty">
+            <i class="fa fa-shopping-cart"></i>
+            <h3>Your cart is empty</h3>
+            <p>Browse our catalog and add your favorite sneakers.</p>
+            <a href="/shop-sneakers" class="sn-btn-primary">
+                Continue Shopping
+            </a>
+        </div>
+        `;
 
             var summaryCard = document.querySelector(".sn-summary-card");
             if (summaryCard) summaryCard.style.display = "none";
@@ -390,9 +442,11 @@ cartSection.addEventListener("click", function (e) {
             var cartSubtitle = document.querySelector(".sn-cart-header p");
             if (cartSubtitle) cartSubtitle.style.display = "none";
 
-            updateCartBadge(0);
+        updateCartBadge(0);
 
-        }
+        handleEmptyCartUI();
+
+    }
 
     },300);
 
