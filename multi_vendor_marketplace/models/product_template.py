@@ -40,13 +40,13 @@ class ProductTemplate(models.Model):
         domain=[('state', '=', 'Approved')])
     seller_pic = fields.Binary(related='seller_id.image_1920',
                                string='Seller image', help='Seller image')
-    web = fields.Many2one("website", string="Website",
+    web = fields.Many2one("website", string="Marketplace Website",
                           help='Website')
     alt_pro_id = fields.Many2one("product.template",
-                              string="Alternative Products",
+                              string="Seller Alternative Products",
                               help='Alternative Products')
     acc_pro_id = fields.Many2one("product.template",
-                              string="Accessory Products",
+                              string="Seller Accessory Products",
                               help='Accessory products')
     forcasted_qty = fields.Integer(string='Forcasted quantity',
                                    help='Forcasted quantity')

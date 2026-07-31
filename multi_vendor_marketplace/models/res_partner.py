@@ -100,7 +100,7 @@ class ResPartner(models.Model):
                                   help="For getting stock location in "
                                        "warehouse")
     warehouse_id = fields.Many2one('stock.warehouse',
-                                   string='Default Warehouse',
+                                   string='Seller Default Warehouse',
                                    help="For getting default warehouse")
     total_commission = fields.Float(string="Total commission",
                                     help="Total commission for the seller")

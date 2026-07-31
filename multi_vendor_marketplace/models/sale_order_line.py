@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
                                 related='product_id.seller_id')
     partner_id = fields.Many2one('res.partner',
                                  related='order_id.partner_id',
-                                 string="Customer",
+                                 string="Marketplace Customer",
                                  help="Get the partner information")
     marketplace_state = fields.Selection(
         selection=[('pending', 'Pending'),

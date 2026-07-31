@@ -84,7 +84,7 @@ class ResConfigSettings(models.TransientModel):
             raise_if_not_found=False))
     seller_warehouse_id = fields.Many2one(
         'stock.warehouse',
-        string='Warehouse', help='Warehouse',
+        string='Seller Warehouse', help='Warehouse',
         required=True,
         config_parameter='multi_vendor_marketplace.seller_warehouse_id',
         default=lambda self: self.env.ref(
@@ -94,7 +94,7 @@ class ResConfigSettings(models.TransientModel):
         string='Seller shop', help='Seller shop',
         config_parameter='multi_vendor_marketplace.seller_shop')
     commission = fields.Float(
-        string='Seller shop', help='Seller shop',
+        string='Commission Percentage', help='Commission Percentage',
         default=2,
         config_parameter='multi_vendor_marketplace.commission')
     currency = fields.Many2one(
@@ -129,11 +129,11 @@ class ResConfigSettings(models.TransientModel):
     seller_request_admin_mail = fields.Boolean(
         string='Mail notification',
         help='Enable notification for '
-             'Admin',
+        'Admin',
         config_parameter='multi_vendor_marketplace.seller_request_admin_mail')
     seller_request_admin_mail_template_id = fields.Many2one(
         'mail.template',
-        string='Email Template',
+        string='Seller Request Admin Email Template',
         help='Email Template',
         config_parameter=
         'multi_vendor_marketplace.seller_request_admin_mail_template_id',
@@ -145,7 +145,7 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='multi_vendor_marketplace.seller_request_seller_mail')
     seller_request_seller_mail_template_id = fields.Many2one(
         'mail.template',
-        string='Email Template',
+        string='Seller Request Seller Email Template',
         help='Email template',
         config_parameter=
         'multi_vendor_marketplace.seller_request_seller_mail_template_id',
@@ -158,17 +158,17 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='multi_vendor_marketplace.seller_approve_admin_mail')
     seller_approve_admin_mail_template_id = fields.Many2one(
         'mail.template',
-        string='Email Template', help='Email template',
+        string='Seller Approve Admin Email Template', help='Email template',
         config_parameter=
         'multi_vendor_marketplace.seller_approve_admin_mail_template_id',
         default=lambda self: self.env['ir.model.data']._xmlid_to_res_id(
             'multi_vendor_marketplace.seller_state_admin_mail_template'),
         required=True)
     seller_approve_seller_mail = fields.Boolean(
-        'Enable notification for Seller',
+        'Enable Notification for Approved Seller',
         config_parameter='multi_vendor_marketplace.seller_approve_seller_mail')
     seller_approve_seller_mail_template_id = fields.Many2one(
-        'mail.template', string='Email Template',
+        'mail.template', string='Seller Approve Seller Email Template',
         help='Email Template',
         config_parameter=
         'multi_vendor_marketplace.seller_approve_seller_mail_template_id',
@@ -179,27 +179,27 @@ class ResConfigSettings(models.TransientModel):
         string='Admin Notification', help='Enable notification for Admin',
         config_parameter='multi_vendor_marketplace.product_approve_admin_mail')
     product_approve_admin_mail_template_id = fields.Many2one(
-        'mail.template', 'Email Template',
+        'mail.template', 'Product Approve Admin Email Template',
         config_parameter=
         'multi_vendor_marketplace.product_approve_admin_mail_template_id',
         default=lambda self: self.env['ir.model.data']._xmlid_to_res_id(
             'multi_vendor_marketplace.product_state_admin_mail_template'),
         required=True)
     product_approve_seller_mail = fields.Boolean(
-        'Enable notification for Seller',
+        'Enable Notification for Approved Product',
         config_parameter='multi_vendor_marketplace.product_approve_seller_mail')
     product_approve_seller_mail_template_id = fields.Many2one(
-        'mail.template', 'Email Template',
+        'mail.template', 'Product Approve Seller Email Template',
         config_parameter=
         'multi_vendor_marketplace.product_approve_seller_mail_template_id',
         default=lambda self: self.env['ir.model.data']._xmlid_to_res_id(
             'multi_vendor_marketplace.product_state_seller_mail_template'),
         required=True)
     new_order_seller_mail = fields.Boolean(
-        'Enable notification for Seller',
+        'Enable Notification for New Seller Order',
         config_parameter='multi_vendor_marketplace.new_order_admin_mail')
     new_order_seller_mail_template_id = fields.Many2one(
-        'mail.template', 'Email Template',
+        'mail.template', 'New Order Seller Email Template',
         config_parameter=
         'multi_vendor_marketplace.new_order_admin_mail_template_id',
         default=lambda self: self.env['ir.model.data']._xmlid_to_res_id(
