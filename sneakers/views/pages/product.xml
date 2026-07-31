@@ -149,19 +149,21 @@
                             </div>
 
                             <!-- Colors -->
-                            <div class="sn-product-colors">
-                                <h4>Color</h4>
-                                <div class="sn-color-options">
-                                    <t t-foreach="colors" t-as="color">
-                                        <span class="sn-color"
-                                            t-att-title="color.product_attribute_value_id.name"
-                                            t-att-data-color-id="color.id"
-                                            t-att-data-color="color.product_attribute_value_id.name"
-                                            t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
-                                        </span>
-                                    </t>
+                            <t t-if="colors">
+                                <div class="sn-product-colors">
+                                    <h4>Color</h4>
+                                    <div class="sn-color-options">
+                                        <t t-foreach="colors" t-as="color">
+                                            <span class="sn-color"
+                                                t-att-title="color.product_attribute_value_id.name"
+                                                t-att-data-color-id="color.id"
+                                                t-att-data-color="color.product_attribute_value_id.name"
+                                                t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
+                                            </span>
+                                        </t>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
 
                             <!-- Sizes -->
                             <div class="sn-product-sizes">
@@ -222,8 +224,9 @@
                                     </button>
                                 </t>
                                 <a
-                                    href="#categories"
-                                    class="sn-btn-outline-wl">
+                                    href="/checkout"
+                                    class="sn-btn-outline-wl sn-buy-now"
+                                    t-att-data-template-id="product.id">
                                     Buy Now
                                 </a>
                             </div>

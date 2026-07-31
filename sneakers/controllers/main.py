@@ -118,6 +118,13 @@ class SneakersController(http.Controller):
             ('public_categ_ids', 'in', sneakers_categ_ids),
         ])
 
+        # Filtre par recherche (name ilike)
+        search_query = kwargs.get('search', '').strip()
+        if search_query:
+            products = products.filtered(
+                lambda p: search_query.lower() in p.name.lower()
+            )
+
 
         # Filtre par sous-catégorie
         if selected_subcategory and selected_subcategory.exists():
@@ -324,6 +331,7 @@ class SneakersController(http.Controller):
             'product_ratings': product_ratings,
             'subcategories': subcategories,
             'selected_category': selected_category,
+            'search_query': search_query if search_query else '',
         }
         return request.render(
             'sneakers.shop_page',
@@ -665,8 +673,11 @@ class SneakersController(http.Controller):
             if payment_provider_id:
                 provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
                 if provider.exists():
+                    # Get payment method from provider (required in Odoo 19)
+                    payment_method = provider.payment_method_ids[:1]
                     tx = request.env['payment.transaction'].sudo().create({
                         'provider_id': provider.id,
+                        'payment_method_id': payment_method.id if payment_method else False,
                         'sale_order_ids': [(4, order.id)],
                         'partner_id': order.partner_id.id,
                         'amount': order.amount_total,
