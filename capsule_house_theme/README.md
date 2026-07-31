@@ -612,6 +612,13 @@ recadrée à l'identique du modèle pour comparaison directe) : inset
 encore agrandi sur les 4 côtés (`top: -70%`, `right: -80%`, `left:
 -60%`, `bottom: -60%`), fondu à 22%/78%, `blur(70px)`, `opacity: 0.4`.
 
+Retour client sur cette v.30 (couverture correcte) : "il faut que ce
+soit aussi visible que sur le modèle" — trop pâle. **Correctif
+v19.0.1.0.31** (testé en direct, capture recadrée comme la maquette) :
+`opacity` 0.4 → 0.65, `blur(70px)` → `blur(55px)`, fondu resserré à
+30%/82% (au lieu de 22%/78%). Inset inchangé (la largeur de couverture
+était déjà bonne).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
