@@ -619,6 +619,30 @@ v19.0.1.0.31** (testé en direct, capture recadrée comme la maquette) :
 30%/82% (au lieu de 22%/78%). Inset inchangé (la largeur de couverture
 était déjà bonne).
 
+Retour client sur cette v.31 : "non pas concentré comme ça, laisse
+tomber" puis deux captures annotées à la main (traits tracés sur la
+maquette ET sur notre rendu) pour clarifier : le halo du modèle a un
+bord repérable, une limite qu'on peut suivre même en restant douce,
+alors que le nôtre (trop flouté sur une zone trop large) n'avait plus
+de forme du tout — juste un dégradé infini sans limite perceptible.
+**Correctif v19.0.1.0.32** (testé en direct, capture recadrée comme la
+maquette) : inset resserré (`top: -45%`, `right: -55%`, `left: -25%`,
+`bottom: -30%`), fondu resserré à 42%/72%, `blur(38px)` (au lieu de
+55px), `opacity: 0.6`. Objectif : contour net et traçable, sans
+retomber sur un halo invisible comme les toutes premières versions.
+
+Retour client sur cette v.32 : le contour était net mais le halo était
+redevenu trop petit (visible seulement en haut) ET trop foncé — la
+v.32 avait resserré la taille en même temps que le contour, ce qui
+n'était pas demandé ; rappel que les traits tracés à la main montrent
+une zone couvrant plus de la moitié du cadre. **Correctif
+v19.0.1.0.33** (testé en direct) : inset rétabli large, proche de la
+v.30 (`top: -65%`, `right: -75%`, `left: -50%`, `bottom: -50%`), fondu
+gardé resserré (35%/70%) pour le contour, `opacity: 0.4` (couleur plus
+claire), `blur(48px)`. Objectif : les 3 exigences réunies en même
+temps (grande couverture + contour net + couleur claire), au lieu de
+les corriger une par une en régressant sur les autres.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
