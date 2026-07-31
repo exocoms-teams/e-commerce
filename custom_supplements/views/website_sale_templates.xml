@@ -54,13 +54,41 @@
         </xpath>
     </template>
 
-    <!-- 4. Alerte Allergènes dynamique dans le résumé du panier -->
+  <!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
         <xpath expr="." position="inside">
+            
+            <!-- CSS dédié à l'alerte pour garantir la visibilité partout -->
+            <style>
+                .cs-allergen-alert {
+                    background: linear-gradient(145deg, #1F2937, #111827) !important;
+                    border: 1px solid #374151 !important;
+                    border-left: 4px solid #F59E0B !important; /* Bordure d'accentuation Ambre */
+                    color: #D1D5DB !important;
+                    border-radius: 12px !important;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+                }
+                .cs-allergen-alert strong {
+                    color: #FCD34D !important; /* Jaune vif pour le titre */
+                    font-weight: 700 !important;
+                    letter-spacing: 0.5px;
+                }
+                .cs-allergen-alert i {
+                    color: #F59E0B !important; /* Icône Ambre */
+                    font-size: 1.1rem;
+                }
+            </style>
+
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
-            <div t-if="has_supplements" class="alert alert-warning mt-3 mb-0 text-start shadow-sm" style="font-size: 0.85rem;" role="alert">
-                <i class="fa fa-exclamation-triangle me-2"/> 
-                <strong>Rappel Santé :</strong> Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
+            
+            <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-0 text-start" style="font-size: 0.85rem;" role="alert">
+                <div class="d-flex align-items-center mb-1">
+                    <i class="fa fa-exclamation-triangle me-2"/> 
+                    <strong>RAPPEL SANTÉ</strong>
+                </div>
+                <div class="mt-1" style="line-height: 1.4;">
+                    Certains articles de votre commande sont des compléments alimentaires pouvant contenir des allergènes. Vérifiez les étiquettes.
+                </div>
             </div>
         </xpath>
     </template>
