@@ -522,6 +522,13 @@ donnée touchés :
 - `.ch-hero-illustration` (`z-index: 1`) et `.ch-hero-float-card`
   (`z-index: 2`) remontés pour rester visibles au-dessus du halo.
 
+Retour client sur cette v.23 : "il y a pas toujours cette couleur
+derrière comme sur le modèle" — le halo était trop pâle/délavé.
+**Ajustement en v19.0.1.0.24** : `opacity` 0.32 → 0.55, `blur(60px)` →
+`blur(40px)`, fondu du gradient resserré (salmon 40%/transparent 68%
+au lieu de 45%/72%), inset resserré à `-14% -8%`. Toujours du CSS pur,
+aucune donnée ni template touchés.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
