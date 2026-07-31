@@ -10,15 +10,6 @@ class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
     def _get_specific_rendering_values(self, processing_values):
-        """Renvoyer les valeurs du formulaire de redirection.
-
-        Comme pour le virement bancaire (payment_custom), le « paiement »
-        consiste simplement à confirmer la commande : le formulaire poste la
-        référence de transaction vers notre route de traitement qui met la
-        transaction en attente. Le règlement réel interviendra hors ligne,
-        par virement du comptable public après dépôt de la facture sur
-        Chorus Pro.
-        """
         res = super()._get_specific_rendering_values(processing_values)
         if self.provider_code != 'mandat_administratif':
             return res
@@ -27,22 +18,19 @@ class PaymentTransaction(models.Model):
             'reference': self.reference,
         }
 
-    # --- API de traitement des données de paiement (Odoo 19) --- #
-
     @api.model
     def _extract_reference(self, provider_code, payment_data):
-        """Extraire la référence de transaction des données reçues."""
         if provider_code != 'mandat_administratif':
             return super()._extract_reference(provider_code, payment_data)
         return payment_data.get('reference')
 
-    def _apply_updates(self, payment_data):
-        """Mettre la transaction en attente : le paiement se fera par
-        virement administratif après dépôt de la facture sur Chorus Pro."""
+    def _process_notification_data(self, notification_data):
+        super()._process_notification_data(notification_data)
         if self.provider_code != 'mandat_administratif':
-            return super()._apply_updates(payment_data)
+            return
+
         _logger.info(
-            "Mandat administratif : transaction %s mise en attente "
-            "(règlement via Chorus Pro).", self.reference,
+            "Mandat administratif : transaction %s mise en attente (règlement via Chorus Pro).",
+            self.reference,
         )
         self._set_pending()

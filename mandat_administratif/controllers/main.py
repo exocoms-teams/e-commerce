@@ -31,6 +31,6 @@ class MandatAdministratifController(http.Controller):
                     'amount': tx.amount,
                     'currency': tx.currency_id.name,
                 }
-                tx._handle_feedback_data('mandat_administratif', payment_data)
+                tx._handle_notification_data('mandat_administratif', payment_data)
 
         return request.redirect('/payment/status')
