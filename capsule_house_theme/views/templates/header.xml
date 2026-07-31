@@ -1,132 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        Template autonome (pas d'inherit_id) : il est simplement t-call-é
-        depuis theme_layout. Scopé à notre site via _scope_layout_views()
-        dans __init__.py après installation (external id
-        capsule_house_theme.theme_header) — sans quoi il serait, comme
-        toute vue avec website_id=False, disponible pour tous les sites
-        de la base mutualisée.
+        CORRECTIF — voir README "Header natif comme sur exocoms_theme" et
+        le commentaire dans layout.xml.
 
-        Structure calquée sur la maquette de référence : bandeau d'annonce
-        sombre, logo bicolore, "Tous les pods" en pastille pleine + reste
-        du menu piloté par website.menu (donc par _setup_menus() dans
-        __init__.py — ajouter une catégorie là-bas suffit à l'ajouter ici).
+        Ce fichier contenait auparavant un template `theme_header` qui
+        REMPLAÇAIT entièrement le <header id="top"> natif d'Odoo (logo,
+        nav, panier, wishlist, recherche, langue, compte — tout recodé à
+        la main en QWeb custom). Ce n'est pas ainsi que le header du
+        module de référence exocoms_theme fonctionne réellement en
+        production : leur propre views/templates/header.xml définit un
+        template `custom_header` qui n'est JAMAIS t-call-é (vérifié par
+        recherche exhaustive dans tout le module) — un reste abandonné.
+        Le header réellement utilisé sur exocoms_theme est le header
+        NATIF Odoo (header#top), simplement restylé par CSS
+        (static/src/css/header.css : header#top, .navbar-brand.logo,
+        #top_menu, .o_wsale_my_cart, .o_wsale_my_wish,
+        .o_header_language_selector, li.dropdown.o_no_autohide_item...).
+
+        Capsule House suit maintenant la même logique : le header natif
+        est intact (menu = website.menu natif, logo = website.logo natif
+        posé par _set_logo() dans __init__.py, panier/wishlist/recherche/
+        langue/compte = widgets natifs des modules website/website_sale/
+        website_sale_wishlist), uniquement restylé par CSS
+        (odoo-integration.css + layout.css).
+
+        Seul élément gardé ici : une fine bannière d'annonce au-dessus du
+        header, reprise de la maquette fournie — ce n'est PAS un élément
+        natif Odoo (aucun équivalent dans website.layout), donc ça reste
+        un petit ajout XML à nous, mais qui ne touche à aucun moment à la
+        structure du header lui-même (inséré `position="before"` sur
+        header#top dans layout.xml, jamais dedans).
 
         NB : le texte du bandeau d'annonce ci-dessous ("Livraison &amp;
         installation offertes...") est repris tel quel de la maquette
         fournie — à confirmer/ajuster avec le client avant mise en ligne,
         ce n'est pas une donnée business vérifiée par ce module.
     -->
-    <template id="theme_header" name="Capsule House - Header">
+    <template id="theme_announce_bar" name="Capsule House - Bandeau d'annonce">
         <div class="ch-announce">
             <div class="container">
                 Livraison &amp; installation offertes dès 25 000 € d'achat — Livraison sous 6 semaines
             </div>
         </div>
-        <header id="ch-header" class="ch-header">
-            <div class="ch-header-inner container">
-                <a href="/" class="ch-logo">
-                    <!-- SVG du badge/logo validé par le client — repris tel
-                         quel (ne pas régénérer/remplacer par une autre
-                         forme). Les fichiers capsule-house-logo.svg /
-                         capsule-house-icon.svg (forme pilule) sont
-                         d'anciennes versions abandonnées, ne pas les
-                         utiliser. -->
-                    <svg class="ch-logo-mark-svg" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <radialGradient id="ch-logo-hg1" cx="35%" cy="35%" r="70%">
-                                <stop offset="0%" stop-color="#F6B26B"/>
-                                <stop offset="100%" stop-color="#C1694F"/>
-                            </radialGradient>
-                            <linearGradient id="ch-logo-hg2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#FFFFFF"/>
-                                <stop offset="100%" stop-color="#EDE0D0"/>
-                            </linearGradient>
-                        </defs>
-                        <circle cx="48" cy="48" r="45" fill="url(#ch-logo-hg2)" stroke="#1F2421" stroke-opacity="0.08"/>
-                        <rect x="12" y="34" width="72" height="30" rx="15" fill="#1F2421" opacity="0.06"/>
-                        <circle cx="38" cy="49" r="11" fill="url(#ch-logo-hg1)"/>
-                        <circle cx="63" cy="49" r="5" fill="#C1694F" opacity="0.7"/>
-                    </svg>
-                    <span class="ch-logo-text">
-                        capsule<br/>
-                        <span class="ch-logo-text-accent">house</span>
-                    </span>
-                </a>
-
-                <nav class="ch-nav" id="chNav">
-                    <a href="/shop" class="ch-nav-pill">Tous les pods</a>
-                    <t t-foreach="request.website.menu_id.child_id.filtered(lambda m: m.url != '/shop').sorted('sequence')" t-as="menu_item">
-                        <t t-if="menu_item.url not in ('/',)">
-                            <a t-att-href="menu_item.url" class="ch-nav-link">
-                                <t t-esc="menu_item.name"/>
-                            </a>
-                        </t>
-                    </t>
-                </nav>
-
-                <div class="ch-header-actions">
-                    <a href="/shop/cart" class="ch-icon-link ch-cart-link" title="Panier">
-                        <i class="fa fa-shopping-cart"/>
-                        <!-- .my_cart_quantity : classe standard website_sale, mise à
-                             jour automatiquement par son propre JS après un ajout
-                             au panier. Pas de JS custom nécessaire ici. -->
-                        <sup class="my_cart_quantity ch-cart-badge">0</sup>
-                    </a>
-                    <!-- Décoratif pour l'instant : la wishlist nécessite le
-                         module 'website_sale_wishlist' (pas dans depends).
-                         À ajouter aux dépendances si la fonctionnalité est
-                         confirmée côté client. -->
-                    <a href="/shop/wishlist" class="ch-icon-link" title="Mes favoris">
-                        <i class="fa fa-heart-o"/>
-                    </a>
-                    <a href="/shop" class="ch-icon-link" title="Rechercher">
-                        <i class="fa fa-search"/>
-                    </a>
-
-                    <!-- Sélecteur de langue : natif Odoo (request.website.language_ids),
-                         route native /website/lang/<url_code> pour le switch. Masqué
-                         automatiquement s'il n'y a qu'une seule langue active sur le
-                         site (pas la peine d'afficher un sélecteur à un seul choix). -->
-                    <div class="ch-lang-switcher" t-if="len(request.website.language_ids) > 1">
-                        <t t-set="ch_current_lang" t-value="request.env['res.lang'].search([('code', '=', request.env.context.get('lang'))], limit=1)"/>
-                        <button type="button" class="ch-lang-toggle" aria-haspopup="true">
-                            <span t-esc="ch_current_lang.name if ch_current_lang else ''"/>
-                            <i class="fa fa-angle-down"/>
-                        </button>
-                        <div class="ch-lang-menu">
-                            <a t-foreach="request.website.language_ids" t-as="ch_lang"
-                               t-attf-href="/website/lang/#{ch_lang.url_code}"
-                               t-attf-class="ch-lang-item #{'active' if ch_lang.code == request.env.context.get('lang') else ''}">
-                                <t t-esc="ch_lang.name"/>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Compte client : lien Connexion pour un visiteur public,
-                         menu Mon compte / Déconnexion pour un utilisateur identifié.
-                         Repris du même schéma que exocoms_theme (exo-profile-dropdown). -->
-                    <div class="ch-account-dropdown">
-                        <a t-if="request.env.user._is_public()" href="/web/login" class="ch-icon-link" title="Connexion">
-                            <i class="fa fa-user-o"/>
-                        </a>
-                        <t t-else="">
-                            <button type="button" class="ch-icon-link ch-account-toggle" title="Mon compte" aria-haspopup="true">
-                                <i class="fa fa-user"/>
-                            </button>
-                            <div class="ch-account-menu">
-                                <a href="/my/home"><i class="fa fa-user-circle"/> Mon compte</a>
-                                <a href="/web/session/logout?redirect=/"><i class="fa fa-sign-out"/> Déconnexion</a>
-                            </div>
-                        </t>
-                    </div>
-
-                    <button type="button" class="ch-burger" id="chBurger" aria-expanded="false">
-                        <span/><span/><span/>
-                    </button>
-                </div>
-            </div>
-        </header>
     </template>
 </odoo>

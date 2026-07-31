@@ -206,6 +206,70 @@ sidebar native reste donc VISIBLE et stylée (nouvelle section dans
 "Surface (m²)" déjà attaché aux produits via
 `_attach_shop_filters_to_products()`.
 
+### Header natif comme sur exocoms_theme (v19.0.1.0.12)
+
+Correctif d'architecture demandé explicitement par le client : "regarde
+comment j'ai procédé pour faire mon header sur exocoms theme, je n'ai
+pas du tout créé de xml pour ça".
+
+Vérification faite dans `exocoms_theme` (recherche exhaustive de
+`custom_header` dans tout le module) : leur `views/templates/header.xml`
+définit bien un template `custom_header`, mais il n'est **jamais
+t-call-é nulle part** — un reste abandonné, du même type que leurs
+anciens SVG de logo Capsule House qu'on nous a dit de ne pas réutiliser,
+ou que leur `dashboard_menu_boutiques_sidebar` (voir section boutique
+ci-dessus). Leur VRAI header en production est le header **natif** Odoo
+(`header#top`), simplement restylé par CSS
+(`static/src/css/header.css` : sélecteurs `header#top`,
+`.navbar-brand.logo`, `#top_menu`, `.o_wsale_my_cart`, `.o_wsale_my_wish`,
+`.o_header_language_selector`, `li.dropdown.o_no_autohide_item`) — le
+menu vient de `website.menu`, le logo du champ natif `website.logo`,
+panier/wishlist/recherche/langue/compte des widgets natifs des modules
+`website` / `website_sale` / `website_sale_wishlist`.
+
+Notre module faisait l'inverse : `theme_layout` (`layout.xml`)
+remplaçait entièrement `<header id="top">` par un template maison
+(`theme_header`) recodant à la main logo (SVG inline), nav (boucle sur
+`website.menu_id.child_id`), panier, wishlist décorative, sélecteur de
+langue et dropdown compte. Corrigé :
+
+- **`layout.xml`** : suppression du xpath `position="replace"` sur
+  `header#top`. Le header natif reste intact ; seule une fine bannière
+  d'annonce est encore insérée `position="before"` (élément de maquette
+  sans équivalent natif Odoo — ne touche à aucun moment à la structure
+  du header).
+- **`header.xml`** : ne contient plus que ce bandeau d'annonce
+  (`theme_announce_bar`) ; tout le reste de l'ancien `theme_header` a
+  été retiré.
+- **`layout.css`** : nouvelles règles ciblant les classes natives
+  (`header#top`, `.navbar-brand.logo`, `#top_menu .nav-link`,
+  `.o_wsale_my_cart`, `.o_wsale_my_wish`,
+  `a[data-bs-target="#o_search_modal"]`, `.o_header_language_selector`,
+  `li.dropdown.o_no_autohide_item`, navbar mobile), mêmes cibles que
+  `exocoms_theme/header.css`, adaptées à nos variables `--ch-*`. Le lien
+  "Tous les pods" (`/shop`) est mis en pastille pleine via un sélecteur
+  d'attribut (`.nav-link[href="/shop"]`), jamais par ordre/position.
+- **`base.css`** : suppression du `padding-top` qui compensait l'ancien
+  header fixe — le header natif est en flux normal (`#wrapwrap { padding:
+  0 !important; margin: 0 !important; }`, comme chez exocoms_theme).
+  `--topbar-h`/`--header-h` retirées de `variables.css` (plus utilisées).
+- **`__init__.py`** : `_set_logo()` pointait vers `logo.png`, jamais
+  livré (no-op silencieux permanent). Pointe maintenant vers
+  `static/src/img/capsule-house-logo.png`, généré à partir du badge SVG
+  validé par le client + du wordmark "capsule house" (aplatis en un
+  seul PNG) — le logo natif s'applique donc réellement au site
+  maintenant.
+- **`main.js`** : suppression de `initBurger()`/`initNavActive()`, du JS
+  qui pilotait l'ancien menu mobile custom (`#chBurger`/`#chNav`) —
+  le menu mobile (offcanvas) et l'état actif sont gérés nativement par
+  Odoo.
+- **`__manifest__.py`** : ajout de la dépendance `website_sale_wishlist`
+  pour que l'icône wishlist native soit réellement fonctionnelle (note :
+  `exocoms_theme` style `.o_wsale_my_wish` dans son CSS sans déclarer
+  cette dépendance dans son propre manifest — potentiellement non
+  fonctionnel chez eux ; on choisit d'être explicite/correct plutôt que
+  de reproduire cette lacune).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

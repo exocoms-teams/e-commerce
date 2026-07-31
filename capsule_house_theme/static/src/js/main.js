@@ -1,46 +1,16 @@
 /**
  * capsule_house_theme — JavaScript principal
- * Menu mobile, nav active
+ *
+ * CORRECTIF — voir README "Header natif comme sur exocoms_theme" :
+ * ce fichier contenait initBurger()/initNavActive(), du JS maison pour
+ * piloter le menu mobile et l'état "actif" de notre ancien header
+ * custom (#chBurger, #chNav, .ch-nav-link). Le header est désormais le
+ * header#top natif Odoo (voir layout.xml/header.xml/layout.css) : le
+ * menu mobile (offcanvas) et la mise en surbrillance du lien actif
+ * sont gérés nativement par Odoo lui-même, plus besoin de JS ici.
  */
 (function () {
     'use strict';
-
-    function initBurger() {
-        var burger = document.getElementById('chBurger');
-        var nav = document.getElementById('chNav');
-        if (!burger || !nav) return;
-        burger.addEventListener('click', function () {
-            var open = nav.classList.toggle('open');
-            burger.classList.toggle('open', open);
-            burger.setAttribute('aria-expanded', String(open));
-            document.body.style.overflow = open ? 'hidden' : '';
-        });
-        nav.querySelectorAll('.ch-nav-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                nav.classList.remove('open');
-                burger.classList.remove('open');
-                document.body.style.overflow = '';
-            });
-        });
-        document.addEventListener('click', function (e) {
-            if (!nav.contains(e.target) && !burger.contains(e.target)) {
-                nav.classList.remove('open');
-                burger.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-        });
-    }
-
-    function initNavActive() {
-        var path = window.location.pathname;
-        document.querySelectorAll('.ch-nav-link').forEach(function (link) {
-            var href = (link.getAttribute('href') || '').split('?')[0];
-            if (!href) return;
-            if ((href === '/' && path === '/') || (href !== '/' && path.startsWith(href))) {
-                link.classList.add('active');
-            }
-        });
-    }
 
     function initScrollReveal() {
         if (!('IntersectionObserver' in window)) return;

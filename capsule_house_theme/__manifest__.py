@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Capsule House Theme',
-    'version': '19.0.1.0.11',
+    'version': '19.0.1.0.12',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -16,6 +16,15 @@ Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mes
     'depends': [
         'website',
         'website_sale',
+        # Nécessaire pour que l'icône wishlist du header NATIF Odoo
+        # (.o_wsale_my_wish) soit réellement fonctionnelle plutôt que
+        # décorative — voir README "Header natif comme sur
+        # exocoms_theme" : exocoms_theme lui-même style cette classe
+        # dans son CSS sans déclarer cette dépendance dans son propre
+        # manifest (donc potentiellement non fonctionnelle chez eux) ;
+        # on choisit ici d'être explicite et correct plutôt que de
+        # reproduire cette même lacune.
+        'website_sale_wishlist',
         'mail',
     ],
     'data': [

@@ -9,6 +9,35 @@
         header/footer de TOUS les sites de la base, pas seulement au nôtre.
     -->
     <template id="theme_layout" name="Capsule House - Layout" inherit_id="website.layout">
+        <!--
+            CORRECTIF (voir README, section "Header natif comme sur
+            exocoms_theme") : ce module remplaçait auparavant tout le
+            <header id="top"> natif par un template maison
+            (capsule_house_theme.theme_header : logo/nav/icônes/langue/
+            compte entièrement recodés à la main). Ce n'est PAS ainsi que
+            le header d'exocoms_theme (module de référence) fonctionne en
+            production : son views/templates/header.xml définit bien un
+            template `custom_header`, mais il n'est jamais t-call-é nulle
+            part (confirmé par recherche exhaustive dans tout le module) —
+            c'est un reste abandonné, exactement comme les anciens SVG de
+            logo Capsule House qu'on nous a dit de ne pas réutiliser. Le
+            VRAI header d'exocoms_theme est le header natif Odoo
+            (header#top), simplement stylé par CSS (voir leur
+            static/src/css/header.css : sélecteurs `header#top`,
+            `.navbar-brand.logo`, `#top_menu`, `.o_wsale_my_cart`, etc.).
+
+            On corrige donc ici en gardant le header natif intact (menu,
+            logo, panier, wishlist, recherche, langue, compte gérés par
+            Odoo lui-même) et en le restylant uniquement par CSS
+            (odoo-integration.css / layout.css). Seul ajout gardé : une
+            fine bannière d'annonce au-dessus du header natif (élément de
+            maquette sans équivalent natif Odoo) — voir
+            theme_announce_bar, qui ne touche PAS à la structure du
+            header lui-même.
+        -->
+        <xpath expr="//header[@id='top']" position="before">
+            <t t-call="capsule_house_theme.theme_announce_bar"/>
+        </xpath>
         <xpath expr="//head" position="inside">
             <!--
                 Filet de secours, indépendant du bundle compilé web.assets_frontend
@@ -34,9 +63,6 @@
             <t t-foreach="['variables.css', 'base.css', 'layout.css', 'homepage.css', 'shop.css', 'odoo-integration.css']" t-as="ch_css_file">
                 <link rel="stylesheet" t-attf-href="/capsule_house_theme/static/src/css/#{ch_css_file}?v=#{ch_theme_version}"/>
             </t>
-        </xpath>
-        <xpath expr="//header[@id='top']" position="replace">
-            <t t-call="capsule_house_theme.theme_header"/>
         </xpath>
         <xpath expr="//footer" position="replace">
             <t t-call="capsule_house_theme.theme_footer"/>

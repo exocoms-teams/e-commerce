@@ -66,7 +66,7 @@ THEME_ASSETS = {
 # seul site après installation, sans quoi un ir.ui.view avec website_id=False
 # s'appliquerait par défaut à TOUS les sites de la base partagée.
 SCOPED_VIEW_XML_IDS = [
-    'capsule_house_theme.theme_header',
+    'capsule_house_theme.theme_announce_bar',
     'capsule_house_theme.theme_footer',
     'capsule_house_theme.theme_layout',
     'capsule_house_theme.partial_hero',
@@ -163,29 +163,40 @@ def _get_website(env, company):
     return website
 
 
-def _set_logo(env, website):
-    """Pose le logo/favicon du site s'il n'est pas déjà configuré.
+LOGO_PATH = ('static', 'src', 'img', 'capsule-house-logo.png')
 
-    No-op silencieux si l'image statique n'est pas encore livrée dans le
-    module : évite de planter l'install sur un asset manquant pendant que
-    le contenu graphique arrive au fur et à mesure.
+
+def _set_logo(env, website):
+    """Pose le logo du site — même pattern que exocoms_theme._set_logo().
+
+    Le header natif Odoo (header#top, voir README "Header natif comme sur
+    exocoms_theme") affiche le logo via `.navbar-brand.logo img`, dont la
+    source est le champ natif `website.logo` : on ne peut plus injecter
+    notre propre SVG décoratif dans le DOM (ce serait recréer un header
+    custom, exactement ce qu'on vient de corriger). Il faut donc que ce
+    champ pointe vers notre image de marque.
+
+    `capsule-house-logo.png` = le badge SVG validé par le client (repris
+    tel quel de l'ancien header.xml, cf. commentaire dans ce fichier) +
+    le wordmark "capsule house", aplatis en un seul PNG (rasterisé une
+    fois, stocké en asset statique du module). Idempotent : ne réécrase
+    jamais un logo déjà posé manuellement en backend (website.logo déjà
+    renseigné = on considère que c'est intentionnel, on ne l'écrase pas).
     """
     if website.logo:
         return
     try:
         import base64
         import os
-        logo_path = os.path.join(
-            os.path.dirname(__file__), 'static', 'src', 'img', 'logo.png',
-        )
+        logo_path = os.path.join(os.path.dirname(__file__), *LOGO_PATH)
         if os.path.exists(logo_path):
             with open(logo_path, 'rb') as f:
                 website.write({'logo': base64.b64encode(f.read())})
-                _logger.info("capsule_house_theme: logo appliqué au site id=%s.", website.id)
+            _logger.info("capsule_house_theme: logo appliqué au site id=%s.", website.id)
         else:
-            _logger.info(
-                "capsule_house_theme: pas de logo.png livré pour l'instant, "
-                "site id=%s laissé avec le logo par défaut.", website.id,
+            _logger.warning(
+                "capsule_house_theme: %s introuvable — site id=%s laissé "
+                "avec le logo par défaut.", os.path.join(*LOGO_PATH), website.id,
             )
     except Exception:
         _logger.exception(
