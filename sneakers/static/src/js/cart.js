@@ -102,9 +102,11 @@
     // ================================================
 
     function updateCartBadge(count) {
+
         var badge = document.querySelector(".sn-cart-count");
+
         if (!badge) return;
-        badge.textContent   = count;
+        badge.textContent = count;
         badge.style.display = "flex";
         badge.classList.remove("sn-cart-count--bump");
         void badge.offsetWidth;
@@ -149,6 +151,11 @@ function updateCartBackend(lineId, qty) {
 
     var cartSection = document.querySelector(".sn-cart");
     if (!cartSection) return;
+    cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
+
+        updateIncreaseButtonState(item);
+
+    });
 
 
     // ================================================
@@ -178,18 +185,18 @@ function updateCartBackend(lineId, qty) {
             console.log("CART PRODUCT STOCK :", stock);
 
 
-            if (!isNaN(stock) && current >= stock) {
-
+            if (isNaN(stock) || stock <= 0 || current >= stock) {
 
                 if(window.snShowToast){
 
                     window.snShowToast(
-                        "Maximum disponible : " + stock + " article(s)",
+                        stock <= 0 
+                        ? "Produit indisponible"
+                        : "Maximum disponible : " + stock + " article(s)",
                         "error"
                     );
 
                 }
-
 
                 return;
             }

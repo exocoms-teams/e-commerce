@@ -40,19 +40,178 @@ function initAddToCartCards() {
 
     buttons.forEach(function(btn){
 
+        var stock = parseInt(btn.dataset.stock,10);
+
+        if(!isNaN(stock) && stock <= 0){
+
+            btn.disabled = true;
+            btn.textContent = "Out of stock";
+
+        }
+
+    });
+
+    buttons.forEach(function(btn){
+
         btn.addEventListener("click", function(e){
 
             e.preventDefault();
 
+<<<<<<< HEAD
             var card = btn.closest('.sn-product-card');
+=======
+            if(!currentVariantAvailable){
+
+                if(window.snShowToast){
+                    window.snShowToast(
+                        "Cette variante n'est pas disponible.",
+                        "error"
+                    );
+                }
+
+                return;
+            }
+
+
+            var productId = this.dataset.productId;
+>>>>>>> origin/soukaina/prd-ges
             var templateId = this.dataset.templateId;
             if (!templateId || !card) return;
 
+<<<<<<< HEAD
             // Read variant data from DOM (no network call)
             var sizes = [];
             var colors = [];
             try { sizes = JSON.parse(card.dataset.sizes || '[]'); } catch(ex) {}
             try { colors = JSON.parse(card.dataset.colors || '[]'); } catch(ex) {}
+=======
+            // Vérification stock depuis le bouton
+            var stock = parseInt(this.dataset.stock, 10);
+
+
+            if (isNaN(stock)) {
+
+                stock = 0;
+
+            }
+
+
+            console.log("CARD STOCK :", stock);
+
+
+            if(stock <= 0){
+
+                if(window.snShowToast){
+
+                    window.snShowToast(
+                        "Produit hors stock",
+                        "error"
+                    );
+
+                }
+
+                return;
+            }
+
+            fetch('/shop/cart/add', {
+
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    jsonrpc: "2.0",
+                    method: "call",
+
+                    params: {
+                        product_id: parseInt(productId),
+                        product_template_id: parseInt(templateId),
+                        add_qty: 1,
+                        quantity: 1
+                    }
+
+                })
+
+            })
+
+            .then(function(response){
+                return response.json();
+            })
+
+            .then(function(data){
+                
+                if (data.error) {
+
+                    console.error(
+                        "ODOO ERROR MESSAGE :",
+                        data.error.message
+                    );
+
+                    console.error(
+                        "ODOO ERROR DATA :",
+                        data.error.data
+                    );
+
+                    console.error(
+                        "ODOO DEBUG :",
+                        data.error.data.debug
+                    );
+
+                    return;
+                }
+            // Vérification warning Odoo (stock insuffisant par exemple)
+            if(data.result && data.result.warning){
+
+                if(window.snShowToast){
+
+                    window.snShowToast(
+                        data.result.warning,
+                        "error"
+                    );
+
+                }
+
+                return;
+            }
+
+
+        if(data.result){
+
+        var originalText = btn.textContent;
+
+        btn.textContent = "✓ Added";
+
+
+        var badge = document.querySelector(".sn-cart-count");
+
+        if(badge){
+
+            badge.textContent = data.result.cart_quantity;
+            badge.style.display = "flex";
+
+        }
+
+
+        setTimeout(function(){
+
+            btn.textContent = originalText;
+
+        },2000);
+
+    }
+
+})
+
+            .catch(function(error){
+
+                console.error(
+                    "CARD ADD CART ERROR:",
+                    error
+                );
+>>>>>>> origin/soukaina/prd-ges
 
             openVariantModal(parseInt(templateId), this, {
                 name: this.dataset.productName || '',
@@ -694,7 +853,7 @@ document.addEventListener('click', function(e) {
             currentVariantAvailable = false;
 
             addBtn.disabled = true;
-            addBtn.textContent = "Rupture de stock";
+            addBtn.textContent = "Out of stock";
 
         }
         else{
@@ -702,7 +861,10 @@ document.addEventListener('click', function(e) {
             currentVariantAvailable = true;
 
             addBtn.disabled = false;
-            addBtn.textContent = "Ajouter au panier";
+             // Réactiver les boutons quantité
+            document.querySelectorAll(".sn-qty-btn").forEach(function(btn){
+                btn.disabled = false;
+            });
 
         }
         
@@ -854,14 +1016,17 @@ document.addEventListener('click', function(e) {
 
     })
 
-    .then(function(data){
-
+        .then(function(data){
 
         if (data.error) {
             console.error(
                 "ODOO ERROR DETAILS :",
                 data.error.data
             );
+
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
         }
 
 
@@ -869,22 +1034,24 @@ document.addEventListener('click', function(e) {
 
             btn.textContent = "✓ Added to Cart!";
 
-
             var badge = document.querySelector(".sn-cart-count");
 
             if(badge){
 
                 badge.textContent = data.result.cart_quantity;
-
                 badge.style.display = "flex";
 
             }
 
+
+            setTimeout(function(){
+
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+            },2000);
+
         }
-
-
-        btn.disabled = false;
-
 
     })
 

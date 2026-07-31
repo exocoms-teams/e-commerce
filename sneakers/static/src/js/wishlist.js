@@ -118,7 +118,7 @@
         if (wlBadge) {
             var newWl = getLocalWishlist();
             wlBadge.textContent = newWl.length;
-            wlBadge.style.display = newWl.length > 0 ? 'flex' : 'none';
+            wlBadge.style.display = 'flex';
         }
 
         /* backend */

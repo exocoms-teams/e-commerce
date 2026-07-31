@@ -107,16 +107,8 @@
         var quantity = data.result || 0;
 
 
-        if(quantity > 0){
-
-            badge.textContent = quantity;
-            badge.style.display = 'flex';
-
-        }else{
-
-            badge.style.display = 'none';
-
-        }
+        badge.textContent = quantity;
+        badge.style.display = 'flex';
 
     })
     .catch(function(error){
@@ -129,13 +121,19 @@
 })();
 
     (function initWishlistBadge() {
-        var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
+
+        var wl = JSON.parse(
+            localStorage.getItem('sn_wishlist') || '[]'
+        );
+
         var badge = document.querySelector('.sn-wishlist-count');
+
         if (!badge) return;
+
         badge.textContent = wl.length;
-        badge.style.display = wl.length > 0 ? 'flex' : 'none';
+        badge.style.display = 'flex';
+
     })();
 
-    /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
 })();
