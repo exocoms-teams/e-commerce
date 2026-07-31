@@ -663,6 +663,66 @@ def _setup_shop_categories(env, website):
     return categories
 
 
+SHOP_DESIGN_CLASSES = (
+    'o_wsale_products_opt_layout_catalog '
+    'o_wsale_products_opt_design_thumbs '
+    'o_wsale_products_opt_name_color_regular '
+    'o_wsale_products_opt_rounded_2 '
+    'o_wsale_products_opt_thumb_cover '
+    'o_wsale_products_opt_img_secondary_show '
+    'o_wsale_products_opt_img_hover_zoom_out_light '
+    'o_wsale_products_opt_has_cta '
+    'o_wsale_products_opt_actions_onhover '
+    'o_wsale_products_opt_has_wishlist '
+    'o_wsale_products_opt_wishlist_fixed '
+    'o_wsale_products_opt_has_description '
+    'o_wsale_products_opt_actions_subtle '
+    'o_wsale_products_opt_cc1'
+)
+
+
+def _setup_shop_display(env, website):
+    """Pose le design "Chips" de la grille boutique — EN CODE, pas via un
+    clic dans l'éditeur de site (demande explicite du client : "je veux
+    ça mais je veux que ça soit en local").
+
+    Odoo stocke ce réglage nativement sur des champs du modèle `website`
+    (pas une vue séparée à hériter) : `shop_opt_products_design_classes`
+    (la chaîne de classes CSS qui pilote le design "Chips"/"Grid"/
+    "List" — "Chips" correspond en interne à
+    `o_wsale_products_opt_design_thumbs`, le nom affiché dans l'éditeur
+    diffère du nom technique), plus `shop_ppg`/`shop_ppr`/`shop_gap`
+    (taille de grille), `shop_page_container` et `shop_default_sort`.
+
+    Valeurs reprises telles quelles depuis l'état actuel du site
+    (confirmé en lisant les vrais champs en conditions réelles, pas
+    deviné) : grille 21 produits par page, 3 colonnes, écart 16px,
+    conteneur "regular", tri par défaut "En vedette"
+    (`website_sequence asc`). Idempotent : simple write si une valeur
+    diffère de celle voulue, sans quoi ce serait un no-op à chaque
+    passage du cron horaire.
+    """
+    Website = env['website']
+    wanted = {
+        'shop_ppg': 21,
+        'shop_ppr': 3,
+        'shop_gap': '16px',
+        'shop_page_container': 'regular',
+        'shop_opt_products_design_classes': SHOP_DESIGN_CLASSES,
+        'shop_default_sort': 'website_sequence asc',
+    }
+    to_write = {}
+    for field_name, value in wanted.items():
+        if field_name in Website._fields and website[field_name] != value:
+            to_write[field_name] = value
+    if to_write:
+        website.write(to_write)
+        _logger.info(
+            "capsule_house_theme: design boutique (Chips) posé sur le "
+            "site id=%s (%s).", website.id, list(to_write.keys()),
+        )
+
+
 def _setup_menus(env, website, categories):
     """Crée le menu du site, scopé à notre website_id.
 
@@ -907,6 +967,7 @@ def run_theme_maintenance(env):
     _scope_layout_views(env, website)
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)
+    _setup_shop_display(env, website)
     _setup_menus(env, website, categories)
     _setup_shop_filters(env)
     _publish_our_products(env, website, company)

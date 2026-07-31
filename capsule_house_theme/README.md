@@ -481,6 +481,27 @@ repos, soulèvement + ombre plus marquée + léger zoom sur l'image au
 survol, titre en police d'accroche, bouton wishlist en cercle discret
 superposé sur l'image.
 
+### Design "Chips" posé par le code, pas par l'éditeur (v19.0.1.0.22)
+
+Demande client explicite : "je veux ça [le design Chips] mais je veux
+que ça soit en local" — c'est-à-dire posé par le module, pas par un
+clic dans Style > Products Design > Chips de l'éditeur de site (pas
+versionné, pas reproductible sur une autre instance).
+
+Diagnostic fait en conditions réelles (lecture directe des champs via
+JSON-RPC, pas deviné) : ce réglage n'est PAS une vue à hériter mais des
+champs natifs du modèle `website` — `shop_opt_products_design_classes`
+(la chaîne de classes CSS qui pilote le design ; "Chips" correspond en
+interne à `o_wsale_products_opt_design_thumbs`, le nom affiché dans
+l'éditeur diffère du nom technique), `shop_ppg`/`shop_ppr`/`shop_gap`
+(taille de grille), `shop_page_container`, `shop_default_sort`. Valeurs
+reprises telles quelles depuis l'état actuellement appliqué sur le site
+(lu en direct) : 21 produits/page, 3 colonnes, écart 16px, conteneur
+"regular", tri "En vedette".
+
+Nouvelle fonction `_setup_shop_display(env, website)`, idempotente
+(write uniquement si une valeur diffère de celle voulue).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
