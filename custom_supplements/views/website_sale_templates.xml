@@ -521,12 +521,13 @@
             </style>
         </xpath>
     </template>
-    <!-- =====================================================================
+ <!-- =====================================================================
          PARTIE 4 : DESIGN PREMIUM DE LA PAGE PRODUIT DÉTAILLÉE (DARK MODE)
          ===================================================================== -->
 
     <template id="custom_product_premium_design" inherit_id="website_sale.product" name="Product Premium Design">
-        <xpath expr="//div[@id='wrap']" position="before">
+        <!-- MODIFICATION ICI : On cible product_detail et on injecte "before" (beaucoup plus sûr) -->
+        <xpath expr="//div[@id='product_detail']" position="before">
             <style>
                 <![CDATA[
                 /* --- A. FOND DE LA PAGE ET TEXTE GLOBAL --- */
@@ -535,14 +536,12 @@
                     color: #E5E7EB !important;
                 }
                 
-                /* Titre du produit */
                 #product_detail h1 {
                     color: #F9FAFB !important;
                     font-weight: 800 !important;
                     letter-spacing: -0.5px;
                 }
                 
-                /* Textes secondaires (Terms, Shipping, etc.) */
                 #product_detail .text-muted, 
                 #product_detail p {
                     color: #9CA3AF !important;
@@ -565,7 +564,7 @@
                     background-color: #10B981 !important;
                     border-color: #10B981 !important;
                     color: #ffffff !important;
-                    border-radius: 30px !important; /* Forme de pilule premium */
+                    border-radius: 30px !important;
                     font-weight: 700 !important;
                     padding: 12px 30px !important;
                     text-transform: uppercase;
@@ -614,12 +613,6 @@
                     padding-bottom: 10px;
                     margin-bottom: 15px;
                 }
-                /* Tableaux à l'intérieur des encarts (s'il y en a) */
-                #product_detail .alert-info table th, 
-                #product_detail .alert-info table td {
-                    border-color: #374151 !important;
-                    color: #E5E7EB !important;
-                }
 
                 /* --- F. FIL D'ARIANE --- */
                 #product_detail .breadcrumb .breadcrumb-item a {
@@ -632,6 +625,44 @@
                 }
                 #product_detail .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
                     color: #6B7280 !important;
+                }
+
+                /* --- G. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
+                #product_detail .alert-info table {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    --bs-table-bg: transparent !important;
+                    --bs-table-accent-bg: transparent !important;
+                    --bs-table-striped-bg: transparent !important;
+                }
+                
+                #product_detail .alert-info table thead tr th,
+                #product_detail .alert-info table thead tr td,
+                #product_detail .alert-info table tbody tr:nth-child(1) th,
+                #product_detail .alert-info table tbody tr:nth-child(1) td,
+                #product_detail .alert-info table tr:first-child th,
+                #product_detail .alert-info table tr:first-child td {
+                    background: #374151 !important;
+                    background-color: #374151 !important; 
+                    color: #F9FAFB !important;
+                    border-bottom: 2px solid #10B981 !important;
+                    box-shadow: none !important;
+                }
+
+                #product_detail .alert-info table thead tr th *,
+                #product_detail .alert-info table thead tr td *,
+                #product_detail .alert-info table tr:first-child th *,
+                #product_detail .alert-info table tr:first-child td * {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    color: #F9FAFB !important;
+                }
+
+                #product_detail .alert-info table tbody tr:nth-child(n+2) td,
+                #product_detail .alert-info table tbody tr:nth-child(n+2) th {
+                    background: #1F2937 !important;
+                    background-color: #1F2937 !important;
+                    color: #E5E7EB !important;
                 }
                 ]]>
             </style>
