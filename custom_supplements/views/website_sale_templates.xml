@@ -88,6 +88,17 @@
     <template id="homepage_hero_split" inherit_id="website.homepage" name="Hero Premium Créatif">
         <xpath expr="//div[@id='wrap']" position="inside">
 
+            <!-- Styles spécifiques pour les effets de survol de la grille premium -->
+            <style>
+                .cs-hover-lift {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .cs-hover-lift:hover {
+                    transform: translateY(-6px);
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+                }
+            </style>
+
             <!-- 1. HERO PLEIN ÉCRAN -->
             <section class="cs-hero-media" style="height:100vh; min-height:720px;">
                 <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
@@ -197,19 +208,33 @@
                     <div class="row g-4">
                         <t t-foreach="request.env['product.template'].sudo().search([('is_published','=',True), ('is_supplement','=',True)], limit=4, order='create_date desc')" t-as="product">
                             <div class="col-6 col-md-3 cs-reveal">
-                                <div class="cs-card shadow-sm h-100 position-relative">
+                                <!-- AJOUT : d-flex, flex-column, et effet au survol (cs-hover-lift) -->
+                                <div class="cs-card shadow-sm h-100 position-relative cs-hover-lift" style="display: flex; flex-direction: column;">
+                                    
                                     <t t-if="product.is_vegan">
-                                        <span class="badge cs-badge-accent position-absolute m-3"><i class="fa fa-leaf me-1"/>Vegan</span>
+                                        <!-- z-index ajouté pour passer au-dessus du lien étendu -->
+                                        <span class="badge cs-badge-accent position-absolute m-3" style="z-index: 2;"><i class="fa fa-leaf me-1"/>Vegan</span>
                                     </t>
+                                    
                                     <div style="height:220px; background-color:#fff; border-radius:16px 16px 0 0; overflow:hidden;">
                                         <img t-attf-src="/web/image/product.template/#{product.id}/image_1024" t-attf-alt="#{product.name}" class="w-100 h-100" style="object-fit:contain;"/>
                                     </div>
-                                    <div class="p-3">
+                                    
+                                    <!-- flex-grow-1 permet de pousser le prix/bouton tout en bas -->
+                                    <div class="p-3 d-flex flex-column" style="flex-grow: 1;">
                                         <div class="cs-font-body small text-muted text-uppercase mb-1" t-if="product.is_supplement">Complément Alimentaire</div>
-                                        <h6 class="cs-font-heading mb-2"><t t-esc="product.name"/></h6>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="cs-font-heading" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
-                                            <a t-attf-href="/shop/#{slug(product)}" class="btn btn-sm cs-btn-primary rounded-pill px-3">Ajouter</a>
+                                        
+                                        <!-- MODIFICATION DU TITRE AVEC STRETCHED-LINK -->
+                                        <h6 class="cs-font-heading mb-3">
+                                            <a t-attf-href="/shop/#{slug(product)}" class="text-dark text-decoration-none stretched-link">
+                                                <t t-esc="product.name"/>
+                                            </a>
+                                        </h6>
+                                        
+                                        <!-- mt-auto pousse ce bloc en bas, z-index:10 protège le bouton Ajouter -->
+                                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                                            <span class="cs-font-heading fw-bold fs-5" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                            <a t-attf-href="/shop/cart/update" class="btn btn-sm cs-btn-primary rounded-pill px-3 position-relative" style="z-index: 10;">Ajouter</a>
                                         </div>
                                     </div>
                                 </div>
@@ -258,9 +283,6 @@
 
         </xpath>
     </template>
-
-
-
 
 <!-- =====================================================================
          PARTIE 3 : DESIGN PREMIUM DE LA PAGE BOUTIQUE (DARK MODE COMPLET)
@@ -314,7 +336,6 @@
                 }
 
                 /* --- C. DÉPLACEMENT DU TAG EN HAUT À GAUCHE (FORÇAGE) --- */
-                /* Cible spécifiquement les classes de positionnement Bootstrap natives d'Odoo */
                 .o_wsale_products_main_row .oe_product_cart .badge,
                 .o_wsale_products_main_row .oe_product_cart .o_ribbon,
                 .o_wsale_products_main_row .oe_product_cart .top-0.end-0,
@@ -326,6 +347,7 @@
                     position: absolute !important;
                     z-index: 10 !important;
                 }
+
                 /* --- D. TEXTES ET PRIX DES PRODUITS --- */
                 .o_wsale_products_main_row .oe_product_cart h6 a,
                 .o_wsale_products_main_row .oe_product_cart .h6 a,
