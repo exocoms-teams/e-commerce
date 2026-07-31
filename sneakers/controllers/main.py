@@ -45,9 +45,29 @@ class SneakersController(http.Controller):
         # Catégories principales
         # ==========================
 
-        categories = request.env['product.public.category'].sudo().search([
-            ('parent_id', '=', False)
-        ])
+        all_categories = request.env['product.public.category'].sudo().search([])
+
+        # Sneakers category XML IDs — products must belong to at least one
+        sneakers_categ_xmlids = [
+            'sneakers.category_running',
+            'sneakers.category_basketball',
+            'sneakers.category_lifestyle',
+            'sneakers.category_training',
+            'sneakers.category_skateboarding',
+            'sneakers.category_outdoor',
+        ]
+        sneakers_categ_ids = []
+        for xmlid in sneakers_categ_xmlids:
+            try:
+                cat = request.env.ref(xmlid)
+                if cat:
+                    sneakers_categ_ids.append(cat.id)
+            except Exception:
+                pass
+
+        categories = all_categories.filtered(
+            lambda c: c.id in sneakers_categ_ids
+        )
 
         selected_category = False
         subcategories = request.env['product.public.category'].sudo().search([
@@ -57,7 +77,7 @@ class SneakersController(http.Controller):
         category_name = kwargs.get('category')
 
         if category_name:
-            selected_category = categories.filtered(
+            selected_category = all_categories.filtered(
                 lambda c: c.name.lower() == category_name.lower()
             )[:1]
 
@@ -69,7 +89,8 @@ class SneakersController(http.Controller):
         unique_subcategories = {}
 
         for cat in subcategories:
-            unique_subcategories[cat.name] = cat
+            if cat.id in sneakers_categ_ids:
+                unique_subcategories[cat.name] = cat
 
         subcategories = list(unique_subcategories.values())
         # ==========================
@@ -93,7 +114,8 @@ class SneakersController(http.Controller):
         # ==========================
 
         products = request.env['product.template'].sudo().search([
-            ('sale_ok', '=', True)
+            ('sale_ok', '=', True),
+            ('public_categ_ids', 'in', sneakers_categ_ids),
         ])
 
 
@@ -225,17 +247,18 @@ class SneakersController(http.Controller):
 
         availability = request.httprequest.args.get('availability')
 
-        if availability == "in_stock":
-
-            products = products.filtered(
-                lambda p: p.qty_available > 0
-            )
-
-        elif availability == "out_of_stock":
-
-            products = products.filtered(
-                lambda p: p.qty_available <= 0
-            )
+        if availability and _is_module_installed('stock'):
+            try:
+                if availability == "in_stock":
+                    products = products.filtered(
+                        lambda p: p.qty_available > 0
+                    )
+                elif availability == "out_of_stock":
+                    products = products.filtered(
+                        lambda p: p.qty_available <= 0
+                    )
+            except Exception:
+                pass
 
 
         # ==========================
@@ -637,18 +660,26 @@ class SneakersController(http.Controller):
                 if carrier.exists():
                     order.sudo().carrier_id = carrier.id
 
-            # Set payment provider
+            # Handle payment via payment.transaction (Odoo 19 — payment_provider_id doesn't exist on sale.order)
             payment_provider_id = kwargs.get('payment_provider_id')
             if payment_provider_id:
-                order.sudo().payment_provider_id = int(payment_provider_id)
-
-                # Confirm order (wire transfer / manual payment)
                 provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
-                if provider.exists() and provider.code == 'wire_transfer':
-                    order.sudo().action_confirm()
-                    return request.redirect('/confirmation')
+                if provider.exists():
+                    tx = request.env['payment.transaction'].sudo().create({
+                        'provider_id': provider.id,
+                        'sale_order_ids': [(4, order.id)],
+                        'partner_id': order.partner_id.id,
+                        'amount': order.amount_total,
+                        'currency_id': order.currency_id.id,
+                        'reference': 'SNEAKERS-%s-%s' % (order.id, fields.Datetime.now().strftime('%Y%m%d%H%M%S')),
+                    })
+
+                    if provider.code == 'wire_transfer':
+                        order.sudo().action_confirm()
+                        return request.redirect('/confirmation')
 
             # If no payment provider selected, still try to confirm
+            order.sudo().action_confirm()
             return request.redirect('/confirmation')
 
         # Payment providers (only published, website-enabled)
