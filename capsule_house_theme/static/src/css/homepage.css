@@ -217,14 +217,28 @@
        (proche de v.30, top -65%/right -75%/left -50%/bottom -50%)
        tout en gardant un fondu resserré (35%/70%) pour le contour net
        demandé, et opacité réduite à 0.4 (au lieu de 0.6) pour une
-       couleur plus claire, moins "foncée". Testé et confirmé en
-       direct avant d'être reporté ici. */
+       couleur plus claire, moins "foncée".
+
+       Extension à gauche (v19.0.1.0.34) : retour client avec capture
+       annotée d'un trait ROUGE dessiné à la main indiquant l'étendue
+       exacte voulue du halo, comparé au trait GRIS (étendue actuelle
+       de la v.33) : le trait rouge démarre bien plus à gauche en haut
+       du cadre (juste au-dessus du bord gauche de la carte) alors que
+       le gris ne commençait qu'à plus de la moitié de la largeur de
+       la carte — tout le quart supérieur-gauche restait blanc. Corrigé
+       en augmentant fortement le débordement à gauche (left -90% au
+       lieu de -50%) et en recentrant légèrement le point focal du
+       dégradé (58% 32% au lieu de 64% 30%) pour laisser le halo
+       s'étendre visiblement au-dessus/à gauche du texte aussi, tout
+       en gardant l'intensité concentrée en haut à droite. Testé et
+       confirmé en direct (capture pleine page) avant d'être reporté
+       ici. */
     inset: auto;
     top: -65%;
     right: -75%;
-    left: -50%;
-    bottom: -50%;
-    background: radial-gradient(ellipse closest-side at 64% 30%, var(--ch-terracotta) 0%, var(--ch-salmon) 35%, transparent 70%);
+    left: -90%;
+    bottom: -55%;
+    background: radial-gradient(ellipse closest-side at 58% 32%, var(--ch-terracotta) 0%, var(--ch-salmon) 35%, transparent 70%);
     opacity: 0.4;
     filter: blur(48px);
     z-index: 0;

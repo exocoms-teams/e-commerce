@@ -643,6 +643,16 @@ claire), `blur(48px)`. Objectif : les 3 exigences réunies en même
 temps (grande couverture + contour net + couleur claire), au lieu de
 les corriger une par une en régressant sur les autres.
 
+Retour client sur cette v.33 : capture annotée à la main avec un trait
+rouge (étendue voulue) comparé à un trait gris (étendue actuelle) —
+le rouge démarre bien plus à gauche en haut du cadre, alors que tout
+le quart supérieur-gauche restait blanc en v.33. **Correctif
+v19.0.1.0.34** (testé en direct, capture plein écran avec le texte du
+hero visible) : `left: -90%` (au lieu de -50%), `bottom: -55%` (au
+lieu de -50%), centre du dégradé recentré à `58% 32%` (au lieu de `64%
+30%`) pour laisser le halo déborder visiblement au-dessus/à gauche du
+bloc de texte, tout en gardant l'intensité concentrée en haut à droite.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
