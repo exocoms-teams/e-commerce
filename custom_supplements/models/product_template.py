@@ -5,8 +5,7 @@ class ProductTemplate(models.Model):
 
     is_vegan = fields.Boolean(string="100% Vegan", default=False)
     nutritional_info = fields.Html(string="Valeurs Nutritionnelles")
-    allergens = fields.Many2many("custom_suplements.allergen",string="Allergènes")
-    
+    allergen_ids = fields.Many2many('allergen', string="Allergènes")
     is_supplement = fields.Boolean(string="Est un complément alimentaire", default=False)
     dosage = fields.Char(string="Dosage recommandé", help="Ex: 2 gélules par jour")
     ingredients = fields.Text(string="Ingrédients actifs", help="Liste des composants nutritionnels")

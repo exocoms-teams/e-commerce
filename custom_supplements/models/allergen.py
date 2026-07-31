@@ -2,8 +2,7 @@ from odoo import fields, models
 
 class Allergen(models.Model):
     _name = "allergen"
-    _description = "Test Model"
+    _description = "Allergens"
 
     name = fields.Char()
 
-    
