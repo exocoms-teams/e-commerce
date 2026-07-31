@@ -247,15 +247,15 @@ class SneakersController(http.Controller):
 
         availability = request.httprequest.args.get('availability')
 
-        if availability and _is_module_installed('stock'):
+        if availability:
             try:
                 if availability == "in_stock":
                     products = products.filtered(
-                        lambda p: p.qty_available > 0
+                        lambda p: p.website_availability in ('always', 'threshold')
                     )
                 elif availability == "out_of_stock":
                     products = products.filtered(
-                        lambda p: p.qty_available <= 0
+                        lambda p: p.website_availability == 'never'
                     )
             except Exception:
                 pass
