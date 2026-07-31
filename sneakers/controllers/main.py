@@ -289,6 +289,12 @@ class SneakersController(http.Controller):
             ('attribute_id', '=', color_attribute.id)
         ]) if color_attribute else []
 
+        print("Color attribute :", color_attribute)
+        print("Nombre de couleurs :", len(colors))
+
+        for color in colors:
+            print(color.name, color.html_color)
+
         product_ratings = self._get_product_ratings(products)
 
         values = {
