@@ -990,6 +990,17 @@ Tous les sites non configurés partagent la même valeur par défaut
 NOTRE site uniquement (jamais touché ailleurs), pour qu'il gagne
 systématiquement ce départage.
 
+## Pagination boutique restée violette (v19.0.1.0.44)
+
+Client : "tu as oublié la couleur ici comme on a fait dans
+exocoms_theme" (capture du pager, rond de page active en violet). Le
+pager natif Odoo (`#o_wsale_pager`) garde sa couleur primaire par
+défaut (#875A7B) tant qu'aucune règle ne le recolore — jamais fait
+côté Capsule House. Vérifié dans exocoms_theme
+(`static/src/css/layout.css`) : ils ont exactement cette règle, scopée
+à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
+`--ch-terracotta`/`--ch-white`.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
