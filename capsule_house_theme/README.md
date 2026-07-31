@@ -321,6 +321,42 @@ autre société) et la pose comme pricelist par défaut du site si le
 champ existe sur cette version (feature-detect, comme ailleurs dans ce
 module).
 
+#### Cause EXACTE confirmée en conditions réelles (v19.0.1.0.15)
+
+Le correctif 19.0.1.0.14 (pricelist) était une bonne pratique mais pas
+la vraie cause du blocage. Diagnostic confirmé en inspectant directement
+la session live du site (`/web/session/get_session_info`) :
+
+```
+uid=2 "Mitchell Admin", allowed_companies = {1: "YourCompany"} SEULEMENT
+```
+
+L'administrateur qui navigue sur le site Capsule House n'a jamais eu
+"Exocoms Group" (la société de ce site) dans ses sociétés autorisées
+(`res.users.company_ids`). Dès qu'un code a besoin de lire un modèle à
+règle multi-société pendant la navigation (ici :
+`website_sale.get_pricelist_available()` lisant
+`res.country.group.pricelist_ids`), `env.companies` lève
+`AccessError("Access to unauthorized or invalid companies.")` — le 403
+observé.
+
+Fix : nouvelle fonction `_grant_company_access(env, company)` (appelée
+en tout début de `run_theme_maintenance`, juste après `_get_company`)
+qui ajoute notre société aux sociétés autorisées de tout utilisateur
+membre du groupe Administration/Paramètres (`base.group_system`).
+Cohérent avec le fait que cette base mutualisée (~17 sites) est gérée
+par une seule équipe centrale administrant tous les sites clients.
+Idempotent, ne touche jamais un utilisateur non-administrateur ni les
+sociétés des autres sites.
+
+**Attention version du manifeste** : à un moment, `__manifest__.py`
+`'version'` est repassé localement à `'1.0'` (format court). Un retour à
+ce format fait sauter silencieusement TOUTES les migrations
+(`migrations/19.0.1.0.1/` à `.15/`) au prochain upgrade, car Odoo ne les
+rejoue que s'il reconnaît une progression cohérente avec le schéma
+`19.0.1.0.x`. Remis à `19.0.1.0.15` — ne plus revenir à un format court
+sur ce module.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

@@ -122,6 +122,19 @@ class CapsuleHouseWebsite(Website):
             'units_installed_count': units_installed_count,
         })
 
+    @http.route('/boutique', type='http', auth='public', website=True,
+                sitemap=True)
+    def boutique(self, **kw):
+        """Alias FR de /shop — même route que sur exocoms_theme.
+
+        Route neuve (jamais utilisée ailleurs dans la base mutualisée) :
+        pas de risque de collision avec un autre site, pas besoin de
+        garde `_is_our_website`. Simple redirect vers la page boutique
+        native (`/shop`, gérée par website_sale) : on ne duplique jamais
+        la logique de la page boutique elle-même ici.
+        """
+        return request.redirect('/shop')
+
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def newsletter_subscribe(self, email=None, **kwargs):

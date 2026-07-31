@@ -121,6 +121,69 @@ def _get_company(env):
     return Company.create({'name': COMPANY_NAME})
 
 
+def _grant_company_access(env, company):
+    """Ajoute NOTRE société aux sociétés autorisées des administrateurs.
+
+    Bug corrigé (diagnostiqué en conditions réelles via le traceback
+    complet de la page d'erreur 403 sur /shop) :
+
+        odoo.exceptions.AccessError: Access to unauthorized or invalid
+        companies.
+        (levée par la propriété env.companies, odoo/orm/environments.py)
+
+    Ce n'est PAS (contrairement à ce qu'on pensait en 19.0.1.0.14) un
+    problème de pricelist manquante en tant que tel : le traceback
+    montre que l'erreur remonte de `website_sale.get_pricelist_available()`
+    en train de lire `res.country.group.pricelist_ids` (un modèle soumis
+    aux règles multi-société), qui a besoin de calculer
+    `self.env.companies` pour construire le domaine de sécurité — et ce
+    calcul lui-même échoue.
+
+    Cause réelle : quand un administrateur bascule sur le site "Capsule
+    House" via le sélecteur de site du backend, Odoo place la société de
+    ce site (notre `company`, créée par `_get_company()` ci-dessus) dans
+    le contexte de société actif de sa session. Mais si cette société
+    n'a jamais été ajoutée aux "sociétés autorisées"
+    (`res.users.company_ids`) de cet administrateur, `env.companies`
+    lève une AccessError dès qu'un code quelconque a besoin de lire un
+    modèle à règle multi-société pendant qu'il navigue sur notre site.
+
+    Fix : ajouter notre société aux sociétés autorisées de tout
+    utilisateur membre du groupe Administration/Paramètres
+    (`base.group_system`). Cette base mutualisée (~17 sites) est gérée
+    par une seule équipe centrale (Exocoms Group) qui administre tous
+    les sites clients : il est donc cohérent que ces comptes aient accès
+    à chaque société créée par un de leurs propres modules de thème.
+    Idempotent : `(4, company.id)` n'ajoute jamais un doublon ; ne
+    touche jamais un utilisateur qui n'est pas administrateur système,
+    ni les sociétés des autres sites.
+    """
+    Users = env['res.users'].sudo()
+    admin_group = env.ref('base.group_system', raise_if_not_found=False)
+    if not admin_group:
+        _logger.warning(
+            "capsule_house_theme: groupe base.group_system introuvable — "
+            "accès société non accordé automatiquement aux "
+            "administrateurs."
+        )
+        return
+
+    admins = Users.search([('groups_id', 'in', admin_group.id)])
+    updated = []
+    for user in admins:
+        if company.id not in user.company_ids.ids:
+            user.write({'company_ids': [(4, company.id)]})
+            updated.append(user.id)
+    if updated:
+        _logger.info(
+            "capsule_house_theme: société '%s' (id=%s) ajoutée aux "
+            "sociétés autorisées des administrateurs id=%s — corrige le "
+            "403 'Access to unauthorized or invalid companies' rencontré "
+            "en naviguant sur /shop depuis le backend.",
+            company.name, company.id, updated,
+        )
+
+
 def _get_website(env, company):
     """Retrouve NOTRE site, jamais par nom.
 
@@ -756,6 +819,7 @@ def run_theme_maintenance(env):
     indépendant du versioning des migrations. Chaque étape est idempotente.
     """
     company = _get_company(env)
+    _grant_company_access(env, company)
     website = _get_website(env, company)
     _setup_pricelist(env, website, company)
     _set_logo(env, website)

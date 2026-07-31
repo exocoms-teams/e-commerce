@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Capsule House Theme',
-    'version': '1.0',
+    # NB : ne JAMAIS revenir à un format court ("1.0") — Odoo ne rejoue les
+    # scripts de migrations/<version>/ que s'il reconnaît une progression de
+    # version cohérente avec le schéma utilisé par ce module (19.0.1.0.x).
+    # Un retour à "1.0" fait sauter silencieusement TOUTES les migrations
+    # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
+    # les régressions observées (pricelist, accès société, logo, CSS non
+    # appliqués malgré le code correctement poussé).
+    'version': '19.0.1.0.16',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
