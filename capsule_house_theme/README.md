@@ -357,6 +357,65 @@ rejoue que s'il reconnaît une progression cohérente avec le schéma
 `19.0.1.0.x`. Remis à `19.0.1.0.15` — ne plus revenir à un format court
 sur ce module.
 
+### Audit systématique complet vs exocoms_theme (v19.0.1.0.16 → .17)
+
+Jusqu'ici, les écarts avec exocoms_theme (module de référence) étaient
+corrigés au coup par coup, à chaque fois que le client en pointait un
+lui-même. Sur sa demande explicite, comparaison complète fichier par
+fichier (contrôleurs, `__init__.py`, vues, CSS) plutôt que réactive.
+
+- **`/boutique`** (v19.0.1.0.16) : route manquante, ajoutée dans
+  `controllers/main.py` (alias de `/shop`, identique à exocoms_theme).
+- **Sélecteur de langue invisible** (v19.0.1.0.17) : le header
+  (`header.xml`/`layout.css`) affiche déjà un sélecteur de langue natif,
+  mais seulement si le site a plus d'une langue active — et rien dans ce
+  module n'en activait jamais une deuxième. Le sélecteur de langue
+  demandé par le client restait donc construit mais invisible en
+  pratique. Nouvelle fonction `_setup_languages(env, website)` (même
+  pattern que `exocoms_theme._setup_languages`) : active fr_FR + en_US,
+  fr_FR par défaut.
+- **Écarts volontairement NON repris**, car hors périmètre demandé pour
+  Capsule House ou propres à l'activité d'exocoms (monétique/TPE) :
+  système d'avis clients (`models/avis.py`, `/avis`), live chat
+  (`_setup_livechat`, dépendances `im_livechat`/`website_livechat`),
+  widget "vus récemment" (`ExocomsWebsiteSale.product()`), pages
+  Services/Contact/À propos (déjà actées "au fur et à mesure" par le
+  client).
+- **Écart connu, non corrigé pour l'instant** : le footer
+  (`footer.xml`) contient des liens vers `/mentions-legales`, `/cgv`,
+  `/confidentialite`, `/livraison`, `/retours`, `/garantie`, `/faq`,
+  `/a-propos`, `/le-concept`, `/contact` — aucune de ces pages n'existe
+  encore dans ce module (elles mèneront à un 404 tant qu'elles ne sont
+  pas créées), cohérent avec le calendrier "au fur et à mesure" déjà
+  acté pour Services/Contact/À propos.
+
+### CRITIQUE — panne totale de chargement du module (v19.0.1.0.18)
+
+La 19.0.1.0.17 a fait planter le chargement du module lors du
+déploiement réel (traceback confirmé) :
+
+```
+ValueError: Invalid field res.users.groups_id in condition
+('groups_id', 'in', 4)
+```
+
+Cause : `_grant_company_access()` (v19.0.1.0.15) utilisait
+`Users.search([('groups_id', 'in', admin_group.id)])` — le champ
+many2many `groups_id` sur `res.users` a été renommé dans Odoo 19.
+Corrigé en remplaçant ce domaine par `user.has_group('base.group_system')`,
+la méthode stable et publique d'Odoo pour tester l'appartenance à un
+groupe, indépendante du nom interne du champ m2m — plus robuste aussi
+aux futurs changements de version.
+
+**Leçon** : ne jamais écrire de domaine de recherche sur un champ m2m
+"système" (`groups_id`, et probablement d'autres équivalents) sans
+d'abord vérifier son nom exact sur la version cible via
+`Model._fields`, ou préférer une méthode publique stable
+(`has_group()`, `_is_admin()`, etc.) quand une existe — exactement le
+même principe de prudence déjà appliqué ailleurs dans ce module pour
+`product.public.category.website_id` ou `website.pricelist_id`
+(feature-detect avant utilisation).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

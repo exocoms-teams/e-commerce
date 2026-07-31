@@ -157,18 +157,32 @@ def _grant_company_access(env, company):
     Idempotent : `(4, company.id)` n'ajoute jamais un doublon ; ne
     touche jamais un utilisateur qui n'est pas administrateur système,
     ni les sociétés des autres sites.
+
+    BUG corrigé ici (a fait planter le chargement complet du module en
+    conditions réelles — traceback confirmé : `ValueError: Invalid
+    field res.users.groups_id`) : le champ many2many `groups_id` sur
+    `res.users` a été renommé dans Odoo 19. Plutôt que de deviner/coder
+    en dur le nouveau nom (fragile, encore susceptible de changer),
+    on utilise `user.has_group(...)`, la méthode stable et publique
+    d'Odoo pour tester l'appartenance à un groupe — indépendante du nom
+    interne du champ m2m sous-jacent, quelle que soit la version.
     """
     Users = env['res.users'].sudo()
-    admin_group = env.ref('base.group_system', raise_if_not_found=False)
-    if not admin_group:
+    admin_group_xmlid = 'base.group_system'
+    if not env.ref(admin_group_xmlid, raise_if_not_found=False):
         _logger.warning(
-            "capsule_house_theme: groupe base.group_system introuvable — "
-            "accès société non accordé automatiquement aux "
-            "administrateurs."
+            "capsule_house_theme: groupe %s introuvable — accès société "
+            "non accordé automatiquement aux administrateurs.",
+            admin_group_xmlid,
         )
         return
 
-    admins = Users.search([('groups_id', 'in', admin_group.id)])
+    # share=False : utilisateurs internes uniquement (exclut portail/
+    # public) — champ stable, sert seulement à réduire le volume avant
+    # le filtre has_group() ci-dessous, pas de dépendance sur un nom de
+    # champ m2m fragile.
+    internal_users = Users.search([('share', '=', False)])
+    admins = internal_users.filtered(lambda u: u.has_group(admin_group_xmlid))
     updated = []
     for user in admins:
         if company.id not in user.company_ids.ids:
@@ -284,6 +298,54 @@ def _setup_pricelist(env, website, company):
                 "id=%s pour le site id=%s.", field_name, pricelist.id, website.id,
             )
             break
+
+
+def _setup_languages(env, website):
+    """Active fr_FR + en_US sur le site et fixe fr_FR comme langue par
+    défaut — même pattern que exocoms_theme._setup_languages().
+
+    GAP repéré lors de l'audit systématique contre exocoms_theme (le
+    client a demandé qu'on regarde son module de référence de bout en
+    bout plutôt qu'au coup par coup) : le header (header.xml/layout.css)
+    affiche déjà un sélecteur de langue natif, mais UNIQUEMENT si
+    `len(request.website.language_ids) > 1` — sans cette fonction, rien
+    dans ce module n'activait jamais de deuxième langue sur le site.
+    Le sélecteur de langue demandé par le client restait donc construit
+    mais invisible, comme si on ne l'avait jamais livré.
+
+    Idempotent : ne réactive pas une langue déjà active, ne réécrase pas
+    `language_ids`/`default_lang_id` s'ils sont déjà corrects. Rejouable
+    depuis le cron horaire comme le reste de run_theme_maintenance (même
+    remarque que exocoms_theme : sans extraction en fonction séparée
+    rejouée à chaque passage, une perte de configuration — ex. site
+    dupliqué depuis un snapshot antérieur — ne serait plus jamais
+    corrigée automatiquement).
+    """
+    lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+    if not lang_fr:
+        env['res.lang']._activate_lang('fr_FR')
+        lang_fr = env['res.lang'].search([('code', '=', 'fr_FR')], limit=1)
+
+    lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+    if not lang_en:
+        env['res.lang']._activate_lang('en_US')
+        lang_en = env['res.lang'].search([('code', '=', 'en_US')], limit=1)
+
+    if not (website and lang_fr):
+        return
+
+    wanted_ids = {lang_fr.id} | ({lang_en.id} if lang_en else set())
+    current_ids = set(website.language_ids.ids)
+    if website.default_lang_id.id != lang_fr.id or current_ids != wanted_ids:
+        website.write({
+            'default_lang_id': lang_fr.id,
+            'language_ids': [(6, 0, list(wanted_ids))],
+        })
+        _logger.info(
+            "capsule_house_theme: langues du site id=%s synchronisées "
+            "(fr_FR par défaut%s) — active le sélecteur de langue natif "
+            "du header.", website.id, ' + en_US' if lang_en else '',
+        )
 
 
 LOGO_PATH = ('static', 'src', 'img', 'capsule-house-logo.png')
@@ -822,6 +884,7 @@ def run_theme_maintenance(env):
     _grant_company_access(env, company)
     website = _get_website(env, company)
     _setup_pricelist(env, website, company)
+    _setup_languages(env, website)
     _set_logo(env, website)
     _setup_homepage(env, website)
     _setup_domain(env, website)
