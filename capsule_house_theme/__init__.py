@@ -170,6 +170,59 @@ def _get_website(env, company):
     return website
 
 
+def _setup_pricelist(env, website, company):
+    """Garantit qu'une product.pricelist existe pour NOTRE société.
+
+    Bug corrigé (constaté en conditions réelles) : 403 sur /shop —
+    "Failed to read field res.country.group.pricelist_ids / Access to
+    unauthorized or invalid companies."
+
+    Cause : `_get_company()` crée notre société via un simple
+    `res.company.create({'name': ...})`. Contrairement à la création
+    d'une société via l'assistant standard d'Odoo (Paramètres >
+    Sociétés), un `create()` direct ne seed AUCUNE pricelist par défaut
+    pour cette société. Sans pricelist scopée à notre company_id,
+    website_sale élargit sa recherche de pricelist applicable via les
+    groupes de pays partagés (`res.country.group.pricelist_ids`) — une
+    liste qui traverse TOUTES les pricelists de la base mutualisée, y
+    compris celles des ~16 autres sociétés/sites, que la nôtre n'est pas
+    autorisée à lire (règle d'accès multi-société native d'Odoo) : d'où
+    le 403.
+
+    Fix : créer une pricelist scopée strictement à NOTRE company_id (et
+    à aucune autre), pour qu'Odoo la trouve directement sans jamais
+    avoir besoin d'élargir sa recherche à d'autres sociétés. Idempotent :
+    recherche filtrée sur company_id = notre société avant de créer, ne
+    lit/écrit jamais une pricelist appartenant à une autre société.
+    """
+    Pricelist = env['product.pricelist'].sudo()
+    pricelist = Pricelist.search([('company_id', '=', company.id)], limit=1)
+    if not pricelist:
+        vals = {'name': 'Capsule House - Tarif public', 'company_id': company.id}
+        if 'currency_id' in Pricelist._fields and company.currency_id:
+            vals['currency_id'] = company.currency_id.id
+        pricelist = Pricelist.create(vals)
+        _logger.info(
+            "capsule_house_theme: pricelist créée pour la société '%s' "
+            "(company_id=%s, pricelist_id=%s) — corrige le 403 sur /shop "
+            "causé par l'absence de pricelist scopée à notre société.",
+            company.name, company.id, pricelist.id,
+        )
+
+    # Champ de pricelist par défaut du site : le nom exact varie selon la
+    # version/le mode multi-pricelist activé (feature-detect, comme
+    # ailleurs dans ce module, plutôt que de supposer un nom de champ).
+    Website = env['website']
+    for field_name in ('pricelist_id', 'default_pricelist_id'):
+        if field_name in Website._fields and not website[field_name]:
+            website.write({field_name: pricelist.id})
+            _logger.info(
+                "capsule_house_theme: website.%s posé sur la pricelist "
+                "id=%s pour le site id=%s.", field_name, pricelist.id, website.id,
+            )
+            break
+
+
 LOGO_PATH = ('static', 'src', 'img', 'capsule-house-logo.png')
 
 
@@ -704,6 +757,7 @@ def run_theme_maintenance(env):
     """
     company = _get_company(env)
     website = _get_website(env, company)
+    _setup_pricelist(env, website, company)
     _set_logo(env, website)
     _setup_homepage(env, website)
     _setup_domain(env, website)

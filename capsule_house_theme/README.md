@@ -292,6 +292,35 @@ rondes), mais deux problèmes visibles :
   classique (`capsule_house_theme.logo_applied_v1`, même idiome que
   `CONFIG_ASSETS_FIX_KEY`) qui force la pose une seule fois.
 
+### 403 sur /shop — pricelist manquante pour notre société (v19.0.1.0.14)
+
+Une fois le header natif propre (logo + nav OK, confirmé par capture
+d'écran), clic sur "Tous les pods" (`/shop`) → 403 :
+
+```
+Failed to read field res.country.group.pricelist_ids
+Access to unauthorized or invalid companies.
+```
+
+Cause : `_get_company()` crée la société "Exocoms Group" via un simple
+`res.company.create({'name': ...})`. Contrairement à la création d'une
+société via l'assistant standard d'Odoo (Paramètres > Sociétés), un
+`create()` direct ne seed AUCUNE pricelist par défaut pour cette
+société. Sans pricelist scopée à notre `company_id`, `website_sale`
+élargit sa recherche de pricelist applicable via les groupes de pays
+partagés (`res.country.group.pricelist_ids`) — une liste qui traverse
+TOUTES les pricelists de la base mutualisée, y compris celles des ~16
+autres sociétés/sites que la nôtre n'est pas autorisée à lire (règle
+d'accès multi-société native d'Odoo) : d'où le 403.
+
+Fix : nouvelle fonction `_setup_pricelist(env, website, company)`
+(appelée en tout début de `run_theme_maintenance`, juste après
+`_get_website`) qui crée une `product.pricelist` scopée strictement à
+notre `company_id` (idempotent, ne touche jamais une pricelist d'une
+autre société) et la pose comme pricelist par défaut du site si le
+champ existe sur cette version (feature-detect, comme ailleurs dans ce
+module).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
