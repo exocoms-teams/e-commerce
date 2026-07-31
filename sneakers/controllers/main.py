@@ -207,7 +207,7 @@ class SneakersController(http.Controller):
             values
         )
 
-    @http.route('/get-product-variant', type='json', auth='public', website=True)
+    @http.route('/get-product-variant', type='jsonrpc', auth='public', website=True)
     def get_product_variant(self, template_id, attribute_value_ids):
 
         template = request.env['product.template'].sudo().browse(
