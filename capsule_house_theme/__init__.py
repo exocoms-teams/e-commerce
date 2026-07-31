@@ -36,6 +36,13 @@ CONFIG_WEBSITE_ID_KEY = 'capsule_house_theme.website_id'
 # tourner qu'UNE SEULE FOIS (pas à chaque passage du cron horaire), voir le
 # docstring de cette fonction pour le contexte du bug qu'elle corrige.
 CONFIG_ASSETS_FIX_KEY = 'capsule_house_theme.frontend_assets_regenerated_v1'
+
+# Garde-fou pour _set_logo() : appliquer notre logo UNE SEULE FOIS,
+# jamais à chaque passage (cron horaire / migration), voir le docstring
+# de cette fonction pour le contexte du bug qu'il corrige (website.logo
+# déjà non-vide par défaut sur un nouveau site Odoo, donc jamais écrasé
+# par l'ancienne condition `if website.logo: return`).
+CONFIG_LOGO_APPLIED_KEY = 'capsule_house_theme.logo_applied_v1'
 COMPANY_NAME = 'Exocoms Group'
 WEBSITE_NAME = 'Capsule House'
 
@@ -179,11 +186,22 @@ def _set_logo(env, website):
     `capsule-house-logo.png` = le badge SVG validé par le client (repris
     tel quel de l'ancien header.xml, cf. commentaire dans ce fichier) +
     le wordmark "capsule house", aplatis en un seul PNG (rasterisé une
-    fois, stocké en asset statique du module). Idempotent : ne réécrase
-    jamais un logo déjà posé manuellement en backend (website.logo déjà
-    renseigné = on considère que c'est intentionnel, on ne l'écrase pas).
+    fois, stocké en asset statique du module).
+
+    BUG corrigé ici (constaté en conditions réelles : le header affichait
+    le placeholder générique Odoo "Your Logo" au lieu du nôtre) : la
+    condition précédente `if website.logo: return` supposait que
+    website.logo était vide par défaut sur un site neuf. En réalité Odoo
+    pose lui-même une valeur par défaut (placeholder) sur ce champ à la
+    création du site, donc cette condition empêchait TOUJOURS notre pose,
+    même au tout premier passage du hook. Remplacé par un garde-fou
+    ir.config_parameter classique (même idiome que
+    CONFIG_ASSETS_FIX_KEY) : on force la pose UNE SEULE FOIS, ce qui
+    écrase bien le placeholder Odoo initial, sans jamais revenir écraser
+    un changement fait volontairement en backend après coup.
     """
-    if website.logo:
+    ICP = env['ir.config_parameter'].sudo()
+    if ICP.get_param(CONFIG_LOGO_APPLIED_KEY) == '1':
         return
     try:
         import base64
@@ -192,11 +210,15 @@ def _set_logo(env, website):
         if os.path.exists(logo_path):
             with open(logo_path, 'rb') as f:
                 website.write({'logo': base64.b64encode(f.read())})
+            ICP.set_param(CONFIG_LOGO_APPLIED_KEY, '1')
             _logger.info("capsule_house_theme: logo appliqué au site id=%s.", website.id)
         else:
             _logger.warning(
                 "capsule_house_theme: %s introuvable — site id=%s laissé "
-                "avec le logo par défaut.", os.path.join(*LOGO_PATH), website.id,
+                "avec le logo par défaut Odoo pour l'instant (le hook "
+                "réessaiera au prochain passage, la clé de garde n'est "
+                "posée qu'en cas de succès réel).",
+                os.path.join(*LOGO_PATH), website.id,
             )
     except Exception:
         _logger.exception(

@@ -270,6 +270,28 @@ langue et dropdown compte. Corrigé :
   fonctionnel chez eux ; on choisit d'être explicite/correct plutôt que
   de reproduire cette lacune).
 
+#### Retour terrain (v19.0.1.0.13)
+
+Après déploiement de la 19.0.1.0.12, capture d'écran du site en ligne :
+la nav natif s'affichait bien restylée (pastille "Tous les pods", icônes
+rondes), mais deux problèmes visibles :
+
+- Numéro de téléphone factice (`+1 555-555-5556`) et bouton "Contact Us"
+  encore affichés — pré-remplis par défaut par Odoo sur tout nouveau
+  site, aucune donnée business réelle de Capsule House. Masqués par CSS
+  (`layout.css`) via sélecteur structurel
+  (`li:has(a[href^="tel:"])`, `li:has(a.btn_cta)`), même technique que
+  `exocoms_theme/header.css` (les règles `data-oe-id` d'exocoms sont
+  spécifiques à leur propre base et volontairement pas reprises ici).
+- Logo affichant le placeholder générique Odoo "Your Logo" au lieu du
+  nôtre. Cause : `_set_logo()` utilisait `if website.logo: return` en
+  supposant ce champ vide par défaut sur un site neuf — en réalité Odoo
+  y pose lui-même un placeholder à la création du site, donc cette
+  condition bloquait TOUJOURS la pose de notre logo, dès le tout premier
+  passage du hook. Remplacé par un garde-fou `ir.config_parameter`
+  classique (`capsule_house_theme.logo_applied_v1`, même idiome que
+  `CONFIG_ASSETS_FIX_KEY`) qui force la pose une seule fois.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

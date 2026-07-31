@@ -125,6 +125,25 @@ header#top #top_menu .nav-item .nav-link[href="/shop"]:hover {
     color: var(--ch-white) !important;
 }
 
+/* ÉLÉMENTS PAR DÉFAUT ODOO À MASQUER — même technique que
+   exocoms_theme/header.css : un nouveau website natif Odoo pré-remplit
+   son header avec un numéro de téléphone factice (lien tel:) et un
+   bouton CTA générique ("Contact Us"/btn_cta) — aucun des deux n'est
+   une donnée business réelle de Capsule House (voir la règle du projet
+   : jamais de fausses données affichées). On masque ces deux éléments
+   par sélecteur structurel (classe/attribut natif Odoo, donc portable —
+   contrairement aux règles data-oe-id d'exocoms_theme, spécifiques à
+   leur propre base et donc volontairement PAS reprises ici). La nav
+   Capsule House (Accueil, Tous les pods, Studio, Duo, Panorama,
+   Accessoires) vient de _setup_menus() dans __init__.py et n'est PAS
+   concernée par ces règles. */
+header#top li:has(a[href^="tel:"]),
+header#top li:has(a.btn_cta),
+header#top .o_navbar_mobile li:has(a[href^="tel:"]),
+header#top .o_navbar_mobile li:has(a.btn_cta) {
+    display: none !important;
+}
+
 /* ICÔNES — panier, wishlist, recherche (widgets natifs) */
 header#top .navbar-nav.align-items-center {
     gap: 8px !important;
