@@ -764,20 +764,34 @@ def _setup_shop_categories(env, website):
 
 
 SHOP_DESIGN_CLASSES = (
-    'o_wsale_products_opt_layout_catalog '
-    'o_wsale_products_opt_design_thumbs '
+    # v19.0.1.0.41 — retour client : "je t'ai dit que je voulais ce
+    # design [Chips] sur mes produits du shop, essaye de voir comment
+    # ça a été fait sur exocoms_theme pour bien le faire sur Capsule
+    # House". La liste précédente ici était DEVINÉE (mauvaise
+    # supposition : "Chips" = o_wsale_products_opt_design_thumbs, +
+    # rounded_2, actions_onhover, wishlist_fixed, has_description,
+    # actions_subtle — aucune de ces classes ne vient du vrai design
+    # Chips). Remplacée par la liste EXACTE lue dans le code réel
+    # d'exocoms_theme (__init__.py, écrite deux fois : post_init_hook
+    # et le hook de maintenance principal — confirmée fonctionnelle en
+    # production sur leur site, pas devinée). La classe qui porte
+    # vraiment le nom "Chips" est o_wsale_products_opt_design_chips.
     'o_wsale_products_opt_name_color_regular '
-    'o_wsale_products_opt_rounded_2 '
     'o_wsale_products_opt_thumb_cover '
     'o_wsale_products_opt_img_secondary_show '
     'o_wsale_products_opt_img_hover_zoom_out_light '
     'o_wsale_products_opt_has_cta '
-    'o_wsale_products_opt_actions_onhover '
     'o_wsale_products_opt_has_wishlist '
-    'o_wsale_products_opt_wishlist_fixed '
-    'o_wsale_products_opt_has_description '
-    'o_wsale_products_opt_actions_subtle '
-    'o_wsale_products_opt_cc1'
+    'o_wsale_products_opt_has_comparison '
+    'o_wsale_products_opt_actions_inline '
+    'o_wsale_products_opt_wishlist_inline '
+    'o_wsale_products_opt_actions_promote '
+    'o_wsale_products_opt_cc '
+    'o_wsale_products_opt_cc1 '
+    'o_wsale_products_opt_rounded_4 '
+    'o_wsale_products_opt_thumb_6_5 '
+    'o_wsale_products_opt_layout_catalog '
+    'o_wsale_products_opt_design_chips'
 )
 
 
@@ -789,14 +803,29 @@ def _setup_shop_display(env, website):
     Odoo stocke ce réglage nativement sur des champs du modèle `website`
     (pas une vue séparée à hériter) : `shop_opt_products_design_classes`
     (la chaîne de classes CSS qui pilote le design "Chips"/"Grid"/
-    "List" — "Chips" correspond en interne à
-    `o_wsale_products_opt_design_thumbs`, le nom affiché dans l'éditeur
-    diffère du nom technique), plus `shop_ppg`/`shop_ppr`/`shop_gap`
-    (taille de grille), `shop_page_container` et `shop_default_sort`.
+    "List" — la classe qui porte vraiment le nom "Chips" est
+    `o_wsale_products_opt_design_chips`), plus `shop_ppg`/`shop_ppr`/
+    `shop_gap` (taille de grille), `shop_page_container` et
+    `shop_default_sort`.
 
-    Valeurs reprises telles quelles depuis l'état actuel du site
-    (confirmé en lisant les vrais champs en conditions réelles, pas
-    deviné) : grille 21 produits par page, 3 colonnes, écart 16px,
+    SHOP_DESIGN_CLASSES (v19.0.1.0.41) : liste EXACTE reprise du code
+    réel d'exocoms_theme (leur __init__.py, écrite dans post_init_hook
+    ET dans le hook de maintenance principal), pas devinée — voir le
+    commentaire sur SHOP_DESIGN_CLASSES ci-dessus pour le détail des
+    classes précédemment fausses. `_setup_shop_grid_design()` (appelée
+    juste après) est un filet de sécurité repris de la même logique
+    chez eux : si Odoo a déjà créé une vue `website_sale.products`
+    spécifique à NOTRE site (website_id posé), on s'assure que sa vue
+    QWeb porte bien la classe `o_wsale_products_opt_design_chips` sur
+    le conteneur grid, au cas où le simple champ `website.write()`
+    ne suffise pas à lui seul. On ne crée JAMAIS cette vue nous-mêmes
+    et on ne touche JAMAIS à la vue générique partagée par les 17
+    sites de la base — exactement la même prudence que sur
+    _setup_shop_grid_design() côté exocoms.
+
+    Valeurs de grille reprises telles quelles depuis l'état actuel du
+    site (confirmé en lisant les vrais champs en conditions réelles,
+    pas deviné) : grille 21 produits par page, 3 colonnes, écart 16px,
     conteneur "regular", tri par défaut "En vedette"
     (`website_sequence asc`). Idempotent : simple write si une valeur
     diffère de celle voulue, sans quoi ce serait un no-op à chaque
@@ -820,6 +849,77 @@ def _setup_shop_display(env, website):
         _logger.info(
             "capsule_house_theme: design boutique (Chips) posé sur le "
             "site id=%s (%s).", website.id, list(to_write.keys()),
+        )
+
+
+def _setup_shop_grid_design(env, website):
+    """Filet de sécurité pour le design "Chips" de la grille boutique —
+    repris tel quel (même prudence de scoping) de la fonction du même
+    nom dans exocoms_theme.
+
+    `_setup_shop_display()` pose déjà `shop_opt_products_design_classes`
+    sur le modèle `website`, ce qui suffit dans la quasi-totalité des
+    cas. Mais si Odoo a créé une vue QWeb `website_sale.products`
+    spécifique à NOTRE site (website_id posé — typiquement après une
+    personnalisation faite une fois dans l'éditeur de site), cette vue
+    peut porter sa propre classe sur le conteneur grid, indépendamment
+    du champ `website`. On s'assure alors que `o_wsale_products_opt_
+    design_chips` y est bien présente aussi.
+
+    Scoping STRICT, leçon apprise chez exocoms (leur propre commentaire
+    documente un bug corrigé : la version originale cherchait TOUTES
+    les vues `website_sale.products` de la base sans filtre de site, et
+    modifiait donc potentiellement la vue générique partagée par les
+    17 sites) : on ne cherche QUE les vues avec `website_id = notre
+    site`, et si aucune n'existe on ne touche À RIEN — pas question de
+    créer nous-mêmes une vue spécifique ni de modifier la vue globale.
+    """
+    try:
+        grid_views = env['ir.ui.view'].search([
+            ('key', 'like', 'website_sale.products'),
+            ('type', '=', 'qweb'),
+            ('website_id', '=', website.id),
+        ])
+        if not grid_views:
+            _logger.info(
+                "capsule_house_theme: aucune vue 'website_sale.products' "
+                "spécifique au site id=%s — design Chips posé uniquement "
+                "via le champ website (pas de vue dédiée à corriger).",
+                website.id,
+            )
+            return
+        for grid_view in grid_views:
+            try:
+                arch = grid_view.arch
+                if 'o_wsale_products_grid' in arch and \
+                   'o_wsale_products_opt_design_chips' not in arch:
+                    if 'o_wsale_products_opt_layout_catalog' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_opt_layout_catalog',
+                            'o_wsale_products_opt_layout_catalog'
+                            ' o_wsale_products_opt_design_chips'
+                        )
+                    elif 'o_wsale_products_grid_table grid' in arch:
+                        arch = arch.replace(
+                            'o_wsale_products_grid_table grid',
+                            'o_wsale_products_grid_table grid'
+                            ' o_wsale_products_opt_design_chips'
+                        )
+                    grid_view.write({'arch': arch})
+                    _logger.info(
+                        "capsule_house_theme: classe design Chips "
+                        "ajoutée sur la vue id=%s (site id=%s).",
+                        grid_view.id, website.id,
+                    )
+            except Exception:
+                _logger.exception(
+                    "capsule_house_theme: échec application design "
+                    "Chips sur vue id=%s.", grid_view.id,
+                )
+    except Exception:
+        _logger.exception(
+            "capsule_house_theme: échec recherche des vues grid "
+            "produits (site id=%s).", website.id,
         )
 
 
@@ -1105,6 +1205,7 @@ def run_theme_maintenance(env):
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)
     _setup_shop_display(env, website)
+    _setup_shop_grid_design(env, website)
     _setup_menus(env, website, categories)
     _setup_shop_filters(env)
     _publish_our_products(env, website, company)

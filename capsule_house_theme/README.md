@@ -894,6 +894,41 @@ quel que soit le préfixe de langue, sans faux positif possible (aucune
 autre URL du menu ne se termine par `/shop`). Vérifié en direct par
 injection CSS avant d'être reporté dans le fichier.
 
+## Design boutique "Chips" — classes corrigées d'après exocoms_theme (v19.0.1.0.41)
+
+Client (capture du panneau "Products Design: Chips" dans l'éditeur de
+site) : "je t'ai dit que je voulais ce style comme design sur mes
+produits du shop, essaye de voir comment ça a été fait sur
+exocoms_theme pour bien le faire sur Capsule House."
+
+Le mécanisme (poser le design "en code" via le champ natif
+`website.shop_opt_products_design_classes`, demande explicite du
+client plutôt qu'un clic dans l'éditeur) était déjà en place
+(`_setup_shop_display()`), mais la liste de classes CSS
+(`SHOP_DESIGN_CLASSES`) avait été **devinée** lors d'une session
+précédente, jamais vérifiée contre une implémentation réelle. Corrigée
+en comparant au code réel d'exocoms_theme (écrit deux fois chez eux —
+post_init_hook et le hook de maintenance principal — donc confirmé
+fonctionnel en production) :
+
+- `o_wsale_products_opt_design_thumbs` → `_design_chips` (la vraie
+  classe "Chips" — celle qu'on devinait n'existe même pas sous ce nom
+  dans leur config) ;
+- `_rounded_2` → `_rounded_4` ;
+- `_actions_onhover` → `_actions_inline` + `_actions_promote` ;
+- `_wishlist_fixed` → `_wishlist_inline` ;
+- `_has_description` et `_actions_subtle` retirées (absentes chez
+  exocoms) ;
+- `_has_comparison`, `_cc` et `_thumb_6_5` ajoutées (présentes chez
+  exocoms, manquantes chez nous).
+
+Ajout de `_setup_shop_grid_design()`, filet de sécurité repris tel
+quel (même prudence de scoping) de la fonction du même nom chez
+exocoms : si une vue `website_sale.products` spécifique à NOTRE site
+existe déjà, on s'assure que sa classe grid porte bien
+`o_wsale_products_opt_design_chips` — jamais de vue créée, jamais la
+vue générique partagée par les 17 sites touchée.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
