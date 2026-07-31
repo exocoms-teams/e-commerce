@@ -25,7 +25,10 @@ class PaymentTransaction(models.Model):
         return payment_data.get('reference')
 
     def _process_notification_data(self, notification_data):
+        """Mettre la transaction en attente."""
+        # On laisse le super gérer les vérifications de base
         super()._process_notification_data(notification_data)
+
         if self.provider_code != 'mandat_administratif':
             return
 
@@ -33,4 +36,7 @@ class PaymentTransaction(models.Model):
             "Mandat administratif : transaction %s mise en attente (règlement via Chorus Pro).",
             self.reference,
         )
-        self._set_pending()
+
+        # S'assurer que l'état passe à 'pending'
+        if self.state != 'pending':
+            self._set_pending()
