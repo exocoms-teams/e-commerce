@@ -692,10 +692,9 @@ class SneakersController(http.Controller):
             # No valid payment provider selected — stay on checkout, don't confirm
             return request.redirect('/checkout?error=payment_required')
 
-        # Payment providers (only published, website-enabled)
+        # Payment providers (only enabled/test) — ponytail: removed website_id filter, provider was invisible
         payment_providers = request.env['payment.provider'].sudo().search([
             ('state', 'in', ['enabled', 'test']),
-            ('website_id', 'in', [request.website.id, False]),
         ]) if order else request.env['payment.provider'].sudo().browse()
 
         # Delivery methods (soft dep on delivery module)
