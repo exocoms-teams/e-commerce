@@ -458,6 +458,29 @@ cosmétique ; plus aucune règle display/flex-direction/align-items/
 justify-content — les classes natives (`d-flex flex-column gap-2`)
 suffisent telles quelles.
 
+### Cartes produit "chip" sur /shop (v19.0.1.0.21)
+
+Demande client : reprendre le style de carte produit d'exocoms_theme
+("en chips" — coins arrondis, ombre douce, effet de soulèvement au
+survol).
+
+Avant d'écrire la moindre règle, vérification en direct des vraies
+classes natives sur `/shop` (leçon tirée des bugs précédents — ne plus
+copier une classe d'exocoms sans la confirmer) : leur propre règle
+`.o_product` ne correspond à RIEN sur cette instance Odoo 19 (classe
+absente du DOM réel, probablement écrite pour une version antérieure
+d'Odoo). Les vraies classes confirmées par inspection :
+`.o_wsale_product_grid_wrapper` (la carte elle-même), `.oe_product_image`
+/ `.oe_product_image_img` (image), `.o_wsale_products_item_title`
+(titre), `.o_add_wishlist` (bouton wishlist — pas
+`.o_add_wishlist_dyn`/`.o_wish_add` comme précédemment supposé).
+
+Nouvelle section dans `odoo-integration.css` stylant ces classes
+vérifiées : carte blanche à coins arrondis (`--r-lg`), ombre légère au
+repos, soulèvement + ombre plus marquée + léger zoom sur l'image au
+survol, titre en police d'accroche, bouton wishlist en cercle discret
+superposé sur l'image.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

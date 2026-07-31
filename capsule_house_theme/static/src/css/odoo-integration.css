@@ -133,6 +133,80 @@
 }
 
 /* ========================================
+   CARTES PRODUITS BOUTIQUE — style "chip" (comme demandé, inspiré
+   d'exocoms_theme : coins arrondis, ombre douce, effet de soulèvement
+   au survol)
+   ======================================== */
+/* Classes confirmées en inspectant le DOM réel de /shop sur cette
+   instance Odoo 19 (pas de reprise à l'aveugle des classes d'exocoms —
+   leur propre règle `.o_product` ne correspond à RIEN sur cette
+   version d'Odoo, la vraie carte est `.o_wsale_product_grid_wrapper`,
+   l'image `.oe_product_image_img`, le titre
+   `.o_wsale_products_item_title`, le bouton wishlist `.o_add_wishlist`). */
+
+.o_wsale_product_grid_wrapper {
+    background: var(--ch-white);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--ch-gray-border);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.o_wsale_product_grid_wrapper:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: transparent;
+}
+
+.oe_product_image {
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    background: var(--ch-panel);
+}
+
+.oe_product_image_img {
+    transition: transform var(--transition);
+}
+
+.o_wsale_product_grid_wrapper:hover .oe_product_image_img {
+    transform: scale(1.05);
+}
+
+.o_wsale_products_item_title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ch-ink);
+}
+
+.o_wsale_products_item_title a {
+    color: var(--ch-ink);
+}
+
+.o_wsale_product_information_text {
+    padding: 4px 14px 14px;
+}
+
+/* Icône wishlist — cercle discret superposé sur l'image, cohérent avec
+   .ch-icon-link du header */
+.o_add_wishlist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ch-white);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    color: var(--ch-ink);
+}
+
+.o_add_wishlist:hover {
+    color: var(--ch-terracotta);
+}
+
+/* ========================================
    FICHE PRODUIT — badges / prix / note
    ======================================== */
 
