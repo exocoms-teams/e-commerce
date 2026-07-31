@@ -538,6 +538,38 @@ homogène. **Correctif v19.0.1.0.25** : inset uniforme `-20%` sur les 4
 côtés + `radial-gradient(circle closest-side, ...)` pour un halo
 rond, centré, symétrique dans toutes les directions.
 
+Malgré ça, retour client persistant : "toujours rien" / halo quasi
+invisible sur le site réel. Plutôt que de retoucher une 4e fois les
+réglages à l'aveugle, **inspection live du DOM réel** (Claude in
+Chrome : `getComputedStyle`, lecture du fichier CSS réellement servi,
+capture d'écran) sur
+`https://exocoms-e-commerce-capsule-house-35749213.dev.odoo.com/` :
+- Le CSS déployé correspondait bien à la v.25 (`?v=19.0.1.0.25`
+  confirmé, contenu du fichier confirmé) — ce n'était donc PAS un
+  problème de cache/déploiement comme suspecté.
+- `getComputedStyle` confirmait `opacity: 0.55`, `filter: blur(40px)`,
+  couleurs correctes, aucun ancêtre avec `overflow: hidden` — le CSS
+  s'appliquait bien.
+- Mais rendu visuel (capture d'écran) : halo quasiment invisible.
+- **Cause réelle trouvée par le calcul** : avec `closest-side` (cercle
+  ou ellipse) et un fondu vers transparent à 68% du rayon, le rayon
+  "coloré" du dégradé (avant transparence) était plus petit que le
+  demi-côté de la carte elle-même. Tout le halo coloré se retrouvait
+  donc caché DERRIÈRE la carte ; seul un infime liseré flouté (quelques
+  px) dépassait — exactement ce qui était visible sur chaque capture,
+  et pourquoi aucun réglage d'opacité/flou n'avait d'effet visible : le
+  problème n'a jamais été la couleur, mais la géométrie.
+- **Correctif validé EN DIRECT** (override CSS injecté dans la page
+  live + capture d'écran de confirmation avant de committer quoi que
+  ce soit) : `radial-gradient(ellipse closest-side, --ch-terracotta 0%,
+  --ch-salmon 55%, transparent 88%)` (fondu repoussé beaucoup plus
+  loin), `opacity: 0.6`, `blur(35px)`. **v19.0.1.0.26.**
+
+⚠️ Au passage, `__manifest__.py` était repassé à `'version': '1.0'`
+localement (probablement lors d'un test) — remis à `19.0.1.0.26` avant
+tout déploiement. Rappel : ce format casse le mécanisme de replay des
+migrations (voir avertissement en tête du fichier).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

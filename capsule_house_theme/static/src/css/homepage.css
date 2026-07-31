@@ -145,17 +145,25 @@
 .ch-hero-visual::before {
     content: "";
     position: absolute;
-    /* Inset symétrique (même valeur sur les 4 côtés) + gradient
-       "circle" explicite : avant, l'inset asymétrique (-14% haut/bas,
-       -8% gauche/droite) combiné à une ellipse calée sur la forme
-       (rectangulaire, plus large que haute) de la carte donnait un
-       halo qui semblait décentré vers un coin. Ici le halo est un
-       vrai cercle, centré au milieu de la carte dans toutes les
-       directions, comme sur la maquette. */
+    /* Cause réelle du halo invisible sur v19.0.1.0.22-25 (confirmée en
+       direct via inspection live du DOM + test d'override CSS avant
+       correctif) : ce n'était ni la couleur, ni l'opacité/flou, ni un
+       souci de déploiement — c'était la géométrie. Avec `circle
+       closest-side` (ou même `ellipse closest-side` avec un fondu à
+       68%), le rayon "coloré" du dégradé (avant transparence) restait
+       plus petit que le demi-côté de la carte elle-même : tout le
+       halo se retrouvait donc caché DERRIÈRE la carte, et seul un
+       infime liseré flouté dépassait (d'où le "rien ne change" malgré
+       plusieurs ajustements d'opacité/flou). Fix : garder une ellipse
+       (pas un cercle forcé, pour suivre la forme rectangulaire de la
+       carte) et repousser le fondu beaucoup plus loin (55%/88% au
+       lieu de 40%/68%) pour que la couleur dépasse réellement des 4
+       côtés. Testé et confirmé visuellement en direct avant ce
+       commit. */
     inset: -20%;
-    background: radial-gradient(circle closest-side, var(--ch-terracotta) 0%, var(--ch-salmon) 40%, transparent 68%);
-    opacity: 0.55;
-    filter: blur(40px);
+    background: radial-gradient(ellipse closest-side, var(--ch-terracotta) 0%, var(--ch-salmon) 55%, transparent 88%);
+    opacity: 0.6;
+    filter: blur(35px);
     z-index: 0;
     pointer-events: none;
 }
