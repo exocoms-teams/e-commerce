@@ -1,4 +1,4 @@
-.. image:: image:: https://img.shields.io/badge/license-LGPL--3-green.svg
+.. image:: https://img.shields.io/badge/license-LGPL--3-green.svg
     :target: https://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 
@@ -16,14 +16,13 @@ Company
 
 License
 -------
-Lesser General Public License, Version 3 (LGPL v3).
-(https://www.gnu.org/licenses/lgpl-3.0-standalone.html)
+* Lesser General Public License, Version 3 (LGPL v3).
+  (https://www.gnu.org/licenses/lgpl-3.0-standalone.html)
 
 Credits
 -------
-* Developers: (V16) Gokul P I,
-                    Farha V C,
-                    Sreeshanth V S, Contact: odoo@cybrosys.com
+* Developers: (V16) Gokul P I, Farha V C, Sreeshanth V S (Contact: odoo@cybrosys.com)
+
 
 Contacts
 --------
