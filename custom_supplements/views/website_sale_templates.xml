@@ -56,33 +56,31 @@
 
 <!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <!-- CIBLAGE PRÉCIS : Juste après le tableau des totaux pour éviter la duplication AJAX -->
-        <xpath expr="//div[@id='cart_total']" position="after">
+        <!-- CIBLAGE PARFAIT : On se place juste après le tableau des prix, à l'intérieur du conteneur racine -->
+        <xpath expr="//table" position="after">
             
-            <!-- CSS dédié à l'alerte pour garantir la visibilité partout -->
             <style>
                 .cs-allergen-alert {
                     background: linear-gradient(145deg, #1F2937, #111827) !important;
                     border: 1px solid #374151 !important;
-                    border-left: 4px solid #F59E0B !important; /* Bordure d'accentuation Ambre */
+                    border-left: 4px solid #F59E0B !important;
                     color: #D1D5DB !important;
                     border-radius: 12px !important;
                     box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
                 }
                 .cs-allergen-alert strong {
-                    color: #FCD34D !important; /* Jaune vif pour le titre */
+                    color: #FCD34D !important;
                     font-weight: 700 !important;
                     letter-spacing: 0.5px;
                 }
                 .cs-allergen-alert i {
-                    color: #F59E0B !important; /* Icône Ambre */
+                    color: #F59E0B !important;
                     font-size: 1.1rem;
                 }
             </style>
 
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
             
-            <!-- Affichage conditionnel -->
             <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-3 text-start" style="font-size: 0.85rem;" role="alert">
                 <div class="d-flex align-items-center mb-1">
                     <i class="fa fa-exclamation-triangle me-2"/> 
