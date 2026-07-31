@@ -176,11 +176,11 @@
 
                                     <h3>Payment Method</h3>
 
-                                    <t t-foreach="payment_providers" t-as="provider">
+                                    <t t-foreach="payment_providers" t-as="provider" t-counter="pp_idx">
                                         <label class="sn-radio-card">
                                             <input type="radio" name="payment_provider_id"
                                                    t-att-value="provider.id"
-                                                   t-att-checked="provider.code == 'wire_transfer'"/>
+                                                   t-att-checked="pp_idx == 0"/>
                                             <div>
                                                 <div class="sn-radio-title">
                                                     <strong t-out="provider.name"/>
@@ -191,7 +191,7 @@
                                     </t>
 
                                     <!-- Confirm button inside payment section -->
-                                    <button class="sn-confirm-btn" type="submit" form="sn-checkout-form">
+                                    <button class="sn-confirm-btn" type="submit">
                                         Confirm &amp; Pay
                                     </button>
 
@@ -254,11 +254,6 @@
                                     <span>Total</span>
                                     <span t-out="'%.2f $' % total"/>
                                 </div>
-
-                                <!-- Place Order -->
-                                <button class="sn-place-order-btn" type="submit" form="sn-checkout-form">
-                                    Place Order
-                                </button>
 
                                 <!-- Back -->
                                 <a href="/cart" class="sn-back-cart">

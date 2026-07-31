@@ -14,9 +14,9 @@
     });
 
     // Confirm & Pay button — validate all then submit
-    var confirmBtns = document.querySelectorAll(".sn-confirm-btn, .sn-place-order-btn");
-    confirmBtns.forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
+    var confirmBtn = document.querySelector(".sn-confirm-btn");
+    if (confirmBtn) {
+        confirmBtn.addEventListener("click", function (e) {
             var allValid = true;
             checkoutCards.forEach(function (card) {
                 if (card.style.display === "none") return;
@@ -26,7 +26,7 @@
                 e.preventDefault();
             }
         });
-    });
+    }
 
     function validateCard(card) {
         var valid = true;
