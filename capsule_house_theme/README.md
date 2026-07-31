@@ -805,6 +805,51 @@ corrigé :
   sur v.34, donc pas représentative de l'environnement actuellement
   observé par le client.
 
+## Live Chat invisible + menu FR en anglais — root cause trouvé et corrigé (v19.0.1.0.38)
+
+Client : "tu ne vois pas qu'il y a trois autres sites, le live chat
+s'applique sur le premier website" — hypothèse initiale (résolution de
+domaine ambiguë sur l'URL de preview). Inspection live sur une page
+confirmée Capsule House (`document.title` == "Capsule House — Maisons
+modulaires") a montré que ce n'était PAS un problème de domaine :
+
+- **Live Chat** : `.o-livechat-root` bien présent dans le DOM, visible,
+  z-index correct (donc `website.channel_id` / règle d'affichage /
+  opérateur posés par `_setup_livechat()` sont corrects côté backend),
+  mais **vide** (0 enfant). La console montrait :
+  `ReferenceError: initBurger is not defined` levée par
+  `@capsule_house_theme/js/main`, qui casse le chargement du bundle JS
+  de la page. En cascade, plusieurs templates Owl natifs échouaient à
+  s'enregistrer (`web.PagerIndicator`, `web.OverlayContainer`,
+  `web.BlockUI`, `html_editor.UploadProgressToast`, et surtout
+  **`mail.ChatHub`** — le composant qui affiche la fenêtre du chat).
+  Cause exacte : `static/src/js/main.js` appelait encore `initBurger()`
+  et `initNavActive()` dans `init()`, deux fonctions supprimées lors du
+  passage au header natif Odoo (le commentaire en tête de fichier avait
+  été mis à jour à l'époque, mais pas le nettoyage de `init()`). Fix :
+  suppression des deux appels orphelins — le Live Chat se monte
+  maintenant normalement, sur toutes les pages.
+- **Menu FR affiché en anglais** : sur la même capture (page confirmée
+  en français), le menu du haut affichait "Home, All pods, Accessories,
+  Deals, Reviews" au lieu des libellés français. Cause dans
+  `_setup_menus()` : l'écriture du libellé français ne posait aucun
+  contexte de langue, donc héritait de la langue ambiante de
+  l'environnement du hook/cron (superuser, `en_US` par défaut) — le
+  texte français atterrissait dans la case de traduction `en_US`, que
+  l'écriture EN explicite juste après écrasait avec "Home" etc. La case
+  `fr_FR` n'était en réalité jamais remplie ; un visiteur FR se
+  rabattait donc sur la valeur `en_US`. Fix : `fr_FR` est maintenant
+  posé explicitement (`with_context(lang='fr_FR')`) à la création ET à
+  la mise à jour, avant l'écriture `en_US`.
+
+Conclusion sur l'hypothèse "3 sites / résolution de domaine" : cette
+piste n'est pas exclue en général sur une instance mutualisée sans
+domaine propre par site (voir "Passer le domaine en production"
+ci-dessus), mais elle n'était PAS la cause du problème observé ici —
+les deux bugs ci-dessus suffisaient à eux seuls à expliquer les deux
+symptômes rapportés, et ont été confirmés par inspection DOM/console
+live sur une page dont le contexte Capsule House était certain.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

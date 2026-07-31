@@ -35,8 +35,6 @@
     }
 
     function init() {
-        initBurger();
-        initNavActive();
         initScrollReveal();
     }
 

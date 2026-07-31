@@ -887,11 +887,23 @@ def _setup_menus(env, website, categories):
             ('url', '=', url),
             ('website_id', '=', website.id),
         ], limit=1)
+        # Bug réel trouvé en v.38 (inspection live, page confirmée en
+        # français) : le menu s'affichait en ANGLAIS alors que le
+        # sélecteur de langue était sur "Français". Cause : l'écriture
+        # du libellé français ci-dessous n'imposait aucun contexte de
+        # langue, donc héritait de la langue ambiante de l'environnement
+        # du hook/cron (superuser, en_US par défaut) — le texte français
+        # atterrissait dans la case de traduction "en_US", que l'écriture
+        # EN explicite juste après écrasait avec "Home" etc. La case
+        # "fr_FR" n'était donc JAMAIS remplie, et un visiteur FR se
+        # rabattait sur la valeur en_US. Fix : poser fr_FR explicitement
+        # des deux côtés (write ET create), jamais compter sur la langue
+        # ambiante de l'env.
         if existing:
-            existing.write({'name': name, 'sequence': seq})
+            existing.with_context(lang='fr_FR').write({'name': name, 'sequence': seq})
             record = existing
         else:
-            record = Menu.create({
+            record = Menu.with_context(lang='fr_FR').create({
                 'name': name,
                 'url': url,
                 'sequence': seq,
@@ -899,6 +911,8 @@ def _setup_menus(env, website, categories):
                 'parent_id': website.menu_id.id,
             })
         kept_menu_ids.add(record.id)
+        if record.with_context(lang='fr_FR').name != name:
+            record.with_context(lang='fr_FR').write({'name': name})
         en_name = EN_MENU_NAMES.get(name)
         if en_name and record.with_context(lang='en_US').name != en_name:
             record.with_context(lang='en_US').write({'name': en_name})
