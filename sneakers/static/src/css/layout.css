@@ -276,7 +276,10 @@ header{
 }
 
 .sn-account-dropdown{
-    display:none;
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(-4px);
+    transition:opacity .15s, visibility .15s, transform .15s;
     position:absolute;
     top:calc(100% + 8px);
     right:0;
@@ -289,8 +292,20 @@ header{
     padding:6px 0;
 }
 
+/* bridge so mouse doesn't leave wrap between icon and dropdown */
+.sn-account-wrap::after{
+    content:'';
+    position:absolute;
+    top:100%;
+    right:0;
+    width:100%;
+    height:12px;
+}
+
 .sn-account-wrap:hover .sn-account-dropdown{
-    display:block;
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
 }
 
 .sn-account-dropdown a{
@@ -313,6 +328,12 @@ header{
     width:16px;
     text-align:center;
     font-size:13px;
+}
+
+.sn-account-logout{
+    border-top:1px solid var(--border-color);
+    margin-top:4px;
+    padding-top:10px !important;
 }
 
 /* CONTAINER */
