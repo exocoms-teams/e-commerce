@@ -374,7 +374,9 @@
         if (priceRangeSlider) priceRangeSlider.value = priceRangeSlider.max;
 
         updatePriceDisplay();
-        applyFilters();
+
+        // Clear ALL URL params (including server-side ones like category)
+        window.location.href = "/shop-sneakers";
     }
 
     // APPLIQUER LES FILTRES
