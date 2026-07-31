@@ -436,6 +436,28 @@ automatiquement nettoyé par la logique `stray_menus` déjà existante.
 Bénéfice secondaire : un aller-retour de redirect en moins au clic sur
 "Accueil".
 
+### Titre "All products" mal placé sur /shop (v19.0.1.0.20)
+
+Constaté en conditions réelles, confirmé en inspectant le DOM live
+(pas une supposition cette fois) : `#o_wsale_products_header` est
+nativement en `d-flex flex-column gap-2` — titre "All products", puis
+rangée catégories (`.o_wsale_filmstrip_container`), puis barre
+recherche/tri (`.products_header.btn-toolbar`), empilés verticalement,
+alignés à gauche par défaut.
+
+Notre CSS (`odoo-integration.css`) forçait `align-items: center` et
+`justify-content: space-between` sur ce même conteneur en colonne : sur
+un flex en colonne, `align-items` agit sur l'axe horizontal (recentre
+chaque ligne au lieu de les garder alignées à gauche) et
+`justify-content` sur l'axe vertical (perturbe l'espacement entre les
+lignes) — d'où le titre décalé au lieu de rester en haut à gauche comme
+sur le rendu natif par défaut.
+
+Fix : `#o_wsale_products_header` ne reçoit plus qu'un padding
+cosmétique ; plus aucune règle display/flex-direction/align-items/
+justify-content — les classes natives (`d-flex flex-column gap-2`)
+suffisent telles quelles.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

@@ -18,12 +18,19 @@
    EN-TÊTE GRILLE BOUTIQUE — recherche / tri / filtre prix
    ======================================== */
 
+/* CORRECTIF (constaté en conditions réelles + confirmé en inspectant le
+   DOM live) : #o_wsale_products_header est NATIVEMENT en
+   `d-flex flex-column gap-2` (titre "All products" puis rangée
+   catégories puis barre recherche/tri, empilés verticalement, alignés
+   à gauche). L'ancienne règle ci-dessous forçait `align-items: center`
+   (recentre chaque ligne horizontalement) et `justify-content:
+   space-between` sur ce conteneur en colonne (agit sur l'axe vertical,
+   donc sur l'espacement entre les lignes) — résultat : le titre "All
+   products" se retrouvait décalé au lieu de rester aligné à gauche
+   comme sur le rendu natif par défaut. On ne touche plus à
+   display/flex-direction/align-items ici : les classes natives
+   suffisent, seul un padding cosmétique est ajouté. */
 #o_wsale_products_header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
     padding: 12px 0;
 }
 
