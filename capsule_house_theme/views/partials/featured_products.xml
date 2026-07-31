@@ -11,13 +11,24 @@
         compare_list_price existe et dépasse le prix courant. Scopé à
         notre site via _scope_layout_views() (external id
         capsule_house_theme.partial_featured_products).
+
+        Traduction FR/EN (v19.0.1.0.37) : oubliée en v.36 (retour
+        client explicite : "la partie meilleures ventes n'est pas non
+        plus traduite") — même convention t-if/t-else sur
+        request.env.lang que hero.xml/footer.xml. Les données produit
+        elles-mêmes (item['name'], item['category_name']) ne sont pas
+        traduites, comme partout ailleurs dans ce module.
     -->
     <template id="partial_featured_products" name="Capsule House - Meilleures ventes">
         <section class="ch-bestsellers">
             <div class="container">
-                <div class="ch-bestsellers-head">
+                <div class="ch-bestsellers-head" t-if="request.env.lang == 'fr_FR'">
                     <h2 class="ch-section-title">Meilleures ventes</h2>
                     <a href="/shop" class="ch-see-all">Voir tous les modèles →</a>
+                </div>
+                <div class="ch-bestsellers-head" t-if="request.env.lang != 'fr_FR'">
+                    <h2 class="ch-section-title">Best sellers</h2>
+                    <a href="/shop" class="ch-see-all">See all models →</a>
                 </div>
                 <div class="ch-bestsellers-grid" t-if="featured_products">
                     <t t-foreach="featured_products" t-as="item">
@@ -42,14 +53,22 @@
                                           t-options="{'widget': 'monetary', 'display_currency': item['currency']}"/>
                                 </div>
                             </div>
-                            <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
-                                <i class="fa fa-plus"/>
-                            </a>
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="Voir le produit">
+                                    <i class="fa fa-plus"/>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <a t-attf-href="/shop/#{ item['url'] }" class="ch-product-card-add" title="View product">
+                                    <i class="fa fa-plus"/>
+                                </a>
+                            </t>
                         </div>
                     </t>
                 </div>
                 <p t-else="" class="ch-featured-empty">
-                    Les modules Capsule House arrivent très bientôt.
+                    <t t-if="request.env.lang == 'fr_FR'">Les modules Capsule House arrivent très bientôt.</t>
+                    <t t-else="">Capsule House models are coming very soon.</t>
                 </p>
             </div>
         </section>

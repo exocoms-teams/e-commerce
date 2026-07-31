@@ -865,6 +865,21 @@ def _setup_menus(env, website, categories):
     # clients, modérés avant publication.
     entries.append(('Avis clients', '/avis', sequence))
 
+    # Traduction EN du libellé de menu (v19.0.1.0.37) : `website.menu.name`
+    # est un champ traduisible nativement dans Odoo, mais rien ne posait
+    # jamais de valeur pour en_US — d'où le nav resté français même une
+    # fois la langue du site basculée en anglais (retour client explicite).
+    # Studio/Duo/Panorama ne sont pas traduits : ce sont des noms de
+    # gammes de produits (comme des noms propres), pas du texte d'UI —
+    # cohérent avec le choix de ne jamais traduire les noms de produits.
+    EN_MENU_NAMES = {
+        'Accueil': 'Home',
+        'Tous les pods': 'All pods',
+        'Promotions': 'Deals',
+        'Avis clients': 'Reviews',
+        'Accessoires': 'Accessories',
+    }
+
     known_urls = {url for _, url, _ in entries}
     kept_menu_ids = set()
     for name, url, seq in entries:
@@ -874,16 +889,19 @@ def _setup_menus(env, website, categories):
         ], limit=1)
         if existing:
             existing.write({'name': name, 'sequence': seq})
-            kept_menu_ids.add(existing.id)
+            record = existing
         else:
-            created = Menu.create({
+            record = Menu.create({
                 'name': name,
                 'url': url,
                 'sequence': seq,
                 'website_id': website.id,
                 'parent_id': website.menu_id.id,
             })
-            kept_menu_ids.add(created.id)
+        kept_menu_ids.add(record.id)
+        en_name = EN_MENU_NAMES.get(name)
+        if en_name and record.with_context(lang='en_US').name != en_name:
+            record.with_context(lang='en_US').write({'name': en_name})
     _logger.info(
         "capsule_house_theme: menu du site id=%s synchronisé (%d entrées).",
         website.id, len(entries),

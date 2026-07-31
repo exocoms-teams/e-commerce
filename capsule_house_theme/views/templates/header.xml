@@ -36,11 +36,18 @@
         installation offertes...") est repris tel quel de la maquette
         fournie — à confirmer/ajuster avec le client avant mise en ligne,
         ce n'est pas une donnée business vérifiée par ce module.
+
+        Traduction FR/EN (v19.0.1.0.37) : oubliée en v.36 (retour
+        client : le bandeau restait identique dans les deux langues),
+        même convention t-if/t-else que le reste du thème.
     -->
     <template id="theme_announce_bar" name="Capsule House - Bandeau d'annonce">
         <div class="ch-announce">
-            <div class="container">
+            <div class="container" t-if="request.env.lang == 'fr_FR'">
                 Livraison &amp; installation offertes dès 25 000 € d'achat — Livraison sous 6 semaines
+            </div>
+            <div class="container" t-if="request.env.lang != 'fr_FR'">
+                Free delivery &amp; installation on orders over €25,000 — Delivered in 6 weeks
             </div>
         </div>
     </template>

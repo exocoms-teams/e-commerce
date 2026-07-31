@@ -781,6 +781,30 @@ mécanisme `exocoms_theme._setup_livechat()` :
 Appelé dans `run_theme_maintenance()` juste après
 `_scope_layout_views()`, même position relative que chez exocoms.
 
+## Traduction — oublis corrigés (v19.0.1.0.37)
+
+Retour client sur la v.36, captures FR vs EN à l'appui : "le header en
+anglais n'est pas traduit, la partie meilleures ventes non plus, et le
+live chat ne s'affiche pas — je t'ai demandé de tout gérer". Trouvé et
+corrigé :
+
+- **Menu du haut** : `website.menu.name` est traduisible nativement
+  dans Odoo, mais `_setup_menus()` n'avait jamais posé de valeur pour
+  `en_US` — corrigé via `record.with_context(lang='en_US').write(...)`
+  pour Accueil/Tous les pods/Promotions/Avis clients/Accessoires.
+  Studio/Duo/Panorama restent inchangés (noms de gamme, pas du texte
+  d'UI).
+- **`views/partials/featured_products.xml`** ("Meilleures ventes") :
+  entièrement oubliée en v.36, traduite ici.
+- **`views/templates/header.xml`** (bandeau d'annonce) et
+  **`views/pages/shop.xml`** (titre au-dessus de la grille boutique) :
+  également oubliés, traduits.
+- **Live Chat invisible** : diagnostic en cours au moment de ce commit
+  — nécessite une inspection live du site réel (URL à jour du client),
+  pas encore fait. Ancienne URL de test vérifiée entre-temps : encore
+  sur v.34, donc pas représentative de l'environnement actuellement
+  observé par le client.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

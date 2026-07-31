@@ -19,12 +19,22 @@
     <template id="page_shop" name="Capsule House - Boutique"
               inherit_id="website_sale.products" priority="20">
         <xpath expr="//div[hasclass('o_wsale_products_page')]" position="before">
-            <section class="ch-shop-hero">
+            <!-- Traduction FR/EN (v19.0.1.0.37), même convention que le
+                 reste du thème. -->
+            <section class="ch-shop-hero" t-if="request.env.lang == 'fr_FR'">
                 <div class="container">
                     <h1 class="ch-shop-hero-title">Nos modules Capsule House</h1>
                     <p class="ch-shop-hero-subtitle">
                         Studio, duo ou famille — trouvez le module qui vous
                         correspond.
+                    </p>
+                </div>
+            </section>
+            <section class="ch-shop-hero" t-if="request.env.lang != 'fr_FR'">
+                <div class="container">
+                    <h1 class="ch-shop-hero-title">Our Capsule House models</h1>
+                    <p class="ch-shop-hero-subtitle">
+                        Studio, duo or family — find the model that suits you.
                     </p>
                 </div>
             </section>
