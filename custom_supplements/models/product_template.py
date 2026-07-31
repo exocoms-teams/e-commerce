@@ -25,3 +25,9 @@ class ProductTemplate(models.Model):
                     
         # On passe la liste modifiée à la vraie méthode d'Odoo
         return super(ProductTemplate, self).create(vals_list)
+
+    def _search_get_detail(self, website, order, options):
+        result = super()._search_get_detail(website, order, options)
+        if options.get('allergens_exclude_ids'):
+            result['base_domain'].append([('allergen_ids', 'not in', options['allergens_exclude_ids'])])
+        return result
