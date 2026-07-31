@@ -1,0 +1,35 @@
+{
+    'name': 'Theme Exocoms Monetique',
+    'version': '1.0',
+    'summary': 'Premium FinTech B2B e-commerce theme for Monetiques.fr',
+    'author': 'Exocoms Group',
+    'license': 'LGPL-3',
+    'category': 'Theme/eCommerce',
+    'depends': [
+        'website',
+        'website_sale',
+        'multi_vendor_marketplace',
+        'mandat_administratif'
+    ],
+    'data': [
+        'views/layout.xml',
+        'views/snippets/s_hero.xml',
+        'views/snippets/s_pourquoi.xml',
+        'views/snippets/s_services.xml',
+        'views/snippets/s_bestsellers.xml',
+        'views/snippets/s_reviews.xml',
+        'views/snippets/snippets.xml',
+        'views/contrat_templates.xml',
+        'views/shop_templates.xml',
+        'views/seo_templates.xml',
+    ],
+    'assets': {
+        'web.assets_frontend': [
+            'theme_exocoms_monetique/static/src/scss/variables.scss',
+            'theme_exocoms_monetique/static/src/scss/base.scss',
+        ],
+    },
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

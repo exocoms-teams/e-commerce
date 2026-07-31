@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="seo_landing_template" name="SEO Landing Page - Monetiques.fr">
+            <t t-call="website.layout">
+                <!-- Dynamically inject SEO metadata -->
+                <t t-set="html_meta_title" t-value="seo_data['title']"/>
+                <t t-set="html_meta_description" t-value="seo_data['meta_desc']"/>
+
+                <div id="wrap" class="oe_structure oe_empty">
+                    <!-- Hero/Header Section -->
+                    <section class="py-5 bg-light border-bottom">
+                        <div class="container text-center">
+                            <h1 class="display-4 fw-bold text-dark mb-3" t-out="seo_data['h1']"/>
+                            <p class="lead text-muted max-w-2xl mx-auto" t-out="seo_data['meta_desc']"/>
+                            <div class="mt-4">
+                                <a href="/shop" class="btn btn-primary rounded-pill px-4 py-2 me-3">Voir le catalogue</a>
+                                <a href="/contrat#callback-section" class="btn btn-outline-secondary rounded-pill px-4 py-2">Demander une étude</a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Main Article Content Section -->
+                    <section class="py-5 bg-white">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
+                                    <article class="lh-lg text-muted">
+                                        <p class="fs-5" t-out="seo_data['content']"/>
+                                        <p class="mt-4">Chez <strong>Monetiques.fr</strong>, nous comprenons que chaque métier a des exigences uniques. C\'est pourquoi nous collaborons avec <strong>EXOCOMS Group</strong> pour vous offrir les terminaux les plus fiables du marché, pré-configurés avec vos cartes d\'acquisition professionnelles pour un branchement immédiat.</p>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- FAQ Section (Schema.org ready) -->
+                    <section class="py-5 bg-light border-top">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
+                                    <h3 class="fw-bold text-center text-dark mb-4">Questions fréquentes</h3>
+                                    <div class="accordion" id="accordionSeoFaq">
+                                        <div class="accordion-item border-0 shadow-sm rounded-3 mb-3 bg-white">
+                                            <h2 class="accordion-header" id="headingSeoOne">
+                                                <button class="accordion-button fw-bold text-dark bg-white border-0 rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeoOne" aria-expanded="true" aria-controls="collapseSeoOne" t-out="seo_data['faq_q']"/>
+                                            </h2>
+                                            <div id="collapseSeoOne" class="accordion-collapse collapse show" aria-labelledby="headingSeoOne" data-bs-parent="#accordionSeoFaq">
+                                                <div class="accordion-body text-muted" t-out="seo_data['faq_a']"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Banner / Trust Section -->
+                    <section class="py-5 bg-dark text-white">
+                        <div class="container text-center">
+                            <h4 class="fw-bold text-primary mb-3">Besoin d'un accompagnement personnalisé ?</h4>
+                            <p class="text-muted mb-4">Nos experts monétiques vous conseillent gratuitement par téléphone.</p>
+                            <a href="/contrat#callback-section" class="btn btn-primary rounded-pill px-4 py-2">Demander à être rappelé</a>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

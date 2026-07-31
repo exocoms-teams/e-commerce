@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="vendor_portal_dashboard"
+            name="Portail Vendeur - Tableau de bord">
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Tableau de bord vendeur</title>
+        <link rel="stylesheet" href="/multi_vendor_marketplace/static/src/css/vendor_portal.css"/>
+      </head>
+      <body>
+        <div class="mvp-portal">
+
+          <!-- En-tete avec navigation -->
+          <div class="mvp-header">
+            <div class="mvp-container">
+              <div class="mvp-header-inner">
+                <div class="mvp-vendor-info">
+                  <div class="mvp-avatar">
+                    <span t-esc="vendor.name[0].upper()"/>
+                  </div>
+                  <div>
+                    <h1 class="mvp-vendor-name" t-esc="vendor.name"/>
+                    <p class="mvp-vendor-email" t-esc="vendor.email or ''"/>
+                  </div>
+                </div>
+                <nav class="mvp-nav">
+                  <a href="/vendor/dashboard"
+                     class="mvp-nav-link mvp-nav-active">Tableau de bord</a>
+                  <a href="/vendor/products"
+                     class="mvp-nav-link">Mes produits</a>
+                  <a href="/vendor/orders"
+                     class="mvp-nav-link">Mes commandes</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- Corps -->
+          <div class="mvp-body">
+            <div class="mvp-container">
+
+              <!-- Cartes KPI -->
+              <div class="mvp-stats">
+                <div class="mvp-stat">
+                  <span class="mvp-stat-number"
+                        t-esc="len(products)"/>
+                  <span class="mvp-stat-label">Produits actifs</span>
+                </div>
+                <div class="mvp-stat">
+                  <span class="mvp-stat-number" t-esc="orders_count"/>
+                  <span class="mvp-stat-label">Commandes ce mois</span>
+                </div>
+              </div>
+
+              <!-- Grille produits -->
+              <h2 class="mvp-section-title">Mes produits</h2>
+              <t t-if="not products">
+                <p>Vous n'avez pas encore de produits.</p>
+              </t>
+              <t t-else="">
+                <div class="mvp-products">
+                  <t t-foreach="products" t-as="product">
+                    <div class="mvp-product-card">
+                      <div class="mvp-product-img">
+                        <t t-if="product.image_512">
+                          <img t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                               t-att-alt="product.name"/>
+                        </t>
+                      </div>
+                      <div class="mvp-product-body">
+                        <h3 t-esc="product.name"/>
+                        <p class="mvp-price">
+                          <t t-esc="'%.2f EUR HT' % product.list_price"/>
+                        </p>
+                        <span t-if="product.website_published"
+                              class="mvp-badge mvp-badge-green">Publie</span>
+                        <span t-else="" class="mvp-badge mvp-badge-gray">
+                          Non publie</span>
+                      </div>
+                      <div class="mvp-product-actions">
+                        <a t-attf-href="/vendor/product/#{product.id}/edit"
+                           class="mvp-btn mvp-btn-outline">Modifier</a>
+                        <a t-attf-href="/shop/product/#{product.id}"
+                           class="mvp-btn" target="_blank">Boutique</a>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </template>
+
+<!--Template 2 — Edition produit-->
+  <template id="vendor_portal_product_edit"
+            name="Portail Vendeur - Edition produit">
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Modifier produit</title>
+        <link rel="stylesheet" href="/multi_vendor_marketplace/static/src/css/vendor_portal.css"/>
+      </head>
+      <body>
+        <div class="mvp-portal">
+          <div class="mvp-header">
+            <div class="mvp-container">
+              <div class="mvp-header-inner">
+                <h1 class="mvp-vendor-name" t-esc="vendor.name"/>
+                <nav class="mvp-nav">
+                  <a href="/vendor/dashboard" class="mvp-nav-link">Tableau de bord</a>
+                  <a href="/vendor/products" class="mvp-nav-link mvp-nav-active">
+                    Mes produits</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="mvp-body">
+            <div class="mvp-container">
+              <div class="mvp-form-wrapper">
+                <t t-if="error">
+                  <div class="mvp-alert mvp-alert-error"><t t-esc="error"/></div>
+                </t>
+                <t t-if="success">
+                  <div class="mvp-alert mvp-alert-success">
+                    Produit mis a jour avec succes.</div>
+                </t>
+                <h2>Modifier : <t t-esc="product.name"/></h2>
+                <form method="POST"
+                      t-attf-action="/vendor/product/#{product.id}/save">
+                  <input type="hidden" name="csrf_token"
+                         t-att-value="request.csrf_token()"/>
+                  <div class="mvp-form-group">
+                    <label for="list_price">Prix HT (EUR)</label>
+                    <input type="number" name="list_price" id="list_price"
+                           step="0.01" min="0" class="mvp-input"
+                           t-att-value="product.list_price" required="required"/>
+                  </div>
+                  <div class="mvp-form-group">
+                    <label for="description_sale">Description commerciale</label>
+                    <textarea name="description_sale" id="description_sale"
+                              rows="5" class="mvp-textarea">
+                      <t t-esc="product.description_sale or ''"/>
+                    </textarea>
+                  </div>
+                  <div class="mvp-form-actions">
+                    <button type="submit" class="mvp-btn mvp-btn-primary">
+                      Enregistrer</button>
+                    <a href="/vendor/dashboard" class="mvp-btn mvp-btn-outline">
+                      Annuler</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </template>
+
+<!--Template 3 — Page commandes-->
+  <template id="vendor_portal_orders"
+            name="Portail Vendeur - Commandes">
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Mes commandes</title>
+        <link rel="stylesheet" href="/multi_vendor_marketplace/static/src/css/vendor_portal.css"/>
+      </head>
+      <body>
+        <div class="mvp-portal">
+          <div class="mvp-header">
+            <div class="mvp-container">
+              <div class="mvp-header-inner">
+                <h1 class="mvp-vendor-name">Commandes recentes</h1>
+                <nav class="mvp-nav">
+                  <a href="/vendor/dashboard" class="mvp-nav-link">Tableau de bord</a>
+                  <a href="/vendor/products" class="mvp-nav-link">Mes produits</a>
+                  <a href="/vendor/orders"
+                     class="mvp-nav-link mvp-nav-active">Mes commandes</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="mvp-body">
+            <div class="mvp-container">
+
+              <!-- Filtres statut -->
+              <div class="mvp-filters">
+                <a t-attf-href="/vendor/orders"
+                   t-attf-class="mvp-badge #{not status and 'mvp-badge-blue' or 'mvp-badge-gray'}">
+                  Tous</a>
+                <a t-attf-href="/vendor/orders?status=draft"
+                   t-attf-class="mvp-badge #{status == 'draft' and 'mvp-badge-blue' or 'mvp-badge-gray'}">
+                  Brouillon</a>
+                <a t-attf-href="/vendor/orders?status=sale"
+                   t-attf-class="mvp-badge #{status == 'sale' and 'mvp-badge-blue' or 'mvp-badge-gray'}">
+                  Confirme</a>
+                <a t-attf-href="/vendor/orders?status=done"
+                   t-attf-class="mvp-badge #{status == 'done' and 'mvp-badge-blue' or 'mvp-badge-gray'}">
+                  Livre</a>
+                <span class="mvp-total-info">
+                  <strong t-esc="total_orders"/> commande(s)</span>
+              </div>
+
+              <!-- Tableau commandes -->
+              <t t-if="not orders">
+                <p>Aucune commande pour le moment.</p>
+              </t>
+              <table class="mvp-table">
+                <thead>
+                  <tr>
+                    <th>Commande</th><th>Date</th><th>Produit</th>
+                    <th>Prix unit.</th><th>Qte</th>
+                    <th>Montant HT</th><th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <t t-foreach="orders" t-as="line">
+                    <tr>
+                      <td t-esc="line.order_id.name"/>
+                      <td t-esc="line.order_id.date_order.strftime('%d/%m/%Y')"/>
+                      <td t-esc="line.product_id.name"/>
+                      <td><t t-esc="'%.2f' % line.price_unit"/></td>
+                      <td t-esc="int(line.product_uom_qty)"/>
+                      <td><t t-esc="'%.2f EUR' % line.price_subtotal"/></td>
+                      <td>
+                        <t t-if="line.order_id.state == 'draft'">
+                          <span class="mvp-badge mvp-badge-gray">Brouillon</span>
+                        </t>
+                        <t t-elif="line.order_id.state == 'sale'">
+                          <span class="mvp-badge mvp-badge-blue">Confirme</span>
+                        </t>
+                        <t t-elif="line.order_id.state == 'done'">
+                          <span class="mvp-badge mvp-badge-green">Livre</span>
+                        </t>
+                        <t t-else="">
+                          <span class="mvp-badge mvp-badge-gray"
+                                t-esc="line.order_id.state"/>
+                        </t>
+                      </td>
+                    </tr>
+                  </t>
+                </tbody>
+                <tfoot t-if="orders">
+                  <tr>
+                    <td colspan="5"><strong>TOTAL</strong></td>
+                    <td><strong>
+                      <t t-esc="'%.2f EUR' % sum(l.price_subtotal for l in orders)"/>
+                    </strong></td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <!-- Pagination -->
+              <div t-if="total > items_per_page" class="mvp-pagination">
+                <a t-if="page > 1"
+                   t-attf-href="/vendor/orders?page=#{page-1}&amp;status=#{status}"
+                   class="mvp-btn mvp-btn-outline">Precedent</a>
+                <span>Page <t t-esc="page"/> sur
+                  <t t-esc="(total + items_per_page - 1) // items_per_page"/></span>
+                <a t-if="page * items_per_page &lt; total"
+                   t-attf-href="/vendor/orders?page=#{page+1}&amp;status=#{status}"
+                   class="mvp-btn mvp-btn-outline">Suivant</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </template>
+  <!--Template — Liste des produits-->
+  <template id="vendor_portal_products"
+            name="Portail Vendeur - Mes produits">
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Mes produits</title>
+        <link rel="stylesheet" href="/multi_vendor_marketplace/static/src/css/vendor_portal.css"/>
+      </head>
+      <body>
+        <div class="mvp-portal">
+          <div class="mvp-header">
+            <div class="mvp-container">
+              <div class="mvp-header-inner">
+                <h1 class="mvp-vendor-name" t-esc="vendor.name"/>
+                <nav class="mvp-nav">
+                  <a href="/vendor/dashboard" class="mvp-nav-link">Tableau de bord</a>
+                  <a href="/vendor/products" class="mvp-nav-link mvp-nav-active">Mes produits</a>
+                  <a href="/vendor/orders" class="mvp-nav-link">Mes commandes</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="mvp-body">
+            <div class="mvp-container">
+              <h2 class="mvp-section-title">Mes produits</h2>
+              <t t-if="not products">
+                <p>Vous n'avez pas encore de produits.</p>
+              </t>
+              <t t-else="">
+                <div class="mvp-products">
+                  <t t-foreach="products" t-as="product">
+                    <div class="mvp-product-card">
+                      <div class="mvp-product-img">
+                        <t t-if="product.image_512">
+                          <img t-attf-src="/web/image/product.template/#{product.id}/image_512"
+                               t-att-alt="product.name"/>
+                        </t>
+                      </div>
+                      <div class="mvp-product-body">
+                        <h3 t-esc="product.name"/>
+                        <p class="mvp-price">
+                          <t t-esc="'%.2f EUR HT' % product.list_price"/>
+                        </p>
+                        <span t-if="product.website_published"
+                              class="mvp-badge mvp-badge-green">Publie</span>
+                        <span t-else="" class="mvp-badge mvp-badge-gray">Non publie</span>
+                      </div>
+                      <div class="mvp-product-actions">
+                        <a t-attf-href="/vendor/product/#{product.id}/edit"
+                           class="mvp-btn mvp-btn-outline">Modifier</a>
+                        <a t-attf-href="/shop/product/#{product.id}"
+                           class="mvp-btn" target="_blank">Boutique</a>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </template>
+</odoo>

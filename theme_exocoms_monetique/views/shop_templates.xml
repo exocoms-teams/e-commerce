@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Customizing Product Cards in Grid -->
+        <template id="products_item_monetiques" inherit_id="website_sale.products_item" name="Monetiques Product Card">
+            <xpath expr="//form" position="replace">
+                <form action="/shop/cart/update" method="post" class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden product-card position-relative" t-att-data-publish="product.website_published and 'on' or 'off'">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    
+                    <!-- Badges -->
+                    <div class="position-absolute top-0 start-0 m-3 z-index-2">
+                        <span class="badge bg-primary text-white rounded-pill px-3 py-1">Certifié PCI-DSS</span>
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="card-img-top bg-white d-flex align-items-center justify-content-center p-4 position-relative" style="height: 220px;">
+                        <a t-att-href="product.website_url" class="d-block h-100 w-100 text-center">
+                            <span t-field="product.image_1920" t-options="{'widget': 'image', 'preview_image': 'image_1024', 'class': 'img-fluid h-100 w-auto', 'style': 'object-fit: contain;'}"/>
+                        </a>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column p-4">
+                        <h5 class="card-title fw-bold text-dark mb-1">
+                            <a t-att-href="product.website_url" class="text-decoration-none text-dark" t-field="product.name"/>
+                        </h5>
+                        <p class="card-text text-muted small flex-grow-1" t-field="product.description_sale"/>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <div class="product-price">
+                                <span class="fw-bold fs-5 text-primary" t-field="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                                    <i class="fa fa-shopping-cart me-1"></i> Acheter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </xpath>
+        </template>
+
+        <!-- Customizing Product Page Layout -->
+        <template id="product_page_monetiques" inherit_id="website_sale.product" name="Monetiques Product Detail">
+            <xpath expr="//section[@id='product_detail']" position="replace">
+                <section id="product_detail" class="py-5 bg-white" t-att-data-view-track="view_track and '1' or '0'" t-att-data-product-tracking-info="json.dumps(request.env['product.template'].get_google_analytics_data(product))">
+                    <div class="container">
+                        <div class="row">
+                            <!-- Left: Images Gallery -->
+                            <div class="col-lg-6 mb-5 mb-lg-0">
+                                <div class="p-3 bg-light rounded-4 text-center">
+                                    <span t-field="product.image_1920" t-options="{'widget': 'image', 'class': 'img-fluid rounded-3', 'style': 'max-height: 450px; object-fit: contain;'}"/>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Product Info -->
+                            <div class="col-lg-6 ps-lg-5">
+                                <span class="badge bg-success text-white mb-2">En Stock</span>
+                                <h1 class="fw-bold text-dark mb-2" t-field="product.name"/>
+                                <div class="d-flex align-items-center gap-2 mb-4">
+                                    <div class="text-warning">
+                                        <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                    </div>
+                                    <span class="text-muted small">(12 avis clients)</span>
+                                </div>
+
+                                <h3 class="fw-bold text-primary mb-4" t-field="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+
+                                <p class="text-muted mb-4" t-field="product.description_sale"/>
+
+                                <form class="js_add_to_cart_form mb-5" action="/shop/cart/update" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" class="product_id" name="product_id" t-att-value="product.product_variant_id.id"/>
+                                    
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="css_quantity input-group w-auto">
+                                            <button type="button" class="btn btn-outline-secondary rounded-start js_add_cart_json"><i class="fa fa-minus"></i></button>
+                                            <input type="text" class="form-control text-center quantity" style="max-width: 60px;" name="add_qty" value="1"/>
+                                            <button type="button" class="btn btn-outline-secondary rounded-end js_add_cart_json"><i class="fa fa-plus"></i></button>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
+                                            <i class="fa fa-shopping-cart me-2"></i> Ajouter au panier
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Secondary Buttons -->
+                                    <div class="d-flex gap-3 mt-4">
+                                        <a href="/contrat#callback-section" class="btn btn-outline-secondary rounded-pill btn-sm">
+                                            <i class="fa fa-phone me-1"></i> Demander un devis
+                                        </a>
+                                        <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm">
+                                            <i class="fa fa-download me-1"></i> Fiche PDF
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Technical Tabs -->
+                        <div class="row mt-5 pt-5 border-top">
+                            <div class="col-12">
+                                <ul class="nav nav-tabs border-bottom-0" id="productTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active fw-bold border-0 px-4 py-3" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="true">Fiche Technique</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link fw-bold border-0 px-4 py-3" id="compat-tab" data-bs-toggle="tab" data-bs-target="#compat" type="button" role="tab" aria-controls="compat" aria-selected="false">Compatibilités</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link fw-bold border-0 px-4 py-3" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq" type="button" role="tab" aria-controls="faq" aria-selected="false">FAQ Produit</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content p-4 bg-light rounded-3 mt-3" id="productTabsContent">
+                                    <div class="tab-pane fade show active" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+                                        <table class="table table-striped mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="fw-bold w-25">OS</td>
+                                                    <td>Android Secure OS</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Sans Contact</td>
+                                                    <td>Oui (NFC)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Sécurité</td>
+                                                    <td>Certifié PCI-PTS v6.x</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade" id="compat" role="tabpanel" aria-labelledby="compat-tab">
+                                        <p class="mb-0 text-muted">Compatible avec tous les logiciels de caisse majeurs et toutes les banques françaises (contrat d'acquisition direct).</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="faq" role="tabpanel" aria-labelledby="faq-tab">
+                                        <h6 class="fw-bold">Le TPE est-il livré configuré ?</h6>
+                                        <p class="text-muted">Oui, si vous souscrivez à l'un de nos contrats monétiques, le TPE est livré entièrement paramétré et prêt à l'emploi.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            </xpath>
+        </template>
+    </data>
+</odoo>
