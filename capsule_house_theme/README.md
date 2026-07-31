@@ -570,6 +570,15 @@ localement (probablement lors d'un test) — remis à `19.0.1.0.26` avant
 tout déploiement. Rappel : ce format casse le mécanisme de replay des
 migrations (voir avertissement en tête du fichier).
 
+Retour client sur cette v.26 (halo enfin visible) : "mais il doit être
+placé comme sur le modèle" — sur la maquette, le halo est concentré en
+haut à droite (effet "source de lumière"), pas centré/symétrique.
+**Correctif v19.0.1.0.27** (testé en direct sur le site réel avant
+d'être écrit dans le code, capture à l'appui) : inset asymétrique
+(`top: -18%`, `right: -22%`, `bottom: -6%`, `left: -6%`) + centre du
+radial-gradient décalé (`at 68% 32%` au lieu de centré), fondu à
+50%/85%.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
