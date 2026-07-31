@@ -101,6 +101,35 @@
                                 </t>
                             </div>
 
+                            <!-- Stock Badge -->
+                            <t t-if="stock_state != 'hidden'">
+                                <div class="sn-stock-badge">
+                                    <t t-if="stock_state == 'in_stock'">
+                                        <span class="sn-stock-in">
+                                            <i class="fa fa-check-circle"/> In Stock
+                                        </span>
+                                    </t>
+                                    <t t-elif="stock_state == 'low_stock'">
+                                        <span class="sn-stock-low">
+                                            <i class="fa fa-exclamation-triangle"/>
+                                            Only <t t-esc="stock_qty"/> left in stock
+                                        </span>
+                                    </t>
+                                    <t t-elif="stock_state == 'out_of_stock'">
+                                        <t t-if="allow_out_of_stock_order">
+                                            <span class="sn-stock-backorder">
+                                                <i class="fa fa-clock-o"/> Available on Backorder
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="sn-stock-out">
+                                                <i class="fa fa-times-circle"/> Out of Stock
+                                            </span>
+                                        </t>
+                                    </t>
+                                </div>
+                            </t>
+
                             <!-- Short Description -->
                             <div class="sn-product-description-short">
                                 <p>
@@ -152,7 +181,8 @@
                                         type="number"
                                         value="1"
                                         min="1"
-                                        max="99"/>
+                                        t-att-max="stock_qty"
+                                        t-att-data-stock="str(stock_qty)"/>
                                     <button
                                         class="sn-qty-btn"
                                         data-action="increase">
@@ -163,11 +193,28 @@
 
                             <!-- Action Buttons -->
                             <div class="sn-buttons">
-                                <button
-                                    class="sn-btn-primary sn-add-cart-btn-product"
-                                    t-att-data-template-id="product.id">
-                                    Add to Cart
-                                </button>
+                                <t t-if="stock_state == 'out_of_stock' and not allow_out_of_stock_order">
+                                    <button style="width:50%" class="sn-btn-primary sn-add-cart" disabled="disabled">
+                                        Out of Stock
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <button style="width:50%"
+                                        class="sn-btn-primary sn-add-cart"
+                                        t-att-data-template-id="product.id">
+                                        <t t-if="stock_state == 'out_of_stock'">
+                                            Add to Cart (Backorder)
+                                        </t>
+                                        <t t-else="">
+                                            Add to Cart
+                                        </t>
+                                    </button>
+                                </t>
+                                <a
+                                    href="#categories"
+                                    class="sn-btn-outline-wl">
+                                    Buy Now
+                                </a>
                             </div>
 
                             <!-- Product Meta -->
@@ -183,11 +230,22 @@
                                 <!--
                                 <div>
                                     <strong>Availability :</strong>
-                                    <t t-if="product_variant.qty_available > 0">
+                                    <t t-if="stock_state == 'hidden'">
+                                        
+                                    </t>
+                                    <t t-elif="stock_state == 'in_stock'">
                                         In Stock
                                     </t>
-                                    <t t-else="">
-                                        Out of Stock
+                                    <t t-elif="stock_state == 'low_stock'">
+                                        Low Stock (<t t-esc="stock_qty"/> left)
+                                    </t>
+                                    <t t-elif="stock_state == 'out_of_stock'">
+                                        <t t-if="allow_out_of_stock_order">
+                                            Available on Backorder
+                                        </t>
+                                        <t t-else="">
+                                            Out of Stock
+                                        </t>
                                     </t>
                                 </div>
                                 -->

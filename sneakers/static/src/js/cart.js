@@ -168,7 +168,35 @@ function updateCartBackend(lineId, qty) {
         var current = parseInt(input.value, 10) || 1;
 
         if (btn.textContent.trim() === "+" || btn.dataset.action === "increase") {
+
+            var stock = parseInt(
+                input.dataset.stock,
+                10
+            );
+
+
+            console.log("CART PRODUCT STOCK :", stock);
+
+
+            if (!isNaN(stock) && current >= stock) {
+
+
+                if(window.snShowToast){
+
+                    window.snShowToast(
+                        "Maximum disponible : " + stock + " article(s)",
+                        "error"
+                    );
+
+                }
+
+
+                return;
+            }
+
+
             input.value = current + 1;
+            updateIncreaseButtonState(cartItem);
         } else if (btn.textContent.trim() === "-" || btn.dataset.action === "decrease") {
             if (current > 1) input.value = current - 1;
         }
@@ -184,6 +212,48 @@ function updateCartBackend(lineId, qty) {
     });
 
 
+    // Active ou désactive le bouton d'augmentation de quantité
+    // selon le stock disponible du produit.
+    // Le bouton "+" est bloqué lorsque la quantité sélectionnée
+    // atteint la quantité maximale disponible en stock.
+    
+    function updateIncreaseButtonState(cartItem){
+
+    var input = cartItem.querySelector(".sn-cart-qty-input");
+
+    var increaseBtn = cartItem.querySelector(
+        ".sn-qty-btn[data-action='increase']"
+    );
+
+
+    if(!input || !increaseBtn){
+        return;
+    }
+
+
+    var stock = parseInt(
+        input.dataset.stock,
+        10
+    );
+
+
+    var qty = parseInt(
+        input.value,
+        10
+    );
+
+
+    if(qty >= stock){
+
+        increaseBtn.disabled = true;
+
+    }else{
+
+        increaseBtn.disabled = false;
+
+    }
+
+}
 
     // ================================================
     // SAISIE DIRECTE DANS L'INPUT
@@ -196,7 +266,37 @@ function updateCartBackend(lineId, qty) {
         if (!cartItem) return;
 
         var val = parseInt(e.target.value, 10);
-        if (isNaN(val) || val < 1) { e.target.value = 1; val = 1; }
+
+        var stock = parseInt(
+            e.target.dataset.stock,
+            10
+        );
+
+
+        if (isNaN(val) || val < 1) {
+
+            e.target.value = 1;
+            val = 1;
+
+        }
+
+
+        if(!isNaN(stock) && val > stock){
+
+            e.target.value = stock;
+            val = stock;
+
+
+            if(window.snShowToast){
+
+                window.snShowToast(
+                    "Maximum disponible : " + stock + " article(s)",
+                    "error"
+                );
+
+            }
+
+        }
 
         updateItemTotal(cartItem, val);
 

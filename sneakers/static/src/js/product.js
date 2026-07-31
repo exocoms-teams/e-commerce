@@ -2,7 +2,7 @@
 
     var productSection = document.querySelector(".sn-product-details");
     
-    
+    var currentVariantAvailable = true;
 
     var selectedSizeId = null;
     var selectedSize = null;
@@ -43,6 +43,18 @@ function initAddToCartCards() {
         btn.addEventListener("click", function(e){
 
             e.preventDefault();
+
+            if(!currentVariantAvailable){
+
+                if(window.snShowToast){
+                    window.snShowToast(
+                        "Cette variante n'est pas disponible.",
+                        "error"
+                    );
+                }
+
+                return;
+            }
 
 
            var productId = this.dataset.productId;
@@ -291,6 +303,7 @@ function initAddToCartCards() {
                 selectedSizeId = Number(this.dataset.sizeId);
 
                 selectedSize = this.dataset.size || this.textContent.trim();
+                updateVariantStock();
 
             });
         });
@@ -319,6 +332,8 @@ function initAddToCartCards() {
 
             selectedColorId = Number(this.dataset.colorId);
 
+            updateVariantStock();
+
             selectedColor = this.dataset.color || this.title || "";
 
             var colorLabel = document.querySelector(".sn-selected-color-label");
@@ -340,27 +355,90 @@ function initAddToCartCards() {
         var qtyInput = document.querySelector(".sn-qty-input");
         var qtyBtns  = document.querySelectorAll(".sn-qty-btn");
         if (!qtyInput || !qtyBtns.length) return;
+        if (qtyInput.getAttribute("data-stock") === null) {
+    var maxStock = qtyInput.getAttribute("max");
+
+    if (maxStock !== null) {
+        qtyInput.setAttribute("data-stock", maxStock);
+    }
+}
 
         qtyBtns.forEach(function (btn) {
+
             btn.addEventListener("click", function () {
+
                 var current = parseInt(qtyInput.value, 10) || 1;
-                var delta   = this.dataset.action === "increase" || this.textContent.trim() === "+"
-                              ? 1 : -1;
-                var min     = parseInt(qtyInput.min, 10) || 1;
-                var max     = parseInt(qtyInput.max, 10) || 99;
-                var next    = Math.min(max, Math.max(min, current + delta));
+
+                var delta = this.dataset.action === "increase" ||
+                            this.textContent.trim() === "+"
+                            ? 1
+                            : -1;
+
+                var min = parseInt(qtyInput.min, 10) || 1;
+
+                var stock = qtyInput.getAttribute("data-stock");
+
+                stock = stock !== null && stock !== ""
+                    ? parseInt(stock, 10)
+                    : null;
+
+                var max = qtyInput.max
+                    ? parseInt(qtyInput.max, 10)
+                    : null;
+
+
+                // Aucun stock disponible
+                if (stock === 0) {
+
+                    btn.disabled = true;
+
+                    return;
+                }
+
+
+                var next = current + delta;
+
+
+                if (max !== null) {
+                    next = Math.min(max, next);
+                }
+
+
+                next = Math.max(min, next);
+
 
                 qtyInput.value = next;
+
             });
+
         });
 
         // Validation saisie directe
         qtyInput.addEventListener("change", function () {
+            var stock = parseInt(this.dataset.stock, 10);
+
+            if (stock === 0) {
+                this.value = 1;
+                return;
+            }
+
             var val = parseInt(this.value, 10);
+
             var min = parseInt(this.min, 10) || 1;
-            var max = parseInt(this.max, 10) || 99;
-            if (isNaN(val) || val < min) this.value = min;
-            if (val > max) this.value = max;
+
+            var max = this.max
+                ? parseInt(this.max, 10)
+                : null;
+
+
+            if (isNaN(val) || val < min) {
+                this.value = min;
+            }
+
+            if (max !== null && val > max) {
+                this.value = max;
+            }
+
         });
     }
 
@@ -427,7 +505,159 @@ function initAddToCartCards() {
         });
     }
 
+    function updateVariantStock(){
+
+    var addBtn = document.querySelector(".sn-add-cart");
+
+    if(!addBtn){
+        return;
+    }
+
+
+    var templateId = addBtn.dataset.templateId;
+
+
+    var attributeIds = [];
+
+
+    if(selectedColorId){
+        attributeIds.push(parseInt(selectedColorId));
+    }
+
+
+    if(selectedSizeId){
+        attributeIds.push(parseInt(selectedSizeId));
+    }
+
+
+    fetch('/get-product-variant', {
+
+        method: 'POST',
+
+        headers:{
+            'Content-Type':'application/json'
+        },
+
+        body: JSON.stringify({
+
+            jsonrpc:"2.0",
+
+            method:"call",
+
+            params:{
+                template_id: templateId,
+                attribute_value_ids: attributeIds
+            }
+
+        })
+
+    })
+
+    .then(function(response){
+        return response.json();
+    })
+
+    .then(function(data){
+
+
+        if(!data.result || !data.result.product_id){
+
+            currentVariantAvailable = false;
+
+            var qtyInput = document.querySelector(".sn-qty-input");
+
+            if(qtyInput){
+                qtyInput.setAttribute("data-stock", 0);
+                qtyInput.setAttribute("max", 0);
+                qtyInput.value = 1;
+            }
+
+
+            addBtn.disabled = true;
+            addBtn.textContent = "Variante indisponible";
+
+            return;
+        }
+
+
+        var qtyInput = document.querySelector(".sn-qty-input");
+
+
+        if(!qtyInput){
+            return;
+        }
+
+
+        var stock = data.result.qty_available;
+
+        qtyInput.setAttribute("data-stock", stock);
+
+        if(stock <= 0){
+
+            currentVariantAvailable = false;
+
+            addBtn.disabled = true;
+            addBtn.textContent = "Rupture de stock";
+
+        }
+        else{
+
+            currentVariantAvailable = true;
+
+            addBtn.disabled = false;
+            addBtn.textContent = "Ajouter au panier";
+
+        }
+        
+        if(stock !== undefined){
+
+
+            if(stock > 0){
+
+                qtyInput.setAttribute(
+                    "max",
+                    stock
+                );
+
+
+                var currentQty = parseInt(qtyInput.value,10) || 1;
+
+
+                if(currentQty > stock){
+
+                    qtyInput.value = stock;
+
+                }
+
+
+            }else{
+
+                qtyInput.setAttribute(
+                    "max",
+                    0
+                );
+
+                qtyInput.value = 1;
+
+            }
+
+        }
+
+
+    });
+
+}
+
     function getVariantAndAddCart(templateId, qty, sizeId, colorId, btn) {
+        var attributeIds = [];
+
+        if (colorId) {
+            attributeIds.push(parseInt(colorId));
+        }
+
+        if (sizeId) {
+            attributeIds.push(parseInt(sizeId));
+        }
 
     fetch('/get-product-variant', {
 
@@ -445,10 +675,7 @@ function initAddToCartCards() {
 
             params: {
                 template_id: templateId,
-                attribute_value_ids: [
-                    parseInt(colorId),
-                    parseInt(sizeId)
-                ]
+                attribute_value_ids: attributeIds
             }
 
         })
@@ -461,16 +688,26 @@ function initAddToCartCards() {
 
     .then(function(data){
 
-       if (!data.result || !data.result.product_id) {
+        if (!data.result || !data.result.product_id) {
+            console.error("NO VARIANT FOUND", data);
+            return;
+        }
 
-    console.error(
-        "NO VARIANT FOUND",
-        data
-    );
 
-    return;
+        if(data.result.qty_available !== undefined){
 
-}
+            if(data.result.qty_available <= 0){
+                console.error("Produit hors stock");
+                return;
+            }
+
+            qty = Math.min(
+                qty,
+                data.result.qty_available
+            );
+
+        }
+
 
         addToCartFromProduct(
             data.result.product_id,
@@ -478,7 +715,6 @@ function initAddToCartCards() {
             qty,
             btn
         );
-
 
     });
 
