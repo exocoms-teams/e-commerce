@@ -23,7 +23,7 @@
         'security/ir.model.access.csv',
         'data/ir_cron.xml',
         'data/ecommerce_categories.xml',
-        'data/allergens.xml'
+        'data/allergens.xml',
         'data/ecommerce_products.xml', # Nos produits de test
         'views/product_template_views.xml',
         'views/allergen_views.xml',
