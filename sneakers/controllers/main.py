@@ -746,6 +746,7 @@ class SneakersController(http.Controller):
             'subtotal': subtotal,
             'tax': tax,
             'total': total,
+            'error': kwargs.get('error', ''),
         }
         return request.render('sneakers.page_checkout', values)
 

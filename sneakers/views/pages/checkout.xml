@@ -36,7 +36,16 @@
 
             </section>
 
-            <!-- CHECKOUT PROGRESS  -->
+            <!-- ERROR BANNER -->
+            <t t-if="error == 'payment_required'">
+                <div class="mn-container">
+                    <div class="sn-checkout-error">
+                        Please select a payment method before placing your order.
+                    </div>
+                </div>
+            </t>
+
+            <!-- CHECKOUT PROGRESS -->
             <section class="sn-checkout-progress oe_structure oe_empty">
 
                 <div class="mn-container">
@@ -45,42 +54,30 @@
 
                         <div class="sn-progress-line"></div>
 
-                        <div class="sn-progress-step active">
-
-                            <div class="sn-step-circle">1</div>
-
+                        <!-- Step 1: Cart — always done -->
+                        <div class="sn-progress-step done">
+                            <div class="sn-step-circle">✓</div>
                             <span>Cart</span>
-
                         </div>
 
-                        <div class="sn-progress-step">
-
-                            <div class="sn-step-circle">
-                                2
-                            </div>
-
+                        <!-- Step 2: Address — always done (form is visible) -->
+                        <div class="sn-progress-step done">
+                            <div class="sn-step-circle">✓</div>
                             <span>Address</span>
-
                         </div>
 
-                        <div class="sn-progress-step">
-
-                            <div class="sn-step-circle">
-                                3
+                        <!-- Step 3: Shipping — done if delivery methods exist, hidden if not -->
+                        <t t-if="delivery_methods">
+                            <div class="sn-progress-step done">
+                                <div class="sn-step-circle">✓</div>
+                                <span>Shipping</span>
                             </div>
+                        </t>
 
-                            <span>Shipping</span>
-
-                        </div>
-
-                        <div class="sn-progress-step">
-
-                            <div class="sn-step-circle">
-                                4
-                            </div>
-
+                        <!-- Step 4: Payment — active -->
+                        <div class="sn-progress-step active">
+                            <div class="sn-step-circle">4</div>
                             <span>Payment</span>
-
                         </div>
 
                     </div>
@@ -192,6 +189,11 @@
                                             </div>
                                         </label>
                                     </t>
+
+                                    <!-- Confirm button inside payment section -->
+                                    <button class="sn-confirm-btn" type="submit" form="sn-checkout-form">
+                                        Confirm &amp; Pay
+                                    </button>
 
                                 </div>
 
