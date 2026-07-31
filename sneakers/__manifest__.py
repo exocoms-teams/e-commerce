@@ -25,6 +25,7 @@
         'views/pages/product.xml',
         'views/pages/cart.xml',
         'views/pages/checkout.xml',
+        'views/pages/payment.xml',
         'views/pages/confirmation.xml',
         'views/pages/wishlist.xml',
         'views/pages/contact.xml',

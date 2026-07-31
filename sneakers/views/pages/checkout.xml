@@ -36,15 +36,6 @@
 
             </section>
 
-            <!-- ERROR BANNER -->
-            <t t-if="error == 'payment_required'">
-                <div class="mn-container">
-                    <div class="sn-checkout-error">
-                        Please select a payment method before placing your order.
-                    </div>
-                </div>
-            </t>
-
             <!-- CHECKOUT PROGRESS -->
             <section class="sn-checkout-progress oe_structure oe_empty">
 
@@ -54,28 +45,28 @@
 
                         <div class="sn-progress-line"></div>
 
-                        <!-- Step 1: Cart — always done -->
+                        <!-- Step 1: Cart — done -->
                         <div class="sn-progress-step done">
                             <div class="sn-step-circle">✓</div>
                             <span>Cart</span>
                         </div>
 
-                        <!-- Step 2: Address — always done (form is visible) -->
-                        <div class="sn-progress-step done">
-                            <div class="sn-step-circle">✓</div>
+                        <!-- Step 2: Address — active -->
+                        <div class="sn-progress-step active">
+                            <div class="sn-step-circle">2</div>
                             <span>Address</span>
                         </div>
 
                         <!-- Step 3: Shipping — done if delivery methods exist, hidden if not -->
                         <t t-if="delivery_methods">
-                            <div class="sn-progress-step done">
-                                <div class="sn-step-circle">✓</div>
+                            <div class="sn-progress-step">
+                                <div class="sn-step-circle">3</div>
                                 <span>Shipping</span>
                             </div>
                         </t>
 
-                        <!-- Step 4: Payment — active -->
-                        <div class="sn-progress-step active">
+                        <!-- Step 4: Payment -->
+                        <div class="sn-progress-step">
                             <div class="sn-step-circle">4</div>
                             <span>Payment</span>
                         </div>
@@ -171,31 +162,10 @@
 
                                 </div>
 
-                                <!-- PAYMENT METHOD -->
-                                <div class="sn-checkout-card" t-if="payment_providers">
-
-                                    <h3>Payment Method</h3>
-
-                                    <t t-foreach="payment_providers" t-as="provider">
-                                        <label class="sn-radio-card">
-                                            <input type="radio" name="payment_provider_id"
-                                                   t-att-value="provider.id"
-                                                   checked="checked"/>
-                                            <div>
-                                                <div class="sn-radio-title">
-                                                    <strong t-out="provider.name"/>
-                                                </div>
-                                                <p t-if="provider.auth_msg" t-out="provider.auth_msg"/>
-                                            </div>
-                                        </label>
-                                    </t>
-
-                                    <!-- Confirm button inside payment section -->
-                                    <button class="sn-confirm-btn" type="submit">
-                                        Confirm &amp; Pay
-                                    </button>
-
-                                </div>
+                                <!-- CONTINUE BUTTON → /payment -->
+                                <button class="sn-confirm-btn" type="submit">
+                                    Continue to Payment →
+                                </button>
 
                         </form>
 

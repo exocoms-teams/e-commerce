@@ -642,7 +642,7 @@ class SneakersController(http.Controller):
         order = request.cart
 
         if request.httprequest.method == 'POST' and order:
-            # Update partner info
+            # ponytail: step 1 saves address + delivery only, step 2 is /payment
             partner = order.partner_id
             vals = {}
             if kwargs.get('name'):
@@ -662,40 +662,12 @@ class SneakersController(http.Controller):
             if vals:
                 partner.sudo().write(vals)
 
-            # Set delivery method
             if kwargs.get('carrier_id'):
                 carrier = request.env['delivery.carrier'].sudo().browse(int(kwargs['carrier_id']))
                 if carrier.exists():
                     order.sudo().carrier_id = carrier.id
 
-            # Handle payment via payment.transaction (Odoo 19 — payment_provider_id doesn't exist on sale.order)
-            payment_provider_id = kwargs.get('payment_provider_id')
-            if payment_provider_id:
-                provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
-                if provider.exists():
-                    # Get payment method from provider (required in Odoo 19)
-                    payment_method = provider.payment_method_ids[:1]
-                    tx = request.env['payment.transaction'].sudo().create({
-                        'provider_id': provider.id,
-                        'payment_method_id': payment_method.id if payment_method else False,
-                        'sale_order_ids': [(4, order.id)],
-                        'partner_id': order.partner_id.id,
-                        'amount': order.amount_total,
-                        'currency_id': order.currency_id.id,
-                        'reference': 'SNEAKERS-%s-%s' % (order.id, fields.Datetime.now().strftime('%Y%m%d%H%M%S')),
-                    })
-
-                    # ponytail: confirm for any enabled provider — Odoo 19 wire_transfer code is 'manual'
-                    order.sudo().action_confirm()
-                    return request.redirect('/confirmation?order_id=%d' % order.id)
-
-            # No valid payment provider selected — stay on checkout, don't confirm
-            return request.redirect('/checkout?error=payment_required')
-
-        # Payment providers (only enabled/test) — ponytail: removed website_id filter, provider was invisible
-        payment_providers = request.env['payment.provider'].sudo().search([
-            ('state', 'in', ['enabled', 'test']),
-        ]) if order else request.env['payment.provider'].sudo().browse()
+            return request.redirect('/payment')
 
         # Delivery methods (soft dep on delivery module)
         delivery_installed = _is_module_installed('delivery')
@@ -719,26 +691,20 @@ class SneakersController(http.Controller):
             except Exception:
                 delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
 
-        # Countries for address form
         countries = request.env['res.country'].sudo().search([])
 
-        # Order lines
         order_lines = order.order_line if order else request.env['sale.order.line'].sudo().browse()
-
-        # Totals
         subtotal = order.amount_untaxed if order else 0
         tax = order.amount_tax if order else 0
         total = order.amount_total if order else 0
         if delivery_price and order:
             total += delivery_price
 
-        # Partner (for pre-filling address)
         partner = order.partner_id if order else request.env.user.partner_id
 
         values = {
             'order': order,
             'order_lines': order_lines,
-            'payment_providers': payment_providers,
             'delivery_methods': delivery_methods,
             'delivery_price': delivery_price,
             'countries': countries,
@@ -746,9 +712,73 @@ class SneakersController(http.Controller):
             'subtotal': subtotal,
             'tax': tax,
             'total': total,
-            'error': kwargs.get('error', ''),
         }
         return request.render('sneakers.page_checkout', values)
+
+    @http.route('/payment', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
+    def payment(self, **kwargs):
+        order = request.cart
+
+        if request.httprequest.method == 'POST' and order:
+            # ponytail: step 2 — create transaction + confirm order
+            payment_provider_id = kwargs.get('payment_provider_id')
+            if payment_provider_id:
+                provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
+                if provider.exists():
+                    payment_method = provider.payment_method_ids[:1]
+                    request.env['payment.transaction'].sudo().create({
+                        'provider_id': provider.id,
+                        'payment_method_id': payment_method.id if payment_method else False,
+                        'sale_order_ids': [(4, order.id)],
+                        'partner_id': order.partner_id.id,
+                        'amount': order.amount_total,
+                        'currency_id': order.currency_id.id,
+                        'reference': 'SNEAKERS-%s-%s' % (order.id, fields.Datetime.now().strftime('%Y%m%d%H%M%S')),
+                    })
+                    order.sudo().action_confirm()
+                    return request.redirect('/confirmation?order_id=%d' % order.id)
+
+            return request.redirect('/payment?error=select_method')
+
+        # GET — show payment selection
+        if not order:
+            return request.redirect('/shop')
+
+        # ponytail: removed website_id filter — Odoo 19 Wire Transfer wasn't visible
+        payment_providers = request.env['payment.provider'].sudo().search([
+            ('state', 'in', ['enabled', 'test']),
+        ])
+
+        delivery_price = 0
+        if order.carrier_id:
+            try:
+                order.sudo()._compute_delivery_price()
+                order.sudo()._compute_amounts()
+                delivery_price = order.delivery_price
+            except Exception:
+                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
+
+        order_lines = order.order_line
+        subtotal = order.amount_untaxed
+        tax = order.amount_tax
+        total = order.amount_total
+        if delivery_price:
+            total += delivery_price
+
+        partner = order.partner_id
+
+        values = {
+            'order': order,
+            'order_lines': order_lines,
+            'payment_providers': payment_providers,
+            'delivery_price': delivery_price,
+            'partner': partner,
+            'subtotal': subtotal,
+            'tax': tax,
+            'total': total,
+            'error': kwargs.get('error', ''),
+        }
+        return request.render('sneakers.page_payment', values)
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
