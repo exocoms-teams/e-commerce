@@ -114,41 +114,41 @@
                         <h3>
                             Categories
                         </h3>
-
-
-
                         <ul class="sn-filter-list">
 
+                            <t t-if="subcategories">
 
+                                <t t-foreach="subcategories" t-as="subcategory">
 
-                            <t t-foreach="categories" t-as="category">
+                                    <li>
 
+                                        <t t-if="selected_category">
+                                            <a t-att-href="'/shop-sneakers?category=%s&amp;subcategory=%s' % (selected_category.name.lower(), subcategory.id)">
+                                                <t t-out="subcategory.name"/>
+                                            </a>
+                                        </t>
 
-                                <li>
+                                        <t t-else="">
+                                            <a t-att-href="'/shop-sneakers?subcategory=%s' % subcategory.id">
+                                                <t t-out="subcategory.name"/>
+                                            </a>
+                                        </t>
 
+                                    </li>
 
-                                    <a href="#"
-                                       t-att-data-category-id="category.id">
-
-
-                                        <t t-out="category.name"/>
-
-
-                                    </a>
-
-
-                                </li>
-
-
+                                </t>
 
                             </t>
 
+                            <t t-else="">
 
+                                <li>
+                                    No categories available
+                                </li>
+
+                            </t>
 
                         </ul>
-
-
-
                     </div>
 
 
@@ -165,37 +165,22 @@
                             Brands
                         </h3>
 
-
-
                         <t t-foreach="brands" t-as="brand">
-
 
                             <label class="sn-checkbox">
 
-
-                                <input type="checkbox"
-                                       t-att-value="brand.id"/>
-
-
+                                <input 
+                                    type="checkbox"
+                                    t-att-value="brand.id"
+                                    t-att-data-brand-name="brand.name"
+                                />
 
                                 <t t-out="brand.name"/>
 
-
-
                             </label>
 
-
-
                         </t>
-
-
-
                     </div>
-
-
-
-
-
 
 
                     <!-- Sizes -->
@@ -203,222 +188,152 @@
 
                     <div class="sn-filter-box">
 
-
                         <h3>
                             Sizes
                         </h3>
 
-
-
                         <div class="sn-size-list">
-
-
 
                             <t t-foreach="sizes" t-as="size">
 
-
                                 <button
-                                    t-att-data-size="size.id">
-
+                                    type="button"
+                                    class="sn-size-btn"
+                                    t-att-data-size="size.name">
 
                                     <t t-out="size.name"/>
 
-
                                 </button>
-
-
 
                             </t>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
-
-
-
-
                     <!-- Colors -->
 
-
                     <div class="sn-filter-box">
-
 
                         <h3>
                             Colors
                         </h3>
 
 
-
                         <div class="sn-color-list">
-
-
 
                             <t t-foreach="colors" t-as="color">
 
-
-                                <span class="sn-color"
-
-
-                                    t-att-title="color.name"
-
-
+                                <span
+                                    class="sn-color-swatch"
                                     t-att-data-color-id="color.id"
-
-
+                                    t-att-title="color.name"
                                     t-att-style="
-                                    'background-color:%s;%s' % (
-                                        color.html_color,
-                                        'border:1px solid #d1d5db;'
-                                        if color.html_color in [
-                                        '#FFFFFF',
-                                        '#ffffff',
-                                        'white'
-                                        ]
-                                        else ''
-                                    )">
-
-
+                                        'background-color:%s;%s' % (
+                                            color.html_color,
+                                            'border:1px solid #d1d5db;'
+                                            if color.html_color in [
+                                                '#FFFFFF',
+                                                '#ffffff',
+                                                'white'
+                                            ]
+                                            else ''
+                                        )
+                                    ">
                                 </span>
-
-
 
                             </t>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
-
-
                     <!-- Price -->
 
-
                     <div class="sn-filter-box">
-
 
                         <h3>
                             Price
                         </h3>
 
 
-
                         <div class="sn-price-filter">
-
 
                             <div class="sn-price-labels">
 
-
                                 <span class="sn-price-label-min">
-
                                     $0
-
                                 </span>
-
 
 
                                 <span class="sn-price-label-max">
-
                                     $500
-
                                 </span>
 
-
-
                             </div>
-
 
 
                             <div class="sn-price-range-wrap">
 
-
-                                <input type="range"
-                                       class="sn-price-min"
-                                       min="0"
-                                       max="500"
-                                       value="0"
-                                       step="5"/>
-
-
-
-                                <input type="range"
-                                       class="sn-price-slider"
-                                       min="0"
-                                       max="500"
-                                       value="500"
-                                       step="5"/>
+                                <input
+                                    type="range"
+                                    class="sn-price-min"
+                                    min="0"
+                                    max="500"
+                                    value="0"
+                                    step="5"/>
 
 
+                                <input
+                                    type="range"
+                                    class="sn-price-slider"
+                                    min="0"
+                                    max="500"
+                                    value="500"
+                                    step="5"/>
 
                             </div>
 
-
-
                         </div>
-
-
 
                     </div>
 
-
-
-
-
-
                     <!-- Availability -->
 
-
                     <div class="sn-filter-box">
-
 
                         <h3>
                             Availability
                         </h3>
 
 
-
                         <label class="sn-checkbox">
 
-
-                            <input type="checkbox"/>
-
+                            <input
+                                type="radio"
+                                name="availability"
+                                class="sn-availability-toggle"
+                                value="in_stock"/>
 
                             In Stock
 
-
                         </label>
-
-
 
 
                         <label class="sn-checkbox">
 
-
-                            <input type="checkbox"/>
-
+                            <input
+                                type="radio"
+                                name="availability"
+                                class="sn-availability-toggle"
+                                value="out_of_stock"/>
 
                             Out of Stock
-
 
                         </label>
 
 
-
                     </div>
-
-
 
                 </aside>
                                 <!-- PRODUCTS -->
@@ -496,7 +411,9 @@
 
 
 
-                                <select id="sort-products">
+                                <select 
+                                    id="sort-products"
+                                    class="sn-sort-select">
 
 
                                     <option value="popular">

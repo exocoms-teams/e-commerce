@@ -41,11 +41,235 @@ class SneakersController(http.Controller):
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop(self, **kwargs):
 
+        # ==========================
+        # Catégories principales
+        # ==========================
+
+        categories = request.env['product.public.category'].sudo().search([
+            ('parent_id', '=', False)
+        ])
+
+        selected_category = False
+        subcategories = request.env['product.public.category'].sudo().search([
+            ('parent_id', '!=', False)
+        ])
+
+        category_name = kwargs.get('category')
+
+        if category_name:
+            selected_category = categories.filtered(
+                lambda c: c.name.lower() == category_name.lower()
+            )[:1]
+
+            if selected_category:
+                subcategories = request.env['product.public.category'].sudo().search([
+                    ('parent_id', '=', selected_category.id)
+                ])
+
+        unique_subcategories = {}
+
+        for cat in subcategories:
+            unique_subcategories[cat.name] = cat
+
+        subcategories = list(unique_subcategories.values())
+        # ==========================
+        # Sous catégorie sélectionnée
+        # ==========================
+
+        selected_subcategory = request.env['product.public.category']
+        subcategory_id = kwargs.get('subcategory')
+
+        if subcategory_id:
+            selected_subcategory = request.env[
+                'product.public.category'
+            ].sudo().browse(int(subcategory_id))
+
+            if not selected_subcategory.exists():
+                selected_subcategory = request.env['product.public.category']
+
+
+        # ==========================
+        # Produits
+        # ==========================
+
         products = request.env['product.template'].sudo().search([
             ('sale_ok', '=', True)
         ])
 
-        categories = request.env['product.public.category'].sudo().search([])
+
+        # Filtre par sous-catégorie
+        if selected_subcategory and selected_subcategory.exists():
+
+            if selected_category:
+                # Cas 2 : Men/Women/Kids -> filtrer par l'ID exact
+                products = products.filtered(
+                    lambda p: selected_subcategory.id in p.public_categ_ids.ids
+                )
+            else:
+                # Cas 1 : Shop général -> filtrer par le nom
+                products = products.filtered(
+                    lambda p: any(
+                        cat.name == selected_subcategory.name
+                        for cat in p.public_categ_ids
+                    )
+                )
+            
+        elif selected_category:
+
+            products = products.filtered(
+                lambda p:
+                    selected_category.id in p.public_categ_ids.ids
+                    or any(
+                        cat.parent_id.id == selected_category.id
+                        for cat in p.public_categ_ids
+                    )
+            )
+
+        
+
+        # ==========================
+        # Filtre par Brand
+        # ==========================
+
+        brand_ids = request.httprequest.args.getlist('brand')
+
+        if brand_ids:
+
+            brand_ids = [
+                int(bid)
+                for bid in brand_ids
+                if bid.isdigit()
+            ]
+
+            products = products.filtered(
+                lambda p: p.brand_id.id in brand_ids
+            )
+
+        # ==========================
+        # Filtre par taille
+        # ==========================
+
+        size_ids = request.httprequest.args.getlist('size')
+
+
+        if size_ids:
+
+            products = products.filtered(
+                lambda p:
+                    any(
+                        value.name in size_ids
+                        for variant in p.product_variant_ids
+                        for value in variant.product_template_attribute_value_ids.product_attribute_value_id
+                    )
+            )
+
+
+
+        # ==========================
+        # Filtre par couleur
+        # ==========================
+
+        color_ids = request.httprequest.args.getlist('color')
+
+
+        if color_ids:
+
+            color_ids = [
+                int(cid)
+                for cid in color_ids
+                if cid.isdigit()
+            ]
+
+
+            products = products.filtered(
+                lambda p:
+                    any(
+                        value.id in color_ids
+                        for variant in p.product_variant_ids
+                        for value in variant.product_template_attribute_value_ids.product_attribute_value_id
+                    )
+            )
+
+
+
+        # ==========================
+        # Filtre prix
+        # ==========================
+
+        price_min = float(
+            request.httprequest.args.get(
+                'price_min',
+                0
+            )
+        )
+
+
+        price_max = float(
+            request.httprequest.args.get(
+                'price_max',
+                9999
+            )
+        )
+
+
+        products = products.filtered(
+            lambda p:
+                price_min <= p.list_price <= price_max
+        )
+
+
+
+        # ==========================
+        # Filtre disponibilité
+        # ==========================
+
+        availability = request.httprequest.args.get('availability')
+
+        if availability == "in_stock":
+
+            products = products.filtered(
+                lambda p: p.qty_available > 0
+            )
+
+        elif availability == "out_of_stock":
+
+            products = products.filtered(
+                lambda p: p.qty_available <= 0
+            )
+
+
+        # ==========================
+        # Tri produits
+        # ==========================
+
+        sort_by = request.httprequest.args.get('sort')
+
+
+        if sort_by == "price-low":
+
+            products = products.sorted(
+                key=lambda p:p.list_price
+            )
+
+
+        elif sort_by == "price-high":
+
+            products = products.sorted(
+                key=lambda p:p.list_price,
+                reverse=True
+            )
+
+
+        elif sort_by == "newest":
+
+            products = products.sorted(
+                key=lambda p:p.create_date,
+                reverse=True
+            )
+
+        # ==========================
+        # Brands
+        # ==========================
 
         brands = request.env['product.brand'].sudo().search([])
 
@@ -74,6 +298,8 @@ class SneakersController(http.Controller):
             'sizes': sizes,
             'colors': colors,
             'product_ratings': product_ratings,
+            'subcategories': subcategories,
+            'selected_category': selected_category,
         }
         return request.render(
             'sneakers.shop_page',
@@ -143,8 +369,6 @@ class SneakersController(http.Controller):
             lambda line: line.attribute_id.name == "Sole"
         ).value_ids
 
-        print("Material:", material_values.mapped('name'))
-        print("Sole:", sole_values.mapped('name'))
         # ==========================
         # Ecommerce images
         # ==========================

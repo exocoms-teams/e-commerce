@@ -226,7 +226,18 @@
                             <div class="sn-product-meta">
                                 <div>
                                     <strong>Category :</strong>
-                                    <t t-out="', '.join(product.public_categ_ids.mapped('name'))"/>
+
+                                    <t t-foreach="product.public_categ_ids" t-as="cat">
+
+                                        <t t-if="cat.parent_id">
+                                            <t t-out="cat.parent_id.name"/>
+                                            /
+                                        </t>
+
+                                        <t t-out="cat.name"/>
+
+                                    </t>
+
                                 </div>
                                 <div>
                                     <strong>Brand :</strong>
