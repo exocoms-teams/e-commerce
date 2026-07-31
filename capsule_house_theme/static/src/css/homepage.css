@@ -145,8 +145,15 @@
 .ch-hero-visual::before {
     content: "";
     position: absolute;
-    inset: -14% -8%;
-    background: radial-gradient(closest-side, var(--ch-terracotta) 0%, var(--ch-salmon) 40%, transparent 68%);
+    /* Inset symétrique (même valeur sur les 4 côtés) + gradient
+       "circle" explicite : avant, l'inset asymétrique (-14% haut/bas,
+       -8% gauche/droite) combiné à une ellipse calée sur la forme
+       (rectangulaire, plus large que haute) de la carte donnait un
+       halo qui semblait décentré vers un coin. Ici le halo est un
+       vrai cercle, centré au milieu de la carte dans toutes les
+       directions, comme sur la maquette. */
+    inset: -20%;
+    background: radial-gradient(circle closest-side, var(--ch-terracotta) 0%, var(--ch-salmon) 40%, transparent 68%);
     opacity: 0.55;
     filter: blur(40px);
     z-index: 0;

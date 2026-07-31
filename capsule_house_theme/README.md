@@ -529,6 +529,15 @@ derrière comme sur le modèle" — le halo était trop pâle/délavé.
 au lieu de 45%/72%), inset resserré à `-14% -8%`. Toujours du CSS pur,
 aucune donnée ni template touchés.
 
+Retour client sur cette v.24 (halo bien visible, "l'effet est plutôt
+cool" mais décentré vers un coin) : "je veux que ça soit comme sur le
+modèle". Cause : inset asymétrique (-14% haut/bas, -8% gauche/droite)
++ `radial-gradient(closest-side, ...)` sans mot-clé `circle` = ellipse
+calée sur la forme rectangulaire de la carte plutôt qu'un cercle
+homogène. **Correctif v19.0.1.0.25** : inset uniforme `-20%` sur les 4
+côtés + `radial-gradient(circle closest-side, ...)` pour un halo
+rond, centré, symétrique dans toutes les directions.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
