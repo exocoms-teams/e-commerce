@@ -15,8 +15,10 @@ class WebsiteSaleSupplements(WebsiteSale):
         if request.params.get('vegan'):
             # On ajoute notre propre condition : le champ is_vegan doit être True
             domain.append(('is_vegan', '=', True))
+
         # 3. On gère le filtre par allergène
         if request.params.get('allergens_exclude'):
-            domain.append(('allergens','not ilike', request.params.get('allergens_exclude')))        
+            
+            domain.append(('allergens','not ilike', request.params.get('allergens_exclude')))
 
         return domain
