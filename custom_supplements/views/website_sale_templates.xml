@@ -98,9 +98,9 @@
                     <div class="flex-column mb-3">
                         <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
                             <div class="form-check mb-1">
-                                <input type="checkbox" name="allergens_exclude" class="form-check-input"
+                                <input type="checkbox" name="attribute_value" class="form-check-input"
                                     t-att-id="'allergen_%s' % allergen.id"
-                                    t-att-value="allergen.id"
+                                    t-attf-value="allergen-#{allergen.id}"
                                     t-att-checked="'checked' if str(allergen.id) in request.params.get('allergens_exclude', '').split(',') else None"/>
                                 <label class="form-check-label fw-normal" t-att-for="'allergen_%s' % allergen.id" t-esc="allergen.name"/>
                             </div>
