@@ -911,15 +911,27 @@ class SneakersController(http.Controller):
             password = kwargs.get('password', '')
 
             if not email or not password:
-                return request.render('sneakers.page_login', {'error': 'Email and password are required.'})
+                return request.render('sneakers.page_login', {'error': 'Email and password are required.', 'email': email})
 
-            try:
-                request.session.authenticate(request.db, email, password)
+            uid = request.session.authenticate(request.db, email, password)
+            if uid:
                 return request.redirect(redirect)
-            except Exception:
-                return request.render('sneakers.page_login', {'error': 'Invalid email or password.'})
+            return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
 
         return request.render('sneakers.page_login', {})
+
+    # ponytail: redirect default Odoo login to our custom login page
+    @http.route('/web/login', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def web_login(self, redirect=None, **kwargs):
+        if request.httprequest.method == 'POST':
+            email = kwargs.get('login', '').strip()
+            password = kwargs.get('password', '')
+            if email and password:
+                uid = request.session.authenticate(request.db, email, password)
+                if uid:
+                    return request.redirect(redirect or '/my/account')
+            return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
+        return request.redirect('/my/login')
 
     @http.route('/my/logout', type='http', auth='user', website=True)
     def logout(self, **kwargs):
