@@ -160,17 +160,27 @@
        droite de la carte (comme une source de lumière). Repris ici
        via un inset asymétrique (davantage de débordement en haut/à
        droite qu'en bas/à gauche) + un centre de dégradé décalé (68%
-       32% au lieu de 50% 50%). Testé et confirmé visuellement en
-       direct (override CSS injecté sur le site réel + capture d'écran
-       de comparaison) avant d'être reporté ici. */
+       32% au lieu de 50% 50%).
+
+       Texture (v19.0.1.0.28) : la v.27 donnait un blob trop compact
+       et trop saturé (bord visible, presque une tache), alors que sur
+       la maquette le halo est beaucoup plus étalé et progressif, sans
+       bord dur. Agrandi (inset encore plus généreux), fondu repoussé
+       beaucoup plus loin (30%/90% au lieu de 50%/85%), flou renforcé
+       (55px au lieu de 35px) et opacité réduite (0.42 au lieu de 0.6)
+       pour un dégradé long et doux plutôt qu'un rond net.
+
+       Testé et confirmé visuellement en direct (override CSS injecté
+       sur le site réel + capture d'écran de comparaison avec la
+       maquette) avant d'être reporté ici, à chaque itération. */
     inset: auto;
-    top: -18%;
-    right: -22%;
-    left: -6%;
-    bottom: -6%;
-    background: radial-gradient(ellipse closest-side at 68% 32%, var(--ch-terracotta) 0%, var(--ch-salmon) 50%, transparent 85%);
-    opacity: 0.6;
-    filter: blur(35px);
+    top: -30%;
+    right: -35%;
+    left: -10%;
+    bottom: -12%;
+    background: radial-gradient(ellipse closest-side at 66% 30%, var(--ch-terracotta) 0%, var(--ch-salmon) 30%, transparent 90%);
+    opacity: 0.42;
+    filter: blur(55px);
     z-index: 0;
     pointer-events: none;
 }

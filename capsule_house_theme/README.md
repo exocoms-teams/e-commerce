@@ -579,6 +579,16 @@ d'être écrit dans le code, capture à l'appui) : inset asymétrique
 radial-gradient décalé (`at 68% 32%` au lieu de centré), fondu à
 50%/85%.
 
+Retour client sur cette v.27 (position correcte cette fois) : "tu vois
+la diff avec les deux ?" — capture montrant que le halo réel restait
+trop compact et trop saturé (bord visible, presque une tache nette),
+alors que sur la maquette il est beaucoup plus étalé et progressif.
+**Correctif v19.0.1.0.28** (testé en direct, capture à l'appui) : inset
+encore agrandi (`top: -30%`, `right: -35%`, `bottom: -12%`, `left:
+-10%`), fondu repoussé à 30%/90% (dégradé long, pas de bord dur),
+`blur(55px)` (au lieu de 35px), `opacity: 0.42` (au lieu de 0.6, pour
+une texture plus douce/pastel).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
