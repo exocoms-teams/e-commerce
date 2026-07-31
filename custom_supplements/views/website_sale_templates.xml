@@ -7,20 +7,21 @@
 
     <!-- 1. Informations nutritionnelles -->
     <template id="product_supplements_info" inherit_id="website_sale.product" name="Infos Compléments">
-        <xpath expr="//div[@id='product_details']" position="inside">
-            <t t-if="product.is_supplement">
+        <xpath expr="." position="inside">
+            <t t-if="hasattr(product, 'is_supplement') and product.is_supplement">
                 <div class="alert alert-info mt-4" role="alert">
                     <h5 class="mb-2">Informations Nutritionnelles</h5>
                     <ul class="list-unstyled mb-2">
-                        <li t-if="product.is_vegan">
+                        <li t-if="hasattr(product, 'is_vegan') and product.is_vegan">
                             <i class="fa fa-leaf text-success"/> <strong>100% Vegan</strong>
                         </li>
-                        <li t-if="product.allergens">
+                        <!-- Utilisation de allergen_ids et mapped() selon votre structure -->
+                        <li t-if="hasattr(product, 'allergen_ids') and product.allergen_ids">
                             <i class="fa fa-exclamation-triangle text-warning"/> 
-                            <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
+                            <strong>Allergènes :</strong> <t t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
                         </li>
                     </ul>
-                    <div t-if="product.nutritional_info">
+                    <div t-if="hasattr(product, 'nutritional_info') and product.nutritional_info">
                         <t t-out="product.nutritional_info"/>
                     </div>
                 </div>
@@ -31,7 +32,7 @@
     <!-- 2. Badge Vegan -->
     <template id="products_item_supplements_badge" inherit_id="website_sale.products_item" name="Badge Vegan Shop">
         <xpath expr="//form" position="inside">
-            <t t-if="product.is_vegan">
+            <t t-if="hasattr(product, 'is_vegan') and product.is_vegan">
                 <span class="badge text-bg-success position-absolute shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
                     <i class="fa fa-leaf"/> Vegan
                 </span>
@@ -55,7 +56,6 @@
 
     <!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <!-- CIBLAGE PARFAIT : On se place juste après le tableau des prix, à l'intérieur du conteneur racine -->
         <xpath expr="//table" position="after">
             
             <style>
@@ -78,7 +78,8 @@
                 }
             </style>
 
-            <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
+            <!-- Protection hasattr() pour éviter le crash si des produits normaux sont dans le panier -->
+            <t t-set="has_supplements" t-value="website_sale_order and any(hasattr(line.product_id, 'is_supplement') and line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
             
             <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-3 text-start" style="font-size: 0.85rem;" role="alert">
                 <div class="d-flex align-items-center mb-1">
@@ -94,14 +95,15 @@
 
     <!-- 5. Nouveaux champs Dosage et Ingrédients -->
     <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Nutritional Info Supplements">
-        <xpath expr="//div[@id='product_details']" position="inside">
-            <t t-if="product.is_supplement">
+        <xpath expr="." position="inside">
+            <t t-if="hasattr(product, 'is_supplement') and product.is_supplement">
                 <div class="alert alert-info mt-4" role="alert">
                     <h5 class="alert-heading"><i class="fa fa-info-circle"/> Posologie et Composition</h5>
                     <hr/>
                     <ul class="list-unstyled mb-0">
-                        <li><strong>Dosage recommandé :</strong> <span t-field="product.dosage"/></li>
-                        <li><strong>Ingrédients actifs :</strong> <span t-field="product.ingredients"/></li>
+                        <!-- Remplacement de t-field par t-esc + hasattr pour éviter l'Erreur 500 -->
+                        <li><strong>Dosage recommandé :</strong> <span t-esc="product.dosage if hasattr(product, 'dosage') else 'Non spécifié'"/></li>
+                        <li><strong>Ingrédients actifs :</strong> <span t-esc="product.ingredients if hasattr(product, 'ingredients') else 'Non spécifiés'"/></li>
                     </ul>
                 </div>
             </t>
@@ -111,30 +113,33 @@
     <!-- 6. Filtres supplémentaires side-bar -->
     <template id="custom_supplement_filters_sidebar" inherit_id="website_sale.product_attribute_filters_form">
         <xpath expr="//form" position="inside">
-            <div class="accordion-item">
-                <div class="accordion-header h6 mb-0">
-                    <button type="button"
-                    class="accordion-button x-0 bg-transparent shadow-none collapsed" 
-                    aria-controls="custom_supplement_attribute_allergen"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#custom_supplement_attribute_allergen">
-                        <b>Allergènes</b>
-                    </button>
+            <!-- Vérification que le modèle existe bien avant de le requêter -->
+            <t t-if="'allergen' in request.env">
+                <div class="accordion-item">
+                    <div class="accordion-header h6 mb-0">
+                        <button type="button"
+                        class="accordion-button x-0 bg-transparent shadow-none collapsed" 
+                        aria-controls="custom_supplement_attribute_allergen"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#custom_supplement_attribute_allergen">
+                            <b>Allergènes</b>
+                        </button>
+                    </div>
+                    <div class="accordion-collapse collapse" id="custom_supplement_attribute_allergen">
+                        <div class="flex-column mb-3">
+                        <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
+                            <div class="form-check mb-1">
+                                <input type="checkbox" name="allergens_exclude" class="form-check-input"
+                                       t-att-id="'allergen_%s' % allergen.id"
+                                       t-att-value="allergen.id"
+                                       t-att-checked="'checked' if str(allergen.id) in request.params.get('allergens_exclude', '').split(',') else None"/>
+                                <label class="form-check-label fw-normal" t-att-for="'allergen_%s' % allergen.id" t-esc="allergen.name"/>
+                            </div>
+                        </t>
+                    </div>
+                    </div>
                 </div>
-                <div class="accordion-collapse collapse" id="custom_supplement_attribute_allergen">
-                    <div class="flex-column mb-3">
-                    <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
-                        <div class="form-check mb-1">
-                            <input type="checkbox" name="allergens_exclude" class="form-check-input"
-                                   t-att-id="'allergen_%s' % allergen.id"
-                                   t-att-value="allergen.id"
-                                   t-att-checked="'checked' if str(allergen.id) in request.params.get('allergens_exclude', '').split(',') else None"/>
-                            <label class="form-check-label fw-normal" t-att-for="'allergen_%s' % allergen.id" t-esc="allergen.name"/>
-                        </div>
-                    </t>
-                </div>
-                </div>
-            </div>
+            </t>
         </xpath>
     </template>
 
@@ -145,7 +150,6 @@
     <template id="homepage_hero_split" inherit_id="website.homepage" name="Hero Premium Créatif">
         <xpath expr="//div[@id='wrap']" position="inside">
 
-            <!-- Styles spécifiques pour les effets de survol de la grille premium -->
             <style>
                 .cs-hover-lift {
                     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -267,7 +271,7 @@
                             <div class="col-6 col-md-3 cs-reveal">
                                 <div class="cs-card shadow-sm h-100 position-relative cs-hover-lift" style="display: flex; flex-direction: column;">
                                     
-                                    <t t-if="product.is_vegan">
+                                    <t t-if="hasattr(product, 'is_vegan') and product.is_vegan">
                                         <span class="badge cs-badge-accent position-absolute m-3" style="z-index: 2;"><i class="fa fa-leaf me-1"/>Vegan</span>
                                     </t>
                                     
@@ -276,7 +280,7 @@
                                     </div>
                                     
                                     <div class="p-3 d-flex flex-column" style="flex-grow: 1;">
-                                        <div class="cs-font-body small text-muted text-uppercase mb-1" t-if="product.is_supplement">Complément Alimentaire</div>
+                                        <div class="cs-font-body small text-muted text-uppercase mb-1" t-if="hasattr(product, 'is_supplement') and product.is_supplement">Complément Alimentaire</div>
                                         
                                         <h6 class="cs-font-heading mb-3">
                                             <a t-attf-href="/shop/#{slug(product)}" class="text-dark text-decoration-none stretched-link">
@@ -355,7 +359,7 @@
                 </div>
             </section>
 
-            <!-- 2. Styles CSS unifiés (Protégés par CDATA contre les crashs XML) -->
+            <!-- 2. Styles CSS unifiés (Protégés par CDATA) -->
             <style>
                 <![CDATA[
                 /* --- A. FOND GLOBAL ET BARRE DE RECHERCHE --- */
@@ -552,7 +556,6 @@
          ===================================================================== -->
 
     <template id="custom_product_premium_design" inherit_id="website_sale.product" name="Product Premium Design">
-        <!-- CORRECTION ICI : On cible la racine de la vue pour empêcher le crash -->
         <xpath expr="." position="inside">
             <style>
                 <![CDATA[
@@ -700,7 +703,6 @@
          ===================================================================== -->
 
     <template id="custom_cart_premium_design" inherit_id="website_sale.cart" name="Cart Premium Design">
-        <!-- CIBLAGE SÉCURISÉ : "expr='.'" cible la racine du template -->
         <xpath expr="." position="inside">
             <style>
                 <![CDATA[
