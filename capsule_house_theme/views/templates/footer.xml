@@ -14,10 +14,17 @@
         (À propos/Le concept/Contact) pointent vers des pages qui ne sont
         pas encore livrées (au fur et à mesure, cf. README) — ils
         renverront un 404 tant que ces pages n'existent pas.
+
+        Traduction FR/EN (v19.0.1.0.36) : même convention que le hero
+        (voir hero.xml) — texte statique dupliqué dans un bloc
+        t-if/t-else sur request.env.lang. Les liens (href) restent
+        identiques dans les deux langues (pas de préfixe /en/ codé en
+        dur : c'est le mécanisme natif Odoo, via language_ids sur le
+        site, qui gère déjà le préfixe de langue dans l'URL).
     -->
     <template id="theme_footer" name="Capsule House - Footer">
         <footer class="ch-footer">
-            <div class="container ch-footer-newsletter">
+            <div class="container ch-footer-newsletter" t-if="request.env.lang == 'fr_FR'">
                 <div>
                     <h3 class="ch-newsletter-title">Restez informé des nouveaux modèles</h3>
                     <p class="ch-newsletter-sub">Offres, nouveautés et conseils d'installation, une fois par mois.</p>
@@ -28,8 +35,21 @@
                     <button type="submit" class="ch-btn ch-btn-primary">S'inscrire</button>
                 </form>
             </div>
+            <div class="container ch-footer-newsletter" t-if="request.env.lang != 'fr_FR'">
+                <div>
+                    <h3 class="ch-newsletter-title">Stay updated on new models</h3>
+                    <p class="ch-newsletter-sub">Offers, new arrivals and installation tips, once a month.</p>
+                </div>
+                <form action="/newsletter/subscribe" method="post" class="ch-newsletter-form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="email" name="email" placeholder="Your email" required="required"/>
+                    <button type="submit" class="ch-btn ch-btn-primary">Subscribe</button>
+                </form>
+            </div>
 
-            <div class="container ch-footer-inner">
+            <t t-set="ch_footer_accessoires_cat" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Accessoires'), ('website_id', '=', request.website.id)], limit=1)"/>
+
+            <div class="container ch-footer-inner" t-if="request.env.lang == 'fr_FR'">
                 <div class="ch-footer-col ch-footer-col-brand">
                     <span class="ch-footer-brand">
                         capsule<span class="ch-footer-brand-accent">house</span>
@@ -53,12 +73,6 @@
                     <a href="/shop">Tous les pods</a>
                     <a href="/shop?order=create_date desc">Nouveautés</a>
                     <a href="/shop?promotions=1">Promotions</a>
-                    <!-- Lien réel vers la catégorie Accessoires (créée par
-                         _setup_shop_categories dans __init__.py) si elle
-                         existe déjà pour notre site — jamais de lien en dur
-                         vers un id de catégorie qui pourrait ne pas exister
-                         ou appartenir à un autre site. -->
-                    <t t-set="ch_footer_accessoires_cat" t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Accessoires'), ('website_id', '=', request.website.id)], limit=1)"/>
                     <a t-if="ch_footer_accessoires_cat" t-attf-href="/shop/category/#{ch_footer_accessoires_cat.id}">Accessoires</a>
                 </div>
 
@@ -82,13 +96,68 @@
                     </div>
                 </div>
             </div>
+            <div class="container ch-footer-inner" t-if="request.env.lang != 'fr_FR'">
+                <div class="ch-footer-col ch-footer-col-brand">
+                    <span class="ch-footer-brand">
+                        capsule<span class="ch-footer-brand-accent">house</span>
+                    </span>
+                    <p class="ch-footer-desc">
+                        The online shop for design pods — configurable, delivered
+                        anywhere in France.
+                    </p>
+                    <div class="ch-footer-social">
+                        <a t-if="request.website.social_linkedin" t-att-href="request.website.social_linkedin"
+                           target="_blank" class="ch-footer-social-link" title="LinkedIn">in</a>
+                        <a t-if="request.website.social_instagram" t-att-href="request.website.social_instagram"
+                           target="_blank" class="ch-footer-social-link" title="Instagram">ig</a>
+                        <a t-if="request.website.social_facebook" t-att-href="request.website.social_facebook"
+                           target="_blank" class="ch-footer-social-link" title="Facebook">fb</a>
+                    </div>
+                </div>
 
-            <div class="ch-footer-bottom container">
+                <div class="ch-footer-col">
+                    <h4>Shop</h4>
+                    <a href="/shop">All pods</a>
+                    <a href="/shop?order=create_date desc">New arrivals</a>
+                    <a href="/shop?promotions=1">Deals</a>
+                    <a t-if="ch_footer_accessoires_cat" t-attf-href="/shop/category/#{ch_footer_accessoires_cat.id}">Accessories</a>
+                </div>
+
+                <div class="ch-footer-col">
+                    <h4>Help</h4>
+                    <a href="/livraison">Delivery</a>
+                    <a href="/retours">Returns</a>
+                    <a href="/garantie">Warranty</a>
+                    <a href="/faq">FAQ</a>
+                </div>
+
+                <div class="ch-footer-col">
+                    <h4>Company</h4>
+                    <a href="/a-propos">About</a>
+                    <a href="/le-concept">The concept</a>
+                    <a href="/contact">Contact</a>
+                    <div class="ch-footer-payment">
+                        <span class="ch-payment-badge">VISA</span>
+                        <span class="ch-payment-badge">MC</span>
+                        <span class="ch-payment-badge">PAYPAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ch-footer-bottom container" t-if="request.env.lang == 'fr_FR'">
                 <span>© <t t-esc="datetime.datetime.now().year"/> Capsule House. Tous droits réservés.</span>
                 <div class="ch-footer-legal">
                     <a href="/mentions-legales">Mentions légales</a>
                     <a href="/cgv">CGV</a>
                     <a href="/confidentialite">Confidentialité</a>
+                </div>
+            </div>
+            <div class="ch-footer-bottom container" t-if="request.env.lang != 'fr_FR'">
+                <span>© <t t-esc="datetime.datetime.now().year"/> Capsule House. All rights reserved.</span>
+                <div class="ch-footer-legal">
+                    <a href="/mentions-legales">Legal notice</a>
+                    <a href="/cgv">Terms of sale</a>
+                    <a href="/confidentialite">Privacy</a>
                 </div>
             </div>
         </footer>

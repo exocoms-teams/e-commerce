@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.35',
+    'version': '19.0.1.0.36',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -33,6 +33,11 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à 
         # reproduire cette même lacune.
         'website_sale_wishlist',
         'mail',
+        # Live chat natif Odoo (v19.0.1.0.36, réplique du mécanisme
+        # observé sur exocoms_theme) — voir _setup_livechat() dans
+        # __init__.py. Pas de widget tiers (Crisp/Tawk/Intercom).
+        'im_livechat',
+        'website_livechat',
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -88,6 +88,10 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.avis_page',
     'capsule_house_theme.avis_hero',
     'capsule_house_theme.avis_content',
+    # Ajoutés en 19.0.1.0.36 (avis_hero scindé en FR/EN, voir
+    # avis_hero.xml et README "Traduction des pages").
+    'capsule_house_theme.avis_hero_fr',
+    'capsule_house_theme.avis_hero_en',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -306,6 +310,94 @@ def _setup_pricelist(env, website, company):
                 "id=%s pour le site id=%s.", field_name, pricelist.id, website.id,
             )
             break
+
+
+def _get_default_operator(env):
+    """Retourne un utilisateur RÉEL (jamais OdooBot/système) pour servir
+    d'opérateur par défaut du Live Chat — même correctif que
+    exocoms_theme._get_default_operator() : `env.uid` pointe vers
+    OdooBot (id=1, compte système inactif) quand ce code s'exécute via
+    un hook/cron plutôt qu'une vraie session utilisateur, ce qui
+    laisserait le canal sans opérateur valide (donc invisible) après
+    chaque install/rebuild si on s'y fiait.
+    """
+    return env['res.users'].search([
+        ('active', '=', True),
+        ('share', '=', False),
+        ('login', 'not in', ['__system__']),
+    ], order='id asc', limit=1)
+
+
+def _setup_livechat(env, website):
+    """Crée (ou retrouve) un canal Live Chat dédié à NOTRE site et le
+    rattache via website.channel_id — champ nativement scopé par site
+    (chaque website a son propre channel_id), donc aucun risque de fuite
+    vers un autre site de la base mutualisée avec ce mécanisme.
+
+    Réplique le mécanisme observé sur exocoms_theme._setup_livechat(),
+    avec une différence délibérée : le canal est nommé d'après
+    WEBSITE_NAME ('Capsule House'), PAS COMPANY_NAME ('Exocoms Group').
+    COMPANY_NAME est la société PARTAGÉE par les ~17 sites de cette
+    base (Exocoms Group gère tous les sites clients) — un canal
+    recherché par ce nom risquerait de retrouver/réutiliser le canal
+    d'un AUTRE site déjà installé avec le même COMPANY_NAME (dont
+    exocoms_theme lui-même), et donc de repeindre son widget avec nos
+    couleurs ou de mélanger ses règles d'affichage avec les nôtres.
+    Un nom distinct par site garantit l'isolation.
+    """
+    if not website:
+        return
+    channel_name = '%s - Live Chat' % WEBSITE_NAME
+    channel = env['im_livechat.channel'].search([
+        ('name', '=', channel_name),
+    ], limit=1)
+    if not channel:
+        channel = env['im_livechat.channel'].create({'name': channel_name})
+    if website.channel_id.id != channel.id:
+        website.write({'channel_id': channel.id})
+
+    # Couleurs du widget alignées sur notre palette (--ch-terracotta /
+    # --ch-ink dans variables.css), plutôt que la couleur par défaut
+    # (ou celle d'exocoms) d'un canal créé par code.
+    channel.write({
+        'header_background_color': '#1F2421',
+        'title_color': '#FFFFFF',
+        'button_background_color': '#C1694F',
+        'button_text_color': '#FFFFFF',
+    })
+
+    # Un canal créé par code (.create()) n'a AUCUNE règle d'affichage
+    # (im_livechat.channel.rule) par défaut — contrairement à un canal
+    # créé depuis l'interface. Sans règle, Odoo ne sait sur quelles
+    # pages afficher la bulle de chat, donc elle n'apparaît nulle part.
+    if not channel.rule_ids:
+        env['im_livechat.channel.rule'].create({
+            'channel_id': channel.id,
+            'regex_url': '/',
+            'action': 'display_button',
+            'sequence': 10,
+        })
+
+    # Réassigne un opérateur RÉEL si le canal n'en a aucun, à chaque
+    # exécution (install ET update), pas seulement à la création —
+    # sinon un canal existant mais resté sans opérateur valide (ex:
+    # après un rebuild) reste invisible tant qu'on ne le corrige pas
+    # manuellement.
+    if not channel.user_ids:
+        operator = _get_default_operator(env)
+        if operator:
+            channel.write({'user_ids': [(4, operator.id)]})
+            _logger.info(
+                "capsule_house_theme: opérateur Live Chat assigné "
+                "automatiquement : %s.", operator.name,
+            )
+        else:
+            _logger.warning(
+                "capsule_house_theme: aucun utilisateur actif trouvé "
+                "pour servir d'opérateur Live Chat — la bulle de chat "
+                "pourrait ne pas s'afficher. Assignez un opérateur "
+                "manuellement via Site Web > Live Chat."
+            )
 
 
 def _setup_languages(env, website):
@@ -977,6 +1069,7 @@ def run_theme_maintenance(env):
     _setup_theme_assets(env, website)
     _invalidate_frontend_assets(env, website)
     _scope_layout_views(env, website)
+    _setup_livechat(env, website)
     _clean_demo_data(env, website)
     categories = _setup_shop_categories(env, website)
     _setup_shop_display(env, website)

@@ -720,6 +720,67 @@ Erreur commise puis corrigée dans `avis_hero.xml` pendant ce
 développement (repérée par une validation XML systématique de tous
 les fichiers avant livraison, pas seulement au moment du déploiement).
 
+## Traduction des pages + Live Chat, comme sur exocoms_theme (v19.0.1.0.36)
+
+Demande client : "gère la traduction de mes pages comme j'ai fait sur
+exocoms ainsi que live chat" — recherche systématique du mécanisme
+réel dans exocoms_theme avant d'écrire quoi que ce soit (même méthode
+que pour le système d'avis en v.35), pas de reproduction à l'aveugle.
+
+### Traduction (FR/EN)
+
+`_setup_languages()` (en place depuis une version antérieure) activait
+déjà `fr_FR`/`en_US` et posait le sélecteur de langue natif dans le
+header — mais aucune page ne changeait réellement de texte selon la
+langue choisie. Confirmé sur exocoms_theme : **pas de traduction .po
+native pour le corps des pages**, mais une convention systématique de
+texte statique dupliqué dans des blocs `t-if/t-else` sur
+`request.env.lang` (leur propre commentaire : *"Texte statique dupliqué
+t-if/t-else fr_FR, comme partout ailleurs dans ce thème"*). Un seul
+champ modèle traduisible (`translate=True`) chez eux, et une traduction
+automatique optionnelle des avis via l'API publique Google Translate —
+**volontairement non reprise ici** (hors scope, site pas bilingue au
+niveau du contenu généré par les utilisateurs pour l'instant).
+
+Appliqué avec la même convention :
+- `views/partials/hero.xml` : bloc `.ch-hero-content` dupliqué FR/EN,
+  badges "Nouveau"/"Promo" et bouton panier des cartes flottantes.
+- `views/templates/footer.xml` : newsletter, colonnes, bandeau bas.
+- `views/partials/avis_hero.xml` : scindé en `avis_hero_fr` /
+  `avis_hero_en` + aiguilleur, mêmes noms que exocoms_theme.
+- `views/partials/avis_content.xml` : libellés dupliqués FR/EN,
+  boucles dynamiques (stats/avis_list) partagées entre les langues
+  pour ne pas dupliquer la logique elle-même.
+- Header (nav) volontairement français uniquement, comme sur
+  exocoms_theme (jamais bilingue chez eux non plus).
+
+### Live Chat
+
+Natif Odoo (`im_livechat` + `website_livechat`), pas de widget tiers —
+confirmé en lisant le manifest d'exocoms_theme. Ajouté aux dépendances
+du module. Fonctions `_get_default_operator(env)` /
+`_setup_livechat(env, website)` dans `__init__.py`, réplique du
+mécanisme `exocoms_theme._setup_livechat()` :
+- Canal `im_livechat.channel` dédié, rattaché via `website.channel_id`
+  (déjà nativement scopé par site).
+- **Différence délibérée** : canal nommé "Capsule House - Live Chat",
+  pas d'après `COMPANY_NAME` ('Exocoms Group', partagé par les ~17
+  sites de la base) — sinon risque de retrouver/réutiliser le canal
+  d'un AUTRE site déjà installé avec ce nom de société, dont
+  exocoms_theme lui-même.
+- Couleurs du widget sur notre palette (`--ch-terracotta` /
+  `--ch-ink`), pas celles d'exocoms.
+- Règle d'affichage (`im_livechat.channel.rule`, `regex_url='/'`)
+  créée si absente (un canal créé par code n'en a aucune par défaut,
+  contrairement à un canal créé depuis l'interface).
+- Opérateur réel assigné automatiquement si le canal n'en a aucun, à
+  chaque exécution — jamais OdooBot/uid=1 (bug identique corrigé chez
+  exocoms : `env.uid` pointe vers OdooBot quand le code tourne via un
+  hook/cron plutôt qu'une vraie session).
+
+Appelé dans `run_theme_maintenance()` juste après
+`_scope_layout_views()`, même position relative que chez exocoms.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

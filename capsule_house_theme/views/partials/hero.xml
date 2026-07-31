@@ -22,11 +22,20 @@
         Les textes marketing statiques ci-dessous (pastilles, réassurance,
         garantie) sont repris tels quels de la maquette fournie — à
         confirmer avec le client avant mise en ligne.
+
+        Traduction FR/EN (v19.0.1.0.36) : même convention que
+        exocoms_theme (texte statique dupliqué dans un bloc
+        t-if/t-else sur request.env.lang, pas de traduction native
+        .po pour le corps de page) — voir README "Traduction des
+        pages comme sur exocoms_theme". _setup_languages() (déjà en
+        place depuis plus tôt dans ce module) active fr_FR/en_US et
+        pose le sélecteur natif ; ce bloc fournit le texte réellement
+        affiché dans chaque langue.
     -->
     <template id="partial_hero" name="Capsule House - Hero">
         <section class="ch-hero">
             <div class="container ch-hero-grid">
-                <div class="ch-hero-content">
+                <div class="ch-hero-content" t-if="request.env.lang == 'fr_FR'">
                     <div class="ch-rating-badge" t-if="rating_value">
                         <i class="fa fa-star"/>
                         <span t-esc="rating_value"/>
@@ -79,6 +88,56 @@
                         <span class="ch-trust-item"><i class="fa fa-map-marker"/> Installation partout en France</span>
                     </div>
                 </div>
+                <div class="ch-hero-content" t-if="request.env.lang != 'fr_FR'">
+                    <div class="ch-rating-badge" t-if="rating_value">
+                        <i class="fa fa-star"/>
+                        <span t-esc="rating_value"/>
+                        <span class="ch-rating-sep">·</span>
+                        <span t-esc="'%s reviews' % rating_count"/>
+                    </div>
+
+                    <h1 class="ch-hero-title">
+                        Design pods built for<br/>
+                        <span class="ch-hero-title-accent">your land</span>
+                    </h1>
+                    <p class="ch-hero-subtitle">
+                        Compare our models, configure yours and order online.
+                        Delivery, installation and 10-year warranty included.
+                    </p>
+
+                    <form action="/shop" method="get" class="ch-hero-search">
+                        <input type="text" name="search" placeholder="Search a model, a size..."/>
+                        <button type="submit" class="ch-btn ch-btn-black">Search</button>
+                    </form>
+
+                    <div class="ch-hero-pills">
+                        <span class="ch-pill">18-40 sqm</span>
+                        <span class="ch-pill">Delivered in 6 weeks</span>
+                        <span class="ch-pill">Financing available</span>
+                    </div>
+
+                    <div class="ch-hero-stats">
+                        <div class="ch-hero-stat">
+                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-label">models available</span>
+                        </div>
+                        <div class="ch-hero-stat" t-if="units_installed_count">
+                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                            <span class="ch-hero-stat-label">pods installed</span>
+                        </div>
+                        <div class="ch-hero-stat">
+                            <span class="ch-hero-stat-number">10 years</span>
+                            <span class="ch-hero-stat-label">warranty</span>
+                        </div>
+                    </div>
+
+                    <div class="ch-trust-row">
+                        <span class="ch-trust-item"><i class="fa fa-truck"/> Free delivery &amp; installation</span>
+                        <span class="ch-trust-item"><i class="fa fa-shield"/> 10-year manufacturer warranty</span>
+                        <span class="ch-trust-item"><i class="fa fa-credit-card"/> Secure payment, 3x interest-free</span>
+                        <span class="ch-trust-item"><i class="fa fa-map-marker"/> Installation anywhere in France</span>
+                    </div>
+                </div>
 
                 <div class="ch-hero-visual">
                     <div class="ch-hero-illustration">
@@ -110,8 +169,14 @@
                         <t t-foreach="featured_products[:2]" t-as="hero_product">
                             <a t-attf-href="/shop/#{ hero_product['url'] }"
                                t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
-                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">Nouveau</span>
-                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Promo</span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">
+                                    <t t-if="request.env.lang == 'fr_FR'">Nouveau</t>
+                                    <t t-else="">New</t>
+                                </span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">
+                                    <t t-if="request.env.lang == 'fr_FR'">Promo</t>
+                                    <t t-else="">Sale</t>
+                                </span>
                                 <div class="ch-hero-float-img">
                                     <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
                                          t-att-alt="hero_product['name']"/>
@@ -137,9 +202,16 @@
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
                             <input type="hidden" name="add_qty" value="1"/>
-                            <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
-                                <i class="fa fa-plus"/> Ajouter au panier
-                            </button>
+                            <t t-if="request.env.lang == 'fr_FR'">
+                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
+                                    <i class="fa fa-plus"/> Ajouter au panier
+                                </button>
+                            </t>
+                            <t t-else="">
+                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
+                                    <i class="fa fa-plus"/> Add to cart
+                                </button>
+                            </t>
                         </form>
                     </t>
                 </div>
