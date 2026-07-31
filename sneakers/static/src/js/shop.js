@@ -10,7 +10,7 @@
         priceMin:     0,
         priceMax:     9999,
         availability: false,
-        sortBy:       "default",
+        sortBy:       "popular",
         page:         1,
         perPage:      12
     };
@@ -131,7 +131,7 @@
 
         activeFilters.priceMax =
             parseInt(
-                params.get("price_max") || 500
+                params.get("price_max") || 9999
             );
 
 
@@ -360,7 +360,7 @@
         activeFilters.priceMin     = 0;
         activeFilters.priceMax     = 9999;
         activeFilters.availability = false;
-        activeFilters.sortBy       = "default";
+        activeFilters.sortBy       = "popular";
         activeFilters.page         = 1;
 
         // Reset UI
@@ -370,7 +370,7 @@
         availToggles.forEach(function(r){
             r.checked = false;
         });
-        if (sortSelect)  sortSelect.value    = "default";
+        if (sortSelect)  sortSelect.value    = "popular";
         if (priceRangeSlider) priceRangeSlider.value = priceRangeSlider.max;
 
         updatePriceDisplay();
@@ -595,7 +595,7 @@
         }
 
         // SORT — only set if not default
-        if (activeFilters.sortBy && activeFilters.sortBy !== "default") {
+        if (activeFilters.sortBy && activeFilters.sortBy !== "popular") {
             params.set("sort", activeFilters.sortBy);
         } else {
             params.delete("sort");
