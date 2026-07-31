@@ -685,9 +685,9 @@ class SneakersController(http.Controller):
                         'reference': 'SNEAKERS-%s-%s' % (order.id, fields.Datetime.now().strftime('%Y%m%d%H%M%S')),
                     })
 
-                    if provider.code == 'wire_transfer':
-                        order.sudo().action_confirm()
-                        return request.redirect('/confirmation?order_id=%d' % order.id)
+                    # ponytail: confirm for any enabled provider — Odoo 19 wire_transfer code is 'manual'
+                    order.sudo().action_confirm()
+                    return request.redirect('/confirmation?order_id=%d' % order.id)
 
             # No valid payment provider selected — stay on checkout, don't confirm
             return request.redirect('/checkout?error=payment_required')
