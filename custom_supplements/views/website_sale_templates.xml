@@ -475,42 +475,47 @@
                 .o_wsale_apply_layout .dropdown-toggle {
                     color: #F9FAFB !important; 
                 }
-/* --- j. CORRECTION ULTIME DU TABLEAU NUTRITIONNEL (V3) --- */
-                /* Enlever le fond du tableau global et désactiver les variables Bootstrap */
-                .alert-info table {
+/* --- J. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
+                
+                /* 1. Nettoyer les variables globales du tableau Bootstrap */
+                #product_detail .alert-info table {
+                    background: transparent !important;
                     background-color: transparent !important;
                     --bs-table-bg: transparent !important;
+                    --bs-table-accent-bg: transparent !important;
+                    --bs-table-striped-bg: transparent !important;
                 }
                 
-                /* Forcer le fond sombre sur la première ligne entière ET ses cellules */
-                .alert-info table thead tr th,
-                .alert-info table thead tr td,
-                .alert-info table tr:first-child th,
-                .alert-info table tr:first-child td {
-                    background-color: #374151 !important; /* Méthode classique */
-                    --bs-table-bg: #374151 !important;    /* Écrase la variable Bootstrap 5 */
-                    --bs-table-accent-bg: transparent !important;
-                    box-shadow: none !important;          /* Désactive le tinting par ombre de Bootstrap */
+                /* 2. Forcer le fond sombre sur la 1ère ligne (toutes les syntaxes possibles) */
+                #product_detail .alert-info table thead tr th,
+                #product_detail .alert-info table thead tr td,
+                #product_detail .alert-info table tbody tr:nth-child(1) th,
+                #product_detail .alert-info table tbody tr:nth-child(1) td,
+                #product_detail .alert-info table tr:first-child th,
+                #product_detail .alert-info table tr:first-child td {
+                    background: #374151 !important; /* Écrase les background-color ET les background-images */
+                    background-color: #374151 !important; 
                     color: #F9FAFB !important;
                     border-bottom: 2px solid #10B981 !important;
-                    font-weight: 700 !important;
-                }
-
-                /* Tuer tous les styles inline générés par l'éditeur Odoo dans la première ligne */
-                .alert-info table tr:first-child th *,
-                .alert-info table tr:first-child td * {
-                    background-color: transparent !important;
-                    color: #F9FAFB !important;
                     box-shadow: none !important;
                 }
 
-                /* Le reste du tableau (lignes de données) */
-                .alert-info table tbody tr:not(:first-child) td,
-                .alert-info table tr:not(:first-child) td {
+                /* 3. Tuer les styles "en ligne" (inline) sur les textes à l'intérieur des cellules (span, p, strong) */
+                #product_detail .alert-info table thead tr th *,
+                #product_detail .alert-info table thead tr td *,
+                #product_detail .alert-info table tr:first-child th *,
+                #product_detail .alert-info table tr:first-child td * {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    color: #F9FAFB !important;
+                }
+
+                /* 4. Assurer le fond correct pour le reste du tableau (à partir de la ligne 2) */
+                #product_detail .alert-info table tbody tr:nth-child(n+2) td,
+                #product_detail .alert-info table tbody tr:nth-child(n+2) th {
+                    background: #1F2937 !important;
                     background-color: #1F2937 !important;
-                    --bs-table-bg: #1F2937 !important; /* Variable Bootstrap */
                     color: #E5E7EB !important;
-                    border-color: #374151 !important;
                 }
                 ]]>
             </style>
