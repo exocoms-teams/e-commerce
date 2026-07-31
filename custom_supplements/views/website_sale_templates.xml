@@ -15,9 +15,10 @@
                         <li t-if="product.is_vegan">
                             <i class="fa fa-leaf text-success"/> <strong>100% Vegan</strong>
                         </li>
-                        <li t-if="product.allergens">
+                        <!-- MODIFICATION ICI : allergen_ids et mapped('name') -->
+                        <li t-if="product.allergen_ids">
                             <i class="fa fa-exclamation-triangle text-warning"/> 
-                            <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
+                            <strong>Allergènes :</strong> <span t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
                         </li>
                     </ul>
                     <div t-if="product.nutritional_info">
@@ -131,7 +132,7 @@
             <!-- 1. HERO PLEIN ÉCRAN -->
             <section class="cs-hero-media" style="height:100vh; min-height:720px;">
                 <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-                       poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
+                        poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
                     <source src="/custom_supplements/static/src/videos/hero_home_cinematic_bottle_reveal.mp4" type="video/mp4"/>
                 </video>
                 <div class="cs-hero-overlay">
@@ -484,7 +485,7 @@
                 .o_wsale_apply_layout .dropdown-toggle {
                     color: #F9FAFB !important; 
                 }
-/* --- J. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
+                /* --- J. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
                 
                 /* 1. Nettoyer les variables globales du tableau Bootstrap */
                 #product_detail .alert-info table {
