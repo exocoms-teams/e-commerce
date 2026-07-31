@@ -8,6 +8,20 @@
 .ch-hero {
     background: var(--ch-white);
     padding: 56px 0 72px;
+    /* v19.0.1.0.39 — bug réel trouvé en live (page décalée
+       horizontalement, menu/texte coupés à gauche selon la position
+       de scroll) : le halo décoratif (.ch-hero-visual::before, voir
+       plus bas) a des insets très larges (left: -90%, right: -75%)
+       pensés pour déborder de SA carte, mais rien ne le contenait au
+       niveau de la SECTION — il débordait donc de la page entière et
+       ajoutait ~265px de largeur scrollable au document (confirmé en
+       direct : masquer .ch-hero-visual fait disparaître tout le
+       débordement horizontal). Fix : `overflow: hidden` ici, au
+       niveau de la section pleine largeur, pour contenir le halo
+       tout en le laissant déborder librement sur la colonne de texte
+       (effet visuel inchangé), sans jamais dépasser les bords réels
+       de la page. */
+    overflow: hidden;
 }
 
 .ch-hero-grid {

@@ -850,6 +850,33 @@ les deux bugs ci-dessus suffisaient à eux seuls à expliquer les deux
 symptômes rapportés, et ont été confirmés par inspection DOM/console
 live sur une page dont le contexte Capsule House était certain.
 
+## Décalage horizontal de la page — root cause trouvé et corrigé (v19.0.1.0.39)
+
+Client : capture du backend (vue "Edit") montrant la page décalée
+horizontalement — menu coupé à gauche, titre du hero tronqué, scrollbar
+horizontale visible. "Regarde qu'est-ce qui cause ce décalage."
+
+Diagnostic en direct (mesuré, pas deviné) :
+- `document.documentElement.scrollWidth` = 1786 vs `clientWidth` = 1521
+  → 265px de débordement horizontal réel sur toute la page.
+- Masquer temporairement `.ch-hero-visual` fait tomber ce débordement à
+  0 (diff exact : 265px) → confirme que c'est le halo décoratif
+  (`.ch-hero-visual::before`, ajusté sur ~12 itérations en v.22-.34
+  pour matcher la maquette) le responsable, pas le menu ni un autre
+  composant.
+
+Cause exacte : le halo a des insets très généreux (`left: -90%`,
+`right: -75%`) et `.ch-hero-visual` a `overflow: visible` posé exprès
+pour le laisser déborder de sa carte — mais rien plus haut dans
+l'arbre (`.ch-hero-grid`, `.ch-hero`, `body`) ne contenait ce
+débordement au niveau de la SECTION. Le halo débordait donc de la page
+entière, ajoutant 265px de largeur scrollable au document.
+
+Fix : `overflow: hidden` ajouté sur `.ch-hero` (la section pleine
+largeur, pas la carte). Le halo continue de déborder librement à
+l'intérieur de la section (rendu visuel inchangé, vérifié par capture
+avant/après), sans plus jamais dépasser les bords réels de la page.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
