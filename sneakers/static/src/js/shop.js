@@ -563,53 +563,40 @@
         // PRICE
         // =====================
 
-        params.set(
-            "price_min",
-            activeFilters.priceMin
-        );
+        if (activeFilters.priceMin > 0) {
+            params.set("price_min", activeFilters.priceMin);
+        } else {
+            params.delete("price_min");
+        }
 
-
-        params.set(
-            "price_max",
-            activeFilters.priceMax
-        );
-
-
+        if (activeFilters.priceMax < 9999) {
+            params.set("price_max", activeFilters.priceMax);
+        } else {
+            params.delete("price_max");
+        }
 
         // =====================
         // AVAILABILITY
         // =====================
 
-        if(activeFilters.availability){
-
-            params.set(
-                "availability",
-                activeFilters.availability
-            );
-
-        }
-        else{
-
+        if (activeFilters.availability) {
+            params.set("availability", activeFilters.availability);
+        } else {
             params.delete("availability");
-
         }
 
+        // PAGE
+        if (activeFilters.page > 1) {
+            params.set("page", activeFilters.page);
+        } else {
+            params.delete("page");
+        }
 
-
-        params.set(
-            "page",
-            activeFilters.page
-        );
-
-        // SORT
-
-        if(activeFilters.sortBy){
-
-            params.set(
-                "sort",
-                activeFilters.sortBy
-            );
-
+        // SORT — only set if not default
+        if (activeFilters.sortBy && activeFilters.sortBy !== "default") {
+            params.set("sort", activeFilters.sortBy);
+        } else {
+            params.delete("sort");
         }
 
         window.location.href =
