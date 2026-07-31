@@ -27,7 +27,28 @@
         <header id="ch-header" class="ch-header">
             <div class="ch-header-inner container">
                 <a href="/" class="ch-logo">
-                    <span class="ch-logo-mark"/>
+                    <!-- SVG du badge/logo validé par le client — repris tel
+                         quel (ne pas régénérer/remplacer par une autre
+                         forme). Les fichiers capsule-house-logo.svg /
+                         capsule-house-icon.svg (forme pilule) sont
+                         d'anciennes versions abandonnées, ne pas les
+                         utiliser. -->
+                    <svg class="ch-logo-mark-svg" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="ch-logo-hg1" cx="35%" cy="35%" r="70%">
+                                <stop offset="0%" stop-color="#F6B26B"/>
+                                <stop offset="100%" stop-color="#C1694F"/>
+                            </radialGradient>
+                            <linearGradient id="ch-logo-hg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                <stop offset="100%" stop-color="#EDE0D0"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="48" cy="48" r="45" fill="url(#ch-logo-hg2)" stroke="#1F2421" stroke-opacity="0.08"/>
+                        <rect x="12" y="34" width="72" height="30" rx="15" fill="#1F2421" opacity="0.06"/>
+                        <circle cx="38" cy="49" r="11" fill="url(#ch-logo-hg1)"/>
+                        <circle cx="63" cy="49" r="5" fill="#C1694F" opacity="0.7"/>
+                    </svg>
                     <span class="ch-logo-text">
                         capsule<br/>
                         <span class="ch-logo-text-accent">house</span>
@@ -46,8 +67,12 @@
                 </nav>
 
                 <div class="ch-header-actions">
-                    <a href="/shop" class="ch-icon-link" title="Rechercher">
-                        <i class="fa fa-search"/>
+                    <a href="/shop/cart" class="ch-icon-link ch-cart-link" title="Panier">
+                        <i class="fa fa-shopping-cart"/>
+                        <!-- .my_cart_quantity : classe standard website_sale, mise à
+                             jour automatiquement par son propre JS après un ajout
+                             au panier. Pas de JS custom nécessaire ici. -->
+                        <sup class="my_cart_quantity ch-cart-badge">0</sup>
                     </a>
                     <!-- Décoratif pour l'instant : la wishlist nécessite le
                          module 'website_sale_wishlist' (pas dans depends).
@@ -56,13 +81,47 @@
                     <a href="/shop/wishlist" class="ch-icon-link" title="Mes favoris">
                         <i class="fa fa-heart-o"/>
                     </a>
-                    <a href="/shop/cart" class="ch-icon-link ch-cart-link" title="Panier">
-                        <i class="fa fa-shopping-cart"/>
-                        <!-- .my_cart_quantity : classe standard website_sale, mise à
-                             jour automatiquement par son propre JS après un ajout
-                             au panier. Pas de JS custom nécessaire ici. -->
-                        <sup class="my_cart_quantity ch-cart-badge">0</sup>
+                    <a href="/shop" class="ch-icon-link" title="Rechercher">
+                        <i class="fa fa-search"/>
                     </a>
+
+                    <!-- Sélecteur de langue : natif Odoo (request.website.language_ids),
+                         route native /website/lang/<url_code> pour le switch. Masqué
+                         automatiquement s'il n'y a qu'une seule langue active sur le
+                         site (pas la peine d'afficher un sélecteur à un seul choix). -->
+                    <div class="ch-lang-switcher" t-if="len(request.website.language_ids) > 1">
+                        <t t-set="ch_current_lang" t-value="request.env['res.lang'].search([('code', '=', request.env.context.get('lang'))], limit=1)"/>
+                        <button type="button" class="ch-lang-toggle" aria-haspopup="true">
+                            <span t-esc="ch_current_lang.name if ch_current_lang else ''"/>
+                            <i class="fa fa-angle-down"/>
+                        </button>
+                        <div class="ch-lang-menu">
+                            <a t-foreach="request.website.language_ids" t-as="ch_lang"
+                               t-attf-href="/website/lang/#{ch_lang.url_code}"
+                               t-attf-class="ch-lang-item #{'active' if ch_lang.code == request.env.context.get('lang') else ''}">
+                                <t t-esc="ch_lang.name"/>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Compte client : lien Connexion pour un visiteur public,
+                         menu Mon compte / Déconnexion pour un utilisateur identifié.
+                         Repris du même schéma que exocoms_theme (exo-profile-dropdown). -->
+                    <div class="ch-account-dropdown">
+                        <a t-if="request.env.user._is_public()" href="/web/login" class="ch-icon-link" title="Connexion">
+                            <i class="fa fa-user-o"/>
+                        </a>
+                        <t t-else="">
+                            <button type="button" class="ch-icon-link ch-account-toggle" title="Mon compte" aria-haspopup="true">
+                                <i class="fa fa-user"/>
+                            </button>
+                            <div class="ch-account-menu">
+                                <a href="/my/home"><i class="fa fa-user-circle"/> Mon compte</a>
+                                <a href="/web/session/logout?redirect=/"><i class="fa fa-sign-out"/> Déconnexion</a>
+                            </div>
+                        </t>
+                    </div>
+
                     <button type="button" class="ch-burger" id="chBurger" aria-expanded="false">
                         <span/><span/><span/>
                     </button>

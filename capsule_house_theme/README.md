@@ -188,6 +188,24 @@ la syntaxe css2 à poids variable avec point-virgule dans l'URL
 (`wght@400;700`) — toujours la syntaxe historique par virgules
 (`family=Police:400,700`), plus sûre vis-à-vis du minifieur d'Odoo.
 
+### Boutique "native Odoo" comme exocoms_theme (v19.0.1.0.11)
+
+Sur demande client ("la boutique est native à Odoo comme j'ai fait sur
+exocoms"), `shop.xml` pose désormais explicitement `hasLeftColumn=True`
+sur `website_sale.products` via un xpath sur le `t-set` natif — même
+technique que `boutique_sidebar` dans `exocoms_theme`.
+
+Différence assumée avec exocoms_theme : leur sidebar native est ensuite
+entièrement masquée par CSS (`.o_wsale_products_categories { display:
+none }`) au profit d'un méga-menu catégories statique custom
+(`dashboard_menu_boutiques_sidebar`, jamais réellement appelé dans leur
+code — template orphelin). Capsule House n'a pas ce méga-menu : la
+sidebar native reste donc VISIBLE et stylée (nouvelle section dans
+`odoo-integration.css` pour `.o_wsale_products_categories` et
+`.o_wsale_products_attributes`), car c'est elle qui porte le filtre
+"Surface (m²)" déjà attaché aux produits via
+`_attach_shop_filters_to_products()`.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

@@ -52,29 +52,14 @@
     flex-shrink: 0;
 }
 
-.ch-logo-mark {
+/* Badge/logo SVG validé par le client (voir header.xml) — remplace
+   l'ancienne version en CSS pur (dégradé + pseudo-éléments). */
+.ch-logo-mark-svg {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--ch-tan-1), var(--ch-panel) 70%);
-    position: relative;
     flex-shrink: 0;
+    display: block;
 }
-
-.ch-logo-mark::before,
-.ch-logo-mark::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--ch-terracotta);
-    transform: translateY(-50%);
-}
-
-.ch-logo-mark::before { left: 9px; }
-.ch-logo-mark::after { left: 18px; opacity: 0.5; }
 
 .ch-logo-text {
     font-family: var(--font-head);
@@ -183,6 +168,118 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* SÉLECTEUR DE LANGUE */
+.ch-lang-switcher {
+    position: relative;
+}
+
+.ch-lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-pill);
+    background: var(--ch-white);
+    color: var(--ch-ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ch-lang-toggle:hover {
+    border-color: var(--ch-ink);
+}
+
+.ch-lang-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 140px;
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.ch-lang-switcher:hover .ch-lang-menu,
+.ch-lang-switcher:focus-within .ch-lang-menu {
+    display: flex;
+}
+
+.ch-lang-item {
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--ch-ink);
+}
+
+.ch-lang-item:hover {
+    background: var(--ch-panel);
+    text-decoration: none;
+    color: var(--ch-ink);
+}
+
+.ch-lang-item.active {
+    color: var(--ch-terracotta);
+    font-weight: 700;
+}
+
+/* COMPTE CLIENT */
+.ch-account-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ch-account-toggle {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.ch-account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 170px;
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-md);
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.ch-account-dropdown:hover .ch-account-menu,
+.ch-account-dropdown:focus-within .ch-account-menu {
+    display: flex;
+}
+
+.ch-account-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--ch-ink);
+}
+
+.ch-account-menu a:hover {
+    background: var(--ch-panel);
+    text-decoration: none;
+    color: var(--ch-ink);
 }
 
 /* BURGER MOBILE */

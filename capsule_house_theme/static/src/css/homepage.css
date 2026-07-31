@@ -147,32 +147,13 @@
     overflow: hidden;
 }
 
-.ch-pod-shape {
-    width: 62%;
-    aspect-ratio: 16/9;
-    background: var(--ch-tan-1);
-    border-radius: var(--r-pill);
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 0 12%;
-    box-shadow: var(--shadow-md);
-}
-
-.ch-pod-circle-main {
-    width: 42%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--ch-highlight), var(--ch-salmon) 75%);
-    box-shadow: var(--shadow-sm);
-}
-
-.ch-pod-circle-small {
-    width: 18%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--ch-highlight), var(--ch-terracotta) 80%);
-    opacity: 0.85;
+/* Illustration du pod : SVG validé par le client (voir hero.xml), ombre au
+   sol déjà incluse dans le SVG lui-même (ellipse). Remplace l'ancienne
+   version en CSS pur (.ch-pod-shape / .ch-pod-circle-main / .ch-pod-circle-
+   small + pseudo-élément ::after pour l'ombre). */
+.ch-pod-illustration-svg {
+    display: block;
+    max-width: 420px;
 }
 
 .ch-hero-float-card {
@@ -248,6 +229,25 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--ch-terracotta);
+}
+
+.ch-hero-cart-shortcut {
+    position: absolute;
+    bottom: 8%;
+    right: 4%;
+    z-index: 2;
+    margin: 0;
+}
+
+.ch-hero-cart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 12px 20px;
+    box-shadow: var(--shadow-lg);
+    border: none;
+    cursor: pointer;
 }
 
 /* ── MEILLEURES VENTES ── */

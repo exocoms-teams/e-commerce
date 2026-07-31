@@ -63,6 +63,69 @@
 }
 
 /* ========================================
+   SIDEBAR BOUTIQUE — catégories + attributs (dont Surface m²)
+   ======================================== */
+/* NB : contrairement à exocoms_theme (qui masque entièrement cette
+   sidebar native au profit de son propre méga-menu catégories statique),
+   Capsule House n'a pas de méga-menu custom : cette sidebar reste
+   affichée (hasLeftColumn=True posé dans shop.xml) et doit rester
+   visible car c'est elle qui porte le filtre "Surface (m²)" attaché
+   via _attach_shop_filters_to_products(). On l'habille avec nos
+   variables --ch-* plutôt que de la cacher. */
+
+.o_wsale_products_categories,
+.o_wsale_products_attributes {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 16px;
+}
+
+.o_wsale_products_categories + .o_wsale_products_attributes {
+    margin-top: 16px;
+}
+
+.o_wsale_products_categories .list-group-item {
+    border: none;
+    padding: 8px 4px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--ch-ink);
+    background: transparent;
+}
+
+.o_wsale_products_categories .list-group-item:hover {
+    color: var(--ch-terracotta);
+}
+
+.o_wsale_products_categories .list-group-item.active,
+.o_wsale_products_categories .list-group-item.text-primary {
+    color: var(--ch-terracotta) !important;
+    font-weight: 700;
+}
+
+.o_wsale_products_attributes .accordion-header,
+.o_wsale_products_attributes .card-header {
+    font-family: var(--font-head);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ch-ink);
+}
+
+.o_wsale_products_attributes .form-check-label {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--ch-ink);
+}
+
+.o_wsale_products_attributes .form-check-input:checked {
+    background-color: var(--ch-terracotta);
+    border-color: var(--ch-terracotta);
+}
+
+/* ========================================
    FICHE PRODUIT — badges / prix / note
    ======================================== */
 
