@@ -66,6 +66,10 @@ THEME_ASSETS = {
     'homepage.css': 'capsule_house_theme/static/src/css/homepage.css',
     'shop.css': 'capsule_house_theme/static/src/css/shop.css',
     'odoo-integration.css': 'capsule_house_theme/static/src/css/odoo-integration.css',
+    # Ajouté en 19.0.1.0.35 pour la page /avis (voir models/avis.py) :
+    # jusque-là réservé/vide pour les futures pages internes (Services,
+    # Contact, À propos), désormais utilisé pour de vrai.
+    'pages.css': 'capsule_house_theme/static/src/css/pages.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
 }
 
@@ -80,6 +84,10 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.partial_featured_products',
     'capsule_house_theme.page_home',
     'capsule_house_theme.page_shop',
+    # Ajoutés en 19.0.1.0.35 (page /avis, voir models/avis.py).
+    'capsule_house_theme.avis_page',
+    'capsule_house_theme.avis_hero',
+    'capsule_house_theme.avis_content',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -760,6 +768,10 @@ def _setup_menus(env, website, categories):
     # filtrée (ex: domaine sur les prix barrés / une pricelist promo) une
     # fois le mécanisme de promotion du client confirmé.
     entries.append(('Promotions', '/shop?promotions=1', sequence))
+    sequence += 10
+    # Page /avis (capsule.house.avis, voir models/avis.py) : vrais avis
+    # clients, modérés avant publication.
+    entries.append(('Avis clients', '/avis', sequence))
 
     known_urls = {url for _, url, _ in entries}
     kept_menu_ids = set()

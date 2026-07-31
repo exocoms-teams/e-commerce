@@ -653,6 +653,73 @@ lieu de -50%), centre du dégradé recentré à `58% 32%` (au lieu de `64%
 30%`) pour laisser le halo déborder visiblement au-dessus/à gauche du
 bloc de texte, tout en gardant l'intensité concentrée en haut à droite.
 
+## Système d'avis clients réels (v19.0.1.0.35)
+
+Constat de départ : le badge de note du hero ("★ 4.9 · 2 340 avis" sur
+la maquette) ne s'affichait jamais sur le vrai site, car ce chiffre
+n'était qu'un paramètre système (`ir.config_parameter`) jamais
+renseigné — volontairement, pour ne rien fabriquer. Demande client :
+"va dans exocoms et crée donc cette page d'avis sur capsule house" —
+reproduire le vrai système d'avis observé sur `exocoms_theme`
+(`models/avis.py`, `controllers/main.py`, `views/pages/avis.xml`,
+etc.) plutôt que de se contenter d'un chiffre à saisir à la main.
+
+Adapté à Capsule House (pods, pas terminaux de paiement) et à nos
+conventions multi-site :
+
+- **`models/avis.py`** : nouveau modèle `capsule.house.avis` (nom,
+  note 1-5, commentaire, modèle acheté, date, statut
+  `pending`/`published`, `website_id` requis — scopé, obligatoire sur
+  cette base à ~17 sites). Contrainte `@api.constrains` sur la note
+  (1 à 5).
+- **`security/ir.model.access.csv`** : droits `base.group_user`
+  (modération backend, cohérent avec l'équipe centrale qui gère les
+  17 sites).
+- **`views/avis_backend.xml`** : liste (avec avis publiés grisés) +
+  formulaire + action + menu "Avis clients (Capsule House)" pour
+  modérer. Aucun avis n'est jamais publié automatiquement.
+- **`views/partials/avis_hero.xml`** + **`avis_content.xml`** +
+  **`views/pages/avis.xml`** : page publique `/avis` — note moyenne et
+  répartition par étoile calculées dynamiquement (jamais fabriquées :
+  "Aucun avis pour le moment" si `stats` est vide), filtres par note,
+  grille des avis **publiés uniquement**, formulaire de dépôt avec
+  sélecteur d'étoiles cliquable. Pas de photo de fond (contrairement à
+  exocoms_theme qui utilise `heroavis.jpg`) : on n'a pas de vraie photo
+  pour ce site, donc reprise du dégradé doux du thème plutôt que d'en
+  fabriquer une ou de réutiliser celle d'exocoms.
+- **`controllers/main.py`** :
+  - `/avis` (GET) : liste + stats + formulaire.
+  - `/avis/submit` (POST, CSRF) : crée un avis en statut `pending` —
+    jamais publié directement, un admin doit le valider. Routes
+    neuves (aucune collision possible avec un autre site de la base
+    mutualisée) : pas besoin de garde `_is_our_website`, même logique
+    que `/boutique` et `/newsletter/subscribe`.
+  - `homepage()` : le badge de note du hero utilise maintenant
+    `_get_avis_stats()` — note moyenne et nombre d'avis calculés sur
+    les avis **publiés** de notre site s'il y en a ; ne retombe sur
+    l'ancien réglage manuel (`ir.config_parameter`) que si aucun avis
+    n'est encore publié (utile si le client a une note vérifiée
+    ailleurs — Google, Trustpilot — mais pas encore de vrais avis sur
+    le site lui-même).
+- **`_setup_menus`** : nouvelle entrée "Avis clients" (`/avis`) dans
+  la nav.
+- **`static/src/css/pages.css`** : jusque-là réservé/vide pour les
+  futures pages internes, mis en service ici (classes `.ch-avis-*`
+  avec notre palette `--ch-*`), enregistré dans `THEME_ASSETS`.
+
+**Volontairement omis** par rapport à `exocoms_theme` : la traduction
+automatique des commentaires via l'API publique (non officielle) de
+Google Translate (`models/avis.py` côté exocoms) — hors scope de cette
+demande, notre site n'étant pas bilingue pour l'instant ; pourrait être
+ajouté plus tard si besoin.
+
+**Leçon technique** : un commentaire XML (`<!-- -->`) ne peut jamais
+contenir un double tiret `--`, y compris dans des noms de variables
+CSS comme `--ch-bg-soft` — ça casse le parsing XML de toute la vue.
+Erreur commise puis corrigée dans `avis_hero.xml` pendant ce
+développement (repérée par une validation XML systématique de tous
+les fichiers avant livraison, pas seulement au moment du déploiement).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

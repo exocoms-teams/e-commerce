@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.34',
+    'version': '19.0.1.0.35',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mesure : Services, Contact, À propos.
+Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à venir au fur et à mesure : Services, Contact, À propos.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -46,6 +46,13 @@ Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mes
         'views/partials/featured_products.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
+        # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis
+        # soumis par les clients, modérés avant publication. Vues backend
+        # de modération d'abord, puis partiels/page frontend.
+        'views/avis_backend.xml',
+        'views/partials/avis_hero.xml',
+        'views/partials/avis_content.xml',
+        'views/pages/avis.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset
