@@ -678,4 +678,165 @@
             </style>
         </xpath>
     </template>
+    <!-- =====================================================================
+         PARTIE 5 : DESIGN PREMIUM DU PANIER / CHECKOUT (DARK MODE)
+         ===================================================================== -->
+
+    <template id="custom_cart_premium_design" inherit_id="website_sale.cart" name="Cart Premium Design">
+        <xpath expr="//*[@id='wrap']" position="inside">
+            <style>
+                <![CDATA[
+                /* --- A. FOND DE LA PAGE ET TEXTES GLOBAUX --- */
+                #wrapwrap, main, .oe_website_sale {
+                    background-color: #111827 !important;
+                    color: #E5E7EB !important;
+                }
+                
+                .oe_website_sale h1, 
+                .oe_website_sale h3, 
+                .oe_website_sale h4 {
+                    color: #F9FAFB !important;
+                    font-weight: 800 !important;
+                    letter-spacing: -0.5px;
+                }
+
+                /* --- B. FIL D'ARIANE (Order > Address > Payment) --- */
+                .oe_website_sale .breadcrumb .breadcrumb-item a {
+                    color: #10B981 !important;
+                    font-weight: 600 !important;
+                    text-decoration: none !important;
+                }
+                .oe_website_sale .breadcrumb .breadcrumb-item.active {
+                    color: #9CA3AF !important;
+                }
+                .oe_website_sale .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+                    color: #6B7280 !important;
+                }
+
+                /* --- C. LIGNES DE PRODUITS (Colonne de gauche) --- */
+                .oe_website_sale .o_cart_product {
+                    background-color: transparent !important;
+                }
+                .oe_website_sale .o_cart_product h6 a {
+                    color: #F9FAFB !important;
+                    font-weight: 700 !important;
+                    text-decoration: none !important;
+                }
+                .oe_website_sale .o_cart_product .text-muted {
+                    color: #9CA3AF !important;
+                }
+                .oe_website_sale .js_delete_product, 
+                .oe_website_sale .js_save_for_later {
+                    color: #6B7280 !important;
+                    transition: color 0.2s ease;
+                }
+                .oe_website_sale .js_delete_product:hover { color: #EF4444 !important; }
+                .oe_website_sale .js_save_for_later:hover { color: #10B981 !important; }
+                
+                .oe_website_sale .oe_price {
+                    color: #10B981 !important;
+                    font-weight: 800 !important;
+                }
+
+                /* --- D. SÉLECTEUR DE QUANTITÉ --- */
+                .oe_website_sale .css_quantity .btn {
+                    background-color: #1F2937 !important;
+                    border-color: #374151 !important;
+                    color: #10B981 !important;
+                    transition: background-color 0.2s;
+                }
+                .oe_website_sale .css_quantity .btn:hover { background-color: #374151 !important; }
+                .oe_website_sale .css_quantity input {
+                    background-color: #111827 !important;
+                    border-color: #374151 !important;
+                    color: #F9FAFB !important;
+                    font-weight: 600 !important;
+                }
+
+                /* --- E. BOÎTE DE RÉSUMÉ (Droite - Le composant Bento) --- */
+                #o_cart_summary, .oe_website_sale .card {
+                    background-color: #1F2937 !important;
+                    border: 1px solid #374151 !important;
+                    border-radius: 16px !important;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+                    color: #E5E7EB !important;
+                }
+                #o_cart_summary .border-bottom,
+                #o_cart_summary .border-top {
+                    border-color: #374151 !important;
+                }
+                #o_cart_summary .text-muted { color: #9CA3AF !important; }
+                #o_cart_summary strong { color: #F9FAFB !important; }
+                #o_cart_summary .text-xl, 
+                #o_cart_summary .oe_price {
+                    color: #10B981 !important;
+                    font-weight: 800 !important;
+                }
+
+                /* --- F. CHAMP CODE PROMO --- */
+                .oe_website_sale form .form-control {
+                    background-color: #111827 !important;
+                    border: 1px solid #374151 !important;
+                    color: #F9FAFB !important;
+                    border-radius: 8px !important;
+                }
+                .oe_website_sale form .form-control::placeholder { color: #6B7280 !important; }
+                .oe_website_sale form .btn-secondary {
+                    background-color: #374151 !important;
+                    border-color: #374151 !important;
+                    color: #F9FAFB !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                }
+                .oe_website_sale form .btn-secondary:hover { background-color: #4B5563 !important; }
+
+                /* --- G. BOUTON CHECKOUT --- */
+                .oe_website_sale a[href*="/shop/checkout"],
+                #o_cart_summary .btn-primary {
+                    background-color: #10B981 !important;
+                    border-color: #10B981 !important;
+                    color: #ffffff !important;
+                    border-radius: 30px !important;
+                    font-weight: 700 !important;
+                    padding: 12px 30px !important;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+                    display: flex !important;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .oe_website_sale a[href*="/shop/checkout"]:hover,
+                #o_cart_summary .btn-primary:hover {
+                    background-color: #059669 !important;
+                    border-color: #059669 !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+                }
+
+                /* --- H. LIENT CONTINUE SHOPPING --- */
+                .oe_website_sale .btn-link {
+                    color: #10B981 !important;
+                    text-decoration: none !important;
+                    font-weight: 600 !important;
+                }
+                .oe_website_sale .btn-link:hover { color: #059669 !important; }
+
+                /* --- I. ALERTE ALLERGÈNES (Adaptation Dark Mode) --- */
+                .oe_website_sale .alert-warning {
+                    background-color: rgba(245, 158, 11, 0.1) !important;
+                    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+                    color: #FCD34D !important; /* Jaune/Ambre lisible sur fond sombre */
+                    border-radius: 12px !important;
+                }
+                
+                /* Masquer les éventuels séparateurs orphelins (le "or" gris) */
+                .oe_website_sale .text-muted.text-center.my-3 {
+                    opacity: 0.5;
+                }
+                ]]>
+            </style>
+        </xpath>
+    </template>
 </odoo>
