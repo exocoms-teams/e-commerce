@@ -132,6 +132,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* overflow visible (pas hidden) : le halo ci-dessous doit pouvoir
+       déborder du cadre, comme sur la maquette. */
+    overflow: visible;
+}
+
+/* Halo orangé/pêche flouté derrière l'illustration, présent sur la
+   maquette de référence mais absent du rendu initial (jamais codé —
+   pas un bug de données, juste un effet purement décoratif oublié).
+   Couleurs reprises de la palette existante (--ch-terracotta /
+   --ch-salmon), aucune nouvelle donnée requise. */
+.ch-hero-visual::before {
+    content: "";
+    position: absolute;
+    inset: -18% -12%;
+    background: radial-gradient(closest-side, var(--ch-terracotta) 0%, var(--ch-salmon) 45%, transparent 72%);
+    opacity: 0.32;
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .ch-hero-illustration {
@@ -145,6 +164,7 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 /* Illustration du pod : SVG validé par le client (voir hero.xml), ombre au
@@ -169,6 +189,7 @@
     max-width: 220px;
     top: 12%;
     right: -4%;
+    z-index: 2;
 }
 
 .ch-hero-float-card-2 {

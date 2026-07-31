@@ -502,6 +502,26 @@ reprises telles quelles depuis l'état actuellement appliqué sur le site
 Nouvelle fonction `_setup_shop_display(env, website)`, idempotente
 (write uniquement si une valeur diffère de celle voulue).
 
+### Halo orange derrière l'illustration hero (v19.0.1.0.23)
+
+Retour client, à partir d'une comparaison capture maquette / capture
+site réel : "et cla couleur orange en background" — sur la maquette,
+un halo orangé/pêche flouté déborde derrière la carte de
+l'illustration du hero. Absent du rendu réel non pas à cause d'une
+donnée manquante (contrairement aux badges/cartes flottantes traités
+juste avant, qui dépendent de vrais produits), mais parce que cet
+effet purement visuel n'avait tout simplement jamais été codé.
+
+Correctif 100% CSS (`static/src/css/homepage.css`), aucun template ni
+donnée touchés :
+- `.ch-hero-visual` passé en `overflow: visible` (le halo doit pouvoir
+  déborder du cadre).
+- `.ch-hero-visual::before` : `radial-gradient` flouté (`filter:
+  blur(60px)`, `opacity: 0.32`), couleurs reprises de la palette
+  existante (`--ch-terracotta` / `--ch-salmon`), `z-index: 0`.
+- `.ch-hero-illustration` (`z-index: 1`) et `.ch-hero-float-card`
+  (`z-index: 2`) remontés pour rester visibles au-dessus du halo.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
