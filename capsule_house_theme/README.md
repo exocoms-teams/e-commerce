@@ -589,6 +589,19 @@ encore agrandi (`top: -30%`, `right: -35%`, `bottom: -12%`, `left:
 `blur(55px)` (au lieu de 35px), `opacity: 0.42` (au lieu de 0.6, pour
 une texture plus douce/pastel).
 
+Retour client sur cette v.28, avec 2 captures comparatives : "ne
+vois-tu pas la grandeur du halo du modèle par rapport au mien, je veux
+que ce soit exactement pareil" — le halo du modèle occupe une zone
+nettement plus grande. **Correctif v19.0.1.0.29** : inset quasi doublé
+(`top: -55%`, `right: -65%`, `bottom: -20%`, `left: -15%`), fondu à
+28%/88%, `blur(60px)`, `opacity: 0.45`.
+
+⚠️ **Cette itération n'a PAS pu être vérifiée en direct** avant d'être
+committée : Odoo.sh renvoyait une erreur de plateforme ("Odoo.sh |
+Platform Error") sur toutes les tentatives d'accès au site au moment
+du fix. Valeurs estimées par comparaison visuelle des 2 captures
+client, à confirmer une fois le site de nouveau accessible.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
