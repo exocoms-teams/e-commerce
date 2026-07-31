@@ -56,7 +56,8 @@
 
 <!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
-        <xpath expr="." position="inside">
+        <!-- CIBLAGE PRÉCIS : Juste après le tableau des totaux pour éviter la duplication AJAX -->
+        <xpath expr="//div[@id='cart_total']" position="after">
             
             <!-- CSS dédié à l'alerte pour garantir la visibilité partout -->
             <style>
@@ -81,7 +82,8 @@
 
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
             
-            <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-0 text-start" style="font-size: 0.85rem;" role="alert">
+            <!-- Affichage conditionnel -->
+            <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-3 text-start" style="font-size: 0.85rem;" role="alert">
                 <div class="d-flex align-items-center mb-1">
                     <i class="fa fa-exclamation-triangle me-2"/> 
                     <strong>RAPPEL SANTÉ</strong>
