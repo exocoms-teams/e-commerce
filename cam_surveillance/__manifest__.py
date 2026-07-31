@@ -8,8 +8,9 @@
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale', 'monetique_theme', 'stock'],
     'data': [
-        'data/categories.xml',
         'data/website_data.xml',
+        'data/categories.xml',
+        'data/attributs.xml',
         'data/products.xml',
         'views/layout.xml',
         'views/home.xml',
