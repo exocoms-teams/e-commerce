@@ -416,6 +416,26 @@ même principe de prudence déjà appliqué ailleurs dans ce module pour
 `product.public.category.website_id` ou `website.pricelist_id`
 (feature-detect avant utilisation).
 
+### Indicateur "page active" absent sur Accueil (v19.0.1.0.19)
+
+Constaté en conditions réelles (capture d'écran) : sur la catégorie
+"Studio", le lien "Studio" du header s'affiche bien en pastille claire
+(indicateur natif de page active) ; sur l'accueil, "Accueil" ne
+s'allume jamais.
+
+Cause : le menu "Accueil" pointait vers `/`, qui fait un redirect natif
+Odoo vers `website.homepage_url` (= `/capsule-house/home`, posé par
+`_setup_homepage()`). L'URL réellement affichée dans le navigateur une
+fois sur l'accueil est donc `/capsule-house/home`, jamais `/` — et le
+surlignage natif du header (`#top_menu`) compare l'URL du menu à l'URL
+réelle de la page, donc ne correspondait jamais pour Accueil.
+
+Fix : `_setup_menus()` pointe désormais le menu "Accueil" directement
+vers `HOMEPAGE_ROUTE` au lieu de `/` — l'ancien menu (url `/`) est
+automatiquement nettoyé par la logique `stray_menus` déjà existante.
+Bénéfice secondaire : un aller-retour de redirect en moins au clic sur
+"Accueil".
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

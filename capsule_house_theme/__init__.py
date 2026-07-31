@@ -666,15 +666,29 @@ def _setup_shop_categories(env, website):
 def _setup_menus(env, website, categories):
     """Crée le menu du site, scopé à notre website_id.
 
-    Reprend la nav de la maquette de référence : Accueil (racine, masquée
-    du header qui gère son propre logo-lien), Tous les pods (/shop), une
-    entrée par catégorie boutique, puis Promotions. get_or_create par (url,
-    website_id) pour rester idempotent et ne jamais dupliquer une entrée au
-    fil des rejeux du hook / du cron.
+    Reprend la nav de la maquette de référence : Accueil, Tous les pods
+    (/shop), une entrée par catégorie boutique, puis Promotions.
+    get_or_create par (url, website_id) pour rester idempotent et ne
+    jamais dupliquer une entrée au fil des rejeux du hook / du cron.
+
+    Accueil pointe directement vers HOMEPAGE_ROUTE
+    (`/capsule-house/home`), PAS vers `/` — bug corrigé, constaté en
+    conditions réelles (capture d'écran : "Studio" avait bien son
+    indicateur de page active, mais jamais "Accueil"). Cause : `/`
+    fait un redirect natif Odoo vers `website.homepage_url`
+    (= HOMEPAGE_ROUTE, posé par `_setup_homepage()`), donc l'URL
+    réellement affichée dans le navigateur une fois sur l'accueil est
+    `/capsule-house/home`, jamais `/`. Le surlignage natif "page
+    active" du header (`#top_menu`) compare l'URL du menu à l'URL
+    réelle de la page — avec un menu Accueil sur `/`, la comparaison ne
+    correspond donc jamais. En pointant directement sur
+    HOMEPAGE_ROUTE, la comparaison est exacte et l'indicateur
+    s'affiche, en plus d'éviter un aller-retour de redirect inutile
+    au clic.
     """
     Menu = env['website.menu'].sudo()
     entries = [
-        ('Accueil', '/', 10),
+        ('Accueil', HOMEPAGE_ROUTE, 10),
         ('Tous les pods', '/shop', 20),
     ]
     sequence = 30
