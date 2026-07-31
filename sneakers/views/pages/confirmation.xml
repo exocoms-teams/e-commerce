@@ -69,6 +69,26 @@
                                 <strong t-out="transaction.provider_id.name"/>
                             </div>
 
+                            <!-- Wire Transfer Instructions -->
+                            <t t-if="is_wire_transfer">
+                                <div class="sn-wire-instructions">
+                                    <div class="sn-wire-header">
+                                        <i class="fa fa-university"></i>
+                                        <h4>Wire Transfer Instructions</h4>
+                                    </div>
+                                    <p>Complete your payment by transferring the total amount to the bank account below. Your order will be processed once payment is confirmed.</p>
+                                    <table class="sn-wire-table">
+                                        <tr><td>Bank Name</td><td><strong t-out="company.bank_ids[:1].bank_name or 'N/A'"/></td></tr>
+                                        <tr><td>Account Holder</td><td><strong t-out="company.bank_ids[:1].acc_holder_name or company.name"/></td></tr>
+                                        <tr><td>Account Number</td><td><strong t-out="company.bank_ids[:1].acc_number or 'N/A'"/></td></tr>
+                                        <tr><td>Routing Number</td><td><strong t-out="company.bank_ids[:1].bic or 'N/A'"/></td></tr>
+                                        <tr><td>Reference</td><td><strong t-out="order.name"/></td></tr>
+                                        <tr class="sn-wire-total"><td>Amount Due</td><td><strong t-out="'%.2f %s' % (order.amount_total, order.currency_id.name)"/></td></tr>
+                                    </table>
+                                    <p class="sn-wire-note"><i class="fa fa-info-circle"></i> Please include the reference in your transfer description so we can match your payment.</p>
+                                </div>
+                            </t>
+
                             <!-- ORDER DETAILS -->
                             <div class="sn-order-summary">
 

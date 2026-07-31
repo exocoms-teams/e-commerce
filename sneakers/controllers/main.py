@@ -769,14 +769,19 @@ class SneakersController(http.Controller):
 
         # Fetch transaction for payment info
         transaction = request.env['payment.transaction'].sudo().browse()
+        is_wire_transfer = False
         if order and order.exists():
             transaction = request.env['payment.transaction'].sudo().search([
                 ('sale_order_ids', 'in', order.id),
             ], limit=1)
+            if transaction and transaction.exists() and transaction.provider_id.code == 'manual':
+                is_wire_transfer = True
 
         values = {
             'order': order,
             'transaction': transaction,
+            'is_wire_transfer': is_wire_transfer,
+            'company': request.env.company,
         }
         return request.render('sneakers.page_confirmation', values)
 
