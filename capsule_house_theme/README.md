@@ -602,6 +602,16 @@ Platform Error") sur toutes les tentatives d'accès au site au moment
 du fix. Valeurs estimées par comparaison visuelle des 2 captures
 client, à confirmer une fois le site de nouveau accessible.
 
+Retour client sur cette v.29 : "comment l'autre occupe l'écran par
+rapport au mien" — en recadrant la capture live exactement comme la
+maquette (colonne visuelle seule), le halo du modèle lave quasiment
+tout le fond de la carte (fondu ambiant très large, visible même dans
+le coin opposé), alors que le nôtre retombait au blanc pur dès le
+milieu du cadre. **Correctif v19.0.1.0.30** (testé en direct, capture
+recadrée à l'identique du modèle pour comparaison directe) : inset
+encore agrandi sur les 4 côtés (`top: -70%`, `right: -80%`, `left:
+-60%`, `bottom: -60%`), fondu à 22%/78%, `blur(70px)`, `opacity: 0.4`.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
