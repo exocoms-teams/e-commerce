@@ -913,9 +913,12 @@ class SneakersController(http.Controller):
             if not email or not password:
                 return request.render('sneakers.page_login', {'error': 'Email and password are required.', 'email': email})
 
-            uid = request.session.authenticate(request.db, email, password)
-            if uid:
-                return request.redirect(redirect)
+            try:
+                uid = request.session.authenticate(request.db, email, password)
+                if uid:
+                    return request.redirect(redirect)
+            except Exception:
+                pass
             return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
 
         return request.render('sneakers.page_login', {})
@@ -927,9 +930,12 @@ class SneakersController(http.Controller):
             email = kwargs.get('login', '').strip()
             password = kwargs.get('password', '')
             if email and password:
-                uid = request.session.authenticate(request.db, email, password)
-                if uid:
-                    return request.redirect(redirect or '/my/account')
+                try:
+                    uid = request.session.authenticate(request.db, email, password)
+                    if uid:
+                        return request.redirect(redirect or '/my/account')
+                except Exception:
+                    pass
             return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
         return request.redirect('/my/login')
 
