@@ -15,7 +15,7 @@ class MandatAdministratifController(http.Controller):
                 csrf=False)
     def mandat_administratif_process(self, **post):
         """Traiter les données postées par le formulaire de redirection et
-        mettre la transaction en attente (règlement via Chorus Pro)."""
+        mettre la transaction en attente."""
         _logger.info(
             "Mandat administratif : données reçues :\n%s", pprint.pformat(post)
         )
@@ -25,12 +25,12 @@ class MandatAdministratifController(http.Controller):
         if reference:
             tx = request.env['payment.transaction'].sudo().search([('reference', '=', reference)], limit=1)
             if tx:
-                post.update({
+                # Odoo 19 utilise _handle_feedback_data pour traiter les retours de paiement
+                payment_data = {
+                    'reference': reference,
                     'amount': tx.amount,
                     'currency': tx.currency_id.name,
-                })
+                }
+                tx._handle_feedback_data('mandat_administratif', payment_data)
 
-        request.env['payment.transaction'].sudo()._process(
-            'mandat_administratif', post
-        )
         return request.redirect('/payment/status')
