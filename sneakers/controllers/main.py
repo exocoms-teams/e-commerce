@@ -1,5 +1,6 @@
 from odoo import http, fields
 from odoo.http import request
+from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 def _is_module_installed(module_name):
@@ -10,7 +11,7 @@ def _is_module_installed(module_name):
     return bool(mod)
 
 
-class SneakersController(http.Controller):
+class SneakersController(WebsiteSale):
 
     def _get_product_ratings(self, products):
 
