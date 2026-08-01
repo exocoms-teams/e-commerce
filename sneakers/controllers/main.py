@@ -423,7 +423,7 @@ class SneakersController(WebsiteSale):
 
         if product_variant:
 
-            stock_qty = product_variant.qty_available or 0
+            stock_qty = getattr(product_variant, 'qty_available', 0) or 0
 
 
             if product.website_availability == 'always':
@@ -557,57 +557,7 @@ class SneakersController(WebsiteSale):
             values
         )
 
-    @http.route('/cart', type='http', auth='public', website=True, methods=['GET', 'POST'])
-    def cart(self, **kwargs):
-
-        order = request.cart
-        delivery_installed = _is_module_installed('delivery')
-
-        delivery_methods = []
-        if delivery_installed:
-            if request.httprequest.method == 'POST':
-                carrier_id = kwargs.get('carrier_id')
-                if carrier_id and order:
-                    carrier = request.env['delivery.carrier'].sudo().browse(int(carrier_id))
-                    if carrier.exists():
-                        order.sudo().carrier_id = carrier.id
-
-            try:
-                delivery_methods = request.env['delivery.carrier'].sudo().search([
-                    ('website_published', '=', True),
-                    ('company_id', 'in', [request.env.company.id, False]),
-                ])
-            except Exception:
-                delivery_methods = request.env['delivery.carrier'].sudo().search([
-                    ('company_id', 'in', [request.env.company.id, False]),
-                    ('active', '=', True),
-                ])
-
-        # Compute delivery price safely
-        delivery_price = 0
-        if delivery_installed and order and order.carrier_id:
-            try:
-                order.sudo()._compute_delivery_price()
-                order.sudo()._compute_amounts()
-                delivery_price = order.delivery_price
-            except Exception:
-                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
-
-        order_total = order.amount_total if order else 0
-        if delivery_price and order_total:
-            order_total += delivery_price
-
-        values = {
-            'order': order,
-            'delivery_methods': delivery_methods,
-            'delivery_price': delivery_price,
-            'order_total': order_total,
-        }
-
-        return request.render(
-            'sneakers.page_cart',
-            values
-        )
+    # ponytail: removed custom /shop/cart — Odoo's WebsiteSaleCart handles it
 
     @http.route('/get-product-variant', type='jsonrpc', auth='public', website=True)
     def get_product_variant(self, template_id, attribute_value_ids):
@@ -627,8 +577,8 @@ class SneakersController(WebsiteSale):
             if set(selected_ptavs.ids).issubset(set(variant_ptavs.ids)):
                 return {
                     "product_id": variant.id,
-                    "qty_available": variant.qty_available,
-                    "available": variant.qty_available > 0
+                    "qty_available": getattr(variant, 'qty_available', 0),
+                    "available": getattr(variant, 'qty_available', 0) > 0
                 
                 }
 
@@ -638,148 +588,7 @@ class SneakersController(WebsiteSale):
             "available": False,
         }
 
-    @http.route('/checkout', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
-    def checkout(self, **kwargs):
-        order = request.cart
-
-        if request.httprequest.method == 'POST' and order:
-            # ponytail: step 1 saves address + delivery only, step 2 is /payment
-            partner = order.partner_id
-            vals = {}
-            if kwargs.get('name'):
-                vals['name'] = kwargs['name']
-            if kwargs.get('email'):
-                vals['email'] = kwargs['email']
-            if kwargs.get('phone'):
-                vals['phone'] = kwargs['phone']
-            if kwargs.get('street'):
-                vals['street'] = kwargs['street']
-            if kwargs.get('city'):
-                vals['city'] = kwargs['city']
-            if kwargs.get('zip'):
-                vals['zip'] = kwargs['zip']
-            if kwargs.get('country_id'):
-                vals['country_id'] = int(kwargs['country_id'])
-            if vals:
-                partner.sudo().write(vals)
-
-            if kwargs.get('carrier_id'):
-                carrier = request.env['delivery.carrier'].sudo().browse(int(kwargs['carrier_id']))
-                if carrier.exists():
-                    order.sudo().carrier_id = carrier.id
-
-            return request.redirect('/payment')
-
-        # Delivery methods (soft dep on delivery module)
-        delivery_installed = _is_module_installed('delivery')
-        delivery_methods = []
-        if delivery_installed and order:
-            try:
-                delivery_methods = request.env['delivery.carrier'].sudo().search([
-                    ('website_published', '=', True),
-                    ('company_id', 'in', [request.env.company.id, False]),
-                ])
-            except Exception:
-                pass
-
-        # Delivery price
-        delivery_price = 0
-        if delivery_installed and order and order.carrier_id:
-            try:
-                order.sudo()._compute_delivery_price()
-                order.sudo()._compute_amounts()
-                delivery_price = order.delivery_price
-            except Exception:
-                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
-
-        countries = request.env['res.country'].sudo().search([])
-
-        order_lines = order.order_line if order else request.env['sale.order.line'].sudo().browse()
-        subtotal = order.amount_untaxed if order else 0
-        tax = order.amount_tax if order else 0
-        total = order.amount_total if order else 0
-        if delivery_price and order:
-            total += delivery_price
-
-        partner = order.partner_id if order else request.env.user.partner_id
-
-        values = {
-            'order': order,
-            'order_lines': order_lines,
-            'delivery_methods': delivery_methods,
-            'delivery_price': delivery_price,
-            'countries': countries,
-            'partner': partner,
-            'subtotal': subtotal,
-            'tax': tax,
-            'total': total,
-        }
-        return request.render('sneakers.page_checkout', values)
-
-    @http.route('/payment', type='http', auth='public', website=True, sitemap=True, methods=['GET', 'POST'])
-    def payment(self, **kwargs):
-        order = request.cart
-
-        if request.httprequest.method == 'POST' and order:
-            # ponytail: step 2 — create transaction + confirm order
-            payment_provider_id = kwargs.get('payment_provider_id')
-            if payment_provider_id:
-                provider = request.env['payment.provider'].sudo().browse(int(payment_provider_id))
-                if provider.exists():
-                    payment_method = provider.payment_method_ids[:1]
-                    request.env['payment.transaction'].sudo().create({
-                        'provider_id': provider.id,
-                        'payment_method_id': payment_method.id if payment_method else False,
-                        'sale_order_ids': [(4, order.id)],
-                        'partner_id': order.partner_id.id,
-                        'amount': order.amount_total,
-                        'currency_id': order.currency_id.id,
-                        'reference': 'SNEAKERS-%s-%s' % (order.id, fields.Datetime.now().strftime('%Y%m%d%H%M%S')),
-                    })
-                    order.sudo().action_confirm()
-                    return request.redirect('/confirmation?order_id=%d' % order.id)
-
-            return request.redirect('/payment?error=select_method')
-
-        # GET — show payment selection
-        if not order:
-            return request.redirect('/shop')
-
-        # ponytail: removed website_id filter — Odoo 19 Wire Transfer wasn't visible
-        payment_providers = request.env['payment.provider'].sudo().search([
-            ('state', 'in', ['enabled', 'test']),
-        ])
-
-        delivery_price = 0
-        if order.carrier_id:
-            try:
-                order.sudo()._compute_delivery_price()
-                order.sudo()._compute_amounts()
-                delivery_price = order.delivery_price
-            except Exception:
-                delivery_price = order.carrier_id.fixed_price if order.carrier_id else 0
-
-        order_lines = order.order_line
-        subtotal = order.amount_untaxed
-        tax = order.amount_tax
-        total = order.amount_total
-        if delivery_price:
-            total += delivery_price
-
-        partner = order.partner_id
-
-        values = {
-            'order': order,
-            'order_lines': order_lines,
-            'payment_providers': payment_providers,
-            'delivery_price': delivery_price,
-            'partner': partner,
-            'subtotal': subtotal,
-            'tax': tax,
-            'total': total,
-            'error': kwargs.get('error', ''),
-        }
-        return request.render('sneakers.page_payment', values)
+    # ponytail: removed custom /checkout and /payment — Odoo's built-in handles them
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
@@ -787,7 +596,7 @@ class SneakersController(WebsiteSale):
         order_id = kwargs.get('order_id')
         if order_id:
             order = request.env['sale.order'].sudo().browse(int(order_id))
-            if not order.exists() or order.state != 'sale':
+            if not order.exists():
                 order = request.env['sale.order'].sudo().browse()
 
         # Fallback: find last confirmed order for current partner
@@ -795,8 +604,8 @@ class SneakersController(WebsiteSale):
             partner = request.env.user.partner_id
             order = request.env['sale.order'].sudo().search([
                 ('partner_id', '=', partner.id),
-                ('state', '=', 'sale'),
-            ], limit=1, order='confirmation_date desc')
+                ('state', 'in', ['sale', 'sent']),
+            ], limit=1, order='date_order desc')
 
         # Fetch transaction for payment info
         transaction = request.env['payment.transaction'].sudo().browse()
@@ -815,6 +624,12 @@ class SneakersController(WebsiteSale):
             'company': request.env.company,
         }
         return request.render('sneakers.page_confirmation', values)
+
+    def shop_payment_confirmation(self, **post):
+        sale_order_id = request.session.get('sale_last_order_id')
+        if sale_order_id:
+            return request.redirect('/confirmation?order_id=%d' % sale_order_id)
+        return request.redirect('/shop')
 
     @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
     def wishlist(self, **kwargs):
@@ -935,13 +750,17 @@ class SneakersController(WebsiteSale):
                     'company_ids': [(6, 0, [company.id])],
                 })
 
-                # Log in
-                uid = request.session.authenticate(request.db, email, password)
-                if uid:
+                # Log in (Odoo 19: authenticate takes (env, credential))
+                credential = {'login': email, 'password': password, 'type': 'password'}
+                auth_info = request.session.authenticate(request.env, credential)
+                if auth_info and auth_info.get('uid'):
                     return request.redirect('/my/account')
                 return request.render('sneakers.page_register', {'error': 'Account created but login failed. Please sign in.'})
             except Exception as e:
-                return request.render('sneakers.page_register', {'error': 'Registration failed. Please try again.'})
+                import logging
+                _logger = logging.getLogger(__name__)
+                _logger.error("Registration failed: %s", str(e))
+                return request.render('sneakers.page_register', {'error': 'Registration failed: %s' % str(e)})
 
         return request.render('sneakers.page_register', {})
 
@@ -955,8 +774,9 @@ class SneakersController(WebsiteSale):
                 return request.render('sneakers.page_login', {'error': 'Email and password are required.', 'email': email})
 
             try:
-                uid = request.session.authenticate(request.db, email, password)
-                if uid:
+                credential = {'login': email, 'password': password, 'type': 'password'}
+                auth_info = request.session.authenticate(request.env, credential)
+                if auth_info and auth_info.get('uid'):
                     return request.redirect(redirect)
             except Exception:
                 pass
@@ -972,8 +792,9 @@ class SneakersController(WebsiteSale):
             password = kwargs.get('password', '')
             if email and password:
                 try:
-                    uid = request.session.authenticate(request.db, email, password)
-                    if uid:
+                    credential = {'login': email, 'password': password, 'type': 'password'}
+                    auth_info = request.session.authenticate(request.env, credential)
+                    if auth_info and auth_info.get('uid'):
                         return request.redirect(redirect or '/my/account')
                 except Exception:
                     pass
@@ -1022,7 +843,7 @@ class SneakersController(WebsiteSale):
     def my_orders(self, **kwargs):
         orders = request.env['sale.order'].sudo().search([
             ('partner_id', '=', request.env.user.partner_id.id),
-            ('state', 'in', ['sale', 'done']),
+            ('state', 'in', ['sale', 'done', 'sent']),
         ], order='date_order desc')
 
         return request.render('sneakers.page_orders', {

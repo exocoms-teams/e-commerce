@@ -55,7 +55,12 @@
                                                 </div>
                                                 <span class="sn-order-status"
                                                       t-att-class="'sn-status-%s' % order.state">
-                                                    <t t-esc="order.state_label"/>
+                                                    <t t-if="order.state == 'draft'">Quotation</t>
+                                                    <t t-elif="order.state == 'sent'">Quotation Sent</t>
+                                                    <t t-elif="order.state == 'sale'">Sales Order</t>
+                                                    <t t-elif="order.state == 'done'">Locked</t>
+                                                    <t t-elif="order.state == 'cancel'">Cancelled</t>
+                                                    <t t-else="">Unknown</t>
                                                 </span>
                                             </div>
 

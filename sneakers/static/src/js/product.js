@@ -128,7 +128,7 @@ function openVariantModal(templateId, triggerBtn, info) {
     });
 
     // Reset qty
-    modal.querySelector('.sn-variant-modal-qty-input').value = 1;
+    modal.querySelector('.sn-variant-qty-input').value = 1;
 
     // Store template id
     modal.dataset.templateId = templateId;
@@ -142,7 +142,7 @@ function openVariantModal(templateId, triggerBtn, info) {
     addBtn.onclick = function() {
         var selectedSize = sizeContainer.querySelector('.sn-variant-modal-size-btn.active');
         var selectedColor = colorContainer.querySelector('.sn-variant-modal-color-dot.active');
-        var qty = parseInt(modal.querySelector('.sn-variant-modal-qty-input').value, 10) || 1;
+        var qty = parseInt(modal.querySelector('.sn-variant-qty-input').value, 10) || 1;
 
         var attributeIds = [];
         if (selectedColor) attributeIds.push(parseInt(selectedColor.dataset.colorId));
@@ -249,7 +249,7 @@ document.addEventListener('click', function(e) {
     if (!btn) return;
     var modal = document.getElementById('sn-variant-modal');
     if (!modal) return;
-    var input = modal.querySelector('.sn-variant-modal-qty-input');
+    var input = modal.querySelector('.sn-variant-qty-input');
     var val = parseInt(input.value, 10) || 1;
     if (btn.dataset.action === 'increase') {
         input.value = val + 1;
