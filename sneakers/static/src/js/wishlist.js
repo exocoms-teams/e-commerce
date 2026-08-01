@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
 
     var wishlistSection = document.querySelector(".sn-wishlist");
     if (!wishlistSection) return;
@@ -83,7 +83,7 @@
                         '<i class="fa fa-heart-o"></i>' +
                         '<h3>Votre wishlist est vide</h3>' +
                         '<p>Explorez notre catalogue et sauvegardez vos sneakers préférées.</p>' +
-                        '<a href="/shop-sneakers" class="sn-btn-primary">Parcourir le catalogue</a>' +
+                        '<a href="/shop" class="sn-btn-primary">Parcourir le catalogue</a>' +
                     '</div>';
             }
         }

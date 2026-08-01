@@ -37,7 +37,7 @@ initAddToCartCards();
 function initAddToCartCards() {
 
     var buttons = document.querySelectorAll(
-        ".sn-product-card .sn-add-cart"
+        ".sn-product-card .sn-quick-add-btn"
     );
 
     buttons.forEach(function(btn){

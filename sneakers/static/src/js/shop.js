@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
 
     var shopSection = document.querySelector(".sn-shop");
     if (!shopSection) return;
@@ -376,7 +376,7 @@
         updatePriceDisplay();
 
         // Clear ALL URL params (including server-side ones like category)
-        window.location.href = "/shop-sneakers";
+        window.location.href = "/shop";
     }
 
     // APPLIQUER LES FILTRES
@@ -602,7 +602,7 @@
         }
 
         window.location.href =
-            "/shop-sneakers?" + params.toString();
+            "/shop?" + params.toString();
 
     }
 

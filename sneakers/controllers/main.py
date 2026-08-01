@@ -38,7 +38,7 @@ class SneakersController(http.Controller):
     def home(self, **kwargs):
         return request.render('sneakers.page_home', {})
 
-    @http.route('/shop-sneakers', type='http', auth='public', website=True)
+    @http.route('/shop', type='http', auth='public', website=True)
     def shop(self, **kwargs):
 
         # ==========================
@@ -920,17 +920,27 @@ class SneakersController(http.Controller):
             if existing:
                 return request.render('sneakers.page_register', {'error': 'An account with this email already exists.'})
 
-            # Create user
-            user = request.env['res.users'].sudo().create({
-                'name': name,
-                'login': email,
-                'password': password,
-                'email': email,
-            })
+            try:
+                # Get default company
+                company = request.env['res.company'].sudo().search([], limit=1)
 
-            # Log in
-            request.session.authenticate(request.db, email, password)
-            return request.redirect('/my/account')
+                # Create user with company_id (required by Odoo 19)
+                user = request.env['res.users'].sudo().create({
+                    'name': name,
+                    'login': email,
+                    'password': password,
+                    'email': email,
+                    'company_id': company.id,
+                    'company_ids': [(6, 0, [company.id])],
+                })
+
+                # Log in
+                uid = request.session.authenticate(request.db, email, password)
+                if uid:
+                    return request.redirect('/my/account')
+                return request.render('sneakers.page_register', {'error': 'Account created but login failed. Please sign in.'})
+            except Exception as e:
+                return request.render('sneakers.page_register', {'error': 'Registration failed. Please try again.'})
 
         return request.render('sneakers.page_register', {})
 

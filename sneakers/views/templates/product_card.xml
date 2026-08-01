@@ -7,168 +7,119 @@
              t-att-data-sizes="'[%s]' % ','.join(['{&quot;id&quot;:%d,&quot;name&quot;:&quot;%s&quot;}' % (v.id, v.name) for v in product.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Size').value_ids]) if product else '[]'"
              t-att-data-colors="'[%s]' % ','.join(['{&quot;id&quot;:%d,&quot;name&quot;:&quot;%s&quot;,&quot;color&quot;:&quot;%s&quot;}' % (v.id, v.name, v.html_color or '#999') for v in product.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Color').value_ids]) if product else '[]'">
 
-
             <!-- Product Image -->
             <div class="sn-product-image">
 
-
                 <a t-att-href="'/product/%s' % (product.id if product else product_id)">
-
 
                     <!-- Badge -->
                     <t t-if="product">
-                    <t t-if="product.website_published">
-                        <span class="sn-product-badge">New</span>
+                        <t t-if="product.website_published">
+                            <span class="sn-product-badge">New</span>
+                        </t>
                     </t>
-                </t>
 
-                <t t-if="not product and product_badge">
-                    <span class="sn-product-badge">
-                        <t t-out="product_badge"/>
-                    </span>
-                </t>
-
+                    <t t-if="not product and product_badge">
+                        <span class="sn-product-badge">
+                            <t t-out="product_badge"/>
+                        </span>
+                    </t>
 
                     <!-- Main Image -->
                     <t t-if="product">
-
                         <img
                             t-att-src="'/web/image/product.template/%s/image_256' % product.id"
                             t-att-alt="product.name"/>
-
                     </t>
 
                     <t t-if="not product and product_image">
-
                         <img
                             t-att-src="product_image"
                             t-att-alt="product_name"/>
-
                     </t>
-
 
                 </a>
 
-
-                <!-- Hover Actions -->
+                <!-- Wishlist -->
                 <div class="sn-product-actions">
-
-
                     <button class="sn-action-btn"
                             title="Wishlist"
-                             t-att-data-product-id="product.id if product else product_id"
+                            t-att-data-product-id="product.id if product else product_id"
                             aria-pressed="false">
-
-
                         <i class="fa fa-heart"/>
-
-
                     </button>
-
-
                 </div>
 
+                <!-- Quick Add to Cart (hover overlay) -->
+                <div class="sn-quick-add">
+                    <button class="sn-quick-add-btn"
+                            t-att-data-product-id="product.product_variant_id.id if product else product_id"
+                            t-att-data-template-id="product.id if product else product_id"
+                            t-att-data-product-name="product.name if product else product_name"
+                            t-att-data-product-price="product.list_price if product else product_price"
+                            t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image"
+                            t-att-data-stock="0">
+                        <i class="fa fa-shopping-bag"/> Add to Bag
+                    </button>
+                </div>
 
             </div>
 
-
-
-            <!-- Product Information -->
+            <!-- Product Info -->
             <div class="sn-product-info">
 
-
-                <!-- Rating -->
-            <div class="sn-product-rating">
-
-                <t t-set="rating"
-                t-value="product_ratings.get(product.id, 0) if product_ratings else 0"/>
-
-
-                <t t-foreach="[1,2,3,4,5]" t-as="star">
-
-                    <i t-att-class="
-                        'fa fa-star'
-                        if star &lt;= rating
-                        else 'fa fa-star-o'
-                    "/>
-
+                <!-- Brand -->
+                <t t-if="product and product.brand_id">
+                    <span class="sn-product-brand">
+                        <t t-out="product.brand_id.name"/>
+                    </span>
                 </t>
 
-                <span class="sn-rating-value">
-                    (<t t-out="'%.1f' % rating"/>)
-                </span>
-
-            </div>
-
                 <!-- Name -->
-                <h3>
-
-                    <t t-out="product.name if product else product_name"/>
-
+                <h3 class="sn-product-name">
+                    <a t-att-href="'/product/%s' % (product.id if product else product_id)">
+                        <t t-out="product.name if product else product_name"/>
+                    </a>
                 </h3>
 
-
-
                 <!-- Price -->
-                    <div class="sn-product-price">
+                <div class="sn-product-price">
+                    <span class="sn-current-price">
+                        $<t t-if="product"><t t-out="'%.2f' % product.list_price"/></t>
+                        <t t-if="not product"><t t-out="product_price"/></t>
+                    </span>
 
-                        <span class="sn-current-price">
-                            $
-                            <t t-if="product">
-                                <t t-out="'%.2f' % product.list_price"/>
-                            </t>
-
-                            <t t-if="not product">
-                                <t t-out="product_price"/>
-                            </t>
+                    <t t-if="product and product.compare_list_price">
+                        <span class="sn-old-price">
+                            $<t t-out="'%.2f' % product.compare_list_price"/>
                         </span>
+                    </t>
 
+                    <t t-if="not product and product_old_price">
+                        <span class="sn-old-price">
+                            $<t t-out="product_old_price"/>
+                        </span>
+                    </t>
+                </div>
 
-                        <t t-if="product and product.compare_list_price">
-
-                            <span class="sn-old-price">
-                                $
-                                <t t-out="'%.2f' % product.compare_list_price"/>
-                            </span>
-
+                <!-- Color Dots -->
+                <div class="sn-product-colors">
+                    <t t-if="product">
+                        <t t-foreach="product.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Color').value_ids[:5]" t-as="color">
+                            <span class="sn-color-dot"
+                                  t-att-style="'background:%s' % (color.html_color or '#999')"
+                                  t-att-title="color.name"/>
                         </t>
-
-
-                        <t t-if="not product and product_old_price">
-
-                            <span class="sn-old-price">
-                                $
-                                <t t-out="product_old_price"/>
-                            </span>
-
+                        <t t-if="len(product.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Color').value_ids) > 5">
+                            <span class="sn-color-more">+<t t-out="len(product.attribute_line_ids.filtered(lambda l: l.attribute_id.name == 'Color').value_ids) - 5"/></span>
                         </t>
-
-                    </div>
-
-
-
-                <!-- Add Cart -->
-                <button class="sn-add-cart"
-
-                        t-att-data-product-id="product.product_variant_id.id if product else product_id"
-                        t-att-data-template-id="product.id if product else product_id"
-                        t-att-data-product-name="product.name if product else product_name"
-                        t-att-data-product-price="product.list_price if product else product_price"
-                        t-att-data-product-image="('/web/image/product.template/%s/image_1024' % product.id) if product else product_image"
-                        t-att-data-stock="product.product_variant_id.qty_available if product else 0">
-
-                    Add to Cart
-
-                </button>
-
+                    </t>
+                </div>
 
             </div>
-
 
         </div>
 
-
     </template>
-
 
 </odoo>

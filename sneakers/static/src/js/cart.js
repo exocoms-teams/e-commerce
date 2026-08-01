@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
 
     // ================================================
     // UTILITAIRES
@@ -415,7 +415,7 @@ function updateCartBackend(lineId, qty) {
             <i class="fa fa-shopping-cart"></i>
             <h3>Your cart is empty</h3>
             <p>Browse our catalog and add your favorite sneakers.</p>
-            <a href="/shop-sneakers" class="sn-btn-primary">
+            <a href="/shop" class="sn-btn-primary">
                 Continue Shopping
             </a>
         </div>

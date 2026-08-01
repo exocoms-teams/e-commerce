@@ -540,15 +540,15 @@
 
 /* PRODUCT CARD */
 
+/* ============================================
+   PRODUCT CARD — JD Sports Inspired
+   ============================================ */
+
 .sn-product-card{
 
     background:var(--white);
 
-    border-radius:20px;
-
     overflow:hidden;
-
-    box-shadow:var(--shadow-sm);
 
     transition:var(--transition);
 
@@ -556,9 +556,7 @@
 
 .sn-product-card:hover{
 
-    transform:translateY(-10px);
-
-    box-shadow:var(--shadow-lg);
+    box-shadow:0 8px 30px rgba(0,0,0,.08);
 
 }
 
@@ -570,7 +568,15 @@
 
     overflow:hidden;
 
-    background:#F8F8F8;
+    background:#F5F5F5;
+
+    aspect-ratio:1/1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 
 }
 
@@ -578,17 +584,19 @@
 
     width:100%;
 
-    height:200px;
+    height:100%;
 
-    object-fit:cover;
+    object-fit:contain;
 
-    transition:.5s;
+    transition:transform .4s ease;
+
+    padding:12px;
 
 }
 
-.sn-product-card:hover img{
+.sn-product-card:hover .sn-product-image img{
 
-    transform:scale(1.08);
+    transform:scale(1.05);
 
 }
 
@@ -598,21 +606,25 @@
 
     position:absolute;
 
-    top:18px;
+    top:12px;
 
-    left:18px;
+    left:12px;
 
-    background:var(--primary-color);
+    background:var(--black);
 
     color:var(--white);
 
-    padding:8px 14px;
+    padding:4px 10px;
 
-    border-radius:30px;
+    border-radius:2px;
 
-    font-size:12px;
+    font-size:10px;
 
     font-weight:700;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
 
     z-index:10;
 
@@ -624,31 +636,33 @@
 
     position:absolute;
 
-    top:20px;
+    top:12px;
 
-    right:-60px;
+    right:-50px;
 
     display:flex;
 
     flex-direction:column;
 
-    gap:12px;
+    gap:8px;
 
-    transition:.4s;
+    transition:.3s ease;
+
+    z-index:5;
 
 }
 
 .sn-product-card:hover .sn-product-actions{
 
-    right:20px;
+    right:12px;
 
 }
 
 .sn-action-btn{
 
-    width:42px;
+    width:36px;
 
-    height:42px;
+    height:36px;
 
     border:none;
 
@@ -660,17 +674,91 @@
 
     color:var(--black);
 
-    box-shadow:var(--shadow-sm);
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
 
-    transition:.3s;
+    transition:.2s;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:14px;
 
 }
 
 .sn-action-btn:hover{
 
-    background:var(--primary-color);
+    background:var(--black);
 
     color:var(--white);
+
+}
+
+/* QUICK ADD — appears on hover */
+
+.sn-quick-add{
+
+    position:absolute;
+
+    bottom:0;
+
+    left:0;
+
+    right:0;
+
+    transform:translateY(100%);
+
+    transition:transform .3s ease;
+
+    z-index:5;
+
+}
+
+.sn-product-card:hover .sn-quick-add{
+
+    transform:translateY(0);
+
+}
+
+.sn-quick-add-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    background:var(--black);
+
+    color:var(--white);
+
+    border:none;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    letter-spacing:.5px;
+
+    text-transform:uppercase;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    transition:background .2s;
+
+}
+
+.sn-quick-add-btn:hover{
+
+    background:#333;
 
 }
 
@@ -678,29 +766,61 @@
 
 .sn-product-info{
 
-    padding:16px;
+    padding:14px 14px 16px;
 
 }
 
-.sn-product-rating{
+.sn-product-brand{
 
-    color:#FDBA12;
+    display:block;
 
-    margin-bottom:8px;
+    font-size:11px;
 
-    font-size:12px;
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:1.2px;
+
+    color:#666;
+
+    margin-bottom:4px;
 
 }
 
-.sn-product-info h3{
+.sn-product-name{
 
-    font-size:15px;
+    font-size:14px;
 
-    margin-bottom:8px;
+    font-weight:500;
+
+    margin-bottom:6px;
 
     color:var(--black);
 
-    line-height:1.4;
+    line-height:1.35;
+
+}
+
+.sn-product-name a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+    display:block;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.sn-product-name a:hover{
+
+    color:var(--primary-color);
 
 }
 
@@ -712,23 +832,23 @@
 
     gap:8px;
 
-    margin-bottom:14px;
+    margin-bottom:8px;
 
 }
 
 .sn-current-price{
 
-    font-size:13px;
+    font-size:15px;
 
-    color:var(--primary-color);
+    color:var(--black);
 
-    font-weight:600;
+    font-weight:700;
 
 }
 
 .sn-old-price{
 
-    color:#9CA3AF;
+    color:#999;
 
     text-decoration:line-through;
 
@@ -736,38 +856,51 @@
 
 }
 
-/* ADD TO CART */
+/* COLOR DOTS */
 
-.sn-add-cart{
+.sn-product-colors{
 
     display:flex;
 
-    justify-content:center;
-
     align-items:center;
 
-    width:100%;
+    gap:5px;
 
-    height:42px;
-
-    background:var(--primary-color);
-
-    color:var(--white);
-
-    border-radius:40px;
-
-    text-decoration:none;
-
-    font-weight:600;
-
-    transition:.3s;
-    font-size:14px;
+    flex-wrap:wrap;
 
 }
 
-.sn-add-cart:hover{
+.sn-color-dot{
 
-    background:var(--primary-dark);
+    width:12px;
+
+    height:12px;
+
+    border-radius:50%;
+
+    border:1px solid #ddd;
+
+    display:inline-block;
+
+    cursor:pointer;
+
+    transition:border-color .2s;
+
+}
+
+.sn-color-dot:hover{
+
+    border-color:var(--black);
+
+}
+
+.sn-color-more{
+
+    font-size:10px;
+
+    color:#999;
+
+    font-weight:600;
 
 }
 
@@ -775,15 +908,15 @@
 
 @media(max-width:768px){
 
-    .sn-product-image img{
+    .sn-product-image{
 
-        height:180px;
+        aspect-ratio:1/1;
 
     }
 
-    .sn-product-info h3{
+    .sn-product-name{
 
-        font-size:15px;
+        font-size:13px;
 
     }
 
