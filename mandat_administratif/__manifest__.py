@@ -4,36 +4,7 @@
     'version': '19.0.1.4.0',
     'category': 'Accounting/Payment Providers',
     'summary': "Paiement par mandat administratif pour les entités publiques françaises — dépôt des factures sur Chorus Pro",
-    'description': """
-Mandat administratif — Chorus Pro
-=================================
-Module de paiement destiné aux administrations, collectivités territoriales
-et établissements publics français.
-
-Fonctionnalités
----------------
-* Fournisseur de paiement « Mandat administratif » (flux différé, transaction
-  mise en attente comme le virement bancaire).
-* Visible au checkout eCommerce uniquement pour les partenaires marqués
-  « Entité publique ».
-* Champs Chorus Pro sur le partenaire : SIRET destinataire (contrôle de la
-  clé de Luhn), code service, engagement juridique obligatoire.
-* Report des informations sur le devis / bon de commande et la facture :
-  n° d'engagement juridique, code service.
-* Bloc « Règlement par mandat administratif — Chorus Pro » ajouté au PDF
-  de facture.
-* Suivi du dépôt sur Chorus Pro depuis la facture (bouton « Déposée sur
-  Chorus Pro » + horodatage) et lien direct vers le portail.
-* Snippet Website Builder « Mandat administratif » prêt à glisser-déposer
-  sur le site.
-
-Cadre réglementaire : facturation électronique obligatoire via Chorus Pro
-(ordonnance n° 2014-697, décret n° 2016-1478) — délai global de paiement
-de 30 jours (Code de la commande publique).
-
-Compatibilité : Odoo 19 (Odoo.sh) uniquement — non compatible avec les
-versions antérieures.
-    """,
+    'description': "Module de paiement par mandat administratif pour les entités publiques françaises. Intégration Chorus Pro, SIRET, engagement juridique, PDF de facture et snippet Website Builder.",
     'author': "EXOCOMS Group",
     'website': "https://www.exocoms.fr",
     'license': 'LGPL-3',
