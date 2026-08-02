@@ -12,7 +12,7 @@
     }
 
     .sn-nav {
-        display: flex;
+        display: none;
     }
 
     .sn-language-switcher {
@@ -83,14 +83,7 @@
     .sn-search--open {
         display: flex;
     }
-    .sn-search-box {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        border: 2px solid var(--black);
-        border-radius: 6px;
-        overflow: hidden;
-    }
+    
     .sn-search-category {
         display: none;
     }
@@ -137,7 +130,9 @@
         height: 36px;
     }
 
+    /* Header — hamburger + panneau nav */
     .sn-header .sn-hamburger {
+        order: 1;
         display: flex;
         width: 42px;
         height: 42px;
@@ -148,15 +143,48 @@
         align-items: center;
         gap: 5px;
         flex-shrink: 0;
+        cursor: pointer;
     }
-
     .sn-header .sn-hamburger span {
         width: 20px;
         height: 2px;
         border-radius: 2px;
         background: var(--black);
+        transition: transform .3s, opacity .3s;
     }
+    .sn-header .sn-hamburger--active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .sn-header .sn-hamburger--active span:nth-child(2) { opacity: 0; }
+    .sn-header .sn-hamburger--active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+    .sn-header .sn-nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 78%;
+        max-width: 320px;
+        height: 100vh;
+        background: var(--white);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, .15);
+        margin: 0;
+        padding: 100px 24px 24px;
+        transform: translateX(100%);
+        transition: transform .35s ease;
+        z-index: 1100;
+        overflow-y: auto;
+    }
+    .sn-header .sn-nav--open {
+        transform: translateX(0);
+    }
+    .sn-header .sn-nav ul {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .sn-header .sn-nav a {
+        display: block;
+        padding: 14px 0;
+        font-size: 16px;
+        border-bottom: 1px solid var(--border-color);
+    }
 
     /* ── HERO ───────────────────────────────────────────────── */
     .sn-hero {

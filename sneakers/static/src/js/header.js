@@ -15,52 +15,61 @@
         }, { passive: true });
     }
 
+    // ============================
     // MENU HAMBURGER (mobile)
-    var nav = document.querySelector(".sn-nav");
-
-    if (nav && !document.querySelector(".sn-hamburger")) {
-        var hamburger = document.createElement("button");
-        hamburger.className  = "sn-hamburger";
-        hamburger.setAttribute("aria-label", "Toggle navigation");
-        hamburger.setAttribute("aria-expanded", "false");
-        hamburger.innerHTML  =
-            '<span></span><span></span><span></span>';
+    // ============================
+    (function initMobileNav() {
+        var nav = document.querySelector(".sn-nav");
+        if (!nav) return;
 
         var headerInner = document.querySelector(".sn-header .mn-container");
-        if (headerInner) {
-            headerInner.insertBefore(hamburger, nav);
+        if (!headerInner) return;
+
+        var hamburger = document.createElement("button");
+        hamburger.type = "button";
+        hamburger.className = "sn-hamburger";
+        hamburger.setAttribute("aria-label", "Ouvrir le menu");
+        hamburger.setAttribute("aria-expanded", "false");
+        hamburger.innerHTML = "<span></span><span></span><span></span>";
+
+        headerInner.insertBefore(hamburger, nav);
+
+        function openNav() {
+            nav.classList.add("sn-nav--open");
+            hamburger.classList.add("sn-hamburger--active");
+            hamburger.setAttribute("aria-expanded", "true");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeNav() {
+            nav.classList.remove("sn-nav--open");
+            hamburger.classList.remove("sn-hamburger--active");
+            hamburger.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
         }
 
         hamburger.addEventListener("click", function () {
-            var isOpen = nav.classList.toggle("sn-nav--open");
-            hamburger.classList.toggle("sn-hamburger--active", isOpen);
-            hamburger.setAttribute("aria-expanded", isOpen ? "true" : "false");
-
-            document.body.style.overflow = isOpen ? "hidden" : "";
+            if (nav.classList.contains("sn-nav--open")) {
+                closeNav();
+            } else {
+                openNav();
+            }
         });
 
         document.addEventListener("click", function (e) {
-            if (
-                nav.classList.contains("sn-nav--open") &&
-                !nav.contains(e.target) &&
-                !hamburger.contains(e.target)
-            ) {
-                nav.classList.remove("sn-nav--open");
-                hamburger.classList.remove("sn-hamburger--active");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
+            var isOpen = nav.classList.contains("sn-nav--open");
+            if (isOpen && !nav.contains(e.target) && !hamburger.contains(e.target)) {
+                closeNav();
             }
         });
 
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape" && nav.classList.contains("sn-nav--open")) {
-                nav.classList.remove("sn-nav--open");
-                hamburger.classList.remove("sn-hamburger--active");
-                hamburger.setAttribute("aria-expanded", "false");
-                document.body.style.overflow = "";
+                closeNav();
             }
         });
-    }
+    })();
+
 
     // SÉLECTEUR DE LANGUE
     var languageSwitcher = document.querySelector(".sn-language-switcher");
@@ -74,59 +83,59 @@
 
     (function initCartBadge() {
 
-    var badge = document.querySelector('.sn-cart-count');
+        var badge = document.querySelector('.sn-cart-count');
 
-    if (!badge) return;
+        if (!badge) return;
 
 
-    fetch('/shop/cart/quantity', {
+        fetch('/shop/cart/quantity', {
 
-        method: 'POST',
+            method: 'POST',
 
-        headers: {
-            'Content-Type': 'application/json',
-        },
+            headers: {
+                'Content-Type': 'application/json',
+            },
 
-        body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "call",
-            params: {}
+            body: JSON.stringify({
+                jsonrpc: "2.0",
+                method: "call",
+                params: {}
+            })
+
         })
+        .then(function(response){
 
-    })
-    .then(function(response){
+            return response.json();
 
-        return response.json();
+        })
+        .then(function(data){
 
-    })
-    .then(function(data){
-
-        console.log("ODOO CART QUANTITY :", data);
+            console.log("ODOO CART QUANTITY :", data);
 
 
-        var quantity = data.result || 0;
+            var quantity = data.result || 0;
 
 
-        if(quantity > 0){
+            if(quantity > 0){
 
-            badge.textContent = quantity;
-            badge.style.display = 'flex';
+                badge.textContent = quantity;
+                badge.style.display = 'flex';
 
-        }else{
+            }else{
 
-            badge.style.display = 'none';
+                badge.style.display = 'none';
 
-        }
+            }
 
-    })
-    .catch(function(error){
+        })
+        .catch(function(error){
 
-        console.error("CART BADGE ERROR", error);
+            console.error("CART BADGE ERROR", error);
 
-    });
+        });
 
 
-})();
+    })();
 
     (function initWishlistBadge() {
         var wl = JSON.parse(localStorage.getItem('sn_wishlist') || '[]');
@@ -137,45 +146,5 @@
     })();
 
     /* BACKEND : appeler /shop/cart/update avec product_id , qty */
-
-
-
-    // RECHERCHE MOBILE (overlay plein écran)
-    var searchForm    = document.querySelector(".sn-search");
-    var searchToggle  = document.querySelector(".sn-search-toggle");
-    var searchClose   = document.querySelector(".sn-search-close");
-    var searchClear   = document.querySelector(".sn-search-clear");
-    var searchInputEl = searchForm ? searchForm.querySelector('input[type="search"]') : null;
-
-    function closeSearchOverlay() {
-        searchForm.classList.remove("sn-search--open");
-        document.body.style.overflow = "";
-    }
-
-    if (searchForm && searchToggle) {
-        searchToggle.addEventListener("click", function () {
-            searchForm.classList.add("sn-search--open");
-            document.body.style.overflow = "hidden";
-            if (searchInputEl) searchInputEl.focus();
-        });
-    }
-
-    if (searchClose) {
-        searchClose.addEventListener("click", closeSearchOverlay);
-    }
-
-    if (searchClear && searchInputEl) {
-        searchClear.addEventListener("click", function () {
-            searchInputEl.value = "";
-            searchInputEl.focus();
-            searchInputEl.dispatchEvent(new Event("input"));
-        });
-    }
-
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && searchForm && searchForm.classList.contains("sn-search--open")) {
-            closeSearchOverlay();
-        }
-    });
 
 })();
