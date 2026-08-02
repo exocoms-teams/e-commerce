@@ -4,7 +4,7 @@
     "summary": "Catégories repliables 3 niveaux, filtre marques, comparaison "
                "produits, curseur de prix et rafraîchissement AJAX. Snippet "
                "Website Builder + module complet. 100% Odoo 19 natif.",
-    "version": "19.0.1.1.0",
+    "version": "19.0.2.0.0",
     "author": "EXOCOMS Group",
     "website": "https://www.exocoms.fr",
     "category": "Website/eCommerce",

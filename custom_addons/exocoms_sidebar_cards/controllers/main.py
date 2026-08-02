@@ -89,12 +89,20 @@ class ExocomsSidebarController(http.Controller):
         prod_attrs = {}
         for product in products:
             values = {}
+            # Caractéristiques dédiées EXOCOMS (prioritaires, ordonnées)
+            for line in product.characteristic_ids:
+                if not line.name:
+                    continue
+                values[line.name] = line.value or "—"
+                if line.name not in attr_names:
+                    attr_names.append(line.name)
+            # Attributs de variante (complément)
             for line in product.attribute_line_ids:
-                values[line.attribute_id.name] = ", ".join(
-                    line.value_ids.mapped("name")
-                )
-                if line.attribute_id.name not in attr_names:
-                    attr_names.append(line.attribute_id.name)
+                key = line.attribute_id.name
+                if key not in values:
+                    values[key] = ", ".join(line.value_ids.mapped("name"))
+                    if key not in attr_names:
+                        attr_names.append(key)
             prod_attrs[product.id] = values
         return attr_names, prod_attrs
 
