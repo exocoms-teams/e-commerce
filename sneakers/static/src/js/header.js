@@ -25,6 +25,21 @@
         var headerInner = document.querySelector(".sn-header .mn-container");
         if (!headerInner) return;
 
+        var overlay = document.createElement("div");
+        overlay.className = "sn-nav-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.appendChild(overlay);
+
+        var navHeader = document.createElement("div");
+        navHeader.className = "sn-nav-header";
+        navHeader.innerHTML =
+            '<span class="sn-nav-title">Menu</span>' +
+            '<button type="button" class="sn-nav-close" aria-label="Fermer le menu">' +
+            '<i class="fa fa-times" aria-hidden="true"></i></button>';
+        nav.insertBefore(navHeader, nav.firstChild);
+
+        var closeBtn = navHeader.querySelector(".sn-nav-close");
+
         var hamburger = document.createElement("button");
         hamburger.type = "button";
         hamburger.className = "sn-hamburger";
@@ -36,32 +51,28 @@
 
         function openNav() {
             nav.classList.add("sn-nav--open");
-            hamburger.classList.add("sn-hamburger--active");
+            overlay.classList.add("sn-nav-overlay--visible");
+            overlay.setAttribute("aria-hidden", "false");
             hamburger.setAttribute("aria-expanded", "true");
             document.body.style.overflow = "hidden";
         }
 
         function closeNav() {
             nav.classList.remove("sn-nav--open");
-            hamburger.classList.remove("sn-hamburger--active");
+            overlay.classList.remove("sn-nav-overlay--visible");
+            overlay.setAttribute("aria-hidden", "true");
             hamburger.setAttribute("aria-expanded", "false");
             document.body.style.overflow = "";
         }
 
         hamburger.addEventListener("click", function () {
-            if (nav.classList.contains("sn-nav--open")) {
-                closeNav();
-            } else {
+            if (!nav.classList.contains("sn-nav--open")) {
                 openNav();
             }
         });
 
-        document.addEventListener("click", function (e) {
-            var isOpen = nav.classList.contains("sn-nav--open");
-            if (isOpen && !nav.contains(e.target) && !hamburger.contains(e.target)) {
-                closeNav();
-            }
-        });
+        closeBtn.addEventListener("click", closeNav);
+        overlay.addEventListener("click", closeNav);
 
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape" && nav.classList.contains("sn-nav--open")) {
