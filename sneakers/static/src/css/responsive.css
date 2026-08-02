@@ -22,14 +22,16 @@
 
     /* ── HEADER ─────────────────────────────────────────────── */
     .sn-header .mn-container {
-        height: 68px;
-        padding: 0 14px;
-        gap: 10px;
+        position: relative;
+        justify-content: space-between;
     }
 
     .sn-logo {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         margin: 0;
-        padding: 0;
     }
 
     .sn-logo a {
@@ -50,11 +52,73 @@
     }
 
     .sn-actions {
-        gap: 8px;
+        margin-left: auto;
+    }
+    .sn-search-toggle {
+        display: flex;
     }
 
     .sn-search {
         display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--white);
+        z-index: 1200;
+        padding: 16px;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .sn-search--open {
+        display: flex;
+    }
+    .sn-search-box {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--black);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .sn-search-category {
+        display: none;
+    }
+    .sn-search input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+    .sn-search-clear {
+        display: block;
+        background: none;
+        border: none;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: .5px;
+        color: var(--text-light);
+        white-space: nowrap;
+        padding: 0 6px;
+    }
+    .sn-search button[type="submit"] {
+        width: 46px;
+        height: 46px;
+        background: transparent;
+        border: none;
+        font-size: 16px;
+    }
+    .sn-search-close {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 46px;
+        height: 46px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        background: transparent;
+        font-size: 18px;
+        flex-shrink: 0;
     }
 
     .sn-icon {
@@ -247,17 +311,21 @@
     }
 
     .mn-container{
-        margin: auto 8px;
+        margin: auto;
     }
 
 
     /* ── BRANDS ──────────────────────────────────────────────── */
     .sn-brands {
-        padding: 10px;
+        padding: 30px 0;
     }
 
 
     /* ── FEATURES ────────────────────────────────────────────── */
+    .sn-features{
+        padding: 5px 0;
+    }
+
     .sn-features-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
@@ -322,6 +390,43 @@
         font-size: 14px;
     }
 
+    /* Footer */
+    .sn-footer-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px 20px;
+        padding: 40px 16px 24px;
+    }
+    .sn-footer-brand {
+        grid-column: 1 / -1;
+    }
+    .sn-footer-logo svg {
+        width: 24px;
+        height: 24px;
+    }
+    .sn-footer-logo span {
+        font-size: 20px;
+    }
+    .sn-footer-brand p {
+        font-size: 13px;
+        margin-bottom: 16px;
+    }
+    .sn-footer-social a {
+        width: 34px;
+        height: 34px;
+    }
+    .sn-footer-col h4 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    .sn-footer-col ul {
+        gap: 8px;
+    }
+    .sn-footer-col a {
+        font-size: 13px;
+    }
+    .sn-footer-bottom p {
+        font-size: 12px;
+    }
 
     /* ── SHOP ────────────────────────────────────────────────── */
     .sn-shop-subtitle{
@@ -341,7 +446,7 @@
         display: none;
     }
     .sn-shop-layout{
-        margin-left:10px;
+        margin-left:5px;
     }
 
     /* ── PRODUCT ─────────────────────────────────────────────── */

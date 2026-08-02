@@ -138,4 +138,44 @@
 
     /* BACKEND : appeler /shop/cart/update avec product_id , qty */
 
+
+
+    // RECHERCHE MOBILE (overlay plein écran)
+    var searchForm    = document.querySelector(".sn-search");
+    var searchToggle  = document.querySelector(".sn-search-toggle");
+    var searchClose   = document.querySelector(".sn-search-close");
+    var searchClear   = document.querySelector(".sn-search-clear");
+    var searchInputEl = searchForm ? searchForm.querySelector('input[type="search"]') : null;
+
+    function closeSearchOverlay() {
+        searchForm.classList.remove("sn-search--open");
+        document.body.style.overflow = "";
+    }
+
+    if (searchForm && searchToggle) {
+        searchToggle.addEventListener("click", function () {
+            searchForm.classList.add("sn-search--open");
+            document.body.style.overflow = "hidden";
+            if (searchInputEl) searchInputEl.focus();
+        });
+    }
+
+    if (searchClose) {
+        searchClose.addEventListener("click", closeSearchOverlay);
+    }
+
+    if (searchClear && searchInputEl) {
+        searchClear.addEventListener("click", function () {
+            searchInputEl.value = "";
+            searchInputEl.focus();
+            searchInputEl.dispatchEvent(new Event("input"));
+        });
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && searchForm && searchForm.classList.contains("sn-search--open")) {
+            closeSearchOverlay();
+        }
+    });
+
 })();
