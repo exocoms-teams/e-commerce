@@ -15,9 +15,10 @@
                         <li t-if="product.is_vegan">
                             <i class="fa fa-leaf text-success"/> <strong>100% Vegan</strong>
                         </li>
-                        <li t-if="product.allergens">
+                        <!-- MODIFICATION ICI : allergen_ids et mapped('name') -->
+                        <li t-if="product.allergen_ids">
                             <i class="fa fa-exclamation-triangle text-warning"/> 
-                            <strong>Allergènes :</strong> <t t-esc="product.allergens"/>
+                            <strong>Allergènes :</strong> <span t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
                         </li>
                     </ul>
                     <div t-if="product.nutritional_info">
@@ -53,13 +54,12 @@
         </xpath>
     </template>
 
-<!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
-    <!-- <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier"> -->
-        <!-- CIBLAGE PRÉCIS : Juste après le tableau des totaux pour éviter la duplication AJAX -->
-        <!-- <xpath expr="//div[@id='cart_total']" position="after"> -->
+  <!-- 4. Alerte Allergènes dynamique dans le résumé du panier et checkout -->
+    <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Alerte Allergènes Panier">
+        <xpath expr="." position="inside">
             
             <!-- CSS dédié à l'alerte pour garantir la visibilité partout -->
-            <!-- <style>
+            <style>
                 .cs-allergen-alert {
                     background: linear-gradient(145deg, #1F2937, #111827) !important;
                     border: 1px solid #374151 !important;
@@ -80,9 +80,8 @@
             </style>
 
             <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
-             -->
-            <!-- Affichage conditionnel -->
-            <!-- <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-3 text-start" style="font-size: 0.85rem;" role="alert">
+            
+            <div t-if="has_supplements" class="alert cs-allergen-alert mt-4 mb-0 text-start" style="font-size: 0.85rem;" role="alert">
                 <div class="d-flex align-items-center mb-1">
                     <i class="fa fa-exclamation-triangle me-2"/> 
                     <strong>RAPPEL SANTÉ</strong>
@@ -92,7 +91,7 @@
                 </div>
             </div>
         </xpath>
-    </template> -->
+    </template>
 
     <!-- 5. Nouveaux champs Dosage et Ingrédients -->
     <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Nutritional Info Supplements">
@@ -161,7 +160,7 @@
             <!-- 1. HERO PLEIN ÉCRAN -->
             <section class="cs-hero-media" style="height:100vh; min-height:720px;">
                 <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-                       poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
+                        poster="/custom_supplements/static/src/img/hero_home_poster.jpg">
                     <source src="/custom_supplements/static/src/videos/hero_home_cinematic_bottle_reveal.mp4" type="video/mp4"/>
                 </video>
                 <div class="cs-hero-overlay">
@@ -514,7 +513,7 @@
                 .o_wsale_apply_layout .dropdown-toggle {
                     color: #F9FAFB !important; 
                 }
-/* --- J. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
+                /* --- J. CORRECTION DÉFINITIVE DU TABLEAU NUTRITIONNEL --- */
                 
                 /* 1. Nettoyer les variables globales du tableau Bootstrap */
                 #product_detail .alert-info table {
@@ -560,13 +559,13 @@
             </style>
         </xpath>
     </template>
- <!-- =====================================================================
+<!-- =====================================================================
          PARTIE 4 : DESIGN PREMIUM DE LA PAGE PRODUIT DÉTAILLÉE (DARK MODE)
          ===================================================================== -->
 
     <template id="custom_product_premium_design" inherit_id="website_sale.product" name="Product Premium Design">
-        <!-- MODIFICATION ICI : On cible product_detail et on injecte "before" (beaucoup plus sûr) -->
-        <xpath expr="//div[@id='product_detail']" position="before">
+        <!-- CIBLAGE 100% SÉCURISÉ : On utilise le même xpath qui a fonctionné dans la Partie 1 -->
+        <xpath expr="//div[@id='product_details']" position="inside">
             <style>
                 <![CDATA[
                 /* --- A. FOND DE LA PAGE ET TEXTE GLOBAL --- */
@@ -702,6 +701,167 @@
                     background: #1F2937 !important;
                     background-color: #1F2937 !important;
                     color: #E5E7EB !important;
+                }
+                ]]>
+            </style>
+        </xpath>
+    </template>
+    <!-- =====================================================================
+         PARTIE 5 : DESIGN PREMIUM DU PANIER / CHECKOUT (DARK MODE)
+         ===================================================================== -->
+
+    <template id="custom_cart_premium_design" inherit_id="website_sale.cart" name="Cart Premium Design">
+        <!-- SOLUTION 100% SÉCURISÉE : "expr='.'" cible la racine du template -->
+        <xpath expr="." position="inside">
+            <style>
+                <![CDATA[
+                /* --- A. FOND DE LA PAGE ET TEXTES GLOBAUX --- */
+                #wrapwrap, main, .oe_website_sale {
+                    background-color: #111827 !important;
+                    color: #E5E7EB !important;
+                }
+                
+                .oe_website_sale h1, 
+                .oe_website_sale h3, 
+                .oe_website_sale h4 {
+                    color: #F9FAFB !important;
+                    font-weight: 800 !important;
+                    letter-spacing: -0.5px;
+                }
+
+                /* --- B. FIL D'ARIANE (Order > Address > Payment) --- */
+                .oe_website_sale .breadcrumb .breadcrumb-item a {
+                    color: #10B981 !important;
+                    font-weight: 600 !important;
+                    text-decoration: none !important;
+                }
+                .oe_website_sale .breadcrumb .breadcrumb-item.active {
+                    color: #9CA3AF !important;
+                }
+                .oe_website_sale .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+                    color: #6B7280 !important;
+                }
+
+                /* --- C. LIGNES DE PRODUITS (Colonne de gauche) --- */
+                .oe_website_sale .o_cart_product {
+                    background-color: transparent !important;
+                }
+                .oe_website_sale .o_cart_product h6 a {
+                    color: #F9FAFB !important;
+                    font-weight: 700 !important;
+                    text-decoration: none !important;
+                }
+                .oe_website_sale .o_cart_product .text-muted {
+                    color: #9CA3AF !important;
+                }
+                .oe_website_sale .js_delete_product, 
+                .oe_website_sale .js_save_for_later {
+                    color: #6B7280 !important;
+                    transition: color 0.2s ease;
+                }
+                .oe_website_sale .js_delete_product:hover { color: #EF4444 !important; }
+                .oe_website_sale .js_save_for_later:hover { color: #10B981 !important; }
+                
+                .oe_website_sale .oe_price {
+                    color: #10B981 !important;
+                    font-weight: 800 !important;
+                }
+
+                /* --- D. SÉLECTEUR DE QUANTITÉ --- */
+                .oe_website_sale .css_quantity .btn {
+                    background-color: #1F2937 !important;
+                    border-color: #374151 !important;
+                    color: #10B981 !important;
+                    transition: background-color 0.2s;
+                }
+                .oe_website_sale .css_quantity .btn:hover { background-color: #374151 !important; }
+                .oe_website_sale .css_quantity input {
+                    background-color: #111827 !important;
+                    border-color: #374151 !important;
+                    color: #F9FAFB !important;
+                    font-weight: 600 !important;
+                }
+
+                /* --- E. BOÎTE DE RÉSUMÉ (Droite - Le composant Bento) --- */
+                #o_cart_summary, .oe_website_sale .card {
+                    background-color: #1F2937 !important;
+                    border: 1px solid #374151 !important;
+                    border-radius: 16px !important;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+                    color: #E5E7EB !important;
+                }
+                #o_cart_summary .border-bottom,
+                #o_cart_summary .border-top {
+                    border-color: #374151 !important;
+                }
+                #o_cart_summary .text-muted { color: #9CA3AF !important; }
+                #o_cart_summary strong { color: #F9FAFB !important; }
+                #o_cart_summary .text-xl, 
+                #o_cart_summary .oe_price {
+                    color: #10B981 !important;
+                    font-weight: 800 !important;
+                }
+
+                /* --- F. CHAMP CODE PROMO --- */
+                .oe_website_sale form .form-control {
+                    background-color: #111827 !important;
+                    border: 1px solid #374151 !important;
+                    color: #F9FAFB !important;
+                    border-radius: 8px !important;
+                }
+                .oe_website_sale form .form-control::placeholder { color: #6B7280 !important; }
+                .oe_website_sale form .btn-secondary {
+                    background-color: #374151 !important;
+                    border-color: #374151 !important;
+                    color: #F9FAFB !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                }
+                .oe_website_sale form .btn-secondary:hover { background-color: #4B5563 !important; }
+
+                /* --- G. BOUTON CHECKOUT --- */
+                .oe_website_sale a[href*="/shop/checkout"],
+                #o_cart_summary .btn-primary {
+                    background-color: #10B981 !important;
+                    border-color: #10B981 !important;
+                    color: #ffffff !important;
+                    border-radius: 30px !important;
+                    font-weight: 700 !important;
+                    padding: 12px 30px !important;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+                    display: flex !important;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .oe_website_sale a[href*="/shop/checkout"]:hover,
+                #o_cart_summary .btn-primary:hover {
+                    background-color: #059669 !important;
+                    border-color: #059669 !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+                }
+
+                /* --- H. LIEN CONTINUE SHOPPING --- */
+                .oe_website_sale .btn-link {
+                    color: #10B981 !important;
+                    text-decoration: none !important;
+                    font-weight: 600 !important;
+                }
+                .oe_website_sale .btn-link:hover { color: #059669 !important; }
+
+                /* --- I. ALERTE ALLERGÈNES (Adaptation Dark Mode) --- */
+                .oe_website_sale .alert-warning {
+                    background-color: rgba(245, 158, 11, 0.1) !important;
+                    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+                    color: #FCD34D !important;
+                    border-radius: 12px !important;
+                }
+                
+                .oe_website_sale .text-muted.text-center.my-3 {
+                    opacity: 0.5;
                 }
                 ]]>
             </style>
