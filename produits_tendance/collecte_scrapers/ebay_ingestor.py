@@ -1,28 +1,12 @@
-import os
 import requests
 import base64
 import time
-from datetime import datetime, timedelta
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    # Sur Odoo.sh, python-dotenv n'est pas installé, ce n'est pas grave.
-    # Les variables sont gérées nativement par la plateforme.
-    pass
+from datetime import datetime
 
-# ==========================================
-# CONFIGURATION
-# ==========================================
-ODOO_URL = os.getenv("ODOO_URL")
-ODOO_API_KEY = os.getenv("ODOO_API_KEY")
-EBAY_APP_ID = os.getenv("EBAY_APP_ID")
-EBAY_CERT_ID = os.getenv("EBAY_CERT_ID")
-
-def get_real_ebay_token():
+def get_real_ebay_token(app_id, cert_id):
     """Génère le Token d'accès OAuth 2.0 pour eBay"""
     url = "https://api.ebay.com/identity/v1/oauth2/token"
-    auth_str = f"{EBAY_APP_ID}:{EBAY_CERT_ID}"
+    auth_str = f"{app_id}:{cert_id}"
     b64_auth = base64.b64encode(auth_str.encode()).decode('utf-8')
     
     headers = {
@@ -77,14 +61,14 @@ def fetch_winning_products(keyword, token, attempt=1):
         print(f"❌ Erreur Réseau (Fetch) : {e}")
         return []
 
-def push_to_odoo(item):
+def push_to_odoo(item, odoo_url, odoo_api_key):
     """Envoie le produit vers Odoo selon le contrat JSON strict"""
     seller_score = item.get("seller", {}).get("feedbackScore", 0.0)
     sales_count = item.get("soldQuantity", 0) 
     country_code = item.get("itemLocation", {}).get("country", "US")
     
     payload = {
-        "api_key": ODOO_API_KEY,
+        "api_key": odoo_api_key,
         "type": "product",
         "data": {
             "name": item.get("title", "Produit Inconnu")[:100],
@@ -99,26 +83,28 @@ def push_to_odoo(item):
     }
     
     try:
-        res = requests.post(ODOO_URL, json=payload, timeout=10)
-        if res.status_code == 200:
-            return True
-        else:
-            return False
+        res = requests.post(odoo_url, json=payload, timeout=10)
+        return res.status_code == 200
     except requests.exceptions.RequestException:
          return False
 
-def run_ingestion_for_keyword(keyword):
-    """Fonction principale à appeler depuis le contrôleur Odoo"""
-    token = get_real_ebay_token()
+def run_ingestion_for_keyword(keyword, app_id, cert_id, odoo_url, odoo_api_key):
+    """Fonction principale appelée depuis le contrôleur Odoo"""
+    
+    # Vérification de sécurité
+    if not app_id or not cert_id:
+        return {"status": "error", "message": "Clés API eBay manquantes dans Odoo (Paramètres Système)."}
+        
+    token = get_real_ebay_token(app_id, cert_id)
     if not token:
-        return {"status": "error", "message": "Échec de l'authentification eBay"}
+        return {"status": "error", "message": "Échec de l'authentification eBay (vérifiez les clés)."}
         
     items = fetch_winning_products(keyword, token)
     success_count = 0
     
     for item in items:
-        if push_to_odoo(item):
+        if push_to_odoo(item, odoo_url, odoo_api_key):
             success_count += 1
-        time.sleep(1)
+        time.sleep(1) # Pause pour éviter le spam
         
     return {"status": "success", "inserted": success_count}

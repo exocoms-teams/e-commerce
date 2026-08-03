@@ -65,23 +65,52 @@ class TrendProductDetailController(http.Controller):
 
 
 # -----------------------------------------------------------
-# 2bis. CONTROLEUR DASHBOARD (Classement des produits, WIN-48)
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
 # -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='user', website=True)
     def dashboard(self, **kwargs):
-        # Restriction Freemium (WIN-48) : limit=5 appliqué côté ORM, jamais
-        # côté template/JS, pour qu'elle ne puisse pas être contournée en
-        # lisant le HTML brut ou en interceptant la requête.
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
-
         api = TrendDashboardAPI(request.env)
         products = api.get_dashboard_products(limit=limit)
 
         return request.render('produits_tendance.winners_dashboard_template', {
             'products': products,
         })
+
+    # Route pour AFFICHER le Dashboard d'ingestion eBay
+    @http.route('/winners/dashboard', type='http', auth='user', website=True)
+    def show_dashboard(self, **kwargs):
+        return request.render('produits_tendance.template_winners_dashboard', {})
+
+    # Route JSON pour EXECUTER le script eBay (Appel AJAX)
+    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
+    def run_ebay_scan(self, keyword):
+        if not keyword:
+            return {"status": "error", "message": "Mot-clé manquant."}
+            
+        # 1. On récupère TOUTES les configurations depuis les Paramètres Système d'Odoo
+        Param = request.env['ir.config_parameter'].sudo()
+        
+        ebay_app_id = Param.get_param('ebay.app_id')
+        ebay_cert_id = Param.get_param('ebay.cert_id')
+        odoo_api_key = Param.get_param('winners.api_key')
+        
+        # Odoo connaît automatiquement sa propre URL de base
+        base_url = Param.get_param('web.base.url')
+        odoo_url = f"{base_url}/api/trend/ingest"
+        
+        # 2. On exécute le script en lui injectant les clés
+        result = run_ingestion_for_keyword(
+            keyword=keyword, 
+            app_id=ebay_app_id, 
+            cert_id=ebay_cert_id, 
+            odoo_url=odoo_url, 
+            odoo_api_key=odoo_api_key
+        )
+        
+        return result
 
 
 # -----------------------------------------------------------
@@ -245,24 +274,3 @@ class TrendIngestController(http.Controller):
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
-# -----------------------------------------------------------
-# 3. CONTROLEUR DU DASHBOARD INTERNE (Exécution des Scrapers)
-# -----------------------------------------------------------
-class TrendDashboardController(http.Controller):
-
-    # Route pour AFFICHER le Dashboard (Accessible uniquement aux utilisateurs Odoo connectés)
-    @http.route('/winners/dashboard', type='http', auth='user', website=True)
-    def show_dashboard(self, **kwargs):
-        return request.render('produits_tendance.template_winners_dashboard', {})
-
-    # Route JSON pour EXECUTER le script eBay (Appel AJAX depuis le navigateur)
-    @http.route('/dashboard/run_ebay_scan', type='json', auth='user')
-    def run_ebay_scan(self, keyword):
-        if not keyword:
-            return {"status": "error", "message": "Mot-clé manquant."}
-            
-        # Appel direct de la fonction métier encapsulée dans ton script Python
-        result = run_ingestion_for_keyword(keyword)
-        
-        # Le dictionnaire 'result' est automatiquement converti en JSON par Odoo
-        return result
