@@ -4,7 +4,7 @@
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale'],
+    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'stock'],
 
     'data': [
         'security/ir.model.access.csv',
@@ -24,6 +24,7 @@
         'views/pages/shop.xml',
         'views/pages/product.xml',
         'views/pages/cart.xml',
+        'views/pages/cart_override.xml',
         'views/pages/checkout.xml',
         'views/pages/payment.xml',
         'views/pages/confirmation.xml',
@@ -55,6 +56,7 @@
 
             'sneakers/static/src/css/footer.css',
             'sneakers/static/src/css/responsive.css',
+            'sneakers/static/src/css/animations.css',
             'sneakers/static/src/css/main.css',
 
             'sneakers/static/src/css/js-ui.css',

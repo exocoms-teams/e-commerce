@@ -1,6 +1,5 @@
-from odoo import http, fields
+from odoo import http
 from odoo.http import request
-from odoo.addons.website_sale.controllers.main import WebsiteSale
 
 
 def _is_module_installed(module_name):
@@ -11,7 +10,7 @@ def _is_module_installed(module_name):
     return bool(mod)
 
 
-class SneakersController(WebsiteSale):
+class SneakersController(http.Controller):
 
     def _get_product_ratings(self, products):
 
@@ -35,40 +34,48 @@ class SneakersController(WebsiteSale):
         return product_ratings
 
 
-    @http.route('/', type='http', auth='public', website=True, sitemap=True)
-    def home(self, **kwargs):
-        return request.render('sneakers.page_home', {})
+    @http.route('/', type='http', auth='public', website=True)
+    def home(self):
 
-    @http.route('/shop', type='http', auth='public', website=True)
+        popular_products = request.env['product.template'].sudo().search(
+            [
+                ('sale_ok', '=', True),
+                ('website_published', '=', True)
+            ],
+            limit=8
+        )
+
+
+        categories = request.env['product.public.category'].sudo().search(
+            [],
+            limit=6
+        )
+
+
+        brands = request.env['product.brand'].sudo().search(
+            [],
+            limit=5
+        )
+
+        return request.render(
+            'sneakers.page_home',
+            {
+                'popular_products': popular_products,
+                'categories': categories,
+                'brands': brands,
+            }
+        )
+
+    @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop(self, **kwargs):
 
         # ==========================
         # Catégories principales
         # ==========================
 
-        all_categories = request.env['product.public.category'].sudo().search([])
-
-        # Sneakers category XML IDs — products must belong to at least one
-        sneakers_categ_xmlids = [
-            'sneakers.category_running',
-            'sneakers.category_basketball',
-            'sneakers.category_lifestyle',
-            'sneakers.category_training',
-            'sneakers.category_skateboarding',
-            'sneakers.category_outdoor',
-        ]
-        sneakers_categ_ids = []
-        for xmlid in sneakers_categ_xmlids:
-            try:
-                cat = request.env.ref(xmlid)
-                if cat:
-                    sneakers_categ_ids.append(cat.id)
-            except Exception:
-                pass
-
-        categories = all_categories.filtered(
-            lambda c: c.id in sneakers_categ_ids
-        )
+        categories = request.env['product.public.category'].sudo().search([
+            ('parent_id', '=', False)
+        ])
 
         selected_category = False
         subcategories = request.env['product.public.category'].sudo().search([
@@ -76,22 +83,31 @@ class SneakersController(WebsiteSale):
         ])
 
         category_name = kwargs.get('category')
+        search = (kwargs.get('search') or '').strip().lower()
 
         if category_name:
-            selected_category = all_categories.filtered(
-                lambda c: c.name.lower() == category_name.lower()
-            )[:1]
 
-            if selected_category:
-                subcategories = request.env['product.public.category'].sudo().search([
-                    ('parent_id', '=', selected_category.id)
-                ])
+            category = request.env['product.public.category'].sudo().search([
+                ('name', '=ilike', category_name)
+            ], limit=1)
+
+            if category:
+
+                if category.parent_id:
+                    selected_subcategory = category
+                else:
+                    selected_category = category
+
+                    subcategories = request.env[
+                        'product.public.category'
+                    ].sudo().search([
+                        ('parent_id', '=', selected_category.id)
+                    ])
 
         unique_subcategories = {}
 
         for cat in subcategories:
-            if cat.id in sneakers_categ_ids:
-                unique_subcategories[cat.name] = cat
+            unique_subcategories[cat.name] = cat
 
         subcategories = list(unique_subcategories.values())
         # ==========================
@@ -115,17 +131,20 @@ class SneakersController(WebsiteSale):
         # ==========================
 
         products = request.env['product.template'].sudo().search([
-            ('sale_ok', '=', True),
-            ('public_categ_ids', 'in', sneakers_categ_ids),
+            ('sale_ok', '=', True)
         ])
 
-        # Filtre par recherche (name ilike)
-        search_query = kwargs.get('search', '').strip()
-        if search_query:
-            products = products.filtered(
-                lambda p: search_query.lower() in p.name.lower()
-            )
+        # ==========================
+        # Recherche
+        # ==========================
 
+        if search:
+
+            products = products.filtered(
+                lambda p:
+                    search in (p.name or "").lower()
+                    or search in (p.description_sale or "").lower()
+            )
 
         # Filtre par sous-catégorie
         if selected_subcategory and selected_subcategory.exists():
@@ -255,18 +274,17 @@ class SneakersController(WebsiteSale):
 
         availability = request.httprequest.args.get('availability')
 
-        if availability:
-            try:
-                if availability == "in_stock":
-                    products = products.filtered(
-                        lambda p: p.website_availability in ('always', 'threshold')
-                    )
-                elif availability == "out_of_stock":
-                    products = products.filtered(
-                        lambda p: p.website_availability == 'never'
-                    )
-            except Exception:
-                pass
+        if availability == "in_stock":
+
+            products = products.filtered(
+                lambda p: p.qty_available > 0
+            )
+
+        elif availability == "out_of_stock":
+
+            products = products.filtered(
+                lambda p: p.qty_available <= 0
+            )
 
 
         # ==========================
@@ -328,17 +346,36 @@ class SneakersController(WebsiteSale):
             'brands': brands,
             'sizes': sizes,
             'colors': colors,
-            'active_category': category_name,
             'product_ratings': product_ratings,
             'subcategories': subcategories,
             'selected_category': selected_category,
-            'search_query': search_query if search_query else '',
+            'search': search,
+            'search_category': category_name,
         }
         return request.render(
             'sneakers.shop_page',
             values
         )
-    
+    @http.route('/shop/cart/get_product_quantity',type='jsonrpc',auth='public',website=True)
+    def get_product_cart_quantity(self, product_id):
+
+        order = request.cart
+
+        quantity = 0
+
+        if order:
+
+            line = order.order_line.filtered(
+                lambda l: l.product_id.id == int(product_id)
+            )
+
+            if line:
+                quantity = sum(line.mapped('product_uom_qty'))
+
+
+        return {
+            'quantity': quantity
+        }
     @http.route('/product/<int:product_id>', type='http', auth='public', website=True)
     def product_page(self, product_id, **kwargs):
 
@@ -423,7 +460,7 @@ class SneakersController(WebsiteSale):
 
         if product_variant:
 
-            stock_qty = getattr(product_variant, 'qty_available', 0) or 0
+            stock_qty = product_variant.qty_available or 0
 
 
             if product.website_availability == 'always':
@@ -557,7 +594,9 @@ class SneakersController(WebsiteSale):
             values
         )
 
-    # ponytail: removed custom /shop/cart — Odoo's WebsiteSaleCart handles it
+    @http.route('/cart', type='http', auth='public', website=True)
+    def cart_redirect(self, **kwargs):
+        return request.redirect('/shop/cart')
 
     @http.route('/get-product-variant', type='jsonrpc', auth='public', website=True)
     def get_product_variant(self, template_id, attribute_value_ids):
@@ -577,8 +616,8 @@ class SneakersController(WebsiteSale):
             if set(selected_ptavs.ids).issubset(set(variant_ptavs.ids)):
                 return {
                     "product_id": variant.id,
-                    "qty_available": getattr(variant, 'qty_available', 0),
-                    "available": getattr(variant, 'qty_available', 0) > 0
+                    "qty_available": variant.qty_available,
+                    "available": variant.qty_available > 0
                 
                 }
 
@@ -588,264 +627,56 @@ class SneakersController(WebsiteSale):
             "available": False,
         }
 
-    # ponytail: removed custom /checkout and /payment — Odoo's built-in handles them
+    @http.route('/checkout', type='http', auth='public', website=True)
+    def checkout_redirect(self, **kwargs):
+        return request.redirect('/shop/checkout')
+
+    @http.route('/checkout/place-order', type='http', auth='public', website=True, methods=['POST'], sitemap=False)
+    def place_order_redirect(self, **kwargs):
+        return request.redirect('/shop/checkout')
 
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
-        order = request.env['sale.order'].sudo().browse()
         order_id = kwargs.get('order_id')
+        order = False
+        tx = False
+        company = request.env.company
+
         if order_id:
             order = request.env['sale.order'].sudo().browse(int(order_id))
             if not order.exists():
-                order = request.env['sale.order'].sudo().browse()
+                order = False
 
-        # Fallback: find last confirmed order for current partner
-        if not order or not order.exists():
-            partner = request.env.user.partner_id
-            order = request.env['sale.order'].sudo().search([
-                ('partner_id', '=', partner.id),
-                ('state', 'in', ['sale', 'sent']),
-            ], limit=1, order='date_order desc')
-
-        # Fetch transaction for payment info
-        transaction = request.env['payment.transaction'].sudo().browse()
-        is_wire_transfer = False
-        if order and order.exists():
-            transaction = request.env['payment.transaction'].sudo().search([
-                ('sale_order_ids', 'in', order.id),
-            ], limit=1)
-            if transaction and transaction.exists() and transaction.provider_id.code == 'manual':
-                is_wire_transfer = True
+        if order:
+            tx = order.transaction_ids[:1] if hasattr(order, 'transaction_ids') else False
 
         values = {
             'order': order,
-            'transaction': transaction,
-            'is_wire_transfer': is_wire_transfer,
-            'company': request.env.company,
+            'transaction': tx,
+            'is_wire_transfer': tx and tx.provider_id.code == 'wire_transfer' if tx else False,
+            'company': company,
         }
         return request.render('sneakers.page_confirmation', values)
 
-    def shop_payment_confirmation(self, **post):
-        sale_order_id = request.session.get('sale_last_order_id')
-        if sale_order_id:
-            return request.redirect('/confirmation?order_id=%d' % sale_order_id)
-        return request.redirect('/shop')
+    @http.route('/wishlist', type='http', auth='user', website=True)
+    def wishlist(self):
 
-    @http.route('/wishlist', type='http', auth='public', website=True, sitemap=True)
-    def wishlist(self, **kwargs):
-        return request.render('sneakers.page_wishlist', {})
+        partner = request.env.user.partner_id
 
-    @http.route('/contact', type='http', auth='public', website=True, sitemap=True)
-    def contact(self, **kwargs):
-        company = request.env.company
-        company_name = company.name
-        company_phone = company.phone or ''
-        company_email = company.email or ''
-        company_street = company.street or ''
-        company_street2 = company.street2 or ''
-        company_city = company.city or ''
-        company_zip = company.zip or ''
-        company_state = company.state_id.name if company.state_id else ''
-        company_country = company.country_id.name if company.country_id else ''
 
-        address_parts = [p for p in [company_street, company_street2, company_city, company_zip, company_state, company_country] if p]
-        company_address = ', '.join(address_parts) if address_parts else ''
-
-        values = {
-            'company_name': company_name,
-            'company_phone': company_phone,
-            'company_email': company_email,
-            'company_address': company_address,
-        }
-        return request.render('sneakers.page_contact', values)
-
-    @http.route('/terms', type='http', auth='public', website=True, sitemap=True)
-    def terms(self, **kwargs):
-        return request.render('sneakers.page_terms', {})
-
-    # Newsletter webhooks — N8N integration points
-
-    @http.route('/newsletter/subscribe', type='json', auth='public', website=True)
-    def newsletter_subscribe(self, email, name='', **kwargs):
-        if not email or '@' not in email:
-            return {'status': 'error', 'message': 'Invalid email'}
-        existing = request.env['newsletter.subscriber'].sudo().search([
-            ('email', '=', email.strip().lower())
-        ], limit=1)
-        if existing:
-            if existing.state == 'subscribed':
-                return {'status': 'ok', 'message': 'Already subscribed'}
-            existing.sudo().write({'state': 'subscribed', 'subscribed_date': fields.Datetime.now})
-            return {'status': 'ok', 'message': 'Re-subscribed'}
-        request.env['newsletter.subscriber'].sudo().create({
-            'email': email.strip().lower(),
-            'name': name,
-        })
-        return {'status': 'ok', 'message': 'Subscribed'}
-
-    @http.route('/newsletter/unsubscribe', type='json', auth='public', website=True)
-    def newsletter_unsubscribe(self, email, **kwargs):
-        if not email:
-            return {'status': 'error', 'message': 'Email required'}
-        subscriber = request.env['newsletter.subscriber'].sudo().search([
-            ('email', '=', email.strip().lower())
-        ], limit=1)
-        if subscriber:
-            subscriber.action_unsubscribe()
-        return {'status': 'ok', 'message': 'Unsubscribed'}
-
-    @http.route('/newsletter/subscribers', type='json', auth='user', website=True)
-    def newsletter_subscribers(self, **kwargs):
-        """N8N calls this to get all active subscribers for campaign sending."""
-        subscribers = request.env['newsletter.subscriber'].sudo().search([
-            ('state', '=', 'subscribed')
+        wishes = request.env['product.wishlist'].sudo().search([
+            ('partner_id', '=', partner.id)
         ])
-        return {
-            'count': len(subscribers),
-            'subscribers': [{'email': s.email, 'name': s.name} for s in subscribers],
-        }
 
-    # Social media webhook — N8N integration point
 
-    @http.route('/social/publish', type='json', auth='user', website=True)
-    def social_publish(self, name, content, platform, image_ids=None, **kwargs):
-        """Create a social post record. N8N picks it up and publishes."""
-        post = request.env['social.post'].sudo().create({
-            'name': name,
-            'content': content,
-            'platform': platform,
-        })
-        return {'status': 'ok', 'post_id': post.id}
+        wishlist_products = wishes.mapped('product_id')
 
-    # ==========================================
-    # CUSTOMER ACCOUNT (SNEEK-33 to SNEEK-36)
-    # ==========================================
 
-    @http.route('/my/register', type='http', auth='public', website=True, methods=['GET', 'POST'])
-    def register(self, **kwargs):
-        if request.httprequest.method == 'POST':
-            name = kwargs.get('name', '').strip()
-            email = kwargs.get('email', '').strip()
-            password = kwargs.get('password', '')
-
-            if not name or not email or not password:
-                return request.render('sneakers.page_register', {'error': 'All fields are required.'})
-
-            # Check if email already exists
-            existing = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
-            if existing:
-                return request.render('sneakers.page_register', {'error': 'An account with this email already exists.'})
-
-            try:
-                # Get default company
-                company = request.env['res.company'].sudo().search([], limit=1)
-
-                # Create user with company_id (required by Odoo 19)
-                user = request.env['res.users'].sudo().create({
-                    'name': name,
-                    'login': email,
-                    'password': password,
-                    'email': email,
-                    'company_id': company.id,
-                    'company_ids': [(6, 0, [company.id])],
-                })
-
-                # Log in (Odoo 19: authenticate takes (env, credential))
-                credential = {'login': email, 'password': password, 'type': 'password'}
-                auth_info = request.session.authenticate(request.env, credential)
-                if auth_info and auth_info.get('uid'):
-                    return request.redirect('/my/account')
-                return request.render('sneakers.page_register', {'error': 'Account created but login failed. Please sign in.'})
-            except Exception as e:
-                import logging
-                _logger = logging.getLogger(__name__)
-                _logger.error("Registration failed: %s", str(e))
-                return request.render('sneakers.page_register', {'error': 'Registration failed: %s' % str(e)})
-
-        return request.render('sneakers.page_register', {})
-
-    @http.route('/my/login', type='http', auth='public', website=True, methods=['GET', 'POST'])
-    def login(self, redirect='/my/account', **kwargs):
-        if request.httprequest.method == 'POST':
-            email = kwargs.get('email', '').strip()
-            password = kwargs.get('password', '')
-
-            if not email or not password:
-                return request.render('sneakers.page_login', {'error': 'Email and password are required.', 'email': email})
-
-            try:
-                credential = {'login': email, 'password': password, 'type': 'password'}
-                auth_info = request.session.authenticate(request.env, credential)
-                if auth_info and auth_info.get('uid'):
-                    return request.redirect(redirect)
-            except Exception:
-                pass
-            return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
-
-        return request.render('sneakers.page_login', {})
-
-    # ponytail: redirect default Odoo login to our custom login page
-    @http.route('/web/login', type='http', auth='public', website=True, methods=['GET', 'POST'])
-    def web_login(self, redirect=None, **kwargs):
-        if request.httprequest.method == 'POST':
-            email = kwargs.get('login', '').strip()
-            password = kwargs.get('password', '')
-            if email and password:
-                try:
-                    credential = {'login': email, 'password': password, 'type': 'password'}
-                    auth_info = request.session.authenticate(request.env, credential)
-                    if auth_info and auth_info.get('uid'):
-                        return request.redirect(redirect or '/my/account')
-                except Exception:
-                    pass
-            return request.render('sneakers.page_login', {'error': 'Invalid email or password.', 'email': email})
-        return request.redirect('/my/login')
-
-    @http.route('/my/logout', type='http', auth='user', website=True)
-    def logout(self, **kwargs):
-        request.session.logout()
-        return request.redirect('/')
-
-    @http.route('/my/account', type='http', auth='user', website=True, methods=['GET', 'POST'])
-    def my_account(self, **kwargs):
-        user = request.env.user
-        partner = user.partner_id
-
-        if request.httprequest.method == 'POST':
-            vals = {}
-            if kwargs.get('name'):
-                vals['name'] = kwargs['name']
-            if kwargs.get('phone'):
-                vals['phone'] = kwargs['phone']
-            if kwargs.get('street'):
-                vals['street'] = kwargs['street']
-            if kwargs.get('city'):
-                vals['city'] = kwargs['city']
-            if kwargs.get('zip'):
-                vals['zip'] = kwargs['zip']
-            if kwargs.get('country_id'):
-                vals['country_id'] = int(kwargs['country_id'])
-            if vals:
-                partner.sudo().write(vals)
-
-            return request.render('sneakers.page_account', {
-                'partner': partner,
-                'countries': request.env['res.country'].sudo().search([]),
-                'success': 'Profile updated successfully.',
-            })
-
-        return request.render('sneakers.page_account', {
-            'partner': partner,
-            'countries': request.env['res.country'].sudo().search([]),
-        })
-
-    @http.route('/my/orders', type='http', auth='user', website=True)
-    def my_orders(self, **kwargs):
-        orders = request.env['sale.order'].sudo().search([
-            ('partner_id', '=', request.env.user.partner_id.id),
-            ('state', 'in', ['sale', 'done', 'sent']),
-        ], order='date_order desc')
-
-        return request.render('sneakers.page_orders', {
-            'orders': orders,
-        })
+        return request.render(
+            'sneakers.page_wishlist',
+            {
+                'wishlist_products': wishlist_products,
+                'wishes': wishes,
+                'wishlist_page': True,
+            }
+        )

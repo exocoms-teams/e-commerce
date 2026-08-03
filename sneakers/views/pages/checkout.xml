@@ -5,9 +5,6 @@
 
         <t t-call="website.layout">
 
-            <t t-set="title" t-value="'Checkout | SNEAKERS Premium Footwear'"/>
-            <t t-set="description" t-value="'Complete your order securely at SNEAKERS.'"/>
-
             <div class="oe_structure oe_empty"/>
 
             <!-- CHECKOUT HEADER -->
@@ -36,7 +33,7 @@
 
             </section>
 
-            <!-- CHECKOUT PROGRESS -->
+            <!-- CHECKOUT PROGRESS  -->
             <section class="sn-checkout-progress oe_structure oe_empty">
 
                 <div class="mn-container">
@@ -45,30 +42,42 @@
 
                         <div class="sn-progress-line"></div>
 
-                        <!-- Step 1: Cart — done -->
-                        <div class="sn-progress-step done">
-                            <div class="sn-step-circle">✓</div>
-                            <span>Cart</span>
-                        </div>
-
-                        <!-- Step 2: Address — active -->
                         <div class="sn-progress-step active">
-                            <div class="sn-step-circle">2</div>
-                            <span>Address</span>
+
+                            <div class="sn-step-circle">1</div>
+
+                            <span>Cart</span>
+
                         </div>
 
-                        <!-- Step 3: Shipping — done if delivery methods exist, hidden if not -->
-                        <t t-if="delivery_methods">
-                            <div class="sn-progress-step">
-                                <div class="sn-step-circle">3</div>
-                                <span>Shipping</span>
-                            </div>
-                        </t>
-
-                        <!-- Step 4: Payment -->
                         <div class="sn-progress-step">
-                            <div class="sn-step-circle">4</div>
+
+                            <div class="sn-step-circle">
+                                2
+                            </div>
+
+                            <span>Address</span>
+
+                        </div>
+
+                        <div class="sn-progress-step">
+
+                            <div class="sn-step-circle">
+                                3
+                            </div>
+
+                            <span>Shipping</span>
+
+                        </div>
+
+                        <div class="sn-progress-step">
+
+                            <div class="sn-step-circle">
+                                4
+                            </div>
+
                             <span>Payment</span>
+
                         </div>
 
                     </div>
@@ -84,9 +93,9 @@
 
                     <div class="sn-checkout-layout">
 
-                        <form id="sn-checkout-form" method="POST" action="/checkout">
+                        <div class="sn-checkout-form">
 
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="sn-checkout-form">
 
                                 <div class="sn-checkout-card">
 
@@ -96,138 +105,206 @@
 
                                         <div class="sn-form-group">
                                             <label>First Name</label>
-                                            <input type="text" name="name" t-att-value="partner.name or ''" placeholder="John"/>
+                                            <input type="text" placeholder="John"/>
                                         </div>
 
                                         <div class="sn-form-group">
+                                            <label>Last Name</label>
+                                            <input type="text" placeholder="Doe"/>
+                                        </div>
+
+                                        <div class="sn-form-group full">
                                             <label>Email Address</label>
-                                            <input type="email" name="email" t-att-value="partner.email or ''" placeholder="john@example.com"/>
+                                            <input type="email" placeholder="john@example.com"/>
                                         </div>
 
                                         <div class="sn-form-group full">
                                             <label>Phone Number</label>
-                                            <input type="tel" name="phone" t-att-value="partner.phone or ''" placeholder="+212 6 00 00 00 00"/>
+                                            <input type="tel" placeholder="+212 6 00 00 00 00"/>
                                         </div>
 
                                         <div class="sn-form-group full">
                                             <label>Street Address</label>
-                                            <input type="text" name="street" t-att-value="partner.street or ''" placeholder="123 Main Street"/>
+                                            <input type="text" placeholder="123 Main Street"/>
                                         </div>
 
                                         <div class="sn-form-group">
                                             <label>City</label>
-                                            <input type="text" name="city" t-att-value="partner.city or ''" placeholder="Casablanca"/>
+                                            <input type="text" placeholder="Casablanca"/>
                                         </div>
 
                                         <div class="sn-form-group">
                                             <label>Postal Code</label>
-                                            <input type="text" name="zip" t-att-value="partner.zip or ''" placeholder="20000"/>
+                                            <input type="text" placeholder="20000"/>
                                         </div>
 
-                                    <div class="sn-form-group full">
-                                        <label>Country</label>
-                                        <select name="country_id">
-                                            <t t-foreach="countries" t-as="country">
-                                                <option t-att-value="country.id"
-                                                        t-att-selected="partner.country_id and partner.country_id.id == country.id">
-                                                    <t t-out="country.name"/>
-                                                </option>
-                                            </t>
-                                        </select>
-                                    </div>
+                                        <div class="sn-form-group full">
+                                            <label>Country</label>
+                                            <select>
+                                                <option>Morocco</option>
+                                                <option>France</option>
+                                                <option>Spain</option>
+                                            </select>
+                                        </div>
 
                                     </div>
 
                                 </div>
 
                                 <!-- SHIPPING METHOD -->
-                                <div class="sn-checkout-card" t-if="delivery_methods">
+                                <div class="sn-checkout-card">
 
                                     <h3>Shipping Method</h3>
 
-                                    <t t-foreach="delivery_methods" t-as="method">
-                                        <label class="sn-radio-card">
-                                            <input type="radio" name="carrier_id"
-                                                   t-att-value="method.id"
-                                                   t-att-checked="order.carrier_id and order.carrier_id.id == method.id"/>
-                                            <div>
-                                                <strong t-out="method.name"/>
-                                                <p t-if="method.fixed_price">
-                                                    <t t-out="'%.2f' % method.fixed_price"/> $
-                                                </p>
-                                                <p t-else="">Free</p>
-                                            </div>
-                                        </label>
-                                    </t>
+                                    <label class="sn-radio-card">
+
+                                        <input type="radio" name="shipping" checked="checked"/>
+
+                                        <div>
+                                            <strong>Standard Delivery</strong>
+                                            <p>3-5 business days</p>
+                                        </div>
+
+                                        <span>Free</span>
+
+                                    </label>
+
+                                    <label class="sn-radio-card">
+
+                                        <input type="radio" name="shipping"/>
+
+                                        <div>
+                                            <strong>Express Delivery</strong>
+                                            <p>24-48 hours</p>
+                                        </div>
+
+                                        <span>$15.00</span>
+
+                                    </label>
 
                                 </div>
 
-                                <!-- CONTINUE BUTTON → /payment -->
-                                <button class="sn-confirm-btn" type="submit">
-                                    Continue to Payment →
-                                </button>
+                                <!-- PAYMENT METHOD -->
+                                <div class="sn-checkout-card">
 
-                        </form>
+                                    <h3>Payment Method</h3>
 
-                        <aside class="sn-checkout-summary">
+                                    <label class="sn-radio-card">
+                                        <input type="radio" name="payment" value="card"/>
+                                        <div>
+                                            <div class="sn-radio-title">
+                                                <i class="fa fa-credit-card"></i>
+                                                <strong>Credit Card</strong>
+                                            </div>
+                                            <p>Visa, Mastercard, American Express</p>
+                                        </div>
+                                    </label>
+
+                                    <label class="sn-radio-card">
+                                        <input type="radio" name="payment" value="paypal"/>
+                                        <div>
+                                            <div class="sn-radio-title">
+                                                <i class="fa fa-paypal"></i>
+                                                <strong>PayPal</strong>
+                                            </div>
+                                            <p>Pay via your PayPal account</p>
+                                        </div>
+                                    </label>
+
+                                    <label class="sn-radio-card">
+                                        <input type="radio" name="payment" value="cash"/>
+                                        <div>
+                                            <div class="sn-radio-title">
+                                                <i class="fa fa-money"></i>
+                                                <strong>Cash on Delivery</strong>
+                                            </div>
+                                            <p>Pay when your order arrives</p>
+                                        </div>
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                       <aside class="sn-checkout-summary">
                             <div class="sn-summary-card">
 
-                                <h3>Order Summary</h3>
+                                <h3>
+                                    Order Summary
+                                </h3>
 
-                                <!-- Order Lines -->
-                                <t t-if="order_lines">
-                                    <t t-foreach="order_lines" t-as="line">
-                                        <div class="sn-summary-product">
-                                            <img t-if="line.product_id.image_256"
-                                                 t-att-src="'/web/image/product.product/%d/image_256' % line.product_id.id"
-                                                 t-att-alt="line.product_id.name"/>
-                                            <img t-else=""
-                                                 src="/sneakers/static/src/img/products/product-1.jpg"
-                                                 t-att-alt="line.product_id.name"/>
-                                            <div>
-                                                <h4 t-out="line.name"/>
-                                                <span>Qty: <t t-out="line.product_uom_qty"/></span>
-                                            </div>
-                                            <strong t-out="'%.2f $' % line.price_subtotal"/>
+                                <!-- Dynamic Cart Lines -->
+
+                                <t t-foreach="order.order_line" t-as="line">
+                                    <div class="sn-summary-product">
+
+                                        <t t-if="line.product_id.image_256">
+                                            <img t-att-src="'/web/image/product.product/%d/image_128' % line.product_id.id"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/sneakers/static/src/img/products/product-1.jpg"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
+
+                                        <div>
+                                            <h4 t-esc="line.product_id.name"/>
+                                            <span t-esc="'Qty : %d' % line.product_uom_qty"/>
                                         </div>
-                                    </t>
-                                </t>
-                                <t t-else="">
-                                    <p style="color:#999;text-align:center;padding:20px 0;">Your cart is empty</p>
+
+                                        <strong t-esc="currency.symbol + '%.2f' % line.price_subtotal"/>
+
+                                    </div>
                                 </t>
 
                                 <!-- Totals -->
-                                <div class="sn-summary-divider"/>
+
+                                <div class="sn-summary-divider"></div>
 
                                 <div class="sn-summary-row">
                                     <span>Subtotal</span>
-                                    <span t-out="'%.2f $' % subtotal"/>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_untaxed"/>
                                 </div>
 
-                                <div class="sn-summary-row" t-if="delivery_price > 0">
+                                <div class="sn-summary-row">
                                     <span>Shipping</span>
-                                    <span t-out="'%.2f $' % delivery_price"/>
-                                </div>
-                                <div class="sn-summary-row" t-else="">
-                                    <span>Shipping</span>
-                                    <span>Free</span>
+                                    <t t-if="delivery_price > 0">
+                                        <span t-esc="currency.symbol + '%.2f' % delivery_price"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Free</span>
+                                    </t>
                                 </div>
 
-                                <div class="sn-summary-row" t-if="tax > 0">
+                                <div class="sn-summary-row">
                                     <span>Tax</span>
-                                    <span t-out="'%.2f $' % tax"/>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_tax"/>
                                 </div>
 
-                                <div class="sn-summary-divider"/>
+                                <div class="sn-summary-divider"></div>
 
                                 <div class="sn-summary-row sn-summary-total">
                                     <span>Total</span>
-                                    <span t-out="'%.2f $' % total"/>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_total"/>
                                 </div>
 
+                                <!-- Place Order -->
+
+                                <form method="POST" action="/checkout/place-order">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="sn-place-order-btn">
+                                        Place Order
+                                    </button>
+                                </form>
+
                                 <!-- Back -->
+
                                 <a href="/shop/cart" class="sn-back-cart">
+
                                     ← Back to Cart
+
                                 </a>
 
                             </div>

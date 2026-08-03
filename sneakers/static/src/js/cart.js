@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
 
     // ================================================
     // UTILITAIRES
@@ -106,8 +106,12 @@
         var badge = document.querySelector(".sn-cart-count");
 
         if (!badge) return;
+
         badge.textContent = count;
+
+        // Toujours afficher le badge même avec 0
         badge.style.display = "flex";
+
         badge.classList.remove("sn-cart-count--bump");
         void badge.offsetWidth;
         badge.classList.add("sn-cart-count--bump");
@@ -415,32 +419,12 @@ function updateCartBackend(lineId, qty) {
             <i class="fa fa-shopping-cart"></i>
             <h3>Your cart is empty</h3>
             <p>Browse our catalog and add your favorite sneakers.</p>
-            <a href="/shop" class="sn-btn-primary">
+            <a href="/shop-sneakers" class="sn-btn-primary">
                 Continue Shopping
             </a>
         </div>
         `;
 
-            var summaryCard = document.querySelector(".sn-summary-card");
-            if (summaryCard) summaryCard.style.display = "none";
-
-            var promoCard = document.querySelector(".sn-promo-card");
-            if (promoCard) promoCard.style.display = "none";
-
-            var checkoutBtn = document.querySelector(".sn-checkout-btn");
-            if (checkoutBtn) {
-                checkoutBtn.disabled    = true;
-                checkoutBtn.textContent = "Empty cart";
-            }
-
-            var cartLayout = document.querySelector(".sn-cart-layout");
-            if (cartLayout) cartLayout.style.gridTemplateColumns = "1fr";
-
-            var cartTitle = document.querySelector(".sn-cart-header h2");
-            if (cartTitle) cartTitle.style.display = "none";
-            
-            var cartSubtitle = document.querySelector(".sn-cart-header p");
-            if (cartSubtitle) cartSubtitle.style.display = "none";
 
         updateCartBadge(0);
 

@@ -1,477 +1,164 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <template id="page_cart" name="Sneakers Cart">
+    <!-- Inner cart content - reusable from both /cart and /shop/cart -->
+    <template id="page_cart_content" name="Sneakers Cart Content">
 
-        <t t-call="website.layout">
+        <t t-set="title" t-value="'Shopping Cart | SNEAKERS Premium Footwear'"/>
+        <t t-set="description" t-value="'Review your shopping cart and proceed to checkout.'"/>
 
-            <t t-set="title" t-value="'Shopping Cart | SNEAKERS Premium Footwear'"/>
-            <t t-set="description" t-value="'Review your shopping cart and proceed to checkout.'"/>
+        <!-- EDITOR ZONE -->
+        <div class="oe_structure oe_empty"/>
 
-            <!-- EDITOR ZONE -->
-            <div class="oe_structure oe_empty"/>
+        <!-- CART HEADER -->
+        <section class="sn-cart-header oe_structure oe_empty">
+            <div class="mn-container">
+                <div class="sn-section-header">
+                    <span class="sn-section-subtitle">Shopping Cart</span>
+                    <h2>Review Your Cart</h2>
+                    <p>Check your selected sneakers before proceeding to checkout.</p>
+                </div>
+            </div>
+        </section>
 
+        <!-- CART CONTENT -->
+        <section class="sn-cart oe_structure oe_empty">
+            <div class="mn-container">
+                <div class="sn-cart-layout">
 
-            <!-- CART HEADER -->
+                    <!-- CART ITEMS -->
+                    <div class="sn-cart-items">
+                        <t t-if="order and order.order_line">
+                            <t t-foreach="order.order_line.filtered(lambda l: l.product_id and l.product_id.active)" t-as="line">
+                                <article class="sn-cart-item" t-att-data-line-id="line.id" t-att-data-product-id="line.product_id.id">
+                                    <div class="sn-cart-image">
+                                        <img t-att-src="'/web/image/product.template/%s/image_256' % line.product_id.product_tmpl_id.id" t-att-alt="line.product_id.name"/>
+                                    </div>
+                                    <div class="sn-cart-info">
+                                        <span class="sn-cart-category">
+                                            <t t-esc="', '.join(line.product_id.product_tmpl_id.public_categ_ids.mapped('name'))"/>
+                                        </span>
+                                        <h3><t t-esc="line.product_id.name"/></h3>
+                                        <div class="sn-cart-attributes">
+                                            <span>
+                                                Size :
+                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name == 'Size').mapped('name'))"/>
+                                            </span>
+                                            <span>
+                                                Color :
+                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name == 'Color').mapped('name'))"/>
+                                            </span>
+                                        </div>
+                                        <div class="sn-cart-price">
+                                            $<t t-esc="line.price_unit"/>
+                                        </div>
+                                    </div>
+                                    <div class="sn-cart-quantity">
+                                        <button class="sn-qty-btn" data-action="decrease">-</button>
+                                        <input type="number" class="sn-cart-qty-input" min="1" t-att-value="line.product_uom_qty"/>
+                                        <button class="sn-qty-btn" data-action="increase">+</button>
+                                    </div>
+                                    <div class="sn-cart-total">
+                                        $<t t-esc="line.price_subtotal"/>
+                                    </div>
+                                    <button class="sn-cart-remove">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </article>
+                            </t>
+                        </t>
 
-            <section class="sn-cart-header oe_structure oe_empty">
-
-                <div class="mn-container">
-
-                    <div class="sn-section-header">
-
-                        <span class="sn-section-subtitle">
-                            Shopping Cart
-                        </span>
-
-                        <h2>
-                            Review Your Cart
-                        </h2>
-
-                        <p>
-                            Check your selected sneakers before proceeding to checkout.
-                        </p>
-
+                        <!-- EMPTY CART -->
+                        <t t-else="">
+                            <div class="sn-cart-empty">
+                                <i class="fa fa-shopping-cart"></i>
+                                <h3>Your cart is empty</h3>
+                                <p>Browse our catalog and add your favorite sneakers.</p>
+                                <a href="/shop" class="sn-btn-primary">Continue Shopping</a>
+                            </div>
+                        </t>
                     </div>
 
-                </div>
+                    <!-- SUMMARY -->
+                    <aside class="sn-cart-summary">
+                        <div class="sn-summary-card">
+                            <h3>Order Summary</h3>
 
-            </section>
+                            <div class="sn-summary-row">
+                                <span>Subtotal</span>
+                                <span class="sn-order-subtotal">$<t t-esc="order.amount_untaxed if order else 0"/></span>
+                            </div>
 
+                            <div class="sn-summary-row">
+                                <span>Shipping</span>
+                                <span class="sn-order-shipping">
+                                    <t t-if="delivery_price and delivery_price > 0">
+                                        $<t t-esc="delivery_price"/>
+                                    </t>
+                                    <t t-elif="order and order.carrier_id">Free</t>
+                                    <t t-else="">Free</t>
+                                </span>
+                            </div>
 
-            <!-- CART CONTENT -->
-
-            <section class="sn-cart oe_structure oe_empty">
-
-                <div class="mn-container">
-
-
-                    <div class="sn-cart-layout">
-
-
-                        <!-- CART ITEMS -->
-
-                        <div class="sn-cart-items">
-
-
-                            <t t-if="order and order.order_line">
-
-
-                                <t t-foreach="order.order_line.filtered(lambda l: l.product_id)"
-                                   t-as="line">
-
-
-                                    <article class="sn-cart-item"
-                                             t-att-data-line-id="line.id"
-                                             t-att-data-product-id="line.product_id.id">
-
-
-                                        <!-- IMAGE -->
-
-                                        <div class="sn-cart-image">
-
-                                            <img t-att-src="'/web/image/product.template/%s/image_256' % line.product_id.product_tmpl_id.id"
-                                                 t-att-alt="line.product_id.name"/>
-
-                                        </div>
-
-
-
-                                        <!-- INFO -->
-
-                                        <div class="sn-cart-info">
-
-
-                                            <span class="sn-cart-category">
-
-                                                <t t-esc="', '.join(line.product_id.product_tmpl_id.public_categ_ids.mapped('name'))"/>
-
-                                            </span>
-
-
-
-                                            <h3>
-
-                                                <t t-esc="line.product_id.name"/>
-
-                                            </h3>
-
-
-
-                                            <div class="sn-cart-attributes">
-
-
-                                                <span>
-
-                                                    Size :
-
-                                                    <t t-esc="', '.join(
-                                                        line.product_id.product_template_attribute_value_ids
-                                                        .filtered(lambda a: a.attribute_id.name == 'Size')
-                                                        .mapped('name')
-                                                    )"/>
-
+                            <!-- DELIVERY METHOD SELECTOR -->
+                            <t t-if="delivery_methods">
+                                <form method="POST" action="/shop/cart" class="sn-delivery-form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="sn-delivery-options">
+                                        <t t-foreach="delivery_methods" t-as="method">
+                                            <label class="sn-delivery-option">
+                                                <input type="radio" name="carrier_id" t-att-value="method.id" t-att-checked="order and order.carrier_id and order.carrier_id.id == method.id" onchange="this.form.submit()"/>
+                                                <span class="sn-delivery-name"><t t-esc="method.name"/></span>
+                                                <span class="sn-delivery-price">
+                                                    <t t-if="method.fixed_price &gt; 0">$<t t-esc="method.fixed_price"/></t>
+                                                    <t t-else="">Free</t>
                                                 </span>
-
-
-
-                                                <span>
-
-                                                    Color :
-
-                                                    <t t-esc="', '.join(
-                                                        line.product_id.product_template_attribute_value_ids
-                                                        .filtered(lambda a: a.attribute_id.name == 'Color')
-                                                        .mapped('name')
-                                                    )"/>
-
-                                                </span>
-
-
-                                            </div>
-
-
-
-                                            <div class="sn-cart-price">
-
-                                                $<t t-esc="line.price_unit"/>
-
-                                            </div>
-
-
-                                        </div>
-
-
-
-                                        <!-- QUANTITY -->
-
-
-                                        <div class="sn-cart-quantity">
-
-
-                                            <button class="sn-qty-btn"
-                                                    data-action="decrease">
-                                                -
-                                            </button>
-
-
-                                            <input type="number"
-                                                class="sn-cart-qty-input"
-                                                min="1"
-                                                t-att-value="line.product_uom_qty"/>
-
-
-                                            <button class="sn-qty-btn"
-                                                    data-action="increase">
-                                                +
-                                            </button>
-
-
-                                        </div>
-
-
-
-                                        <!-- TOTAL -->
-
-
-                                        <div class="sn-cart-total">
-
-                                            $<t t-esc="line.price_subtotal"/>
-
-                                        </div>
-
-
-
-                                        <button class="sn-cart-remove">
-
-                                            <i class="fa fa-trash"></i>
-
-                                        </button>
-
-
-                                    </article>
-
-
-                                </t>
-
-
+                                            </label>
+                                        </t>
+                                    </div>
+                                </form>
                             </t>
 
+                            <div class="sn-summary-row">
+                                <span>Estimated Tax</span>
+                                <span class="sn-order-tax">$<t t-esc="order.amount_tax if order else 0"/></span>
+                            </div>
 
+                            <div class="sn-summary-divider"></div>
 
-                            <!-- EMPTY CART -->
+                            <div class="sn-summary-row sn-summary-total">
+                                <span>Total</span>
+                                <span class="sn-order-total">$ <t t-esc="order_total"/></span>
+                            </div>
 
-                            <t t-else="">
+                            <a href="/checkout">
+                                <button class="sn-checkout-btn">Proceed to Checkout</button>
+                            </a>
 
-
-                                <div class="sn-cart-empty">
-
-
-                                    <i class="fa fa-shopping-cart"></i>
-
-
-                                    <h3>
-                                        Your cart is empty
-                                    </h3>
-
-
-                                    <p>
-                                        Browse our catalog and add your favorite sneakers.
-                                    </p>
-
-
-                                    <a href="/shop"
-                                       class="sn-btn-primary">
-
-                                        Continue Shopping
-
-                                    </a>
-
-
-                                </div>
-
-
-                            </t>
-
-
+                            <a href="/shop" class="sn-continue-shopping">← Continue Shopping</a>
                         </div>
 
-
-
-
-
-                        <!-- SUMMARY -->
-
-
-                        <aside class="sn-cart-summary">
-
-
-                            <div class="sn-summary-card">
-
-
-                                <h3>
-                                    Order Summary
-                                </h3>
-
-
-
-                                <div class="sn-summary-row">
-
-                                    <span>
-                                        Subtotal
-                                    </span>
-
-
-                                    <span class="sn-order-subtotal">
-
-                                        $<t t-esc="order.amount_untaxed if order else 0"/>
-
-                                    </span>
-
-
-                                </div>
-
-
-
-
-
-                                <div class="sn-summary-row">
-
-
-                                    <span>
-                                        Shipping
-                                    </span>
-
-
-
-                                    <span class="sn-order-shipping">
-
-                                        <t t-if="delivery_price > 0">
-                                            $<t t-esc="delivery_price"/>
-                                        </t>
-
-                                        <t t-elif="order and order.carrier_id">
-                                            Free
-                                        </t>
-
-                                        <t t-else="">
-                                            Not selected
-                                        </t>
-
-
-                                    </span>
-
-
-                                </div>
-
-
-
-                                <!-- DELIVERY METHOD SELECTOR -->
-
-                                <t t-if="delivery_methods">
-
-                                    <form method="POST" action="/shop/cart" class="sn-delivery-form">
-
-                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                                        <div class="sn-delivery-options">
-
-                                            <t t-foreach="delivery_methods" t-as="method">
-
-                                                <label class="sn-delivery-option">
-
-                                                    <input type="radio"
-
-                                                           name="carrier_id"
-
-                                                           t-att-value="method.id"
-
-                                                           t-att-checked="order and order.carrier_id and order.carrier_id.id == method.id"
-
-                                                           onchange="this.form.submit()"/>
-
-                                                    <span class="sn-delivery-name">
-
-                                                        <t t-esc="method.name"/>
-
-                                                    </span>
-
-                                                    <span class="sn-delivery-price">
-
-                                                        <t t-if="method.fixed_price &gt; 0">
-
-                                                            $<t t-esc="method.fixed_price"/>
-
-                                                        </t>
-
-                                                        <t t-else="">
-
-                                                            Free
-
-                                                        </t>
-
-                                                    </span>
-
-                                                </label>
-
-                                            </t>
-
-                                        </div>
-
-                                    </form>
-
-                                </t>
-
-
-
-
-
-
-                                <div class="sn-summary-row">
-
-
-                                    <span>
-                                        Estimated Tax
-                                    </span>
-
-
-
-                                    <span class="sn-order-tax">
-
-
-                                        $<t t-esc="order.amount_tax if order else 0"/>
-
-
-                                    </span>
-
-
-                                </div>
-
-
-                                <div class="sn-summary-divider"></div>
-
-
-                                <div class="sn-summary-row sn-summary-total">
-
-
-                                    <span>
-                                        Total
-                                    </span>
-
-                                    <span class="sn-order-total">
-
-
-                                        $                                    <t t-esc="order_total"/>
-
-
-                                    </span>
-
-                                </div>
-
-                                <a href="/checkout">
-                                    <button class="sn-checkout-btn">
-                                        Proceed to Checkout
-                                    </button>
-                                </a>
-
-                                <a href="/shop"
-                                   class="sn-continue-shopping">
-
-                                    ← Continue Shopping
-
-                                </a>
-
+                        <!-- PROMO -->
+                        <div class="sn-promo-card">
+                            <h4>Promo Code</h4>
+                            <div class="sn-promo-form">
+                                <input type="text" placeholder="Enter promo code"/>
+                                <button>Apply</button>
                             </div>
-
-
-
-
-
-                            <!-- PROMO -->
-
-
-                            <div class="sn-promo-card">
-
-
-                                <h4>
-                                    Promo Code
-                                </h4>
-
-
-                                <div class="sn-promo-form">
-
-
-                                    <input type="text"
-                                           placeholder="Enter promo code"/>
-
-
-                                    <button>
-                                        Apply
-                                    </button>
-
-
-                                </div>
-
-
-                            </div>
-
-
-
-                        </aside>
-
-
-                    </div>
-
+                        </div>
+                    </aside>
 
                 </div>
-
-
-            </section>
-
-
-        </t>
+            </div>
+        </section>
 
     </template>
 
+    <!-- Our /cart route template -->
+    <template id="page_cart" name="Sneakers Cart">
+        <t t-call="website.layout">
+            <t t-call="sneakers.page_cart_content"/>
+        </t>
+    </template>
 
 </odoo>

@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
 
     var shopSection = document.querySelector(".sn-shop");
     if (!shopSection) return;
@@ -10,7 +10,7 @@
         priceMin:     0,
         priceMax:     9999,
         availability: false,
-        sortBy:       "popular",
+        sortBy:       "default",
         page:         1,
         perPage:      12
     };
@@ -131,7 +131,7 @@
 
         activeFilters.priceMax =
             parseInt(
-                params.get("price_max") || 9999
+                params.get("price_max") || 500
             );
 
 
@@ -360,7 +360,7 @@
         activeFilters.priceMin     = 0;
         activeFilters.priceMax     = 9999;
         activeFilters.availability = false;
-        activeFilters.sortBy       = "popular";
+        activeFilters.sortBy       = "default";
         activeFilters.page         = 1;
 
         // Reset UI
@@ -370,13 +370,11 @@
         availToggles.forEach(function(r){
             r.checked = false;
         });
-        if (sortSelect)  sortSelect.value    = "popular";
+        if (sortSelect)  sortSelect.value    = "default";
         if (priceRangeSlider) priceRangeSlider.value = priceRangeSlider.max;
 
         updatePriceDisplay();
-
-        // Clear ALL URL params (including server-side ones like category)
-        window.location.href = "/shop";
+        applyFilters();
     }
 
     // APPLIQUER LES FILTRES
@@ -461,12 +459,25 @@
 
 
             addTag(colorName, function () {
-                activeFilters.colors = activeFilters.colors.filter(function (c) { return c !== color; });
-                colorSwatches.forEach(function (sw) {
-                    if ((sw.dataset.color || sw.title) === color) sw.classList.remove("active");
+
+                activeFilters.colors = activeFilters.colors.filter(function (c) {
+                    return c !== colorId;
                 });
+
+
+                colorSwatches.forEach(function (sw) {
+
+                    if (sw.dataset.colorId === colorId) {
+                        sw.classList.remove("active");
+                    }
+
+                });
+
+
                 applyFilters();
+
             });
+
         });
 
         if (activeFilters.priceMax < 9999) {
@@ -565,44 +576,57 @@
         // PRICE
         // =====================
 
-        if (activeFilters.priceMin > 0) {
-            params.set("price_min", activeFilters.priceMin);
-        } else {
-            params.delete("price_min");
-        }
+        params.set(
+            "price_min",
+            activeFilters.priceMin
+        );
 
-        if (activeFilters.priceMax < 9999) {
-            params.set("price_max", activeFilters.priceMax);
-        } else {
-            params.delete("price_max");
-        }
+
+        params.set(
+            "price_max",
+            activeFilters.priceMax
+        );
+
+
 
         // =====================
         // AVAILABILITY
         // =====================
 
-        if (activeFilters.availability) {
-            params.set("availability", activeFilters.availability);
-        } else {
+        if(activeFilters.availability){
+
+            params.set(
+                "availability",
+                activeFilters.availability
+            );
+
+        }
+        else{
+
             params.delete("availability");
+
         }
 
-        // PAGE
-        if (activeFilters.page > 1) {
-            params.set("page", activeFilters.page);
-        } else {
-            params.delete("page");
-        }
 
-        // SORT — only set if not default
-        if (activeFilters.sortBy && activeFilters.sortBy !== "popular") {
-            params.set("sort", activeFilters.sortBy);
-        } else {
-            params.delete("sort");
+
+        params.set(
+            "page",
+            activeFilters.page
+        );
+
+        // SORT
+
+        if(activeFilters.sortBy){
+
+            params.set(
+                "sort",
+                activeFilters.sortBy
+            );
+
         }
 
         window.location.href =
-            "/shop?" + params.toString();
+            "/shop-sneakers?" + params.toString();
 
     }
 

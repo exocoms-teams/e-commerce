@@ -5,12 +5,6 @@
 
         <t t-call="website.layout">
 
-            <t t-set="title" t-value="product.name + ' | SNEAKERS Premium Footwear'"/>
-            <t t-set="description" t-value="product.description_sale or (product.name + ' - Premium sneaker at SNEAKERS')"/>
-            <t t-set="og_title" t-value="product.name"/>
-            <t t-set="og_description" t-value="product.description_sale or product.name"/>
-            <t t-set="og_type" t-value="'product'"/>
-
             <!-- Website Builder editable zone -->
             <div class="oe_structure oe_empty"/>
 
@@ -149,21 +143,19 @@
                             </div>
 
                             <!-- Colors -->
-                            <t t-if="colors">
-                                <div class="sn-product-colors">
-                                    <h4>Color</h4>
-                                    <div class="sn-color-options">
-                                        <t t-foreach="colors" t-as="color">
-                                            <span class="sn-color"
-                                                t-att-title="color.product_attribute_value_id.name"
-                                                t-att-data-color-id="color.id"
-                                                t-att-data-color="color.product_attribute_value_id.name"
-                                                t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
-                                            </span>
-                                        </t>
-                                    </div>
+                            <div class="sn-product-colors">
+                                <h4>Color</h4>
+                                <div class="sn-color-options">
+                                    <t t-foreach="colors" t-as="color">
+                                        <span class="sn-color"
+                                            t-att-title="color.product_attribute_value_id.name"
+                                            t-att-data-color-id="color.id"
+                                            t-att-data-color="color.product_attribute_value_id.name"
+                                            t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
+                                        </span>
+                                    </t>
                                 </div>
-                            </t>
+                            </div>
 
                             <!-- Sizes -->
                             <div class="sn-product-sizes">
@@ -214,7 +206,9 @@
                                 <t t-else="">
                                     <button style="width:50%"
                                         class="sn-btn-primary sn-add-cart"
-                                        t-att-data-template-id="product.id">
+                                        t-att-data-template-id="product.id"
+                                        t-att-data-stock="stock_qty"
+                                        data-cart-qty="0">
                                         <t t-if="stock_state == 'out_of_stock'">
                                             Add to Cart (Backorder)
                                         </t>
@@ -224,9 +218,8 @@
                                     </button>
                                 </t>
                                 <a
-                                    href="/checkout"
-                                    class="sn-btn-outline-wl sn-buy-now"
-                                    t-att-data-template-id="product.id">
+                                    href="#categories"
+                                    class="sn-btn-outline-wl">
                                     Buy Now
                                 </a>
                             </div>
@@ -252,11 +245,10 @@
                                     <strong>Brand :</strong>
                                     <t t-out="product.brand_id.name or ''"/>
                                 </div>
-                                <!--
                                 <div>
                                     <strong>Availability :</strong>
                                     <t t-if="stock_state == 'hidden'">
-                                        
+                                        --
                                     </t>
                                     <t t-elif="stock_state == 'in_stock'">
                                         In Stock
@@ -273,7 +265,6 @@
                                         </t>
                                     </t>
                                 </div>
-                                -->
                             </div>
 
                         </div>

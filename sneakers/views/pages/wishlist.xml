@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <odoo>
 
@@ -8,12 +8,9 @@
 
         <t t-call="website.layout">
 
-            <t t-set="title" t-value="'My Wishlist | SNEAKERS Premium Footwear'"/>
-            <t t-set="description" t-value="'Your saved sneakers wishlist at SNEAKERS.'"/>
-
             <div class="oe_structure oe_empty"/>
 
-            <div id="wrap">
+            <div id="wrap" class="sn-wishlist">
 
                 <!-- Wishlist Header -->
                 <section class="sn-wishlist-header oe_structure oe_empty">
@@ -55,12 +52,13 @@
                                 </h3>
 
                                 <p>
-                                    6 products saved in your wishlist.
+                                    <t t-out="len(wishlist_products)"/>
+                                    products saved in your wishlist.
                                 </p>
 
                             </div>
 
-                            <a href="/shop" class="sn-btn-outline-wl">
+                            <a href="/shop-sneakers" class="sn-btn-outline-wl">
                                 Continue Shopping →
                             </a>
                             
@@ -69,23 +67,20 @@
 
                         <div class="sn-products-grid">
 
-                            <!-- Product 1 -->
-                            <t t-call="sneakers.product_card"/>
+                            <t t-foreach="wishlist_products" t-as="product">
 
-                            <!-- Product 2 -->
-                            <t t-call="sneakers.product_card"/>
+                                <t t-set="wish"
+                                t-value="wishes.filtered(lambda w: w.product_id.id == product.id)[:1]"/>
 
-                            <!-- Product 3 -->
-                            <t t-call="sneakers.product_card"/>
+                                <t t-set="wish_id"
+                                t-value="wish.id if wish else ''"/>
 
-                            <!-- Product 4 -->
-                            <t t-call="sneakers.product_card"/>
+                                <t t-set="wishlist_page"
+                                t-value="True"/>
 
-                            <!-- Product 5 -->
-                            <t t-call="sneakers.product_card"/>
+                                <t t-call="sneakers.product_card"/>
 
-                            <!-- Product 6 -->
-                            <t t-call="sneakers.product_card"/>
+                            </t>
 
                         </div>
 
@@ -94,6 +89,8 @@
                 </section>
 
                 <!-- Empty Wishlist -->
+                <t t-if="not wishlist_products">
+
                 <section class="sn-empty-wishlist oe_structure oe_empty">
 
                     <div class="mn-container">
@@ -119,7 +116,7 @@
 
                             </p>
 
-                                <a href="/shop" class="sn-btn-primary">
+                                <a href="/shop-sneakers" class="sn-btn-primary">
 
                                     Explore Collection
 
@@ -136,6 +133,7 @@
                     </div>
 
                 </section>
+                </t>
 
                 
                 <!-- ========================================================= -->
@@ -193,6 +191,8 @@
 
                 </section>
 
+                <t t-if="wishlist_products">
+
                 <section class="sn-wishlist-summary oe_structure oe_empty">
 
                     <div class="mn-container">
@@ -219,7 +219,7 @@
 
                 </section>
 
-
+                </t>
             </div>
 
         </t>
