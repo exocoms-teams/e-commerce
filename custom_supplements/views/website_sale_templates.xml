@@ -113,19 +113,20 @@
     <template id="custom_supplement_filters_sidebar" inherit_id="website_sale.product_attribute_filters_form">
         <xpath expr="//form" position="inside">
             <div class="accordion-item">
+                <t t-set="selected" 
+                t-value="(request.params.get('allergens_exclude') or '').split(',')"/>
                 <div class="accordion-header h6 mb-0">
                     <button type="button"
-                    class="accordion-button x-0 bg-transparent shadow-none collapsed" 
+                    class="accordion-button x-0 bg-transparent shadow-none #{'collapsed' if selected else ''}" 
                     aria-controls="custom_supplement_attribute_allergen"
                     data-bs-toggle="collapse"
                     data-bs-target="#custom_supplement_attribute_allergen">
                         <b>Allergènes</b>
                     </button>
                 </div>
-                <div class="accordion-collapse collapse" id="custom_supplement_attribute_allergen">
+                <div class="accordion-collapse collapse #{'show' if selected else ''}" id="custom_supplement_attribute_allergen">
                     <div class="flex-column mb-3">
-                    <t t-set="selected" 
-                    t-value="(request.params.get('allergens_exclude') or '').split(',')"/>
+                    
                     <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
                             <t t-set="new_selected"
                             t-value="
