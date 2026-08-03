@@ -63,7 +63,11 @@ class AccountMove(models.Model):
             if not users:
                 continue
 
-            users.write({
+            # sudo() : l'attribution du groupe est une opération système qui
+            # doit réussir quels que soient les droits de l'appelant (ex: un
+            # client qui valide son propre paiement n'a pas base.group_system,
+            # requis pour écrire group_ids sur res.users).
+            users.sudo().write({
                 'group_ids': (
                     [(3, group.id) for group in (tier_groups - highest_groups)]
                     + [(4, group.id) for group in highest_groups]
