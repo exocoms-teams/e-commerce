@@ -14,6 +14,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/website_data.xml',
+        'data/logo_data.xml',
         'views/templates/header.xml',
         'views/templates/layout.xml',
         'views/templates/footer.xml',
