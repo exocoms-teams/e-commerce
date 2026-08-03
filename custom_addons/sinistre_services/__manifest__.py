@@ -13,6 +13,7 @@
     'depends': [
         'base', 'mail', 'account', 'sale', 'hr',
         'contacts', 'web', 'website', 'portal',
+        'monetique_theme',
         # Dépendances pour débloquer les blocs du website builder
         'website_sale',       # Blocs Catalog + blocs de base (Odoo 17+)
         'website_blog',       # Blocs Blogs
@@ -31,9 +32,11 @@
         'data/website_data.xml',
         # Website
         'views/website_homepage.xml',
+        'views/website_homepage_inherit.xml',
         'views/website_seo.xml',
         'views/page_intervenant_login.xml',
         'views/website_pages.xml',
+        'views/website_prix.xml',
         # Wizards (avant mission_views — références action_sinistre_*_wizard)
         'wizard/assigner_mission_view.xml',
         'wizard/mission_note_wizard_view.xml',
@@ -51,6 +54,7 @@
     'assets': {
         'web.assets_frontend': [
             'monetique_theme/static/src/css/main.css',
+            'sinistre_services/static/src/css/prix.css',
         ],
         'web.assets_backend': [
             'sinistre_services/static/src/css/backend.css',

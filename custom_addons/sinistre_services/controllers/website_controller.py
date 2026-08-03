@@ -24,6 +24,8 @@ from odoo.http import request
 
 from ..models.departements_fr import DEPARTEMENTS_FR
 
+from ..prix import PRIX_METIERS
+
 _logger = logging.getLogger(__name__)
 
 _MAX_UPLOAD_BYTES = 5 * 1024 * 1024
@@ -88,6 +90,17 @@ _SEO = {
         'meta_description': 'Demandez un accès API pour intégrer vos ordres de mission assurance à Sinistre Services.',
         'meta_keywords': 'API assurance, ordre de mission, intégration sinistre',
     },
+
+    '/prix': {
+        'meta_title': 'Tarifs et prix fixes — Sinistre Services',
+        'meta_description': (
+            'Consultez nos grilles tarifaires fixes : serrurerie, plomberie, '
+            'chauffage, électricité, assainissement, vitrerie, nuisibles, travaux. '
+            'Devis gratuit au 09 70 70 07 37.'
+        ),
+        'meta_keywords': 'prix fixe, tarif serrurerie, tarif plomberie, grille tarifaire, dépannage',
+        'og_type': 'website',
+    },
 }
 
 
@@ -127,7 +140,36 @@ class SinistreWebsite(http.Controller):
     # ─── ACCUEIL ────────────────────────────────────────────────────
     @http.route('/', type='http', auth='public', website=True)
     def homepage(self, **kwargs):
-        return self._render('sinistre_services.ss_homepage', '/')
+
+        return self._render(
+            'sinistre_services.ss_homepage', '/',
+            prix_metiers=list(PRIX_METIERS.values()),
+            prix_limit=3,
+        )
+
+    # ─── PRIX FIXES ─────────────────────────────────────────────────
+    @http.route('/prix', type='http', auth='public', website=True)
+    def prix(self, **kwargs):
+        return request.redirect('/#prix')
+
+    @http.route('/prix/<string:slug>', type='http', auth='public', website=True)
+    def prix_metier(self, slug, **kwargs):
+        metier = PRIX_METIERS.get(slug)
+        if not metier:
+            return request.render('sinistre_services.ss_page_404', {
+                'year': datetime.datetime.now().year,
+                'message': "Grille tarifaire introuvable.",
+            })
+        return self._render(
+            'sinistre_services.page_prix_metier', f'/prix/{slug}',
+            metier=metier,
+            prix_metiers=list(PRIX_METIERS.values()),
+            prix_limit=None,
+            meta_title=f"Tarifs {metier['name']} — Prix fixes | Sinistre Services",
+            meta_description=f"{metier['name']} : " + ' · '.join(
+                f"{n} {p}" for n, p in metier['prices']
+            ),
+        )
 
     # ─── NOS SERVICES ───────────────────────────────────────────────
     @http.route('/nos-services', type='http', auth='public', website=True)
