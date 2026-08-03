@@ -124,10 +124,12 @@
                 </div>
                 <div class="accordion-collapse collapse" id="custom_supplement_attribute_allergen">
                     <div class="flex-column mb-3">
+                    <t t-set="selected" 
+                    t-value="(request.params.get('allergens_exclude') or '').split(',')"/>
                     <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
                             <a
                                 
-                                t-attf-class="btn btn-sm mb-1 ">
+                                t-attf-class="btn btn-sm mb-1 #{'btn-danger' if str(allergen.id) in selected else 'btn-outline-secondary'}">
 
                                 <t t-esc="allergen.name"/>
                             </a>
