@@ -95,9 +95,12 @@ def push_to_odoo(item, odoo_url, odoo_api_key):
     
     try:
         res = requests.post(odoo_url, json=payload, timeout=10)
+        if res.status_code != 200:
+            print(f"❌ Erreur Odoo : Code {res.status_code} - Détails : {res.text}")
         return res.status_code == 200
-    except requests.exceptions.RequestException:
-         return False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erreur de connexion vers Odoo : {e}")
+        return False
 
 def run_ingestion_for_keyword(keyword, app_id, cert_id, odoo_url, odoo_api_key):
     """Fonction principale appelée depuis le contrôleur Odoo"""

@@ -272,10 +272,9 @@ class TrendIngestController(http.Controller):
         )
 
     def check_api_key(self, key):
-        import os
-        valid_key = os.getenv('ODOO_API_KEY')
+        valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
         return valid_key and key == valid_key
-
+    
     def _json_response(self, payload, status):
         return request.make_response(
             json.dumps(payload),
