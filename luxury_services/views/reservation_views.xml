@@ -96,19 +96,24 @@
         <field name="arch" type="xml">
             <form string="Réservation">
                 <header>
+                    <button name="action_set_waiting"
+                            string="Envoyer pour validation"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'draft'"/>
                     <button name="action_confirm"
-                            string="Confirmer et envoyer email"
+                            string="Confirmer la réservation"
                             type="object"
                             class="btn-primary"
                             invisible="state != 'en_attente'"/>
                     <button name="action_cancel"
-                            string="Annuler"
+                            string="Annuler la réservation"
                             type="object"
                             class="btn-danger"
                             invisible="state == 'cancelled'"/>
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="en_attente,confirmed,cancelled"/>
+                           statusbar_visible="draft,en_attente,confirmed,cancelled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
