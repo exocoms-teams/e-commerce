@@ -144,14 +144,14 @@
 
                                         <div class="sn-price-range-track"></div>
                                         <div class="sn-price-range-fill"
-                                            t-attf-style="left:#{price_min_pct}%;right:#{100 - price_max_pct}%;"></div>
+                                            t-attf-style="inset-inline-start:#{price_min_pct}%;inset-inline-end:#{100 - price_max_pct}%;"></div>
 
                                         <input type="range"
                                             class="sn-price-range-min"
                                             t-att-min="catalog_price_min"
                                             t-att-max="catalog_price_max"
                                             t-att-value="active_price_min"
-                                            aria-label="Prix minimum"
+                                            aria-label="Minimum price"
                                             onchange="var u=new window.URL(window.location.href); u.searchParams.set('price_min', Math.min(this.value, u.searchParams.get('price_max') || this.max)); u.searchParams.delete('page'); window.location.href=u.toString();"/>
 
                                         <input type="range"
@@ -159,7 +159,7 @@
                                             t-att-min="catalog_price_min"
                                             t-att-max="catalog_price_max"
                                             t-att-value="active_price_max"
-                                            aria-label="Prix maximum"
+                                            aria-label="Maximum price"
                                             onchange="var u=new window.URL(window.location.href); u.searchParams.set('price_max', Math.max(this.value, u.searchParams.get('price_min') || this.min)); u.searchParams.delete('page'); window.location.href=u.toString();"/>
 
                                     </div>

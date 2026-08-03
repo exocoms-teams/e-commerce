@@ -8,22 +8,35 @@ from werkzeug.exceptions import NotFound
 
 from odoo import http
 from odoo.http import request
+from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.website_sale.const import SHOP_PATH
 from odoo.addons.website_sale.controllers.main import WebsiteSale
 
+_lt = LazyTranslate(__name__)
+
+# _lt() (et non request.env._() directement) : ces listes sont évaluées une
+# seule fois à l'import du module, hors de toute requête HTTP — un _() classique
+# n'aurait aucune langue à résoudre à ce moment-là. _lt() capture le module
+# correctement dès maintenant et ne résout la traduction qu'au rendu.
 SORT_OPTIONS = [
-    ('popular', 'Popularity'),
-    ('newest', 'Newest'),
-    ('price-low', 'Price : Low to High'),
-    ('price-high', 'Price : High to Low'),
+    ('popular', _lt('Popularity')),
+    ('newest', _lt('Newest')),
+    ('price-low', _lt('Price : Low to High')),
+    ('price-high', _lt('Price : High to Low')),
 ]
 
 
 AVAILABILITY_OPTIONS = [
-    ('in_stock', 'In Stock'),
-    ('out_of_stock', 'Out of Stock'),
+    ('in_stock', _lt('In Stock')),
+    ('out_of_stock', _lt('Out of Stock')),
 ]
+
+# Codes courts utilisés par le <select> du header (sneakers/views/templates/header.xml)
+# vers les vrais codes de langue Odoo (res.lang). Volontairement pas de préfixe
+# d'URL /fr/, /ar/ pour l'instant — voir EF-023, point de contradiction signalé
+# à l'équipe (critère #1 vs section "Hors de portée" du ticket).
+LANG_CODE_MAP = {'en': 'en_US', 'fr': 'fr_FR', 'ar': 'ar_001'}
 
 
 class SneakersController(http.Controller):
@@ -70,14 +83,18 @@ class SneakersController(http.Controller):
         return '/sneakers/static/src/img/products/%s' % image
 
     def _product_card(self, p, search=None):
-        brand_labels = dict(p._fields['brand'].selection)
-        color_labels = dict(p._fields['color'].selection)
+        # fields_get() (et non _fields['x'].selection en lecture brute) : passe
+        # par la vraie traduction ORM des libellés Selection (ir.model.fields.selection),
+        # fiable quel que soit le contexte d'appel (contrairement à env._() dans
+        # une compréhension, voir la note plus bas sur ce même souci).
+        selections = p.fields_get(['brand', 'color'])
+        brand_labels = dict(selections['brand']['selection'])
+        color_labels = dict(selections['color']['selection'])
         return {
             'product_id': p.id,
             'product_name': self._highlight(p.name, search) if search else p.name,
             'product_image': self._product_image_url(p),
-            'product_price': request.env['ir.qweb.field.monetary'].value_to_html(
-                p.list_price, {'display_currency': p.currency_id}),
+            'product_price': self._monetary(p.list_price, p.currency_id),
             'product_old_price': '',
             'product_badge': '',
             'product_url': '/product/%s' % p.id,
@@ -98,6 +115,25 @@ class SneakersController(http.Controller):
         pattern = re.compile(re.escape(escaped_term), re.IGNORECASE)
         return Markup(pattern.sub(lambda m: '<mark>%s</mark>' % m.group(0), escaped_text))
 
+    @http.route('/set_language/<string:lang>', type='http', auth='public', website=True, sitemap=False)
+    def set_language(self, lang, r='/', **kwargs):
+        """Change la langue de session sans préfixe d'URL (/fr/, /ar/) — voir
+        LANG_CODE_MAP. request.redirect() est local=True par défaut, donc `r`
+        ne peut pas être utilisé pour une redirection externe (open redirect)."""
+        lang_code = LANG_CODE_MAP.get(lang)
+        active_lang = request.env['res.lang'].search([('code', '=', lang_code)], limit=1) if lang_code else False
+        if not active_lang:
+            raise NotFound()
+        request.update_context(lang=lang_code)
+        # request.future_response (et non redirect.set_cookie) : http_routing's
+        # _frontend_pre_dispatch() a déjà programmé un Set-Cookie vers la langue
+        # précédente/par défaut sur ce même future_response plus tôt dans ce
+        # cycle de requête ; les deux en-têtes seraient sinon concaténés et le
+        # navigateur retient le dernier — donc écraser ici, sur le même objet,
+        # pour que notre valeur soit celle qui gagne.
+        request.future_response.set_cookie('frontend_lang', lang_code)
+        return request.redirect(r or '/')
+
     @http.route('/', type='http', auth='public', website=True, sitemap=True)
     def home(self, **kwargs):
         return request.render('sneakers.page_home', {})
@@ -109,6 +145,10 @@ class SneakersController(http.Controller):
         search = (search or '').strip()
         Category = request.env['product.public.category']
         Product = request.env['product.template']
+        selections = Product.fields_get(['brand', 'color', 'size'])
+        brand_labels = dict(selections['brand']['selection'])
+        color_labels = dict(selections['color']['selection'])
+        size_labels = dict(selections['size']['selection'])
 
         root_category = Category.search([
             ('name', '=', 'Sneakers'),
@@ -240,7 +280,7 @@ class SneakersController(http.Controller):
 
         sort_links = [{
             'value': key,
-            'label': label,
+            'label': request.env._(label),
             'url': self._shop_url(category_id=active_category_id, page=1, brands=active_brands,
                                    colors=active_colors, sizes=active_sizes,
                                    availability=active_availability, sort_by=key,
@@ -256,7 +296,7 @@ class SneakersController(http.Controller):
                                    colors=active_colors, sizes=active_sizes,
                                    availability=active_availability,
                                    price_min=price_min, price_max=price_max, search=search),
-        } for key, label in Product._fields['brand'].selection]
+        } for key, label in brand_labels.items()]
 
         color_links = [{
             'key': key,
@@ -267,7 +307,7 @@ class SneakersController(http.Controller):
                                    colors=self._toggled(active_colors, key),
                                    availability=active_availability,
                                    price_min=price_min, price_max=price_max, search=search),
-        } for key, label in Product._fields['color'].selection]
+        } for key, label in color_labels.items()]
 
         size_links = [{
             'key': key,
@@ -278,11 +318,11 @@ class SneakersController(http.Controller):
                                    sizes=self._toggled(active_sizes, key),
                                    availability=active_availability,
                                    price_min=price_min, price_max=price_max, search=search),
-        } for key, label in Product._fields['size'].selection]
+        } for key, label in size_labels.items()]
 
         availability_links = [{
             'key': key,
-            'label': label,
+            'label': request.env._(label),
             'active': key in active_availability,
             'url': self._shop_url(category_id=active_category_id, sort_by=sort_by,
                                    brands=active_brands, colors=active_colors, sizes=active_sizes,
@@ -296,7 +336,7 @@ class SneakersController(http.Controller):
             'active': n == current_page,
         } for n in range(1, total_pages + 1)]
 
-        availability_labels = dict(AVAILABILITY_OPTIONS)
+        availability_labels = {k: request.env._(v) for k, v in AVAILABILITY_OPTIONS}
 
         active_filter_tags = []
 
@@ -328,7 +368,7 @@ class SneakersController(http.Controller):
 
         for key in active_sizes:
             active_filter_tags.append({
-                'label': 'Taille %s' % key,
+                'label': request.env._(_lt('Size %s', key)),
                 'url': self._shop_url(category_id=active_category_id, sort_by=sort_by,
                                        brands=active_brands, colors=active_colors,
                                        sizes=self._toggled(active_sizes, key),
@@ -347,7 +387,7 @@ class SneakersController(http.Controller):
 
         if price_min is not None or price_max is not None:
             active_filter_tags.append({
-                'label': 'Prix : $%s - $%s' % (active_price_min, active_price_max),
+                'label': request.env._(_lt('Price: $%s - $%s', active_price_min, active_price_max)),
                 'url': self._shop_url(category_id=active_category_id, sort_by=sort_by,
                                        brands=active_brands, colors=active_colors,
                                        sizes=active_sizes, availability=active_availability,
@@ -356,7 +396,7 @@ class SneakersController(http.Controller):
 
         if search:
             active_filter_tags.append({
-                'label': 'Recherche : "%s"' % search,
+                'label': request.env._(_lt('Search: "%s"', search)),
                 'url': self._shop_url(category_id=active_category_id, sort_by=sort_by,
                                        brands=active_brands, colors=active_colors,
                                        sizes=active_sizes, availability=active_availability,
@@ -407,8 +447,9 @@ class SneakersController(http.Controller):
             if not product:
                 raise NotFound()
 
-        brand_labels = dict(product._fields['brand'].selection)
-        color_labels = dict(product._fields['color'].selection)
+        selections = product.fields_get(['brand', 'color'])
+        brand_labels = dict(selections['brand']['selection'])
+        color_labels = dict(selections['color']['selection'])
         category = product.public_categ_ids[:1]
 
         related_domain = domain + [('id', '!=', product.id)]
@@ -424,10 +465,10 @@ class SneakersController(http.Controller):
             'product_color_key': product.color or '',
             'product_size': product.size or '',
             'product_in_stock': product.in_stock,
+            'product_availability_label': request.env._(_lt('In Stock')) if product.in_stock else request.env._(_lt('Out of Stock')),
             'product_category': category.name if category else '',
             'product_image': self._product_image_url(product),
-            'product_price_html': request.env['ir.qweb.field.monetary'].value_to_html(
-                product.list_price, {'display_currency': product.currency_id}),
+            'product_price_html': self._monetary(product.list_price, product.currency_id),
             'product_description': product.description_sale or '',
             'rating_avg': product.sudo().rating_avg,
             'rating_count': product.sudo().rating_count,
@@ -447,14 +488,31 @@ class SneakersController(http.Controller):
         })
 
     def _monetary(self, amount, currency):
-        return request.env['ir.qweb.field.monetary'].value_to_html(amount, {'display_currency': currency})
+        """Comme ir.qweb.field.monetary.value_to_html(), mais avec le symbole
+        après le montant en français (119,90 $ plutôt que $ 119,90) — convention
+        typographique française. currency.position est un attribut global de la
+        devise (pas par langue), donc on ne peut pas juste le changer sans aussi
+        affecter l'anglais/l'arabe ; le repositionnement se fait ici uniquement.
+        Le séparateur décimal (virgule) reste géré nativement par Odoo (lang.format)."""
+        Monetary = request.env['ir.qweb.field.monetary']
+        lang = Monetary.user_lang()
+        formatted_amount = lang.format('%.{0}f'.format(currency.decimal_places), currency.round(amount), grouping=True) \
+            .replace(' ', '\N{NO-BREAK SPACE}').replace('-', '-\N{ZERO WIDTH NO-BREAK SPACE}')
+        symbol_after = request.lang.code == 'fr_FR' or currency.position == 'after'
+        nbsp = '\N{NO-BREAK SPACE}'
+        if symbol_after:
+            return Markup('<span class="oe_currency_value">{0}</span>' + nbsp + '{1}').format(
+                formatted_amount, currency.symbol or '')
+        return Markup('{1}' + nbsp + '<span class="oe_currency_value">{0}</span>').format(
+            formatted_amount, currency.symbol or '')
 
     @http.route('/cart', type='http', auth='public', website=True, sitemap=True)
     def cart(self, **kwargs):
         order = request.cart
         lines = order.order_line if order else request.env['sale.order.line']
-        brand_labels = dict(request.env['product.template']._fields['brand'].selection)
-        color_labels = dict(request.env['product.template']._fields['color'].selection)
+        selections = request.env['product.template'].fields_get(['brand', 'color'])
+        brand_labels = dict(selections['brand']['selection'])
+        color_labels = dict(selections['color']['selection'])
 
         cart_items = []
         for line in lines:
@@ -480,6 +538,7 @@ class SneakersController(http.Controller):
             'cart_subtotal_html': self._monetary(order.amount_untaxed, order.currency_id) if order else self._monetary(0, request.website.currency_id),
             'cart_tax_html': self._monetary(order.amount_tax, order.currency_id) if order else self._monetary(0, request.website.currency_id),
             'cart_total_html': self._monetary(order.amount_total, order.currency_id) if order else self._monetary(0, request.website.currency_id),
+            'cart_empty_checkout_label': request.env._(_lt('Empty cart')),
         })
 
     @http.route('/cart/add/<int:product_id>', type='http', auth='public', website=True, methods=['POST'])

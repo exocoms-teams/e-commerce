@@ -49,11 +49,23 @@
                                     <t t-if="not cart_items">
                                         <div class="sn-cart-empty">
                                             <i class="fa fa-shopping-cart"></i>
-                                            <h3>Votre panier est vide</h3>
-                                            <p>Parcourez notre catalogue et ajoutez vos sneakers préférées.</p>
-                                            <a href="/shop-sneakers" class="sn-btn-primary">Continuer vos achats</a>
+                                            <h3>Your cart is empty</h3>
+                                            <p>Browse our catalog and add your favorite sneakers.</p>
+                                            <a href="/shop-sneakers" class="sn-btn-primary">Continue Shopping</a>
                                         </div>
                                     </t>
+
+                                    <!-- Gabarit caché : cart.js clone ce bloc pour l'état "panier vide" sans
+                                         rechargement (suppression du dernier article en AJAX), afin de rester
+                                         traduit sans dupliquer le texte en dur dans le JS. -->
+                                    <div id="sn-cart-empty-template" style="display:none">
+                                        <div class="sn-cart-empty">
+                                            <i class="fa fa-shopping-cart"></i>
+                                            <h3>Your cart is empty</h3>
+                                            <p>Browse our catalog and add your favorite sneakers.</p>
+                                            <a href="/shop-sneakers" class="sn-btn-primary">Continue Shopping</a>
+                                        </div>
+                                    </div>
 
                                     <t t-foreach="cart_items" t-as="item">
                                         <article class="sn-cart-item" t-att-data-line-id="item['line_id']">
@@ -157,7 +169,7 @@
 
                                             </div>
                                             
-                                            <button class="sn-checkout-btn">
+                                            <button class="sn-checkout-btn" t-att-data-empty-label="cart_empty_checkout_label">
                                                 <a href="/checkout">
                                                     Proceed to Checkout
                                                 </a>

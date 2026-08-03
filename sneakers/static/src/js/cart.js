@@ -168,21 +168,20 @@
 
         if (!items.length) {
             var cartItems = document.querySelector(".sn-cart-items");
-            if (cartItems && !emptyMsg) {
-                cartItems.innerHTML =
-                    '<div class="sn-cart-empty">' +
-                        '<i class="fa fa-shopping-cart"></i>' +
-                        '<h3>Votre panier est vide</h3>' +
-                        '<p>Parcourez notre catalogue et ajoutez vos sneakers préférées.</p>' +
-                        '<a href="/shop-sneakers" class="sn-btn-primary">Continuer vos achats</a>' +
-                    '</div>';
+            var emptyTemplate = document.getElementById("sn-cart-empty-template");
+            if (cartItems && !emptyMsg && emptyTemplate) {
+                // Cloné depuis un gabarit rendu (et traduit) côté serveur, plutôt
+                // que du texte en dur ici, pour rester correct dans les 3 langues.
+                cartItems.innerHTML = emptyTemplate.innerHTML;
             }
 
             // Désactive le bouton checkout
             var checkoutBtn = document.querySelector(".sn-checkout-btn");
             if (checkoutBtn) {
                 checkoutBtn.disabled = true;
-                checkoutBtn.textContent = "Panier vide";
+                if (checkoutBtn.dataset.emptyLabel) {
+                    checkoutBtn.textContent = checkoutBtn.dataset.emptyLabel;
+                }
             }
         }
     }

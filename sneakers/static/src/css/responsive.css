@@ -15,3 +15,154 @@
 @media(max-width:576px){
 
 }
+
+/* ================================================================== */
+/* SUPPORT RTL (EF-023 — arabe)                                       */
+/* ================================================================== */
+/* La disposition flexbox se réoriente déjà automatiquement avec       */
+/* dir="rtl" (posé sur <html> dès que la langue arabe est active — voir */
+/* sneakers/views/templates/header.xml → website.layout). Les règles   */
+/* ci-dessous ne couvrent que les propriétés PHYSIQUES (left/right,    */
+/* margin/padding/border-left/right, text-align) qui ne s'inversent    */
+/* jamais toutes seules avec dir="rtl", contrairement aux propriétés   */
+/* logiques. Portée : tous les templates passant par le header/footer  */
+/* communs (shop, panier, fiche produit, checkout, confirmation,       */
+/* wishlist), plus les composants JS (menu mobile, tiroir de filtres,  */
+/* toast, lightbox, autocomplétion). */
+
+/* HEADER — logo, actions, recherche, badges */
+
+[dir="rtl"] .sn-logo{
+    margin-right:0;
+    margin-left:30px;
+}
+
+[dir="rtl"] .sn-actions{
+    padding-right:0;
+    padding-left:5px;
+}
+
+[dir="rtl"] .sn-search-category{
+    border-right:none;
+    border-left:1px solid var(--border-color);
+    background-position: left 16px center;
+}
+
+[dir="rtl"] .sn-cart-count,
+[dir="rtl"] .sn-wishlist-count{
+    right:auto;
+    left:-5px;
+}
+
+/* MENU MOBILE (header.js / js-ui.css) — tiroir depuis la gauche en RTL */
+
+@media(max-width:992px){
+    [dir="rtl"] .sn-nav{
+        right:auto;
+        left:-100%;
+        box-shadow:4px 0 20px rgba(0,0,0,0.15);
+        transition:left 0.35s ease;
+    }
+    [dir="rtl"] .sn-nav--open{
+        left:0;
+    }
+}
+
+/* HOME — bannières, badges produit */
+
+[dir="rtl"] .sn-section-header{
+    text-align:right;
+}
+
+[dir="rtl"] .sn-product-badge{
+    left:auto;
+    right:18px;
+}
+
+[dir="rtl"] .sn-product-actions{
+    right:auto;
+    left:-60px;
+}
+
+[dir="rtl"] .sn-product-card:hover .sn-product-actions{
+    left:20px;
+}
+
+/* SHOP — bannière, tiroir de filtres mobile, accent des titres de filtre */
+
+[dir="rtl"] .sn-shop-banner__content{
+    text-align:right;
+}
+
+[dir="rtl"] .sn-filter-box h3::after{
+    left:auto;
+    right:0;
+}
+
+[dir="rtl"] .sn-filter-list a:hover{
+    padding-left:0;
+    padding-right:6px;
+}
+
+@media(max-width:992px){
+    [dir="rtl"] .sn-shop-sidebar{
+        left:auto;
+        right:-300px;
+        box-shadow:-4px 0 20px rgba(0,0,0,0.1);
+        transition:right 0.3s ease;
+    }
+    [dir="rtl"] .sn-shop-sidebar--open{
+        right:0;
+    }
+}
+
+/* PRODUIT — liste à puces des spécifications */
+
+[dir="rtl"] .sn-tab-content ul{
+    padding-left:0;
+    padding-right:22px;
+}
+
+/* La barre de sélection du slider de prix double poignée (.sn-price-range-fill,
+   shop.xml) utilise inset-inline-start/end plutôt que left/right : ces
+   propriétés CSS logiques s'inversent automatiquement avec la direction,
+   donc pas de règle à dupliquer ici — elle reste alignée avec les curseurs
+   natifs <input type="range"> qui s'inversent aussi seuls en RTL. */
+
+/* CONFIRMATION / WISHLIST */
+
+[dir="rtl"] .sn-order-summary{
+    text-align:right;
+}
+
+[dir="rtl"] .sn-wishlist-header .sn-section-header{
+    text-align:right;
+}
+
+/* CHECKOUT — ligne de progression des étapes */
+
+[dir="rtl"] .sn-progress-line{
+    left:auto;
+    right:0;
+}
+
+/* COMPOSANTS JS PARTAGÉS — toast, lightbox, autocomplétion */
+
+/* Pas au-delà de 576px : la règle mobile (js-ui.css) est déjà symétrique
+   (left:16px + right:16px), rien à inverser en dessous de ce seuil. */
+@media(min-width:577px){
+    [dir="rtl"] .sn-toast{
+        right:auto;
+        left:30px;
+    }
+}
+
+[dir="rtl"] .sn-autocomplete-badge{
+    margin-left:0;
+    margin-right:auto;
+}
+
+[dir="rtl"] .sn-lightbox-close{
+    right:auto;
+    left:24px;
+}

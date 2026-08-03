@@ -68,7 +68,8 @@
     if (languageSwitcher) {
         languageSwitcher.addEventListener("change", function () {
             var selectedLang = this.value;
-            console.log("[header.js] Langue sélectionnée :", selectedLang);
+            var returnPath = window.location.pathname + window.location.search;
+            window.location.href = "/set_language/" + selectedLang + "?r=" + encodeURIComponent(returnPath);
         });
     }
 
