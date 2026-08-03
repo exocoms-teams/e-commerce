@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sinistre_note_interne_wizard" model="ir.ui.view">
+        <field name="name">sinistre.note.interne.wizard.form</field>
+        <field name="model">sinistre.note.interne.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Note interne">
+                <group>
+                    <field name="mission_id" invisible="1"/>
+                    <field name="note" nolabel="1" placeholder="Saisir une note interne…"/>
+                </group>
+                <footer>
+                    <button name="action_enregistrer" string="Enregistrer" type="object" class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sinistre_note_wizard" model="ir.actions.act_window">
+        <field name="name">Note interne</field>
+        <field name="res_model">sinistre.note.interne.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_mission_id': active_id}</field>
+    </record>
+
+    <record id="view_sinistre_message_plateforme_wizard" model="ir.ui.view">
+        <field name="name">sinistre.message.plateforme.wizard.form</field>
+        <field name="model">sinistre.message.plateforme.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Message plateforme">
+                <group>
+                    <field name="mission_id" invisible="1"/>
+                    <field name="contenu" nolabel="1" placeholder="Message pour l'artisan…"/>
+                </group>
+                <footer>
+                    <button name="action_envoyer" string="Envoyer" type="object" class="btn-primary"/>
+                    <button string="Annuler" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sinistre_message_wizard" model="ir.actions.act_window">
+        <field name="name">Message plateforme</field>
+        <field name="res_model">sinistre.message.plateforme.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_mission_id': active_id}</field>
+    </record>
+
+</odoo>

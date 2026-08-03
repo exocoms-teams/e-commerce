@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Meta SEO dynamiques + Open Graph + JSON-LD -->
+    <template id="ss_seo_head" inherit_id="website.layout" name="Sinistre Services — SEO Head">
+        <xpath expr="//head/title" position="replace">
+            <title t-if="meta_title" t-esc="meta_title"/>
+            <title t-else="">Sinistre Services — Intervention urgence 24/7</title>
+        </xpath>
+        <xpath expr="//head" position="inside">
+            <meta name="description" t-att-content="meta_description or 'Plateforme intervention sinistre : serrurier, plombier, chauffagiste, electricien. Artisans certifies 24h/24 partout en France.'"/>
+            <meta name="keywords" t-if="meta_keywords" t-att-content="meta_keywords"/>
+            <meta name="robots" content="index, follow"/>
+            <link rel="canonical" t-if="canonical_url" t-att-href="canonical_url"/>
+            <meta property="og:type" t-att-content="og_type or 'website'"/>
+            <meta property="og:site_name" content="Sinistre Services"/>
+            <meta property="og:title" t-att-content="meta_title or 'Sinistre Services'"/>
+            <meta property="og:description" t-att-content="meta_description or ''"/>
+            <meta property="og:url" t-if="canonical_url" t-att-content="canonical_url"/>
+            <meta property="og:locale" content="fr_FR"/>
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="twitter:title" t-att-content="meta_title or 'Sinistre Services'"/>
+            <meta name="twitter:description" t-att-content="meta_description or ''"/>
+            <script type="application/ld+json" t-if="json_ld">
+                <t t-raw="json_ld"/>
+            </script>
+        </xpath>
+    </template>
+
+    <!-- JSON-LD services (page nos-services) -->
+    <template id="ss_seo_services_jsonld" name="Sinistre — JSON-LD Services">
+        <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Services d'intervention Sinistre Services",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Serrurerie","url":"/nos-services#serrurerie"},
+    {"@type":"ListItem","position":2,"name":"Plomberie","url":"/nos-services#plomberie"},
+    {"@type":"ListItem","position":3,"name":"Chauffagiste","url":"/nos-services#chauffagiste"},
+    {"@type":"ListItem","position":4,"name":"Électricité","url":"/nos-services#electricite"},
+    {"@type":"ListItem","position":5,"name":"Assainissement","url":"/nos-services#assainissement"},
+    {"@type":"ListItem","position":6,"name":"Vitrerie","url":"/nos-services#vitrerie"},
+    {"@type":"ListItem","position":7,"name":"Nuisibles","url":"/nos-services#nuisibles"},
+    {"@type":"ListItem","position":8,"name":"Travaux","url":"/nos-services#travaux"}
+  ]
+}
+        </script>
+    </template>
+
+</odoo>

@@ -1,0 +1,599 @@
+/**
+ * mission_detail.js — Écran de détail d'une mission
+ */
+
+window.MissionDetail = (() => {
+    let _mission   = null;
+    let _missionId = null;
+    let _isLoading = false;
+
+    async function open(idOrRef) {
+        _missionId = (typeof idOrRef === 'string' && /^\d+$/.test(idOrRef)) ? parseInt(idOrRef) : idOrRef;
+        App.showView('mission');
+        await _load();
+    }
+
+    async function _load() {
+        if (_isLoading) return;
+        _isLoading = true;
+        const banner = document.getElementById('missionBanner');
+        if (banner) {
+            const bt = document.getElementById('missionBannerText');
+            if (bt) bt.textContent = 'Chargement…';
+            else banner.textContent = 'Chargement…';
+        }
+        try {
+            const data = await API.getMission(_missionId);
+            _mission   = data.mission || data;
+        } catch (err) {
+            Toast.show('Impossible de charger la mission', 'error');
+            App.goBack();
+            _isLoading = false;
+            return;
+        } finally { _isLoading = false; }
+        Photos.setMission(_mission.id);
+        _render();
+    }
+
+    function _render() {
+        if (!_mission) return;
+        const m = _mission;
+
+        const titleEl = document.getElementById('topbarTitle') || document.getElementById('mobileTopbarTitle');
+        if (titleEl) titleEl.textContent = m.reference || 'Mission';
+
+        const state   = CONFIG.STATE_LABELS[m.state] || { label: m.state || '–', icon: '❓' };
+        const urgConf = CONFIG.URGENCE_COLORS[m.urgence] || CONFIG.URGENCE_COLORS.normale;
+        const banner  = document.getElementById('missionBanner');
+        if (banner) {
+            banner.style.background = urgConf.bg;
+            banner.style.color      = urgConf.text;
+        }
+        const bi = document.getElementById('missionBannerIcon');
+        const bt = document.getElementById('missionBannerText');
+        if (bi) bi.textContent = state.icon;
+        if (bt) bt.textContent = state.label;
+
+        _renderClient(m, urgConf);
+        _renderIntervention(m, urgConf);
+        _renderDescription(m);
+        _renderPhotos(m);
+        _renderDevisUnderPhotos(m);
+        _renderDevis(m);
+        _renderDocumentsImportes(m);
+        _renderConsommables(m);
+        _renderPenseBetes(m);
+        _renderNotes(m);
+        _renderFacture(m);
+        _renderActions(m);
+        _renderMessagerieBadge(m);
+        _setRecapMode(['termine','facture','clos','annule'].includes(m.state));
+    }
+
+    function _setRecapMode(isRecap) {
+        const photosActions = document.querySelector('.photos-actions');
+        const notesSaveBtn = document.querySelector('#notesCard .btn');
+        const notesText = document.getElementById('missionNotesText');
+        if (photosActions) photosActions.style.display = isRecap ? 'none' : '';
+        if (notesSaveBtn) notesSaveBtn.style.display = isRecap ? 'none' : '';
+        if (notesText) {
+            notesText.readOnly = isRecap;
+            notesText.style.background = isRecap ? '#F9FAFB' : '';
+        }
+    }
+
+    function _renderFacture(m) {
+        let card = document.getElementById('factureRecapCard');
+        if (!card) {
+            const notesCard = document.getElementById('notesCard');
+            if (!notesCard) return;
+            card = document.createElement('div');
+            card.id = 'factureRecapCard';
+            card.className = 'card';
+            card.innerHTML = '<div class="card-header"><span class="card-icon">🧾</span><h3 class="card-title">Facture</h3></div><div id="factureRecapContent"></div>';
+            notesCard.parentNode.insertBefore(card, notesCard.nextSibling);
+        }
+        const content = document.getElementById('factureRecapContent');
+        const isDone = ['termine','facture','clos'].includes(m.state);
+        if (!isDone) {
+            card.style.display = 'none';
+            return;
+        }
+        card.style.display = 'block';
+        if (content) {
+            if (m.facture_numero) {
+                let html = '<div style="font-size:15px;font-weight:700;color:#059669">' + m.facture_numero + '</div>';
+                if (m.ref_paiement) {
+                    html += '<div style="font-size:12px;color:#6B7280;margin-top:4px">Réf. paiement : ' + m.ref_paiement + '</div>';
+                }
+                content.innerHTML = html;
+            } else if (m.a_facturer) {
+                content.innerHTML = '<div style="font-size:13px;color:#9CA3AF">Facture non générée</div>';
+            } else {
+                content.innerHTML = '<div style="font-size:13px;color:#059669">Facture enregistrée</div>';
+            }
+        }
+    }
+
+    function _renderClient(m) {
+        const ci = document.getElementById('clientInfo');
+        if (!ci) return;
+        ci.innerHTML = `
+            <div class="info-item">
+                <div class="info-label">Client</div>
+                <div class="info-val">${m.client || '–'}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-val">${m.client_email
+                    ? `<a href="mailto:${m.client_email}" style="color:var(--blue-light)">${m.client_email}</a>`
+                    : '–'}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Source</div>
+                <div class="info-val">${_sourceLabel(m.source)}</div>
+            </div>
+            <div class="info-item" style="grid-column:1/-1">
+                <div class="info-label">Téléphone</div>
+                <div class="info-val">
+                    ${m.tel_sur_place
+                        ? `<a href="tel:${m.tel_sur_place}" style="color:var(--blue-light);font-weight:600">${m.tel_sur_place}</a>`
+                        : '–'}
+                </div>
+            </div>
+        `;
+    }
+
+    function _renderIntervention(m, urgConf) {
+        const ii = document.getElementById('interventionInfo');
+        if (!ii) return;
+        ii.innerHTML = `
+            <div class="info-item">
+                <div class="info-label">Type</div>
+                <div class="info-val">${CONFIG.TYPE_LABELS[m.type_intervention] || m.type_intervention}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Urgence</div>
+                <div class="info-val" style="color:${urgConf.text}">${urgConf.icon} ${m.urgence}</div>
+            </div>
+            ${m.numero_dossier ? `<div class="info-item"><div class="info-label">N° dossier</div><div class="info-val">${m.numero_dossier}</div></div>` : ''}
+            <div class="info-item" style="grid-column:1/-1">
+                <div class="info-label">Adresse</div>
+                <div class="info-val">
+                    <a href="https://maps.google.com/?q=${encodeURIComponent(m.adresse || '')}"
+                       target="_blank" style="color:var(--blue-light)">📍 ${m.adresse || '–'}</a>
+                </div>
+            </div>
+            ${m.date_rdv ? `<div class="info-item"><div class="info-label">Date RDV</div><div class="info-val">${_formatDate(m.date_rdv)}</div></div>` : ''}
+            ${m.montant_garanti && m.source === 'assurance' ? `
+            <div class="info-item">
+                <div class="info-label">Garantie assurance</div>
+                <div class="info-val" style="font-weight:700">${_fmt(m.montant_garanti)} € HT</div>
+            </div>` : ''}
+            ${m.montant_devis ? `
+            <div class="info-item">
+                <div class="info-label">Montant Devis</div>
+                <div class="info-val" style="font-weight:700;color:var(--blue)">${_fmt(m.montant_devis)} €</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Reste à charge</div>
+                <div class="info-val" style="font-weight:700;color:${m.reste_a_charge > 0 ? '#DC2626' : '#059669'}">${_fmt(m.reste_a_charge)} €</div>
+            </div>` : ''}
+            ${m.devis_depasse_garantie ? `
+            <div class="info-item" style="grid-column:1/-1">
+                <div class="info-val" style="color:#D97706;font-size:12px">⚠️ Devis supérieur à la garantie — le client peut accepter ou refuser</div>
+            </div>` : ''}
+        `;
+    }
+
+    function _renderDescription(m) {
+        const dt = document.getElementById('descriptionText');
+        if (dt) dt.textContent = m.description || '–';
+    }
+
+    function _renderPhotos(m) {
+        const grid   = document.getElementById('photosGrid');
+        const counts = document.getElementById('photoCounts');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const avant = (m.photos || []).filter(p => p.type_photo === 'avant');
+        const apres = (m.photos || []).filter(p => p.type_photo === 'apres');
+        if (counts) counts.textContent = `${avant.length} avant · ${apres.length} après`;
+        const isRecap = ['termine','facture','clos','annule'].includes(m.state);
+        const canDelete = !isRecap;
+        [...avant, ...apres].forEach(photo => {
+            const thumb = document.createElement('div');
+            thumb.className = `photo-thumb ${photo.type_photo}`;
+            thumb.dataset.photoId = photo.id;
+            thumb.innerHTML = `
+                <img src="${photo.url || '#'}" alt="Photo ${photo.type_photo}" onerror="this.style.display='none'"/>
+                <div class="photo-thumb-label">${photo.type_photo}</div>
+                ${canDelete ? `<button type="button" class="photo-delete-btn" data-photo-id="${photo.id}" title="Supprimer cette photo">✕</button>` : ''}
+            `;
+            const delBtn = thumb.querySelector('.photo-delete-btn');
+            if (delBtn) {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deletePhoto(photo.id, delBtn);
+                });
+            }
+            grid.appendChild(thumb);
+        });
+        const st = m.state;
+        const btnAvant = document.getElementById('btnPhotoAvant');
+        const btnApres = document.getElementById('btnPhotoApres');
+        if (btnAvant) btnAvant.style.display = ['nouveau','assigne','rdv_planifie','en_cours'].includes(st) ? 'flex' : 'none';
+        if (btnApres) btnApres.style.display = ['en_cours','travaux_en_cours','devis_accepte','devis_envoye'].includes(st) ? 'flex' : 'none';
+    }
+
+    function _renderDevisUnderPhotos(m) {
+        const block = document.getElementById('devisUnderPhotos');
+        if (!block) return;
+        block.innerHTML = '';
+        const isDone = ['termine','facture','clos','annule'].includes(m.state);
+        if (isDone) return;
+        if (!m.devis) {
+            block.appendChild(_btn('💶 Créer un devis', 'btn-nav', () => DevisForm.open(m.id)));
+            block.appendChild(_btn('📥 Importer un devis (logiciel)', 'btn-outline', () => ImportDoc.open(m.id, 'devis')));
+        }
+    }
+
+    function _renderDocumentsImportes(m) {
+        let card = document.getElementById('importDocsCard');
+        const docs = m.documents_importes || [];
+        const isDone = ['termine','facture','clos'].includes(m.state);
+        if (!docs.length && !isDone) return;
+        if (!card) {
+            const devisCard = document.getElementById('devisCard');
+            if (!devisCard) return;
+            card = document.createElement('div');
+            card.id = 'importDocsCard';
+            card.className = 'card';
+            card.innerHTML = '<div class="card-header"><span class="card-icon">📥</span><h3 class="card-title">Documents importés</h3></div><div id="importDocsList"></div><div id="importDocsActions" class="photos-actions"></div>';
+            devisCard.parentNode.insertBefore(card, devisCard.nextSibling);
+        }
+        const list = document.getElementById('importDocsList');
+        const actions = document.getElementById('importDocsActions');
+        if (list) {
+            if (!docs.length) {
+                list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;margin:0">Aucun document importé</p>';
+            } else {
+                list.innerHTML = docs.map(d => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #E5E7EB;font-size:13px">
+                        <div>
+                            <strong>${d.type === 'facture' ? 'Facture' : 'Devis'}</strong> — ${d.reference}<br/>
+                            <span style="color:#6B7280">${_fmt(d.montant_ht)} € HT / ${_fmt(d.montant_ttc)} € TTC</span>
+                        </div>
+                        ${d.url ? `<a href="${d.url}" target="_blank" class="btn btn-outline btn-sm" style="padding:4px 10px">📄</a>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+        if (actions) {
+            actions.innerHTML = '';
+            if (isDone && !docs.some(d => d.type === 'facture')) {
+                const b = _btn('📥 Importer facture (logiciel)', 'btn-outline btn-sm', () => ImportDoc.open(m.id, 'facture'));
+                actions.appendChild(b);
+            }
+        }
+        card.style.display = (docs.length || isDone) ? 'block' : 'none';
+    }
+
+    function addPhotoThumb({ type, preview, id }) {
+        const grid = document.getElementById('photosGrid');
+        if (!grid) return null;
+        const thumb = document.createElement('div');
+        thumb.className = `photo-thumb ${type}`;
+        if (id) thumb.dataset.photoId = id;
+        const canDelete = !_mission || !['termine','facture','clos','annule'].includes(_mission.state);
+        thumb.innerHTML = `
+            <img src="${preview}" alt="Photo ${type}"/>
+            <div class="photo-thumb-label">${type}</div>
+            ${canDelete ? `<button type="button" class="photo-delete-btn" title="Supprimer cette photo">✕</button>` : ''}
+        `;
+        const delBtn = thumb.querySelector('.photo-delete-btn');
+        if (delBtn) {
+            delBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePhoto(id || 0, delBtn);
+            });
+        }
+        grid.appendChild(thumb);
+        refreshPhotoCounts();
+        return thumb;
+    }
+
+    function setPhotoThumbId(thumbEl, photoId) {
+        if (!thumbEl || !photoId) return;
+        thumbEl.dataset.photoId = photoId;
+        const delBtn = thumbEl.querySelector('.photo-delete-btn');
+        if (delBtn) {
+            delBtn.replaceWith(delBtn.cloneNode(true));
+            const newBtn = thumbEl.querySelector('.photo-delete-btn');
+            newBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deletePhoto(photoId, newBtn);
+            });
+        }
+    }
+
+    async function deletePhoto(photoId, btnEl) {
+        if (!confirm('Supprimer cette photo ?')) return;
+        if (!photoId || photoId === 0 || !_missionId) {
+            btnEl?.closest('.photo-thumb')?.remove();
+            refreshPhotoCounts();
+            return;
+        }
+        try {
+            await API.deletePhoto(_missionId, photoId);
+            btnEl?.closest('.photo-thumb')?.remove();
+            Toast.show('Photo supprimée', 'success');
+            refreshPhotoCounts();
+            if (_mission && _mission.photos) {
+                _mission.photos = _mission.photos.filter(p => p.id !== photoId);
+            }
+        } catch (err) {
+            Toast.show('Erreur: ' + err.message, 'error');
+        }
+    }
+
+    function refreshPhotoCounts() {
+        if (!_mission) return;
+        const avant = document.querySelectorAll('.photo-thumb.avant').length;
+        const apres = document.querySelectorAll('.photo-thumb.apres').length;
+        const el    = document.getElementById('photoCounts');
+        if (el) el.textContent = `${avant} avant · ${apres} après`;
+    }
+
+    function _renderConsommables(m) {
+        const list = document.getElementById('consommablesList');
+        if (!list) return;
+        const items = m.consommables || [];
+        if (!items.length) {
+            list.textContent = 'Aucun consommable';
+            return;
+        }
+        list.innerHTML = items.map(c => `
+            <div style="padding:6px 0;border-bottom:1px solid #E5E7EB;font-size:13px">
+                ${c.designation} × ${c.quantite} ${c.unite || ''}
+                ${c.commande_fournisseur ? ' <span style="color:#D97706">📦 commande</span>' : ''}
+            </div>
+        `).join('');
+    }
+
+    function _renderPenseBetes(m) {
+        const list = document.getElementById('penseBeteList');
+        if (!list) return;
+        const items = m.pense_betes || [];
+        if (!items.length) {
+            list.innerHTML = '<p style="font-size:13px;color:#9CA3AF;margin:0">Aucun pense-bête</p>';
+            return;
+        }
+        list.innerHTML = items.map(p => `
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px">
+                <span style="flex:1">${p.contenu}</span>
+                <button class="btn btn-outline btn-sm" style="padding:4px 8px" onclick="MissionDetail.donePenseBete(${p.id})">✓</button>
+            </div>
+        `).join('');
+    }
+
+    async function addConsommable() {
+        const des = document.getElementById('consoDesignation')?.value.trim();
+        const qte = parseFloat(document.getElementById('consoQte')?.value) || 1;
+        if (!des || !_missionId) return;
+        try {
+            await API.addConsommable(_missionId, { designation: des, quantite: qte, unite: 'pièce' });
+            document.getElementById('consoDesignation').value = '';
+            Toast.show('Consommable ajouté', 'success');
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    async function addPenseBete() {
+        const contenu = document.getElementById('penseBeteInput')?.value.trim();
+        if (!contenu) return;
+        try {
+            await API.addPenseBete(contenu, _missionId);
+            document.getElementById('penseBeteInput').value = '';
+            Toast.show('Pense-bête ajouté', 'success');
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    async function donePenseBete(id) {
+        try {
+            await API.donePenseBete(id);
+            await _load();
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    function _renderDevis(m) {
+        const content = document.getElementById('devisContent');
+        const badge   = document.getElementById('devisStatusBadge');
+        if (!content) return;
+        const devis = m.devis || null;
+        if (!devis) {
+            if (badge) badge.style.display = 'none';
+            content.innerHTML = `<p style="color:#9CA3AF;font-size:13px;margin-bottom:12px">Aucun devis créé — utilisez le bouton sous les photos</p>`;
+            return;
+        }
+        const devisStates = {
+            brouillon:   { label: 'Brouillon',      color: '#6B7280', bg: '#F3F4F6' },
+            envoye:      { label: 'Envoyé',          color: '#D97706', bg: '#FEF3C7' },
+            accepte:     { label: '✅ Accepté',      color: '#059669', bg: '#D1FAE5' },
+            refuse:      { label: '❌ Refusé',       color: '#DC2626', bg: '#FEE2E2' },
+            en_revision: { label: '⚠️ En révision',  color: '#7C3AED', bg: '#EDE9FE' },
+        };
+        const ds = devisStates[devis.state] || devisStates.brouillon;
+        if (badge) {
+            Object.assign(badge.style, { display:'inline-block', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600', color:ds.color, background:ds.bg });
+            badge.textContent = ds.label;
+        }
+        const lignesHtml = (devis.lignes || []).map(l => `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #E5E7EB">
+                <span>${l.description} × ${l.quantite}</span>
+                <span style="font-weight:600">${_fmt(l.montant_total)} €</span>
+            </div>
+        `).join('');
+        content.innerHTML = `
+            ${lignesHtml}
+            <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:16px;font-weight:800;color:#1E40AF">
+                <span>Total TTC</span><span>${_fmt(devis.montant_total)} €</span>
+            </div>
+            ${devis.note_client ? `<p style="margin-top:8px;font-size:12px;color:#6B7280;font-style:italic">${devis.note_client}</p>` : ''}
+        `;
+    }
+
+    function _renderNotes(m) {
+        const textarea = document.getElementById('missionNotesText');
+        if (textarea && m.notes_artisan !== undefined) textarea.value = m.notes_artisan || '';
+    }
+
+    function _renderMessagerieBadge(m) {
+        const badge = document.getElementById('msgBadge');
+        const count = m.messages_non_lus || 0;
+        if (badge) { badge.textContent = count || ''; badge.style.display = count ? 'flex' : 'none'; }
+    }
+
+    function _renderActions(m) {
+        const block = document.getElementById('missionActions');
+        if (!block) return;
+        block.innerHTML = '';
+
+        const st  = m.state;
+        const dev = m.devis;
+        const isDone = ['termine','facture','clos','annule'].includes(st);
+        if (isDone) return;
+
+        if (!m.signature_avant) {
+            block.appendChild(_btn('✍️ Signature Avant Intervention', 'btn-start', () =>
+                Signature.open({ mode: 'avant', missionId: m.id })
+            ));
+        }
+
+        if (!['en_cours','travaux_en_cours','devis_accepte','devis_envoye','devis_refuse'].includes(st)) {
+            block.appendChild(_btn('🔧 Démarrer l\'intervention', 'btn-start', async () => {
+                const avant = document.querySelectorAll('.photo-thumb.avant').length;
+                if (avant === 0) {
+                    Toast.show('⚠️ Prenez au moins une photo AVANT (* obligatoire)', 'warning');
+                    return;
+                }
+                await _action('DEMARRER_MISSION', () => API.demarrer(m.id), { missionId: m.id });
+            }));
+        }
+
+        if (dev?.state === 'brouillon') {
+            block.appendChild(_btn('✏️ Modifier le devis', 'btn-nav', () => DevisForm.open(m.id, dev, false)));
+        }
+
+        if (dev?.state === 'accepte') {
+            block.appendChild(_btn('⚠️ Modifier le devis (avenant)', 'btn-warning', () => {
+                if (!confirm('Modifier le devis obligera le client à signer à nouveau. Continuer ?')) return;
+                DevisForm.open(m.id, dev, true);
+            }));
+        }
+
+        if (dev?.state === 'envoye') {
+            block.appendChild(_btn('✅ Faire signer le client (devis)', 'btn-start', () =>
+                Signature.open({ mode: 'devis', devisId: dev.id, missionId: m.id })
+            ));
+            block.appendChild(_btn('❌ Client refuse le devis', 'btn-danger', async () => {
+                if (!confirm('Confirmer le refus ? La mission pourra être clôturée et l\'assurance facturée.')) return;
+                await _action('REFUSER_DEVIS', () => API.refuserDevis(dev.id), { devisId: dev.id });
+            }));
+        }
+
+        if (dev?.state === 'en_revision') {
+            block.appendChild(_btn('✍️ Re-signature client (devis modifié)', 'btn-warning', () =>
+                Signature.open({ mode: 'devis_modifie', devisId: dev.id, missionId: m.id })
+            ));
+        }
+
+        const canClose = ['en_cours','travaux_en_cours','devis_accepte','devis_refuse'].includes(st);
+        if (canClose) {
+            block.appendChild(_btn('✍️ Signature Après Intervention', 'btn-start', async () => {
+                const apres = document.querySelectorAll('.photo-thumb.apres').length;
+                if (apres === 0) {
+                    Toast.show('⚠️ Prenez des photos APRÈS (* obligatoire)', 'warning');
+                    return;
+                }
+                Signature.open({ mode: 'apres', missionId: m.id });
+            }));
+            block.appendChild(_btn('🎉 Clôturer la mission', 'btn-start', async () => {
+                const apres = document.querySelectorAll('.photo-thumb.apres').length;
+                if (apres === 0) {
+                    Toast.show('⚠️ Prenez des photos APRÈS les travaux', 'warning');
+                    return;
+                }
+                if (!m.signature_apres) {
+                    Toast.show('⚠️ Signature client de fin d\'intervention requise', 'warning');
+                    return;
+                }
+                if (!confirm('Confirmer la clôture de la mission ?')) return;
+                await _action('TERMINER_MISSION', () => API.terminer(m.id), { missionId: m.id });
+            }));
+        }
+
+        if (m.tel_sur_place) {
+            block.appendChild(_btn(`📞 Appeler ${m.tel_sur_place}`, 'btn-call', () => {
+                window.location.href = `tel:${m.tel_sur_place}`;
+            }));
+        }
+        if (m.adresse) {
+            block.appendChild(_btn('🗺 Ouvrir dans Maps', 'btn-nav', () => {
+                window.open(`https://maps.google.com/?q=${encodeURIComponent(m.adresse)}`);
+            }));
+        }
+    }
+
+    function _btn(label, cls, onClick) {
+        const btn = document.createElement('button');
+        btn.className = cls;
+        btn.innerHTML = `<span>${label}</span>`;
+        btn.addEventListener('click', onClick);
+        return btn;
+    }
+
+    async function _action(type, apiFn, queuePayload) {
+        try {
+            const result = await Offline.tryOrQueue(type, apiFn, queuePayload);
+            if (!result?.queued) {
+                Toast.show('✅ Action enregistrée', 'success');
+                await MissionDetail.reload();
+            }
+        } catch (err) { Toast.show('Erreur: ' + err.message, 'error'); }
+    }
+
+    async function saveNotes() {
+        const textarea = document.getElementById('missionNotesText');
+        if (!textarea || !_missionId) return;
+        try {
+            await API.saveNotes(_missionId, textarea.value.trim());
+            Toast.show('📝 Notes enregistrées', 'success');
+        } catch (err) { Toast.show('Erreur notes: ' + err.message, 'error'); }
+    }
+
+    function _fmt(n) { return parseFloat(n || 0).toFixed(2).replace('.', ','); }
+    function _formatDate(dt) {
+        if (!dt) return '–';
+        return new Date(dt).toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    }
+    function _sourceLabel(s) {
+        return { assurance:'🏢 Assurance', particulier:'👤 Particulier', entreprise:'🏭 Entreprise' }[s] || (s || '–');
+    }
+
+    return {
+        open,
+        reload: async () => { await _load(); },
+        getMission: () => _mission,
+        addPhotoThumb,
+        setPhotoThumbId,
+        refreshPhotoCounts,
+        deletePhoto,
+        saveNotes,
+        addConsommable,
+        addPenseBete,
+        donePenseBete,
+        openMessagerie: () => { if (_missionId) Messagerie.open(_missionId); },
+    };
+})();

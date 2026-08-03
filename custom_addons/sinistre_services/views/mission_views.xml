@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- MISSION FORM -->
+    <record id="view_sinistre_mission_form" model="ir.ui.view">
+        <field name="name">sinistre.mission.form</field>
+        <field name="model">sinistre.mission</field>
+        <field name="arch" type="xml">
+            <form string="Ordre de Mission">
+                <header>
+                    <button name="action_assigner" string="Assigner" type="object" class="btn-primary" invisible="state != 'nouveau' or not intervenant_id"/>
+                    <button name="action_planifier_rdv" string="Confirmer RDV" type="object" class="btn-primary" invisible="state != 'assigne'"/>
+                    <button name="action_demarrer" string="Démarrer travaux" type="object" class="btn-primary" invisible="state not in ('rdv_planifie','assigne','devis_accepte')"/>
+                    <button name="action_terminer" string="Clôturer" type="object" class="btn-success" invisible="state not in ('travaux_en_cours','en_cours','devis_refuse')"/>
+                    <button name="action_creer_facture_assurance" string="Facturer Assurance" type="object" class="btn-secondary" invisible="state != 'termine' or source != 'assurance' or facture_assurance_id"/>
+                    <button name="action_creer_facture_client" string="Facturer Reste à Charge" type="object" class="btn-secondary" invisible="state not in ('termine','facture') or reste_a_charge &lt;= 0 or facture_client_id"/>
+                    <button name="action_annuler" string="Annuler" type="object" invisible="state in ('clos','annule','facture')"/>
+                    <button name="%(action_sinistre_note_wizard)d" string="Note interne" type="action" class="btn-secondary"/>
+                    <button name="%(action_sinistre_message_wizard)d" string="Message plateforme" type="action" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="nouveau,assigne,rdv_planifie,devis_envoye,devis_accepte,travaux_en_cours,termine,facture,clos"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_voir_devis" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="devis_count" widget="statinfo" string="Devis"/>
+                        </button>
+                        <button name="action_voir_photos" type="object" class="oe_stat_button" icon="fa-camera">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="photos_avant_count"/>/<field name="photos_apres_count"/></span>
+                                <span class="o_stat_text">Photos Av/Ap</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="reference" readonly="1"/></h1>
+                        <field name="priority" widget="priority"/>
+                    </div>
+                    <group>
+                        <group string="Source &amp; Type">
+                            <field name="source"/>
+                            <field name="type_intervention"/>
+                            <field name="urgence"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="date_reception"/>
+                            <field name="date_rdv"/>
+                            <field name="date_debut_travaux" readonly="1"/>
+                            <field name="date_cloture" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Assurance" invisible="source != 'assurance'">
+                        <group>
+                            <field name="assurance_id"/>
+                            <field name="ref_assurance"/>
+                            <field name="numero_dossier"/>
+                            <field name="contrat_assurance"/>
+                        </group>
+                        <group>
+                            <field name="montant_garanti"/>
+                            <field name="franchise"/>
+                            <field name="devis_depasse_garantie" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Client">
+                        <group>
+                            <field name="client_id" options="{'quick_create': false}"/>
+                            <field name="client_email"/>
+                            <field name="adresse_intervention"/>
+                        </group>
+                        <group>
+                            <field name="contact_sur_place"/>
+                            <field name="tel_sur_place"/>
+                            <field name="tva_client" invisible="source == 'assurance'"/>
+                        </group>
+                    </group>
+                    <group string="Intervenant">
+                        <field name="intervenant_id" options="{'quick_create': false}"/>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description_sinistre" placeholder="Décrivez le sinistre..."/>
+                        </page>
+                        <page string="Financier">
+                            <group string="Estimation (visible artisan avant acceptation)">
+                                <group>
+                                    <field name="montant_estime" widget="monetary"
+                                           help="Montant minimum communiqué à l'artisan avant acceptation"/>
+                                    <field name="montant_estime_max" widget="monetary"
+                                           help="Montant maximum de la fourchette estimée"/>
+                                </group>
+                                <group>
+                                    <field name="montant_garanti" invisible="source != 'assurance'"/>
+                                    <field name="franchise" invisible="source != 'assurance'"/>
+                                </group>
+                            </group>
+                            <group string="Facturation">
+                                <group>
+                                    <field name="montant_devis"/>
+                                    <field name="reste_a_charge" class="fw-bold"/>
+                                    <field name="commission_plateforme"/>
+                                    <field name="commission_virement"/>
+                                    <field name="mode_paiement"/>
+                                    <field name="ref_paiement"/>
+                                    <field name="date_credit_virement"/>
+                                </group>
+                                <group>
+                                    <field name="facture_assurance_id" readonly="1"/>
+                                    <field name="facture_client_id" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Documents importés">
+                            <field name="document_artisan_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="date_import"/>
+                                    <field name="type_document"/>
+                                    <field name="reference_externe"/>
+                                    <field name="montant_ht" widget="monetary"/>
+                                    <field name="montant_ttc" widget="monetary"/>
+                                    <field name="fichier_name"/>
+                                    <field name="devis_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes internes">
+                            <group>
+                                <field name="notes_artisan" string="Notes Artisan (PWA)"
+                                       readonly="1"
+                                       help="Notes saisies par l'artisan depuis l'application mobile"/>
+                            </group>
+                            <group string="Commentaire interne plateforme">
+                                <field name="commentaire_interne" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Messages Plateforme">
+                            <field name="sinistre_message_ids" nolabel="1"
+                                   context="{'default_auteur_type': 'plateforme', 'default_auteur_nom': 'Plateforme FairFair', 'default_lu_artisan': False}">
+                                <list editable="bottom">
+                                    <field name="date_envoi" readonly="1"/>
+                                    <field name="auteur_type"/>
+                                    <field name="auteur_nom"/>
+                                    <field name="contenu"/>
+                                    <field name="lu_artisan"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Signatures">
+                            <group>
+                                <group string="Avant intervention">
+                                    <field name="signature_avant" widget="image"
+                                           string="Signature client (avant)"
+                                           readonly="1"
+                                           help="Signature du client autorisant le démarrage des travaux"/>
+                                </group>
+                                <group string="Après intervention">
+                                    <field name="signature_apres" widget="image"
+                                           string="Signature client (après)"
+                                           readonly="1"
+                                           help="Signature du client validant la fin des travaux"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Consommables">
+                            <field name="consommable_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="designation"/>
+                                    <field name="quantite"/>
+                                    <field name="unite"/>
+                                    <field name="commande_fournisseur"/>
+                                    <field name="fournisseur"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Technique">
+                            <group>
+                                <field name="token_api" readonly="1"/>
+                                <field name="code_acces" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- MISSION LIST -->
+    <record id="view_sinistre_mission_list" model="ir.ui.view">
+        <field name="name">sinistre.mission.list</field>
+        <field name="model">sinistre.mission</field>
+        <field name="arch" type="xml">
+            <list string="Missions"
+                  decoration-danger="urgence == 'tres_urgente'"
+                  decoration-warning="urgence == 'urgente'"
+                  decoration-muted="state in ('clos','annule')">
+                <field name="reference"/>
+                <field name="date_reception"/>
+                <field name="source" widget="badge"
+                       decoration-info="source == 'assurance'"
+                       decoration-success="source == 'particulier'"
+                       decoration-warning="source == 'entreprise'"/>
+                <field name="type_intervention"/>
+                <field name="client_id"/>
+                <field name="adresse_intervention"/>
+                <field name="intervenant_id"/>
+                <field name="urgence" widget="badge"
+                       decoration-danger="urgence == 'tres_urgente'"
+                       decoration-warning="urgence == 'urgente'"/>
+                <field name="date_rdv"/>
+                <field name="montant_devis" optional="show"/>
+                <field name="reste_a_charge" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('termine','clos')"
+                       decoration-primary="state in ('travaux_en_cours','en_cours')"
+                       decoration-warning="state in ('rdv_planifie','assigne')"
+                       decoration-danger="state in ('annule','devis_refuse')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- MISSION KANBAN -->
+    <record id="view_sinistre_mission_kanban" model="ir.ui.view">
+        <field name="name">sinistre.mission.kanban</field>
+        <field name="model">sinistre.mission</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="reference"/>
+                <field name="source"/>
+                <field name="type_intervention"/>
+                <field name="client_id"/>
+                <field name="intervenant_id"/>
+                <field name="urgence"/>
+                <field name="montant_devis"/>
+                <field name="date_rdv"/>
+                <field name="state"/>
+                <field name="priority"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_global_click #{record.urgence.raw_value == 'tres_urgente' ? 'border-danger' : record.urgence.raw_value == 'urgente' ? 'border-warning' : ''}">
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="reference"/>
+                                        </strong>
+                                        <small class="text-muted">
+                                            <field name="type_intervention"/>
+                                        </small>
+                                    </div>
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <i class="fa fa-user" title="Client"/>
+                                        <field name="client_id"/>
+                                    </div>
+                                    <div t-if="record.intervenant_id.raw_value">
+                                        <i class="fa fa-wrench" title="Intervenant"/>
+                                        <field name="intervenant_id"/>
+                                    </div>
+                                    <div t-if="record.date_rdv.raw_value">
+                                        <i class="fa fa-calendar" title="Date RDV"/>
+                                        <field name="date_rdv"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="source" widget="badge"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="urgence" widget="badge"
+                                               decoration-danger="urgence == 'tres_urgente'"
+                                               decoration-warning="urgence == 'urgente'"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- MISSION SEARCH -->
+    <record id="view_sinistre_mission_search" model="ir.ui.view">
+        <field name="name">sinistre.mission.search</field>
+        <field name="model">sinistre.mission</field>
+        <field name="arch" type="xml">
+            <search string="Recherche Missions">
+                <field name="reference"/>
+                <field name="client_id"/>
+                <field name="intervenant_id"/>
+                <field name="assurance_id"/>
+                <field name="ref_assurance"/>
+                <separator/>
+                <filter string="Nouvelles" name="nouveau"
+                        domain="[('state', '=', 'nouveau')]"/>
+                <filter string="En Cours" name="en_cours"
+                        domain="[('state', 'in', ['en_cours', 'travaux_en_cours', 'rdv_planifie', 'assigne'])]"/>
+                <filter string="Urgentes" name="urgente"
+                        domain="[('urgence', 'in', ['urgente', 'tres_urgente'])]"/>
+                <separator/>
+                <filter string="Assurances" name="assurance"
+                        domain="[('source', '=', 'assurance')]"/>
+                <filter string="Particuliers" name="particulier"
+                        domain="[('source', '=', 'particulier')]"/>
+                <filter string="Entreprises" name="entreprise"
+                        domain="[('source', '=', 'entreprise')]"/>
+                <separator/>
+                <filter string="Terminées" name="termine"
+                        domain="[('state', 'in', ['termine', 'facture', 'clos'])]"/>
+                <separator/>
+                <filter string="Par Statut" name="group_state"
+                        context="{'group_by': 'state'}"/>
+                <filter string="Par Type" name="group_type"
+                        context="{'group_by': 'type_intervention'}"/>
+                <filter string="Par Source" name="group_source"
+                        context="{'group_by': 'source'}"/>
+                <filter string="Par Intervenant" name="group_intervenant"
+                        context="{'group_by': 'intervenant_id'}"/>
+                <filter string="Par Assurance" name="group_assurance"
+                        context="{'group_by': 'assurance_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_sinistre_mission" model="ir.actions.act_window">
+        <field name="name">Ordres de Mission</field>
+        <field name="res_model">sinistre.mission</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_sinistre_mission_search"/>
+        <field name="context">{'search_default_en_cours': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune mission pour le moment.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sinistre_candidature_list" model="ir.ui.view">
+        <field name="name">sinistre.candidature.list</field>
+        <field name="model">sinistre.candidature</field>
+        <field name="arch" type="xml">
+            <list string="Candidatures">
+                <field name="name"/>
+                <field name="nom"/>
+                <field name="email"/>
+                <field name="telephone"/>
+                <field name="specialites"/>
+                <field name="zone_intervention"/>
+                <field name="siret"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'nouveau'"
+                       decoration-warning="state == 'en_cours'"
+                       decoration-success="state == 'valide'"
+                       decoration-danger="state == 'refuse'"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sinistre_candidature_form" model="ir.ui.view">
+        <field name="name">sinistre.candidature.form</field>
+        <field name="model">sinistre.candidature</field>
+        <field name="arch" type="xml">
+            <form string="Candidature">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="nouveau,en_cours,valide,refuse"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Identité">
+                            <field name="prenom"/>
+                            <field name="nom"/>
+                            <field name="email" widget="email"/>
+                            <field name="telephone" widget="phone"/>
+                            <field name="siret"/>
+                            <field name="statut_juridique"/>
+                            <field name="experience"/>
+                        </group>
+                        <group string="Activité">
+                            <field name="specialites"/>
+                            <field name="zone_intervention"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Documents">
+                            <group>
+                                <group>
+                                    <field name="doc_certification" filename="doc_certification_filename"/>
+                                    <field name="doc_assurance" filename="doc_assurance_filename"/>
+                                </group>
+                                <group>
+                                    <field name="doc_identite" filename="doc_identite_filename"/>
+                                    <field name="photo" filename="photo_filename"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sinistre_candidature" model="ir.actions.act_window">
+        <field name="name">Candidatures</field>
+        <field name="res_model">sinistre.candidature</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

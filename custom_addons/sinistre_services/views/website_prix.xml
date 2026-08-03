@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ════════════════════════════════════════════════════════════
+     CARTE PRIX RÉUTILISABLE (homepage + pages tarifs)
+     Contexte attendu :
+       - prix_metiers : itérable de métiers (dicts avec name, icon, prices, slug)
+       - prix_limit   : nombre de prestations affichées (None = toutes)
+       - m            : métier courant (variable de boucle)
+════════════════════════════════════════════════════════════ -->
+<template id="ss_prix_card" name="Sinistre — Carte Prix Métier">
+    <div class="mn-price-card">
+        <div class="mn-price-card__head">
+            <div class="mn-card__icon">
+                <i t-attf-class="fa {{ m['icon'] }}" aria-hidden="true"/>
+            </div>
+            <h3 t-esc="m['name']"/>
+        </div>
+        <ul class="mn-price-card__list">
+            <t t-foreach="m['prices'][:prix_limit]" t-as="p">
+                <li class="mn-price-item">
+                    <span class="mn-price-item__name" t-esc="p[0]"/>
+                    <span class="mn-price-item__price" t-esc="p[1]"/>
+                </li>
+            </t>
+        </ul>
+        <a t-attf-href="/prix/{{ m['slug'] }}" class="mn-price-card__link">
+            <span>Voir tous les prix</span>
+            <span class="mn-card__arrow">&#8594;</span>
+        </a>
+    </div>
+</template>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE TARIFS D'UN MÉTIER  (/prix/<slug>)
+════════════════════════════════════════════════════════════ -->
+<template id="page_prix_metier" name="Sinistre Services — Prix fixes du métier">
+    <t t-call="website.layout">
+        <div id="wrap">
+
+            <section class="o_colored_level mn-page-hero" data-name="Bandeau Prix Métier">
+                <div class="mn-container">
+                    <p style="font-size:13px;margin-bottom:14px;position:relative;z-index:1;">
+                        <a href="/" style="color:rgba(255,255,255,.7);">Accueil</a>
+                        <span style="color:rgba(255,255,255,.4);"> › </span>
+                        <a href="/#prix" style="color:rgba(255,255,255,.7);">Prix fixes</a>
+                        <span style="color:rgba(255,255,255,.4);"> › </span>
+                        <span style="color:white;" t-esc="metier['name']"/>
+                    </p>
+                    <h1 t-esc="'Prix fixes ' + metier['name']"/>
+                    <p t-esc="metier['desc']"/>
+                </div>
+            </section>
+
+            <section class="mn-section mn-section--gray">
+                <div class="mn-container" style="max-width:880px;">
+
+                    <!-- Grille tarifaire complète du métier -->
+                    <t t-set="m" t-value="metier"/>
+                    <t t-set="prix_limit" t-value="None"/>
+                    <div class="mn-price-page__card">
+                        <t t-call="sinistre_services.ss_prix_card"/>
+                        <div class="mn-price-page__actions">
+                            <a t-attf-href="/demande-intervention?type={{ metier['slug'] }}" class="mn-btn mn-btn--primary">
+                                <i class="fa fa-wrench" aria-hidden="true"/> Demander une intervention
+                            </a>
+                            <a href="tel:+330970700737" class="mn-btn mn-btn--outline">
+                                <i class="fa fa-phone" aria-hidden="true"/> 09 70 70 07 37
+                            </a>
+                        </div>
+                        <p style="text-align:center;font-size:13px;color:#6B7280;margin-top:20px;margin-bottom:0;">
+                            Prix fixes et sans frais cachés · Devis gratuit
+                        </p>
+                    </div>
+
+                    <!-- Autres métiers -->
+                    <div style="margin-top:48px;">
+                        <h2 style="font-size:20px;font-weight:800;color:#0F172A;text-align:center;margin-bottom:20px;">
+                            Découvrir les autres tarifs
+                        </h2>
+                        <div class="mn-price-chips">
+                            <t t-foreach="prix_metiers" t-as="o">
+                                <t t-if="o['slug'] != metier['slug']">
+                                    <a t-attf-href="/prix/{{ o['slug'] }}" class="mn-price-chip">
+                                        <i t-attf-class="fa {{ o['icon'] }}" aria-hidden="true"/>
+                                        <span t-esc="o['name']"/>
+                                    </a>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div id="oe_structure_ss_prix_bottom" class="oe_structure oe_empty" style="margin-top:8px;"/>
+
+                </div>
+            </section>
+
+        </div>
+    </t>
+</template>
+
+</odoo>
