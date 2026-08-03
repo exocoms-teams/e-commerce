@@ -62,8 +62,8 @@ class TrendProduct(models.Model):
 
     # --- CONTRAINTES SQL ---
     _product_ref_source_uniq = models.Constraint(
-        'unique(product_ref, source)',
-        "Ce produit (référence + source) est déjà enregistré. Impossible de le dupliquer.",
+        'unique(product_ref)',
+        "Ce produit est déjà enregistré. Impossible de le dupliquer.",
     )
 
     # --- MÉTHODES DE CALCUL (COMPUTE) ---

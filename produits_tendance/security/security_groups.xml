@@ -9,4 +9,13 @@
     <record id="group_trend_api" model="res.groups">
         <field name="name">Integration/API technique</field>
     </record>
+    <!-- Groupe : Utilisateur Gratuit / Freemium (attribué par défaut à l'inscription)
+         implied_ids = group_trend_user : donne les mêmes droits de lecture
+         (trend.product, trend.ad, trend.category, trend.score) pour que
+         request.env['trend.product'].search([]) fonctionne directement pour
+         un utilisateur connecté de ce groupe, sans passer par sudo(). -->
+    <record id="group_trend_free" model="res.groups">
+      <field name="name">Utilisateur Gratuit</field>
+      <field name="implied_ids" eval="[(4, ref('produits_tendance.group_trend_user'))]"/>
+    </record>
 </odoo>
