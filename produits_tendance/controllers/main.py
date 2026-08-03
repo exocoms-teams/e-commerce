@@ -91,7 +91,22 @@ class TrendDashboardController(http.Controller):
         if not keyword:
             return {"status": "error", "message": "Mot-clé manquant."}
 
-        result = run_ingestion_for_keyword(keyword)
+        Param = request.env['ir.config_parameter'].sudo()
+        ebay_app_id = Param.get_param('ebay.app_id')
+        ebay_cert_id = Param.get_param('ebay.cert_id')
+        odoo_api_key = Param.get_param('winners.api_key')
+        
+        base_url = Param.get_param('web.base.url')
+        odoo_url = f"{base_url}/api/trend/ingest"
+        
+        # 2. Exécution avec injection des paramètres
+        result = run_ingestion_for_keyword(
+            keyword=keyword,
+            app_id=ebay_app_id,
+            cert_id=ebay_cert_id,
+            odoo_url=odoo_url,
+            odoo_api_key=odoo_api_key
+        )
         
         return result
 
