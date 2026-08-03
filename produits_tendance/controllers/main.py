@@ -1,6 +1,7 @@
 import json
 from odoo import http
 from odoo.http import request
+from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 
 # -----------------------------------------------------------
 # 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
@@ -206,3 +207,24 @@ class TrendIngestController(http.Controller):
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
+# -----------------------------------------------------------
+# 3. CONTROLEUR DU DASHBOARD INTERNE (Exécution des Scrapers)
+# -----------------------------------------------------------
+class TrendDashboardController(http.Controller):
+
+    # Route pour AFFICHER le Dashboard (Accessible uniquement aux utilisateurs Odoo connectés)
+    @http.route('/winners/dashboard', type='http', auth='user', website=True)
+    def show_dashboard(self, **kwargs):
+        return request.render('produits_tendance.template_winners_dashboard', {})
+
+    # Route JSON pour EXECUTER le script eBay (Appel AJAX depuis le navigateur)
+    @http.route('/dashboard/run_ebay_scan', type='json', auth='user')
+    def run_ebay_scan(self, keyword):
+        if not keyword:
+            return {"status": "error", "message": "Mot-clé manquant."}
+            
+        # Appel direct de la fonction métier encapsulée dans ton script Python
+        result = run_ingestion_for_keyword(keyword)
+        
+        # Le dictionnaire 'result' est automatiquement converti en JSON par Odoo
+        return result
