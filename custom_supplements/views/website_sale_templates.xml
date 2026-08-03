@@ -127,7 +127,14 @@
                     <t t-set="selected" 
                     t-value="(request.params.get('allergens_exclude') or '').split(',')"/>
                     <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
-                            <a
+                            <t t-set="new_selected"
+                            t-value="
+                                    selected + [str(allergen.id)]
+                                    if str(allergen.id) not in selected
+                                    else [v for v in selected if v != str(allergen.id)]
+                            "/>
+                                <a
+                                
                                 t-att-href="keep('/shop', allergens_exclude=','.join(new_selected))"
                                 t-attf-class="btn btn-sm mb-1 #{'btn-danger' if str(allergen.id) in selected else 'btn-outline-secondary'}">
 
