@@ -16,7 +16,7 @@
         <field name="email_to">{{object.client_email}}</field>
         <field name="body_html"><![CDATA[
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #714b67; padding: 20px; text-align: center;">
+                <div style="background-color: #0F172A; padding: 20px; text-align: center;">
                     <h1 style="color: white; margin: 0;">Réservation Confirmée</h1>
                 </div>
                 <div style="padding: 30px; background-color: #f9f9f9;">
@@ -24,7 +24,7 @@
                     <p>Votre réservation a été confirmée. Voici le récapitulatif :</p>
 
                     <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                        <tr style="background-color: #714b67; color: white;">
+                        <tr style="background-color: #0F172A; color: white;">
                             <td style="padding: 10px;"><strong>Référence</strong></td>
                             <td style="padding: 10px;">{{object.name}}</td>
                         </tr>
@@ -52,7 +52,7 @@
 
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{{object.get_payment_url()}}"
-                           style="background-color: #714b67; color: white; padding: 15px 30px;
+                           style="background-color: #0F172A; color: white; padding: 15px 30px;
                                   text-decoration: none; border-radius: 5px; font-size: 16px;">
                             Procéder au paiement des frais de réservation
                         </a>
@@ -70,11 +70,7 @@
         <field name="name">luxury.reservation.list</field>
         <field name="model">luxury.reservation</field>
         <field name="arch" type="xml">
-            <list string="Réservations"
-                  decoration-warning="state == 'en_attente'"
-                  decoration-success="state == 'confirmed'"
-                  decoration-danger="state == 'cancelled'"
-                  decoration-muted="state == 'draft'">
+            <list string="Réservations">
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="client_name"/>
@@ -84,7 +80,11 @@
                 <field name="date_fin"/>
                 <field name="nb_jours"/>
                 <field name="prix_total"/>
-                <field name="state"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-warning="state == 'en_attente'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
     </record>

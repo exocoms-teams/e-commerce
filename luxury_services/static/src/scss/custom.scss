@@ -1,32 +1,57 @@
+// ============================================================
+// Palette Luxury Services - guide equipe Jour 1, section 0.2
+// Univers premium : Bleu Nuit + Or Champagne + Ivoire
+// Rayon de bordure global : 4px (plus anguleux que Travel/Monetiques)
+// ============================================================
+:root {
+    --luxury-primary: #0F172A;       // Bleu Nuit
+    --luxury-accent: #C9A227;        // Or Champagne
+    --luxury-bg: #FAF7F0;            // Ivoire
+    --luxury-text: #1C1917;          // Texte principal
+    --luxury-text-secondary: #78716C; // Texte secondaire
+    --luxury-border: #E7E1D4;        // Bordure
+}
+
+// Fond de la classe utilisee dans le recap de reservation (card-header)
+.bg-luxury {
+    background-color: var(--luxury-primary) !important;
+}
+
 // Bouton Réserver - style luxe
 .btn-luxury {
-    background-color: #714b67;
-    border-color: #714b67;
-    color: #ffffff;
+    background-color: var(--luxury-accent);
+    border-color: var(--luxury-accent);
+    color: var(--luxury-primary);
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
+    border-radius: 4px;
     transition: all 0.3s ease;
 
     &:hover {
-        background-color: #5a3a52;
-        border-color: #5a3a52;
-        color: #ffffff;
+        filter: brightness(0.9);
+        color: var(--luxury-primary);
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(113, 75, 103, 0.4);
+        box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
     }
 }
 
 // Infos luxury sur la page produit
 .luxury_info {
-    background-color: #f8f5f7;
-    border-left: 4px solid #714b67;
+    background-color: var(--luxury-bg);
+    border-left: 4px solid var(--luxury-accent);
     padding: 12px 16px;
     border-radius: 4px;
     font-size: 0.95rem;
+    color: var(--luxury-text);
 
     span {
         display: inline-block;
         margin-bottom: 4px;
     }
+}
+
+// Titres accentues sur les filtres shop (voir templates.xml)
+.luxury_filters h6 {
+    color: var(--luxury-accent) !important;
 }

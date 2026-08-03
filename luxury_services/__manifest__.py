@@ -16,6 +16,9 @@
         'web.assets_frontend': [
             'luxury_services/static/src/scss/custom.scss',
         ],
+        'web.assets_backend': [
+            'luxury_services/static/src/scss/luxury_backend.scss',
+        ],
     },
     'installable': True,
     'auto_install': False,
