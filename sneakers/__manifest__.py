@@ -35,6 +35,7 @@
         'views/pages/login.xml',
         'views/pages/account.xml',
         'views/pages/orders.xml',
+        'views/pages/static_pages.xml',
     ],
 
     'assets': {
@@ -60,6 +61,7 @@
             'sneakers/static/src/css/main.css',
 
             'sneakers/static/src/css/js-ui.css',
+            'sneakers/static/src/css/static_pages.css',
 
             'sneakers/static/src/js/slider.js',
             'sneakers/static/src/js/header.js',

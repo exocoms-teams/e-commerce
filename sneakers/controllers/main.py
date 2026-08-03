@@ -680,3 +680,41 @@ class SneakersController(http.Controller):
                 'wishlist_page': True,
             }
         )
+
+    @http.route('/contact', type='http', auth='public', website=True)
+    def contact(self, **kwargs):
+        company = request.website.company_id
+        return request.render('sneakers.page_contact', {
+            'company_name': company.name,
+            'company_address': company.street,
+            'company_phone': company.phone,
+            'company_email': company.email,
+        })
+
+    @http.route('/terms', type='http', auth='public', website=True)
+    def terms(self, **kwargs):
+        return request.render('sneakers.page_terms', {})
+
+    @http.route('/about', type='http', auth='public', website=True)
+    def about(self, **kwargs):
+        return request.render('sneakers.page_about', {})
+
+    @http.route('/faq', type='http', auth='public', website=True)
+    def faq(self, **kwargs):
+        return request.render('sneakers.page_faq', {})
+
+    @http.route('/careers', type='http', auth='public', website=True)
+    def careers(self, **kwargs):
+        return request.render('sneakers.page_careers', {})
+
+    @http.route('/shipping', type='http', auth='public', website=True)
+    def shipping(self, **kwargs):
+        return request.render('sneakers.page_shipping', {})
+
+    @http.route('/returns', type='http', auth='public', website=True)
+    def returns(self, **kwargs):
+        return request.render('sneakers.page_returns', {})
+
+    @http.route('/privacy-policy', type='http', auth='public', website=True)
+    def privacy_policy(self, **kwargs):
+        return request.render('sneakers.page_privacy_policy', {})
