@@ -33,6 +33,19 @@ class TrendScore(models.Model):
         default=0,
     )
 
+    # --- GOOGLE TRENDS (purement informatif) ---
+    # Décision d'équipe : le search_volume est affiché à titre indicatif sur
+    # la fiche produit mais n'entre JAMAIS dans le calcul de computed_score.
+    # Voir models/trend_score_calculator.py : la formule ne référence pas
+    # ce champ.
+    search_volume = fields.Integer(
+        string="Volume de recherche Google Trends",
+        default=0,
+        help="Intérêt de recherche Google Trends au moment du calcul. "
+             "Purement informatif : n'influence pas le score de tendance "
+             "ni le classement (rank).",
+    )
+
     # --- SNAPSHOT DES MÉTRIQUES (période T de ce calcul) ---
     # Ces champs "gèlent" les valeurs de V_T, L_T, P_T, A_T au moment du calcul.
     # Nécessaire car trend.product/trend.ad sont mutables (les compteurs

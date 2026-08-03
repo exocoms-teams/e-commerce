@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Fiche produit détaillée : /product/<id>
+         Respecte la charte graphique Winners :
+         - uniquement les variables SCSS de _winners_variables.scss
+         - toute classe custom préfixée par o_winners
+         - le score de tendance (o_winners_score_badge) et l'indicateur
+           Google Trends (o_winners_gtrends) sont deux blocs visuellement
+           distincts : Google Trends est purement informatif et ne doit
+           jamais être confondu avec le score de classement. -->
+    <template id="template_product_detail" name="Fiche produit tendance">
+        <t t-call="website.layout">
+            <div id="wrap" class="o_winners_product_detail">
+                <div class="container mt-5 mb-5">
+
+                    <div class="o_winners_product_detail__header">
+                        <span t-if="product.category_id"
+                              class="o_winners_product_detail__category">
+                            <t t-esc="product.category_id.name"/>
+                        </span>
+                        <h1 t-esc="product.name"/>
+                        <div class="o_winners_product_detail__meta">
+                            <span t-if="product.country">
+                                <t t-esc="product.country"/>
+                            </span>
+                            <span t-if="product.date">
+                                · <t t-esc="product.date"/>
+                            </span>
+                            <span t-if="product.source">
+                                · <t t-esc="dict(product._fields['source'].selection).get(product.source)"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <!-- Score de tendance principal : seul indicateur qui
+                             influence le classement des produits. -->
+                        <div class="col-md-4 mb-3">
+                            <div class="o_winners_score_badge">
+                                <div class="o_winners_score_badge__label">Score de tendance</div>
+                                <div class="o_winners_score_badge__value">
+                                    <t t-esc="'%.1f' % trend_score"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Intérêt Google Trends : bloc totalement séparé,
+                             icône et style dédiés, jamais mélangé au score. -->
+                        <div class="col-md-4 mb-3" t-if="search_volume is not None">
+                            <div class="o_winners_gtrends">
+                                <div class="o_winners_gtrends__icon">📈</div>
+                                <div class="o_winners_gtrends__body">
+                                    <div class="o_winners_gtrends__label">Intérêt Google Trends</div>
+                                    <div class="o_winners_gtrends__value">
+                                        <t t-esc="search_volume"/>
+                                    </div>
+                                    <div class="o_winners_gtrends__disclaimer">
+                                        Indicateur informatif, n'influence pas le classement.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <div class="o_winners_product_detail__stat">
+                                <div class="o_winners_product_detail__stat_label">Ventes</div>
+                                <div class="o_winners_product_detail__stat_value">
+                                    <t t-esc="product.sales_count"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="o_winners_product_detail__ads mt-4" t-if="ads">
+                        <h3>Publicités liées</h3>
+                        <div class="o_winners_product_detail__ads_summary">
+                            <span><t t-esc="total_likes"/> likes</span>
+                            ·
+                            <span><t t-esc="total_shares"/> partages</span>
+                            ·
+                            <span><t t-esc="len(ads)"/> publicité(s)</span>
+                        </div>
+                        <ul class="o_winners_product_detail__ads_list">
+                            <li t-foreach="ads" t-as="ad">
+                                <t t-esc="dict(ad._fields['social_network'].selection).get(ad.social_network)"/>
+                                — <t t-esc="ad.likes_count"/> likes, <t t-esc="ad.shares_count"/> partages
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

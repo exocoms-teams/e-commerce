@@ -3,6 +3,8 @@ from odoo import http
 from odoo.http import request
 from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 
+from .dashboard_api import TrendDashboardAPI
+
 # -----------------------------------------------------------
 # 1. CONTROLEUR DU FORMULAIRE WEB (Frontend)
 # -----------------------------------------------------------
@@ -47,7 +49,43 @@ class TrendSubmissionController(http.Controller):
 
 
 # -----------------------------------------------------------
-# 2. CONTROLEUR DE L'API (Réception des données de l'extension)
+# 2. CONTROLEUR FICHE PRODUIT DETAILLEE (Frontend)
+# -----------------------------------------------------------
+class TrendProductDetailController(http.Controller):
+
+    @http.route('/product/<int:id>', type='http', auth='public', website=True)
+    def product_detail(self, id, **kwargs):
+        # NB : get_product_detail lève werkzeug.exceptions.NotFound si
+        # l'id n'existe pas. On laisse volontairement l'exception remonter :
+        # sur une route website=True, Odoo l'intercepte lui-même et affiche
+        # la page 404 du thème (pas de try/except ici, pas de stacktrace).
+        api = TrendDashboardAPI(request.env)
+        data = api.get_product_detail(id)
+        return request.render('produits_tendance.template_product_detail', data)
+
+
+# -----------------------------------------------------------
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits, WIN-48)
+# -----------------------------------------------------------
+class TrendDashboardController(http.Controller):
+
+    @http.route('/dashboard', type='http', auth='user', website=True)
+    def dashboard(self, **kwargs):
+        # Restriction Freemium (WIN-48) : limit=5 appliqué côté ORM, jamais
+        # côté template/JS, pour qu'elle ne puisse pas être contournée en
+        # lisant le HTML brut ou en interceptant la requête.
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
+
+        api = TrendDashboardAPI(request.env)
+        products = api.get_dashboard_products(limit=limit)
+
+        return request.render('produits_tendance.winners_dashboard_template', {
+            'products': products,
+        })
+
+
+# -----------------------------------------------------------
+# 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
 class TrendIngestController(http.Controller):
 
