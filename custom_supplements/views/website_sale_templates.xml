@@ -126,16 +126,7 @@
                     <div class="flex-column mb-3">
                     <t t-foreach="request.env['allergen'].sudo().search([])" t-as="allergen">
                             <a
-                                t-att-href="keep(
-                                    '/shop',
-                                    allergens_exclude=','.join(
-                                        [x for x in (
-                                            selected + [str(allergen.id)]
-                                            if str(allergen.id) not in selected
-                                            else [v for v in selected if v != str(allergen.id)]
-                                        )]
-                                    )
-                                )"
+                                
                                 t-attf-class="btn btn-sm mb-1 #{'btn-danger' if str(allergen.id) in selected else 'btn-outline-secondary'}">
 
                                 <t t-esc="allergen.name"/>
