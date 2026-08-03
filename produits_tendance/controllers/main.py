@@ -1,4 +1,5 @@
 import json
+import os
 from odoo import http
 from odoo.http import request
 from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
@@ -89,26 +90,8 @@ class TrendDashboardController(http.Controller):
     def run_ebay_scan(self, keyword):
         if not keyword:
             return {"status": "error", "message": "Mot-clé manquant."}
-            
-        # 1. On récupère TOUTES les configurations depuis les Paramètres Système d'Odoo
-        Param = request.env['ir.config_parameter'].sudo()
-        
-        ebay_app_id = Param.get_param('ebay.app_id')
-        ebay_cert_id = Param.get_param('ebay.cert_id')
-        odoo_api_key = Param.get_param('winners.api_key')
-        
-        # Odoo connaît automatiquement sa propre URL de base
-        base_url = Param.get_param('web.base.url')
-        odoo_url = f"{base_url}/api/trend/ingest"
-        
-        # 2. On exécute le script en lui injectant les clés
-        result = run_ingestion_for_keyword(
-            keyword=keyword, 
-            app_id=ebay_app_id, 
-            cert_id=ebay_cert_id, 
-            odoo_url=odoo_url, 
-            odoo_api_key=odoo_api_key
-        )
+
+        result = run_ingestion_for_keyword(keyword)
         
         return result
 
@@ -186,6 +169,7 @@ class TrendIngestController(http.Controller):
             'score_site_x': payload.get('score_site_x'),
             'country': payload['country'],
             'source': payload['source'],
+            'image_url': payload.get('image_url'),
         }
         vals = {k: v for k, v in vals.items() if v is not None}
 
@@ -265,7 +249,8 @@ class TrendIngestController(http.Controller):
         )
 
     def check_api_key(self, key):
-        valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
+        import os
+        valid_key = os.getenv('ODOO_API_KEY')
         return valid_key and key == valid_key
 
     def _json_response(self, payload, status):
