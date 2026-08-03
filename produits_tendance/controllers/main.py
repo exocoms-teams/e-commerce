@@ -84,8 +84,7 @@ class TrendDashboardController(http.Controller):
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
     def show_dashboard(self, **kwargs):
         return request.render('produits_tendance.template_winners_dashboard', {})
-
-    # Route JSON pour EXECUTER le script eBay (Appel AJAX)
+    
     @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
     def run_ebay_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
@@ -94,8 +93,6 @@ class TrendDashboardController(http.Controller):
         if not (is_api_user or is_admin):
             return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
 
-        if not keyword:
-            return {"status": "error", "message": "Mot-clé manquant."}
         if not keyword:
             return {"status": "error", "message": "Mot-clé manquant."}
 
