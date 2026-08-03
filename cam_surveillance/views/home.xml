@@ -64,7 +64,8 @@
                                     <p>Caméras et équipements AXIS certifiés, prêts à déployer</p>
                                 </div>
                                 <div class="cam-products-grid">
-                                    <t t-foreach="request.env['product.template'].search([('is_published','=',True)], limit=8)" t-as="product">
+                                    <!-- Tri SQL direct et performant grâce au champ stocké 'view_count' -->
+                                    <t t-foreach="request.env['product.template'].search([('is_published','=',True)], order='view_count desc', limit=8)" t-as="product">
                                         <a t-attf-href="/shop/#{product.id}" class="cam-product-card">
                                             <div class="cam-product-img">
                                                 <t t-if="product.image_512">
@@ -76,7 +77,7 @@
                                             </div>
                                             <div class="cam-product-body">
                                                 <h3 t-esc="product.name"/>
-
+                                
                                                 <div class="cam-stock-status mt-1 mb-2">
                                                     <t t-if="'qty_available' in product._fields">
                                                         <t t-if="product.sudo().qty_available &gt; 0">
@@ -92,16 +93,16 @@
                                                         </t>
                                                     </t>
                                                 </div>
-                                                
+                                
                                                 <div class="cam-product-footer">
-                                                   <span class="cam-product-price">
-                                                    <span t-field="product.list_price"
-                                                        t-options="{
-                                                            'widget': 'monetary',
-                                                            'display_currency': website.currency_id,
-                                                            
-                                                        }"/>
-                                                    <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/></span>
+                                                    <span class="cam-product-price">
+                                                        <span t-field="product.list_price"
+                                                              t-options="{
+                                                                  'widget': 'monetary',
+                                                                  'display_currency': website.currency_id,
+                                                              }"/>
+                                                        <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/>
+                                                    </span>
                                                     <span class="cam-btn-sm">Voir</span>
                                                 </div>
                                             </div>
