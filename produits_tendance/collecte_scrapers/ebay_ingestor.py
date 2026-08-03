@@ -3,10 +3,13 @@ import requests
 import base64
 import time
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-
-# Charge les variables cachées depuis le fichier .env
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # Sur Odoo.sh, python-dotenv n'est pas installé, ce n'est pas grave.
+    # Les variables sont gérées nativement par la plateforme.
+    pass
 
 # ==========================================
 # CONFIGURATION
