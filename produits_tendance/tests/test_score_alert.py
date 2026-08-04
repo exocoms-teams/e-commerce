@@ -3,9 +3,26 @@ from unittest.mock import MagicMock, patch
 from odoo.tests.common import TransactionCase
 
 
+def _make_product(env, ref_suffix):
+    return env['trend.product'].create({
+        'name': 'Produit Alerte Test',
+        'product_ref': f'TEST-ALERT-{ref_suffix}',
+        'country': 'MA',
+        'source': 'api',
+    })
+
+
 class TestScoreAlerts(TransactionCase):
     """WIN-67 : vérifie que le dépassement de seuil génère un mail.mail pour
-    les abonnés Standard et une entrée trend.webhook.queue pour les Pro."""
+    les abonnés Standard et une entrée trend.webhook.queue pour les Pro.
+
+    Seuil et URL de webhook fixés une fois en setUpClass et JAMAIS modifiés
+    en cours de test : ir.config_parameter est mis en cache (ormcache), et
+    modifier un paramètre puis le relire dans la même transaction ne reflète
+    pas toujours le changement de façon fiable (constaté : un set_param('')
+    suivi d'un get_param() dans le même test renvoyait encore l'ancienne
+    valeur). Les scénarios "pas configuré" sont donc dans des classes à part
+    (ci-dessous) qui ne définissent jamais le paramètre concerné."""
 
     @classmethod
     def setUpClass(cls):
@@ -35,19 +52,9 @@ class TestScoreAlerts(TransactionCase):
 
     def setUp(self):
         super().setUp()
-        # Un produit par test (pas en setUpClass) : chaque test crée son
-        # propre trend.score, et un test qui vérifie l'ABSENCE d'alerte
-        # (ex: test_no_threshold_configured_does_not_alert) ne doit jamais
-        # pouvoir retrouver l'entrée créée par un autre test sur un produit
-        # partagé — sinon un ordre d'exécution défavorable fait échouer le
-        # test sans rapport avec le code testé (constaté : "trend.webhook.
-        # queue(1,) is not false" à cause d'un produit partagé en classe).
-        self.product = self.env['trend.product'].create({
-            'name': 'Produit Alerte Test',
-            'product_ref': f'TEST-ALERT-{self.id()}',
-            'country': 'MA',
-            'source': 'api',
-        })
+        # Un produit par test : évite qu'un test qui vérifie une absence
+        # d'alerte retrouve l'entrée créée par un autre test du même produit.
+        self.product = _make_product(self.env, self.id())
 
     def test_score_above_threshold_emails_standard_users_only(self):
         self.env['trend.score'].create({
@@ -86,9 +93,20 @@ class TestScoreAlerts(TransactionCase):
         self.assertFalse(self.env['mail.mail'].search([('email_to', '=', self.standard_user.email)]))
         self.assertFalse(self.env['trend.webhook.queue'].search([('product_id', '=', self.product.id)]))
 
-    def test_no_threshold_configured_does_not_alert(self):
-        self.env['ir.config_parameter'].sudo().set_param('produits_tendance.score_alert_threshold', '')
 
+class TestScoreAlertsNoThreshold(TransactionCase):
+    """WIN-67 : aucune alerte ne doit être déclenchée si le seuil n'est pas
+    configuré. `score_alert_threshold` n'est délibérément jamais défini ici."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env['ir.config_parameter'].sudo().set_param(
+            'produits_tendance.webhook_url', 'https://hooks.example.com/webhook-test'
+        )
+        cls.product = _make_product(cls.env, 'no-threshold')
+
+    def test_no_threshold_configured_does_not_alert(self):
         self.env['trend.score'].create({
             'product_id': self.product.id,
             'computed_score': 999.0,
@@ -96,22 +114,27 @@ class TestScoreAlerts(TransactionCase):
 
         self.assertFalse(self.env['trend.webhook.queue'].search([('product_id', '=', self.product.id)]))
 
-        # Remet le seuil pour ne pas impacter les autres tests de la classe.
-        self.env['ir.config_parameter'].sudo().set_param('produits_tendance.score_alert_threshold', '50')
+
+class TestScoreAlertsNoWebhookUrl(TransactionCase):
+    """WIN-67 : le seuil peut être dépassé, mais sans URL de webhook
+    configurée, rien ne doit être mis en file d'attente. `webhook_url`
+    n'est délibérément jamais définie ici."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env['ir.config_parameter'].sudo().set_param(
+            'produits_tendance.score_alert_threshold', '50'
+        )
+        cls.product = _make_product(cls.env, 'no-webhook-url')
 
     def test_no_webhook_url_configured_does_not_queue(self):
-        self.env['ir.config_parameter'].sudo().set_param('produits_tendance.webhook_url', '')
-
         self.env['trend.score'].create({
             'product_id': self.product.id,
             'computed_score': 60.0,
         })
 
         self.assertFalse(self.env['trend.webhook.queue'].search([('product_id', '=', self.product.id)]))
-
-        self.env['ir.config_parameter'].sudo().set_param(
-            'produits_tendance.webhook_url', 'https://hooks.example.com/webhook-test'
-        )
 
 
 class TestWebhookQueueCron(TransactionCase):
