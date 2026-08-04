@@ -257,7 +257,10 @@
                         path = `/${langCode}${path === '/' ? '' : path}`;
                     }
                     
-                    window.location.href = path + search + hash;
+                    // Update HTML lang attribute for TTS locale
+                    document.documentElement.lang = langCode;
+                    // Reload to apply Odoo language routing
+                    window.location.href = '/' + langCode + (path.replace(/^\/(en|fr|ar)(\/|$)/, '')) + search + hash;
                 };
 
                 document.addEventListener("DOMContentLoaded", function() {
