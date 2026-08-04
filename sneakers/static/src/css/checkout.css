@@ -5,6 +5,46 @@
     z-index: 1001;
 }
 
+/* ODOO NATIVE CHECKOUT OVERRIDES */
+/* Confirm button: purple → orange */
+.o_wsale_checkout_page .btn-primary,
+.o_wsale_checkout_page .o_checkout_pay,
+.o_wsale_checkout_page button[type="submit"].btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+.o_wsale_checkout_page .btn-primary:hover,
+.o_wsale_checkout_page .o_checkout_pay:hover {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+}
+
+/* Order summary product image: uncrop */
+.o_wsale_checkout_page .o_wsale_product_image {
+    width: 80px !important;
+    height: 80px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+.o_wsale_checkout_page .o_wsale_product_image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Checkout page z-index: prevent navbar overlap */
+.o_wsale_checkout_page header,
+.o_wsale_checkout_page .o_wsale_checkout_page_header {
+    z-index: 1002;
+}
+.o_wsale_checkout_page main {
+    position: relative;
+    z-index: 1;
+}
+
 /* CHECKOUT HEADER */
 
 .sn-checkout-header {
