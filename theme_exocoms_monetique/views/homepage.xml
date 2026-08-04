@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <template id="monetiques_homepage" inherit_id="website.homepage" name="Homepage Monetiques.fr">
-            <!-- On remplace le div oe_empty de la page d'accueil par défaut par nos snippets pour que le site ne soit pas vide -->
-            <xpath expr="//div[@id='wrap']" position="replace">
+    <data noupdate="0">
+        <!-- 1. Déplacer la page d'accueil par défaut d'Odoo pour libérer l'URL '/' -->
+        <record id="website.homepage_page" model="website.page">
+            <field name="url">/odoo-home-default</field>
+            <field name="is_published">False</field>
+        </record>
+
+        <!-- 2. Créer notre propre page d'accueil et lui assigner l'URL '/' -->
+        <template id="monetiques_homepage_view" name="Accueil Monetiques">
+            <t t-call="website.layout">
                 <div id="wrap" class="oe_structure">
                     <t t-call="theme_exocoms_monetique.s_hero_monetiques"/>
                     <t t-call="theme_exocoms_monetique.s_pourquoi_monetiques"/>
@@ -12,7 +18,13 @@
                     <t t-call="theme_exocoms_monetique.s_bestsellers_monetiques"/>
                     <t t-call="theme_exocoms_monetique.s_reviews_monetiques"/>
                 </div>
-            </xpath>
+            </t>
         </template>
+
+        <record id="monetiques_homepage_page" model="website.page">
+            <field name="url">/</field>
+            <field name="is_published">True</field>
+            <field name="view_id" ref="monetiques_homepage_view"/>
+        </record>
     </data>
 </odoo>
