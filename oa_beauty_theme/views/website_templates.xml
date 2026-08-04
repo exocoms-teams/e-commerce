@@ -191,4 +191,131 @@
             <t t-out="'User-agent: *\nDisallow: /shop/cart\nDisallow: /shop/checkout\nDisallow: /shop/payment\nDisallow: /shop/address\nDisallow: /my/\n'"/>
         </xpath>
     </template>
+    <!--
+        Phase 6: Accessibility Widget (Font Resizer + Text-To-Speech)
+    -->
+    <template id="oa_beauty_accessibility_widget" inherit_id="website.layout" name="O&amp;A Beauty — Accessibility Widget">
+        <xpath expr="//footer" position="after">
+            <!-- Accessibility Widget -->
+            <div class="oa-accessibility-widget">
+                <button class="oa-acc-toggle-btn" aria-label="Accessibilité et Lecture" title="Accessibilité et Lecture">
+                    <i class="fa fa-universal-access"></i>
+                </button>
+                <div class="oa-acc-panel">
+                    <div class="oa-acc-header">
+                        <h6>Accessibilité</h6>
+                        <button class="oa-acc-close-btn">&amp;times;</button>
+                    </div>
+                    <div class="oa-acc-body">
+                        <!-- Font Size Adjustment -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Taille du Texte</span>
+                            <div class="oa-acc-controls">
+                                <button id="oa-font-dec" title="Diminuer">A-</button>
+                                <button id="oa-font-reset" title="Réinitialiser">Reset</button>
+                                <button id="oa-font-inc" title="Agrandir">A+</button>
+                            </div>
+                        </div>
+                        <!-- Text to Speech -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Lecture Vocale</span>
+                            <div class="oa-acc-controls">
+                                <button id="oa-tts-toggle" class="w-100 btn-tts-off">
+                                    <i class="fa fa-volume-up me-2"></i> Activer la lecture
+                                </button>
+                            </div>
+                        </div>
+                        <div class="oa-acc-tip text-muted small mt-2">
+                            Lorsque la lecture vocale est active, cliquez sur n'importe quel texte pour l'écouter.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessibility Script -->
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const toggleBtn = document.querySelector('.oa-acc-toggle-btn');
+                    const closeBtn = document.querySelector('.oa-acc-close-btn');
+                    const panel = document.querySelector('.oa-acc-panel');
+                    
+                    // Open/Close Panel
+                    if (toggleBtn &amp;&amp; panel) {
+                        toggleBtn.addEventListener('click', () => panel.classList.toggle('active'));
+                    }
+                    if (closeBtn &amp;&amp; panel) {
+                        closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+                    }
+
+                    // Font Size Adjustments
+                    let fontSizePercent = 100;
+                    const fontInc = document.getElementById('oa-font-inc');
+                    const fontDec = document.getElementById('oa-font-dec');
+                    const fontReset = document.getElementById('oa-font-reset');
+
+                    const updateFontSize = (percent) => {
+                        fontSizePercent = percent;
+                        document.documentElement.style.fontSize = fontSizePercent + '%';
+                        localStorage.setItem('oa_font_size', fontSizePercent);
+                    };
+
+                    // Load saved font size
+                    const savedFontSize = localStorage.getItem('oa_font_size');
+                    if (savedFontSize) {
+                        updateFontSize(parseInt(savedFontSize));
+                    }
+
+                    if (fontInc) fontInc.addEventListener('click', () => updateFontSize(Math.min(fontSizePercent + 10, 150)));
+                    if (fontDec) fontDec.addEventListener('click', () => updateFontSize(Math.max(fontSizePercent - 10, 80)));
+                    if (fontReset) fontReset.addEventListener('click', () => updateFontSize(100));
+
+                    // Text To Speech (TTS) Logic
+                    const ttsToggle = document.getElementById('oa-tts-toggle');
+                    let ttsActive = false;
+                    let synth = window.speechSynthesis;
+
+                    if (ttsToggle) {
+                        ttsToggle.addEventListener('click', () => {
+                            ttsActive = !ttsActive;
+                            if (ttsActive) {
+                                ttsToggle.classList.remove('btn-tts-off');
+                                ttsToggle.classList.add('btn-tts-on');
+                                ttsToggle.innerHTML = '<i class="fa fa-volume-mute me-2"></i> Désactiver la lecture';
+                                document.body.classList.add('oa-tts-enabled');
+                            } else {
+                                ttsToggle.classList.remove('btn-tts-on');
+                                ttsToggle.classList.add('btn-tts-off');
+                                ttsToggle.innerHTML = '<i class="fa fa-volume-up me-2"></i> Activer la lecture';
+                                document.body.classList.remove('oa-tts-enabled');
+                                if (synth) synth.cancel();
+                            }
+                        });
+                    }
+
+                    // Click handler to read text aloud
+                    document.body.addEventListener('click', function(e) {
+                        if (!ttsActive || !synth) return;
+
+                        const textContainer = e.target.closest('p, h1, h2, h3, h4, h5, h6, span, a, li, button');
+                        if (textContainer) {
+                            // Don't trigger if click is on the widget itself
+                            if (textContainer.closest('.oa-accessibility-widget')) return;
+
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            const textToRead = textContainer.innerText || textContainer.textContent;
+                            if (textToRead &amp;&amp; textToRead.trim().length > 0) {
+                                synth.cancel(); // stop current reading
+                                const lang = document.documentElement.lang || 'fr';
+                                const utterance = new SpeechSynthesisUtterance(textToRead.trim());
+                                utterance.lang = lang;
+                                synth.speak(utterance);
+                            }
+                        }
+                    }, true); // Use capture phase to intercept clicks
+                });
+            </script>
+        </xpath>
+    </template>
 </odoo>

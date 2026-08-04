@@ -2985,3 +2985,168 @@ html[dir="rtl"] {
         font-size: 0.85rem !important;
     }
 }
+
+// ── ACCESSIBILITY WIDGET ─────────────────────────────────────────
+.oa-accessibility-widget {
+    position: fixed;
+    bottom: 90px; // Placed slightly above the mobile bottom nav if active
+    right: 20px;
+    z-index: 1040;
+    font-family: var(--oa-font-body);
+
+    .oa-acc-toggle-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--oa-prune);
+        color: white;
+        border: 2px solid var(--oa-champagne);
+        box-shadow: 0 4px 15px rgba(54, 34, 59, 0.35);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        &:hover {
+            transform: scale(1.08);
+            background-color: var(--oa-mauve);
+            box-shadow: 0 6px 20px rgba(54, 34, 59, 0.5);
+        }
+    }
+
+    .oa-acc-panel {
+        position: absolute;
+        bottom: 60px;
+        right: 0;
+        width: 280px;
+        background: rgba(249, 246, 240, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid var(--oa-border);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(15px);
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        &.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+
+    .oa-acc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--oa-border);
+        padding-bottom: 8px;
+
+        h6 {
+            margin: 0;
+            color: var(--oa-prune);
+            font-family: var(--oa-font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .oa-acc-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--oa-muted);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            
+            &:hover {
+                color: var(--oa-prune);
+            }
+        }
+    }
+
+    .oa-acc-option {
+        margin-bottom: 15px;
+    }
+
+    .oa-acc-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--oa-muted);
+        margin-bottom: 8px;
+    }
+
+    .oa-acc-controls {
+        display: flex;
+        gap: 8px;
+
+        button {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--oa-border);
+            color: var(--oa-prune);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                border-color: var(--oa-mauve);
+                color: var(--oa-mauve);
+                background: var(--oa-ivory);
+            }
+        }
+        
+        #oa-tts-toggle {
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            
+            &.btn-tts-off {
+                background: white;
+                border-color: var(--oa-border);
+                color: var(--oa-prune);
+            }
+            
+            &.btn-tts-on {
+                background: var(--oa-prune);
+                border-color: var(--oa-prune);
+                color: white;
+                animation: oa-tts-pulse 2s infinite;
+            }
+        }
+    }
+
+    .oa-acc-tip {
+        line-height: 1.4;
+        font-size: 0.65rem;
+    }
+}
+
+// Global class when TTS is active
+.oa-tts-enabled {
+    p:hover, h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover, span:hover, a:hover, li:hover {
+        background-color: rgba(193, 169, 208, 0.15) !important;
+        cursor: help !important;
+    }
+}
+
+@keyframes oa-tts-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(54, 34, 59, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(54, 34, 59, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(54, 34, 59, 0); }
+}
+
