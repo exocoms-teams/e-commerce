@@ -66,8 +66,10 @@ class LuxuryController(WebsiteSale):
         _logger.warning("LUXURY EXTRA DOMAINS = %s", extra_domains)
     
         if extra_domains:
-            return domain & Domain(AND(extra_domains))
-    
+            result = Domain(extra_domains[0])
+            for d in extra_domains[1:]:
+                result = result & Domain(d)
+            return domain & result
         return domain
 
 

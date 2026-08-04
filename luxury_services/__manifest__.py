@@ -4,7 +4,7 @@
     'summary': 'Gestion des yachts, jets et services VIP',
     'author': 'Exocoms',
     'category': 'eCommerce',
-    'depends': ['product', 'website_sale'],
+    'depends': ['product', 'website_sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/product_views.xml',
@@ -15,6 +15,9 @@
     'assets': {
         'web.assets_frontend': [
             'luxury_services/static/src/scss/custom.scss',
+        ],
+        'web.assets_backend': [
+            'luxury_services/static/src/scss/luxury_backend.scss',
         ],
     },
     'installable': True,

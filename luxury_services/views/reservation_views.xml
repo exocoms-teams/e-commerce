@@ -16,7 +16,7 @@
         <field name="email_to">{{object.client_email}}</field>
         <field name="body_html"><![CDATA[
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #714b67; padding: 20px; text-align: center;">
+                <div style="background-color: #0F172A; padding: 20px; text-align: center;">
                     <h1 style="color: white; margin: 0;">Réservation Confirmée</h1>
                 </div>
                 <div style="padding: 30px; background-color: #f9f9f9;">
@@ -24,7 +24,7 @@
                     <p>Votre réservation a été confirmée. Voici le récapitulatif :</p>
 
                     <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                        <tr style="background-color: #714b67; color: white;">
+                        <tr style="background-color: #0F172A; color: white;">
                             <td style="padding: 10px;"><strong>Référence</strong></td>
                             <td style="padding: 10px;">{{object.name}}</td>
                         </tr>
@@ -52,7 +52,7 @@
 
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{{object.get_payment_url()}}"
-                           style="background-color: #714b67; color: white; padding: 15px 30px;
+                           style="background-color: #0F172A; color: white; padding: 15px 30px;
                                   text-decoration: none; border-radius: 5px; font-size: 16px;">
                             Procéder au paiement des frais de réservation
                         </a>
@@ -70,11 +70,7 @@
         <field name="name">luxury.reservation.list</field>
         <field name="model">luxury.reservation</field>
         <field name="arch" type="xml">
-            <list string="Réservations"
-                  decoration-warning="state == 'en_attente'"
-                  decoration-success="state == 'confirmed'"
-                  decoration-danger="state == 'cancelled'"
-                  decoration-muted="state == 'draft'">
+            <list string="Réservations">
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="client_name"/>
@@ -84,7 +80,11 @@
                 <field name="date_fin"/>
                 <field name="nb_jours"/>
                 <field name="prix_total"/>
-                <field name="state"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-warning="state == 'en_attente'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
     </record>
@@ -96,19 +96,24 @@
         <field name="arch" type="xml">
             <form string="Réservation">
                 <header>
+                    <button name="action_set_waiting"
+                            string="Envoyer pour validation"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'draft'"/>
                     <button name="action_confirm"
-                            string="Confirmer et envoyer email"
+                            string="Confirmer la réservation"
                             type="object"
                             class="btn-primary"
                             invisible="state != 'en_attente'"/>
                     <button name="action_cancel"
-                            string="Annuler"
+                            string="Annuler la réservation"
                             type="object"
                             class="btn-danger"
                             invisible="state == 'cancelled'"/>
                     <field name="state"
                            widget="statusbar"
-                           statusbar_visible="en_attente,confirmed,cancelled"/>
+                           statusbar_visible="draft,en_attente,confirmed,cancelled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -116,35 +121,34 @@
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group string="Informations client">
-                        <group>
-                            <field name="client_name"/>
-                            <field name="client_email"/>
-                            <field name="client_phone"/>
-                        </group>
-                    </group>
-                    <group string="Adresse">
-                        <group>
-                            <field name="client_adresse"/>
-                            <field name="client_code_postal"/>
-                            <field name="client_pays"/>
-                        </group>
-                    </group>
-                    <group string="Détails réservation">
-                        <group>
-                            <field name="product_id"/>
-                            <field name="date_debut"/>
-                            <field name="date_fin"/>
-                        </group>
-                        <group>
-                            <field name="nb_jours"/>
-                            <field name="prix_total"/>
-                        </group>
-                    </group>
-                    <group string="Notes">
-                        <field name="notes" nolabel="1"/>
-                    </group>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <group string="Informations client">
+                                <field name="client_name"/>
+                                <field name="client_email"/>
+                                <field name="client_phone"/>
+                            </group>
+                            <group string="Adresse">
+                                <field name="client_adresse"/>
+                                <field name="client_code_postal"/>
+                                <field name="client_pays"/>
+                            </group>
+                        </div>
+                        <div class="col-lg-6">
+                            <group string="Détails réservation">
+                                <field name="product_id"/>
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
+                                <field name="nb_jours"/>
+                                <field name="prix_total"/>
+                            </group>
+                            <group string="Notes">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </div>
+                    </div>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
