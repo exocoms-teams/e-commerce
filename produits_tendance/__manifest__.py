@@ -21,6 +21,7 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
+        'views/dashboard_templates.xml',   # WIN-48
     ],
     'assets': {
         'web.assets_frontend': [
@@ -28,6 +29,7 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/subscription_pricing.scss',
+            'produits_tendance/static/src/scss/dashboard.scss',
         ],
     },
     'installable': True,

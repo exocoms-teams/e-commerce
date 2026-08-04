@@ -32,6 +32,22 @@ class TrendDashboardAPI:
         par un futur contrôleur sans modifier de comportement déjà livré.
         """
         return env.user.has_group('produits_tendance.group_trend_pro')
+    # Classement / dashboard (liste)
+    # ------------------------------------------------------------------
+    def get_dashboard_products(self, limit=None):
+        """Retourne les trend.product triés par score de tendance décroissant.
+
+        :param int|None limit: si fourni, plafonne le nombre de résultats
+            (utilisé pour la restriction Freemium, WIN-48) — appliqué ici,
+            côté ORM, jamais seulement côté template/JS.
+
+        Utilise les droits de l'utilisateur connecté (pas de sudo) : le
+        groupe group_trend_free implique group_trend_user (lecture seule),
+        donc cette requête fonctionne aussi bien pour un compte Freemium.
+        """
+        return self.env['trend.product'].search(
+            [], order='current_score desc', limit=limit
+        )
 
     # ------------------------------------------------------------------
     # Fiche produit détaillée

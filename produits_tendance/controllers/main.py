@@ -64,6 +64,26 @@ class TrendProductDetailController(http.Controller):
 
 
 # -----------------------------------------------------------
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits, WIN-48)
+# -----------------------------------------------------------
+class TrendDashboardController(http.Controller):
+
+    @http.route('/dashboard', type='http', auth='user', website=True)
+    def dashboard(self, **kwargs):
+        # Restriction Freemium (WIN-48) : limit=5 appliqué côté ORM, jamais
+        # côté template/JS, pour qu'elle ne puisse pas être contournée en
+        # lisant le HTML brut ou en interceptant la requête.
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
+
+        api = TrendDashboardAPI(request.env)
+        products = api.get_dashboard_products(limit=limit)
+
+        return request.render('produits_tendance.winners_dashboard_template', {
+            'products': products,
+        })
+
+
+# -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
 class TrendIngestController(http.Controller):
