@@ -1,6 +1,9 @@
 import json
+import os
+import re
 from odoo import http
 from odoo.http import request
+from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 
 from .dashboard_api import TrendDashboardAPI
 
@@ -63,6 +66,7 @@ class TrendProductDetailController(http.Controller):
         return request.render('produits_tendance.template_product_detail', data)
 
 # -----------------------------------------------------------
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
 # 2bis. CONTROLEUR DASHBOARD - Classement produits + filtres dynamiques
 #       (WIN-45 / WIN-50)
 # -----------------------------------------------------------
@@ -70,6 +74,7 @@ class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='public', website=True)
     def dashboard(self, **kwargs):
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         """Affiche la page dashboard (classement produits) avec le panneau
         de filtres (.o_winners_filter_panel) et la grille de cartes
         produit (.o_winners_product_card), pré-remplie sans filtre.
@@ -81,6 +86,41 @@ class TrendDashboardController(http.Controller):
             'categories': options['categories'],
             'countries': options['countries'],
         })
+
+    # Route pour AFFICHER le Dashboard d'ingestion eBay
+    @http.route('/winners/dashboard', type='http', auth='user', website=True)
+    def show_dashboard(self, **kwargs):
+        return request.render('produits_tendance.template_winners_dashboard', {})
+    
+    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
+    def run_ebay_scan(self, keyword):
+        is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
+        is_admin = request.env.user.has_group('base.group_erp_manager')
+        
+        if not (is_api_user or is_admin):
+            return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
+
+        if not keyword:
+            return {"status": "error", "message": "Mot-clé manquant."}
+
+        Param = request.env['ir.config_parameter'].sudo()
+        ebay_app_id = Param.get_param('ebay.app_id')
+        ebay_cert_id = Param.get_param('ebay.cert_id')
+        odoo_api_key = Param.get_param('winners.api_key')
+        
+        base_url = Param.get_param('web.base.url')
+        odoo_url = f"{base_url}/api/trend/ingest"
+        
+        # 2. Exécution avec injection des paramètres
+        result = run_ingestion_for_keyword(
+            keyword=keyword,
+            app_id=ebay_app_id,
+            cert_id=ebay_cert_id,
+            odoo_url=odoo_url,
+            odoo_api_key=odoo_api_key
+        )
+        
+        return result
 
     @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
     def dashboard_filter(self, category_id=None, country=None, **kwargs):
@@ -168,6 +208,7 @@ class TrendIngestController(http.Controller):
             'score_site_x': payload.get('score_site_x'),
             'country': payload['country'],
             'source': payload['source'],
+            'image_url': payload.get('image_url'),
         }
         vals = {k: v for k, v in vals.items() if v is not None}
 
@@ -240,7 +281,7 @@ class TrendIngestController(http.Controller):
     def check_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
         return valid_key and key == valid_key
-
+    
     def _json_response(self, payload, status):
         return request.make_response(
             json.dumps(payload),
