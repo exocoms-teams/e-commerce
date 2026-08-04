@@ -4,21 +4,21 @@
         <field name="name">travel.payment.transaction.form</field>
         <field name="model">travel.payment.transaction</field>
         <field name="arch" type="xml">
-            <form string="Payment Transaction">
+            <form string="Transaction de paiement">
                 <header>
-                    <button name="action_pending" string="Send Payment"
+                    <button name="action_pending" string="Envoyer le paiement"
                             type="object" invisible="state != 'draft'"
                             class="btn-primary"/>
-                    <button name="action_done" string="Confirm Payment"
+                    <button name="action_done" string="Confirmer le paiement"
                             type="object" invisible="state != 'pending'"
                             class="btn-primary"/>
-                    <button name="action_failed" string="Mark Failed"
+                    <button name="action_failed" string="Marquer en échec"
                             type="object" invisible="state not in ('pending',)"
                             class="btn-danger"/>
-                    <button name="action_cancel" string="Cancel"
+                    <button name="action_cancel" string="Annuler"
                             type="object" invisible="state in ('done', 'cancelled')"
                             class="btn-secondary"/>
-                    <button name="action_reset" string="Reset"
+                    <button name="action_reset" string="Réinitialiser"
                             type="object" invisible="state != 'cancelled'"
                             class="btn-secondary"/>
                     <field name="state" widget="statusbar"
@@ -35,7 +35,7 @@
                             <field name="currency"/>
                             <field name="date_transaction"/>
                         </group>
-                        <group string="Amounts">
+                        <group string="Montants">
                             <field name="amount"/>
                             <field name="commission"/>
                         </group>
@@ -64,7 +64,7 @@
     </record>
 
     <record id="action_payment_transaction" model="ir.actions.act_window">
-        <field name="name">Payment Transactions</field>
+        <field name="name">Transactions de paiement</field>
         <field name="res_model">travel.payment.transaction</field>
         <field name="view_mode">list,form</field>
     </record>

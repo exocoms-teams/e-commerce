@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================ -->
+    <!-- TEMPLATE LISTE DES GUIDES -->
+    <!-- ============================================ -->
+    <template id="website_guide_list" name="Guides Touristiques - Liste">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-4">
+                    <!-- Header -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h1 class="text-center">Guides Touristiques</h1>
+                            <p class="text-center text-muted">Découvrez nos guides experts pour vos voyages</p>
+                            <hr/>
+                        </div>
+                    </div>
+
+                    <!-- Barre de recherche et filtres -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <form method="get" action="/guides" class="form-inline justify-content-center">
+                                <div class="form-group mx-2">
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="Rechercher un guide..." 
+                                           t-att-value="filters.get('search', '')"/>
+                                </div>
+                                <div class="form-group mx-2">
+                                    <select name="category_id" class="form-control">
+                                        <option value="">Toutes les catégories</option>
+                                        <t t-foreach="categories" t-as="cat">
+                                            <option t-att-value="cat.id" 
+                                                    t-att-selected="filters.get('category_id', '') == str(cat.id)">
+                                                <t t-esc="cat.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="form-group mx-2">
+                                    <input type="number" name="price_max" class="form-control" 
+                                           placeholder="Prix max (€)" 
+                                           t-att-value="filters.get('price_max', '')"/>
+                                </div>
+                                <button type="submit" class="btn btn-primary mx-2">
+                                    <i class="fa fa-search"/> Filtrer
+                                </button>
+                                <a href="/guides" class="btn btn-secondary">
+                                    <i class="fa fa-undo"/> Réinitialiser
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Nombre de résultats -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <p class="text-muted">
+                                <t t-esc="len(guides)"/> guide(s) trouvé(s)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Grille des guides -->
+                    <div class="row">
+                        <t t-if="guides">
+                            <t t-foreach="guides" t-as="guide">
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <!-- Image -->
+                                        <div class="card-img-top" style="height: 200px; overflow: hidden; background: #f8f9fa;">
+                                            <img t-att-src="guide.image_1920 and '/web/image/travel.guide/%s/image_1920' % guide.id or '/web/static/img/placeholder.png'" 
+                                                 class="img-fluid w-100 h-100" 
+                                                 style="object-fit: cover;"
+                                                 alt="Guide"/>
+                                        </div>
+                                        
+                                        <!-- Corps -->
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <a t-attf-href="/guides/{{ guide.id }}" class="text-decoration-none">
+                                                    <t t-esc="guide.name"/>
+                                                </a>
+                                            </h5>
+                                            <p class="card-text text-muted small">
+                                                <t t-esc="guide.description[:100]"/>
+                                                <t t-if="len(guide.description or '') > 100">...</t>
+                                            </p>
+                                            
+                                            <!-- Badges -->
+                                            <div class="mb-2">
+                                                <t t-if="guide.category_id">
+                                                    <span class="badge badge-info">
+                                                        <i class="fa fa-tag"/> <t t-esc="guide.category_id.name"/>
+                                                    </span>
+                                                </t>
+                                                <t t-if="guide.duration">
+                                                    <span class="badge badge-secondary">
+                                                        <i class="fa fa-clock-o"/> <t t-esc="guide.duration"/>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Footer -->
+                                        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                                            <span class="h5 text-primary mb-0">
+                                                <t t-esc="guide.price or '0'"/> €
+                                            </span>
+                                            <a t-attf-href="/guides/{{ guide.id }}" class="btn btn-primary btn-sm">
+                                                Voir le guide <i class="fa fa-arrow-right"/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <div class="col-md-12">
+                                <div class="alert alert-info text-center">
+                                    <i class="fa fa-info-circle"/> Aucun guide trouvé
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================ -->
+    <!-- TEMPLATE DÉTAIL D'UN GUIDE -->
+    <!-- ============================================ -->
+    <template id="website_guide_detail" name="Guide Touristique - Détail">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container mt-4">
+                    <!-- Fil d'Ariane -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                            <li class="breadcrumb-item"><a href="/guides">Guides</a></li>
+                            <li class="breadcrumb-item active"><t t-esc="guide.name"/></li>
+                        </ol>
+                    </nav>
+
+                    <div class="row">
+                        <!-- Colonne principale - Image et description -->
+                        <div class="col-md-8">
+                            <!-- Image -->
+                            <div class="card mb-4">
+                                <img t-att-src="guide.image_1920 and '/web/image/travel.guide/%s/image_1920' % guide.id or '/web/static/img/placeholder.png'" 
+                                     class="card-img-top" 
+                                     style="max-height: 500px; object-fit: cover;"
+                                     alt="Guide"/>
+                            </div>
+                            
+                            <!-- Titre et description -->
+                            <h1><t t-esc="guide.name"/></h1>
+                            <div class="mb-3">
+                                <t t-if="guide.category_id">
+                                    <span class="badge badge-info"><i class="fa fa-tag"/> <t t-esc="guide.category_id.name"/></span>
+                                </t>
+                                <t t-if="guide.duration">
+                                    <span class="badge badge-secondary"><i class="fa fa-clock-o"/> <t t-esc="guide.duration"/></span>
+                                </t>
+                                <span class="badge badge-success"><i class="fa fa-eur"/> <t t-esc="guide.price or '0'"/> €</span>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5>Description</h5>
+                                    <p><t t-esc="guide.description or 'Aucune description disponible'"/></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Contenu détaillé -->
+                            <t t-if="guide.content">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h5>Détails du guide</h5>
+                                        <div t-raw="guide.content"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Colonne latérale - Informations et réservation -->
+                        <div class="col-md-4">
+                            <div class="card sticky-top" style="top: 20px;">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fa fa-info-circle"/> Informations</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <strong><i class="fa fa-eur"/> Prix :</strong>
+                                            <span class="h4 text-primary"><t t-esc="guide.price or '0'"/> €</span>
+                                        </li>
+                                        <t t-if="guide.duration">
+                                            <li class="mb-3">
+                                                <strong><i class="fa fa-clock-o"/> Durée :</strong>
+                                                <t t-esc="guide.duration"/>
+                                            </li>
+                                        </t>
+                                        <t t-if="guide.category_id">
+                                            <li class="mb-3">
+                                                <strong><i class="fa fa-tag"/> Catégorie :</strong>
+                                                <t t-esc="guide.category_id.name"/>
+                                            </li>
+                                        </t>
+                                        <li class="mb-3">
+                                            <strong><i class="fa fa-calendar"/> Disponible :</strong>
+                                            <span class="badge badge-success">Oui</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer">
+                                    <a t-attf-href="/travels/book/{{ guide.id }}" class="btn btn-success btn-block btn-lg">
+                                        <i class="fa fa-calendar-check-o"/> Réserver maintenant
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Guides similaires -->
+                            <t t-if="similar_guides">
+                                <div class="card mt-4">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h6 class="mb-0"><i class="fa fa-list"/> Guides similaires</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <t t-foreach="similar_guides" t-as="sim">
+                                            <div class="media mb-3 border-bottom pb-2">
+                                                <img t-att-src="sim.image_1920 and '/web/image/travel.guide/%s/image_1920' % sim.id or '/web/static/img/placeholder.png'" 
+                                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;"/>
+                                                <div class="media-body ml-3">
+                                                    <h6 class="mt-0">
+                                                        <a t-attf-href="/guides/{{ sim.id }}">
+                                                            <t t-esc="sim.name"/>
+                                                        </a>
+                                                    </h6>
+                                                    <small class="text-muted"><t t-esc="sim.price or '0'"/> €</small>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

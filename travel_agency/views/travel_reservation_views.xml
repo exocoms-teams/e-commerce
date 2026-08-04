@@ -4,18 +4,18 @@
         <field name="name">travel.reservation.form</field>
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
-            <form string="Travel Reservation">
+            <form string="Réservation de voyage">
                 <header>
-                    <button name="action_waiting" string="Set Waiting"
+                    <button name="action_waiting" string="Mettre en attente"
                             type="object" invisible="state != 'draft'"
                             class="btn-secondary"/>
-                    <button name="action_confirm" string="Confirm"
+                    <button name="action_confirm" string="Confirmer"
                             type="object" invisible="state != 'en_attente'"
                             class="btn-primary"/>
-                    <button name="action_cancel" string="Cancel"
+                    <button name="action_cancel" string="Annuler"
                             type="object" invisible="state in ('cancel', 'confirmed')"
                             class="btn-danger"/>
-                    <button name="action_reset" string="Reset to Draft"
+                    <button name="action_reset" string="Remettre en brouillon"
                             type="object" invisible="state != 'cancel'"
                             class="btn-secondary"/>
                     <field name="state" widget="statusbar"
@@ -33,13 +33,13 @@
                             <field name="client_phone"/>
                             <field name="client_country"/>
                         </group>
-                        <group string="Travel">
+                        <group string="Voyage">
                             <field name="product_id"/>
                             <field name="date_depart"/>
                             <field name="date_retour"/>
                             <field name="nb_jours"/>
                         </group>
-                        <group string="Travelers">
+                        <group string="Voyageurs">
                             <field name="nb_adultes"/>
                             <field name="nb_enfants"/>
                             <field name="nb_voyageurs"/>
@@ -48,7 +48,7 @@
                             <field name="commission_amount"/>
                         </group>
                     </group>
-                    <group string="Passengers">
+                    <group string="Passagers">
                         <field name="passenger_ids">
                             <list editable="bottom">
                                 <field name="prenom"/>
@@ -60,6 +60,11 @@
                     </group>
                     <field name="notes"/>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -137,30 +142,35 @@
         <field name="name">travel.reservation.list</field>
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
-            <list string="Reservations">
+            <list string="Réservations">
                 <field name="name"/>
                 <field name="client_name"/>
                 <field name="product_id"/>
                 <field name="date_depart"/>
-                <field name="state"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-warning="state == 'en_attente'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-danger="state == 'cancel'"/>
             </list>
         </field>
     </record>
 
     <record id="action_travel_reservation" model="ir.actions.act_window">
-         <field name="name">Travel Reservations</field>
+
+        <field name="name">Réservations de voyage</field>
         <field name="res_model">travel.reservation</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="view_travel_reservation_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create your first reservation
+                Créez votre première réservation
             </p>
         </field>
     </record>
 
     <menuitem id="menu_travel_root" name="Travel" sequence="10"/>
-    <menuitem id="menu_travel_reservation" name="Reservations"
+    <menuitem id="menu_travel_reservation" name="Réservations"
               parent="menu_travel_root"
               action="action_travel_reservation"/>
 </odoo>

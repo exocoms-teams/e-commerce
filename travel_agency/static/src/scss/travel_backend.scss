@@ -1,0 +1,99 @@
+// ============================================================
+// Palette Travel — Jour 1, section 0.1 du guide d'equipe
+// Remplace le violet Odoo par defaut (menus, boutons, barre de statut, titres)
+// Portee : globale a tout le backend Odoo (decision validee)
+// ============================================================
+
+:root {
+    --travel-primary: #2563EB;      // Bleu Horizon
+    --travel-secondary: #0EA5E9;    // Turquoise Voyage
+    --travel-accent: #F97316;       // Corail Soleil
+    --travel-text: #0F172A;         // Texte principal
+    --travel-text-secondary: #64748B; // Texte secondaire
+    --travel-bg: #F8FAFC;           // Fond clair
+    --travel-border: #E2E8F0;       // Bordure
+
+    // Variables Bootstrap utilisees par le client web Odoo
+    --bs-primary: var(--travel-primary);
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-link-color: var(--travel-primary);
+}
+
+// Barre d'application (menu du haut) : RETIRE - trop visible sur toutes les
+// autres apps (Website, ecran des Apps...), pas seulement Travel. Demande explicite
+// de l'equipe de ne pas recolorer cet element.
+
+// Boutons primaires (formulaires, headers de vue)
+.btn-primary {
+    background-color: var(--travel-primary) !important;
+    border-color: var(--travel-primary) !important;
+
+    &:hover {
+        filter: brightness(0.9);
+    }
+}
+
+// Boutons secondaires
+.btn-outline-primary,
+.btn-secondary.o_btn_secondary_travel {
+    color: var(--travel-primary) !important;
+    border-color: var(--travel-primary) !important;
+}
+
+// Barre de statut (statusbar widget) - couleur generique de secours
+.o_statusbar_status .o_arrow_button_current,
+.o_form_statusbar .o_arrow_button_current,
+.o_arrow_button.o_arrow_button_current {
+    background-color: var(--travel-primary) !important;
+    color: #fff !important;
+}
+
+// Barre de statut Travel Reservation - couleur specifique par etat (guide equipe, page 3)
+// Ordre : draft, en_attente, confirmed, cancel (statusbar_visible dans travel_reservation_views.xml)
+// Cible par position car Odoo ne pose pas de classe stable par valeur de selection sur ce widget.
+// A verifier visuellement : si la position ne correspond pas (ex: bouton retour au brouillon
+// modifie l'ordre affiche), ajuster les nth-child ci-dessous.
+.o_statusbar_status, .o_form_statusbar {
+    .o_arrow_button_current {
+        &:nth-child(1) { background-color: #E2E8F0 !important; color: #475569 !important; }
+        &:nth-child(2) { background-color: #FEF3C7 !important; color: #B45309 !important; }
+        &:nth-child(3) { background-color: #DCFCE7 !important; color: #15803D !important; }
+        &:nth-child(4) { background-color: #FEE2E2 !important; color: #B91C1C !important; }
+    }
+}
+
+// Titres de formulaire : pas de couleur forcee (le gris/bleu-marine fixe rendait
+// le texte illisible en mode sombre) - on laisse la couleur par defaut d'Odoo,
+// qui s'adapte deja correctement au theme clair/sombre.
+
+// Liens et icones actives
+.o_menu_sections .dropdown-toggle.active,
+a:not(.btn) {
+    color: var(--travel-primary);
+}
+
+// ============================================================
+// Badges de statut - Travel Reservation (guide equipe, page 3)
+// Draft/Waiting/Confirmed/Cancelled -> decoration-secondary/warning/success/danger
+// Couvre les deux nomenclatures de classes badge (Bootstrap 5 et anciennes versions Odoo)
+// ============================================================
+.badge.text-bg-secondary, .badge.badge-secondary,
+.badge.text-bg-muted, .badge.badge-muted, .badge.text-muted {
+    background-color: #E2E8F0 !important;
+    color: #475569 !important;
+}
+
+.badge.text-bg-warning, .badge.badge-warning {
+    background-color: #FEF3C7 !important;
+    color: #B45309 !important;
+}
+
+.badge.text-bg-success, .badge.badge-success {
+    background-color: #DCFCE7 !important;
+    color: #15803D !important;
+}
+
+.badge.text-bg-danger, .badge.badge-danger {
+    background-color: #FEE2E2 !important;
+    color: #B91C1C !important;
+}

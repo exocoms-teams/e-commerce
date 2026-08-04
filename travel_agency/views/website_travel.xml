@@ -400,6 +400,18 @@
                                         <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
                                         <textarea name="notes" class="form-control" rows="3"/>
                                     </div>
+                                     
+                                    <h5 class="mb-3 mt-4">Mode de paiement</h5>
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Prestataire de paiement *</strong></label>
+                                        <select name="payment_provider_id" class="form-select" required="1">
+                                            <option value="">-- Choisir --</option>
+                                            <t t-foreach="providers" t-as="provider">
+                                                <option t-att-value="provider.id"><t t-esc="provider.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+
 
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary btn-lg">
@@ -452,6 +464,35 @@
             </div>
         </t>
     </template>
+     
+    <template id="travel_payment_page" name="Paiement">
+    <t t-call="website.layout">
+        <div class="container mt-5 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <h1 class="mb-4"><i class="fa fa-credit-card me-2"/>Paiement</h1>
+                    <div t-if="error" class="alert alert-danger"><t t-esc="error"/></div>
+                    <div class="card">
+                        <div class="card-body">
+                            <p><strong>Réservation :</strong> <t t-esc="transaction.reservation_id.name"/></p>
+                            <p><strong>Montant :</strong> <t t-esc="transaction.amount"/> €</p>
+                            <p><strong>Prestataire :</strong> <t t-esc="transaction.provider_id.name"/></p>
+                            <form action="/travels/payment/submit" method="POST">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="transaction_id" t-att-value="transaction.id"/>
+                                <div class="mb-3">
+                                    <label class="form-label">Numéro de carte (simulateur, 16 chiffres)</label>
+                                    <input type="text" name="card_number" class="form-control" maxlength="16" required="1"/>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Payer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</template> 
 
     <template id="travel_confirm_page" name="Confirmation réservation">
         <t t-call="website.layout">
@@ -493,5 +534,127 @@
             </div>
         </t>
     </template>
+
+
+    <template id="recommandation_form_page" name="Trouver ma destination idéale">
+    <t t-call="website.layout">
+        <div class="container mt-5 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <h1 class="mb-2">
+                        <i class="fa fa-magic me-2"/>
+                        Vous ne savez pas où partir ?
+                    </h1>
+                    <p class="text-muted mb-4">Dites-nous vos préférences, on vous propose une destination et un hôtel adaptés.</p>
+
+                    <div t-if="error" class="alert alert-danger" t-esc="error"/>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="/recommandation/resultats" method="POST">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Budget max par personne (€) *</label>
+                                    <input type="number" name="budget_max" class="form-control" min="0" required="1"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre de voyageurs *</label>
+                                    <input type="number" name="nb_personnes" class="form-control" min="1" value="1" required="1"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Confort minimum souhaité</label>
+                                    <select name="etoiles_min" class="form-select">
+                                        <option value="">Peu importe</option>
+                                        <option value="1">1 étoile et +</option>
+                                        <option value="2">2 étoiles et +</option>
+                                        <option value="3">3 étoiles et +</option>
+                                        <option value="4">4 étoiles et +</option>
+                                        <option value="5">5 étoiles</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Type de séjour</label>
+                                    <select name="type_voyage" class="form-select">
+                                        <option value="">Peu importe</option>
+                                        <option value="aller_simple">Aller simple</option>
+                                        <option value="aller_retour">Aller-retour</option>
+                                        <option value="circuit">Circuit touristique</option>
+                                        <option value="sejour">Séjour</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Une destination en tête ? (optionnel)</label>
+                                    <input type="text" name="pays" class="form-control" placeholder="Laissez vide si vous ne savez pas"/>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fa fa-search me-2"/>
+                                    Trouver ma destination
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</template>
+
+<template id="recommandation_results_page" name="Vos suggestions de voyage">
+    <t t-call="website.layout">
+        <div class="container mt-5 mb-5">
+            <h1 class="mb-4">
+                <i class="fa fa-magic me-2"/>
+                Nos suggestions pour vous
+            </h1>
+
+            <div t-if="not recommendations" class="alert alert-warning">
+                Aucune destination ne correspond exactement à vos critères. Essayez d'augmenter votre budget ou de retirer un filtre.
+                <a href="/recommandation" class="d-block mt-2">&#8592; Refaire une recherche</a>
+            </div>
+
+            <div t-if="recommendations" class="row">
+                <t t-foreach="recommendations" t-as="reco">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" t-esc="reco['destination'].name"/>
+                                <p class="text-muted mb-2">
+                                    <t t-esc="reco['destination'].ville_destination"/>, <t t-esc="reco['destination'].pays_destination"/>
+                                </p>
+                                <p class="mb-2">
+                                    <strong t-esc="'%.2f €' % reco['destination'].prix_par_personne"/> / personne
+                                </p>
+
+                                <div t-if="reco['hotels']">
+                                    <h6 class="mt-3">Hôtel suggéré</h6>
+                                    <t t-foreach="reco['hotels']" t-as="hotel">
+                                        <div class="border rounded p-2 mb-2">
+                                            <div t-esc="hotel.name"/>
+                                            <small class="text-muted">
+                                                <t t-esc="hotel.etoiles"/> étoiles — <t t-esc="'%.2f €' % hotel.prix_par_nuit"/>/nuit
+                                            </small>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <a t-attf-href="/travels/book/#{reco['destination'].id}" class="btn btn-primary w-100 mt-2">
+                                    Réserver
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <a href="/recommandation" class="btn btn-link">&#8592; Refaire une recherche</a>
+        </div>
+    </t>
+</template>
 
 </odoo>

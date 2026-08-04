@@ -2,6 +2,10 @@
 <!-- ajout de condition utilisation genere via LegalPlace.fr -->
 <odoo>
 
+    <!-- ============================================ -->
+    <!-- MENUS EXISTANTS -->
+    <!-- ============================================ -->
+
     <record id="website_menu_about" model="website.menu">
         <field name="name">À propos</field>
         <field name="url">/a-propos</field>
@@ -17,7 +21,6 @@
     <record id="website.menu_home" model="website.menu">
         <field name="name">Accueil</field>
     </record>
-
 
     <record id="website_sale.menu_shop" model="website.menu">
         <field name="parent_id" eval="False"/>
@@ -36,6 +39,153 @@
         <field name="parent_id" ref="website.main_menu"/>
         <field name="sequence">90</field>
     </record>
+
+    <!-- ============================================ -->
+    <!-- NOUVEAUX MENUS - SERVICES VOYAGES -->
+    <!-- ============================================ -->
+
+    <!-- Menu principal "Nos Services" -->
+    <record id="website_menu_services" model="website.menu">
+        <field name="name">Nos Services</field>
+        <field name="url">#</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- Sous-menu Voyages (produits) -->
+    <record id="website_menu_travels" model="website.menu">
+        <field name="name">Voyages</field>
+        <field name="url">/travels</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <!-- Sous-menu Hôtels -->
+    <record id="website_menu_hotels" model="website.menu">
+        <field name="name">Hôtels</field>
+        <field name="url">/hotels</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <!-- Sous-menu Vols -->
+    <record id="website_menu_vols" model="website.menu">
+        <field name="name">Vols</field>
+        <field name="url">/vols</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">3</field>
+    </record>
+
+    <!-- Sous-menu Trains -->
+    <record id="website_menu_trains" model="website.menu">
+        <field name="name">Trains</field>
+        <field name="url">/trains</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">4</field>
+    </record>
+
+    <!-- Sous-menu Voitures -->
+    <record id="website_menu_cars" model="website.menu">
+        <field name="name">Voitures</field>
+        <field name="url">/voitures</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- NOUVEAUX MENUS - GUIDES, LOISIRS, LOCATIONS -->
+    <!-- ============================================ -->
+
+    <!-- Sous-menu Guides Touristiques -->
+    <record id="website_menu_guides" model="website.menu">
+        <field name="name">Guides Touristiques</field>
+        <field name="url">/guides</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">6</field>
+        <field name="website_id" ref="website.default_website"/>
+    </record>
+
+    <!-- Sous-menu Loisirs -->
+    <record id="website_menu_leisures" model="website.menu">
+        <field name="name">Sorties &amp; Loisirs</field>
+        <field name="url">/loisirs</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">7</field>
+        <field name="website_id" ref="website.default_website"/>
+    </record>
+
+    <!-- Sous-menu Locations -->
+    <record id="website_menu_rentals" model="website.menu">
+        <field name="name">Locations de maison</field>
+        <field name="url">/locations</field>
+        <field name="parent_id" ref="website_menu_services"/>
+        <field name="sequence">8</field>
+        <field name="website_id" ref="website.default_website"/>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- MENU DANS LE FOOTER (Optionnel) -->
+    <!-- ============================================ -->
+
+    <!-- Footer - Services rapides -->
+    <!-- TODO: bloc desactive - "website.footer" n'est pas un external ID valide pour website.menu
+         dans cette version d'Odoo (il n'existe pas de parent menu "footer" a referencer ainsi).
+         A reactiver une fois le bon point d'ancrage identifie, ou en injectant ces liens
+         directement dans le template QWeb du footer.
+    <record id="website_menu_footer_services" model="website.menu">
+        <field name="name">Nos Services</field>
+        <field name="url">#</field>
+        <field name="parent_id" ref="website.footer"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="website_menu_footer_travels" model="website.menu">
+        <field name="name">Voyages</field>
+        <field name="url">/travels</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="website_menu_footer_hotels" model="website.menu">
+        <field name="name">Hôtels</field>
+        <field name="url">/hotels</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="website_menu_footer_vols" model="website.menu">
+        <field name="name">Vols</field>
+        <field name="url">/vols</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="website_menu_footer_guides" model="website.menu">
+        <field name="name">Guides</field>
+        <field name="url">/guides</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">4</field>
+    </record>
+
+    <record id="website_menu_footer_leisures" model="website.menu">
+        <field name="name">Loisirs</field>
+        <field name="url">/loisirs</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="website_menu_footer_rentals" model="website.menu">
+        <field name="name">Locations</field>
+        <field name="url">/locations</field>
+        <field name="parent_id" ref="website_menu_footer_services"/>
+        <field name="sequence">6</field>
+    </record>
+    -->
+
+
+    <!-- ============================================ -->
+    <!-- TEMPLATES DES PAGES EXISTANTES -->
+    <!-- ============================================ -->
 
     <template id="about_page" name="À propos">
         <t t-call="website.layout">
@@ -109,6 +259,32 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Nouvelle FAQ pour les guides -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-5">
+                                Comment réserver un guide touristique ?
+                            </button>
+                        </h2>
+                        <div id="faq-5" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                            <div class="accordion-body">
+                                Vous pouvez réserver un guide touristique directement sur notre site dans la section "Guides Touristiques". Sélectionnez le guide de votre choix, puis cliquez sur "Réserver". Vous serez redirigé vers le formulaire de réservation où vous pourrez choisir vos dates et nombre de participants.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Nouvelle FAQ pour les locations -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-6">
+                                Quelles sont les conditions pour louer une maison ?
+                            </button>
+                        </h2>
+                        <div id="faq-6" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                            <div class="accordion-body">
+                                Pour louer une maison, vous devez être âgé d'au moins 18 ans et fournir une pièce d'identité valide. Un dépôt de garantie peut être demandé selon la propriété. Les conditions spécifiques sont détaillées sur chaque annonce.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </t>
@@ -146,7 +322,7 @@
                 <p>L'hébergeur du site est la société Exocoms, dont le siège social est situé au 58 rue de Monceau, 75008 Paris, numéro de téléphone : +33 (0)1 84 79 37 55.</p>
 
                 <h3 class="mt-4">Article 2 : Accès au site</h3>
-                <p>Le site permet à l'Utilisateur un accès gratuit aux services suivants : Agence de Voyage (réservation de voyages, hôtels, vols, trains et locations de voiture).</p>
+                <p>Le site permet à l'Utilisateur un accès gratuit aux services suivants : Agence de Voyage (réservation de voyages, hôtels, vols, trains, voitures, guides touristiques, sorties &amp; loisirs, locations de maison).</p>
                 <p>Le site est accessible gratuitement en tout lieu à tout Utilisateur ayant un accès à Internet. Tous les frais supportés par l'Utilisateur pour accéder au service (matériel informatique, logiciels, connexion Internet, etc.) sont à sa charge.</p>
                 <p>L'Utilisateur non membre n'a pas accès aux services réservés. Pour cela, il doit s'inscrire en remplissant le formulaire. En acceptant de s'inscrire aux services réservés, l'Utilisateur membre s'engage à fournir des informations sincères et exactes concernant son état civil et ses coordonnées, notamment son adresse email.</p>
                 <p>Pour accéder aux services, l'Utilisateur doit ensuite s'identifier à l'aide de son identifiant et de son mot de passe qui lui seront communiqués après son inscription.</p>

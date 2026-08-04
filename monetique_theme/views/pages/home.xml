@@ -40,6 +40,15 @@
                                 <li class="mn-search__tab" data-target="search-voitures">
                                     <i class="fa fa-car me-1"/>Location de voiture
                                 </li>
+                                <li class="mn-search__tab" data-target="search-guides">
+                                    <i class="fa fa-map-signs me-1"/>Guides touristiques
+                                </li>
+                                <li class="mn-search__tab" data-target="search-locations">
+                                    <i class="fa fa-home me-1"/>Maisons de location
+                                </li>
+                                <li class="mn-search__tab" data-target="search-groupes">
+                                    <i class="fa fa-users me-1"/>Groupes de sorties et de loisirs
+                                </li>
                             </ul>
 
                             <form action="/travels" method="get" class="mn-search-bar" id="search-voyages">
@@ -144,6 +153,74 @@
                                 </button>
                             </form>
 
+                            <form action="/guides" method="get" class="mn-search-bar" id="search-guides" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Langue du guide</label>
+                                    <select name="langue">
+                                        <option value="">Toutes</option>
+                                        <option value="francais">Français</option>
+                                        <option value="anglais">Anglais</option>
+                                        <option value="espagnol">Espagnol</option>
+                                        <option value="allemand">Allemand</option>
+                                        <option value="italien">Italien</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/locations" method="get" class="mn-search-bar" id="search-locations" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Type de logement</label>
+                                    <select name="type_logement">
+                                        <option value="">Tous</option>
+                                        <option value="maison">Maison</option>
+                                        <option value="appartement">Appartement</option>
+                                        <option value="villa">Villa</option>
+                                        <option value="chalet">Chalet</option>
+                                        <option value="studio">Studio</option>
+                                    </select>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Budget max / nuit</label>
+                                    <input type="number" name="prix_max" placeholder="€ / nuit" min="0"/>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
+                            <form action="/groupes" method="get" class="mn-search-bar" id="search-groupes" style="display:none">
+                                <div class="mn-search-bar__field">
+                                    <label>Destination</label>
+                                    <input type="text" name="destination" placeholder="Ville ou pays"/>
+                                </div>
+                                <div class="mn-search-bar__field">
+                                    <label>Type d'activité</label>
+                                    <select name="type_activite">
+                                        <option value="">Toutes</option>
+                                        <option value="decouverte">Découverte culturelle</option>
+                                        <option value="nature">Randonnée nature</option>
+                                        <option value="gastronomie">Gastronomie</option>
+                                        <option value="sport">Activités sportives</option>
+                                        <option value="bien_etre">Bien-être / Détente</option>
+                                        <option value="sorties">Sorties nocturnes</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="mn-btn mn-btn--primary mn-search-bar__submit">
+                                    <i class="fa fa-search me-2"/>Rechercher
+                                </button>
+                            </form>
+
                             <script>
                                 document.querySelectorAll('.mn-search__tab').forEach(function (tab) {
                                     tab.addEventListener('click', function () {
@@ -159,6 +236,9 @@
                         <div class="mn-hero__actions">
                             <a href="/travels" class="mn-btn mn-btn--primary mn-btn--lg">Découvrir nos voyages</a>
                             <a href="/travels" class="mn-btn mn-btn--outline mn-btn--lg" style="color:white;border-color:white">Voir nos destinations</a>
+                            <a href="/recommandation" class="btn btn-outline-light btn-lg">
+                                <i class="fa fa-magic me-2"/>Je ne sais pas où partir, aidez-moi
+                            </a>
                         </div>
                         <div class="mn-hero__trust" style="color:rgba(255,255,255,0.8)">
                             <span>&#10003; Paiement sécurisé</span>
@@ -289,7 +369,7 @@
                                     <h3 t-esc="hotel.name"/>
                                     <p t-esc="hotel.ville"/>
                                     <div class="mn-product-card__footer">
-                                        <span class="mn-product-card__price" t-esc="'%s €toiles' % hotel.etoiles"/>
+                                        <span class="mn-product-card__price" t-esc="'%s étoiles' % hotel.etoiles"/>
                                         <span class="mn-btn mn-btn--primary mn-btn--sm">Voir l'hôtel</span>
                                     </div>
                                 </div>
