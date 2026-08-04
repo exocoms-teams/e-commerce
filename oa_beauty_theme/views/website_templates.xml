@@ -207,6 +207,15 @@
                         <button class="oa-acc-close-btn">&amp;times;</button>
                     </div>
                     <div class="oa-acc-body">
+                        <!-- Language Switcher -->
+                        <div class="oa-acc-option">
+                            <span class="oa-acc-label">Langue du Site</span>
+                            <div class="oa-acc-controls">
+                                <button onclick="switchSiteLanguage('fr')" title="Français">FR</button>
+                                <button onclick="switchSiteLanguage('en')" title="English">EN</button>
+                                <button onclick="switchSiteLanguage('ar')" title="العربية">AR</button>
+                            </div>
+                        </div>
                         <!-- Font Size Adjustment -->
                         <div class="oa-acc-option">
                             <span class="oa-acc-label">Taille du Texte</span>
@@ -234,11 +243,28 @@
 
             <!-- Accessibility Script -->
             <script>
+                // Language Switcher Function
+                window.switchSiteLanguage = function(langCode) {
+                    let path = window.location.pathname;
+                    const search = window.location.search;
+                    const hash = window.location.hash;
+                    
+                    // Replace or prepend language prefix
+                    const langPrefixRegex = /^\/(en|fr|ar)(\/|$)/;
+                    if (langPrefixRegex.test(path)) {
+                        path = path.replace(langPrefixRegex, `/${langCode}$2`);
+                    } else {
+                        path = `/${langCode}${path === '/' ? '' : path}`;
+                    }
+                    
+                    window.location.href = path + search + hash;
+                };
+
                 document.addEventListener("DOMContentLoaded", function() {
                     const toggleBtn = document.querySelector('.oa-acc-toggle-btn');
                     const closeBtn = document.querySelector('.oa-acc-close-btn');
                     const panel = document.querySelector('.oa-acc-panel');
-                    
+
                     // Open/Close Panel
                     if (toggleBtn &amp;&amp; panel) {
                         toggleBtn.addEventListener('click', () => panel.classList.toggle('active'));
