@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import http, fields
 from odoo.http import request
 
 
@@ -66,6 +66,10 @@ class SneakersController(http.Controller):
             }
         )
 
+    @http.route('/shop', type='http', auth='public', website=True)
+    def shop_redirect(self, **kwargs):
+        return request.redirect('/shop-sneakers', code=301)
+
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
     def shop(self, **kwargs):
 
@@ -73,6 +77,7 @@ class SneakersController(http.Controller):
         # Catégories principales
         # ==========================
 
+        # Show all categories (all are sneaker-relevant for this store)
         categories = request.env['product.public.category'].sudo().search([
             ('parent_id', '=', False)
         ])
@@ -340,6 +345,18 @@ class SneakersController(http.Controller):
 
         product_ratings = self._get_product_ratings(products)
 
+        # ==========================
+        # Pagination
+        # ==========================
+
+        per_page = 12
+        page = max(1, int(request.httprequest.args.get('page', 1)))
+        total_products = len(products)
+        total_pages = max(1, (total_products + per_page - 1) // per_page)
+        page = min(page, total_pages)
+        offset = (page - 1) * per_page
+        products = products[offset:offset + per_page]
+
         values = {
             'products': products,
             'categories': categories,
@@ -351,6 +368,8 @@ class SneakersController(http.Controller):
             'selected_category': selected_category,
             'search': search,
             'search_category': category_name,
+            'current_page': page,
+            'total_pages': total_pages,
         }
         return request.render(
             'sneakers.shop_page',
@@ -627,14 +646,6 @@ class SneakersController(http.Controller):
             "available": False,
         }
 
-    @http.route('/checkout', type='http', auth='public', website=True)
-    def checkout_redirect(self, **kwargs):
-        return request.redirect('/shop/checkout')
-
-    @http.route('/checkout/place-order', type='http', auth='public', website=True, methods=['POST'], sitemap=False)
-    def place_order_redirect(self, **kwargs):
-        return request.redirect('/shop/checkout')
-
     @http.route('/confirmation', type='http', auth='public', website=True, sitemap=True)
     def confirmation(self, **kwargs):
         order_id = kwargs.get('order_id')
@@ -718,3 +729,22 @@ class SneakersController(http.Controller):
     @http.route('/privacy-policy', type='http', auth='public', website=True)
     def privacy_policy(self, **kwargs):
         return request.render('sneakers.page_privacy_policy', {})
+
+    @http.route('/newsletter/subscribe', type='json', auth='public', csrf=False)
+    def newsletter_subscribe(self, **kwargs):
+        email = (kwargs.get('email') or '').strip()
+        if not email or '@' not in email:
+            return {'success': False, 'error': 'Email invalide'}
+        existing = request.env['newsletter.subscriber'].sudo().search([
+            ('email', '=', email)
+        ], limit=1)
+        if existing:
+            if existing.state == 'subscribed':
+                return {'success': False, 'error': 'Déjà inscrit'}
+            existing.sudo().write({'state': 'subscribed', 'subscribed_date': fields.Datetime.now})
+        else:
+            request.env['newsletter.subscriber'].sudo().create({
+                'email': email,
+                'state': 'subscribed',
+            })
+        return {'success': True}

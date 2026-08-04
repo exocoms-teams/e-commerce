@@ -116,23 +116,15 @@
                         </h3>
                         <ul class="sn-filter-list">
 
-                            <t t-if="subcategories">
+                            <t t-if="categories">
 
-                                <t t-foreach="subcategories" t-as="subcategory">
+                                <t t-foreach="categories" t-as="cat">
 
                                     <li>
 
-                                        <t t-if="selected_category">
-                                            <a t-att-href="'/shop-sneakers?category=%s&amp;subcategory=%s' % (selected_category.name.lower(), subcategory.id)">
-                                                <t t-out="subcategory.name"/>
-                                            </a>
-                                        </t>
-
-                                        <t t-else="">
-                                            <a t-att-href="'/shop-sneakers?subcategory=%s' % subcategory.id">
-                                                <t t-out="subcategory.name"/>
-                                            </a>
-                                        </t>
+                                        <a t-att-href="'/shop-sneakers?category=%s' % cat.name.lower()">
+                                            <t t-out="cat.name"/>
+                                        </a>
 
                                     </li>
 
@@ -533,90 +525,22 @@
 
 
                     <div class="sn-shop-pagination">
-
-
-                        <nav class="sn-pagination">
-
-
-
-                            <button class="sn-page-btn">
-
-
+                        <nav class="sn-pagination" t-if="total_pages > 1">
+                            <a t-if="current_page > 1" t-attf-href="/shop-sneakers?page=#{current_page - 1}" class="sn-page-btn">
                                 <i class="fa fa-chevron-left"></i>
-
-
-                            </button>
-
-
-
-
-
-                            <button class="sn-page-btn active">
-
-                                1
-
-                            </button>
-
-
-
-
-
-                            <button class="sn-page-btn">
-
-                                2
-
-                            </button>
-
-
-
-
-
-                            <button class="sn-page-btn">
-
-                                3
-
-                            </button>
-
-
-
-
-
-                            <span class="sn-pagination-dots">
-
-                                ...
-
-                            </span>
-
-
-
-
-
-                            <button class="sn-page-btn">
-
-                                10
-
-                            </button>
-
-
-
-
-
-                            <button class="sn-page-btn">
-
-
+                            </a>
+                            <t t-foreach="range(1, total_pages + 1)" t-as="p">
+                                <a t-if="p == 1 or p == total_pages or (p &gt;= current_page - 2 and p &lt;= current_page + 2)"
+                                   t-attf-href="/shop-sneakers?page=#{p}"
+                                   t-attf-class="sn-page-btn #{ 'active' if p == current_page else '' }">
+                                    <t t-esc="p"/>
+                                </a>
+                                <span t-if="(p == current_page - 3 and current_page &gt; 4) or (p == current_page + 3 and current_page &lt; total_pages - 3)" class="sn-pagination-dots">...</span>
+                            </t>
+                            <a t-if="current_page &lt; total_pages" t-attf-href="/shop-sneakers?page=#{current_page + 1}" class="sn-page-btn">
                                 <i class="fa fa-chevron-right"></i>
-
-
-                            </button>
-
-
-
-
-
+                            </a>
                         </nav>
-
-
-
                     </div>
 
 

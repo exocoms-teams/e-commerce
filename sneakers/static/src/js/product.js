@@ -21,6 +21,7 @@
     initQuantitySelector();
 
     initAddToCartProduct();
+    updateAddCartButton(productSection.querySelector(".sn-add-cart"));
 
     initTabs();
 
