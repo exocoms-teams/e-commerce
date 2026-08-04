@@ -79,21 +79,50 @@ def calculate_trend_score(current_metrics, previous_metrics=None, source_score=0
     return round(final_score, 4)
 
 
+def latest_ads_by_ref(ad_ids):
+    """Ne garde qu'une ligne trend.ad par ad_ref : la plus récente
+    (collected_at le plus grand).
+
+    WIN-XX ("Passer trend.ad en mode historique") : une même publicité
+    (ad_ref) peut désormais avoir plusieurs lignes trend.ad, une par
+    collecte, au lieu d'une seule ligne mise à jour en place. Toute
+    agrégation "état courant" (score, total_likes/total_shares affichés
+    sur la fiche produit, etc.) doit passer par cette fonction pour ne
+    compter chaque publicité qu'une seule fois — sinon les totaux
+    gonflent artificiellement à chaque nouvelle collecte historisée.
+
+    :param ad_ids: recordset trend.ad (peut mélanger plusieurs ad_ref).
+    :rtype: recordset trend.ad, une ligne par ad_ref.
+    """
+    latest_by_ref = {}
+    # sorted() met les collected_at manquants (False, lignes créées avant
+    # ce changement) en premier : ils seront écrasés par toute ligne
+    # horodatée plus récente pour le même ad_ref, ce qui est le
+    # comportement souhaité.
+    for ad in ad_ids.sorted('collected_at'):
+        latest_by_ref[ad.ad_ref] = ad
+    return ad_ids.browse([ad.id for ad in latest_by_ref.values()])
+
+
 def build_current_metrics(product):
     """Construit le dict de métriques courantes attendu par calculate_trend_score,
     à partir d'un produit (recordset trend.product ou tout objet "duck-typed"
     exposant les mêmes attributs : sales_count, ad_ids.mapped(...)).
 
     - ventes   <- product.sales_count
-    - likes    <- somme des likes_count de product.ad_ids
-    - partages <- somme des shares_count de product.ad_ids
-    - ads      <- nombre de trend.ad liés (A_T)
+    - likes    <- somme des likes_count de la DERNIÈRE collecte de chaque
+                  publicité liée (voir latest_ads_by_ref, WIN-XX)
+    - partages <- somme des shares_count, même règle
+    - ads      <- nombre de publicités distinctes liées (A_T), pas le
+                  nombre de lignes trend.ad (qui peut inclure plusieurs
+                  collectes historisées de la même publicité)
     """
+    ads = latest_ads_by_ref(product.ad_ids)
     return {
         'ventes': product.sales_count or 0,
-        'likes': sum(product.ad_ids.mapped('likes_count')),
-        'partages': sum(product.ad_ids.mapped('shares_count')),
-        'ads': len(product.ad_ids),
+        'likes': sum(ads.mapped('likes_count')),
+        'partages': sum(ads.mapped('shares_count')),
+        'ads': len(ads),
     }
 
 

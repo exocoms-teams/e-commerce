@@ -195,6 +195,11 @@ class TrendIngestController(http.Controller):
         )
 
     def _handle_ad(self, payload):
+        """WIN-XX ("Passer trend.ad en mode historique") : ne fait plus de
+        search()+write() sur un enregistrement existant. Chaque collecte
+        crée systématiquement une nouvelle ligne trend.ad horodatée
+        (collected_at).
+        """
         required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
         for field in required_fields:
             if not payload.get(field):
@@ -208,10 +213,6 @@ class TrendIngestController(http.Controller):
 
         env = request.env(su=True)
 
-        existing = env['trend.ad'].search(
-            [('ad_ref', '=', payload['ad_ref'])], limit=1
-        )
-
         vals = {
             'ad_ref': payload['ad_ref'],
             'product_ref': payload['product_ref'],
@@ -220,12 +221,10 @@ class TrendIngestController(http.Controller):
             'likes_count': payload.get('likes_count', 0),
             'shares_count': payload.get('shares_count', 0),
         }
+        if payload.get('collected_at'):
+            vals['collected_at'] = payload['collected_at']
 
-        if existing:
-            existing.write(vals)
-            record = existing
-        else:
-            record = env['trend.ad'].create(vals)
+        record = env['trend.ad'].create(vals)
 
         return self._json_response(
             {'status': 'success', 'type': 'ad', 'id': record.id}, 200
