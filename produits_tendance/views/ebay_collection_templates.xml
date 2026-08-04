@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="template_winners_dashboard" name="Winners Dashboard">
+        <t t-call="website.layout">
+            <!-- C'est cette classe 'o_winners_dashboard_header' qui fait le lien avec le JS ! -->
+            <div class="container mt-5 o_winners_dashboard_header">
+                <h1 class="mb-4 text-center">Dashboard d'Ingestion Winners</h1>
+                
+                <!-- Carte du contrôleur eBay -->
+                <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+                    <h3 class="card-title">📡  Détection eBay Live</h3>
+                    <p class="text-muted">Le script s'exécutera côté serveur via le contrôleur Python.</p>
+                    
+                    <div class="mb-3">
+                        <label for="ebay_keyword" class="form-label">Mot-clé cible</label>
+                        <input type="text" id="ebay_keyword" class="form-control" placeholder="ex: smartwatch, écouteurs..."/>
+                    </div>
+                    
+                    <!-- Bouton avec préfixe o_winners_ -->
+                    <button id="btn_run_scan" class="btn w-100 text-white o_winners_btn_primary" style="background-color: #1B3A6B;">
+                        Lancer l'ingestion
+                    </button>
+                    
+                    <!-- Zone d'affichage des résultats -->
+                    <div id="scan_result" class="mt-4 alert d-none" role="alert"></div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
