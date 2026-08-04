@@ -28,8 +28,9 @@
         'data/ecommerce_products.xml', # Nos produits de test
         'views/product_template_views.xml',
         'views/allergen_views.xml',
-        'views/website_layout.xml',
-        'views/website_sale_templates.xml',
+        # 'views/website_layout.xml',
+        # 'views/website_sale_templates.xml',
+        'views/website_product_templates_views.xml',
     ],
     'installable': True,
     'application': True,
