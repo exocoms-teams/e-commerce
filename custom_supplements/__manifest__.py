@@ -15,7 +15,6 @@
         #bloc 'assets' pour charger votre futur design :
         'assets': {
         'web.assets_frontend': [
-        'custom_supplements/static/src/js/allergen_filter.js',
             'custom_supplements/static/src/scss/style.scss',
         ],
     },
