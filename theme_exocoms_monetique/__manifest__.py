@@ -13,10 +13,12 @@
     ],
     'data': [
         'data/product_data.xml',
+        'views/homepage.xml',
         'views/layout.xml',
         'views/snippets/s_hero.xml',
         'views/snippets/s_pourquoi.xml',
         'views/snippets/s_services.xml',
+        'views/snippets/s_trust_security.xml',
         'views/snippets/s_bestsellers.xml',
         'views/snippets/s_reviews.xml',
         'views/snippets/snippets.xml',
