@@ -18,7 +18,7 @@
 
     <template id="products_item">
 
-        <div class="card border-0 rounded-4 overflow-hidden h-100 shadow-sm">
+        <div class="card border-0 rounded-4 overflow-hidden shadow-sm">
 
             <!-- Image -->
                         <t
@@ -43,10 +43,6 @@
                 t-set="primary_image_holder"
                 t-value="(all_images_list[:1]+[product])[0]"
             />
-            <t
-                t-set="secondary_image_holder"
-                t-value="(all_images_list[1:2]+[False])[0]"
-            />
 
             <a
                 t-att-href="product_href"
@@ -59,14 +55,6 @@
                     t-field="primary_image_holder.image_1920"
                     t-options="{'widget': 'image', 'preview_image': 'image_1024', 'class': 'oe_product_image_img h-100 w-100'}"
                     class="oe_product_image_img_wrapper oe_product_image_img_wrapper_primary d-flex h-100 justify-content-center align-items-center"
-                />
-
-                <!-- Secondary image -->
-                <span
-                    t-if="secondary_image_holder"
-                    t-field="secondary_image_holder.image_1920"
-                    t-options="{'widget': 'image', 'preview_image': 'image_1024', 'class': 'oe_product_image_img_secondary h-100 w-100'}"
-                    class="oe_product_image_img_wrapper oe_product_image_img_wrapper_secondary h-100 justify-content-center align-items-center"
                 />
             </a>
 
@@ -84,13 +72,14 @@
                         <div class="text-muted">
                             From :
                             <span class="">
-                                $79.00
+                                <t t-if="product_price" t-out="product_price"/>
                             </span>
                         </div>
 
                     </div>
 
-                    <button class="btn btn-dark rounded-3">
+                    <button class="btn btn-dark rounded-3 d-flex justify-content-center align-items-center"
+                    style="width:45px height:45px">
                         <i class="fa fa-shopping-cart"/>
                     </button>
 
