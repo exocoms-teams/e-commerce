@@ -1,6 +1,8 @@
 # controllers/dashboard_api.py
 from werkzeug.exceptions import NotFound
 
+from ..models.trend_score_calculator import latest_ads_by_ref
+
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques
@@ -58,7 +60,11 @@ class TrendDashboardAPI:
         # Trends (purement informatif, cf. trend.score.search_volume).
         latest_score = product.score_ids.sorted('computed_at', reverse=True)[:1]
 
-        ads = product.ad_ids
+        # WIN-XX (mode historique trend.ad) : une publicité peut désormais
+        # avoir plusieurs lignes horodatées (une par collecte). On ne garde
+        # que la dernière par ad_ref pour l'affichage et les totaux, sinon
+        # les compteurs likes/partages gonflent à chaque nouvelle collecte.
+        ads = latest_ads_by_ref(product.ad_ids)
 
         return {
             'product': product,
