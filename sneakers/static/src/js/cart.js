@@ -19,54 +19,8 @@
 
 
     // ================================================
-    // ORDER SUMMARY — totaux + liste articles sidebar
     // ================================================
-
-    function updateOrderSummary(cart) {
-        if (!cart) {
-        cart = [];
-        }
-        var subtotal  = cart.reduce(function (acc, i) { return acc + i.price * i.qty; }, 0);
-        var discount  = window.sn_discount || 0;
-        var shipping  = parseFloat(document.querySelector(".sn-order-shipping")?.textContent.replace(/[^0-9.]/g, '')) || 0;
-        var total     = Math.max(0, subtotal - discount + shipping);
-        var itemCount = cart.reduce(function (acc, i) { return acc + i.qty; }, 0);
-
-        setTextIfExists(".sn-order-subtotal", formatPrice(subtotal));
-        setTextIfExists(".sn-order-shipping",  shipping === 0 ? (subtotal > 0 ? "Free" : formatPrice(0)) : formatPrice(shipping));
-        setTextIfExists(".sn-order-discount",  discount > 0 ? "-" + formatPrice(discount) : "-");
-        setTextIfExists(".sn-order-total",     formatPrice(total));
-
-        var discountRow = document.querySelector(".sn-order-discount-row");
-        if (discountRow) {
-            discountRow.style.display = discount > 0 ? "" : "none";
-        }
-
-        // Liste des articles dans la sidebar du summary
-        var summaryList = document.querySelector(".sn-order-items");
-        if (summaryList) {
-            summaryList.innerHTML = "";
-            cart.forEach(function (item) {
-                var row = document.createElement("div");
-                row.className = "sn-order-item";
-                row.innerHTML =
-                    '<div class="sn-order-item-info">' +
-                        (item.image
-                            ? '<img src="' + item.image + '" alt="' + item.name + '" class="sn-order-item-img"/>'
-                            : "") +
-                        '<span class="sn-order-item-name">' + item.name + '</span>' +
-                        '<span class="sn-order-item-qty">x' + item.qty + '</span>' +
-                    '</div>' +
-                    '<span class="sn-order-item-total">' + formatPrice(item.price * item.qty) + '</span>';
-                summaryList.appendChild(row);
-            });
-        }
-
-        updateCartBadge(itemCount);
-    }
-
-    // ================================================
-    // SYNC DOM → (après +/- ou suppression)
+    // SYNC CART DATA FROM DOM (reads current state)
     // ================================================
 
     function syncCartFromDOM() {
@@ -86,7 +40,6 @@
                 qty       : parseInt(input.value, 10) || 1
             });
         });
-        updateOrderSummary(cart);
         return cart;
     }
 
@@ -178,11 +131,6 @@ function updateCartBackend(lineId, qty) {
             summaryCard.style.display = "none";
         }
 
-
-        var promoCard = document.querySelector(".sn-promo-card");
-        if(promoCard){
-            promoCard.style.display = "none";
-        }
 
 
         var checkoutBtn = document.querySelector(".sn-checkout-btn");
@@ -441,91 +389,5 @@ function updateCartBackend(lineId, qty) {
 
 
 });
-
-    // ================================================
-    // CODE PROMO
-    // ================================================
-
-    var promoForm = document.querySelector(".sn-promo-form");
-    if (promoForm) {
-        var PROMO_CODES = {
-            "SNEAKERS10": { type: "percent", value: 10, msg: "10% discount applied!" },
-            "SUMMER20":   { type: "percent", value: 20, msg: "20% Summer Sale discount!" },
-            "FLAT15":     { type: "fixed",   value: 15, msg: "$15 discount applied!" }
-        };
-        var promoInput = promoForm.querySelector("input[type='text']");
-
-        function applyPromoCode() {
-            if (!promoInput) return;
-
-            var code  = promoInput.value.trim().toUpperCase();
-            if (!code) return;
-
-            var msgEl = document.querySelector(".sn-promo-message");
-            if (!msgEl) {
-                msgEl = document.createElement("p");
-                msgEl.className = "sn-promo-message";
-                promoForm.insertAdjacentElement("afterend", msgEl);
-            }
-
-            /* BACKEND — valider le code promo */
-
-            var promo = PROMO_CODES[code];
-            if (!promo) {
-                msgEl.textContent = "Invalid or expired code.";
-                msgEl.className   = "sn-promo-message sn-promo-message--error";
-                return;
-            }
-
-            var cart = [];
-
-            cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
-
-                var price = parsePrice(
-                    item.querySelector(".sn-cart-price").textContent
-                );
-
-                var qty = parseInt(
-                    item.querySelector("input[type='number']").value,
-                    10
-                ) || 1;
-
-                cart.push({
-                    price: price,
-                    qty: qty
-                });
-
-            });
-
-
-            var subtotal = cart.reduce(function(acc, i){
-                return acc + i.price * i.qty;
-            }, 0);
-
-
-            var discountAmt = promo.type === "percent"
-                ? (subtotal * promo.value / 100)
-                : promo.value;
-            window.sn_discount = discountAmt;
-            window.sn_promo_code = code;
-            msgEl.textContent    = "You saved " + formatPrice(discountAmt) + "!";
-            msgEl.className      = "sn-promo-message sn-promo-message--success";
-            promoInput.readOnly  = true;
-
-            updateOrderSummary(syncCartFromDOM());
-        }
-
-        promoForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            applyPromoCode();
-        });
-
-        promoInput.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                applyPromoCode();
-            }
-        });
-    }
 
 })();
