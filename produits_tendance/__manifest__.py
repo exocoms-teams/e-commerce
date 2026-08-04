@@ -22,6 +22,7 @@
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48
+        'data/webhook_queue_cron.xml',      # WIN-67
     ],
     'assets': {
         'web.assets_frontend': [
