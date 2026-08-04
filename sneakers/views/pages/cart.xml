@@ -29,7 +29,7 @@
                     <!-- CART ITEMS -->
                     <div class="sn-cart-items">
                         <t t-if="order and order.order_line">
-                            <t t-foreach="order.order_line.filtered(lambda l: l.product_id and l.product_id.active)" t-as="line">
+                            <t t-foreach="order.order_line.filtered(lambda l: l.product_id and l.product_id.active and not l.is_delivery)" t-as="line">
                                 <article class="sn-cart-item" t-att-data-line-id="line.id" t-att-data-product-id="line.product_id.id">
                                     <div class="sn-cart-image">
                                         <img t-att-src="'/web/image/product.template/%s/image_256' % line.product_id.product_tmpl_id.id" t-att-alt="line.product_id.name"/>
@@ -119,9 +119,22 @@
                                 </form>
                             </t>
 
+                            <div class="sn-summary-row sn-order-discount-row" style="display:none">
+                                <span>Discount</span>
+                                <span class="sn-order-discount" style="color:#22C55E">-</span>
+                            </div>
+
                             <div class="sn-summary-row">
                                 <span>Estimated Tax</span>
                                 <span class="sn-order-tax">$<t t-esc="order.amount_tax if order else 0"/></span>
+                            </div>
+
+                            <div class="sn-promo-section">
+                                <form class="sn-promo-form" onsubmit="return false">
+                                    <div class="sn-promo-input-wrap">
+                                        <input type="text" placeholder="Gift card or discount code..."/>
+                                    </div>
+                                </form>
                             </div>
 
                             <div class="sn-summary-divider"></div>
@@ -136,18 +149,6 @@
                             </a>
 
                             <a href="/shop-sneakers" class="sn-continue-shopping">← Continue Shopping</a>
-                        </div>
-
-                        <!-- PROMO -->
-                        <div class="sn-promo-card">
-                            <h4>Promo Code</h4>
-                            <div class="sn-promo-form">
-                                <div class="sn-promo-input-wrap">
-                                    <input type="text" placeholder="Enter promo code"/>
-                                    <button type="button" class="sn-promo-clear" title="Remove promo code">&#215;</button>
-                                </div>
-                                <button>Apply</button>
-                            </div>
                         </div>
                     </aside>
 
