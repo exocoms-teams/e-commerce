@@ -62,7 +62,39 @@ class TrendProductDetailController(http.Controller):
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
+# -----------------------------------------------------------
+# 2bis. CONTROLEUR DASHBOARD - Classement produits + filtres dynamiques
+#       (WIN-45 / WIN-50)
+# -----------------------------------------------------------
+class TrendDashboardController(http.Controller):
 
+    @http.route('/dashboard', type='http', auth='public', website=True)
+    def dashboard(self, **kwargs):
+        """Affiche la page dashboard (classement produits) avec le panneau
+        de filtres (.o_winners_filter_panel) et la grille de cartes
+        produit (.o_winners_product_card), pré-remplie sans filtre.
+        """
+        api = TrendDashboardAPI(request.env)
+        options = api.get_filter_options()
+        return request.render('produits_tendance.template_dashboard', {
+            'products': api.get_product_list(),
+            'categories': options['categories'],
+            'countries': options['countries'],
+        })
+
+    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, **kwargs):
+        """Route JSON interne consommée en AJAX par dashboard_filters.js.
+
+        Ne retourne jamais d'erreur bloquante : des paramètres absents ou
+        vides signifient simplement "pas de filtre sur ce critère".
+        """
+        api = TrendDashboardAPI(request.env)
+        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        return request.make_response(
+            json.dumps({'status': 'success', 'products': products}),
+            headers=[('Content-Type', 'application/json')],
+        )
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------

@@ -51,3 +51,48 @@ class TrendDashboardAPI:
             'total_likes': sum(ads.mapped('likes_count')),
             'total_shares': sum(ads.mapped('shares_count')),
         }
+    # ------------------------------------------------------------------
+    # Liste / filtres dynamiques (WIN-45 / WIN-50)
+    # ------------------------------------------------------------------
+    def get_product_list(self, category_id=None, country=None):
+        """Retourne les produits triés par score de tendance décroissant,
+        optionnellement filtrés par catégorie et/ou pays.
+
+        :param int|None category_id: id d'un trend.category, ou None/0 pour
+            ne pas filtrer sur la catégorie.
+        :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
+            pas filtrer sur le pays.
+        :rtype: list[dict]
+        """
+        env = self.env(su=True)
+        domain = []
+        if category_id:
+            domain.append(('category_id', '=', int(category_id)))
+        if country:
+            domain.append(('country', '=', country))
+
+        products = env['trend.product'].search(domain, order='current_score desc')
+
+        return [{
+            'id': product.id,
+            'name': product.name,
+            'category': product.category_id.name or '',
+            'country': product.country or '',
+            'score': round(product.current_score, 1),
+            'sales_count': product.sales_count,
+        } for product in products]
+
+    def get_filter_options(self):
+        """Retourne les valeurs disponibles pour peupler les selects du
+        panneau de filtres (.o_winners_filter_panel) : catégories connues
+        et pays distincts déjà présents sur des trend.product.
+        """
+        env = self.env(su=True)
+        categories = env['trend.category'].search([], order='name asc')
+        countries = env['trend.product'].read_group(
+            [('country', '!=', False)], ['country'], ['country']
+        )
+        return {
+            'categories': [{'id': c.id, 'name': c.name} for c in categories],
+            'countries': sorted(g['country'] for g in countries if g['country']),
+        }
