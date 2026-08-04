@@ -1,5 +1,4 @@
 import json
-import re
 from odoo import http
 from odoo.http import request
 
@@ -63,27 +62,39 @@ class TrendProductDetailController(http.Controller):
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
-
 # -----------------------------------------------------------
-# 2bis. CONTROLEUR DASHBOARD (Classement des produits, WIN-48)
+# 2bis. CONTROLEUR DASHBOARD - Classement produits + filtres dynamiques
+#       (WIN-45 / WIN-50)
 # -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
-    @http.route('/dashboard', type='http', auth='user', website=True)
+    @http.route('/dashboard', type='http', auth='public', website=True)
     def dashboard(self, **kwargs):
-        # Restriction Freemium (WIN-48) : limit=5 appliqué côté ORM, jamais
-        # côté template/JS, pour qu'elle ne puisse pas être contournée en
-        # lisant le HTML brut ou en interceptant la requête.
-        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
-
+        """Affiche la page dashboard (classement produits) avec le panneau
+        de filtres (.o_winners_filter_panel) et la grille de cartes
+        produit (.o_winners_product_card), pré-remplie sans filtre.
+        """
         api = TrendDashboardAPI(request.env)
-        products = api.get_dashboard_products(limit=limit)
-
-        return request.render('produits_tendance.winners_dashboard_template', {
-            'products': products,
+        options = api.get_filter_options()
+        return request.render('produits_tendance.template_dashboard', {
+            'products': api.get_product_list(),
+            'categories': options['categories'],
+            'countries': options['countries'],
         })
 
+    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, **kwargs):
+        """Route JSON interne consommée en AJAX par dashboard_filters.js.
 
+        Ne retourne jamais d'erreur bloquante : des paramètres absents ou
+        vides signifient simplement "pas de filtre sur ce critère".
+        """
+        api = TrendDashboardAPI(request.env)
+        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        return request.make_response(
+            json.dumps({'status': 'success', 'products': products}),
+            headers=[('Content-Type', 'application/json')],
+        )
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
@@ -124,28 +135,8 @@ class TrendIngestController(http.Controller):
             return self._handle_score(data)
         else:
             return self._json_response(
-                {'status': 'error', 'code': 'unknown_type',
-                 'field': 'type', 'received': type}, 400
+                {'status': 'error', 'code': 'unknown_type', 'field': 'type', 'received': type}, 400
             )
-
-    def _validate_payload(self, payload):
-        if payload.get('date'):
-            if not re.match(r'^\d{4}-\d{2}-\d{2}$', payload['date']):
-                return self._json_response(
-                    {'status': 'error', 'code': 'invalid_format',
-                     'field': 'date', 'expected': 'YYYY-MM-DD'}, 400
-                )
-
-        if payload.get('country'):
-            country = payload['country']
-            if len(country) != 2 or not country.isupper():
-                return self._json_response(
-                    {'status': 'error', 'code': 'invalid_format',
-                     'field': 'country',
-                     'expected': 'ISO 3166-1 alpha-2 (ex: MA, FR)'}, 400
-                )
-
-        return None
 
     def _handle_product(self, payload):
         required_fields = ['name', 'product_ref', 'category', 'country', 'source']
@@ -154,10 +145,6 @@ class TrendIngestController(http.Controller):
                 return self._json_response(
                     {'status': 'error', 'code': 'missing_field', 'field': field}, 400
                 )
-
-        error = self._validate_payload(payload)
-        if error:
-            return error
 
         env = request.env(su=True)
 
@@ -195,40 +182,28 @@ class TrendIngestController(http.Controller):
         )
 
     def _handle_ad(self, payload):
-        """WIN-XX ("Passer trend.ad en mode historique") : ne fait plus de
-        search()+write() sur un enregistrement existant. Chaque collecte
-        crée systématiquement une nouvelle ligne trend.ad horodatée
-        (collected_at).
-        """
-        required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
-        for field in required_fields:
-            if not payload.get(field):
-                return self._json_response(
-                    {'status': 'error', 'code': 'missing_field', 'field': field}, 400
-                )
+         required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
+         for field in required_fields:
+              if not payload.get(field):
+                 return self._json_response(
+                {'status': 'error', 'code': 'missing_field', 'field': field}, 400
+            )
 
-        error = self._validate_payload(payload)
-        if error:
-            return error
+         env = request.env(su=True)
 
-        env = request.env(su=True)
+         vals = {
+          'ad_ref': payload['ad_ref'],
+          'product_ref': payload['product_ref'],
+          'country': payload['country'],
+           'social_network': payload['social_network'],
+          'likes_count': payload.get('likes_count', 0),
+          'shares_count': payload.get('shares_count', 0),
+             }
+         record = env['trend.ad'].create(vals)
 
-        vals = {
-            'ad_ref': payload['ad_ref'],
-            'product_ref': payload['product_ref'],
-            'country': payload['country'],
-            'social_network': payload['social_network'],
-            'likes_count': payload.get('likes_count', 0),
-            'shares_count': payload.get('shares_count', 0),
-        }
-        if payload.get('collected_at'):
-            vals['collected_at'] = payload['collected_at']
-
-        record = env['trend.ad'].create(vals)
-
-        return self._json_response(
-            {'status': 'success', 'type': 'ad', 'id': record.id}, 200
-        )
+         return self._json_response(
+        {'status': 'success', 'type': 'ad', 'id': record.id}, 200
+    )
 
     def _handle_score(self, payload):
         required_fields = ['product_ref', 'computed_score']
