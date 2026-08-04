@@ -41,6 +41,20 @@ class TrendAd(models.Model):
     likes_count = fields.Integer(string='Nombre de likes', default=0)
     shares_count = fields.Integer(string='Nombre de partages', default=0)
 
+    # WIN-XX ("Étendre trend.ad avec un champ de date") : horodatage de la
+    # collecte. Nécessaire pour passer trend.ad en mode historique (WIN-XX,
+    # "Passer trend.ad en mode historique") : chaque nouvelle collecte crée
+    # désormais une nouvelle ligne au lieu d'écraser likes_count/shares_count
+    # sur la ligne existante, afin de pouvoir reconstituer Vol_T_prev pour
+    # le calcul de croissance (voir models/trend_score_calculator.py).
+    # NB : les lignes trend.ad créées avant ce changement n'ont pas de
+    # valeur ici (collected_at=False) — prévoir une migration de données si
+    # l'historique passé doit être exploité.
+    collected_at = fields.Datetime(
+        string="Date de collecte",
+        default=fields.Datetime.now,
+    )
+
 
     # Surcharge de la méthode de création
     @api.model_create_multi
