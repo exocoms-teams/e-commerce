@@ -4,7 +4,10 @@
     'category': 'Website',
     'author': 'winners',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'auth_signup'],
+    'depends': [
+        'website', 'website_sale', 'auth_signup',
+        'sale_subscription', 'website_sale_subscription',   # WIN-66
+    ],
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -16,6 +19,9 @@
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
+        'data/subscription_plans.xml',           # WIN-66
+        'data/subscription_products.xml',        # WIN-66
+        'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48
     ],
     'assets': {
@@ -24,6 +30,7 @@
             'produits_tendance/static/src/js/dashboard_ingestion.js',
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
+            'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/scss/dashboard.scss',
         ],
     },
