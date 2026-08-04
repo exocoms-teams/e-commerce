@@ -64,6 +64,75 @@
         </field>
     </record>
 
+    <!-- Search view - filters and grouping -->
+    <record id="view_travel_reservation_search" model="ir.ui.view">
+        <field name="name">travel.reservation.search</field>
+        <field name="model">travel.reservation</field>
+        <field name="arch" type="xml">
+            <search string="Search Reservations">
+                <field name="name"/>
+                <field name="client_name" string="Client"/>
+                <field name="client_email"/>
+                <field name="product_id" string="Travel Offer"/>
+                <field name="client_country" string="Country"/>
+
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Waiting" name="filter_en_attente"
+                        domain="[('state', '=', 'en_attente')]"/>
+                <filter string="Confirmed" name="filter_confirmed"
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Cancelled" name="filter_cancel"
+                        domain="[('state', '=', 'cancel')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="groupby_state" context="{'group_by': 'state'}"/>
+                    <filter string="Travel Offer" name="groupby_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Country" name="groupby_country" context="{'group_by': 'client_country'}"/>
+                    <filter string="Departure Date" name="groupby_departure" context="{'group_by': 'date_depart'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban view - reservations grouped by status -->
+    <record id="view_travel_reservation_kanban" model="ir.ui.view">
+        <field name="name">travel.reservation.kanban</field>
+        <field name="model">travel.reservation</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="client_name"/>
+                <field name="product_id"/>
+                <field name="date_depart"/>
+                <field name="date_retour"/>
+                <field name="prix_total"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div>
+                                <field name="client_name"/>
+                            </div>
+                            <div>
+                                <field name="product_id"/>
+                            </div>
+                            <div class="text-muted">
+                                <field name="date_depart"/> → <field name="date_retour"/>
+                            </div>
+                            <div>
+                                <strong><field name="prix_total"/> €</strong>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record id="view_travel_reservation_list" model="ir.ui.view">
         <field name="name">travel.reservation.list</field>
         <field name="model">travel.reservation</field>
@@ -79,9 +148,10 @@
     </record>
 
     <record id="action_travel_reservation" model="ir.actions.act_window">
-        <field name="name">Travel Reservations</field>
+         <field name="name">Travel Reservations</field>
         <field name="res_model">travel.reservation</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_travel_reservation_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first reservation

@@ -37,4 +37,35 @@
               action="action_travel_dashboard"
               sequence="1"/>
 
+    <!-- Vue Graphique - Réservations par statut -->
+    <record id="view_travel_dashboard_reservation_graph" model="ir.ui.view">
+        <field name="name">travel.dashboard.reservation.graph</field>
+        <field name="model">travel.reservation</field>
+        <field name="arch" type="xml">
+            <graph string="Réservations par statut" type="bar">
+                <field name="state" type="row"/>
+                <field name="id" type="count"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action Dashboard Réservations -->
+    <record id="action_travel_dashboard_reservation" model="ir.actions.act_window">
+        <field name="name">Réservations par statut</field>
+        <field name="res_model">travel.reservation</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Répartition des réservations par statut
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Réservations par statut -->
+    <menuitem id="menu_travel_dashboard_reservation"
+              name="Réservations par statut"
+              parent="menu_travel_agency_root"
+              action="action_travel_dashboard_reservation"
+              sequence="2"/>
+
 </odoo>
