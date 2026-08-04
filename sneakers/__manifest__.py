@@ -1,10 +1,10 @@
 {
     'name': 'monetiques.fr — Infrastructure de Paiement',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'stock'],
+    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock'],
 
     'data': [
         'security/ir.model.access.csv',

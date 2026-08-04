@@ -1,5 +1,6 @@
-from odoo import http, fields
+from odoo import http, fields, _
 from odoo.http import request
+from odoo.addons.website_sale.controllers import main as website_sale_main
 
 
 def _is_module_installed(module_name):
@@ -8,6 +9,48 @@ def _is_module_installed(module_name):
         ('state', '=', 'installed'),
     ], limit=1)
     return bool(mod)
+
+
+def _clear_order_coupons(order):
+    """Remove all applied coupons and their reward lines from the order.
+
+    Ensures only one coupon can be active at a time across the shop so
+    stacking discounts from different loyalty programs cannot occur.
+    """
+    if not order or not order.exists():
+        return
+    reward_lines = order.order_line.filtered(lambda l: l.reward_id)
+    if reward_lines:
+        reward_lines.unlink()
+    if order.applied_coupon_ids:
+        order.write({'applied_coupon_ids': [(5, 0, 0)]})
+    if order.coupon_point_ids:
+        order.write({'coupon_point_ids': [(5, 0, 0)]})
+    order._update_programs_and_rewards()
+
+
+class SneakersWebsiteSale(website_sale_main.WebsiteSale):
+    """Inherit Odoo's WebsiteSale controller to enforce single-coupon behaviour.
+
+    Applying a new promo code must replace any previously applied coupon so
+    that customers cannot stack discounts from different loyalty programs.
+    Also routes default redirects through /shop-sneakers so coupon links
+    never bounce via the Odoo default /shop URL.
+    """
+
+    def pricelist(self, promo, reward_id=None, **post):
+        if not (order_sudo := request.cart):
+            return super().pricelist(promo, **post)
+        _clear_order_coupons(order_sudo)
+        if not post.get('r'):
+            post['r'] = '/shop/cart'
+        return super().pricelist(promo, reward_id=reward_id, **post)
+
+    def activate_coupon(self, code, r='/shop-sneakers', **kw):
+        if not (order_sudo := request.cart):
+            return super().activate_coupon(code, r=r, **kw)
+        _clear_order_coupons(order_sudo)
+        return super().activate_coupon(code, r=r, **kw)
 
 
 class SneakersController(http.Controller):

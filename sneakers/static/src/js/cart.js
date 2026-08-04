@@ -81,7 +81,7 @@
 
 function updateCartBackend(lineId, qty) {
 
-    fetch('/shop/cart/update', {
+    return fetch('/shop/cart/update', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -223,8 +223,7 @@ function updateCartBackend(lineId, qty) {
         updateCartBackend(
             lineId,
             input.value
-        );
-        syncCartFromDOM();
+        ).then(function(){ location.reload(); });
     });
 
 
@@ -323,10 +322,7 @@ function updateCartBackend(lineId, qty) {
         updateCartBackend(
             lineId,
             val
-        );
-
-
-        syncCartFromDOM();
+        ).then(function(){ location.reload(); });
     });
 
     // ================================================
@@ -350,7 +346,7 @@ function updateCartBackend(lineId, qty) {
 
 
         // suppression côté Odoo
-        updateCartBackend(lineId, 0);
+        updateCartBackend(lineId, 0).then(function(){ location.reload(); });
 
 
         cartItem.style.opacity = "0";
