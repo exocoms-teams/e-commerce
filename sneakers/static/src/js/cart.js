@@ -448,9 +448,9 @@ function updateCartBackend(lineId, qty) {
             "SUMMER20":   { type: "percent", value: 20, msg: "20% Summer Sale discount!" },
             "FLAT15":     { type: "fixed",   value: 15, msg: "$15 discount applied!" }
         };
+        var promoInput = promoForm.querySelector("input[type='text']");
 
         function applyPromoCode() {
-            var promoInput = promoForm.querySelector("input[type='text']");
             if (!promoInput) return;
 
             var code  = promoInput.value.trim().toUpperCase();
@@ -502,10 +502,13 @@ function updateCartBackend(lineId, qty) {
                 ? (subtotal * promo.value / 100)
                 : promo.value;
             window.sn_discount = discountAmt;
+            window.sn_promo_code = code;
             msgEl.textContent    = promo.msg;
             msgEl.className      = "sn-promo-message sn-promo-message--success";
-            promoInput.value     = "";
-            promoInput.disabled  = true;
+            promoInput.readOnly  = true;
+
+            var clearBtn = promoForm.querySelector(".sn-promo-clear");
+            if (clearBtn) clearBtn.classList.add("sn-promo-clear--visible");
 
             updateOrderSummary(syncCartFromDOM());
         }
@@ -515,13 +518,39 @@ function updateCartBackend(lineId, qty) {
             applyPromoCode();
         });
 
-        var promoBtn = promoForm.querySelector("button");
+        var promoBtn = promoForm.querySelector("button:not(.sn-promo-clear)");
         if (promoBtn) {
             promoBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 applyPromoCode();
             });
         }
+
+        var clearBtn = promoForm.querySelector(".sn-promo-clear");
+        if (clearBtn) {
+            clearBtn.addEventListener("click", function () {
+                promoInput.value    = "";
+                promoInput.readOnly = false;
+                window.sn_discount  = 0;
+                window.sn_promo_code = "";
+                clearBtn.classList.remove("sn-promo-clear--visible");
+
+                var msgEl = document.querySelector(".sn-promo-message");
+                if (msgEl) msgEl.textContent = "";
+
+                updateOrderSummary(syncCartFromDOM());
+            });
+        }
+
+        promoInput.addEventListener("input", function () {
+            if (clearBtn) {
+                if (promoInput.value.trim()) {
+                    clearBtn.classList.add("sn-promo-clear--visible");
+                } else {
+                    clearBtn.classList.remove("sn-promo-clear--visible");
+                }
+            }
+        });
     }
 
 })();
