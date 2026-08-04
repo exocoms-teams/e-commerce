@@ -33,9 +33,18 @@ class TestScoreAlerts(TransactionCase):
             'group_ids': [(4, cls.pro_group.id)],
         })
 
-        cls.product = cls.env['trend.product'].create({
+    def setUp(self):
+        super().setUp()
+        # Un produit par test (pas en setUpClass) : chaque test crée son
+        # propre trend.score, et un test qui vérifie l'ABSENCE d'alerte
+        # (ex: test_no_threshold_configured_does_not_alert) ne doit jamais
+        # pouvoir retrouver l'entrée créée par un autre test sur un produit
+        # partagé — sinon un ordre d'exécution défavorable fait échouer le
+        # test sans rapport avec le code testé (constaté : "trend.webhook.
+        # queue(1,) is not false" à cause d'un produit partagé en classe).
+        self.product = self.env['trend.product'].create({
             'name': 'Produit Alerte Test',
-            'product_ref': 'TEST-ALERT-0001',
+            'product_ref': f'TEST-ALERT-{self.id()}',
             'country': 'MA',
             'source': 'api',
         })
