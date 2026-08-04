@@ -52,6 +52,10 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         _clear_order_coupons(order_sudo)
         return super().activate_coupon(code, r=r, **kw)
 
+    @http.route('/shop', type='http', auth='public', website=True)
+    def shop(self, **kwargs):
+        return request.redirect('/shop-sneakers', code=301)
+
 
 class SneakersController(http.Controller):
 
