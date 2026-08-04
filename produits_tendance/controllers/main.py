@@ -1,4 +1,5 @@
 import json
+import re
 from odoo import http
 from odoo.http import request
 
@@ -123,8 +124,28 @@ class TrendIngestController(http.Controller):
             return self._handle_score(data)
         else:
             return self._json_response(
-                {'status': 'error', 'code': 'unknown_type', 'field': 'type', 'received': type}, 400
+                {'status': 'error', 'code': 'unknown_type',
+                 'field': 'type', 'received': type}, 400
             )
+
+    def _validate_payload(self, payload):
+        if payload.get('date'):
+            if not re.match(r'^\d{4}-\d{2}-\d{2}$', payload['date']):
+                return self._json_response(
+                    {'status': 'error', 'code': 'invalid_format',
+                     'field': 'date', 'expected': 'YYYY-MM-DD'}, 400
+                )
+
+        if payload.get('country'):
+            country = payload['country']
+            if len(country) != 2 or not country.isupper():
+                return self._json_response(
+                    {'status': 'error', 'code': 'invalid_format',
+                     'field': 'country',
+                     'expected': 'ISO 3166-1 alpha-2 (ex: MA, FR)'}, 400
+                )
+
+        return None
 
     def _handle_product(self, payload):
         required_fields = ['name', 'product_ref', 'category', 'country', 'source']
@@ -133,6 +154,10 @@ class TrendIngestController(http.Controller):
                 return self._json_response(
                     {'status': 'error', 'code': 'missing_field', 'field': field}, 400
                 )
+
+        error = self._validate_payload(payload)
+        if error:
+            return error
 
         env = request.env(su=True)
 
@@ -176,6 +201,10 @@ class TrendIngestController(http.Controller):
                 return self._json_response(
                     {'status': 'error', 'code': 'missing_field', 'field': field}, 400
                 )
+
+        error = self._validate_payload(payload)
+        if error:
+            return error
 
         env = request.env(su=True)
 
