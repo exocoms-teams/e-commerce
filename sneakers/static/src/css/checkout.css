@@ -6,41 +6,49 @@
 }
 
 /* ODOO NATIVE CHECKOUT OVERRIDES */
-/* Confirm button: purple → orange */
-.o_wsale_checkout_page .btn-primary,
-.o_wsale_checkout_page .o_checkout_pay,
-.o_wsale_checkout_page button[type="submit"].btn-primary {
+/* Confirm button: purple → orange, white text, same color on hover */
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"],
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:hover,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:active,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:focus {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
     color: #fff !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
 }
-.o_wsale_checkout_page .btn-primary:hover,
-.o_wsale_checkout_page .o_checkout_pay:hover {
-    background-color: var(--primary-dark) !important;
-    border-color: var(--primary-dark) !important;
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"] span,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"] i {
+    color: #fff !important;
+}
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]::after {
+    color: #fff !important;
+}
+/* Fallback: force white on ALL text inside the confirm button */
+body.o_website_sale_checkout [name="website_sale_main_button"] * {
+    color: #fff !important;
+}
+body.o_website_sale_checkout .oe_website_sale .btn-primary {
+    color: #fff !important;
 }
 
 /* Order summary product image: uncrop */
-.o_wsale_checkout_page .o_wsale_product_image {
+body.o_website_sale_checkout .card img.img,
+body.o_website_sale_checkout .o_sale_product_image,
+body.o_website_sale_checkout img.img.rounded {
     width: 80px !important;
     height: 80px !important;
     min-width: 80px !important;
     min-height: 80px !important;
     border-radius: 14px !important;
-    overflow: hidden !important;
-}
-.o_wsale_checkout_page .o_wsale_product_image img {
-    width: 100% !important;
-    height: 100% !important;
     object-fit: cover !important;
 }
 
 /* Checkout page z-index: prevent navbar overlap */
-.o_wsale_checkout_page header,
-.o_wsale_checkout_page .o_wsale_checkout_page_header {
+body.o_website_sale_checkout header {
     z-index: 1002;
 }
-.o_wsale_checkout_page main {
+body.o_website_sale_checkout main {
     position: relative;
     z-index: 1;
 }
