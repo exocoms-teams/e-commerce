@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard classement produits (WIN-48) : /dashboard
+         Respecte la charte graphique Winners :
+         - uniquement les variables SCSS de _winners_variables.scss
+         - toute classe custom préfixée par o_winners
+         Réutilise les tokens $o-winners-white / -shadow-soft / -border-soft
+         déjà introduits en WIN-51 pour les cartes produit. -->
+    <template id="winners_dashboard_template" name="Dashboard - Classement produits">
+        <t t-call="website.layout">
+            <div id="wrap" class="o_winners_dashboard">
+                <div class="container mt-5 mb-5">
+
+                    <div class="o_winners_dashboard__header">
+                        <h1>Classement des produits tendance</h1>
+                    </div>
+
+                    <div t-if="not products" class="alert alert-info mt-4">
+                        Aucun produit à afficher pour le moment.
+                    </div>
+
+                    <div class="o_winners_dashboard__grid row mt-4">
+                        <div t-foreach="products" t-as="product" class="col-md-4 mb-4">
+                            <a t-attf-href="/product/#{product.id}" class="o_winners_product_card">
+                                <span t-if="product.category_id"
+                                      class="o_winners_product_card__category">
+                                    <t t-esc="product.category_id.name"/>
+                                </span>
+                                <h3 class="o_winners_product_card__name" t-esc="product.name"/>
+                                <div class="o_winners_product_card__footer">
+                                    <span class="o_winners_product_card__score">
+                                        <t t-esc="'%.1f' % product.current_score"/>
+                                    </span>
+                                    <span t-if="product.country"
+                                          class="o_winners_product_card__country">
+                                        <t t-esc="product.country"/>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

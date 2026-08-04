@@ -15,6 +15,7 @@
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
+        'views/dashboard_templates.xml',   # WIN-48
     ],
     'assets': {
         'web.assets_frontend': [
@@ -27,6 +28,7 @@
             'web/static/lib/Chart/Chart.js',
             'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
             'produits_tendance/static/src/js/trend_chart.js',
+            'produits_tendance/static/src/scss/dashboard.scss',
         ],
     },
     'installable': True,
