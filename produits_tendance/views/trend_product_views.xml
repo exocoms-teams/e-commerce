@@ -42,6 +42,8 @@
                             <field name="current_score"/>
                             <field name="rank_number"/>
                             <field name="is_top_10"/>
+                            <!-- Affichage en tant que lien cliquable -->
+                            <field name="image_url" widget="url"/>
                         </group>
                     </group>
                 </sheet>
@@ -49,7 +51,7 @@
         </field>
     </record>
 
-    <!-- 3. VUE KANBAN (regroupee par categorie) -->
+    <!-- 3. VUE KANBAN (regroupée par catégorie) -->
     <record id="view_trend_product_kanban" model="ir.ui.view">
         <field name="name">trend.product.kanban</field>
         <field name="model">trend.product</field>
@@ -61,18 +63,31 @@
                 <field name="country"/>
                 <field name="current_score"/>
                 <field name="rank_number"/>
+                <!-- IL EST OBLIGATOIRE DE DÉCLARER LE CHAMP ICI POUR L'UTILISER DANS LE TEMPLATE -->
+                <field name="image_url"/>
+                
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_card oe_kanban_global_click">
+                        <!-- Utilisation de d-flex (Flexbox) pour aligner l'image et le texte côte à côte -->
+                        <div class="oe_kanban_card oe_kanban_global_click d-flex align-items-center">
+                            
+                            <!-- Zone de l'image (s'affiche uniquement si l'URL existe) -->
+                            <div class="o_kanban_image me-3" t-if="record.image_url.raw_value">
+                                <img t-att-src="record.image_url.raw_value" 
+                                     alt="Image du produit" 
+                                     style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;"/>
+                            </div>
+                            
+                            <!-- Zone du texte -->
                             <div class="oe_kanban_details">
-                                <strong class="o_kanban_record_title">
+                                <strong class="o_kanban_record_title" style="font-size: 14px;">
                                     <field name="name"/>
                                 </strong>
-                                <div>
-                                    Ventes : <field name="sales_count"/>
+                                <div class="text-muted mt-1">
+                                    <i class="fa fa-shopping-cart"></i> Ventes : <field name="sales_count"/>
                                 </div>
-                                <div>
-                                    Pays : <field name="country"/>
+                                <div class="text-muted">
+                                    <i class="fa fa-globe"></i> Pays : <field name="country"/>
                                 </div>
                                 <div>
                                     Score : <field name="current_score"/>
@@ -81,6 +96,7 @@
                                     Rang : <field name="rank_number"/>
                                 </div>
                             </div>
+                            
                         </div>
                     </t>
                 </templates>
@@ -89,6 +105,7 @@
     </record>
 
     <!-- 4. VUE RECHERCHE -->
+    <!-- (inchangée) -->
     <record id="view_trend_product_search" model="ir.ui.view">
         <field name="name">trend.product.search</field>
         <field name="model">trend.product</field>
@@ -107,6 +124,7 @@
     </record>
 
     <!-- 5. L'ACTION -->
+    <!-- (inchangée) -->
     <record id="action_trend_product" model="ir.actions.act_window">
         <field name="name">Produits</field>
         <field name="res_model">trend.product</field>
@@ -115,5 +133,6 @@
     </record>
 
     <!-- 6. LE MENU -->
+    <!-- (inchangée) -->
     <menuitem id="menu_trend_product" name="Produits" parent="menu_trend_root" action="action_trend_product" sequence="10"/>
 </odoo>

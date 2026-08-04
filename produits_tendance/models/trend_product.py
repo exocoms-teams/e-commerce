@@ -15,6 +15,7 @@ class TrendProduct(models.Model):
     date = fields.Date(string="Date de collecte")
     score_site_x = fields.Float(string="Score site source")
     country = fields.Char(string="Pays")
+    image_url = fields.Char(string="URL de l'image")
 
     source = fields.Selection([
         ('scraping', 'Scraping'),

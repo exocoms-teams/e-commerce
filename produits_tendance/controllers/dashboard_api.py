@@ -1,6 +1,8 @@
 # controllers/dashboard_api.py
 from werkzeug.exceptions import NotFound
 
+from ..models.trend_score_calculator import latest_ads_by_ref
+
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques
@@ -19,6 +21,19 @@ class TrendDashboardAPI:
         self.env = env
 
     # ------------------------------------------------------------------
+    # Garde-fou abonnement (WIN-66)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def is_pro_user(env):
+        """Garde-fou réutilisable pour toute future fonctionnalité réservée
+        aux abonnés Pro (ex: données prédictives du dashboard, WIN-66).
+
+        N'est appelé par aucune page existante pour l'instant : le dashboard
+        WIN-48 reste géré par sa propre logique de limite Freemium. Ce
+        utilitaire est prêt à être branché (`if not TrendDashboardAPI.is_pro_user(request.env): ...`)
+        par un futur contrôleur sans modifier de comportement déjà livré.
+        """
+        return env.user.has_group('produits_tendance.group_trend_pro')
     # Classement / dashboard (liste)
     # ------------------------------------------------------------------
     def get_dashboard_products(self, limit=None):
@@ -58,7 +73,11 @@ class TrendDashboardAPI:
         # Trends (purement informatif, cf. trend.score.search_volume).
         latest_score = product.score_ids.sorted('computed_at', reverse=True)[:1]
 
-        ads = product.ad_ids
+        # WIN-XX (mode historique trend.ad) : une publicité peut désormais
+        # avoir plusieurs lignes horodatées (une par collecte). On ne garde
+        # que la dernière par ad_ref pour l'affichage et les totaux, sinon
+        # les compteurs likes/partages gonflent à chaque nouvelle collecte.
+        ads = latest_ads_by_ref(product.ad_ids)
 
         return {
             'product': product,
