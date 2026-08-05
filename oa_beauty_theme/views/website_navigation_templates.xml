@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Epic 1 & 2: Luxury Navigation & Mobile Bottom Bar
+        Injecting the mobile bottom bar safely into website.layout before the closing body tag.
+    -->
+    <template id="oa_beauty_mobile_bottom_bar" inherit_id="website.layout" name="O&amp;A Beauty — Mobile Bottom Bar">
+        <xpath expr="//body" position="inside">
+
+            <!--
+                Mobile Bottom Bar — 100% static HTML.
+                Cart counter uses class "my_cart_quantity" which Odoo's
+                website_sale JS automatically updates via AJAX.
+                No Python calls, no sale_get_order(), no hasattr.
+            -->
+            <nav id="oa_bottom_bar" class="oa-bottom-bar d-flex d-md-none justify-content-around align-items-center">
+
+                <!-- Home -->
+                <a href="/" class="oa-nav-item">
+                    <i class="fa fa-home"></i>
+                    <span class="oa-nav-label">Accueil</span>
+                </a>
+
+                <!-- Shop / Categories -->
+                <a href="/shop" class="oa-nav-item">
+                    <i class="fa fa-th-large"></i>
+                    <span class="oa-nav-label">Boutique</span>
+                </a>
+
+                <!-- Search -->
+                <a href="/shop" class="oa-nav-item">
+                    <i class="fa fa-search"></i>
+                    <span class="oa-nav-label">Recherche</span>
+                </a>
+
+                <!-- Wishlist -->
+                <a href="/shop/wishlist" class="oa-nav-item">
+                    <div class="position-relative">
+                        <i class="fa fa-heart-o"></i>
+                        <sup class="my_wish_quantity badge oa-badge" style="display: none;">0</sup>
+                    </div>
+                    <span class="oa-nav-label">Favoris</span>
+                </a>
+
+                <!-- Cart -->
+                <a href="/shop/cart" class="oa-nav-item o_wsale_my_cart">
+                    <div class="position-relative">
+                        <i class="fa fa-shopping-bag"></i>
+                        <sup class="my_cart_quantity badge oa-badge" t-esc="website_sale_order and website_sale_order.cart_quantity or '0'">0</sup>
+                    </div>
+                    <span class="oa-nav-label">Panier</span>
+                </a>
+
+            </nav>
+        </xpath>
+        
+        <!-- Epic 7: Top Header Redesign (Luxury Custom Navbar) -->
+        <xpath expr="//header" position="replace">
+            <!-- Accessibility: Skip to Content Link -->
+            <a href="#wrap" class="oa-skip-link">Aller au contenu principal</a>
+
+            <header id="top" class="oa-header fixed-top" role="banner">
+                <!-- Top Announcement Bar -->
+                <div class="oa-top-bar text-center py-2" style="background-color: var(--oa-prune); color: white; font-family: var(--oa-font-body); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
+                    Livraison gratuite pour les commandes dépassant 150 €
+                </div>
+                
+                <!-- Main Navbar -->
+                <nav class="navbar navbar-expand-lg oa-navbar-main px-4 py-3">
+                    <div class="container-fluid align-items-center">
+                        
+                        <!-- Left Links (Desktop) -->
+                        <div class="collapse navbar-collapse w-100 order-1 order-lg-0 dual-collapse2 d-none d-lg-flex">
+                            <ul class="navbar-nav me-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" style="font-family: var(--oa-font-body); font-size: 0.8rem; letter-spacing: 0.15em; font-weight: 500;" href="/shop/category/skincare">Soins de la Peau</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase ms-4" style="font-family: var(--oa-font-body); font-size: 0.8rem; letter-spacing: 0.15em; font-weight: 500;" href="/shop/category/makeup">Maquillage</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase ms-4" style="font-family: var(--oa-font-body); font-size: 0.8rem; letter-spacing: 0.15em; font-weight: 500; color: var(--oa-mauve);" href="/shop/category/fragrances">✦ Parfums</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Center Logo -->
+                        <div class="mx-auto order-0 w-100 text-center d-flex justify-content-between justify-content-lg-center align-items-center">
+                            <!-- Mobile Toggler -->
+                            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target=".dual-collapse2">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            
+                            <a class="navbar-brand logo mx-auto" href="/" style="font-family: var(--oa-font-display); font-size: 2rem; color: var(--oa-prune); text-decoration: none; letter-spacing: 0.12em;">
+                                O&amp;A <span style="color: var(--oa-mauve);">Beauty</span>
+                            </a>
+                            
+                            <!-- Mobile Right Icons Placeholder (to balance flex) -->
+                            <div class="d-lg-none" style="width: 56px;"></div>
+                        </div>
+
+                        <!-- Right Links -->
+                        <div class="collapse navbar-collapse w-100 order-2 dual-collapse2 d-none d-lg-flex">
+                            <ul class="navbar-nav ms-auto align-items-center">
+                                <!-- Language Selector -->
+                                <li class="nav-item ms-4">
+                                    <t t-call="website.language_selector"/>
+                                </li>
+                                <!-- Search -->
+                                <li class="nav-item ms-4">
+                                    <a class="nav-link" href="#" data-bs-target="#o_search_modal" data-bs-toggle="modal">
+                                        <i class="fa fa-search fs-5 text-dark"></i>
+                                    </a>
+                                </li>
+                                <!-- Wishlist -->
+                                <li class="nav-item ms-4 position-relative">
+                                    <a class="nav-link" href="/shop/wishlist">
+                                        <i class="fa fa-heart-o fs-5 text-dark"></i>
+                                        <sup class="my_wish_quantity badge rounded-circle position-absolute top-0 start-100 translate-middle" style="background-color: var(--oa-mauve); font-size: 0.6rem; padding: 3px 5px; display: none;">0</sup>
+                                    </a>
+                                </li>
+                                <!-- Cart -->
+                                <li class="nav-item ms-4 position-relative">
+                                    <a class="nav-link oa-cart-icon o_wsale_my_cart" href="/shop/cart">
+                                        <i class="fa fa-shopping-bag fs-5 text-dark"></i>
+                                        <sup class="my_cart_quantity badge rounded-circle position-absolute top-0 start-100 translate-middle" style="background-color: var(--oa-mauve); font-size: 0.6rem; padding: 3px 5px;" t-esc="website_sale_order and website_sale_order.cart_quantity or '0'">0</sup>
+                                    </a>
+                                </li>
+                                <!-- Customer Account Dropdown -->
+                                <li class="nav-item dropdown ms-4">
+                                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="oaAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding-bottom: 0;">
+                                        <i class="fa-regular fa-user fs-5 text-dark"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" aria-labelledby="oaAccountDropdown" style="background-color: var(--oa-ivory); border-radius: 10px; font-family: var(--oa-font-body);">
+                                        <t t-if="request.session.uid">
+                                            <li><a class="dropdown-item py-2" href="/my" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune);">Mon Compte</a></li>
+                                            <li><a class="dropdown-item py-2" href="/my/beauty_profile" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune);">Profil Beauté</a></li>
+                                            <li><hr class="dropdown-divider" style="border-color: rgba(0,0,0,0.05);"/></li>
+                                            <li><a class="dropdown-item py-2 text-danger" href="/web/session/logout?redirect=/" style="font-size: 0.85rem; letter-spacing: 0.05em;">Déconnexion</a></li>
+                                        </t>
+                                        <t t-else="">
+                                            <li><a class="dropdown-item py-2" href="/web/login" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune); font-weight: 500;">Se Connecter</a></li>
+                                            <li><a class="dropdown-item py-2" href="/web/signup" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-mauve);">Créer un Compte</a></li>
+                                        </t>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                
+                <!-- Mobile Collapsed Menu (only visible when toggled) -->
+                <div class="collapse navbar-collapse dual-collapse2 d-lg-none bg-white w-100 border-top" style="position: absolute; top: 100%; left: 0; z-index: 1050; padding: 20px;">
+                    <ul class="navbar-nav text-center">
+                        <li class="nav-item py-2">
+                            <t t-call="website.language_selector"/>
+                        </li>
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/shop/category/skincare">Soins de la Peau</a>
+                        </li>
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/shop/category/makeup">Maquillage</a>
+                        </li>
+                        <li class="nav-item py-2">
+                            <a class="nav-link text-uppercase" style="font-family: var(--oa-font-body); letter-spacing: 0.15em; color: var(--oa-mauve);" href="/shop/category/fragrances">✦ Parfums</a>
+                        </li>
+                        <li class="nav-item py-2 border-top mt-2">
+                            <t t-if="request.session.uid">
+                                <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/my">Mon Compte</a>
+                                <a class="nav-link text-uppercase text-dark py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/my/beauty_profile">Profil Beauté</a>
+                                <a class="nav-link text-uppercase text-danger py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/web/session/logout?redirect=/">Déconnexion</a>
+                            </t>
+                            <t t-else="">
+                                <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/web/login">Se Connecter</a>
+                                <a class="nav-link text-uppercase py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em; color: var(--oa-mauve);" href="/web/signup">Créer un Compte</a>
+                            </t>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+        </xpath>
+    </template>
+
+</odoo>
