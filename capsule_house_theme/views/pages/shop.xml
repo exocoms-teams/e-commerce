@@ -20,7 +20,9 @@
     <!-- 1. En-tête de la page Shop -->
     <template id="page_shop" name="Capsule House - Boutique" inherit_id="website_sale.products" priority="20">
         <xpath expr="//div[hasclass('o_wsale_products_page')]" position="before">
-            <section class="ch-shop-hero">
+            <!-- Traduction FR/EN (v19.0.1.0.37), même convention que le
+                 reste du thème. -->
+            <section class="ch-shop-hero" t-if="request.env.lang == 'fr_FR'">
                 <div class="container">
                     <h1 class="ch-shop-hero-title">Nos modules Capsule House</h1>
                     <p class="ch-shop-hero-subtitle">
@@ -28,6 +30,31 @@
                     </p>
                 </div>
             </section>
+            <section class="ch-shop-hero" t-if="request.env.lang != 'fr_FR'">
+                <div class="container">
+                    <h1 class="ch-shop-hero-title">Our Capsule House models</h1>
+                    <p class="ch-shop-hero-subtitle">
+                        Studio, duo or family — find the model that suits you.
+                    </p>
+                </div>
+            </section>
+        </xpath>
+
+        <!--
+            Sidebar native (catégories + attributs, dont notre filtre
+            "Surface (m²)" attaché via _attach_shop_filters_to_products) —
+            même technique que exocoms_theme.boutique_sidebar (xpath sur
+            les t-set du template natif), à la différence près que
+            exocoms cache ensuite sa sidebar par CSS (elle a son propre
+            méga-menu catégories statique en remplacement). Ici on garde
+            la sidebar native VISIBLE : Capsule House n'a pas de méga-menu
+            catégories custom, et c'est justement ce panneau qui doit
+            afficher le filtre Surface (m²). optional="True" : si un jour
+            website_sale change/supprime ce t-set, l'installation du
+            module ne casse pas.
+        -->
+        <xpath expr="//t[@t-set='hasLeftColumn']" position="replace" optional="True">
+            <t t-set="hasLeftColumn" t-value="True"/>
         </xpath>
     </template>
 </odoo>

@@ -1,20 +1,36 @@
 /* ============================================================
-   LAYOUT — Bandeau d'annonce, Header, Navigation, Footer
-   Correspond aux templates views/templates/header.xml et footer.xml
+   LAYOUT — Bandeau d'annonce, Header NATIF Odoo, Footer
+   Correspond à views/templates/header.xml (bandeau d'annonce
+   uniquement) et footer.xml.
+
+   CORRECTIF — voir README "Header natif comme sur exocoms_theme" :
+   ce fichier stylait auparavant un header entièrement custom
+   (<header id="ch-header">, remplaçant le header natif Odoo). Ce
+   n'est pas ainsi que fonctionne réellement exocoms_theme (module de
+   référence) : leur propre views/templates/header.xml définit bien un
+   template `custom_header`, mais il n'est jamais appelé nulle part
+   (reste abandonné) — leur VRAI header en production est le header
+   NATIF Odoo (header#top), simplement restylé par CSS (voir leur
+   static/src/css/header.css). On corrige donc ici de la même façon :
+   le header#top natif reste intact (menu = website.menu, logo =
+   website.logo, panier/wishlist/recherche/langue/compte = widgets
+   natifs des modules website / website_sale / website_sale_wishlist),
+   uniquement restylé ci-dessous.
 ============================================================ */
 
-/* ── BANDEAU D'ANNONCE ── */
+/* ── BANDEAU D'ANNONCE ──
+   Élément de maquette sans équivalent natif Odoo (voir
+   theme_announce_bar dans header.xml) : reste en flux normal, juste
+   au-dessus du header#top natif — pas de position:fixed, contrairement
+   à l'ancienne version qui devait compenser un header custom fixe. */
 .ch-announce {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1100;
-    height: var(--topbar-h);
     background: var(--ch-ink);
     color: var(--ch-white);
     display: flex;
     align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 0;
     font-size: 12.5px;
     font-weight: 500;
 }
@@ -23,195 +39,325 @@
     text-align: center;
 }
 
-/* ── HEADER ── */
-.ch-header {
-    position: fixed;
-    top: var(--topbar-h);
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    height: var(--header-h);
-    background: var(--ch-white);
-    border-bottom: 1px solid var(--ch-gray-border);
-    display: flex;
-    align-items: center;
+/* ============================================================
+   HEADER NATIF ODOO — reskin Capsule House
+   (mêmes cibles CSS que exocoms_theme/static/src/css/header.css :
+   header#top, .navbar-brand.logo, #top_menu, .o_wsale_my_cart,
+   .o_wsale_my_wish, .o_header_language_selector,
+   li.dropdown.o_no_autohide_item — adaptées à nos variables --ch-*)
+============================================================ */
+
+header#top {
+    background: var(--ch-white) !important;
+    border-bottom: 1px solid var(--ch-gray-border) !important;
+    box-shadow: none !important;
 }
 
-.ch-header-inner {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    width: 100%;
+header#top .navbar.d-lg-block {
+    padding: 0 !important;
+    background: var(--ch-white) !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
-.ch-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    flex-shrink: 0;
+header#top #o_main_nav.container,
+header#top .o_main_nav.container {
+    max-width: 1280px !important;
+    padding: 0 24px !important;
+    height: 76px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 24px !important;
 }
 
-.ch-logo-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--ch-tan-1), var(--ch-panel) 70%);
-    position: relative;
-    flex-shrink: 0;
+/* LOGO — image native (website.logo, posé par _set_logo() sur notre
+   badge + wordmark aplatis, voir __init__.py) */
+header#top .navbar-brand.logo {
+    padding: 0 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
 }
 
-.ch-logo-mark::before,
-.ch-logo-mark::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--ch-terracotta);
-    transform: translateY(-50%);
+header#top .navbar-brand.logo img {
+    height: 40px !important;
+    width: auto !important;
 }
 
-.ch-logo-mark::before { left: 9px; }
-.ch-logo-mark::after { left: 18px; opacity: 0.5; }
-
-.ch-logo-text {
-    font-family: var(--font-head);
-    font-size: 17px;
-    font-weight: 800;
-    line-height: 1.05;
-    color: var(--ch-ink);
+/* NAV — liens natifs (#top_menu = website.menu_id.child_id) */
+header#top #top_menu.navbar-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    flex: 1 !important;
 }
 
-.ch-logo-text-accent {
-    color: var(--ch-terracotta);
+header#top #top_menu .nav-item .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 16px !important;
+    font-family: var(--font-body) !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: var(--ch-ink) !important;
+    border-radius: var(--r-pill) !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
 }
 
-.ch-logo:hover .ch-logo-text,
-.ch-logo:hover .ch-logo-text-accent {
-    color: var(--ch-ink);
+header#top #top_menu .nav-item .nav-link:hover,
+header#top #top_menu .nav-item .nav-link.active {
+    background: var(--ch-panel) !important;
+    color: var(--ch-ink) !important;
+    text-decoration: none !important;
 }
 
-/* NAV */
-.ch-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
+/* "Tous les pods" (/shop) en pastille pleine, comme sur la maquette —
+   ciblé par attribut href, jamais par ordre/position (le menu natif
+   peut être réordonné en backend sans casser ce style).
+
+   Bug réel trouvé en v.40 (retour client : "je parle au niveau de all
+   pods" — capture EN vs FR montrant la pastille noire présente en
+   français mais absente en anglais) : le sélecteur utilisait
+   [href="/shop"], une correspondance EXACTE. Or Odoo préfixe l'URL
+   avec le code langue quand ce n'est pas la langue par défaut du
+   site : le lien devient /en/shop en anglais, qui ne correspond plus
+   à "/shop" exact — d'où le style perdu uniquement en anglais.
+   Corrigé avec un sélecteur de suffixe ($=) qui matche l'URL quel que
+   soit le préfixe de langue (/shop, /en/shop, /fr/shop...), sans
+   risque de faux positif : aucune autre URL du menu (/shop/category/X,
+   /shop?promotions=1) ne SE TERMINE par "/shop". */
+header#top #top_menu .nav-item .nav-link[href$="/shop"] {
+    background: var(--ch-ink) !important;
+    color: var(--ch-white) !important;
+    font-weight: 600 !important;
 }
 
-.ch-nav-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 10px 20px;
-    background: var(--ch-ink);
-    color: var(--ch-white);
-    font-size: 13.5px;
-    font-weight: 600;
-    border-radius: var(--r-pill);
-    text-decoration: none;
-    margin-right: 8px;
-    transition: background var(--transition);
+header#top #top_menu .nav-item .nav-link[href$="/shop"]:hover {
+    background: #000000 !important;
+    color: var(--ch-white) !important;
 }
 
-.ch-nav-pill:hover {
-    background: #000000;
-    color: var(--ch-white);
-    text-decoration: none;
+/* ÉLÉMENTS PAR DÉFAUT ODOO À MASQUER — même technique que
+   exocoms_theme/header.css : un nouveau website natif Odoo pré-remplit
+   son header avec un numéro de téléphone factice (lien tel:) et un
+   bouton CTA générique ("Contact Us"/btn_cta) — aucun des deux n'est
+   une donnée business réelle de Capsule House (voir la règle du projet
+   : jamais de fausses données affichées). On masque ces deux éléments
+   par sélecteur structurel (classe/attribut natif Odoo, donc portable —
+   contrairement aux règles data-oe-id d'exocoms_theme, spécifiques à
+   leur propre base et donc volontairement PAS reprises ici). La nav
+   Capsule House (Accueil, Tous les pods, Studio, Duo, Panorama,
+   Accessoires) vient de _setup_menus() dans __init__.py et n'est PAS
+   concernée par ces règles. */
+header#top li:has(a[href^="tel:"]),
+header#top li:has(a.btn_cta),
+header#top .o_navbar_mobile li:has(a[href^="tel:"]),
+header#top .o_navbar_mobile li:has(a.btn_cta) {
+    display: none !important;
 }
 
-.ch-nav-link {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    font-family: var(--font-body);
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--ch-ink);
-    text-decoration: none;
-    border-radius: var(--r-pill);
-    transition: background var(--transition), color var(--transition);
+/* ICÔNES — panier, wishlist, recherche (widgets natifs) */
+header#top .navbar-nav.align-items-center {
+    gap: 8px !important;
+    padding: 0 !important;
 }
 
-.ch-nav-link:hover,
-.ch-nav-link.active {
-    color: var(--ch-ink);
-    background: var(--ch-panel);
-    text-decoration: none;
+header#top .o_wsale_my_cart a,
+header#top .o_wsale_my_wish a,
+header#top a[data-bs-target="#o_search_modal"] {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--ch-ink) !important;
+    font-size: 15px !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
+    padding: 0 !important;
 }
 
-.ch-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-    flex-shrink: 0;
+header#top .o_wsale_my_cart a:hover,
+header#top .o_wsale_my_wish a:hover,
+header#top a[data-bs-target="#o_search_modal"]:hover {
+    background: var(--ch-panel) !important;
+    color: var(--ch-ink) !important;
+    text-decoration: none !important;
 }
 
-.ch-icon-link {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--ch-ink);
-    font-size: 16px;
-    transition: background var(--transition);
+header#top .o_wsale_my_cart a i,
+header#top .o_wsale_my_wish a i,
+header#top a[data-bs-target="#o_search_modal"] i {
+    color: inherit !important;
 }
 
-.ch-icon-link:hover {
-    background: var(--ch-panel);
-    color: var(--ch-ink);
-    text-decoration: none;
+header#top .my_cart_quantity,
+header#top .my_wish_quantity {
+    background: var(--ch-terracotta) !important;
+    color: var(--ch-white) !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
 }
 
-.ch-cart-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 3px;
-    background: var(--ch-terracotta);
-    color: var(--ch-white);
-    font-size: 10px;
-    font-weight: 700;
-    border-radius: 99px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Wishlist toujours visible, même vide (dépend de
+   website_sale_wishlist, voir __manifest__.py depends) */
+header#top .o_wsale_my_wish { display: flex !important; }
+
+/* SÉLECTEUR DE LANGUE — natif (o_header_language_selector), affiché
+   automatiquement par Odoo si le site a plusieurs website.language_ids */
+header#top .o_header_language_selector {
+    display: flex !important;
+    align-items: center !important;
 }
 
-/* BURGER MOBILE */
-.ch-burger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    width: 36px;
-    height: 36px;
-    padding: 8px;
-    background: none;
-    border: 1px solid var(--ch-gray-border);
-    border-radius: var(--r-sm);
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
+header#top .o_header_language_selector .dropdown-toggle {
+    height: 36px !important;
+    border-radius: var(--r-pill) !important;
+    background: var(--ch-white) !important;
+    border: 1px solid var(--ch-gray-border) !important;
+    color: var(--ch-ink) !important;
+    font-family: var(--font-body) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
 }
 
-.ch-burger span {
-    display: block;
-    width: 18px;
-    height: 1.5px;
-    background: var(--ch-ink);
-    transition: all var(--transition);
+header#top .o_header_language_selector .dropdown-toggle:hover {
+    border-color: var(--ch-ink) !important;
 }
 
-.ch-burger.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
-.ch-burger.open span:nth-child(2) { opacity: 0; }
-.ch-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+header#top .o_header_language_selector .dropdown-menu {
+    border-radius: var(--r-md) !important;
+    border: 1px solid var(--ch-gray-border) !important;
+    box-shadow: var(--shadow-md) !important;
+    padding: 6px !important;
+}
+
+header#top .o_header_language_selector .dropdown-item {
+    font-size: 13px !important;
+    color: var(--ch-ink) !important;
+    border-radius: var(--r-sm) !important;
+    padding: 8px 10px !important;
+}
+
+header#top .o_header_language_selector .dropdown-item:hover {
+    background: var(--ch-panel) !important;
+    color: var(--ch-ink) !important;
+}
+
+/* COMPTE — dropdown natif connecté (li.dropdown.o_no_autohide_item) :
+   Odoo affiche par défaut une icône + le nom de l'utilisateur ; on
+   masque le texte natif et on affiche une icône "user" ronde, même
+   technique que exocoms_theme/header.css. */
+header#top li.dropdown.o_no_autohide_item {
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--ch-ink) !important;
+    padding: 0 !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle span { display: none !important; }
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::after { display: none !important; }
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle::before {
+    content: '\f007' !important;
+    font-family: 'FontAwesome' !important;
+    font-size: 15px !important;
+}
+
+header#top li.dropdown.o_no_autohide_item > a.dropdown-toggle:hover {
+    background: var(--ch-panel) !important;
+}
+
+header#top .dropdown-menu.js_usermenu {
+    border-radius: var(--r-md) !important;
+    border: 1px solid var(--ch-gray-border) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+header#top .dropdown-menu.js_usermenu .dropdown-item i {
+    color: var(--ch-terracotta) !important;
+}
+
+/* DÉCONNECTÉ — bouton "Connexion" natif (texte géré par Odoo, traduit
+   FR/EN automatiquement — on ne touche pas au contenu, juste au style) */
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn {
+    background: var(--ch-ink) !important;
+    color: var(--ch-white) !important;
+    border: 1px solid var(--ch-ink) !important;
+    border-radius: var(--r-pill) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    text-decoration: none !important;
+}
+
+header#top li.o_no_autohide_item:not(.dropdown) a.o_nav_link_btn:hover {
+    background: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* NAVBAR MOBILE (offcanvas natif) */
+header#top .o_header_mobile.d-lg-none {
+    padding: 0 !important;
+    background: var(--ch-white) !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+header#top .o_header_mobile .o_main_nav.container {
+    height: 64px !important;
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+header#top .o_header_mobile .navbar-brand.logo img { height: 32px !important; width: auto !important; }
+
+header#top .o_header_mobile button[data-bs-toggle="offcanvas"] {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: var(--ch-panel) !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--ch-ink) !important;
+}
+
+header#top .o_navbar_mobile .nav-link {
+    color: var(--ch-ink) !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+}
+
+header#top .o_navbar_mobile .nav-link:hover,
+header#top .o_navbar_mobile .nav-link.active {
+    background: var(--ch-panel) !important;
+    color: var(--ch-ink) !important;
+}
+
+@media (max-width: 480px) {
+    header#top .o_header_mobile .o_main_nav.container { height: 56px !important; }
+    header#top .o_header_mobile .navbar-brand.logo img { height: 28px !important; }
+}
 
 /* ── FOOTER ── */
 .ch-footer {
@@ -388,27 +534,10 @@
 }
 
 @media (max-width: 768px) {
-    .ch-nav {
-        position: fixed;
-        top: calc(var(--topbar-h) + var(--header-h));
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--ch-white);
-        flex-direction: column;
-        align-items: flex-start;
-        height: auto;
-        overflow-y: auto;
-        padding: 16px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 999;
-        box-shadow: var(--shadow-lg);
-    }
-
-    .ch-nav.open { transform: translateX(0); }
-    .ch-nav-link, .ch-nav-pill { width: 100%; margin-right: 0; }
-    .ch-burger { display: flex; }
+    /* La nav mobile (offcanvas) est désormais gérée nativement par
+       Odoo (header#top .o_header_mobile) — voir la section HEADER
+       NATIF ODOO plus haut dans ce fichier, plus besoin de règles
+       maison ici. */
 
     .ch-footer-newsletter { flex-direction: column; align-items: flex-start; }
     .ch-newsletter-form { width: 100%; }
