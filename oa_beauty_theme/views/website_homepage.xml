@@ -290,13 +290,19 @@
                         <div class="row g-4 justify-content-center">
                             <t t-foreach="frag_products" t-as="fp">
                                 <div class="col-6 col-md-4 col-lg-2">
-                                    <a t-att-href="fp.website_url" class="oa-fragrance-card d-block text-decoration-none text-white">
-                                        <span t-field="fp.image_1920" t-options="{'widget':'image','class':'w-100','style':'max-height:180px;object-fit:contain;filter:drop-shadow(0 8px 25px rgba(0,0,0,0.5));','loading':'lazy'}"/>
-                                        <div class="oa-fragrance-card-type mt-3" t-esc="fp.oa_type or 'Eau de Parfum'"/>
-                                        <div class="oa-fragrance-card-name" t-esc="fp.name"/>
-                                        <div class="oa-fragrance-card-price" t-esc="fp.list_price" t-options="{'widget':'monetary','display_currency':website.currency_id}"/>
-                                        <div class="mt-2">
-                                            <span style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Collection à venir</span>
+                                    <a t-att-href="fp.website_url" class="oa-fragrance-card d-block text-decoration-none text-white h-100">
+                                        <div class="d-flex flex-column h-100 justify-content-between">
+                                            <div>
+                                                <span t-field="fp.image_1920" t-options="{'widget':'image','class':'w-100','style':'max-height:180px;object-fit:contain;filter:drop-shadow(0 8px 25px rgba(0,0,0,0.5));','loading':'lazy'}"/>
+                                                <div class="oa-fragrance-card-type mt-3" t-esc="fp.oa_type or 'Eau de Parfum'"/>
+                                                <div class="oa-fragrance-card-name" t-esc="fp.name"/>
+                                            </div>
+                                            <div class="mt-auto">
+                                                <div class="oa-fragrance-card-price" t-esc="fp.list_price" t-options="{'widget':'monetary','display_currency':website.currency_id}"/>
+                                                <div class="mt-2">
+                                                    <span style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Collection à venir</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </a>
                                 </div>
