@@ -1,8 +1,7 @@
 # controllers/dashboard_api.py
 from werkzeug.exceptions import NotFound
-
-from ..models.trend_score_calculator import latest_ads_by_ref
-
+from ..models.trend_ad import latest_ads_by_ref
+from ..services.scoring_engine import ScoringEngine
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques

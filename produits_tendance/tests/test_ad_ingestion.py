@@ -1,10 +1,10 @@
 import json
 
 from odoo.tests.common import HttpCase
+from odoo.tools import mute_logger
+from ..models.trend_ad import latest_ads_by_ref
 
-from ..models.trend_score_calculator import build_current_metrics
-
-
+@mute_logger('odoo.sql_db', 'odoo.http')
 class TestAdIngestionHistorization(HttpCase):
     """WIN-XX ('Passer trend.ad en mode historique') : le handler 'ad' de
     /api/trend/ingest ne doit plus écraser likes_count/shares_count sur un
@@ -47,6 +47,7 @@ class TestAdIngestionHistorization(HttpCase):
         )
         return json.loads(response.text)
 
+    @mute_logger('odoo.sql_db', 'odoo.http')
     def test_sending_same_ad_ref_twice_creates_two_historized_rows(self):
         result_1 = self._ingest_ad(likes_count=100, shares_count=10, collected_at='2026-07-01 09:00:00')
         result_2 = self._ingest_ad(likes_count=250, shares_count=40, collected_at='2026-07-02 09:00:00')
@@ -66,7 +67,7 @@ class TestAdIngestionHistorization(HttpCase):
         self._ingest_ad(likes_count=100, shares_count=10, collected_at='2026-07-01 09:00:00')
         self._ingest_ad(likes_count=250, shares_count=40, collected_at='2026-07-02 09:00:00')
 
-        metrics = build_current_metrics(self.product)
-        self.assertEqual(metrics['likes'], 250)
-        self.assertEqual(metrics['partages'], 40)
-        self.assertEqual(metrics['ads'], 1)
+        latest_ads = latest_ads_by_ref(self.product.ad_ids)
+        self.assertEqual(sum(latest_ads.mapped('likes_count')), 250)
+        self.assertEqual(sum(latest_ads.mapped('shares_count')), 40)
+        self.assertEqual(len(latest_ads), 1)
