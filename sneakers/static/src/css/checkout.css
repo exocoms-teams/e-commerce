@@ -1,3 +1,62 @@
+/* CHECKOUT PAGES — ensure checkout content stays above the sticky header */
+.sn-checkout-page .sn-checkout-progress,
+.sn-checkout-page .sn-checkout-content {
+    position: relative;
+    z-index: 1001;
+}
+
+/* ODOO NATIVE CHECKOUT OVERRIDES */
+/* Confirm button: purple → orange, white text, same color on hover */
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"],
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:hover,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:active,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]:focus {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+}
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"] span,
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"] i {
+    color: #fff !important;
+}
+body.o_website_sale_checkout div.d-flex.flex-column a[name="website_sale_main_button"]::after {
+    color: #fff !important;
+}
+/* Fallback: force white on ALL text inside the confirm button */
+body.o_website_sale_checkout [name="website_sale_main_button"] * {
+    color: #fff !important;
+}
+body.o_website_sale_checkout .oe_website_sale .btn-primary {
+    color: #fff !important;
+}
+
+/* Order summary product image: fill container */
+body.o_website_sale_checkout .o_cart_product_image {
+    width: 130px !important;
+    height: 130px !important;
+    overflow: hidden !important;
+    border-radius: 14px !important;
+}
+body.o_website_sale_checkout .o_cart_product_image img.img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 14px !important;
+}
+
+/* Checkout page z-index: prevent navbar overlap */
+body.o_website_sale_checkout header {
+    z-index: 1002;
+}
+body.o_website_sale_checkout main {
+    position: relative;
+    z-index: 1;
+}
+
 /* CHECKOUT HEADER */
 
 .sn-checkout-header {
@@ -48,8 +107,8 @@
     content: '';
     position: absolute;
     top: 28px;
-    left: 0;
-    right: 0;
+    left: 27.5px;
+    right: 27.5px;
     height: 3px;
     background: #e8e8e8;
     transform: translateY(-50%);
@@ -136,7 +195,7 @@
 .sn-progress-step.completed .sn-step-circle {
     background: #16a34a;
     border-color: #16a34a;
-    color: transparent;       /* cache le chiffre */
+    color: transparent;      
     position: relative;
 }
 .sn-progress-step.completed .sn-step-circle::after {
@@ -162,7 +221,7 @@
 
 .sn-checkout-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 40px;
     align-items: start;
 }
@@ -357,48 +416,45 @@
     font-weight: 700;
 }
 
-/* PROMO */
+/* PROMO - native Odoo coupon_form styles */
 
-.sn-promo-form {
-    display: flex;
-    gap: 12px;
-    margin-top: 30px;
+.sn-promo-section .input-group {
+    gap: 0;
 }
 
-.sn-promo-form input {
-    flex: 1;
-
+.sn-promo-section .form-control {
     height: 52px;
-
     padding: 0 16px;
-
     border: 1px solid #ddd;
-
-    border-radius: 14px;
-
+    border-radius: 14px 0 0 14px;
     outline: none;
 }
 
-.sn-promo-form button {
+.sn-promo-section .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+.sn-promo-section .btn {
     padding: 0 24px;
-
     border: none;
-
-    border-radius: 14px;
-
+    border-radius: 0 14px 14px 0;
     background: var(--primary-color);
-
     color: white;
-
     font-weight: 600;
-
     cursor: pointer;
-
     transition: .3s;
 }
 
-.sn-promo-form button:hover {
+.sn-promo-section .btn:hover {
     background: var(--primary-dark);
+}
+
+.sn-promo-section .alert {
+    margin-top: 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    padding: 10px 14px;
 }
 
 /* BUTTONS */
@@ -449,6 +505,23 @@
     color: var(--primary-color);
 }
 
+
+/* Sections payment details cachées par défaut */
+.sn-payment-section {
+    display: none;
+}
+.sn-paypal-mock {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: #f0f8ff;
+    border-radius: 12px;
+    border: 1px solid #009cde;
+    margin-top: 12px;
+    margin-bottom: 15px;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 992px) {
@@ -474,11 +547,11 @@
         display: none;
     }
 
-    .sn-promo-form {
+    .sn-promo-section .input-group {
         flex-direction: column;
     }
 
-    .sn-promo-form button {
+    .sn-promo-section .btn {
         height: 52px;
     }
 

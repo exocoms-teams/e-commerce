@@ -23,10 +23,10 @@
 
                     <div class="sn-topbar-right">
 
-                        <select class="sn-language-switcher" aria-label="Change language">
-                            <option value="en">English</option>
-                            <option value="ar">العربية</option>
-                            <option value="fr">Français</option>
+                        <select class="sn-language-switcher" aria-label="Change language" onchange="window.location.href='/website/lang/' + this.value">
+                            <option value="en" t-att-selected="request.context.get('lang', 'en_US').startswith('en')">English</option>
+                            <option value="fr" t-att-selected="request.context.get('lang', 'en_US').startswith('fr')">Français</option>
+                            <option value="ar" t-att-selected="request.context.get('lang', 'en_US').startswith('ar')">العربية</option>
                         </select>
 
                     </div>
@@ -67,12 +67,12 @@
 
                         <ul>
                             <li><a href="/">Home</a></li>
-                            <li><a href="/shop-sneakers">Shop</a></li>
                             <li><a href="/shop-sneakers?category=men">Men</a></li>
                             <li><a href="/shop-sneakers?category=women">Women</a></li>
+                            <li><a href="/shop-sneakers?category=kids">Kids</a></li>
                             <li><a href="/shop-sneakers?category=sports">Sports</a></li>
-                            <li><a href="/shop-sneakers?category=new_arrivals">New Arrivals</a></li>
-                            <li><a href="/shop-sneakers?category=sale">Sale</a></li>
+                            <li><a href="/shop-sneakers?category=lifestyle">Lifestyle</a></li>
+                            <li><a href="/shop-sneakers?category=new_arrivals">New</a></li>
                         </ul>
 
                     </nav>
@@ -116,10 +116,31 @@
 
                         <!-- Cart -->
 
-                        <a href="/cart" class="sn-icon" aria-label="Cart">
+                        <a href="/shop/cart" class="sn-icon" aria-label="Cart">
                             <i class="fa fa-shopping-cart" aria-hidden="true"/>
                             <span class="sn-cart-count">0</span>
                         </a>
+
+                        <!-- Account -->
+                        <t t-if="request.env.user._is_public()">
+                            <a href="/my/login" class="sn-icon" aria-label="Sign In">
+                                <i class="fa fa-user" aria-hidden="true"/>
+                            </a>
+                        </t>
+                        <t t-else="">
+                            <div class="sn-account-wrap">
+                                <a href="/my/account" class="sn-icon" aria-label="My Account">
+                                    <i class="fa fa-user" aria-hidden="true"/>
+                                </a>
+                                <div class="sn-account-dropdown">
+                                    <a href="/my"><i class="fa fa-th-large" aria-hidden="true"/> Account</a>
+                                    <a href="/my/orders"><i class="fa fa-shopping-bag" aria-hidden="true"/> Orders</a>
+                                    <a href="/my/invoices?filterby=invoices"><i class="fa fa-file-text-o" aria-hidden="true"/> Invoices</a>
+                                    <a href="/my/account"><i class="fa fa-cog" aria-hidden="true"/> Profile</a>
+                                    <a href="/web/session/logout" class="sn-account-logout"><i class="fa fa-sign-out" aria-hidden="true"/> Logout</a>
+                                </div>
+                            </div>
+                        </t>
 
                     </div>
 

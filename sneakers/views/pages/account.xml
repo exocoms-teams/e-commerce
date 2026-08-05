@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_account" name="Sneakers My Account">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'My Account | SNEAKERS'"/>
+            <t t-set="description" t-value="'Manage your SNEAKERS account.'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <section class="sn-account-page oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <!-- ACCOUNT SIDEBAR -->
+                    <div class="sn-account-layout">
+
+                        <aside class="sn-account-sidebar">
+
+                            <div class="sn-account-user">
+                                <div class="sn-account-avatar">
+                                    <t t-esc="partner.name[:1]"/>
+                                </div>
+                                <div>
+                                    <h4 t-esc="partner.name"/>
+                                    <p t-esc="partner.email"/>
+                                </div>
+                            </div>
+
+                            <nav class="sn-account-nav">
+                                <a href="/my/account" class="active">My Profile</a>
+                                <a href="/my/orders">Order History</a>
+                                <a href="/my/logout">Sign Out</a>
+                            </nav>
+
+                        </aside>
+
+                        <!-- ACCOUNT CONTENT -->
+                        <div class="sn-account-content">
+
+                            <h3>My Profile</h3>
+
+                            <t t-if="success">
+                                <div class="sn-auth-success">
+                                    <t t-esc="success"/>
+                                </div>
+                            </t>
+
+                            <form method="POST" action="/my/account" class="sn-account-form">
+
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="sn-form-grid">
+
+                                    <div class="sn-form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" name="name" t-att-value="partner.name or ''"/>
+                                    </div>
+
+                                    <div class="sn-form-group">
+                                        <label>Email</label>
+                                        <input type="email" t-att-value="partner.email or ''" disabled="disabled"/>
+                                    </div>
+
+                                    <div class="sn-form-group">
+                                        <label>Phone</label>
+                                        <input type="tel" name="phone" t-att-value="partner.phone or ''"/>
+                                    </div>
+
+                                    <div class="sn-form-group">
+                                        <label>Street</label>
+                                        <input type="text" name="street" t-att-value="partner.street or ''"/>
+                                    </div>
+
+                                    <div class="sn-form-group">
+                                        <label>City</label>
+                                        <input type="text" name="city" t-att-value="partner.city or ''"/>
+                                    </div>
+
+                                    <div class="sn-form-group">
+                                        <label>Postal Code</label>
+                                        <input type="text" name="zip" t-att-value="partner.zip or ''"/>
+                                    </div>
+
+                                    <div class="sn-form-group full">
+                                        <label>Country</label>
+                                        <select name="country_id">
+                                            <option value="">-- Select --</option>
+                                            <t t-foreach="countries" t-as="country">
+                                                <option t-att-value="country.id"
+                                                        t-att-selected="partner.country_id and partner.country_id.id == country.id">
+                                                    <t t-out="country.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <button type="submit" class="sn-btn-primary">
+                                    Save Changes
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>

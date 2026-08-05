@@ -121,16 +121,29 @@
             }
 
             /* BACKEND — Inscription newsletter */
-             
-
-            setTimeout(function () {
-                showToast("Merci ! Vous êtes inscrit à notre newsletter.");
-                form.reset();
+            fetch('/newsletter/subscribe', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: email})
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.success) {
+                    showToast("Merci ! Vous êtes inscrit à notre newsletter.");
+                    form.reset();
+                } else {
+                    showToast(res.error || "Erreur lors de l'inscription.", "error");
+                }
+            })
+            .catch(function() {
+                showToast("Erreur réseau. Réessayez.", "error");
+            })
+            .finally(function() {
                 if (submitBtn) {
                     submitBtn.disabled    = false;
                     submitBtn.textContent = "Subscribe";
                 }
-            }, 800);
+            });
         });
     }
 

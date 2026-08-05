@@ -5,6 +5,7 @@
 
         <t t-call="website.layout">
 
+            <t t-set="body_class" t-value="'sn-checkout-page'"/>
             <div class="oe_structure oe_empty"/>
 
             <!-- CHECKOUT HEADER -->
@@ -156,31 +157,37 @@
 
                                     <h3>Shipping Method</h3>
 
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping" checked="checked"/>
-
-                                        <div>
-                                            <strong>Standard Delivery</strong>
-                                            <p>3-5 business days</p>
-                                        </div>
-
-                                        <span>Free</span>
-
-                                    </label>
-
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping"/>
-
-                                        <div>
-                                            <strong>Express Delivery</strong>
-                                            <p>24-48 hours</p>
-                                        </div>
-
-                                        <span>$15.00</span>
-
-                                    </label>
+                                    <t t-if="delivery_methods">
+                                        <form method="post" action="/shop/select_delivery_method" class="sn-delivery-method">
+                                            <t t-foreach="delivery_methods" t-as="method">
+                                                <label class="sn-radio-card">
+                                                    <input type="radio" name="delivery_method_id" t-att-value="method.id" t-att-checked="method.id == delivery_carrier"/>
+                                                    <div>
+                                                        <strong t-esc="method.name"/>
+                                                        <p t-if="method.carrier_description" t-esc="method.carrier_description"/>
+                                                    </div>
+                                                    <t t-if="method.product_id">
+                                                        <t t-if="method.product_id.lst_price > 0">
+                                                            <span t-esc="'%.2f $' % method.product_id.lst_price"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span>Free</span>
+                                                        </t>
+                                                    </t>
+                                                </label>
+                                            </t>
+                                        </form>
+                                    </t>
+                                    <t t-else="">
+                                        <label class="sn-radio-card">
+                                            <input type="radio" name="shipping" checked="checked"/>
+                                            <div>
+                                                <strong>Standard Delivery</strong>
+                                                <p>3-5 business days</p>
+                                            </div>
+                                            <span>Free</span>
+                                        </label>
+                                    </t>
 
                                 </div>
 
@@ -235,107 +242,75 @@
                                     Order Summary
                                 </h3>
 
-                                <!-- Product -->
+                                <!-- Dynamic Cart Lines -->
 
-                                <div class="sn-summary-product">
+                                <t t-foreach="order.order_line" t-as="line">
+                                    <div class="sn-summary-product">
 
-                                    <img src="/sneakers/static/src/img/products/product-1.jpg"
-                                        alt="Nike Air Max"/>
+                                        <t t-if="line.product_id.image_256">
+                                            <img t-att-src="'/web/image/product.product/%d/image_128' % line.product_id.id"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/sneakers/static/src/img/products/product-1.jpg"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
 
-                                    <div>
+                                        <div>
+                                            <h4 t-esc="line.product_id.name"/>
+                                            <span t-esc="'Qty : %d' % line.product_uom_qty"/>
+                                        </div>
 
-                                        <h4>Nike Air Max 270</h4>
-
-                                        <span>Qty : 1</span>
-
-                                    </div>
-
-                                    <strong>$180.00</strong>
-
-                                </div>
-
-                                <div class="sn-summary-product">
-
-                                    <img src="/sneakers/static/src/img/products/product-2.jpg"
-                                        alt="Adidas Ultraboost"/>
-
-                                    <div>
-
-                                        <h4>Adidas Ultraboost</h4>
-
-                                        <span>Qty : 2</span>
+                                        <strong t-esc="currency.symbol + '%.2f' % line.price_subtotal"/>
 
                                     </div>
-
-                                    <strong>$440.00</strong>
-
-                                </div>
+                                </t>
 
                                 <!-- Totals -->
 
                                 <div class="sn-summary-divider"></div>
 
                                 <div class="sn-summary-row">
-
                                     <span>Subtotal</span>
-
-                                    <span>$620.00</span>
-
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_untaxed"/>
                                 </div>
 
                                 <div class="sn-summary-row">
-
                                     <span>Shipping</span>
-
-                                    <span>Free</span>
-
+                                    <t t-if="delivery_price > 0">
+                                        <span t-esc="currency.symbol + '%.2f' % delivery_price"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Free</span>
+                                    </t>
                                 </div>
 
                                 <div class="sn-summary-row">
+                                    <span>Tax</span>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_tax"/>
+                                </div>
 
-                                    <span>Estimated Tax</span>
-
-                                    <span>$24.00</span>
-
+                                <div class="sn-promo-section">
+                                    <t t-set="redirect" t-value="'/shop/checkout'"/>
+                                    <t t-call="website_sale.coupon_form"/>
                                 </div>
 
                                 <div class="sn-summary-divider"></div>
 
                                 <div class="sn-summary-row sn-summary-total">
-
                                     <span>Total</span>
-
-                                    <span>$644.00</span>
-
-                                </div>
-
-                                <!-- Promo Code -->
-
-                                <div class="sn-promo-form">
-
-                                    <input
-                                        type="text"
-                                        placeholder="Promo Code"/>
-
-                                    <button>
-
-                                        Apply
-
-                                    </button>
-
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_total"/>
                                 </div>
 
                                 <!-- Place Order -->
-                                 
-                                <button class="sn-place-order-btn">
-                                    <a href="/confirmation">
-                                        Place Order
-                                    </a>
-                                </button>
+
+                                <a href="/shop/payment" class="sn-place-order-btn" style="display:block;text-align:center;text-decoration:none;">
+                                    Place Order
+                                </a>
 
                                 <!-- Back -->
 
-                                <a href="/cart" class="sn-back-cart">
+                                <a href="/shop/cart" class="sn-back-cart">
 
                                     ← Back to Cart
 

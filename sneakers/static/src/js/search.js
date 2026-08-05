@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
 
     var searchForm  = document.querySelector(".sn-search");
     if (!searchForm) return;
@@ -34,12 +34,12 @@
     ];
 
     var DEMO_CATEGORIES = [
-        { type: "category", label: "Running",      url: "/shop-sneakers?category=running"    },
-        { type: "category", label: "Basketball",   url: "/shop-sneakers?category=basketball" },
-        { type: "category", label: "Lifestyle",    url: "/shop-sneakers?category=lifestyle"  },
-        { type: "category", label: "Hommes",       url: "/shop-sneakers?category=men"        },
-        { type: "category", label: "Femmes",       url: "/shop-sneakers?category=women"      },
-        { type: "category", label: "Soldes",       url: "/shop-sneakers?category=sale"       },
+        { type: "category", label: "Running",      url: "/shop?category=running"    },
+        { type: "category", label: "Basketball",   url: "/shop?category=basketball" },
+        { type: "category", label: "Lifestyle",    url: "/shop?category=lifestyle"  },
+        { type: "category", label: "Hommes",       url: "/shop?category=men"        },
+        { type: "category", label: "Femmes",       url: "/shop?category=women"      },
+        { type: "category", label: "Soldes",       url: "/shop?category=sale"       },
     ];
 
     // ─── Fonction de recherche ────────────────────────────────────────
@@ -119,7 +119,7 @@
         // Lien « Voir tous les résultats »
         var seeAll = document.createElement("a");
         seeAll.className = "sn-autocomplete-see-all";
-        seeAll.href      = "/shop-sneakers?search=" + encodeURIComponent(query);
+        seeAll.href      = "/shop?search=" + encodeURIComponent(query);
         seeAll.innerHTML = 'Voir tous les résultats pour <strong>"' + query + '"</strong>';
         dropdown.appendChild(seeAll);
 

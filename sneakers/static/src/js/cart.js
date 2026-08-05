@@ -19,49 +19,8 @@
 
 
     // ================================================
-    // ORDER SUMMARY — totaux + liste articles sidebar
     // ================================================
-
-    function updateOrderSummary(cart) {
-        if (!cart) {
-        cart = [];
-        }
-        var subtotal  = cart.reduce(function (acc, i) { return acc + i.price * i.qty; }, 0);
-        var shipping  = subtotal > 0 && subtotal >= 100 ? 0 : (subtotal > 0 ? 15 : 0);
-        var discount  = 0;
-        var total     = Math.max(0, subtotal - discount + shipping);
-        var itemCount = cart.reduce(function (acc, i) { return acc + i.qty; }, 0);
-
-        setTextIfExists(".sn-order-subtotal", formatPrice(subtotal));
-        setTextIfExists(".sn-order-shipping",  shipping === 0 ? (subtotal > 0 ? "Free" : formatPrice(0)) : formatPrice(shipping));
-        setTextIfExists(".sn-order-discount",  discount > 0 ? "-" + formatPrice(discount) : "-");
-        setTextIfExists(".sn-order-total",     formatPrice(total));
-
-        // Liste des articles dans la sidebar du summary
-        var summaryList = document.querySelector(".sn-order-items");
-        if (summaryList) {
-            summaryList.innerHTML = "";
-            cart.forEach(function (item) {
-                var row = document.createElement("div");
-                row.className = "sn-order-item";
-                row.innerHTML =
-                    '<div class="sn-order-item-info">' +
-                        (item.image
-                            ? '<img src="' + item.image + '" alt="' + item.name + '" class="sn-order-item-img"/>'
-                            : "") +
-                        '<span class="sn-order-item-name">' + item.name + '</span>' +
-                        '<span class="sn-order-item-qty">x' + item.qty + '</span>' +
-                    '</div>' +
-                    '<span class="sn-order-item-total">' + formatPrice(item.price * item.qty) + '</span>';
-                summaryList.appendChild(row);
-            });
-        }
-
-        updateCartBadge(itemCount);
-    }
-
-    // ================================================
-    // SYNC DOM → LOCALSTORAGE (après +/- ou suppression)
+    // SYNC CART DATA FROM DOM (reads current state)
     // ================================================
 
     function syncCartFromDOM() {
@@ -81,7 +40,6 @@
                 qty       : parseInt(input.value, 10) || 1
             });
         });
-        updateOrderSummary(cart);
         return cart;
     }
 
@@ -102,10 +60,16 @@
     // ================================================
 
     function updateCartBadge(count) {
+
         var badge = document.querySelector(".sn-cart-count");
+
         if (!badge) return;
-        badge.textContent   = count;
-        badge.style.display = count > 0 ? "flex" : "none";
+
+        badge.textContent = count;
+
+        // Toujours afficher le badge même avec 0
+        badge.style.display = "flex";
+
         badge.classList.remove("sn-cart-count--bump");
         void badge.offsetWidth;
         badge.classList.add("sn-cart-count--bump");
@@ -117,7 +81,7 @@
 
 function updateCartBackend(lineId, qty) {
 
-    fetch('/shop/cart/update', {
+    return fetch('/shop/cart/update', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -152,6 +116,58 @@ function updateCartBackend(lineId, qty) {
 
 
     // ================================================
+    // EMPTY CART UI
+    // ================================================
+
+    function handleEmptyCartUI(){
+
+        if(cartSection.querySelector(".sn-cart-item")){
+            return;
+        }
+
+
+        var summaryCard = document.querySelector(".sn-summary-card");
+        if(summaryCard){
+            summaryCard.style.display = "none";
+        }
+
+
+
+        var checkoutBtn = document.querySelector(".sn-checkout-btn");
+        if(checkoutBtn){
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = "Empty cart";
+        }
+
+
+        var cartLayout = document.querySelector(".sn-cart-layout");
+        if(cartLayout){
+            cartLayout.style.gridTemplateColumns = "1fr";
+        }
+
+
+        var cartTitle = document.querySelector(".sn-cart-header h2");
+        if(cartTitle){
+            cartTitle.style.display = "none";
+        }
+
+
+        var cartSubtitle = document.querySelector(".sn-cart-header p");
+        if(cartSubtitle){
+            cartSubtitle.style.display = "none";
+        }
+
+    }
+
+    handleEmptyCartUI();
+    cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
+
+        updateIncreaseButtonState(item);
+
+    });
+
+
+    // ================================================
     // BOUTONS +/- QUANTITÉ
     // ================================================
 
@@ -178,18 +194,18 @@ function updateCartBackend(lineId, qty) {
             console.log("CART PRODUCT STOCK :", stock);
 
 
-            if (!isNaN(stock) && current >= stock) {
-
+            if (isNaN(stock) || stock <= 0 || current >= stock) {
 
                 if(window.snShowToast){
 
                     window.snShowToast(
-                        "Maximum disponible : " + stock + " article(s)",
+                        stock <= 0 
+                        ? "Produit indisponible"
+                        : "Maximum disponible : " + stock + " article(s)",
                         "error"
                     );
 
                 }
-
 
                 return;
             }
@@ -207,8 +223,7 @@ function updateCartBackend(lineId, qty) {
         updateCartBackend(
             lineId,
             input.value
-        );
-        syncCartFromDOM();
+        ).then(function(){ location.reload(); });
     });
 
 
@@ -307,156 +322,68 @@ function updateCartBackend(lineId, qty) {
         updateCartBackend(
             lineId,
             val
-        );
-
-
-        syncCartFromDOM();
+        ).then(function(){ location.reload(); });
     });
 
     // ================================================
-// SUPPRESSION D'UN ARTICLE
-// ================================================
+    // SUPPRESSION D'UN ARTICLE
+    // ================================================
 
-cartSection.addEventListener("click", function (e) {
+    cartSection.addEventListener("click", function (e) {
 
-    var removeBtn = e.target.closest(".sn-cart-remove");
+        var removeBtn = e.target.closest(".sn-cart-remove");
 
-    if (!removeBtn) return;
-
-
-    var cartItem = removeBtn.closest(".sn-cart-item");
-
-    if (!cartItem) return;
+        if (!removeBtn) return;
 
 
-    var lineId = cartItem.dataset.lineId;
-    var productId = cartItem.dataset.productId;
+        var cartItem = removeBtn.closest(".sn-cart-item");
+
+        if (!cartItem) return;
 
 
-    // suppression côté Odoo
-    updateCartBackend(lineId, 0);
+        var lineId = cartItem.dataset.lineId;
+        var productId = cartItem.dataset.productId;
 
 
-    cartItem.style.opacity = "0";
+        // suppression côté Odoo
+        updateCartBackend(lineId, 0).then(function(){ location.reload(); });
 
 
-    setTimeout(function(){
-
-        cartItem.remove();
+        cartItem.style.opacity = "0";
 
 
-        syncCartFromDOM();
+        setTimeout(function(){
+
+            cartItem.remove();
 
 
-        if (!cartSection.querySelector(".sn-cart-item")) {
-
-            document.querySelector(".sn-cart-items").innerHTML =
-            `
-            <div class="sn-cart-empty">
-                <i class="fa fa-shopping-cart"></i>
-                <h3>Your cart is empty</h3>
-                <p>Browse our catalog and add your favorite sneakers.</p>
-                <a href="/shop-sneakers" class="sn-btn-primary">
-                    Continue Shopping
-                </a>
-            </div>
-            `;
+            syncCartFromDOM();
 
 
-            updateCartBadge(0);
+            if (!cartSection.querySelector(".sn-cart-item")) {
 
-        }
+        document.querySelector(".sn-cart-items").innerHTML =
+        `
+        <div class="sn-cart-empty">
+            <i class="fa fa-shopping-cart"></i>
+            <h3>Your cart is empty</h3>
+            <p>Browse our catalog and add your favorite sneakers.</p>
+            <a href="/shop-sneakers" class="sn-btn-primary">
+                Continue Shopping
+            </a>
+        </div>
+        `;
+
+
+        updateCartBadge(0);
+
+        handleEmptyCartUI();
+
+    }
 
     },300);
 
 
 });
-
-    // ================================================
-    // CODE PROMO
-    // ================================================
-
-    var promoForm = document.querySelector(".sn-promo-form");
-    if (promoForm) {
-        var PROMO_CODES = {
-            "SNEAKERS10": { type: "percent", value: 10, msg: "10% discount applied!" },
-            "SUMMER20":   { type: "percent", value: 20, msg: "20% Summer Sale discount!" },
-            "FLAT15":     { type: "fixed",   value: 15, msg: "$15 discount applied!" }
-        };
-
-        function applyPromoCode() {
-            var promoInput = promoForm.querySelector("input[type='text']");
-            if (!promoInput) return;
-
-            var code  = promoInput.value.trim().toUpperCase();
-            if (!code) return;
-
-            var msgEl = document.querySelector(".sn-promo-message");
-            if (!msgEl) {
-                msgEl = document.createElement("p");
-                msgEl.className = "sn-promo-message";
-                promoForm.appendChild(msgEl);
-            }
-
-            /* BACKEND — valider le code promo */
-
-            var promo = PROMO_CODES[code];
-            if (!promo) {
-                msgEl.textContent = "Invalid or expired code.";
-                msgEl.className   = "sn-promo-message sn-promo-message--error";
-                return;
-            }
-
-            var cart = [];
-
-            cartSection.querySelectorAll(".sn-cart-item").forEach(function(item){
-
-                var price = parsePrice(
-                    item.querySelector(".sn-cart-price").textContent
-                );
-
-                var qty = parseInt(
-                    item.querySelector("input[type='number']").value,
-                    10
-                ) || 1;
-
-                cart.push({
-                    price: price,
-                    qty: qty
-                });
-
-            });
-
-
-            var subtotal = cart.reduce(function(acc, i){
-                return acc + i.price * i.qty;
-            }, 0);
-
-
-            var discountAmt = promo.type === "percent"
-                ? (subtotal * promo.value / 100)
-                : promo.value;
-            window.sn_discount = discountAmt;
-            msgEl.textContent    = promo.msg;
-            msgEl.className      = "sn-promo-message sn-promo-message--success";
-            promoInput.value     = "";
-            promoInput.disabled  = true;
-
-            updateOrderSummary(syncCartFromDOM());
-        }
-
-        promoForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            applyPromoCode();
-        });
-
-        var promoBtn = promoForm.querySelector("button");
-        if (promoBtn) {
-            promoBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                applyPromoCode();
-            });
-        }
-    }
 
 })();

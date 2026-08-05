@@ -1,151 +1,182 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
     <template id="page_confirmation" name="Sneakers Order Confirmation">
 
         <t t-call="website.layout">
 
+            <t t-set="title" t-value="'Order Confirmed | SNEAKERS Premium Footwear'"/>
+            <t t-set="description" t-value="'Your order has been confirmed. Thank you for shopping with SNEAKERS.'"/>
+            <t t-set="body_class" t-value="'sn-checkout-page'"/>
+
             <div class="oe_structure oe_empty"/>
 
-            <!-- CONFIRMATION HEADER -->
-            <section class="sn-confirmation-header oe_structure oe_empty">
+            <t t-if="order and order.exists()">
 
-                <div class="mn-container">
+                <!-- CONFIRMATION HEADER -->
+                <section class="sn-confirmation-header oe_structure oe_empty">
 
-                    <div class="sn-section-header">
+                    <div class="mn-container">
 
-                        <span class="sn-section-subtitle">
-                            Order Confirmation
-                        </span>
+                        <div class="sn-section-header">
 
-                        <h2>
-                            Thank You For Your Purchase!
-                        </h2>
+                            <span class="sn-section-subtitle">
+                                Order Confirmation
+                            </span>
 
-                        <p>
-                            Your order has been successfully placed and is now
-                            being processed.
-                        </p>
+                            <h2>
+                                Thank You For Your Purchase!
+                            </h2>
 
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- CONFIRMATION CONTENT -->
-            <section class="sn-confirmation oe_structure oe_empty">
-
-                <div class="mn-container">
-
-                    <div class="sn-confirmation-card">
-
-                        <!-- Success Icon -->
-
-                        <div class="sn-confirmation-icon">
-
-                            <i class="fa fa-check-circle"></i>
-
-                        </div>
-
-                        <!-- Success Message -->
-                        <h3>Payment Successful</h3>
-
-                        <p>Thank you for shopping with Sneakers.
-                            Your order has been confirmed.</p>
-
-                        <!-- Order Number -->
-                        <div class="sn-order-number">
-
-                            <span>Order Number</span>
-
-                            <strong>#SN-2026-000245</strong>
-
-                        </div>
-
-                        <!-- ORDER DETAILS -->
-                        <div class="sn-order-summary">
-
-                            <h4>Order Summary</h4>
-
-                            <div class="sn-order-item">
-
-                                <span>Nike Air Max 270 x1</span>
-
-                                <strong>$180.00</strong>
-
-                            </div>
-
-                            <div class="sn-order-item">
-
-                                <span>Adidas Ultraboost x2</span>
-
-                                <strong>$440.00</strong>
-
-                            </div>
-
-                            <div class="sn-summary-divider"></div>
-
-                            <div class="sn-order-item">
-
-                                <span>Subtotal</span>
-
-                                <strong>$620.00</strong>
-
-                            </div>
-
-                            <div class="sn-order-item">
-
-                                <span>Shipping</span>
-
-                                <strong>Free</strong>
-
-                            </div>
-
-                            <div class="sn-order-item">
-
-                                <span>Tax</span>
-
-                                <strong>$24.00</strong>
-
-                            </div>
-
-                            <div class="sn-summary-divider"></div>
-
-                            <div class="sn-order-item sn-order-total">
-
-                                <span>Total</span>
-
-                                <strong>$644.00</strong>
-
-                            </div>
-
-                        </div>
-
-                        <div class="sn-confirmation-actions">
-
-                            <a href="/shop-sneakers"
-                               class="sn-primary-btn">
-
-                                Continue Shopping
-
-                            </a>
-
-                            <a href="/sneakers/static/src/pdf/invoice.pdf"
-                               download="invoice.pdf"
-                               class="sn-secondary-btn">
-
-                                Download Invoice
-
-                            </a>
+                            <p>
+                                Your order <strong t-out="order.name"/> has been
+                                successfully placed and is now being processed.
+                            </p>
 
                         </div>
 
                     </div>
 
-                </div>
+                </section>
 
-            </section>
+                <!-- CONFIRMATION CONTENT -->
+                <section class="sn-confirmation oe_structure oe_empty">
+
+                    <div class="mn-container">
+
+                        <div class="sn-confirmation-card">
+
+                            <!-- Success Icon -->
+                            <div class="sn-confirmation-icon">
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+
+                            <!-- Success Message -->
+                            <h3 t-if="order.state == 'sale'">Payment Confirmed</h3>
+                            <h3 t-else="">Order Placed</h3>
+
+                            <p>Thank you for shopping with Sneakers.
+                                Your order has been confirmed.</p>
+
+                            <!-- Order Number -->
+                            <div class="sn-order-number">
+                                <span>Order Number</span>
+                                <strong t-out="order.name"/>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div t-if="transaction and transaction.exists()" class="sn-order-number" style="margin-top:12px;">
+                                <span>Payment Method</span>
+                                <strong t-out="transaction.provider_id.name"/>
+                            </div>
+
+                            <!-- Wire Transfer Instructions -->
+                            <t t-if="is_wire_transfer">
+                                <div class="sn-wire-instructions">
+                                    <div class="sn-wire-header">
+                                        <i class="fa fa-university"></i>
+                                        <h4>Wire Transfer Instructions</h4>
+                                    </div>
+                                    <p>Complete your payment by transferring the total amount to the bank account below. Your order will be processed once payment is confirmed.</p>
+                                    <table class="sn-wire-table">
+                                        <tr><td>Bank Name</td><td><strong t-out="company.bank_ids[:1].bank_name or 'N/A'"/></td></tr>
+                                        <tr><td>Account Holder</td><td><strong t-out="company.bank_ids[:1].acc_holder_name or company.name"/></td></tr>
+                                        <tr><td>Account Number</td><td><strong t-out="company.bank_ids[:1].acc_number or 'N/A'"/></td></tr>
+                                        <tr><td>Routing Number</td><td><strong t-out="company.bank_ids[:1].bic or 'N/A'"/></td></tr>
+                                        <tr><td>Reference</td><td><strong t-out="order.name"/></td></tr>
+                                        <tr class="sn-wire-total"><td>Amount Due</td><td><strong t-out="'%.2f %s' % (order.amount_total, order.currency_id.name)"/></td></tr>
+                                    </table>
+                                    <p class="sn-wire-note"><i class="fa fa-info-circle"></i> Please include the reference in your transfer description so we can match your payment.</p>
+                                </div>
+                            </t>
+
+                            <!-- ORDER DETAILS -->
+                            <div class="sn-order-summary">
+
+                                <h4>Order Summary</h4>
+
+                                <t t-foreach="order.order_line" t-as="line">
+                                    <div class="sn-order-item">
+                                        <span>
+                                            <t t-out="line.name"/>
+                                            <t t-if="line.product_uom_qty > 1"> x<t t-out="int(line.product_uom_qty)"/></t>
+                                        </span>
+                                        <strong t-out="'%.2f $' % line.price_subtotal"/>
+                                    </div>
+                                </t>
+
+                                <div class="sn-summary-divider"></div>
+
+                                <div class="sn-order-item">
+                                    <span>Subtotal</span>
+                                    <strong t-out="'%.2f $' % order.amount_untaxed"/>
+                                </div>
+
+                                <div class="sn-order-item">
+                                    <span>Tax</span>
+                                    <strong t-out="'%.2f $' % order.amount_tax"/>
+                                </div>
+
+                                <div class="sn-summary-divider"></div>
+
+                                <div class="sn-order-item sn-order-total">
+                                    <span>Total</span>
+                                    <strong t-out="'%.2f $' % order.amount_total"/>
+                                </div>
+
+                            </div>
+
+                            <!-- Shipping Address -->
+                            <div t-if="order.partner_shipping_id != order.partner_id" style="margin-top:24px;text-align:left;">
+                                <h4>Shipping Address</h4>
+                                <p style="margin:0;">
+                                    <t t-out="order.partner_shipping_id.name"/><br/>
+                                    <t t-if="order.partner_shipping_id.street" t-out="order.partner_shipping_id.street"/><br/>
+                                    <t t-if="order.partner_shipping_id.city" t-out="order.partner_shipping_id.city"/>
+                                    <t t-if="order.partner_shipping_id.zip" t-out="' ' + order.partner_shipping_id.zip"/><br/>
+                                    <t t-if="order.partner_shipping_id.country_id" t-out="order.partner_shipping_id.country_id.name"/>
+                                </p>
+                            </div>
+
+                            <div class="sn-confirmation-actions">
+
+                                <a href="/shop-sneakers"
+                                   class="sn-primary-btn">
+                                    Continue Shopping
+                                </a>
+
+                                <a t-if="order.invoice_ids"
+                                   t-attf-href="/web/invoices/{{order.invoice_ids[0].id}}/pdf"
+                                   download=""
+                                   class="sn-secondary-btn">
+                                    Download Invoice
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </t>
+
+            <!-- NO ORDER FOUND -->
+            <t t-else="">
+
+                <section class="sn-confirmation-header oe_structure oe_empty">
+                    <div class="mn-container">
+                        <div class="sn-section-header">
+                            <span class="sn-section-subtitle">Order Not Found</span>
+                            <h2>We couldn't find your order.</h2>
+                            <p>Please check your email or contact support.</p>
+                            <a href="/shop-sneakers" class="sn-primary-btn" style="margin-top:24px;display:inline-block;">Back to Shop</a>
+                        </div>
+                    </div>
+                </section>
+
+            </t>
 
         </t>
 
