@@ -20,6 +20,8 @@ confirmation explicite de l'équipe — à valider :
 """
 import json
 
+from markupsafe import escape
+
 from odoo import api, models
 
 
@@ -59,13 +61,18 @@ class TrendScore(models.Model):
             ('group_ids', 'not in', pro_group.id),
         ])
 
+        # échappement HTML : product_id.name peut venir de sources externes
+        # non fiables (API publique, scraper, formulaire crowdsourcing) —
+        # ne jamais l'insérer tel quel dans un corps d'email HTML.
+        safe_name = escape(self.product_id.name)
+
         for user in standard_users:
             if not user.email:
                 continue
             self.env['mail.mail'].create({
                 'subject': f"🚀 {self.product_id.name} dépasse le seuil de tendance",
                 'body_html': (
-                    f"<p>Le produit <strong>{self.product_id.name}</strong> vient "
+                    f"<p>Le produit <strong>{safe_name}</strong> vient "
                     f"d'atteindre un score de tendance de "
                     f"<strong>{self.computed_score:.1f}</strong>.</p>"
                 ),
