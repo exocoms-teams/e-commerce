@@ -5,6 +5,7 @@
 
         <t t-call="website.layout">
 
+            <t t-set="body_class" t-value="'sn-checkout-page'"/>
             <div class="oe_structure oe_empty"/>
 
             <!-- CHECKOUT HEADER -->
@@ -156,31 +157,37 @@
 
                                     <h3>Shipping Method</h3>
 
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping" checked="checked"/>
-
-                                        <div>
-                                            <strong>Standard Delivery</strong>
-                                            <p>3-5 business days</p>
-                                        </div>
-
-                                        <span>Free</span>
-
-                                    </label>
-
-                                    <label class="sn-radio-card">
-
-                                        <input type="radio" name="shipping"/>
-
-                                        <div>
-                                            <strong>Express Delivery</strong>
-                                            <p>24-48 hours</p>
-                                        </div>
-
-                                        <span>$15.00</span>
-
-                                    </label>
+                                    <t t-if="delivery_methods">
+                                        <form method="post" action="/shop/select_delivery_method" class="sn-delivery-method">
+                                            <t t-foreach="delivery_methods" t-as="method">
+                                                <label class="sn-radio-card">
+                                                    <input type="radio" name="delivery_method_id" t-att-value="method.id" t-att-checked="method.id == delivery_carrier"/>
+                                                    <div>
+                                                        <strong t-esc="method.name"/>
+                                                        <p t-if="method.carrier_description" t-esc="method.carrier_description"/>
+                                                    </div>
+                                                    <t t-if="method.product_id">
+                                                        <t t-if="method.product_id.lst_price > 0">
+                                                            <span t-esc="'%.2f $' % method.product_id.lst_price"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span>Free</span>
+                                                        </t>
+                                                    </t>
+                                                </label>
+                                            </t>
+                                        </form>
+                                    </t>
+                                    <t t-else="">
+                                        <label class="sn-radio-card">
+                                            <input type="radio" name="shipping" checked="checked"/>
+                                            <div>
+                                                <strong>Standard Delivery</strong>
+                                                <p>3-5 business days</p>
+                                            </div>
+                                            <span>Free</span>
+                                        </label>
+                                    </t>
 
                                 </div>
 
@@ -226,48 +233,92 @@
 
                             </div>
 
-                            <!-- PAYMENT DETAILS (Step 4 — affiché dynamiquement par JS) -->
-                            <div class="sn-checkout-card" id="sn-card-payment-details">
+                        </div>
 
-                                <!-- Champs carte bancaire -->
-                                <div class="sn-payment-section sn-payment-section--card">
-                                    <h3>Card Details</h3>
-                                    <div class="sn-form-grid">
-                                        <div class="sn-form-group full">
-                                            <label>Card Number</label>
-                                            <input type="text" placeholder="1234  5678  9012  3456" maxlength="19"/>
+                       <aside class="sn-checkout-summary">
+                            <div class="sn-summary-card">
+
+                                <h3>
+                                    Order Summary
+                                </h3>
+
+                                <!-- Dynamic Cart Lines -->
+
+                                <t t-foreach="order.order_line" t-as="line">
+                                    <div class="sn-summary-product">
+
+                                        <t t-if="line.product_id.image_256">
+                                            <img t-att-src="'/web/image/product.product/%d/image_128' % line.product_id.id"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/sneakers/static/src/img/products/product-1.jpg"
+                                                t-att-alt="line.product_id.name"/>
+                                        </t>
+
+                                        <div>
+                                            <h4 t-esc="line.product_id.name"/>
+                                            <span t-esc="'Qty : %d' % line.product_uom_qty"/>
                                         </div>
-                                        <div class="sn-form-group">
-                                            <label>Expiry Date</label>
-                                            <input type="text" placeholder="MM / YY" maxlength="7"/>
-                                        </div>
-                                        <div class="sn-form-group">
-                                            <label>CVV</label>
-                                            <input type="text" placeholder="123" maxlength="4"/>
-                                        </div>
-                                        <div class="sn-form-group full">
-                                            <label>Cardholder Name</label>
-                                            <input type="text" placeholder="John Doe"/>
-                                        </div>
+
+                                        <strong t-esc="currency.symbol + '%.2f' % line.price_subtotal"/>
+
                                     </div>
+                                </t>
+
+                                <!-- Totals -->
+
+                                <div class="sn-summary-divider"></div>
+
+                                <div class="sn-summary-row">
+                                    <span>Subtotal</span>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_untaxed"/>
                                 </div>
 
-                                <!-- Section PayPal -->
-                                <div class="sn-payment-section sn-payment-section--paypal">
-                                    <h3>PayPal</h3>
-                                    <p>
-                                        You will complete your payment securely via PayPal.
-                                        No real account required.
-                                    </p>
-                                    <div class="sn-paypal-mock">
-                                        <i class="fa fa-paypal"/>
-                                        <span>Paying via PayPal</span>
-                                    </div>
+                                <div class="sn-summary-row">
+                                    <span>Shipping</span>
+                                    <t t-if="delivery_price > 0">
+                                        <span t-esc="currency.symbol + '%.2f' % delivery_price"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Free</span>
+                                    </t>
                                 </div>
+
+                                <div class="sn-summary-row">
+                                    <span>Tax</span>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_tax"/>
+                                </div>
+
+                                <div class="sn-promo-section">
+                                    <t t-set="redirect" t-value="'/shop/checkout'"/>
+                                    <t t-call="website_sale.coupon_form"/>
+                                </div>
+
+                                <div class="sn-summary-divider"></div>
+
+                                <div class="sn-summary-row sn-summary-total">
+                                    <span>Total</span>
+                                    <span t-esc="currency.symbol + '%.2f' % order.amount_total"/>
+                                </div>
+
+                                <!-- Place Order -->
+
+                                <a href="/shop/payment" class="sn-place-order-btn" style="display:block;text-align:center;text-decoration:none;">
+                                    Place Order
+                                </a>
+
+                                <!-- Back -->
+
+                                <a href="/shop/cart" class="sn-back-cart">
+
+                                    ← Back to Cart
+
+                                </a>
 
                             </div>
 
-                        </div>
+                        </aside>
 
                     </div>
 

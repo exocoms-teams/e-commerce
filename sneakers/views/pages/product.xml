@@ -46,36 +46,41 @@
                             <!-- Product Title -->
                             <div class="sn-product-title">
                                 <span class="sn-product-brand">
-                                    <t t-out="product.brand_id.name or ''"/>
+                                    <t t-out="product_brand or ''"/>
                                 </span>
                                 <h1>
                                     <t t-out="product.name"/>
                                 </h1>
                                 <span class="sn-product-sku">
                                     SKU :
-                                    <t t-out="product.default_code or '-'"/>
+                                    <t t-out="product_variant.default_code or '-'"/>
                                 </span>
                             </div>
 
-                            <!-- Rating -->
                             <div class="sn-product-rating">
-                                <div class="sn-stars">
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                    <i class="fa fa-star"/>
-                                </div>
-                                <span class="sn-rating-value">
-                                    <t t-out="product.rating or 0"/>
-                                </span>
-                                <span class="sn-review-count">
-                                    (
-                                    <t t-out="product.review_count or 0"/>
-                                    Reviews
-                                    )
-                                </span>
-                            </div>
+    <div class="sn-stars">
+    <t t-foreach="[1,2,3,4,5]" t-as="star">
+
+    <i t-att-class="
+        'fa fa-star'
+        if star &lt;= round(average_rating)
+        else 'fa fa-star-o'
+    "/>
+
+</t>
+</div>
+
+    <span class="sn-rating-value">
+    <t t-out="'%.1f' % average_rating if average_rating else 0"/>
+</span>
+
+<span class="sn-review-count">
+    (
+    <t t-out="review_count or 0"/>
+    Reviews
+    )
+</span>
+</div>
 
                             <!-- Price -->
                             <div class="sn-product-price">
@@ -83,7 +88,7 @@
                                     $
                                     <t t-out="'%.2f' % product.list_price"/>
                                 </span>
-                                <t t-if="product.compare_list_price">
+                                <t t-if="product.compare_list_price and product.compare_list_price > product.list_price">
                                     <span class="sn-old-price">
                                         $
                                         <t t-out="'%.2f' % product.compare_list_price"/>
@@ -199,8 +204,11 @@
                                     </button>
                                 </t>
                                 <t t-else="">
-                                    <button class="sn-btn-primary sn-add-cart"
-                                        t-att-data-template-id="product.id">
+                                    <button style="width:50%"
+                                        class="sn-btn-primary sn-add-cart"
+                                        t-att-data-template-id="product.id"
+                                        t-att-data-stock="stock_qty"
+                                        data-cart-qty="0">
                                         <t t-if="stock_state == 'out_of_stock'">
                                             Add to Cart (Backorder)
                                         </t>
@@ -215,17 +223,27 @@
                             <div class="sn-product-meta">
                                 <div>
                                     <strong>Category :</strong>
-                                    <t t-out="', '.join(product.public_categ_ids.mapped('name'))"/>
+
+                                    <t t-foreach="product.public_categ_ids" t-as="cat">
+
+                                        <t t-if="cat.parent_id">
+                                            <t t-out="cat.parent_id.name"/>
+                                            /
+                                        </t>
+
+                                        <t t-out="cat.name"/>
+
+                                    </t>
+
                                 </div>
                                 <div>
                                     <strong>Brand :</strong>
                                     <t t-out="product.brand_id.name or ''"/>
                                 </div>
-                                <!--
                                 <div>
                                     <strong>Availability :</strong>
                                     <t t-if="stock_state == 'hidden'">
-                                        
+                                        --
                                     </t>
                                     <t t-elif="stock_state == 'in_stock'">
                                         In Stock
@@ -242,7 +260,6 @@
                                         </t>
                                     </t>
                                 </div>
-                                -->
                             </div>
 
                         </div>
@@ -306,11 +323,31 @@
                         </p>
                         <p>
                             <strong>Material:</strong>
-                            <t t-out="product_material"/>
+
+                            <t t-if="materials">
+                                <t t-foreach="materials" t-as="material">
+                                    <span t-out="material.name"/>
+                                </t>
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
                         </p>
+
+
                         <p>
                             <strong>Sole:</strong>
-                            <t t-out="product_sole"/>
+
+                            <t t-if="soles">
+                                <t t-foreach="soles" t-as="sole">
+                                    <span t-out="sole.name"/>
+                                </t>
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
                         </p>
                         <p>
                             <strong>Available Sizes:</strong>
@@ -318,34 +355,63 @@
                         </p>
                         <p>
                             <strong>Weight:</strong>
-                            <t t-out="product_weight"/>
+
+                            <t t-if="product_weight">
+                                <t t-out="'%.2f' % product_weight"/> kg
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
                         </p>
                         <p>
                             <strong>Origin:</strong>
-                            <t t-out="product_origin"/>
+                            <t t-if="product_origin">
+                                <t t-out="product_origin"/>
+                            </t>
+                            <t t-else="">
+                                -
+                            </t>
                         </p>
                     </div>
-
-                    <!-- Reviews -->
-                    <div
-                        id="tab-reviews"
-                        class="sn-tab-content"
-                        style="display:none">
-                        <t t-foreach="reviews" t-as="review">
-                            <p>
-                                <strong>
-                                    <t t-out="review.stars"/>
-                                </strong>
-                                —
-                                "<t t-out="review.text"/>"
-                                —
-                                <t t-out="review.author"/>
-                            </p>
-                            <br/>
-                        </t>
-                    </div>
-
                 </div>
+
+                  <div
+    id="tab-reviews"
+    class="sn-tab-content"
+    style="display:none">
+
+    <t t-if="reviews">
+
+        <t t-foreach="reviews" t-as="review">
+
+    <p>
+        <strong>
+            <t t-out="review.rating"/> ★
+        </strong>
+
+        —
+        "<t t-out="review.feedback"/>"
+
+        —
+        <t t-if="review.partner_id">
+            <t t-out="review.partner_id.name"/>
+        </t>
+        <t t-else="">
+            Anonymous
+        </t>
+
+    </p>
+
+</t>
+
+    </t>
+
+    <t t-else="">
+        <p>No reviews yet.</p>
+    </t>
+
+</div>
             </section>
 
             <!-- RELATED PRODUCTS -->

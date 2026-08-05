@@ -142,109 +142,35 @@
 
                     <div class="sn-categories-grid">
 
-                        <!-- Men -->
-                        <a href="/shop-sneakers?category=men" class="sn-category-card">
+                            <t t-foreach="categories" t-as="category">
 
-                            <img
-                                src="/sneakers/static/src/img/categories/men.jpg"
-                                alt="Men Sneakers"/>
+                                <a t-att-href="
+                                    category.parent_id
+                                    and '/shop-sneakers?subcategory=%s' % category.id
+                                    or '/shop-sneakers?category=%s' % category.name.lower()
+                                "
+                                class="sn-category-card">
 
-                            <div class="sn-category-overlay">
+                                    <img t-att-src="'/web/image/product.public.category/%s/image' % category.id"
+                                        t-att-alt="category.name"/>
 
-                                <h3>Men</h3>
+                                    <div class="sn-category-overlay">
 
-                                <span>Explore Collection</span>
+                                        <h3>
+                                            <t t-out="category.name"/>
+                                        </h3>
 
-                            </div>
+                                        <span>
+                                            Explore Collection
+                                        </span>
 
-                        </a>
+                                    </div>
 
-                        <!-- Women -->
-                        <a href="/shop-sneakers?category=women" class="sn-category-card">
+                                </a>
 
-                            <img
-                                src="/sneakers/static/src/img/categories/women.jpg"
-                                alt="Women Sneakers"/>
-
-                            <div class="sn-category-overlay">
-
-                                <h3>Women</h3>
-
-                                <span>Explore Collection</span>
+                            </t>
 
                             </div>
-
-                        </a>
-
-                        <!-- Running -->
-                        <a href="/shop-sneakers?category=running" class="sn-category-card">
-
-                            <img
-                                src="/sneakers/static/src/img/categories/running.jpg"
-                                alt="Running Shoes"/>
-
-                            <div class="sn-category-overlay">
-
-                                <h3>Running</h3>
-
-                                <span>Explore Collection</span>
-
-                            </div>
-
-                        </a>
-
-                        <!-- Basketball -->
-                        <a href="/shop-sneakers?category=basketball" class="sn-category-card">
-
-                            <img
-                                src="/sneakers/static/src/img/categories/basketball.jpg"
-                                alt="Basketball Shoes"/>
-
-                            <div class="sn-category-overlay">
-
-                                <h3>Basketball</h3>
-
-                                <span>Explore Collection</span>
-
-                            </div>
-
-                        </a>
-
-                        <!--Lifestyle-->
-                        <a href="/shop-sneakers?category=lifestyle" class="sn-category-card">
-
-                            <img
-                                src="/sneakers/static/src/img/categories/lifestyle.jpg"
-                                alt="Lifestyle Shoes"/>
-
-                            <div class="sn-category-overlay">
-
-                                <h3>Lifestyle</h3>
-
-                                <span>Explore Collection</span>
-
-                            </div>
-
-                        </a>
-
-                        <!--Training-->
-                        <a href="/shop-sneakers?category=training" class="sn-category-card">
-
-                            <img
-                                src="/sneakers/static/src/img/categories/training.jpg"
-                                alt="Training Shoes"/>
-
-                            <div class="sn-category-overlay">
-
-                                <h3>Training</h3>
-
-                                <span>Explore Collection</span>
-
-                            </div>
-
-                        </a>
-
-                    </div>
 
                 </div>
 
@@ -275,86 +201,11 @@
 
                     <!-- Products Grid -->
                     <div class="sn-products-grid">
-                        
 
-                        <!-- Product 1 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="1"/>
-                            <t t-set="product_name" t-value="'Nike Air Max 270'"/>
-                            <t t-set="product_price" t-value="'$189.00'"/>
-                            <t t-set="product_old_price" t-value="'$229.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-1.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
-                        </t>
+                        <t t-foreach="popular_products" t-as="product">
 
-                        <!-- Product 2 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="2"/>
-                            <t t-set="product_name" t-value="'Adidas Ultraboost'"/>
-                            <t t-set="product_price" t-value="'$175.00'"/>
-                            <t t-set="product_old_price" t-value="'$210.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-2.jpg'"/>
-                            <t t-set="product_badge" t-value="'HOT'"/>
-                        </t>
+                            <t t-call="sneakers.product_card"/>
 
-                        <!-- Product 3 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="3"/>
-                            <t t-set="product_name" t-value="'Puma RS-X'"/>
-                            <t t-set="product_price" t-value="'$145.00'"/>
-                            <t t-set="product_old_price" t-value="'$180.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-3.jpg'"/>
-                            <t t-set="product_badge" t-value="'SALE'"/>
-                        </t>
-
-                        <!-- Product 4 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="4"/>
-                            <t t-set="product_name" t-value="'New Balance 550'"/>
-                            <t t-set="product_price" t-value="'$165.00'"/>
-                            <t t-set="product_old_price" t-value="'$195.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-4.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
-                        </t>
-
-                        <!-- Product 5 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="5"/>
-                            <t t-set="product_name" t-value="'Nike Dunk Low'"/>
-                            <t t-set="product_price" t-value="'$155.00'"/>
-                            <t t-set="product_old_price" t-value="'$190.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-5.jpg'"/>
-                            <t t-set="product_badge" t-value="'BEST'"/>
-                        </t>
-
-                        <!-- Product 6 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="6"/>
-                            <t t-set="product_name" t-value="'Jordan One High'"/>
-                            <t t-set="product_price" t-value="'$249.00'"/>
-                            <t t-set="product_old_price" t-value="'$299.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-6.jpg'"/>
-                            <t t-set="product_badge" t-value="'LIMITED'"/>
-                        </t>
-
-                        <!-- Product 7 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="7"/>
-                            <t t-set="product_name" t-value="'Converse Chuck 70'"/>
-                            <t t-set="product_price" t-value="'$119.00'"/>
-                            <t t-set="product_old_price" t-value="'$149.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-7.jpg'"/>
-                            <t t-set="product_badge" t-value="'SALE'"/>
-                        </t>
-
-                        <!-- Product 8 -->
-                        <t t-call="sneakers.product_card">
-                            <t t-set="product_id" t-value="8"/>
-                            <t t-set="product_name" t-value="'Asics Gel Kayano'"/>
-                            <t t-set="product_price" t-value="'$199.00'"/>
-                            <t t-set="product_old_price" t-value="'$235.00'"/>
-                            <t t-set="product_image" t-value="'/sneakers/static/src/img/products/product-8.jpg'"/>
-                            <t t-set="product_badge" t-value="'NEW'"/>
                         </t>
 
                     </div>
@@ -499,32 +350,27 @@
                     <!-- Brands Grid -->
                     <div class="sn-brands-grid">
 
-                        <div class="sn-brand-card">
-                            <img src="/sneakers/static/src/img/brands/nike.png"
-                                 alt="Nike"/>
-                        </div>
+
+                        <t t-foreach="brands" t-as="brand">
+
 
                         <div class="sn-brand-card">
-                            <img src="/sneakers/static/src/img/brands/adidas.png"
-                                 alt="Adidas"/>
+
+
+                            <img 
+                                t-att-src="
+                                '/web/image/product.brand/%s/logo' % brand.id"
+                                t-att-alt="brand.name"
+                            />
+
+
                         </div>
 
-                        <div class="sn-brand-card">
-                            <img src="/sneakers/static/src/img/brands/newbalance.png"
-                                 alt="New Balance"/>
-                        </div>
 
-                        <div class="sn-brand-card">
-                            <img src="/sneakers/static/src/img/brands/vans.png"
-                                 alt="Vans"/>
-                        </div>
+                        </t>
 
-                        <div class="sn-brand-card">
-                            <img src="/sneakers/static/src/img/brands/converse.png"
-                                 alt="Converse"/>
-                        </div>
 
-                    </div>
+                        </div>
 
                 </div>
 
