@@ -1,14 +1,66 @@
 /* ===== CAM SURVEILLANCE ===== */
 
+/* ===== DESIGN TOKENS ===== */
+
 :root {
+    /* 1. Couleurs d'origine (fallbacks de sécurité) */
     --orange: #FF6B00;
-    --orange-dark: #e55a00;
-    --orange-light: #fff3eb;
-    --dark: #1a1a1a;
-    --gray: #666;
-    --light: #f8f8f8;
+    --dark: #111111;
+    --gray: #F4F4F5;
+    --light: #FFFFFF;
     --t: all 0.3s ease;
+
+    /* 2. Échelle sémantique des couleurs */
+    --color-primary: var(--orange);
+    --color-primary-hover: #e55a00;
+    --color-bg-main: var(--light);
+    --color-bg-alt: #f8f9fa;
+    --color-bg-dark: var(--dark);
+    --color-card-bg: var(--light);
+    --color-border: #e9ecef;
+    --color-border-light: #eee;
+
+    /* Couleurs de texte */
+    --color-text-primary: var(--dark);
+    --color-text-muted: #888888;
+    --color-text-body: #495057;
+    --color-text-light: var(--light);
+
+    /* 3. Typographie */
+    --font-family-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.9rem;
+    --font-size-xs: 0.8rem;
+
+    --font-size-h1: 3.5rem;
+    --font-size-h2: 2.5rem;
+    --font-size-h3: 1.3rem;
+
+    --font-weight-regular: 400;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* 4. Rayons de bordure (Border Radius) */
+    --radius-sm: 5px;
+    --radius-md: 8px;      /* Boutons, cartes secondaires */
+    --radius-lg: 12px;     /* Cartes produits, conteneurs */
+    --radius-xl: 30px;     /* Badges, pilules */
+    --radius-full: 50px;
+
+    /* 5. Ombres & Élevations */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.1);
+    --shadow-primary: 0 4px 15px rgba(255, 107, 0, 0.3);
+
+    /* 6. Espacements (Spacing) */
+    --section-spacing-desktop: 80px 20px;
+    --section-spacing-mobile: 40px 15px;
+    --transition-standard: all 0.3s ease;
 }
+
+/* ===== CAM SURVEILLANCE MODULE ===== */
 
 .cam-container {
     max-width: 1200px;
@@ -21,13 +73,13 @@
     margin-bottom: 50px;
 }
 .cam-section-header h2 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--dark);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-text-primary);
     margin-bottom: 10px;
 }
 .cam-section-header p {
-    color: var(--gray);
+    color: var(--color-text-muted);
     font-size: 1.1rem;
 }
 
@@ -35,34 +87,34 @@
 .cam-btn-primary,
 .cam-btn-secondary {
     padding: 15px 35px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     text-decoration: none;
-    font-weight: 700;
-    transition: var(--t);
+    font-weight: var(--font-weight-bold);
+    transition: var(--transition-standard);
 }
 .cam-btn-primary {
-    background: var(--orange);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(255,107,0,0.3);
+    background: var(--color-primary);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-primary);
 }
 .cam-btn-primary:hover {
-    background: var(--orange-dark);
-    color: #fff;
+    background: var(--color-primary-hover);
+    color: var(--color-text-light);
     text-decoration: none;
     transform: translateY(-2px);
 }
 .cam-btn-secondary {
-    background: #fff;
-    color: var(--orange);
-    border: 2px solid var(--orange);
+    background: var(--color-bg-main);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
 }
 .cam-btn-secondary:hover {
-    background: var(--orange);
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-light);
     text-decoration: none;
 }
 
-/* Hero */
+/* Hero Section */
 .cam-hero {
     background: linear-gradient(135deg, rgba(0,0,0,0.65), rgba(255,107,0,0.45)),
                 url('/cam_surveillance/static/src/img/hero-bg.webp');
@@ -77,29 +129,29 @@
 }
 .cam-hero-badge {
     display: inline-block;
-    background: var(--orange-light);
-    color: var(--orange-dark);
-    border: 1px solid var(--orange);
+    background: var(--color-bg-alt);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
     padding: 8px 20px;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    border-radius: var(--radius-xl);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
     margin-bottom: 25px;
 }
 .cam-hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-extrabold);
     line-height: 1.1;
-    color: #fff;
+    color: var(--color-text-light);
     margin-bottom: 20px;
 }
 .cam-hero-title span {
-    color: var(--orange);
+    color: var(--color-primary);
     display: block;
 }
 .cam-hero-subtitle {
     font-size: 1.2rem;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 35px;
     line-height: 1.6;
 }
@@ -119,28 +171,28 @@
 .cam-stat {
     display: flex;
     flex-direction: column;
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
     padding: 18px 30px;
     min-width: 120px;
 }
 .cam-stat-number {
     font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--orange);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-primary);
 }
 .cam-stat-label {
-    color: #fff;
-    font-size: 0.9rem;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
     margin-top: 4px;
 }
 
-/* Bandeau promo défilant */
+/* Bandeau Promo */
 .cam-promo-banner {
-    background: var(--orange);
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-light);
     padding: 15px 0;
     overflow: hidden;
     white-space: nowrap;
@@ -151,7 +203,7 @@
     animation: cam-scroll 25s linear infinite;
 }
 .cam-promo-track span {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     position: relative;
     padding-left: 60px;
 }
@@ -159,7 +211,7 @@
     content: "•";
     position: absolute;
     left: 0;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 @keyframes cam-scroll {
     from { transform: translateX(0); }
@@ -171,8 +223,8 @@
 
 /* Catégories */
 .cam-categories {
-    padding: 80px 20px;
-    background: #fff;
+    padding: var(--section-spacing-desktop);
+    background: var(--color-bg-main);
 }
 .cam-cat-grid {
     display: grid;
@@ -180,47 +232,46 @@
     gap: 25px;
 }
 .cam-cat-card {
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border-light);
     border-top: 3px solid transparent;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 35px 25px;
     text-align: center;
     text-decoration: none;
-    transition: var(--t);
+    transition: var(--transition-standard);
 }
 .cam-cat-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    border-top: 3px solid var(--orange);
+    box-shadow: var(--shadow-lg);
+    border-top: 3px solid var(--color-primary);
     text-decoration: none;
 }
 .cam-btn-audit {
     border: none;
 }
-
 .cam-cat-card h3 {
-    color: var(--dark);
+    color: var(--color-text-primary);
     margin-bottom: 8px;
-    font-size: 1.3rem;
+    font-size: var(--font-size-h3);
 }
 .cam-cat-card p {
-    color: var(--gray);
+    color: var(--color-text-muted);
     margin-bottom: 15px;
 }
 .cam-cat-link {
-    color: var(--orange);
-    font-weight: 700;
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
 }
 .cam-cat-featured {
-    background: var(--orange-light);
-    border-top: 3px solid var(--orange);
+    background: var(--color-bg-alt);
+    border-top: 3px solid var(--color-primary);
 }
 
-/* Pourquoi nous */
+/* Pourquoi Nous */
 .cam-why {
-    padding: 80px 20px;
-    background: var(--light);
+    padding: var(--section-spacing-desktop);
+    background: var(--color-bg-main);
 }
 .cam-why-grid {
     display: grid;
@@ -228,27 +279,26 @@
     gap: 25px;
 }
 .cam-why-card {
-    background: #fff;
-    border-radius: 12px;
+    background: var(--color-card-bg);
+    border-radius: var(--radius-lg);
     padding: 30px 20px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-md);
 }
-
 .cam-why-card h3 {
-    color: var(--dark);
+    color: var(--color-text-primary);
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
 .cam-why-card p {
-    color: var(--gray);
+    color: var(--color-text-muted);
     font-size: 0.95rem;
 }
 
 /* Produits */
 .cam-products {
-    padding: 80px 20px;
-    background: var(--light);
+    padding: var(--section-spacing-desktop);
+    background: var(--color-bg-main);
 }
 .cam-products-grid {
     display: grid;
@@ -256,23 +306,16 @@
     gap: 25px;
 }
 .cam-product-card {
-    background: #fff;
-    border-radius: 12px;
+    background: var(--color-card-bg);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: var(--t);
-}
-.cam-product-card,
-.cam-product-card:hover,
-.cam-product-card:focus,
-.cam-product-card:active,
-.cam-product-card:visited {
-    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-standard);
 }
 .cam-product-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    box-shadow: var(--shadow-lg);
 }
 .cam-product-img {
     height: 200px;
@@ -294,7 +337,7 @@
     padding: 20px;
 }
 .cam-product-body h3 {
-    color: var(--dark);
+    color: var(--color-text-primary);
     font-size: 1.1rem;
     margin-bottom: 15px;
     min-height: 50px;
@@ -305,18 +348,18 @@
     align-items: center;
 }
 .cam-product-price {
-    color: var(--orange);
-    font-weight: 800;
+    color: var(--color-primary);
+    font-weight: var(--font-weight-extrabold);
     font-size: 1.2rem;
     text-decoration: none;
 }
 .cam-btn-sm {
-    background: var(--orange);
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-light);
     padding: 8px 18px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
 }
 .cam-products-footer {
     text-align: center;
@@ -325,8 +368,8 @@
 
 /* Footer */
 .cam-footer {
-    background: #2a2a2a;
-    color: #fff;
+    background: var(--color-bg-dark);
+    color: var(--color-text-light);
 }
 .cam-footer-top {
     padding: 60px 0 40px;
@@ -338,13 +381,13 @@
 }
 .cam-footer-logo {
     font-size: 1.5rem;
-    font-weight: 800;
-    color: #fff;
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-text-light);
     text-decoration: none;
 }
-.cam-footer-logo span { color: var(--orange); }
+.cam-footer-logo span { color: var(--color-primary); }
 .cam-footer-brand p {
-    color: #888;
+    color: var(--color-text-muted);
     margin: 15px 0;
 }
 .cam-footer-badges {
@@ -353,14 +396,14 @@
 }
 .cam-badge {
     background: #3a3a3a;
-    color: var(--orange);
+    color: var(--color-primary);
     padding: 5px 12px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
 }
 .cam-footer-col h4 {
-    color: #fff;
+    color: var(--color-text-light);
     margin-bottom: 15px;
     font-size: 1rem;
 }
@@ -370,11 +413,14 @@
 }
 .cam-footer-col li { margin-bottom: 10px; }
 .cam-footer-col a {
-    color: #888;
+    color: var(--color-text-muted);
     text-decoration: none;
-    transition: var(--t);
+    transition: var(--transition-standard);
 }
-.cam-footer-col a:hover { color: var(--orange); text-decoration: none; }
+.cam-footer-col a:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+}
 .cam-footer-bottom {
     border-top: 1px solid #3a3a3a;
     padding: 20px 0;
@@ -384,13 +430,13 @@
     justify-content: space-between;
     align-items: center;
 }
-.cam-footer-bottom p { color: #888; margin: 0; }
+.cam-footer-bottom p { color: var(--color-text-muted); margin: 0; }
 .cam-footer-bottom nav a {
-    color: #888;
+    color: var(--color-text-muted);
     text-decoration: none;
     margin-left: 20px;
 }
-.cam-footer-bottom nav a:hover { color: var(--orange); text-decoration: none; }
+.cam-footer-bottom nav a:hover { color: var(--color-primary); text-decoration: none; }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -399,47 +445,45 @@
     .cam-why-grid,
     .cam-footer-grid,
     .cam-products-grid { grid-template-columns: 1fr; }
+
+    .cam-categories,
+    .cam-why,
+    .cam-products {
+        padding: var(--section-spacing-mobile);
+    }
 }
 
 @media (max-width: 480px) {
-   .cam-hero-title {font-size: 1.8rem; }
-   .cam-cat-grid,
+    .cam-hero-title { font-size: 1.8rem; }
+    .cam-cat-grid,
     .cam-why-grid,
     .cam-footer-grid,
-    .cam-products-grid { grid-template-columns: 1fr;
-    gap:13px;
-}
+    .cam-products-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
 }
 
-/* Section globale des avis */
+/* Section Avis & Témoignages */
 .cam-reviews-simple {
-    background-color: #f8f9fa; 
-    border-top: 1px solid #e9ecef;
-    border-bottom: 1px solid #e9ecef;
+    background-color: var(--color-bg-alt);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--section-spacing-desktop);
 }
 
-/* titre avis */
-.cam-section-header h2 {
-    font-weight: 700;
-    color: #212529;
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-}
-
-/* Alignement des étoiles et du texte */
 .cam-global-rating {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: #ffffff;
+    background: var(--color-card-bg);
     padding: 10px 20px;
-    border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Effet d'ombre douce */
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
 }
 
-/* étoiles */
-.cam-rating-stars {
+.cam-rating-stars, .cam-review-stars {
     color: #ffc107;
     font-size: 1.2rem;
 }
@@ -448,32 +492,16 @@
     margin-right: 2px;
 }
 
-/* Texte à côté des étoiles */
 .cam-rating-text {
     font-size: 1rem;
-    color: #495057;
+    color: var(--color-text-body);
 }
 
 .cam-rating-text strong {
-    color: #198754; /* Note 4,8 en vert "confiance" */
+    color: #198754;
     font-size: 1.1rem;
 }
 
-.cam-reviews-simple {
-    background-color: #f8f9fa;
-}
-
-.cam-global-rating {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.cam-rating-stars, .cam-review-stars {
-    color: #ffc107;
-}
-
-/* colonnes pour les témoignages */
 .cam-reviews-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -482,15 +510,15 @@
 }
 
 .cam-review-card {
-    background: #ffffff;
+    background: var(--color-card-bg);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: 1px solid #e9ecef;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
 }
 
 .cam-review-comment {
     font-style: italic;
-    color: #495057;
+    color: var(--color-text-body);
     margin: 10px 0;
 }
