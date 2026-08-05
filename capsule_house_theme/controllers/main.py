@@ -105,13 +105,21 @@ class CapsuleHouseWebsite(Website):
         # Métriques de la maquette de référence : "4 modèles disponibles"
         # est un vrai comptage (sûr à afficher). "2 340 pods installés" et
         # la note "4.9 · X avis" étaient des chiffres fixes de la maquette,
-        # non vérifiés par ce module — on ne les fabrique pas : ils restent
-        # masqués tant qu'un admin ne les a pas renseignés explicitement
-        # via ir.config_parameter (à exposer dans Réglages > Technique si
-        # besoin d'un vrai écran de configuration plus tard).
+        # non vérifiés par ce module — on ne les fabrique pas.
+        #
+        # Depuis l'ajout du système d'avis réels (capsule.house.avis,
+        # voir models/avis.py, réplique du mécanisme observé sur
+        # exocoms_theme) : la note/le nombre d'avis du badge hero sont
+        # calculés à partir des VRAIS avis publiés sur notre site s'il y
+        # en a. Si aucun avis n'est encore publié, on retombe sur
+        # l'ancien réglage manuel (ir.config_parameter) — utile si le
+        # client a une note vérifiée ailleurs (Google, Trustpilot...)
+        # mais pas encore de vrais avis sur le site lui-même.
+        rating_value, rating_count = self._get_avis_stats(website)
         ICP = request.env['ir.config_parameter'].sudo()
-        rating_value = ICP.get_param('capsule_house_theme.rating_value')
-        rating_count = ICP.get_param('capsule_house_theme.rating_count')
+        if rating_value is None:
+            rating_value = ICP.get_param('capsule_house_theme.rating_value')
+            rating_count = ICP.get_param('capsule_house_theme.rating_count')
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
         return request.render('capsule_house_theme.page_home', {
@@ -121,6 +129,94 @@ class CapsuleHouseWebsite(Website):
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
         })
+
+    def _get_avis_stats(self, website):
+        """Note moyenne + nombre d'avis PUBLIÉS de notre site, ou
+        (None, None) si aucun avis publié. Jamais de valeur fabriquée :
+        calcul direct sur les enregistrements réels capsule.house.avis.
+        """
+        Avis = request.env['capsule.house.avis'].sudo()
+        published = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ])
+        if not published:
+            return None, None
+        avg = sum(a.rating for a in published) / len(published)
+        return round(avg, 1), len(published)
+
+    @http.route('/boutique', type='http', auth='public', website=True,
+                sitemap=True)
+    def boutique(self, **kw):
+        """Alias FR de /shop — même route que sur exocoms_theme.
+
+        Route neuve (jamais utilisée ailleurs dans la base mutualisée) :
+        pas de risque de collision avec un autre site, pas besoin de
+        garde `_is_our_website`. Simple redirect vers la page boutique
+        native (`/shop`, gérée par website_sale) : on ne duplique jamais
+        la logique de la page boutique elle-même ici.
+        """
+        return request.redirect('/shop')
+
+    @http.route('/avis', type='http', auth='public', website=True, sitemap=True)
+    def avis_page(self, **kw):
+        """Page publique listant les vrais avis publiés + formulaire de
+        dépôt. Route neuve (pas de collision possible avec un autre site
+        de la base mutualisée) : pas besoin de garde `_is_our_website`,
+        même logique que /boutique et /newsletter/subscribe ci-dessous.
+        """
+        website = request.website
+        Avis = request.env['capsule.house.avis'].sudo()
+        avis_list = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ], order='date desc, id desc')
+
+        stats = False
+        if avis_list:
+            total = len(avis_list)
+            avg = sum(a.rating for a in avis_list) / total
+            dist = {}
+            for star in (5, 4, 3, 2, 1):
+                count = len(avis_list.filtered(lambda a: a.rating == star))
+                dist[star] = round(count * 100 / total)
+            stats = {'avg': round(avg, 1), 'total': total, 'dist': dist}
+
+        return request.render('capsule_house_theme.avis_page', {
+            'avis_list': avis_list,
+            'stats': stats,
+            'sent': kw.get('sent') == '1',
+        })
+
+    @http.route('/avis/submit', type='http', auth='public', website=True,
+                methods=['POST'], csrf=True, sitemap=False)
+    def avis_submit(self, **post):
+        """Crée un avis en attente de modération ('pending') — jamais
+        publié directement : un admin doit le valider dans Avis clients
+        (Capsule House) avant qu'il n'apparaisse sur /avis ou dans le
+        badge de note du hero. Aucune donnée fabriquée : uniquement ce
+        que le visiteur soumet lui-même.
+        """
+        name = (post.get('name') or '').strip()
+        comment = (post.get('comment') or '').strip()
+        product = (post.get('product') or '').strip()
+        try:
+            rating = int(post.get('rating') or 0)
+        except ValueError:
+            rating = 0
+        rating = min(5, max(1, rating)) if rating else 5
+
+        if name and comment:
+            request.env['capsule.house.avis'].sudo().create({
+                'name': name,
+                'comment': comment,
+                'product': product,
+                'rating': rating,
+                'website_id': request.website.id,
+                'state': 'pending',
+            })
+
+        return request.redirect('/avis?sent=1')
 
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)

@@ -1,7 +1,380 @@
 /* ============================================================
-   PAGES INTERNES — Services, Contact, À propos...
-   Non livré pour l'instant (au fur et à mesure). Ce fichier n'est
-   PAS encore enregistré dans THEME_ASSETS (__init__.py) : il ne
-   sera chargé sur le site qu'une fois les pages correspondantes
-   ajoutées à views/pages/ et son entrée ajoutée à THEME_ASSETS.
+   PAGES INTERNES — Avis clients (/avis), + à venir : Services,
+   Contact, À propos (au fur et à mesure).
+   Chargé UNIQUEMENT sur notre site (ir.asset scopé website_id,
+   voir _setup_theme_assets dans __init__.py).
 ============================================================ */
+
+/* ── AVIS — HERO ──
+   Pas de photo de fond (contrairement à exocoms_theme) : on n'a pas
+   de vraie photo pour ce site, donc on reprend le dégradé doux du
+   thème (--ch-bg-soft / --ch-tan-2) plutôt que d'en fabriquer une ou
+   de réutiliser celle d'exocoms. */
+.ch-avis-hero {
+    background: linear-gradient(160deg, var(--ch-bg-soft) 0%, var(--ch-tan-2) 100%);
+    padding: 64px 0 56px;
+}
+
+.ch-avis-hero-inner {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.ch-avis-hero { text-align: center; }
+
+.ch-avis-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ch-white);
+    border: 1.5px solid var(--ch-gray-border);
+    color: var(--ch-ink);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: var(--r-pill);
+    margin-bottom: 24px;
+}
+
+.ch-avis-hero-stars i {
+    color: var(--ch-amber);
+    font-size: 11px;
+    margin-right: 2px;
+}
+
+.ch-avis-hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(32px, 4.5vw, 48px);
+    font-weight: 800;
+    color: var(--ch-ink);
+    line-height: 1.15;
+    margin: 0 0 16px;
+}
+
+.ch-avis-hero-sub {
+    font-size: 16px;
+    color: var(--ch-fog);
+    line-height: 1.6;
+    margin: 0 0 28px;
+}
+
+.ch-avis-hero-btn {
+    box-shadow: var(--shadow-md);
+}
+
+/* ── AVIS — STATS ── */
+.ch-avis-stats-section {
+    background: var(--ch-panel);
+    padding: 56px 0;
+    border-bottom: 1px solid var(--ch-gray-border);
+}
+
+.ch-avis-stats-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 56px;
+    align-items: center;
+}
+
+.ch-avis-score-block { text-align: center; }
+
+.ch-avis-score-big {
+    font-family: var(--font-head);
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.ch-avis-score-stars-big {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.ch-avis-score-stars-big i { color: var(--ch-amber); font-size: 20px; }
+
+.ch-avis-score-total { font-size: 13px; color: var(--ch-fog); font-weight: 500; }
+
+.ch-avis-bars-block { flex: 1; }
+
+.ch-avis-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.ch-avis-bar-row:last-child { margin-bottom: 0; }
+
+.ch-avis-bar-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ch-ink);
+    width: 40px;
+    flex-shrink: 0;
+    justify-content: flex-end;
+}
+.ch-avis-bar-label i { color: var(--ch-amber); font-size: 11px; }
+
+.ch-avis-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--ch-gray-border);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+}
+
+.ch-avis-bar-fill {
+    height: 100%;
+    border-radius: var(--r-pill);
+    background: linear-gradient(90deg, var(--ch-amber), var(--ch-terracotta));
+    width: 0%;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+}
+
+.ch-avis-bar-pct { font-size: 12px; font-weight: 600; color: var(--ch-fog); width: 34px; flex-shrink: 0; }
+
+/* ── AVIS — FILTRES ── */
+.ch-avis-filters {
+    background: var(--ch-white);
+    padding: 20px 0;
+    border-bottom: 1px solid var(--ch-gray-border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.ch-avis-filters-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ch-avis-filter-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ch-fog);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 4px;
+}
+
+.ch-avis-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ch-panel);
+    border: 1.5px solid var(--ch-gray-border);
+    color: var(--ch-ink);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.ch-avis-filter-btn i { color: var(--ch-amber); }
+.ch-avis-filter-btn:hover,
+.ch-avis-filter-btn.active { background: var(--ch-ink); border-color: var(--ch-ink); color: var(--ch-white); }
+
+/* ── AVIS — GRILLE ── */
+.ch-avis-body { background: var(--ch-panel); padding: 48px 0 72px; }
+
+.ch-avis-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--ch-fog);
+    font-size: 14px;
+    padding: 32px 0;
+}
+
+.ch-avis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.ch-avis-card {
+    background: var(--ch-white);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    border: 1px solid var(--ch-gray-border);
+    transition: transform var(--transition), box-shadow var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+}
+.ch-avis-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.ch-avis-card-head { display: flex; align-items: center; gap: 14px; }
+
+.ch-avis-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    color: var(--ch-white);
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ch-avis-name { font-size: 14px; font-weight: 700; color: var(--ch-ink); margin-bottom: 2px; }
+.ch-avis-date { font-size: 12px; color: var(--ch-fog); }
+
+.ch-avis-stars { display: flex; gap: 3px; }
+.ch-avis-stars i.fa-star { color: var(--ch-amber); font-size: 13px; }
+.ch-avis-stars i.fa-star-o { color: var(--ch-gray-border); font-size: 13px; }
+
+.ch-avis-text { font-size: 14px; color: var(--ch-ink); line-height: 1.7; flex: 1; margin: 0; }
+
+.ch-avis-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ch-avis-product-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ch-panel);
+    color: var(--ch-ink);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--r-pill);
+}
+.ch-avis-product-tag i { color: var(--ch-terracotta); font-size: 11px; }
+
+.ch-avis-verified { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--ch-green); }
+
+.ch-avis-card.featured {
+    border-color: var(--ch-amber);
+    background: linear-gradient(135deg, var(--ch-highlight) 0%, var(--ch-white) 60%);
+}
+.ch-avis-card.featured::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--ch-amber), var(--ch-terracotta));
+}
+
+/* ── AVIS — FORMULAIRE ── */
+.ch-avis-form-section { background: var(--ch-white); padding: 64px 0; border-top: 1px solid var(--ch-gray-border); }
+.ch-avis-form-inner { max-width: 680px; margin: 0 auto; }
+.ch-avis-form-header { text-align: center; margin-bottom: 40px; }
+
+.ch-avis-section-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ch-terracotta);
+    background: var(--ch-highlight);
+    padding: 5px 14px;
+    border-radius: var(--r-pill);
+    margin-bottom: 14px;
+}
+
+.ch-avis-form-title {
+    font-family: var(--font-head);
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 800;
+    color: var(--ch-ink);
+    margin: 0 0 10px;
+}
+
+.ch-avis-form-sub { font-size: 14px; color: var(--ch-fog); }
+
+.ch-avis-form-card {
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--ch-gray-border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+}
+.ch-avis-form-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--ch-amber), var(--ch-terracotta));
+}
+
+.ch-avis-success-msg { text-align: center; padding: 40px 24px; }
+.ch-avis-success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--ch-green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: var(--ch-white); margin: 0 auto 20px;
+}
+.ch-avis-success-title { font-size: 22px; font-weight: 800; color: var(--ch-ink); margin-bottom: 10px; }
+.ch-avis-success-text { font-size: 14px; color: var(--ch-fog); line-height: 1.7; }
+
+.ch-avis-star-picker-wrap { margin-bottom: 24px; }
+.ch-avis-star-picker-label { font-size: 13px; font-weight: 700; color: var(--ch-ink); margin-bottom: 12px; display: block; }
+.ch-avis-star-picker { display: flex; gap: 8px; }
+.ch-avis-star-btn {
+    font-size: 28px;
+    color: var(--ch-gray-border);
+    cursor: pointer;
+    transition: transform 0.15s, color 0.15s;
+    line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: FontAwesome;
+}
+.ch-avis-star-btn:hover, .ch-avis-star-btn.active { color: var(--ch-amber); transform: scale(1.15); }
+.ch-avis-star-hint { font-size: 12px; color: var(--ch-fog); margin-top: 8px; min-height: 16px; font-style: italic; }
+.ch-avis-req { color: var(--ch-terracotta); margin-left: 2px; }
+
+.ch-avis-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ch-avis-form-group { margin-bottom: 18px; }
+.ch-avis-form-label { display: block; font-size: 13px; font-weight: 600; color: var(--ch-ink); margin-bottom: 7px; }
+
+.ch-avis-input, .ch-avis-textarea {
+    width: 100%;
+    background: var(--ch-white);
+    border: 1.5px solid var(--ch-gray-border);
+    border-radius: var(--r-md);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ch-ink);
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color var(--transition);
+    box-sizing: border-box;
+}
+.ch-avis-input:focus, .ch-avis-textarea:focus { border-color: var(--ch-amber); }
+.ch-avis-textarea { resize: vertical; min-height: 110px; }
+
+.ch-avis-submit { width: 100%; margin-top: 8px; }
+
+@media (max-width: 1024px) {
+    .ch-avis-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .ch-avis-stats-inner { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+    .ch-avis-grid { grid-template-columns: 1fr; }
+    .ch-avis-form-row { grid-template-columns: 1fr; }
+    .ch-avis-form-card { padding: 24px; }
+}

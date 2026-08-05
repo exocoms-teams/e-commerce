@@ -7,7 +7,24 @@
 /* ── HERO ── */
 .ch-hero {
     background: var(--ch-white);
-    padding: 56px 0 72px;
+    /* v19.0.1.0.45 — retour client : écart trop grand avant "Meilleures
+       ventes". Padding bas réduit 72px -> 48px (voir aussi
+       .ch-bestsellers plus bas, réduit en miroir). */
+    padding: 56px 0 48px;
+    /* v19.0.1.0.39 — bug réel trouvé en live (page décalée
+       horizontalement, menu/texte coupés à gauche selon la position
+       de scroll) : le halo décoratif (.ch-hero-visual::before, voir
+       plus bas) a des insets très larges (left: -90%, right: -75%)
+       pensés pour déborder de SA carte, mais rien ne le contenait au
+       niveau de la SECTION — il débordait donc de la page entière et
+       ajoutait ~265px de largeur scrollable au document (confirmé en
+       direct : masquer .ch-hero-visual fait disparaître tout le
+       débordement horizontal). Fix : `overflow: hidden` ici, au
+       niveau de la section pleine largeur, pour contenir le halo
+       tout en le laissant déborder librement sur la colonne de texte
+       (effet visuel inchangé), sans jamais dépasser les bords réels
+       de la page. */
+    overflow: hidden;
 }
 
 .ch-hero-grid {
@@ -132,6 +149,117 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* overflow visible (pas hidden) : le halo ci-dessous doit pouvoir
+       déborder du cadre, comme sur la maquette. */
+    overflow: visible;
+}
+
+/* Halo orangé/pêche flouté derrière l'illustration, présent sur la
+   maquette de référence mais absent du rendu initial (jamais codé —
+   pas un bug de données, juste un effet purement décoratif oublié).
+   Couleurs reprises de la palette existante (--ch-terracotta /
+   --ch-salmon), aucune nouvelle donnée requise. */
+.ch-hero-visual::before {
+    content: "";
+    position: absolute;
+    /* Cause réelle du halo invisible sur v19.0.1.0.22-25 (confirmée en
+       direct via inspection live du DOM + test d'override CSS avant
+       correctif) : ce n'était ni la couleur, ni l'opacité/flou, ni un
+       souci de déploiement — c'était la géométrie. Avec `closest-side`
+       et un fondu vers transparent à 68%, le rayon "coloré" du
+       dégradé restait plus petit que le demi-côté de la carte
+       elle-même : tout le halo se retrouvait donc caché DERRIÈRE la
+       carte, et seul un infime liseré flouté dépassait (d'où le "rien
+       ne change" malgré plusieurs ajustements d'opacité/flou).
+
+       Positionnement (v19.0.1.0.27) : sur la maquette de référence, le
+       halo n'est pas centré/symétrique mais concentré en haut à
+       droite de la carte (comme une source de lumière). Repris ici
+       via un inset asymétrique (davantage de débordement en haut/à
+       droite qu'en bas/à gauche) + un centre de dégradé décalé (68%
+       32% au lieu de 50% 50%).
+
+       Texture (v19.0.1.0.28) : la v.27 donnait un blob trop compact
+       et trop saturé (bord visible, presque une tache), alors que sur
+       la maquette le halo est beaucoup plus étalé et progressif, sans
+       bord dur. Agrandi (inset encore plus généreux), fondu repoussé
+       beaucoup plus loin (30%/90% au lieu de 50%/85%), flou renforcé
+       (55px au lieu de 35px) et opacité réduite (0.42 au lieu de 0.6)
+       pour un dégradé long et doux plutôt qu'un rond net.
+
+       Taille (v19.0.1.0.29) : retour client avec capture comparative
+       montrant que le halo du modèle occupe une zone nettement plus
+       grande que le nôtre à taille de carte égale. Inset encore
+       agrandi (quasi doublé). NB : cette itération n'a pas pu être
+       vérifiée en direct sur le site réel avant d'être committée
+       (Odoo.sh renvoyait une erreur de plateforme au moment du test)
+       — valeurs estimées par comparaison visuelle des deux captures,
+       à confirmer après déploiement.
+
+       Occupation du cadre (v19.0.1.0.30) : comparaison à cadrage égal
+       (capture recadrée sur la seule colonne visuelle, comme la
+       maquette) : le halo du modèle "lave" quasiment tout le fond de
+       la carte, même en diagonale opposée à sa concentration (un
+       fondu ambiant très large), alors que le nôtre restait contenu
+       au coin haut-droite et retombait au blanc pur dès le milieu du
+       cadre. Inset encore agrandi (top/right/left/bottom tous entre
+       -60% et -80%), fondu repoussé (22%/78%), flou 70px, opacité
+       0.4. Testé et confirmé en direct (capture recadrée identique à
+       la maquette) avant d'être reporté ici.
+
+       Intensité (v19.0.1.0.31) : la couverture était bonne mais trop
+       pâle par rapport à la maquette ("il faut que ce soit aussi
+       visible que sur le modèle"). Opacité remontée à 0.65 (au lieu
+       de 0.4), flou réduit à 55px (au lieu de 70px) et fondu resserré
+       à 30%/82% (au lieu de 22%/78%) pour une couleur plus lisible
+       sans perdre la largeur de couverture obtenue en v.30.
+
+       Contour (v19.0.1.0.32) : retour client "non pas concentré comme
+       ça, laisse tomber" puis captures annotées à la main (traits
+       tracés sur la maquette ET sur notre rendu) pour montrer que le
+       halo du modèle a un BORD repérable — une limite qu'on peut
+       suivre au doigt, même douce — alors que le nôtre, trop flouté
+       sur une zone trop large (v.30/.31), n'avait plus de forme du
+       tout, juste un dégradé infini sans limite perceptible. Corrigé
+       en resserrant l'ensemble (inset réduit, fondu resserré à
+       42%/72%, flou réduit à 38px) pour redonner un contour net tout
+       en gardant une bonne couverture et une bonne intensité.
+
+       Correction de trajectoire (v19.0.1.0.33) : la v.32 corrigeait
+       le contour mais en resserrant la TAILLE en même temps, ce qui
+       n'était pas demandé — retour client : le halo redevenait trop
+       petit (visible seulement en haut) ET trop foncé/saturé, très
+       loin des traits tracés sur la maquette qui montrent une zone
+       couvrant plus de la moitié du cadre. Rétabli un inset large
+       (proche de v.30, top -65%/right -75%/left -50%/bottom -50%)
+       tout en gardant un fondu resserré (35%/70%) pour le contour net
+       demandé, et opacité réduite à 0.4 (au lieu de 0.6) pour une
+       couleur plus claire, moins "foncée".
+
+       Extension à gauche (v19.0.1.0.34) : retour client avec capture
+       annotée d'un trait ROUGE dessiné à la main indiquant l'étendue
+       exacte voulue du halo, comparé au trait GRIS (étendue actuelle
+       de la v.33) : le trait rouge démarre bien plus à gauche en haut
+       du cadre (juste au-dessus du bord gauche de la carte) alors que
+       le gris ne commençait qu'à plus de la moitié de la largeur de
+       la carte — tout le quart supérieur-gauche restait blanc. Corrigé
+       en augmentant fortement le débordement à gauche (left -90% au
+       lieu de -50%) et en recentrant légèrement le point focal du
+       dégradé (58% 32% au lieu de 64% 30%) pour laisser le halo
+       s'étendre visiblement au-dessus/à gauche du texte aussi, tout
+       en gardant l'intensité concentrée en haut à droite. Testé et
+       confirmé en direct (capture pleine page) avant d'être reporté
+       ici. */
+    inset: auto;
+    top: -65%;
+    right: -75%;
+    left: -90%;
+    bottom: -55%;
+    background: radial-gradient(ellipse closest-side at 58% 32%, var(--ch-terracotta) 0%, var(--ch-salmon) 35%, transparent 70%);
+    opacity: 0.4;
+    filter: blur(48px);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .ch-hero-illustration {
@@ -145,34 +273,16 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
-.ch-pod-shape {
-    width: 62%;
-    aspect-ratio: 16/9;
-    background: var(--ch-tan-1);
-    border-radius: var(--r-pill);
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 0 12%;
-    box-shadow: var(--shadow-md);
-}
-
-.ch-pod-circle-main {
-    width: 42%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--ch-highlight), var(--ch-salmon) 75%);
-    box-shadow: var(--shadow-sm);
-}
-
-.ch-pod-circle-small {
-    width: 18%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--ch-highlight), var(--ch-terracotta) 80%);
-    opacity: 0.85;
+/* Illustration du pod : SVG validé par le client (voir hero.xml), ombre au
+   sol déjà incluse dans le SVG lui-même (ellipse). Remplace l'ancienne
+   version en CSS pur (.ch-pod-shape / .ch-pod-circle-main / .ch-pod-circle-
+   small + pseudo-élément ::after pour l'ombre). */
+.ch-pod-illustration-svg {
+    display: block;
+    max-width: 420px;
 }
 
 .ch-hero-float-card {
@@ -188,6 +298,7 @@
     max-width: 220px;
     top: 12%;
     right: -4%;
+    z-index: 2;
 }
 
 .ch-hero-float-card-2 {
@@ -250,9 +361,30 @@
     color: var(--ch-terracotta);
 }
 
+.ch-hero-cart-shortcut {
+    position: absolute;
+    bottom: 8%;
+    right: 4%;
+    z-index: 2;
+    margin: 0;
+}
+
+.ch-hero-cart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 12px 20px;
+    box-shadow: var(--shadow-lg);
+    border: none;
+    cursor: pointer;
+}
+
 /* ── MEILLEURES VENTES ── */
 .ch-bestsellers {
-    padding: 64px 0 80px;
+    /* v19.0.1.0.45 — padding haut réduit 64px -> 40px, en miroir de
+       .ch-hero ci-dessus (écart total avec le hero jugé trop grand). */
+    padding: 40px 0 80px;
     background: var(--ch-white);
 }
 

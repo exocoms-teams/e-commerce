@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Capsule House Theme',
-    'version': '19.0.1.0.7',
+    # NB : ne JAMAIS revenir à un format court ("1.0") — Odoo ne rejoue les
+    # scripts de migrations/<version>/ que s'il reconnaît une progression de
+    # version cohérente avec le schéma utilisé par ce module (19.0.1.0.x).
+    # Un retour à "1.0" fait sauter silencieusement TOUTES les migrations
+    # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
+    # les régressions observées (pricelist, accès société, logo, CSS non
+    # appliqués malgré le code correctement poussé).
+    'version': '19.0.1.0.45',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mesure : Services, Contact, À propos.
+Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à venir au fur et à mesure : Services, Contact, À propos.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -16,7 +23,21 @@ Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mes
     'depends': [
         'website',
         'website_sale',
+        # Nécessaire pour que l'icône wishlist du header NATIF Odoo
+        # (.o_wsale_my_wish) soit réellement fonctionnelle plutôt que
+        # décorative — voir README "Header natif comme sur
+        # exocoms_theme" : exocoms_theme lui-même style cette classe
+        # dans son CSS sans déclarer cette dépendance dans son propre
+        # manifest (donc potentiellement non fonctionnelle chez eux) ;
+        # on choisit ici d'être explicite et correct plutôt que de
+        # reproduire cette même lacune.
+        'website_sale_wishlist',
         'mail',
+        # Live chat natif Odoo (v19.0.1.0.36, réplique du mécanisme
+        # observé sur exocoms_theme) — voir _setup_livechat() dans
+        # __init__.py. Pas de widget tiers (Crisp/Tawk/Intercom).
+        'im_livechat',
+        'website_livechat',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -31,6 +52,13 @@ Pages actuellement livrées : Accueil, Boutique. Pages à venir au fur et à mes
         'views/partials/featured_products.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
+        # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis
+        # soumis par les clients, modérés avant publication. Vues backend
+        # de modération d'abord, puis partiels/page frontend.
+        'views/avis_backend.xml',
+        'views/partials/avis_hero.xml',
+        'views/partials/avis_content.xml',
+        'views/pages/avis.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset

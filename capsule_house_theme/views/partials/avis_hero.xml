@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Hero de la page /avis. Contrairement à exocoms_theme (qui utilise
+        une photo de fond, static/src/img/heroavis.jpg), on n'a pas de
+        photo réelle pour ce site : plutôt que d'en fabriquer une ou de
+        réutiliser celle d'exocoms (pas la nôtre), on reprend le même
+        dégradé doux que le reste du thème (variables ch-bg-soft /
+        ch-tan-2), cohérent avec le hero de l'accueil.
+
+        Traduction FR/EN (v19.0.1.0.36) : même schéma que
+        exocoms_theme (avis_hero_fr / avis_hero_en, deux templates
+        complets + un aiguilleur qui choisit selon request.env.lang),
+        plutôt que des t-if/t-else inline comme sur hero.xml/footer.xml
+        — plus lisible ici vu que tout le bloc change de langue.
+
+        Tous scopés à notre site via _scope_layout_views() (external
+        ids capsule_house_theme.avis_hero / avis_hero_fr / avis_hero_en).
+    -->
+    <template id="avis_hero_fr" name="Capsule House - Avis Hero FR">
+        <section class="ch-avis-hero">
+            <div class="container ch-avis-hero-inner text-center">
+                <div class="ch-avis-hero-eyebrow">
+                    <span class="ch-avis-hero-stars">
+                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                    </span>
+                    Avis clients vérifiés
+                </div>
+
+                <h1 class="ch-avis-hero-title">
+                    Ce que disent<br/><span class="ch-hero-title-accent">nos clients</span>
+                </h1>
+
+                <p class="ch-avis-hero-sub">
+                    Partagez votre expérience avec Capsule House et aidez
+                    d'autres futurs propriétaires à faire leur choix.
+                </p>
+
+                <a href="#avis-form" class="ch-btn ch-btn-black ch-avis-hero-btn">
+                    <i class="fa fa-pencil"/> Écrire un avis
+                </a>
+            </div>
+        </section>
+    </template>
+
+    <template id="avis_hero_en" name="Capsule House - Avis Hero EN">
+        <section class="ch-avis-hero">
+            <div class="container ch-avis-hero-inner text-center">
+                <div class="ch-avis-hero-eyebrow">
+                    <span class="ch-avis-hero-stars">
+                        <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                    </span>
+                    Verified customer reviews
+                </div>
+
+                <h1 class="ch-avis-hero-title">
+                    What our<br/><span class="ch-hero-title-accent">customers say</span>
+                </h1>
+
+                <p class="ch-avis-hero-sub">
+                    Share your experience with Capsule House and help other
+                    future owners make their choice.
+                </p>
+
+                <a href="#avis-form" class="ch-btn ch-btn-black ch-avis-hero-btn">
+                    <i class="fa fa-pencil"/> Write a review
+                </a>
+            </div>
+        </section>
+    </template>
+
+    <!-- Aiguilleur — choisit quel template complet appeler selon la langue -->
+    <template id="avis_hero" name="Capsule House - Avis Hero">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="capsule_house_theme.avis_hero_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="capsule_house_theme.avis_hero_en"/>
+    </template>
+</odoo>

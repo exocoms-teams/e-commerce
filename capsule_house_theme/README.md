@@ -188,6 +188,819 @@ la syntaxe css2 à poids variable avec point-virgule dans l'URL
 (`wght@400;700`) — toujours la syntaxe historique par virgules
 (`family=Police:400,700`), plus sûre vis-à-vis du minifieur d'Odoo.
 
+### Boutique "native Odoo" comme exocoms_theme (v19.0.1.0.11)
+
+Sur demande client ("la boutique est native à Odoo comme j'ai fait sur
+exocoms"), `shop.xml` pose désormais explicitement `hasLeftColumn=True`
+sur `website_sale.products` via un xpath sur le `t-set` natif — même
+technique que `boutique_sidebar` dans `exocoms_theme`.
+
+Différence assumée avec exocoms_theme : leur sidebar native est ensuite
+entièrement masquée par CSS (`.o_wsale_products_categories { display:
+none }`) au profit d'un méga-menu catégories statique custom
+(`dashboard_menu_boutiques_sidebar`, jamais réellement appelé dans leur
+code — template orphelin). Capsule House n'a pas ce méga-menu : la
+sidebar native reste donc VISIBLE et stylée (nouvelle section dans
+`odoo-integration.css` pour `.o_wsale_products_categories` et
+`.o_wsale_products_attributes`), car c'est elle qui porte le filtre
+"Surface (m²)" déjà attaché aux produits via
+`_attach_shop_filters_to_products()`.
+
+### Header natif comme sur exocoms_theme (v19.0.1.0.12)
+
+Correctif d'architecture demandé explicitement par le client : "regarde
+comment j'ai procédé pour faire mon header sur exocoms theme, je n'ai
+pas du tout créé de xml pour ça".
+
+Vérification faite dans `exocoms_theme` (recherche exhaustive de
+`custom_header` dans tout le module) : leur `views/templates/header.xml`
+définit bien un template `custom_header`, mais il n'est **jamais
+t-call-é nulle part** — un reste abandonné, du même type que leurs
+anciens SVG de logo Capsule House qu'on nous a dit de ne pas réutiliser,
+ou que leur `dashboard_menu_boutiques_sidebar` (voir section boutique
+ci-dessus). Leur VRAI header en production est le header **natif** Odoo
+(`header#top`), simplement restylé par CSS
+(`static/src/css/header.css` : sélecteurs `header#top`,
+`.navbar-brand.logo`, `#top_menu`, `.o_wsale_my_cart`, `.o_wsale_my_wish`,
+`.o_header_language_selector`, `li.dropdown.o_no_autohide_item`) — le
+menu vient de `website.menu`, le logo du champ natif `website.logo`,
+panier/wishlist/recherche/langue/compte des widgets natifs des modules
+`website` / `website_sale` / `website_sale_wishlist`.
+
+Notre module faisait l'inverse : `theme_layout` (`layout.xml`)
+remplaçait entièrement `<header id="top">` par un template maison
+(`theme_header`) recodant à la main logo (SVG inline), nav (boucle sur
+`website.menu_id.child_id`), panier, wishlist décorative, sélecteur de
+langue et dropdown compte. Corrigé :
+
+- **`layout.xml`** : suppression du xpath `position="replace"` sur
+  `header#top`. Le header natif reste intact ; seule une fine bannière
+  d'annonce est encore insérée `position="before"` (élément de maquette
+  sans équivalent natif Odoo — ne touche à aucun moment à la structure
+  du header).
+- **`header.xml`** : ne contient plus que ce bandeau d'annonce
+  (`theme_announce_bar`) ; tout le reste de l'ancien `theme_header` a
+  été retiré.
+- **`layout.css`** : nouvelles règles ciblant les classes natives
+  (`header#top`, `.navbar-brand.logo`, `#top_menu .nav-link`,
+  `.o_wsale_my_cart`, `.o_wsale_my_wish`,
+  `a[data-bs-target="#o_search_modal"]`, `.o_header_language_selector`,
+  `li.dropdown.o_no_autohide_item`, navbar mobile), mêmes cibles que
+  `exocoms_theme/header.css`, adaptées à nos variables `--ch-*`. Le lien
+  "Tous les pods" (`/shop`) est mis en pastille pleine via un sélecteur
+  d'attribut (`.nav-link[href="/shop"]`), jamais par ordre/position.
+- **`base.css`** : suppression du `padding-top` qui compensait l'ancien
+  header fixe — le header natif est en flux normal (`#wrapwrap { padding:
+  0 !important; margin: 0 !important; }`, comme chez exocoms_theme).
+  `--topbar-h`/`--header-h` retirées de `variables.css` (plus utilisées).
+- **`__init__.py`** : `_set_logo()` pointait vers `logo.png`, jamais
+  livré (no-op silencieux permanent). Pointe maintenant vers
+  `static/src/img/capsule-house-logo.png`, généré à partir du badge SVG
+  validé par le client + du wordmark "capsule house" (aplatis en un
+  seul PNG) — le logo natif s'applique donc réellement au site
+  maintenant.
+- **`main.js`** : suppression de `initBurger()`/`initNavActive()`, du JS
+  qui pilotait l'ancien menu mobile custom (`#chBurger`/`#chNav`) —
+  le menu mobile (offcanvas) et l'état actif sont gérés nativement par
+  Odoo.
+- **`__manifest__.py`** : ajout de la dépendance `website_sale_wishlist`
+  pour que l'icône wishlist native soit réellement fonctionnelle (note :
+  `exocoms_theme` style `.o_wsale_my_wish` dans son CSS sans déclarer
+  cette dépendance dans son propre manifest — potentiellement non
+  fonctionnel chez eux ; on choisit d'être explicite/correct plutôt que
+  de reproduire cette lacune).
+
+#### Retour terrain (v19.0.1.0.13)
+
+Après déploiement de la 19.0.1.0.12, capture d'écran du site en ligne :
+la nav natif s'affichait bien restylée (pastille "Tous les pods", icônes
+rondes), mais deux problèmes visibles :
+
+- Numéro de téléphone factice (`+1 555-555-5556`) et bouton "Contact Us"
+  encore affichés — pré-remplis par défaut par Odoo sur tout nouveau
+  site, aucune donnée business réelle de Capsule House. Masqués par CSS
+  (`layout.css`) via sélecteur structurel
+  (`li:has(a[href^="tel:"])`, `li:has(a.btn_cta)`), même technique que
+  `exocoms_theme/header.css` (les règles `data-oe-id` d'exocoms sont
+  spécifiques à leur propre base et volontairement pas reprises ici).
+- Logo affichant le placeholder générique Odoo "Your Logo" au lieu du
+  nôtre. Cause : `_set_logo()` utilisait `if website.logo: return` en
+  supposant ce champ vide par défaut sur un site neuf — en réalité Odoo
+  y pose lui-même un placeholder à la création du site, donc cette
+  condition bloquait TOUJOURS la pose de notre logo, dès le tout premier
+  passage du hook. Remplacé par un garde-fou `ir.config_parameter`
+  classique (`capsule_house_theme.logo_applied_v1`, même idiome que
+  `CONFIG_ASSETS_FIX_KEY`) qui force la pose une seule fois.
+
+### 403 sur /shop — pricelist manquante pour notre société (v19.0.1.0.14)
+
+Une fois le header natif propre (logo + nav OK, confirmé par capture
+d'écran), clic sur "Tous les pods" (`/shop`) → 403 :
+
+```
+Failed to read field res.country.group.pricelist_ids
+Access to unauthorized or invalid companies.
+```
+
+Cause : `_get_company()` crée la société "Exocoms Group" via un simple
+`res.company.create({'name': ...})`. Contrairement à la création d'une
+société via l'assistant standard d'Odoo (Paramètres > Sociétés), un
+`create()` direct ne seed AUCUNE pricelist par défaut pour cette
+société. Sans pricelist scopée à notre `company_id`, `website_sale`
+élargit sa recherche de pricelist applicable via les groupes de pays
+partagés (`res.country.group.pricelist_ids`) — une liste qui traverse
+TOUTES les pricelists de la base mutualisée, y compris celles des ~16
+autres sociétés/sites que la nôtre n'est pas autorisée à lire (règle
+d'accès multi-société native d'Odoo) : d'où le 403.
+
+Fix : nouvelle fonction `_setup_pricelist(env, website, company)`
+(appelée en tout début de `run_theme_maintenance`, juste après
+`_get_website`) qui crée une `product.pricelist` scopée strictement à
+notre `company_id` (idempotent, ne touche jamais une pricelist d'une
+autre société) et la pose comme pricelist par défaut du site si le
+champ existe sur cette version (feature-detect, comme ailleurs dans ce
+module).
+
+#### Cause EXACTE confirmée en conditions réelles (v19.0.1.0.15)
+
+Le correctif 19.0.1.0.14 (pricelist) était une bonne pratique mais pas
+la vraie cause du blocage. Diagnostic confirmé en inspectant directement
+la session live du site (`/web/session/get_session_info`) :
+
+```
+uid=2 "Mitchell Admin", allowed_companies = {1: "YourCompany"} SEULEMENT
+```
+
+L'administrateur qui navigue sur le site Capsule House n'a jamais eu
+"Exocoms Group" (la société de ce site) dans ses sociétés autorisées
+(`res.users.company_ids`). Dès qu'un code a besoin de lire un modèle à
+règle multi-société pendant la navigation (ici :
+`website_sale.get_pricelist_available()` lisant
+`res.country.group.pricelist_ids`), `env.companies` lève
+`AccessError("Access to unauthorized or invalid companies.")` — le 403
+observé.
+
+Fix : nouvelle fonction `_grant_company_access(env, company)` (appelée
+en tout début de `run_theme_maintenance`, juste après `_get_company`)
+qui ajoute notre société aux sociétés autorisées de tout utilisateur
+membre du groupe Administration/Paramètres (`base.group_system`).
+Cohérent avec le fait que cette base mutualisée (~17 sites) est gérée
+par une seule équipe centrale administrant tous les sites clients.
+Idempotent, ne touche jamais un utilisateur non-administrateur ni les
+sociétés des autres sites.
+
+**Attention version du manifeste** : à un moment, `__manifest__.py`
+`'version'` est repassé localement à `'1.0'` (format court). Un retour à
+ce format fait sauter silencieusement TOUTES les migrations
+(`migrations/19.0.1.0.1/` à `.15/`) au prochain upgrade, car Odoo ne les
+rejoue que s'il reconnaît une progression cohérente avec le schéma
+`19.0.1.0.x`. Remis à `19.0.1.0.15` — ne plus revenir à un format court
+sur ce module.
+
+### Audit systématique complet vs exocoms_theme (v19.0.1.0.16 → .17)
+
+Jusqu'ici, les écarts avec exocoms_theme (module de référence) étaient
+corrigés au coup par coup, à chaque fois que le client en pointait un
+lui-même. Sur sa demande explicite, comparaison complète fichier par
+fichier (contrôleurs, `__init__.py`, vues, CSS) plutôt que réactive.
+
+- **`/boutique`** (v19.0.1.0.16) : route manquante, ajoutée dans
+  `controllers/main.py` (alias de `/shop`, identique à exocoms_theme).
+- **Sélecteur de langue invisible** (v19.0.1.0.17) : le header
+  (`header.xml`/`layout.css`) affiche déjà un sélecteur de langue natif,
+  mais seulement si le site a plus d'une langue active — et rien dans ce
+  module n'en activait jamais une deuxième. Le sélecteur de langue
+  demandé par le client restait donc construit mais invisible en
+  pratique. Nouvelle fonction `_setup_languages(env, website)` (même
+  pattern que `exocoms_theme._setup_languages`) : active fr_FR + en_US,
+  fr_FR par défaut.
+- **Écarts volontairement NON repris**, car hors périmètre demandé pour
+  Capsule House ou propres à l'activité d'exocoms (monétique/TPE) :
+  système d'avis clients (`models/avis.py`, `/avis`), live chat
+  (`_setup_livechat`, dépendances `im_livechat`/`website_livechat`),
+  widget "vus récemment" (`ExocomsWebsiteSale.product()`), pages
+  Services/Contact/À propos (déjà actées "au fur et à mesure" par le
+  client).
+- **Écart connu, non corrigé pour l'instant** : le footer
+  (`footer.xml`) contient des liens vers `/mentions-legales`, `/cgv`,
+  `/confidentialite`, `/livraison`, `/retours`, `/garantie`, `/faq`,
+  `/a-propos`, `/le-concept`, `/contact` — aucune de ces pages n'existe
+  encore dans ce module (elles mèneront à un 404 tant qu'elles ne sont
+  pas créées), cohérent avec le calendrier "au fur et à mesure" déjà
+  acté pour Services/Contact/À propos.
+
+### CRITIQUE — panne totale de chargement du module (v19.0.1.0.18)
+
+La 19.0.1.0.17 a fait planter le chargement du module lors du
+déploiement réel (traceback confirmé) :
+
+```
+ValueError: Invalid field res.users.groups_id in condition
+('groups_id', 'in', 4)
+```
+
+Cause : `_grant_company_access()` (v19.0.1.0.15) utilisait
+`Users.search([('groups_id', 'in', admin_group.id)])` — le champ
+many2many `groups_id` sur `res.users` a été renommé dans Odoo 19.
+Corrigé en remplaçant ce domaine par `user.has_group('base.group_system')`,
+la méthode stable et publique d'Odoo pour tester l'appartenance à un
+groupe, indépendante du nom interne du champ m2m — plus robuste aussi
+aux futurs changements de version.
+
+**Leçon** : ne jamais écrire de domaine de recherche sur un champ m2m
+"système" (`groups_id`, et probablement d'autres équivalents) sans
+d'abord vérifier son nom exact sur la version cible via
+`Model._fields`, ou préférer une méthode publique stable
+(`has_group()`, `_is_admin()`, etc.) quand une existe — exactement le
+même principe de prudence déjà appliqué ailleurs dans ce module pour
+`product.public.category.website_id` ou `website.pricelist_id`
+(feature-detect avant utilisation).
+
+### Indicateur "page active" absent sur Accueil (v19.0.1.0.19)
+
+Constaté en conditions réelles (capture d'écran) : sur la catégorie
+"Studio", le lien "Studio" du header s'affiche bien en pastille claire
+(indicateur natif de page active) ; sur l'accueil, "Accueil" ne
+s'allume jamais.
+
+Cause : le menu "Accueil" pointait vers `/`, qui fait un redirect natif
+Odoo vers `website.homepage_url` (= `/capsule-house/home`, posé par
+`_setup_homepage()`). L'URL réellement affichée dans le navigateur une
+fois sur l'accueil est donc `/capsule-house/home`, jamais `/` — et le
+surlignage natif du header (`#top_menu`) compare l'URL du menu à l'URL
+réelle de la page, donc ne correspondait jamais pour Accueil.
+
+Fix : `_setup_menus()` pointe désormais le menu "Accueil" directement
+vers `HOMEPAGE_ROUTE` au lieu de `/` — l'ancien menu (url `/`) est
+automatiquement nettoyé par la logique `stray_menus` déjà existante.
+Bénéfice secondaire : un aller-retour de redirect en moins au clic sur
+"Accueil".
+
+### Titre "All products" mal placé sur /shop (v19.0.1.0.20)
+
+Constaté en conditions réelles, confirmé en inspectant le DOM live
+(pas une supposition cette fois) : `#o_wsale_products_header` est
+nativement en `d-flex flex-column gap-2` — titre "All products", puis
+rangée catégories (`.o_wsale_filmstrip_container`), puis barre
+recherche/tri (`.products_header.btn-toolbar`), empilés verticalement,
+alignés à gauche par défaut.
+
+Notre CSS (`odoo-integration.css`) forçait `align-items: center` et
+`justify-content: space-between` sur ce même conteneur en colonne : sur
+un flex en colonne, `align-items` agit sur l'axe horizontal (recentre
+chaque ligne au lieu de les garder alignées à gauche) et
+`justify-content` sur l'axe vertical (perturbe l'espacement entre les
+lignes) — d'où le titre décalé au lieu de rester en haut à gauche comme
+sur le rendu natif par défaut.
+
+Fix : `#o_wsale_products_header` ne reçoit plus qu'un padding
+cosmétique ; plus aucune règle display/flex-direction/align-items/
+justify-content — les classes natives (`d-flex flex-column gap-2`)
+suffisent telles quelles.
+
+### Cartes produit "chip" sur /shop (v19.0.1.0.21)
+
+Demande client : reprendre le style de carte produit d'exocoms_theme
+("en chips" — coins arrondis, ombre douce, effet de soulèvement au
+survol).
+
+Avant d'écrire la moindre règle, vérification en direct des vraies
+classes natives sur `/shop` (leçon tirée des bugs précédents — ne plus
+copier une classe d'exocoms sans la confirmer) : leur propre règle
+`.o_product` ne correspond à RIEN sur cette instance Odoo 19 (classe
+absente du DOM réel, probablement écrite pour une version antérieure
+d'Odoo). Les vraies classes confirmées par inspection :
+`.o_wsale_product_grid_wrapper` (la carte elle-même), `.oe_product_image`
+/ `.oe_product_image_img` (image), `.o_wsale_products_item_title`
+(titre), `.o_add_wishlist` (bouton wishlist — pas
+`.o_add_wishlist_dyn`/`.o_wish_add` comme précédemment supposé).
+
+Nouvelle section dans `odoo-integration.css` stylant ces classes
+vérifiées : carte blanche à coins arrondis (`--r-lg`), ombre légère au
+repos, soulèvement + ombre plus marquée + léger zoom sur l'image au
+survol, titre en police d'accroche, bouton wishlist en cercle discret
+superposé sur l'image.
+
+### Design "Chips" posé par le code, pas par l'éditeur (v19.0.1.0.22)
+
+Demande client explicite : "je veux ça [le design Chips] mais je veux
+que ça soit en local" — c'est-à-dire posé par le module, pas par un
+clic dans Style > Products Design > Chips de l'éditeur de site (pas
+versionné, pas reproductible sur une autre instance).
+
+Diagnostic fait en conditions réelles (lecture directe des champs via
+JSON-RPC, pas deviné) : ce réglage n'est PAS une vue à hériter mais des
+champs natifs du modèle `website` — `shop_opt_products_design_classes`
+(la chaîne de classes CSS qui pilote le design ; "Chips" correspond en
+interne à `o_wsale_products_opt_design_thumbs`, le nom affiché dans
+l'éditeur diffère du nom technique), `shop_ppg`/`shop_ppr`/`shop_gap`
+(taille de grille), `shop_page_container`, `shop_default_sort`. Valeurs
+reprises telles quelles depuis l'état actuellement appliqué sur le site
+(lu en direct) : 21 produits/page, 3 colonnes, écart 16px, conteneur
+"regular", tri "En vedette".
+
+Nouvelle fonction `_setup_shop_display(env, website)`, idempotente
+(write uniquement si une valeur diffère de celle voulue).
+
+### Halo orange derrière l'illustration hero (v19.0.1.0.23)
+
+Retour client, à partir d'une comparaison capture maquette / capture
+site réel : "et cla couleur orange en background" — sur la maquette,
+un halo orangé/pêche flouté déborde derrière la carte de
+l'illustration du hero. Absent du rendu réel non pas à cause d'une
+donnée manquante (contrairement aux badges/cartes flottantes traités
+juste avant, qui dépendent de vrais produits), mais parce que cet
+effet purement visuel n'avait tout simplement jamais été codé.
+
+Correctif 100% CSS (`static/src/css/homepage.css`), aucun template ni
+donnée touchés :
+- `.ch-hero-visual` passé en `overflow: visible` (le halo doit pouvoir
+  déborder du cadre).
+- `.ch-hero-visual::before` : `radial-gradient` flouté (`filter:
+  blur(60px)`, `opacity: 0.32`), couleurs reprises de la palette
+  existante (`--ch-terracotta` / `--ch-salmon`), `z-index: 0`.
+- `.ch-hero-illustration` (`z-index: 1`) et `.ch-hero-float-card`
+  (`z-index: 2`) remontés pour rester visibles au-dessus du halo.
+
+Retour client sur cette v.23 : "il y a pas toujours cette couleur
+derrière comme sur le modèle" — le halo était trop pâle/délavé.
+**Ajustement en v19.0.1.0.24** : `opacity` 0.32 → 0.55, `blur(60px)` →
+`blur(40px)`, fondu du gradient resserré (salmon 40%/transparent 68%
+au lieu de 45%/72%), inset resserré à `-14% -8%`. Toujours du CSS pur,
+aucune donnée ni template touchés.
+
+Retour client sur cette v.24 (halo bien visible, "l'effet est plutôt
+cool" mais décentré vers un coin) : "je veux que ça soit comme sur le
+modèle". Cause : inset asymétrique (-14% haut/bas, -8% gauche/droite)
++ `radial-gradient(closest-side, ...)` sans mot-clé `circle` = ellipse
+calée sur la forme rectangulaire de la carte plutôt qu'un cercle
+homogène. **Correctif v19.0.1.0.25** : inset uniforme `-20%` sur les 4
+côtés + `radial-gradient(circle closest-side, ...)` pour un halo
+rond, centré, symétrique dans toutes les directions.
+
+Malgré ça, retour client persistant : "toujours rien" / halo quasi
+invisible sur le site réel. Plutôt que de retoucher une 4e fois les
+réglages à l'aveugle, **inspection live du DOM réel** (Claude in
+Chrome : `getComputedStyle`, lecture du fichier CSS réellement servi,
+capture d'écran) sur
+`https://exocoms-e-commerce-capsule-house-35749213.dev.odoo.com/` :
+- Le CSS déployé correspondait bien à la v.25 (`?v=19.0.1.0.25`
+  confirmé, contenu du fichier confirmé) — ce n'était donc PAS un
+  problème de cache/déploiement comme suspecté.
+- `getComputedStyle` confirmait `opacity: 0.55`, `filter: blur(40px)`,
+  couleurs correctes, aucun ancêtre avec `overflow: hidden` — le CSS
+  s'appliquait bien.
+- Mais rendu visuel (capture d'écran) : halo quasiment invisible.
+- **Cause réelle trouvée par le calcul** : avec `closest-side` (cercle
+  ou ellipse) et un fondu vers transparent à 68% du rayon, le rayon
+  "coloré" du dégradé (avant transparence) était plus petit que le
+  demi-côté de la carte elle-même. Tout le halo coloré se retrouvait
+  donc caché DERRIÈRE la carte ; seul un infime liseré flouté (quelques
+  px) dépassait — exactement ce qui était visible sur chaque capture,
+  et pourquoi aucun réglage d'opacité/flou n'avait d'effet visible : le
+  problème n'a jamais été la couleur, mais la géométrie.
+- **Correctif validé EN DIRECT** (override CSS injecté dans la page
+  live + capture d'écran de confirmation avant de committer quoi que
+  ce soit) : `radial-gradient(ellipse closest-side, --ch-terracotta 0%,
+  --ch-salmon 55%, transparent 88%)` (fondu repoussé beaucoup plus
+  loin), `opacity: 0.6`, `blur(35px)`. **v19.0.1.0.26.**
+
+⚠️ Au passage, `__manifest__.py` était repassé à `'version': '1.0'`
+localement (probablement lors d'un test) — remis à `19.0.1.0.26` avant
+tout déploiement. Rappel : ce format casse le mécanisme de replay des
+migrations (voir avertissement en tête du fichier).
+
+Retour client sur cette v.26 (halo enfin visible) : "mais il doit être
+placé comme sur le modèle" — sur la maquette, le halo est concentré en
+haut à droite (effet "source de lumière"), pas centré/symétrique.
+**Correctif v19.0.1.0.27** (testé en direct sur le site réel avant
+d'être écrit dans le code, capture à l'appui) : inset asymétrique
+(`top: -18%`, `right: -22%`, `bottom: -6%`, `left: -6%`) + centre du
+radial-gradient décalé (`at 68% 32%` au lieu de centré), fondu à
+50%/85%.
+
+Retour client sur cette v.27 (position correcte cette fois) : "tu vois
+la diff avec les deux ?" — capture montrant que le halo réel restait
+trop compact et trop saturé (bord visible, presque une tache nette),
+alors que sur la maquette il est beaucoup plus étalé et progressif.
+**Correctif v19.0.1.0.28** (testé en direct, capture à l'appui) : inset
+encore agrandi (`top: -30%`, `right: -35%`, `bottom: -12%`, `left:
+-10%`), fondu repoussé à 30%/90% (dégradé long, pas de bord dur),
+`blur(55px)` (au lieu de 35px), `opacity: 0.42` (au lieu de 0.6, pour
+une texture plus douce/pastel).
+
+Retour client sur cette v.28, avec 2 captures comparatives : "ne
+vois-tu pas la grandeur du halo du modèle par rapport au mien, je veux
+que ce soit exactement pareil" — le halo du modèle occupe une zone
+nettement plus grande. **Correctif v19.0.1.0.29** : inset quasi doublé
+(`top: -55%`, `right: -65%`, `bottom: -20%`, `left: -15%`), fondu à
+28%/88%, `blur(60px)`, `opacity: 0.45`.
+
+⚠️ **Cette itération n'a PAS pu être vérifiée en direct** avant d'être
+committée : Odoo.sh renvoyait une erreur de plateforme ("Odoo.sh |
+Platform Error") sur toutes les tentatives d'accès au site au moment
+du fix. Valeurs estimées par comparaison visuelle des 2 captures
+client, à confirmer une fois le site de nouveau accessible.
+
+Retour client sur cette v.29 : "comment l'autre occupe l'écran par
+rapport au mien" — en recadrant la capture live exactement comme la
+maquette (colonne visuelle seule), le halo du modèle lave quasiment
+tout le fond de la carte (fondu ambiant très large, visible même dans
+le coin opposé), alors que le nôtre retombait au blanc pur dès le
+milieu du cadre. **Correctif v19.0.1.0.30** (testé en direct, capture
+recadrée à l'identique du modèle pour comparaison directe) : inset
+encore agrandi sur les 4 côtés (`top: -70%`, `right: -80%`, `left:
+-60%`, `bottom: -60%`), fondu à 22%/78%, `blur(70px)`, `opacity: 0.4`.
+
+Retour client sur cette v.30 (couverture correcte) : "il faut que ce
+soit aussi visible que sur le modèle" — trop pâle. **Correctif
+v19.0.1.0.31** (testé en direct, capture recadrée comme la maquette) :
+`opacity` 0.4 → 0.65, `blur(70px)` → `blur(55px)`, fondu resserré à
+30%/82% (au lieu de 22%/78%). Inset inchangé (la largeur de couverture
+était déjà bonne).
+
+Retour client sur cette v.31 : "non pas concentré comme ça, laisse
+tomber" puis deux captures annotées à la main (traits tracés sur la
+maquette ET sur notre rendu) pour clarifier : le halo du modèle a un
+bord repérable, une limite qu'on peut suivre même en restant douce,
+alors que le nôtre (trop flouté sur une zone trop large) n'avait plus
+de forme du tout — juste un dégradé infini sans limite perceptible.
+**Correctif v19.0.1.0.32** (testé en direct, capture recadrée comme la
+maquette) : inset resserré (`top: -45%`, `right: -55%`, `left: -25%`,
+`bottom: -30%`), fondu resserré à 42%/72%, `blur(38px)` (au lieu de
+55px), `opacity: 0.6`. Objectif : contour net et traçable, sans
+retomber sur un halo invisible comme les toutes premières versions.
+
+Retour client sur cette v.32 : le contour était net mais le halo était
+redevenu trop petit (visible seulement en haut) ET trop foncé — la
+v.32 avait resserré la taille en même temps que le contour, ce qui
+n'était pas demandé ; rappel que les traits tracés à la main montrent
+une zone couvrant plus de la moitié du cadre. **Correctif
+v19.0.1.0.33** (testé en direct) : inset rétabli large, proche de la
+v.30 (`top: -65%`, `right: -75%`, `left: -50%`, `bottom: -50%`), fondu
+gardé resserré (35%/70%) pour le contour, `opacity: 0.4` (couleur plus
+claire), `blur(48px)`. Objectif : les 3 exigences réunies en même
+temps (grande couverture + contour net + couleur claire), au lieu de
+les corriger une par une en régressant sur les autres.
+
+Retour client sur cette v.33 : capture annotée à la main avec un trait
+rouge (étendue voulue) comparé à un trait gris (étendue actuelle) —
+le rouge démarre bien plus à gauche en haut du cadre, alors que tout
+le quart supérieur-gauche restait blanc en v.33. **Correctif
+v19.0.1.0.34** (testé en direct, capture plein écran avec le texte du
+hero visible) : `left: -90%` (au lieu de -50%), `bottom: -55%` (au
+lieu de -50%), centre du dégradé recentré à `58% 32%` (au lieu de `64%
+30%`) pour laisser le halo déborder visiblement au-dessus/à gauche du
+bloc de texte, tout en gardant l'intensité concentrée en haut à droite.
+
+## Système d'avis clients réels (v19.0.1.0.35)
+
+Constat de départ : le badge de note du hero ("★ 4.9 · 2 340 avis" sur
+la maquette) ne s'affichait jamais sur le vrai site, car ce chiffre
+n'était qu'un paramètre système (`ir.config_parameter`) jamais
+renseigné — volontairement, pour ne rien fabriquer. Demande client :
+"va dans exocoms et crée donc cette page d'avis sur capsule house" —
+reproduire le vrai système d'avis observé sur `exocoms_theme`
+(`models/avis.py`, `controllers/main.py`, `views/pages/avis.xml`,
+etc.) plutôt que de se contenter d'un chiffre à saisir à la main.
+
+Adapté à Capsule House (pods, pas terminaux de paiement) et à nos
+conventions multi-site :
+
+- **`models/avis.py`** : nouveau modèle `capsule.house.avis` (nom,
+  note 1-5, commentaire, modèle acheté, date, statut
+  `pending`/`published`, `website_id` requis — scopé, obligatoire sur
+  cette base à ~17 sites). Contrainte `@api.constrains` sur la note
+  (1 à 5).
+- **`security/ir.model.access.csv`** : droits `base.group_user`
+  (modération backend, cohérent avec l'équipe centrale qui gère les
+  17 sites).
+- **`views/avis_backend.xml`** : liste (avec avis publiés grisés) +
+  formulaire + action + menu "Avis clients (Capsule House)" pour
+  modérer. Aucun avis n'est jamais publié automatiquement.
+- **`views/partials/avis_hero.xml`** + **`avis_content.xml`** +
+  **`views/pages/avis.xml`** : page publique `/avis` — note moyenne et
+  répartition par étoile calculées dynamiquement (jamais fabriquées :
+  "Aucun avis pour le moment" si `stats` est vide), filtres par note,
+  grille des avis **publiés uniquement**, formulaire de dépôt avec
+  sélecteur d'étoiles cliquable. Pas de photo de fond (contrairement à
+  exocoms_theme qui utilise `heroavis.jpg`) : on n'a pas de vraie photo
+  pour ce site, donc reprise du dégradé doux du thème plutôt que d'en
+  fabriquer une ou de réutiliser celle d'exocoms.
+- **`controllers/main.py`** :
+  - `/avis` (GET) : liste + stats + formulaire.
+  - `/avis/submit` (POST, CSRF) : crée un avis en statut `pending` —
+    jamais publié directement, un admin doit le valider. Routes
+    neuves (aucune collision possible avec un autre site de la base
+    mutualisée) : pas besoin de garde `_is_our_website`, même logique
+    que `/boutique` et `/newsletter/subscribe`.
+  - `homepage()` : le badge de note du hero utilise maintenant
+    `_get_avis_stats()` — note moyenne et nombre d'avis calculés sur
+    les avis **publiés** de notre site s'il y en a ; ne retombe sur
+    l'ancien réglage manuel (`ir.config_parameter`) que si aucun avis
+    n'est encore publié (utile si le client a une note vérifiée
+    ailleurs — Google, Trustpilot — mais pas encore de vrais avis sur
+    le site lui-même).
+- **`_setup_menus`** : nouvelle entrée "Avis clients" (`/avis`) dans
+  la nav.
+- **`static/src/css/pages.css`** : jusque-là réservé/vide pour les
+  futures pages internes, mis en service ici (classes `.ch-avis-*`
+  avec notre palette `--ch-*`), enregistré dans `THEME_ASSETS`.
+
+**Volontairement omis** par rapport à `exocoms_theme` : la traduction
+automatique des commentaires via l'API publique (non officielle) de
+Google Translate (`models/avis.py` côté exocoms) — hors scope de cette
+demande, notre site n'étant pas bilingue pour l'instant ; pourrait être
+ajouté plus tard si besoin.
+
+**Leçon technique** : un commentaire XML (`<!-- -->`) ne peut jamais
+contenir un double tiret `--`, y compris dans des noms de variables
+CSS comme `--ch-bg-soft` — ça casse le parsing XML de toute la vue.
+Erreur commise puis corrigée dans `avis_hero.xml` pendant ce
+développement (repérée par une validation XML systématique de tous
+les fichiers avant livraison, pas seulement au moment du déploiement).
+
+## Traduction des pages + Live Chat, comme sur exocoms_theme (v19.0.1.0.36)
+
+Demande client : "gère la traduction de mes pages comme j'ai fait sur
+exocoms ainsi que live chat" — recherche systématique du mécanisme
+réel dans exocoms_theme avant d'écrire quoi que ce soit (même méthode
+que pour le système d'avis en v.35), pas de reproduction à l'aveugle.
+
+### Traduction (FR/EN)
+
+`_setup_languages()` (en place depuis une version antérieure) activait
+déjà `fr_FR`/`en_US` et posait le sélecteur de langue natif dans le
+header — mais aucune page ne changeait réellement de texte selon la
+langue choisie. Confirmé sur exocoms_theme : **pas de traduction .po
+native pour le corps des pages**, mais une convention systématique de
+texte statique dupliqué dans des blocs `t-if/t-else` sur
+`request.env.lang` (leur propre commentaire : *"Texte statique dupliqué
+t-if/t-else fr_FR, comme partout ailleurs dans ce thème"*). Un seul
+champ modèle traduisible (`translate=True`) chez eux, et une traduction
+automatique optionnelle des avis via l'API publique Google Translate —
+**volontairement non reprise ici** (hors scope, site pas bilingue au
+niveau du contenu généré par les utilisateurs pour l'instant).
+
+Appliqué avec la même convention :
+- `views/partials/hero.xml` : bloc `.ch-hero-content` dupliqué FR/EN,
+  badges "Nouveau"/"Promo" et bouton panier des cartes flottantes.
+- `views/templates/footer.xml` : newsletter, colonnes, bandeau bas.
+- `views/partials/avis_hero.xml` : scindé en `avis_hero_fr` /
+  `avis_hero_en` + aiguilleur, mêmes noms que exocoms_theme.
+- `views/partials/avis_content.xml` : libellés dupliqués FR/EN,
+  boucles dynamiques (stats/avis_list) partagées entre les langues
+  pour ne pas dupliquer la logique elle-même.
+- Header (nav) volontairement français uniquement, comme sur
+  exocoms_theme (jamais bilingue chez eux non plus).
+
+### Live Chat
+
+Natif Odoo (`im_livechat` + `website_livechat`), pas de widget tiers —
+confirmé en lisant le manifest d'exocoms_theme. Ajouté aux dépendances
+du module. Fonctions `_get_default_operator(env)` /
+`_setup_livechat(env, website)` dans `__init__.py`, réplique du
+mécanisme `exocoms_theme._setup_livechat()` :
+- Canal `im_livechat.channel` dédié, rattaché via `website.channel_id`
+  (déjà nativement scopé par site).
+- **Différence délibérée** : canal nommé "Capsule House - Live Chat",
+  pas d'après `COMPANY_NAME` ('Exocoms Group', partagé par les ~17
+  sites de la base) — sinon risque de retrouver/réutiliser le canal
+  d'un AUTRE site déjà installé avec ce nom de société, dont
+  exocoms_theme lui-même.
+- Couleurs du widget sur notre palette (`--ch-terracotta` /
+  `--ch-ink`), pas celles d'exocoms.
+- Règle d'affichage (`im_livechat.channel.rule`, `regex_url='/'`)
+  créée si absente (un canal créé par code n'en a aucune par défaut,
+  contrairement à un canal créé depuis l'interface).
+- Opérateur réel assigné automatiquement si le canal n'en a aucun, à
+  chaque exécution — jamais OdooBot/uid=1 (bug identique corrigé chez
+  exocoms : `env.uid` pointe vers OdooBot quand le code tourne via un
+  hook/cron plutôt qu'une vraie session).
+
+Appelé dans `run_theme_maintenance()` juste après
+`_scope_layout_views()`, même position relative que chez exocoms.
+
+## Traduction — oublis corrigés (v19.0.1.0.37)
+
+Retour client sur la v.36, captures FR vs EN à l'appui : "le header en
+anglais n'est pas traduit, la partie meilleures ventes non plus, et le
+live chat ne s'affiche pas — je t'ai demandé de tout gérer". Trouvé et
+corrigé :
+
+- **Menu du haut** : `website.menu.name` est traduisible nativement
+  dans Odoo, mais `_setup_menus()` n'avait jamais posé de valeur pour
+  `en_US` — corrigé via `record.with_context(lang='en_US').write(...)`
+  pour Accueil/Tous les pods/Promotions/Avis clients/Accessoires.
+  Studio/Duo/Panorama restent inchangés (noms de gamme, pas du texte
+  d'UI).
+- **`views/partials/featured_products.xml`** ("Meilleures ventes") :
+  entièrement oubliée en v.36, traduite ici.
+- **`views/templates/header.xml`** (bandeau d'annonce) et
+  **`views/pages/shop.xml`** (titre au-dessus de la grille boutique) :
+  également oubliés, traduits.
+- **Live Chat invisible** : diagnostic en cours au moment de ce commit
+  — nécessite une inspection live du site réel (URL à jour du client),
+  pas encore fait. Ancienne URL de test vérifiée entre-temps : encore
+  sur v.34, donc pas représentative de l'environnement actuellement
+  observé par le client.
+
+## Live Chat invisible + menu FR en anglais — root cause trouvé et corrigé (v19.0.1.0.38)
+
+Client : "tu ne vois pas qu'il y a trois autres sites, le live chat
+s'applique sur le premier website" — hypothèse initiale (résolution de
+domaine ambiguë sur l'URL de preview). Inspection live sur une page
+confirmée Capsule House (`document.title` == "Capsule House — Maisons
+modulaires") a montré que ce n'était PAS un problème de domaine :
+
+- **Live Chat** : `.o-livechat-root` bien présent dans le DOM, visible,
+  z-index correct (donc `website.channel_id` / règle d'affichage /
+  opérateur posés par `_setup_livechat()` sont corrects côté backend),
+  mais **vide** (0 enfant). La console montrait :
+  `ReferenceError: initBurger is not defined` levée par
+  `@capsule_house_theme/js/main`, qui casse le chargement du bundle JS
+  de la page. En cascade, plusieurs templates Owl natifs échouaient à
+  s'enregistrer (`web.PagerIndicator`, `web.OverlayContainer`,
+  `web.BlockUI`, `html_editor.UploadProgressToast`, et surtout
+  **`mail.ChatHub`** — le composant qui affiche la fenêtre du chat).
+  Cause exacte : `static/src/js/main.js` appelait encore `initBurger()`
+  et `initNavActive()` dans `init()`, deux fonctions supprimées lors du
+  passage au header natif Odoo (le commentaire en tête de fichier avait
+  été mis à jour à l'époque, mais pas le nettoyage de `init()`). Fix :
+  suppression des deux appels orphelins — le Live Chat se monte
+  maintenant normalement, sur toutes les pages.
+- **Menu FR affiché en anglais** : sur la même capture (page confirmée
+  en français), le menu du haut affichait "Home, All pods, Accessories,
+  Deals, Reviews" au lieu des libellés français. Cause dans
+  `_setup_menus()` : l'écriture du libellé français ne posait aucun
+  contexte de langue, donc héritait de la langue ambiante de
+  l'environnement du hook/cron (superuser, `en_US` par défaut) — le
+  texte français atterrissait dans la case de traduction `en_US`, que
+  l'écriture EN explicite juste après écrasait avec "Home" etc. La case
+  `fr_FR` n'était en réalité jamais remplie ; un visiteur FR se
+  rabattait donc sur la valeur `en_US`. Fix : `fr_FR` est maintenant
+  posé explicitement (`with_context(lang='fr_FR')`) à la création ET à
+  la mise à jour, avant l'écriture `en_US`.
+
+Conclusion sur l'hypothèse "3 sites / résolution de domaine" : cette
+piste n'est pas exclue en général sur une instance mutualisée sans
+domaine propre par site (voir "Passer le domaine en production"
+ci-dessus), mais elle n'était PAS la cause du problème observé ici —
+les deux bugs ci-dessus suffisaient à eux seuls à expliquer les deux
+symptômes rapportés, et ont été confirmés par inspection DOM/console
+live sur une page dont le contexte Capsule House était certain.
+
+## Décalage horizontal de la page — root cause trouvé et corrigé (v19.0.1.0.39)
+
+Client : capture du backend (vue "Edit") montrant la page décalée
+horizontalement — menu coupé à gauche, titre du hero tronqué, scrollbar
+horizontale visible. "Regarde qu'est-ce qui cause ce décalage."
+
+Diagnostic en direct (mesuré, pas deviné) :
+- `document.documentElement.scrollWidth` = 1786 vs `clientWidth` = 1521
+  → 265px de débordement horizontal réel sur toute la page.
+- Masquer temporairement `.ch-hero-visual` fait tomber ce débordement à
+  0 (diff exact : 265px) → confirme que c'est le halo décoratif
+  (`.ch-hero-visual::before`, ajusté sur ~12 itérations en v.22-.34
+  pour matcher la maquette) le responsable, pas le menu ni un autre
+  composant.
+
+Cause exacte : le halo a des insets très généreux (`left: -90%`,
+`right: -75%`) et `.ch-hero-visual` a `overflow: visible` posé exprès
+pour le laisser déborder de sa carte — mais rien plus haut dans
+l'arbre (`.ch-hero-grid`, `.ch-hero`, `body`) ne contenait ce
+débordement au niveau de la SECTION. Le halo débordait donc de la page
+entière, ajoutant 265px de largeur scrollable au document.
+
+Fix : `overflow: hidden` ajouté sur `.ch-hero` (la section pleine
+largeur, pas la carte). Le halo continue de déborder librement à
+l'intérieur de la section (rendu visuel inchangé, vérifié par capture
+avant/après), sans plus jamais dépasser les bords réels de la page.
+
+## Pastille "Tous les pods"/"All pods" absente en anglais (v19.0.1.0.40)
+
+Client, sur deux captures EN vs FR de la home : "je parle au niveau de
+all pods" — la pastille noire pleine (reprise de la maquette) était
+présente sur "Tous les pods" en français mais absente sur "All pods"
+en anglais.
+
+Cause (confirmée en inspectant `#top_menu li` en direct sur les deux
+URLs) : le style vient de `layout.css`, ciblé par
+`.nav-link[href="/shop"]` — correspondance EXACTE. Odoo préfixe
+automatiquement les liens internes avec le code langue hors langue par
+défaut : le lien devient `/en/shop` en anglais, qui ne matche plus
+`"/shop"`. Fix : sélecteur de suffixe `[href$="/shop"]`, qui matche
+quel que soit le préfixe de langue, sans faux positif possible (aucune
+autre URL du menu ne se termine par `/shop`). Vérifié en direct par
+injection CSS avant d'être reporté dans le fichier.
+
+## Design boutique "Chips" — classes corrigées d'après exocoms_theme (v19.0.1.0.41)
+
+Client (capture du panneau "Products Design: Chips" dans l'éditeur de
+site) : "je t'ai dit que je voulais ce style comme design sur mes
+produits du shop, essaye de voir comment ça a été fait sur
+exocoms_theme pour bien le faire sur Capsule House."
+
+Le mécanisme (poser le design "en code" via le champ natif
+`website.shop_opt_products_design_classes`, demande explicite du
+client plutôt qu'un clic dans l'éditeur) était déjà en place
+(`_setup_shop_display()`), mais la liste de classes CSS
+(`SHOP_DESIGN_CLASSES`) avait été **devinée** lors d'une session
+précédente, jamais vérifiée contre une implémentation réelle. Corrigée
+en comparant au code réel d'exocoms_theme (écrit deux fois chez eux —
+post_init_hook et le hook de maintenance principal — donc confirmé
+fonctionnel en production) :
+
+- `o_wsale_products_opt_design_thumbs` → `_design_chips` (la vraie
+  classe "Chips" — celle qu'on devinait n'existe même pas sous ce nom
+  dans leur config) ;
+- `_rounded_2` → `_rounded_4` ;
+- `_actions_onhover` → `_actions_inline` + `_actions_promote` ;
+- `_wishlist_fixed` → `_wishlist_inline` ;
+- `_has_description` et `_actions_subtle` retirées (absentes chez
+  exocoms) ;
+- `_has_comparison`, `_cc` et `_thumb_6_5` ajoutées (présentes chez
+  exocoms, manquantes chez nous).
+
+Ajout de `_setup_shop_grid_design()`, filet de sécurité repris tel
+quel (même prudence de scoping) de la fonction du même nom chez
+exocoms : si une vue `website_sale.products` spécifique à NOTRE site
+existe déjà, on s'assure que sa classe grid porte bien
+`o_wsale_products_opt_design_chips` — jamais de vue créée, jamais la
+vue générique partagée par les 17 sites touchée.
+
+## Menu compte en anglais + couleurs pages de connexion, d'après exocoms_theme (v19.0.1.0.42)
+
+Client, capture du menu déroulant du compte natif : "tu vois ça ne suit
+pas la langue [My Account / Logout en anglais malgré le site en
+français], va regarder sur exocoms_theme, j'ai aussi géré l'affichage
+du header lorsqu'on se déconnecte, mais les couleurs des pages de
+connexion et déconnexion sur exocoms_theme, sur le init, regarde bien,
+gère bien."
+
+Recherche menée dans le code réel d'exocoms_theme (pas deviné) :
+
+1. **Menu compte natif en anglais** : ce dropdown "My Account"/"Logout"
+   n'est pas un template à nous, c'est le menu natif du module
+   `portal`. exocoms_theme force le rechargement des traductions
+   françaises officielles d'Odoo pour les modules natifs concernés
+   (`mods._update_translations('fr_FR')` sur base/web/website/
+   website_sale/portal/auth_signup/mail/sale) — sans quoi ces chaînes
+   natives peuvent rester en anglais sur une base mutualisée où le
+   français a été activé après coup. Repris à l'identique dans une
+   nouvelle fonction `_reload_native_translations(env)`, appelée après
+   `_setup_languages()`.
+2. **Couleurs des pages /web/login, /web/signup, etc.** : exocoms_theme
+   n'a PAS de règle dédiée à ces pages — ils ont un `.btn-primary`
+   GLOBAL non scopé à un conteneur (layout.css), sans `!important`, qui
+   retombe donc naturellement sur toute page native non déjà couverte
+   par une règle plus spécifique. Chez nous, toutes les règles
+   `.btn-primary` existantes étaient scopées (`.oe_website_sale`,
+   `.o_wsale_product_btn`, `#products_grid`, `.o_portal_wrap`) :
+   aucune ne couvrait `/web/login`, resté sur le bleu/violet par défaut
+   d'Odoo. Ajout d'une règle globale équivalente dans
+   `odoo-integration.css` avec `--ch-terracotta` — sa spécificité plus
+   faible que les règles existantes garantit qu'elle ne s'applique que
+   là où rien de plus spécifique n'est déjà défini, sans régression
+   ailleurs sur le site.
+
+## Déconnexion envoyait sur le mauvais site (v19.0.1.0.43)
+
+Suite du diagnostic "où ça m'envoie lorsque je me déconnecte" : `/web/
+login` et `/web/session/logout` atterrissaient sur le site générique
+par défaut ("My Website") au lieu de Capsule House, alors que `/`
+résolvait correctement.
+
+Le client a demandé de rester sur une analyse du CODE local
+d'exocoms_theme, pas de manipulation sur l'instance Odoo.sh —
+recherche exhaustive faite dans ce sens (`__init__.py` complet :
+aucune occurrence de `sequence` sur le modèle `website`, aucune classe
+`ir.http`/`website` personnalisée, aucune route de login/logout ;
+`controllers/main.py`, `models/`, `data/website_data.xml` : rien non
+plus). Rien dans leur code ne gère spécifiquement ce cas — ce n'est
+donc pas une technique qu'on aurait ratée chez eux, c'est un réglage à
+poser nous-mêmes.
+
+Sans `website.domain` posé (notre cas tant que le DNS n'est pas
+confirmé), Odoo départage les sites candidats pour les routes natives
+comme `/web/login` via `website.sequence` (plus bas = prioritaire).
+Tous les sites non configurés partagent la même valeur par défaut
+(10), y compris le site générique. Fix : nouvelle fonction
+`_setup_website_priority()`, qui pose `website.sequence = 1` sur
+NOTRE site uniquement (jamais touché ailleurs), pour qu'il gagne
+systématiquement ce départage.
+
+## Pagination boutique restée violette (v19.0.1.0.44)
+
+Client : "tu as oublié la couleur ici comme on a fait dans
+exocoms_theme" (capture du pager, rond de page active en violet). Le
+pager natif Odoo (`#o_wsale_pager`) garde sa couleur primaire par
+défaut (#875A7B) tant qu'aucune règle ne le recolore — jamais fait
+côté Capsule House. Vérifié dans exocoms_theme
+(`static/src/css/layout.css`) : ils ont exactement cette règle, scopée
+à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
+`--ch-terracotta`/`--ch-white`.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Modération des avis clients déposés via /avis (voir models/avis.py
+         et controllers/main.py). Vues backend classiques, non scopées
+         website_id (pas nécessaire : ce sont des vues ir.ui.view pour un
+         modèle métier, pas des pages/blocs de site web). -->
+
+    <record id="view_capsule_house_avis_list" model="ir.ui.view">
+        <field name="name">capsule.house.avis.list</field>
+        <field name="model">capsule.house.avis</field>
+        <field name="arch" type="xml">
+            <list string="Avis clients" editable="top" decoration-muted="state == 'published'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="rating"/>
+                <field name="product"/>
+                <field name="website_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_capsule_house_avis_form" model="ir.ui.view">
+        <field name="name">capsule.house.avis.form</field>
+        <field name="model">capsule.house.avis</field>
+        <field name="arch" type="xml">
+            <form string="Avis client">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="rating"/>
+                            <field name="product"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="website_id"/>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="comment"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_capsule_house_avis" model="ir.actions.act_window">
+        <field name="name">Avis clients</field>
+        <field name="res_model">capsule.house.avis</field>
+        <field name="view_mode">list,form</field>
+        <field name="help">Aucun avis pour le moment — ils apparaîtront ici dès qu'un client en soumettra un via /avis.</field>
+    </record>
+
+    <menuitem id="menu_capsule_house_avis_root"
+              name="Avis clients (Capsule House)"
+              sequence="90"
+              action="action_capsule_house_avis"/>
+
+</odoo>
