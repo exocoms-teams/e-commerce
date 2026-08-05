@@ -1,5 +1,10 @@
 from odoo import models, fields, api
 
+def latest_ads_by_ref(ad_ids):
+    latest_by_ref = {}
+    for ad in ad_ids.sorted('collected_at'):
+        latest_by_ref[ad.ad_ref] = ad
+    return ad_ids.browse([ad.id for ad in latest_by_ref.values()])
 class TrendAd(models.Model):
     _name = 'trend.ad'
     _description = 'Publicité des produits tendances'

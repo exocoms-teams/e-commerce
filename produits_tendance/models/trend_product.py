@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-
+from .trend_ad import latest_ads_by_ref
 from odoo.addons.produits_tendance.services.scoring_engine import ScoringEngine
 
 
@@ -171,13 +171,14 @@ class TrendProduct(models.Model):
         # Handle the case where previous_metrics is None (convert to required dict)
         if previous_metrics is None:
             previous_metrics = {'ventes': 0, 'likes': 0, 'partages': 0, 'ads': 0}
-
+        # FILTRER LES PUBLICITÉS EN DOUBLE AVANT LE CALCUL
+        latest_ads = latest_ads_by_ref(self.ad_ids)
         # Build current metrics (same logic as in trend_score_calculator.build_current_metrics)
         current_metrics = {
             'ventes': self.sales_count or 0,
-            'likes': sum(self.ad_ids.mapped('likes_count')),
-            'partages': sum(self.ad_ids.mapped('shares_count')),
-            'ads': len(self.ad_ids),
+            'likes': sum(latest_ads.mapped('likes_count')),
+            'partages': sum(latest_ads.mapped('shares_count')),
+            'ads': len(latest_ads),
         }
 
         # Normalize source score (same logic as in trend_score_calculator.normalize_source_score)
