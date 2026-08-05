@@ -96,11 +96,21 @@ class TestScoreAlerts(TransactionCase):
 
 class TestScoreAlertsNoThreshold(TransactionCase):
     """WIN-67 : aucune alerte ne doit être déclenchée si le seuil n'est pas
-    configuré. `score_alert_threshold` n'est délibérément jamais défini ici."""
+    configuré.
+
+    L'état de ir.config_parameter s'est révélé persister entre les classes
+    de TransactionCase dans ce run (pas de rollback complet observé) : une
+    autre classe de test (TestScoreAlerts) définit score_alert_threshold à
+    '50' — ne pas le redéfinir ici NE SUFFIT PAS, il faut le supprimer
+    explicitement, sinon la valeur laissée par la classe précédente reste
+    active."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env['ir.config_parameter'].sudo().search([
+            ('key', '=', 'produits_tendance.score_alert_threshold'),
+        ]).unlink()
         cls.env['ir.config_parameter'].sudo().set_param(
             'produits_tendance.webhook_url', 'https://hooks.example.com/webhook-test'
         )
@@ -117,8 +127,11 @@ class TestScoreAlertsNoThreshold(TransactionCase):
 
 class TestScoreAlertsNoWebhookUrl(TransactionCase):
     """WIN-67 : le seuil peut être dépassé, mais sans URL de webhook
-    configurée, rien ne doit être mis en file d'attente. `webhook_url`
-    n'est délibérément jamais définie ici."""
+    configurée, rien ne doit être mis en file d'attente.
+
+    Même remarque que TestScoreAlertsNoThreshold : webhook_url doit être
+    explicitement supprimée (pas juste "non définie ici"), sinon la valeur
+    laissée par TestScoreAlerts persiste."""
 
     @classmethod
     def setUpClass(cls):
@@ -126,6 +139,9 @@ class TestScoreAlertsNoWebhookUrl(TransactionCase):
         cls.env['ir.config_parameter'].sudo().set_param(
             'produits_tendance.score_alert_threshold', '50'
         )
+        cls.env['ir.config_parameter'].sudo().search([
+            ('key', '=', 'produits_tendance.webhook_url'),
+        ]).unlink()
         cls.product = _make_product(cls.env, 'no-webhook-url')
 
     def test_no_webhook_url_configured_does_not_queue(self):
