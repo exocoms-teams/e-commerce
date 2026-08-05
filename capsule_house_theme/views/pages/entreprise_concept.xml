@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.entreprise_concept() sur la route
+        '/le-concept'. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.entreprise_concept_page).
+        Comparatif et étapes de fabrication repris de la maquette fournie
+        par le client — à confirmer/ajuster avec lui si les vrais chiffres
+        (budget, délais) diffèrent, ce n'est pas une donnée vérifiée par
+        ce module. Schéma "coupe technique" : même illustration SVG que
+        le hero (views/partials/hero.xml), avec un contour pointillé et
+        des libellés ajoutés par-dessus plutôt qu'un nouveau dessin.
+    -->
+    <template id="entreprise_concept_page" name="Capsule House - Entreprise - Le concept">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Le concept | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">The concept | Capsule House</t>
+            <div id="wrap" class="ch-entreprise-page oe_structure">
+
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Entreprise</span>
+                </div>
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/capsule-house/home">Home</a><span class="sep">/</span><span>Company</span>
+                </div>
+
+                <div class="ch-entreprise-wrap">
+                    <t t-call="capsule_house_theme.entreprise_nav"/>
+
+                    <div t-if="request.env.lang == 'fr_FR'">
+                        <h1 class="ch-aide-title">Qu'est-ce qu'un pod Capsule House ?</h1>
+                        <p class="ch-aide-subtitle">Un pod est une habitation compacte préfabriquée en atelier, livrée quasi finie et installée directement sur votre terrain. Structure bois, isolation renforcée et grande verrière panoramique : le confort d'une maison, la rapidité d'un module.</p>
+
+                        <table class="ch-aide-table ch-entreprise-compare" style="margin-bottom:48px;">
+                            <thead>
+                                <tr><th>Critère</th><th class="ch-entreprise-compare-highlight">Pod Capsule House</th><th>Construction traditionnelle</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Délai</td><td class="ch-entreprise-compare-highlight">6 semaines</td><td>8 à 14 mois</td></tr>
+                                <tr><td>Permis requis</td><td class="ch-entreprise-compare-highlight">Déclaration préalable (souvent)</td><td>Permis de construire</td></tr>
+                                <tr><td>Empreinte carbone</td><td class="ch-entreprise-compare-highlight">Réduite (atelier + bois local)</td><td>Élevée</td></tr>
+                                <tr><td>Mobilité</td><td class="ch-entreprise-compare-highlight">Démontable / déplaçable</td><td>Fixe</td></tr>
+                                <tr><td>Budget moyen</td><td class="ch-entreprise-compare-highlight">29 900 € – 68 900 €</td><td>150 000 € et plus</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2 class="ch-aide-title" style="font-size:22px;margin-bottom:16px;">De l'atelier à votre terrain</h2>
+                        <div class="ch-aide-timeline" style="margin-bottom:48px;">
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">1</div>
+                                <div class="ch-aide-timeline-title">Matériaux</div>
+                                <div class="ch-aide-timeline-text">Ossature bois certifiée, isolation biosourcée, vitrage double.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">2</div>
+                                <div class="ch-aide-timeline-title">Fabrication</div>
+                                <div class="ch-aide-timeline-text">Assemblage en atelier sous conditions contrôlées, hors intempéries.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">3</div>
+                                <div class="ch-aide-timeline-title">Contrôle qualité</div>
+                                <div class="ch-aide-timeline-text">Tests d'étanchéité et de finition avant expédition.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">4</div>
+                                <div class="ch-aide-timeline-title">Transport &amp; pose</div>
+                                <div class="ch-aide-timeline-text">Livraison sur plateau spécial et installation en 1 à 2 jours.</div>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:22px;margin-bottom:16px;">Coupe technique</h2>
+                        <div class="ch-entreprise-diagram">
+                            <div class="ch-entreprise-diagram-label">Toiture isolée</div>
+                            <div class="ch-entreprise-diagram-visual">
+                                <svg viewBox="0 0 300 160" width="70%">
+                                    <defs>
+                                        <linearGradient id="ch-cc-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#FFFFFF"/>
+                                            <stop offset="100%" stop-color="#EAD9C4"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="20" y="20" width="260" height="120" rx="60" fill="url(#ch-cc-body)" stroke="#1F2421" stroke-opacity="0.15"/>
+                                    <rect x="34" y="34" width="232" height="92" rx="46" fill="none" stroke="#C1694F" stroke-width="2" stroke-dasharray="6 6"/>
+                                    <circle cx="110" cy="80" r="38" fill="none" stroke="#1F2421" stroke-opacity="0.25" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div class="ch-entreprise-diagram-label">Structure bois + isolation biosourcée</div>
+                        </div>
+                    </div>
+
+                    <div t-if="request.env.lang != 'fr_FR'">
+                        <h1 class="ch-aide-title">What is a Capsule House pod?</h1>
+                        <p class="ch-aide-subtitle">A pod is a compact home prefabricated in-workshop, delivered nearly finished and installed directly on your land. Wood structure, reinforced insulation and a large panoramic glass front: the comfort of a house, the speed of a module.</p>
+
+                        <table class="ch-aide-table ch-entreprise-compare" style="margin-bottom:48px;">
+                            <thead>
+                                <tr><th>Criteria</th><th class="ch-entreprise-compare-highlight">Capsule House pod</th><th>Traditional construction</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Timeline</td><td class="ch-entreprise-compare-highlight">6 weeks</td><td>8 to 14 months</td></tr>
+                                <tr><td>Permit required</td><td class="ch-entreprise-compare-highlight">Prior declaration (usually)</td><td>Building permit</td></tr>
+                                <tr><td>Carbon footprint</td><td class="ch-entreprise-compare-highlight">Reduced (workshop + local wood)</td><td>High</td></tr>
+                                <tr><td>Mobility</td><td class="ch-entreprise-compare-highlight">Removable / relocatable</td><td>Fixed</td></tr>
+                                <tr><td>Average budget</td><td class="ch-entreprise-compare-highlight">€29,900 – €68,900</td><td>€150,000 and up</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2 class="ch-aide-title" style="font-size:22px;margin-bottom:16px;">From the workshop to your land</h2>
+                        <div class="ch-aide-timeline" style="margin-bottom:48px;">
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">1</div>
+                                <div class="ch-aide-timeline-title">Materials</div>
+                                <div class="ch-aide-timeline-text">Certified timber frame, bio-based insulation, double glazing.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">2</div>
+                                <div class="ch-aide-timeline-title">Manufacturing</div>
+                                <div class="ch-aide-timeline-text">Assembled in-workshop under controlled conditions, weather-independent.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">3</div>
+                                <div class="ch-aide-timeline-title">Quality control</div>
+                                <div class="ch-aide-timeline-text">Weatherproofing and finish testing before shipping.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">4</div>
+                                <div class="ch-aide-timeline-title">Transport &amp; setup</div>
+                                <div class="ch-aide-timeline-text">Delivered on a special flatbed and installed within 1 to 2 days.</div>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:22px;margin-bottom:16px;">Technical cross-section</h2>
+                        <div class="ch-entreprise-diagram">
+                            <div class="ch-entreprise-diagram-label">Insulated roof</div>
+                            <div class="ch-entreprise-diagram-visual">
+                                <svg viewBox="0 0 300 160" width="70%">
+                                    <defs>
+                                        <linearGradient id="ch-cc-body-en" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#FFFFFF"/>
+                                            <stop offset="100%" stop-color="#EAD9C4"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="20" y="20" width="260" height="120" rx="60" fill="url(#ch-cc-body-en)" stroke="#1F2421" stroke-opacity="0.15"/>
+                                    <rect x="34" y="34" width="232" height="92" rx="46" fill="none" stroke="#C1694F" stroke-width="2" stroke-dasharray="6 6"/>
+                                    <circle cx="110" cy="80" r="38" fill="none" stroke="#1F2421" stroke-opacity="0.25" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div class="ch-entreprise-diagram-label">Wood structure + bio-based insulation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

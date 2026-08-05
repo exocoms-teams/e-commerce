@@ -241,6 +241,18 @@ class CapsuleHouseWebsite(Website):
         """Page d'aide "Questions fréquentes"."""
         return request.render('capsule_house_theme.aide_faq_page', {})
 
+    @http.route('/a-propos', type='http', auth='public', website=True, sitemap=True)
+    def entreprise_apropos(self, **kw):
+        """Page Entreprise "À propos". Route neuve (19.0.1.0.47), même
+        logique que /livraison etc. : pas de garde `_is_our_website`.
+        """
+        return request.render('capsule_house_theme.entreprise_apropos_page', {})
+
+    @http.route('/le-concept', type='http', auth='public', website=True, sitemap=True)
+    def entreprise_concept(self, **kw):
+        """Page Entreprise "Le concept"."""
+        return request.render('capsule_house_theme.entreprise_concept_page', {})
+
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def newsletter_subscribe(self, email=None, **kwargs):

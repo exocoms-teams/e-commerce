@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.46',
+    'version': '19.0.1.0.47',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq). Pages à venir au fur et à mesure : Services, Contact, À propos.
+Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -67,6 +67,13 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Liv
         'views/pages/aide_retours.xml',
         'views/pages/aide_garantie.xml',
         'views/pages/aide_faq.xml',
+        # Pages Entreprise (19.0.1.0.47) : À propos, Le concept — liens du
+        # footer colonne "Entreprise". "Contact" reste la page NATIVE
+        # Odoo /contactus (module website, déjà dans les dépendances),
+        # aucun fichier de page contact n'est livré par ce module.
+        'views/partials/entreprise_nav.xml',
+        'views/pages/entreprise_apropos.xml',
+        'views/pages/entreprise_concept.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset

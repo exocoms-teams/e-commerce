@@ -718,3 +718,170 @@
 @media (max-width: 560px) {
     .ch-aide-timeline { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   PAGES ENTREPRISE (À propos /a-propos, Le concept /le-concept)
+   19.0.1.0.47 — réutilise volontairement les classes .ch-aide-*
+   ci-dessus (titre, sous-titre, cartes, tableau) pour rester
+   cohérent avec les pages Aide plutôt que dupliquer un système de
+   classes parallèle. Seuls les blocs propres à ces pages (nav en
+   pills, hero, bandeau stats, historique, comparatif surligné,
+   schéma coupe technique) ont leurs propres classes ci-dessous.
+============================================================ */
+.ch-entreprise-wrap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 24px 24px 80px;
+}
+
+/* Nav en onglets (entreprise_nav.xml, partagée par les 2 pages) */
+.ch-entreprise-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+.ch-entreprise-pill {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--ch-gray-border);
+    background: var(--ch-white);
+    color: var(--ch-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: var(--transition);
+}
+.ch-entreprise-pill:hover { border-color: var(--ch-terracotta); color: var(--ch-terracotta); }
+.ch-entreprise-pill.active {
+    background: var(--ch-ink);
+    border-color: var(--ch-ink);
+    color: var(--ch-white);
+}
+
+/* Hero À propos : texte + illustration, même grille 2 colonnes que le
+   hero d'accueil (voir homepage.css .ch-hero) */
+.ch-entreprise-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 48px;
+}
+.ch-entreprise-hero .ch-aide-title { font-size: 34px; margin-bottom: 16px; }
+.ch-entreprise-accent { color: var(--ch-terracotta); }
+.ch-entreprise-hero-visual { display: flex; justify-content: center; }
+
+/* Bandeau statistiques */
+.ch-entreprise-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 28px 20px;
+    margin-bottom: 48px;
+}
+.ch-entreprise-stat { text-align: center; }
+.ch-entreprise-stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    line-height: 1.2;
+}
+.ch-entreprise-stat-label {
+    font-size: 12.5px;
+    color: var(--ch-fog);
+    margin-top: 4px;
+}
+
+/* Icône des cartes "Nos valeurs" (réutilise .ch-aide-cards/.ch-aide-card) */
+.ch-entreprise-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-md);
+    background: var(--ch-tan-1);
+    color: var(--ch-terracotta);
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+/* Historique — timeline verticale (distincte de .ch-aide-timeline qui
+   est en grille horizontale) */
+.ch-entreprise-history {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 2px solid var(--ch-gray-border);
+    padding-left: 28px;
+    margin-bottom: 16px;
+}
+.ch-entreprise-history-item {
+    position: relative;
+    padding-bottom: 28px;
+}
+.ch-entreprise-history-item::before {
+    content: '';
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    border: 2px solid var(--ch-white);
+    box-shadow: 0 0 0 1px var(--ch-terracotta);
+}
+.ch-entreprise-history-item:last-child { padding-bottom: 0; }
+.ch-entreprise-history-year {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ch-terracotta);
+    margin-bottom: 4px;
+}
+
+/* Le concept — tableau comparatif : réutilise .ch-aide-table, ajoute
+   juste la colonne "Pod Capsule House" surlignée */
+.ch-entreprise-compare-highlight {
+    background: var(--ch-panel);
+    font-weight: 700;
+    color: var(--ch-ink) !important;
+}
+.ch-aide-table.ch-entreprise-compare th.ch-entreprise-compare-highlight,
+.ch-aide-table.ch-entreprise-compare td.ch-entreprise-compare-highlight {
+    background: var(--ch-panel);
+}
+
+/* Le concept — schéma "Coupe technique" */
+.ch-entreprise-diagram {
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+.ch-entreprise-diagram-visual { display: flex; justify-content: center; margin: 16px 0; }
+.ch-entreprise-diagram-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+    .ch-entreprise-hero { grid-template-columns: 1fr; }
+    .ch-entreprise-hero-visual { order: -1; }
+    .ch-entreprise-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+    .ch-entreprise-pills { gap: 6px; }
+    .ch-entreprise-pill { padding: 8px 14px; font-size: 13px; }
+    .ch-entreprise-stats { grid-template-columns: 1fr 1fr; }
+    .ch-aide-table.ch-entreprise-compare { font-size: 12.5px; }
+    .ch-aide-table.ch-entreprise-compare th, .ch-aide-table.ch-entreprise-compare td { padding: 10px 8px; }
+}
