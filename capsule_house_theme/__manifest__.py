@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.45',
+    'version': '19.0.1.0.46',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à venir au fur et à mesure : Services, Contact, À propos.
+Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq). Pages à venir au fur et à mesure : Services, Contact, À propos.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -58,6 +58,15 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à 
         'views/partials/avis_hero.xml',
         'views/partials/avis_content.xml',
         'views/pages/avis.xml',
+        # Pages Aide (19.0.1.0.46) : Livraison, Retours, Garantie, FAQ —
+        # liens du footer colonne "Aide", jusque-là en 404. Menu latéral
+        # partagé (aide_sidebar.xml) chargé avant les 4 pages qui le
+        # t-call-ent.
+        'views/partials/aide_sidebar.xml',
+        'views/pages/aide_livraison.xml',
+        'views/pages/aide_retours.xml',
+        'views/pages/aide_garantie.xml',
+        'views/pages/aide_faq.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset

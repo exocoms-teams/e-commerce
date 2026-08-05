@@ -218,6 +218,29 @@ class CapsuleHouseWebsite(Website):
 
         return request.redirect('/avis?sent=1')
 
+    @http.route('/livraison', type='http', auth='public', website=True, sitemap=True)
+    def aide_livraison(self, **kw):
+        """Page d'aide "Livraison & installation". Route neuve (pas de
+        collision possible avec un autre site de la base mutualisée) :
+        pas besoin de garde `_is_our_website`, même logique que /avis.
+        """
+        return request.render('capsule_house_theme.aide_livraison_page', {})
+
+    @http.route('/retours', type='http', auth='public', website=True, sitemap=True)
+    def aide_retours(self, **kw):
+        """Page d'aide "Retours & rétractation"."""
+        return request.render('capsule_house_theme.aide_retours_page', {})
+
+    @http.route('/garantie', type='http', auth='public', website=True, sitemap=True)
+    def aide_garantie(self, **kw):
+        """Page d'aide "Garantie constructeur"."""
+        return request.render('capsule_house_theme.aide_garantie_page', {})
+
+    @http.route('/faq', type='http', auth='public', website=True, sitemap=True)
+    def aide_faq(self, **kw):
+        """Page d'aide "Questions fréquentes"."""
+        return request.render('capsule_house_theme.aide_faq_page', {})
+
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def newsletter_subscribe(self, email=None, **kwargs):

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.aide_garantie() sur la route
+        '/garantie'. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.aide_garantie_page). Durée et
+        périmètre de garantie repris de la maquette fournie par le
+        client — à confirmer avec lui si les vraies conditions diffèrent.
+    -->
+    <template id="aide_garantie_page" name="Capsule House - Aide - Garantie">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Garantie constructeur | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Manufacturer warranty | Capsule House</t>
+            <div id="wrap" class="ch-aide-page oe_structure">
+
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Aide</span>
+                </div>
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/capsule-house/home">Home</a><span class="sep">/</span><span>Help</span>
+                </div>
+
+                <div class="ch-aide-layout">
+                    <t t-call="capsule_house_theme.aide_sidebar"/>
+
+                    <div class="ch-aide-content" t-if="request.env.lang == 'fr_FR'">
+                        <h1 class="ch-aide-title">Garantie constructeur</h1>
+                        <p class="ch-aide-subtitle">Chaque pod Capsule House est couvert par une garantie constructeur de 10 ans.</p>
+
+                        <div class="ch-aide-warranty">
+                            <div class="ch-aide-warranty-number">10 ans</div>
+                            <div class="ch-aide-warranty-text">Structure, étanchéité et isolation garanties dès la réception, sans démarche supplémentaire de votre part.</div>
+                        </div>
+
+                        <div class="ch-aide-coverage">
+                            <div class="ch-aide-coverage-col ok">
+                                <div class="ch-aide-coverage-title"><i class="fa fa-check"/> Couvert</div>
+                                <ul class="ch-aide-coverage-list">
+                                    <li><i class="fa fa-check"/> Structure et ossature</li>
+                                    <li><i class="fa fa-check"/> Étanchéité de la toiture</li>
+                                    <li><i class="fa fa-check"/> Isolation thermique</li>
+                                    <li><i class="fa fa-check"/> Vitrage et joints d'origine</li>
+                                </ul>
+                            </div>
+                            <div class="ch-aide-coverage-col ko">
+                                <div class="ch-aide-coverage-title"><i class="fa fa-times"/> Non couvert</div>
+                                <ul class="ch-aide-coverage-list">
+                                    <li><i class="fa fa-times"/> Usure normale des finitions</li>
+                                    <li><i class="fa fa-times"/> Dommages accidentels ou climatiques</li>
+                                    <li><i class="fa fa-times"/> Modifications non autorisées</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-card-title" style="margin-bottom:16px;font-size:17px;">Comment déclarer un sinistre</h2>
+                        <div class="ch-aide-steps">
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">1</div>
+                                <div class="ch-aide-steps-text"><strong>Contactez le SAV</strong> avec votre numéro de commande et des photos du problème.</div>
+                            </div>
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">2</div>
+                                <div class="ch-aide-steps-text"><strong>Diagnostic à distance ou visite technique</strong> sous 5 jours ouvrés.</div>
+                            </div>
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">3</div>
+                                <div class="ch-aide-steps-text"><strong>Intervention ou remplacement</strong> pris en charge si couvert par la garantie.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ch-aide-content" t-if="request.env.lang != 'fr_FR'">
+                        <h1 class="ch-aide-title">Manufacturer warranty</h1>
+                        <p class="ch-aide-subtitle">Every Capsule House pod is covered by a 10-year manufacturer warranty.</p>
+
+                        <div class="ch-aide-warranty">
+                            <div class="ch-aide-warranty-number">10 years</div>
+                            <div class="ch-aide-warranty-text">Structure, weatherproofing and insulation guaranteed from delivery, with no extra steps on your part.</div>
+                        </div>
+
+                        <div class="ch-aide-coverage">
+                            <div class="ch-aide-coverage-col ok">
+                                <div class="ch-aide-coverage-title"><i class="fa fa-check"/> Covered</div>
+                                <ul class="ch-aide-coverage-list">
+                                    <li><i class="fa fa-check"/> Structure and frame</li>
+                                    <li><i class="fa fa-check"/> Roof weatherproofing</li>
+                                    <li><i class="fa fa-check"/> Thermal insulation</li>
+                                    <li><i class="fa fa-check"/> Original glazing and seals</li>
+                                </ul>
+                            </div>
+                            <div class="ch-aide-coverage-col ko">
+                                <div class="ch-aide-coverage-title"><i class="fa fa-times"/> Not covered</div>
+                                <ul class="ch-aide-coverage-list">
+                                    <li><i class="fa fa-times"/> Normal wear of finishes</li>
+                                    <li><i class="fa fa-times"/> Accidental or weather damage</li>
+                                    <li><i class="fa fa-times"/> Unauthorized modifications</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-card-title" style="margin-bottom:16px;font-size:17px;">How to file a claim</h2>
+                        <div class="ch-aide-steps">
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">1</div>
+                                <div class="ch-aide-steps-text"><strong>Contact support</strong> with your order number and photos of the issue.</div>
+                            </div>
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">2</div>
+                                <div class="ch-aide-steps-text"><strong>Remote diagnosis or technical visit</strong> within 5 business days.</div>
+                            </div>
+                            <div class="ch-aide-steps-item">
+                                <div class="ch-aide-steps-number">3</div>
+                                <div class="ch-aide-steps-text"><strong>Repair or replacement</strong> covered if included under warranty.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
