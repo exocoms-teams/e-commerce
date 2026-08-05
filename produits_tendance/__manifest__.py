@@ -21,20 +21,13 @@
         'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
     ],
     'assets': {
-        'web.assets_frontend': [
-            'produits_tendance/static/src/scss/_winners_variables.scss',
-            'produits_tendance/static/src/scss/trend_submission_form.scss',
-            'produits_tendance/static/src/scss/trend_product_detail.scss',
-            'produits_tendance/static/src/scss/dashboard.scss',
-            'produits_tendance/static/src/js/dashboard_filters.js',
-        ],
-    },
-    'assets': {
-        'web.assets_frontend': [
-            'produits_tendance/static/src/scss/_winners_variables.scss',
-            'produits_tendance/static/src/scss/trend_submission_form.scss',
-            'produits_tendance/static/src/scss/trend_product_detail.scss',
-        ],
+    'web.assets_frontend': [
+        'produits_tendance/static/src/scss/_winners_variables.scss',
+        'produits_tendance/static/src/scss/trend_submission_form.scss',
+        'produits_tendance/static/src/scss/trend_product_detail.scss',
+        'produits_tendance/static/src/scss/dashboard.scss',
+        'produits_tendance/static/src/js/dashboard_filters.js',
+    ],
     },
     'installable': True,
     'application': False,
