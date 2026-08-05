@@ -1,7 +1,7 @@
 import json
 
 from odoo.tests.common import HttpCase
-
+from odoo.tools import mute_logger
 from ..models.trend_ad import latest_ads_by_ref
 
 
@@ -47,6 +47,7 @@ class TestAdIngestionHistorization(HttpCase):
         )
         return json.loads(response.text)
 
+    @mute_logger('odoo.sql_db', 'odoo.http')
     def test_sending_same_ad_ref_twice_creates_two_historized_rows(self):
         result_1 = self._ingest_ad(likes_count=100, shares_count=10, collected_at='2026-07-01 09:00:00')
         result_2 = self._ingest_ad(likes_count=250, shares_count=40, collected_at='2026-07-02 09:00:00')
