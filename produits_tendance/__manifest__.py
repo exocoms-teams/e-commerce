@@ -17,6 +17,9 @@
         'views/trend_product_detail_templates.xml',
         'views/dashboard_templates.xml',   # WIN-45 / WIN-50
     ],
+    'demo': [
+        'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
+    ],
     'assets': {
         'web.assets_frontend': [
             'produits_tendance/static/src/scss/_winners_variables.scss',
