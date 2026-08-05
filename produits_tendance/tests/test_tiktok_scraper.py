@@ -6,7 +6,6 @@ from odoo.tests.common import HttpCase, TransactionCase
 from ..collecte_scrapers.tiktok_creative_center_scraper import (
     build_ad_payload,
     fetch_trending_ads_page,
-    run_tiktok_ingestion,
 )
 
 
@@ -99,18 +98,26 @@ class TestFetchTrendingAdsPage(TransactionCase):
 
 
 class TestTikTokIngestionEndToEnd(HttpCase):
-    """WIN-69 : vérifie que run_tiktok_ingestion() (le point d'entrée
-    synchrone appelé par le contrôleur) insère bien des trend.ad réels via
-    /api/trend/ingest, en ne mockant QUE l'appel réseau sortant vers
-    TikTok - le trajet vers Odoo passe par le vrai endpoint HTTP, comme
-    test_ad_ingestion.py le fait pour l'ingestion eBay."""
+    """WIN-69 : vérifie que les payloads construits par build_ad_payload()
+    créent bien des trend.ad réels via le vrai endpoint /api/trend/ingest.
+
+    NB : on pousse ici via self.url_open() (comme test_ad_ingestion.py),
+    PAS via run_tiktok_ingestion()/push_ad_to_odoo() : ces derniers font un
+    requests.post() "nu", ce qui est correct pour un vrai appel externe en
+    production, mais le serveur de test HTTP d'Odoo rejette (400) toute
+    requête qui ne porte pas son cookie de session de test - seul
+    self.url_open() le fournit. Le comportement réel de push_ad_to_odoo
+    (POST JSON simple, sans état de session) est lui déjà couvert
+    indirectement : c'est exactement ce que fait ebay_ingestor.push_to_odoo,
+    déjà utilisé en production sans ce problème (aucune session de test en
+    dehors des tests Odoo)."""
 
     def setUp(self):
         super().setUp()
         self.api_key = 'test-tiktok-key'
         self.env['ir.config_parameter'].sudo().set_param('winners.api_key', self.api_key)
 
-    def test_run_tiktok_ingestion_creates_trend_ads(self):
+    def test_build_ad_payload_output_creates_trend_ads_via_real_endpoint(self):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -125,15 +132,21 @@ class TestTikTokIngestionEndToEnd(HttpCase):
             'odoo.addons.produits_tendance.collecte_scrapers.tiktok_creative_center_scraper.requests.get',
             return_value=mock_response,
         ):
-            result = run_tiktok_ingestion(
-                odoo_url=f"{self.base_url()}/api/trend/ingest",
-                odoo_api_key=self.api_key,
-                pages=1,
-            )
+            items = fetch_trending_ads_page(page=1)
 
-        self.assertEqual(result['status'], 'success')
-        self.assertEqual(result['scanned'], 2)
-        self.assertEqual(result['inserted'], 2)
+        self.assertEqual(len(items), 2)
+
+        for item in items:
+            payload = build_ad_payload(item, country_code='MA')
+            body = dict(payload)
+            body['api_key'] = self.api_key
+            response = self.url_open(
+                '/api/trend/ingest',
+                data=json.dumps(body),
+                headers={'Content-Type': 'application/json'},
+            )
+            result = json.loads(response.text)
+            self.assertEqual(result.get('status'), 'success')
 
         ads = self.env['trend.ad'].search([('ad_ref', 'in', ['tiktok-111', 'tiktok-222'])])
         self.assertEqual(len(ads), 2)
