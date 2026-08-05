@@ -396,7 +396,7 @@ class SneakersController(http.Controller):
         # Pagination
         # ==========================
 
-        per_page = 12
+        per_page = 20
         page = max(1, int(request.httprequest.args.get('page', 1)))
         total_products = len(products)
         total_pages = max(1, (total_products + per_page - 1) // per_page)
