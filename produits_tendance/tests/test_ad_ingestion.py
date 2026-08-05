@@ -4,7 +4,7 @@ from odoo.tests.common import HttpCase
 from odoo.tools import mute_logger
 from ..models.trend_ad import latest_ads_by_ref
 
-
+@mute_logger('odoo.sql_db', 'odoo.http')
 class TestAdIngestionHistorization(HttpCase):
     """WIN-XX ('Passer trend.ad en mode historique') : le handler 'ad' de
     /api/trend/ingest ne doit plus écraser likes_count/shares_count sur un
