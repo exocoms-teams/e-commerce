@@ -89,10 +89,16 @@ class TrendDashboardAPI:
         """
         env = self.env(su=True)
         categories = env['trend.category'].search([], order='name asc')
-        countries = env['trend.product'].read_group(
-            [('country', '!=', False)], ['country'], ['country']
+
+        # _read_group (API 19.0) remplace read_group (déprécié) : sans
+        # aggregates, il renvoie directement une liste de tuples à 1 élément
+        # (une entrée par valeur distincte de country).
+        country_groups = env['trend.product']._read_group(
+            [('country', '!=', False)], groupby=['country']
         )
+        countries = sorted(country for (country,) in country_groups if country)
+
         return {
             'categories': [{'id': c.id, 'name': c.name} for c in categories],
-            'countries': sorted(g['country'] for g in countries if g['country']),
+            'countries': countries,
         }

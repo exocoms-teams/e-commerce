@@ -182,37 +182,28 @@ class TrendIngestController(http.Controller):
         )
 
     def _handle_ad(self, payload):
-        required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
-        for field in required_fields:
-            if not payload.get(field):
-                return self._json_response(
-                    {'status': 'error', 'code': 'missing_field', 'field': field}, 400
-                )
+         required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
+         for field in required_fields:
+           if not payload.get(field):
+            return self._json_response(
+                {'status': 'error', 'code': 'missing_field', 'field': field}, 400
+            )
 
-        env = request.env(su=True)
+         env = request.env(su=True)
 
-        existing = env['trend.ad'].search(
-            [('ad_ref', '=', payload['ad_ref'])], limit=1
-        )
+         vals = {
+        'ad_ref': payload['ad_ref'],
+        'product_ref': payload['product_ref'],
+        'country': payload['country'],
+        'social_network': payload['social_network'],
+        'likes_count': payload.get('likes_count', 0),
+        'shares_count': payload.get('shares_count', 0),
+          }
+         record = env['trend.ad'].create(vals)
 
-        vals = {
-            'ad_ref': payload['ad_ref'],
-            'product_ref': payload['product_ref'],
-            'country': payload['country'],
-            'social_network': payload['social_network'],
-            'likes_count': payload.get('likes_count', 0),
-            'shares_count': payload.get('shares_count', 0),
-        }
-
-        if existing:
-            existing.write(vals)
-            record = existing
-        else:
-            record = env['trend.ad'].create(vals)
-
-        return self._json_response(
-            {'status': 'success', 'type': 'ad', 'id': record.id}, 200
-        )
+         return self._json_response(
+        {'status': 'success', 'type': 'ad', 'id': record.id}, 200
+    )
 
     def _handle_score(self, payload):
         required_fields = ['product_ref', 'computed_score']
