@@ -132,6 +132,20 @@
                             <div class="sn-promo-section">
                                 <t t-set="redirect" t-value="'/shop/cart'"/>
                                 <t t-call="website_sale.coupon_form"/>
+                                <!-- Coupon error/success messages -->
+                                <t t-if="request.params.get('code_not_available')">
+                                    <div class="alert alert-danger mt-2" role="alert">This promo code is not available.</div>
+                                </t>
+                                <t t-elif="request.session.get('error_promo_code')">
+                                    <div class="alert alert-danger mt-2" role="alert">
+                                        <t t-esc="request.session.pop('error_promo_code')"/>
+                                    </div>
+                                </t>
+                                <t t-if="request.session.get('successful_code')">
+                                    <div class="alert alert-success mt-2" role="alert">
+                                        Coupon <strong><t t-esc="request.session.pop('successful_code')"/></strong> applied successfully!
+                                    </div>
+                                </t>
                             </div>
 
                             <div class="sn-summary-divider"></div>

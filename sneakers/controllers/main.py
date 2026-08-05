@@ -1,6 +1,7 @@
 from odoo import http, fields, _
 from odoo.http import request
 from odoo.addons.website_sale.controllers import main as website_sale_main
+from odoo.addons.sale.controllers.portal import CustomerPortal
 
 
 def _is_module_installed(module_name):
@@ -40,91 +41,82 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
 
     def pricelist(self, promo, reward_id=None, **post):
         if not (order_sudo := request.cart):
-            return super().pricelist(promo, **post)
+            return request.redirect(post.get('r', '/shop/cart'))
         _clear_order_coupons(order_sudo)
-        if not post.get('r'):
-            post['r'] = '/shop/cart'
-        return super().pricelist(promo, reward_id=reward_id, **post)
+        redirect = post.get('r', '/shop/cart')
+
+        # Try coupon/loyalty code first (sale_loyalty logic)
+        coupon_status = order_sudo._try_apply_code(promo)
+        if coupon_status.get('not_found'):
+            # Not a coupon — try as pricelist code
+            pricelist_sudo = request.env['product.pricelist'].sudo().search(
+                [('code', '=', promo)], limit=1
+            )
+            if not pricelist_sudo:
+                request.session['error_promo_code'] = _("This promo code is not available.")
+                return request.redirect("%s?code_not_available=1" % redirect)
+            request.website._apply_pricelist(pricelist=pricelist_sudo)
+        elif coupon_status.get('error'):
+            request.session['error_promo_code'] = coupon_status['error']
+        elif 'error' not in coupon_status:
+            reward_successfully_applied = True
+            if len(coupon_status) == 1:
+                coupon, rewards = next(iter(coupon_status.items()))
+                reward = rewards if len(rewards) == 1 else (
+                    rewards.browse(reward_id) if reward_id and reward_id in rewards.ids else rewards.browse()
+                )
+                if reward and (not reward.multi_product or request.env.context.get('product_id')):
+                    reward_successfully_applied = self._apply_reward(order_sudo, reward, coupon)
+            if reward_successfully_applied:
+                request.session['successful_code'] = promo
+        return request.redirect(redirect)
+
+    def _apply_reward(self, order, reward, coupon):
+        product_id = request.env.context.get('product_id')
+        product = product_id and request.env['product.product'].sudo().browse(product_id)
+        try:
+            reward_status = order._apply_program_reward(reward, coupon, product=product)
+        except Exception:
+            return False
+        if 'error' in reward_status:
+            request.session['error_promo_code'] = reward_status['error']
+            return False
+        order._update_programs_and_rewards()
+        if order.carrier_id.free_over and not reward.program_id.is_payment_program:
+            res = order.carrier_id.rate_shipment(order)
+            if res.get('success'):
+                order.set_delivery_line(order.carrier_id, res['price'])
+            else:
+                order._remove_delivery_line()
+        return True
 
     def activate_coupon(self, code, r='/shop-sneakers', **kw):
         if not (order_sudo := request.cart):
-            return super().activate_coupon(code, r=r, **kw)
+            return request.redirect(r)
         _clear_order_coupons(order_sudo)
-        return super().activate_coupon(code, r=r, **kw)
+        request.session['pending_coupon_code'] = code
+        result = order_sudo._try_pending_coupon()
+        from werkzeug.urls import url_parse, url_encode
+        url_parts = url_parse(r)
+        url_query = url_parts.decode_query()
+        if isinstance(result, dict) and 'error' in result:
+            url_query['coupon_error'] = result['error']
+        else:
+            url_query['notify_coupon'] = code
+        redirect = url_parts.replace(query=url_encode(url_query))
+        return request.redirect(redirect.to_url())
 
     @http.route('/shop', type='http', auth='public', website=True)
     def shop(self, **kwargs):
-        return request.redirect('/shop-sneakers', code=301)
-
-
-class SneakersController(http.Controller):
-
-    def _get_product_ratings(self, products):
-
-        product_ratings = {}
-
-        for prod in products:
-
-            ratings = request.env['rating.rating'].sudo().search([
-                ('res_model', '=', 'product.template'),
-                ('res_id', '=', prod.id),
-                ('consumed', '=', True),
-            ])
-
-            count = len(ratings)
-
-            product_ratings[prod.id] = (
-                round(sum(ratings.mapped('rating')) / count)
-                if count else 0
-            )
-
-        return product_ratings
-
-
-    @http.route('/', type='http', auth='public', website=True)
-    def home(self):
-
-        popular_products = request.env['product.template'].sudo().search(
-            [
-                ('sale_ok', '=', True),
-                ('website_published', '=', True)
-            ],
-            limit=8
-        )
-
-
-        categories = request.env['product.public.category'].sudo().search(
-            [],
-            limit=6
-        )
-
-
-        brands = request.env['product.brand'].sudo().search(
-            [],
-            limit=5
-        )
-
-        return request.render(
-            'sneakers.page_home',
-            {
-                'popular_products': popular_products,
-                'categories': categories,
-                'brands': brands,
-            }
-        )
-
-    @http.route('/shop', type='http', auth='public', website=True)
-    def shop_redirect(self, **kwargs):
         return request.redirect('/shop-sneakers', code=301)
 
     @http.route('/shop-sneakers', type='http', auth='public', website=True)
-    def shop(self, **kwargs):
+    def shop_sneakers(self, **kwargs):
 
         # ==========================
         # Catégories principales
         # ==========================
 
-        # Show all categories (all are sneaker-relevant for this store)
         categories = request.env['product.public.category'].sudo().search([
             ('parent_id', '=', False)
         ])
@@ -162,6 +154,7 @@ class SneakersController(http.Controller):
             unique_subcategories[cat.name] = cat
 
         subcategories = list(unique_subcategories.values())
+
         # ==========================
         # Sous catégorie sélectionnée
         # ==========================
@@ -176,7 +169,6 @@ class SneakersController(http.Controller):
 
             if not selected_subcategory.exists():
                 selected_subcategory = request.env['product.public.category']
-
 
         # ==========================
         # Produits
@@ -202,19 +194,17 @@ class SneakersController(http.Controller):
         if selected_subcategory and selected_subcategory.exists():
 
             if selected_category:
-                # Cas 2 : Men/Women/Kids -> filtrer par l'ID exact
                 products = products.filtered(
                     lambda p: selected_subcategory.id in p.public_categ_ids.ids
                 )
             else:
-                # Cas 1 : Shop général -> filtrer par le nom
                 products = products.filtered(
                     lambda p: any(
                         cat.name == selected_subcategory.name
                         for cat in p.public_categ_ids
                     )
                 )
-            
+
         elif selected_category:
 
             products = products.filtered(
@@ -225,8 +215,6 @@ class SneakersController(http.Controller):
                         for cat in p.public_categ_ids
                     )
             )
-
-        
 
         # ==========================
         # Filtre par Brand
@@ -252,7 +240,6 @@ class SneakersController(http.Controller):
 
         size_ids = request.httprequest.args.getlist('size')
 
-
         if size_ids:
 
             products = products.filtered(
@@ -264,14 +251,11 @@ class SneakersController(http.Controller):
                     )
             )
 
-
-
         # ==========================
         # Filtre par couleur
         # ==========================
 
         color_ids = request.httprequest.args.getlist('color')
-
 
         if color_ids:
 
@@ -281,7 +265,6 @@ class SneakersController(http.Controller):
                 if cid.isdigit()
             ]
 
-
             products = products.filtered(
                 lambda p:
                     any(
@@ -290,8 +273,6 @@ class SneakersController(http.Controller):
                         for value in variant.product_template_attribute_value_ids.product_attribute_value_id
                     )
             )
-
-
 
         # ==========================
         # Filtre prix
@@ -304,7 +285,6 @@ class SneakersController(http.Controller):
             )
         )
 
-
         price_max = float(
             request.httprequest.args.get(
                 'price_max',
@@ -312,13 +292,10 @@ class SneakersController(http.Controller):
             )
         )
 
-
         products = products.filtered(
             lambda p:
                 price_min <= p.list_price <= price_max
         )
-
-
 
         # ==========================
         # Filtre disponibilité
@@ -338,13 +315,11 @@ class SneakersController(http.Controller):
                 lambda p: p.qty_available <= 0
             )
 
-
         # ==========================
         # Tri produits
         # ==========================
 
         sort_by = request.httprequest.args.get('sort')
-
 
         if sort_by == "price-low":
 
@@ -352,14 +327,12 @@ class SneakersController(http.Controller):
                 key=lambda p:p.list_price
             )
 
-
         elif sort_by == "price-high":
 
             products = products.sorted(
                 key=lambda p:p.list_price,
                 reverse=True
             )
-
 
         elif sort_by == "newest":
 
@@ -390,7 +363,7 @@ class SneakersController(http.Controller):
             ('attribute_id', '=', color_attribute.id)
         ]) if color_attribute else []
 
-        product_ratings = self._get_product_ratings(products)
+        product_ratings = _get_product_ratings(products)
 
         # ==========================
         # Pagination
@@ -422,6 +395,68 @@ class SneakersController(http.Controller):
             'sneakers.shop_page',
             values
         )
+
+
+def _get_product_ratings(products):
+    product_ratings = {}
+    for prod in products:
+        ratings = request.env['rating.rating'].sudo().search([
+            ('res_model', '=', 'product.template'),
+            ('res_id', '=', prod.id),
+            ('consumed', '=', True),
+        ])
+        count = len(ratings)
+        product_ratings[prod.id] = (
+            round(sum(ratings.mapped('rating')) / count)
+            if count else 0
+        )
+    return product_ratings
+
+
+class SneakersController(CustomerPortal):
+
+    def portal_my_orders(self, **kwargs):
+        partner = request.env.user.partner_id
+        orders = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', partner.id),
+            ('state', 'in', ['draft', 'sent', 'sale', 'done', 'cancel']),
+        ], order='date_order desc')
+        return request.render('sneakers.page_orders', {
+            'orders': orders,
+        })
+
+    @http.route('/', type='http', auth='public', website=True)
+    def home(self):
+
+        popular_products = request.env['product.template'].sudo().search(
+            [
+                ('sale_ok', '=', True),
+                ('website_published', '=', True)
+            ],
+            limit=8
+        )
+
+
+        categories = request.env['product.public.category'].sudo().search(
+            [],
+            limit=6
+        )
+
+
+        brands = request.env['product.brand'].sudo().search(
+            [],
+            limit=5
+        )
+
+        return request.render(
+            'sneakers.page_home',
+            {
+                'popular_products': popular_products,
+                'categories': categories,
+                'brands': brands,
+            }
+        )
+
     @http.route('/shop/cart/get_product_quantity',type='jsonrpc',auth='public',website=True)
     def get_product_cart_quantity(self, product_id):
 
@@ -463,7 +498,7 @@ class SneakersController(http.Controller):
             ('public_categ_ids', 'in', product.public_categ_ids.ids)
         ], limit=4)
 
-        related_product_ratings = self._get_product_ratings(related_products)
+        related_product_ratings = _get_product_ratings(related_products)
 
         # ==========================
         # Attributes Color / Size
@@ -715,6 +750,10 @@ class SneakersController(http.Controller):
             'company': company,
         }
         return request.render('sneakers.page_confirmation', values)
+
+    @http.route('/payment', type='http', auth='user', website=True, methods=['POST'])
+    def payment_post(self, **kwargs):
+        return request.redirect('/shop/payment')
 
     @http.route('/wishlist', type='http', auth='user', website=True)
     def wishlist(self):
