@@ -4,7 +4,7 @@
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock'],
+    'depends': ['website', 'website_sale', 'website_sale_wishlist', 'sale_loyalty', 'website_sale_loyalty', 'stock', 'delivery'],
 
     'data': [
         'security/ir.model.access.csv',
@@ -36,6 +36,9 @@
         'views/pages/account.xml',
         'views/pages/orders.xml',
         'views/pages/static_pages.xml',
+
+        'views/delivery_carrier_views.xml',
+        'views/sendcloud_shipping_method_views.xml',
     ],
 
     'assets': {
