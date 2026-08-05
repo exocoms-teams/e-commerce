@@ -36,12 +36,19 @@ class TrendScore(models.Model):
 
     def _winners_check_score_alerts(self):
         threshold = self.env['ir.config_parameter'].sudo().get_param(
-            'produits_tendance.score_alert_threshold'
+            'produits_tendance.score_alert_threshold', default=None
         )
+        # NB : get_param() renvoie False (pas None) par défaut quand la clé
+        # est absente — float(False) vaut 0.0 sans lever d'exception, ce qui
+        # ferait passer "seuil non configuré" pour "seuil = 0" (donc toute
+        # alerte serait déclenchée). D'où le default=None explicite ci-dessus
+        # et ce check, plutôt que de se fier uniquement au try/except.
+        if threshold is None:
+            return  # Pas de seuil configuré : pas d'alerte.
         try:
             threshold = float(threshold)
         except (TypeError, ValueError):
-            return  # Pas de seuil configuré : pas d'alerte.
+            return
 
         for score in self:
             if score.computed_score < threshold:
