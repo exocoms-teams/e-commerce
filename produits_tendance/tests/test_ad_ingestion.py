@@ -2,7 +2,7 @@ import json
 
 from odoo.tests.common import HttpCase
 
-from ..models.trend_score_calculator import build_current_metrics
+from ..models.trend_ad import latest_ads_by_ref
 
 
 class TestAdIngestionHistorization(HttpCase):
@@ -66,7 +66,7 @@ class TestAdIngestionHistorization(HttpCase):
         self._ingest_ad(likes_count=100, shares_count=10, collected_at='2026-07-01 09:00:00')
         self._ingest_ad(likes_count=250, shares_count=40, collected_at='2026-07-02 09:00:00')
 
-        metrics = build_current_metrics(self.product)
-        self.assertEqual(metrics['likes'], 250)
-        self.assertEqual(metrics['partages'], 40)
-        self.assertEqual(metrics['ads'], 1)
+        latest_ads = latest_ads_by_ref(self.product.ad_ids)
+        self.assertEqual(sum(latest_ads.mapped('likes_count')), 250)
+        self.assertEqual(sum(latest_ads.mapped('shares_count')), 40)
+        self.assertEqual(len(latest_ads), 1)
