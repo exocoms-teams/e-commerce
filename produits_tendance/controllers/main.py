@@ -173,9 +173,14 @@ class TrendIngestController(http.Controller):
         if not category:
             category = env['trend.category'].create({'name': payload['category']})
 
+        # product_ref est la seule cle unique en base (contrainte SQL
+        # _product_ref_source_uniq sur trend.product, malgre son nom - elle
+        # ne porte que sur product_ref). Filtrer aussi sur source ici ferait
+        # echouer ce search() a tort si le meme product_ref revient d'une
+        # source differente, puis planter le create() qui suit sur la
+        # contrainte unique(product_ref).
         existing = env['trend.product'].search([
             ('product_ref', '=', payload['product_ref']),
-            ('source', '=', payload['source']),
         ], limit=1)
 
         vals = {
@@ -219,6 +224,8 @@ class TrendIngestController(http.Controller):
           'likes_count': payload.get('likes_count', 0),
           'shares_count': payload.get('shares_count', 0),
              }
+         if payload.get('collected_at'):
+             vals['collected_at'] = payload['collected_at']
          record = env['trend.ad'].create(vals)
 
          return self._json_response(
