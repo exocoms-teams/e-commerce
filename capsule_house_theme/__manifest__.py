@@ -41,6 +41,8 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis). Pages à 
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/categories.xml',
+        'data/products.xml',
         'data/website_data.xml',
         'data/seo_data.xml',
         'data/cron.xml',

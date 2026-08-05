@@ -99,12 +99,15 @@ SCOPED_VIEW_XML_IDS = [
 # Accessoires) et les pages /shop/category/<id> natives de website_sale.
 SHOP_CATEGORIES = ['Studio', 'Duo', 'Panorama', 'Accessoires']
 
-# product.attribute utilisé comme simple filtre boutique (pas de vraies
-# variantes) : nom -> liste de valeurs.
 SHOP_FILTER_ATTRIBUTES = {
+    # Attributs initiaux
     'Surface (m²)': ['15-20 m²', '20-30 m²', '30-45 m²'],
-    'Delais (jours)' : ['1 ou 2 jours', '3 à 6 jours', '7 jours ou plus'],
-    'Materiaux' : ['Bois', 'Verre', 'Fer'],
+    'Delais (jours)': ['1 ou 2 jours', '3 à 6 jours', '7 jours ou plus'],
+    'Materiaux': ['Bois', 'Verre', 'Fer'],
+    # Nouveaux attributs
+    'Usage': ['Bureau', 'Atelier', 'Habitation', 'Loisir', 'Accessoire'],
+    'Garantie': ['2 ans', '5 ans', '10 ans'],
+    "Niveau d'isolation": ['Standard', 'Haute performance', 'Non applicable'],
 }
 
 
