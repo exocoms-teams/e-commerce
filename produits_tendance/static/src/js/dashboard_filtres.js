@@ -128,5 +128,13 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', initDashboardFilters);
+    // Si le DOM est déjà chargé au moment où ce script s'exécute (cas
+    // fréquent sur les pages Odoo, où les bundles JS peuvent être injectés
+    // après DOMContentLoaded), on initialise immédiatement. Sinon on
+    // attend l'événement comme avant.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDashboardFilters);
+    } else {
+        initDashboardFilters();
+    }
 })();
