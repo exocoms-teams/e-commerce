@@ -378,3 +378,510 @@
     .ch-avis-form-row { grid-template-columns: 1fr; }
     .ch-avis-form-card { padding: 24px; }
 }
+
+/* ============================================================
+   PAGES AIDE — Livraison, Retours, Garantie, FAQ (v19.0.1.0.46)
+   Correspond à views/partials/aide_sidebar.xml et
+   views/pages/aide_livraison.xml / aide_retours.xml /
+   aide_garantie.xml / aide_faq.xml. Palette et police reprises à
+   l'identique du reste du site (variables.css) — pas de nouvelle
+   charte pour ces 4 pages.
+============================================================ */
+
+.ch-aide-breadcrumb {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 20px 24px 0;
+    font-size: 13px;
+    color: var(--ch-fog);
+}
+.ch-aide-breadcrumb a { color: var(--ch-fog); text-decoration: none; }
+.ch-aide-breadcrumb a:hover { color: var(--ch-ink); }
+.ch-aide-breadcrumb .sep { margin: 0 6px; color: var(--ch-gray-border); }
+
+.ch-aide-layout {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 24px 24px 80px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* ── SIDEBAR (aide_sidebar.xml, partagée sur les 4 pages) ── */
+.ch-aide-sidebar {
+    background: var(--ch-ink);
+    border-radius: var(--r-lg);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: sticky;
+    top: 24px;
+}
+.ch-aide-sidebar-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ch-amber);
+    margin-bottom: 12px;
+}
+.ch-aide-sidebar-link {
+    display: block;
+    padding: 11px 14px;
+    border-radius: var(--r-md);
+    color: rgba(255,255,255,0.75);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--transition), color var(--transition);
+}
+.ch-aide-sidebar-link:hover { color: var(--ch-white); background: rgba(255,255,255,0.06); }
+.ch-aide-sidebar-link.active { background: var(--ch-terracotta); color: var(--ch-white); }
+
+/* ── CONTENU COMMUN ── */
+.ch-aide-title {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 3.5vw, 38px);
+    font-weight: 800;
+    color: var(--ch-ink);
+    margin-bottom: 12px;
+}
+.ch-aide-subtitle {
+    font-size: 15px;
+    color: var(--ch-fog);
+    line-height: 1.65;
+    max-width: 640px;
+    margin-bottom: 28px;
+}
+
+/* Encart callout (info livraison / alerte retours / chiffre garantie) */
+.ch-aide-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+    margin-bottom: 32px;
+}
+.ch-aide-callout-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--ch-terracotta);
+    margin-top: 2px;
+}
+.ch-aide-callout.ch-aide-callout-alert .ch-aide-callout-icon { color: var(--ch-red); }
+.ch-aide-callout-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    margin-bottom: 4px;
+}
+.ch-aide-callout-text {
+    font-size: 13.5px;
+    color: var(--ch-fog);
+    line-height: 1.6;
+}
+
+/* Timeline 4 étapes (Livraison) */
+.ch-aide-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+}
+.ch-aide-timeline-item {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 22px 20px;
+}
+.ch-aide-timeline-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--ch-ink);
+    color: var(--ch-white);
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+.ch-aide-timeline-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    margin-bottom: 6px;
+}
+.ch-aide-timeline-text {
+    font-size: 13.5px;
+    color: var(--ch-fog);
+    line-height: 1.55;
+}
+
+/* Tableau zones de livraison */
+.ch-aide-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 1px solid var(--ch-gray-border);
+}
+.ch-aide-table th {
+    background: var(--ch-panel);
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ch-fog);
+    padding: 14px 20px;
+}
+.ch-aide-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--ch-ink);
+    border-top: 1px solid var(--ch-gray-border);
+}
+
+/* 3 cartes info (Retours) */
+.ch-aide-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.ch-aide-card {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 22px 20px;
+}
+.ch-aide-card-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    margin-bottom: 8px;
+}
+.ch-aide-card-text {
+    font-size: 13.5px;
+    color: var(--ch-fog);
+    line-height: 1.6;
+}
+
+.ch-aide-btn-dark {
+    display: inline-block;
+    background: var(--ch-ink);
+    color: var(--ch-white) !important;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 26px;
+    border-radius: var(--r-pill);
+    transition: background var(--transition);
+}
+.ch-aide-btn-dark:hover { background: var(--ch-terracotta); }
+
+/* Bandeau "10 ans" (Garantie) */
+.ch-aide-warranty {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 26px 30px;
+    margin-bottom: 32px;
+}
+.ch-aide-warranty-number {
+    font-family: var(--font-head);
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--ch-terracotta);
+    white-space: nowrap;
+}
+.ch-aide-warranty-text {
+    font-size: 14px;
+    color: var(--ch-fog);
+    line-height: 1.6;
+}
+
+/* Couvert / Non couvert (Garantie) */
+.ch-aide-coverage {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+}
+.ch-aide-coverage-col {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 22px 24px;
+}
+.ch-aide-coverage-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+.ch-aide-coverage-col.ok .ch-aide-coverage-title { color: var(--ch-green); }
+.ch-aide-coverage-col.ko .ch-aide-coverage-title { color: var(--ch-red); }
+.ch-aide-coverage-list { list-style: none; margin: 0; padding: 0; }
+.ch-aide-coverage-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--ch-ink);
+    padding: 6px 0;
+}
+.ch-aide-coverage-col.ok .ch-aide-coverage-list li i { color: var(--ch-green); }
+.ch-aide-coverage-col.ko .ch-aide-coverage-list li i { color: var(--ch-red); }
+
+/* Étapes numérotées (déclarer un sinistre) */
+.ch-aide-steps { display: flex; flex-direction: column; gap: 16px; }
+.ch-aide-steps-item { display: flex; align-items: flex-start; gap: 14px; }
+.ch-aide-steps-number {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--ch-ink);
+    color: var(--ch-white);
+    font-size: 12.5px;
+    font-weight: 800;
+    margin-top: 2px;
+}
+.ch-aide-steps-text { font-size: 14.5px; color: var(--ch-ink); line-height: 1.6; }
+.ch-aide-steps-text strong { font-weight: 700; }
+
+/* FAQ — catégories + accordéon natif Bootstrap (même markup que le
+   snippet Accordéon du Website Builder, JS déjà chargé globalement) */
+.ch-aide-faq-category {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ch-terracotta);
+    margin: 32px 0 12px;
+}
+.ch-aide-faq-category:first-child { margin-top: 0; }
+.ch-aide-faq .accordion-item {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ch-gray-border);
+}
+.ch-aide-faq .accordion-button {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    background: transparent;
+    padding: 16px 4px;
+    box-shadow: none !important;
+}
+.ch-aide-faq .accordion-button:not(.collapsed) { color: var(--ch-ink); background: transparent; }
+.ch-aide-faq .accordion-button::after { filter: none; }
+.ch-aide-faq .accordion-body {
+    padding: 0 4px 18px;
+    font-size: 13.5px;
+    color: var(--ch-fog);
+    line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+    .ch-aide-layout { grid-template-columns: 1fr; }
+    .ch-aide-sidebar {
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+        padding: 16px;
+    }
+    .ch-aide-sidebar-title { display: none; }
+    .ch-aide-sidebar-link { white-space: nowrap; }
+    .ch-aide-timeline { grid-template-columns: repeat(2, 1fr); }
+    .ch-aide-cards { grid-template-columns: 1fr; }
+    .ch-aide-coverage { grid-template-columns: 1fr; }
+    .ch-aide-warranty { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+@media (max-width: 560px) {
+    .ch-aide-timeline { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   PAGES ENTREPRISE (À propos /a-propos, Le concept /le-concept)
+   19.0.1.0.47 — réutilise volontairement les classes .ch-aide-*
+   ci-dessus (titre, sous-titre, cartes, tableau) pour rester
+   cohérent avec les pages Aide plutôt que dupliquer un système de
+   classes parallèle. Seuls les blocs propres à ces pages (nav en
+   pills, hero, bandeau stats, historique, comparatif surligné,
+   schéma coupe technique) ont leurs propres classes ci-dessous.
+============================================================ */
+.ch-entreprise-wrap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 24px 24px 80px;
+}
+
+/* Nav en onglets (entreprise_nav.xml, partagée par les 2 pages) */
+.ch-entreprise-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+.ch-entreprise-pill {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--ch-gray-border);
+    background: var(--ch-white);
+    color: var(--ch-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: var(--transition);
+}
+.ch-entreprise-pill:hover { border-color: var(--ch-terracotta); color: var(--ch-terracotta); }
+.ch-entreprise-pill.active {
+    background: var(--ch-ink);
+    border-color: var(--ch-ink);
+    color: var(--ch-white);
+}
+
+/* Hero À propos : texte + illustration, même grille 2 colonnes que le
+   hero d'accueil (voir homepage.css .ch-hero) */
+.ch-entreprise-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 48px;
+}
+.ch-entreprise-hero .ch-aide-title { font-size: 34px; margin-bottom: 16px; }
+.ch-entreprise-accent { color: var(--ch-terracotta); }
+.ch-entreprise-hero-visual { display: flex; justify-content: center; }
+
+/* Bandeau statistiques */
+.ch-entreprise-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 28px 20px;
+    margin-bottom: 48px;
+}
+.ch-entreprise-stat { text-align: center; }
+.ch-entreprise-stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    line-height: 1.2;
+}
+.ch-entreprise-stat-label {
+    font-size: 12.5px;
+    color: var(--ch-fog);
+    margin-top: 4px;
+}
+
+/* Icône des cartes "Nos valeurs" (réutilise .ch-aide-cards/.ch-aide-card) */
+.ch-entreprise-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-md);
+    background: var(--ch-tan-1);
+    color: var(--ch-terracotta);
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+/* Historique — timeline verticale (distincte de .ch-aide-timeline qui
+   est en grille horizontale) */
+.ch-entreprise-history {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 2px solid var(--ch-gray-border);
+    padding-left: 28px;
+    margin-bottom: 16px;
+}
+.ch-entreprise-history-item {
+    position: relative;
+    padding-bottom: 28px;
+}
+.ch-entreprise-history-item::before {
+    content: '';
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ch-terracotta);
+    border: 2px solid var(--ch-white);
+    box-shadow: 0 0 0 1px var(--ch-terracotta);
+}
+.ch-entreprise-history-item:last-child { padding-bottom: 0; }
+.ch-entreprise-history-year {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ch-terracotta);
+    margin-bottom: 4px;
+}
+
+/* Le concept — tableau comparatif : réutilise .ch-aide-table, ajoute
+   juste la colonne "Pod Capsule House" surlignée */
+.ch-entreprise-compare-highlight {
+    background: var(--ch-panel);
+    font-weight: 700;
+    color: var(--ch-ink) !important;
+}
+.ch-aide-table.ch-entreprise-compare th.ch-entreprise-compare-highlight,
+.ch-aide-table.ch-entreprise-compare td.ch-entreprise-compare-highlight {
+    background: var(--ch-panel);
+}
+
+/* Le concept — schéma "Coupe technique" */
+.ch-entreprise-diagram {
+    background: var(--ch-panel);
+    border-radius: var(--r-lg);
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+.ch-entreprise-diagram-visual { display: flex; justify-content: center; margin: 16px 0; }
+.ch-entreprise-diagram-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ch-ink);
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+    .ch-entreprise-hero { grid-template-columns: 1fr; }
+    .ch-entreprise-hero-visual { order: -1; }
+    .ch-entreprise-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+    .ch-entreprise-pills { gap: 6px; }
+    .ch-entreprise-pill { padding: 8px 14px; font-size: 13px; }
+    .ch-entreprise-stats { grid-template-columns: 1fr 1fr; }
+    .ch-aide-table.ch-entreprise-compare { font-size: 12.5px; }
+    .ch-aide-table.ch-entreprise-compare th, .ch-aide-table.ch-entreprise-compare td { padding: 10px 8px; }
+}

@@ -92,6 +92,19 @@ SCOPED_VIEW_XML_IDS = [
     # avis_hero.xml et README "Traduction des pages").
     'capsule_house_theme.avis_hero_fr',
     'capsule_house_theme.avis_hero_en',
+    # Ajoutés en 19.0.1.0.46 (pages Aide : Livraison/Retours/Garantie/
+    # FAQ, colonne "Aide" du footer — voir README).
+    'capsule_house_theme.aide_sidebar',
+    'capsule_house_theme.aide_livraison_page',
+    'capsule_house_theme.aide_retours_page',
+    'capsule_house_theme.aide_garantie_page',
+    'capsule_house_theme.aide_faq_page',
+    # Ajoutés en 19.0.1.0.47 (pages Entreprise : À propos/Le concept,
+    # colonne "Entreprise" du footer — "Contact" reste natif /contactus,
+    # jamais construit par ce module — voir README).
+    'capsule_house_theme.entreprise_nav',
+    'capsule_house_theme.entreprise_apropos_page',
+    'capsule_house_theme.entreprise_concept_page',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de

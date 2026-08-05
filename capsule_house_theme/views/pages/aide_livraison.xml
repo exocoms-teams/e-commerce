@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.aide_livraison() (controllers/main.py)
+        sur la route '/livraison'. Scopée à notre site via
+        _scope_layout_views() (external id capsule_house_theme.aide_livraison_page).
+        Contenu (étapes, délais, frais) repris de la maquette fournie par
+        le client — à confirmer/ajuster avec lui si les vrais délais
+        d'atelier diffèrent, ce n'est pas une donnée vérifiée par ce module.
+    -->
+    <template id="aide_livraison_page" name="Capsule House - Aide - Livraison">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Livraison &amp; installation | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Delivery &amp; installation | Capsule House</t>
+            <div id="wrap" class="ch-aide-page oe_structure">
+
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Aide</span>
+                </div>
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/capsule-house/home">Home</a><span class="sep">/</span><span>Help</span>
+                </div>
+
+                <div class="ch-aide-layout">
+                    <t t-call="capsule_house_theme.aide_sidebar"/>
+
+                    <div class="ch-aide-content" t-if="request.env.lang == 'fr_FR'">
+                        <h1 class="ch-aide-title">Livraison &amp; installation</h1>
+                        <p class="ch-aide-subtitle">De la commande à la pose sur votre terrain, voici comment se déroule la livraison de votre pod.</p>
+
+                        <div class="ch-aide-callout">
+                            <i class="fa fa-truck ch-aide-callout-icon"/>
+                            <div>
+                                <div class="ch-aide-callout-title">Livraison et installation offertes dès 25 000 € d'achat</div>
+                                <div class="ch-aide-callout-text">En dessous de ce montant, des frais de transport et de pose s'appliquent selon la distance — calculés automatiquement au checkout.</div>
+                            </div>
+                        </div>
+
+                        <div class="ch-aide-timeline">
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">1</div>
+                                <div class="ch-aide-timeline-title">Commande confirmée</div>
+                                <div class="ch-aide-timeline-text">Validation du devis et versement d'un acompte de 20 %.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">2</div>
+                                <div class="ch-aide-timeline-title">Fabrication</div>
+                                <div class="ch-aide-timeline-text">Votre pod est produit en atelier sous 4 à 5 semaines.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">3</div>
+                                <div class="ch-aide-timeline-title">Transport</div>
+                                <div class="ch-aide-timeline-text">Acheminement par camion spécialisé jusqu'à votre terrain.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">4</div>
+                                <div class="ch-aide-timeline-title">Installation</div>
+                                <div class="ch-aide-timeline-text">Pose, raccordements et mise en service en 1 à 2 jours.</div>
+                            </div>
+                        </div>
+
+                        <table class="ch-aide-table">
+                            <thead>
+                                <tr><th>Zone</th><th>Délai moyen</th><th>Frais</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>France métropolitaine</td><td>6 semaines</td><td>Offerts dès 25 000 €</td></tr>
+                                <tr><td>Corse</td><td>7 à 8 semaines</td><td>Sur devis</td></tr>
+                                <tr><td>DOM-TOM</td><td>10 à 14 semaines</td><td>Sur devis</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="ch-aide-content" t-if="request.env.lang != 'fr_FR'">
+                        <h1 class="ch-aide-title">Delivery &amp; installation</h1>
+                        <p class="ch-aide-subtitle">From order to setup on your land, here's how the delivery of your pod works.</p>
+
+                        <div class="ch-aide-callout">
+                            <i class="fa fa-truck ch-aide-callout-icon"/>
+                            <div>
+                                <div class="ch-aide-callout-title">Free delivery and installation on orders over €25,000</div>
+                                <div class="ch-aide-callout-text">Below that amount, transport and installation fees apply based on distance — calculated automatically at checkout.</div>
+                            </div>
+                        </div>
+
+                        <div class="ch-aide-timeline">
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">1</div>
+                                <div class="ch-aide-timeline-title">Order confirmed</div>
+                                <div class="ch-aide-timeline-text">Quote validation and a 20% deposit payment.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">2</div>
+                                <div class="ch-aide-timeline-title">Manufacturing</div>
+                                <div class="ch-aide-timeline-text">Your pod is built in our workshop within 4 to 5 weeks.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">3</div>
+                                <div class="ch-aide-timeline-title">Transport</div>
+                                <div class="ch-aide-timeline-text">Delivered by specialized truck straight to your land.</div>
+                            </div>
+                            <div class="ch-aide-timeline-item">
+                                <div class="ch-aide-timeline-number">4</div>
+                                <div class="ch-aide-timeline-title">Installation</div>
+                                <div class="ch-aide-timeline-text">Setup, connections and commissioning within 1 to 2 days.</div>
+                            </div>
+                        </div>
+
+                        <table class="ch-aide-table">
+                            <thead>
+                                <tr><th>Zone</th><th>Average time</th><th>Fees</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Metropolitan France</td><td>6 weeks</td><td>Free from €25,000</td></tr>
+                                <tr><td>Corsica</td><td>7 to 8 weeks</td><td>On request</td></tr>
+                                <tr><td>Overseas territories</td><td>10 to 14 weeks</td><td>On request</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

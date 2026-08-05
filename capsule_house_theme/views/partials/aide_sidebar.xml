@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Menu latéral "AIDE" partagé par les 4 pages d'aide (Livraison,
+        Retours, Garantie, FAQ) — bloc réutilisable t-call-é depuis
+        chacune, plutôt que dupliqué dans chaque page (une seule source
+        à maintenir si un lien change). Scopé à notre site via
+        _scope_layout_views() (external id capsule_house_theme.aide_sidebar).
+
+        État actif calculé DYNAMIQUEMENT à partir de l'URL réelle de la
+        page (request.httprequest.path), jamais codé en dur dans chaque
+        page — sans quoi copier ce bloc sur une 5e page plus tard
+        obligerait à modifier les 4 précédentes pour ne pas se retrouver
+        avec deux liens actifs en même temps. Comparaison par suffixe
+        (endswith) plutôt qu'égalité stricte : la langue non-défaut
+        préfixe l'URL (ex. /en/livraison), même technique que le
+        sélecteur [href$="/shop"] du header (v19.0.1.0.40).
+    -->
+    <template id="aide_sidebar" name="Capsule House - Menu Aide">
+        <t t-set="ch_aide_path" t-value="request.httprequest.path"/>
+        <nav class="ch-aide-sidebar">
+            <span class="ch-aide-sidebar-title" t-if="request.env.lang == 'fr_FR'">Aide</span>
+            <span class="ch-aide-sidebar-title" t-if="request.env.lang != 'fr_FR'">Help</span>
+
+            <a href="/livraison"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/livraison') else ''}"
+               t-if="request.env.lang == 'fr_FR'">Livraison</a>
+            <a href="/livraison"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/livraison') else ''}"
+               t-if="request.env.lang != 'fr_FR'">Delivery</a>
+
+            <a href="/retours"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/retours') else ''}"
+               t-if="request.env.lang == 'fr_FR'">Retours</a>
+            <a href="/retours"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/retours') else ''}"
+               t-if="request.env.lang != 'fr_FR'">Returns</a>
+
+            <a href="/garantie"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/garantie') else ''}"
+               t-if="request.env.lang == 'fr_FR'">Garantie</a>
+            <a href="/garantie"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/garantie') else ''}"
+               t-if="request.env.lang != 'fr_FR'">Warranty</a>
+
+            <a href="/faq"
+               t-attf-class="ch-aide-sidebar-link #{'active' if ch_aide_path.endswith('/faq') else ''}">FAQ</a>
+        </nav>
+    </template>
+</odoo>

@@ -1001,6 +1001,89 @@ côté Capsule House. Vérifié dans exocoms_theme
 à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
 `--ch-terracotta`/`--ch-white`.
 
+## Pages Aide — Livraison, Retours, Garantie, FAQ (v19.0.1.0.46)
+
+Les 4 liens de la colonne "Aide" du footer (jusque-là en 404) mènent
+maintenant à de vraies pages, livrées d'après une maquette fournie par
+le client :
+
+- `/livraison` : encart "livraison offerte dès 25 000 €", timeline 4
+  étapes, tableau des délais/frais par zone (France métro/Corse/DOM-TOM).
+- `/retours` : encart d'alerte sur le droit de rétractation (non
+  applicable après lancement fabrication, produit sur mesure), 3
+  cartes (avant fabrication / après livraison / procédure), bouton
+  vers `/contactus` (page de contact NATIVE d'Odoo — lien mis à jour en
+  v19.0.1.0.47, voir section "Pages Entreprise" ci-dessous ; pointait
+  vers `/contact` avant que la décision de ne jamais reconstruire de
+  page contact ne soit prise).
+- `/garantie` : bandeau "10 ans", colonnes Couvert (vert)/Non couvert
+  (rouge), étapes pour déclarer un sinistre.
+- `/faq` : questions groupées par catégorie, accordéon Bootstrap natif
+  (markup du snippet Accordéon du Website Builder, pas de JS custom).
+
+Menu latéral "Aide" partagé par les 4 pages (`aide_sidebar.xml`),
+état actif calculé dynamiquement depuis l'URL réelle (jamais codé en
+dur par page). Contenu bilingue FR/EN, même convention que le reste du
+thème. Responsive : le menu latéral passe en barre horizontale
+scrollable sous 900px.
+
+Deux écarts avec le brief fourni, choisis pour rester cohérent avec le
+reste du site déjà en place (le brief ne correspondait pas exactement
+à ce qui est réellement déployé) :
+- **Police** : Inter, pas Manrope — Inter est la police utilisée
+  partout ailleurs sur le site (variables.css) ; changer de police
+  seulement sur ces 4 pages aurait cassé la cohérence visuelle.
+- **Icônes** : FontAwesome (`<i class="fa fa-*">`), pas de SVG en
+  ligne dédiées — même bibliothèque d'icônes que le hero et les avis.
+
+Couleur ajoutée : `--ch-red` (#B4553F, rouge alerte/non-couvert),
+absente jusqu'ici de `variables.css` — le reste de la palette
+(`--ch-panel`, `--ch-ink`, `--ch-terracotta`, `--ch-amber`, `--ch-fog`,
+`--ch-green`) existait déjà et correspond exactement aux couleurs
+demandées, réutilisée telle quelle.
+
+## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47)
+
+Les liens de la colonne "Entreprise" du footer mènent maintenant à de
+vraies pages, livrées d'après une maquette fournie par le client :
+
+- `/a-propos` : hero (texte + illustration SVG reprise à l'identique
+  du hero d'accueil), bandeau 4 statistiques (année de fondation, pods
+  installés, taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design
+  intemporel / fabrication responsable / installation rapide),
+  historique en timeline verticale (4 jalons 2022→2026).
+- `/le-concept` : intro "Qu'est-ce qu'un pod Capsule House ?", tableau
+  comparatif Pod vs construction traditionnelle (délai, permis,
+  empreinte carbone, mobilité, budget), 4 étapes "De l'atelier à votre
+  terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
+  schéma "Coupe technique" (même illustration SVG que le hero,
+  stylisée en contour pointillé avec libellés superposés).
+- **Contact : décision explicite du client — "tout les contact de mes
+  pages doive etre dirigé vers la pages contacts native odoo"**. Ce
+  module ne construit AUCUNE page de contact. Tous les liens "Contact"
+  du site (nav en pills `entreprise_nav.xml`, colonne "Entreprise" du
+  footer, bouton "Contacter le service client" de `/retours`) pointent
+  vers `/contactus`, la page de contact native du module `website`
+  (déjà dans les dépendances de ce thème) — confirmée par le code local
+  d'`exocoms_theme` qui l'utilise aussi tel quel (`footer.xml`).
+
+Nav en onglets "pills" partagée par les 2 pages (`entreprise_nav.xml`),
+même principe que `aide_sidebar.xml` : état actif calculé dynamiquement
+depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" de
+cette nav n'est jamais marqué actif (il ne pointe pas vers une page à
+nous). Contenu bilingue FR/EN, même convention que le reste du thème.
+CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
+classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
+plutôt que dupliquer un système parallèle.
+
+Mêmes deux écarts que les pages Aide (v19.0.1.0.46), pour rester
+cohérent avec le reste du site déjà en place : police Inter (pas
+Manrope) et icônes FontAwesome (pas de SVG en ligne dédiées). Aucune
+nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
+`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) couvre entièrement le
+brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
+aux pages Aide).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
