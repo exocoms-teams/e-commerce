@@ -127,6 +127,24 @@
                                         <sup class="my_cart_quantity badge rounded-circle position-absolute top-0 start-100 translate-middle" style="background-color: var(--oa-mauve); font-size: 0.6rem; padding: 3px 5px;" t-esc="website_sale_order and website_sale_order.cart_quantity or '0'">0</sup>
                                     </a>
                                 </li>
+                                <!-- Customer Account Dropdown -->
+                                <li class="nav-item dropdown ms-4">
+                                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="oaAccountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding-bottom: 0;">
+                                        <i class="fa-regular fa-user fs-5 text-dark"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" aria-labelledby="oaAccountDropdown" style="background-color: var(--oa-ivory); border-radius: 10px; font-family: var(--oa-font-body);">
+                                        <t t-if="request.session.uid">
+                                            <li><a class="dropdown-item py-2" href="/my" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune);">Mon Compte</a></li>
+                                            <li><a class="dropdown-item py-2" href="/my/beauty_profile" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune);">Profil Beauté</a></li>
+                                            <li><hr class="dropdown-divider" style="border-color: rgba(0,0,0,0.05);"/></li>
+                                            <li><a class="dropdown-item py-2 text-danger" href="/web/session/logout?redirect=/" style="font-size: 0.85rem; letter-spacing: 0.05em;">Déconnexion</a></li>
+                                        </t>
+                                        <t t-else="">
+                                            <li><a class="dropdown-item py-2" href="/web/login" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-prune); font-weight: 500;">Se Connecter</a></li>
+                                            <li><a class="dropdown-item py-2" href="/web/signup" style="font-size: 0.85rem; letter-spacing: 0.05em; color: var(--oa-mauve);">Créer un Compte</a></li>
+                                        </t>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -147,8 +165,16 @@
                         <li class="nav-item py-2">
                             <a class="nav-link text-uppercase" style="font-family: var(--oa-font-body); letter-spacing: 0.15em; color: var(--oa-mauve);" href="/shop/category/fragrances">✦ Parfums</a>
                         </li>
-                        <li class="nav-item py-2">
-                            <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/best-sellers">Meilleures Ventes</a>
+                        <li class="nav-item py-2 border-top mt-2">
+                            <t t-if="request.session.uid">
+                                <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/my">Mon Compte</a>
+                                <a class="nav-link text-uppercase text-dark py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/my/beauty_profile">Profil Beauté</a>
+                                <a class="nav-link text-uppercase text-danger py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/web/session/logout?redirect=/">Déconnexion</a>
+                            </t>
+                            <t t-else="">
+                                <a class="nav-link text-uppercase text-dark" style="font-family: var(--oa-font-body); letter-spacing: 0.15em;" href="/web/login">Se Connecter</a>
+                                <a class="nav-link text-uppercase py-2" style="font-family: var(--oa-font-body); letter-spacing: 0.15em; color: var(--oa-mauve);" href="/web/signup">Créer un Compte</a>
+                            </t>
                         </li>
                     </ul>
                 </div>

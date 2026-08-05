@@ -2373,6 +2373,7 @@ html[dir="rtl"] {
     100% { transform: translateX(-50%); }
 }
 
+
 // ═══════════════════════════════════════════════════════════════
 // CATEGORY CARDS (DRIBBBLE STYLE)
 // ═══════════════════════════════════════════════════════════════
@@ -2454,11 +2455,28 @@ html[dir="rtl"] {
 .oa-product-card {
     position: relative;
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid rgba(226, 216, 204, 0.3);
 
     .oa-product-img {
-        border-radius: 16px;
+        border-radius: 16px 16px 0 0;
         overflow: hidden;
         position: relative;
+        aspect-ratio: 3/4;
+        width: 100%;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
 
         &::after {
             content: '';
@@ -2475,32 +2493,41 @@ html[dir="rtl"] {
         left: 50%;
         transform: translateX(-50%) translateY(20px);
         opacity: 0;
-        background: white;
-        color: var(--oa-prune);
+        background: var(--oa-prune);
+        color: white;
         font-family: var(--oa-font-body);
         font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        padding: 12px 28px;
+        padding: 10px 24px;
         border: none;
         border-radius: 50px;
         cursor: pointer;
         transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         z-index: 3;
+        white-space: nowrap;
 
         &:hover {
-            background: var(--oa-prune);
+            background: var(--oa-mauve);
             color: white;
             transform: translateX(-50%) translateY(18px) scale(1.03);
         }
     }
 
+    .oa-product-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        background: #ffffff;
+    }
+
     .oa-product-stars {
         display: flex;
         gap: 2px;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
 
         .fa-star {
             font-size: 0.7rem;
@@ -2514,9 +2541,14 @@ html[dir="rtl"] {
 
     &:hover {
         transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(54, 34, 59, 0.08);
 
         .oa-product-img::after {
-            background: rgba(54, 34, 59, 0.08);
+            background: rgba(54, 34, 59, 0.04);
+        }
+
+        .oa-product-img img {
+            transform: scale(1.04);
         }
 
         .oa-quick-add {
