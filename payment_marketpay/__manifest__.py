@@ -4,7 +4,7 @@
     'category': 'Accounting/Payment Providers',
     'sequence': 350,
     'summary': "A payment provider for Marketpay.",
-    'description': " ",
+    'description': "Marketpay payment provider module.",
     'depends': ['payment'],
     'data': [
         'views/payment_marketpay_templates.xml',
