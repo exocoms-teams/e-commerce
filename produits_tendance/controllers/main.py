@@ -4,6 +4,7 @@ import re
 from odoo import http
 from odoo.http import request
 from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
+from ..collecte_scrapers.tiktok_creative_center_scraper import run_tiktok_ingestion
 
 from .dashboard_api import TrendDashboardAPI
 
@@ -114,6 +115,30 @@ class TrendDashboardController(http.Controller):
         )
         
         return result
+
+    # WIN-69 : scan TikTok Creative Center (Top Ads). Même garde d'accès et
+    # même pattern de config (ir.config_parameter + winners.api_key) que
+    # run_ebay_scan ci-dessus.
+    @http.route('/dashboard/run_tiktok_scan', type='jsonrpc', auth='user')
+    def run_tiktok_scan(self, pages=1, period=7, country_code='US'):
+        is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
+        is_admin = request.env.user.has_group('base.group_erp_manager')
+
+        if not (is_api_user or is_admin):
+            return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
+
+        Param = request.env['ir.config_parameter'].sudo()
+        odoo_api_key = Param.get_param('winners.api_key')
+        base_url = Param.get_param('web.base.url')
+        odoo_url = f"{base_url}/api/trend/ingest"
+
+        return run_tiktok_ingestion(
+            odoo_url=odoo_url,
+            odoo_api_key=odoo_api_key,
+            pages=pages,
+            period=period,
+            country_code=country_code,
+        )
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
@@ -226,6 +251,8 @@ class TrendIngestController(http.Controller):
              }
          if payload.get('collected_at'):
              vals['collected_at'] = payload['collected_at']
+         if payload.get('product_name'):
+             vals['product_name'] = payload['product_name']
          record = env['trend.ad'].create(vals)
 
          return self._json_response(
