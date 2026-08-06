@@ -5,6 +5,7 @@
     'sequence': 350,
     'summary': "A payment provider for Marketpay.",
     'description': "Marketpay payment provider module.",
+    'author': "O&A Beauty",
     'depends': ['payment'],
     'data': [
         'views/payment_marketpay_templates.xml',
