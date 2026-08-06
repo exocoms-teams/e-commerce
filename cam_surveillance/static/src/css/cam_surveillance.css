@@ -9,9 +9,37 @@
     --dark-surface: #1E293B;
     --gray-light: #F8FAFC;
     --gray-border: #E2E8F0;
+    --gray-img-bg: #F8F9FA;
     --light: #FFFFFF;
 
-    /* Échelle sémantique */
+    /* Couleurs sémantiques & d'état */
+    --color-star: #FFC107;
+    --color-success: #198754;
+    --dark-badge: #3A3A3A;
+    --border-dark-footer: #3A3A3A;
+
+    /* Transparences & Effets Glassmorphism */
+    --bg-glass-light: rgba(255, 255, 255, 0.1);
+    --border-glass-light: rgba(255, 255, 255, 0.4);
+    --bg-glass-badge: rgba(255, 255, 255, 0.12);
+    --border-glass-badge: rgba(255, 255, 255, 0.25);
+    --bg-glass-stat: rgba(255, 255, 255, 0.07);
+    --border-glass-stat: rgba(255, 255, 255, 0.15);
+
+    /* Variantes d'opacité Orange */
+    --color-orange-50: rgba(255, 107, 0, 0.5);
+    --color-orange-30: rgba(255, 107, 0, 0.3);
+
+    /* Couleurs de texte semi-transparentes */
+    --color-text-white-90: rgba(255, 255, 255, 0.9);
+    --color-text-white-95: rgba(255, 255, 255, 0.95);
+    --color-text-white-85: rgba(255, 255, 255, 0.85);
+
+    /* Overlay Hero Gradient */
+    --hero-overlay-start: rgba(15, 23, 42, 0.82);
+    --hero-overlay-end: rgba(15, 23, 42, 0.75);
+
+    /* Échelle sémantique principal */
     --color-primary: var(--orange);
     --color-primary-hover: var(--orange-hover);
     --color-bg-main: var(--light);
@@ -49,6 +77,7 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12);
     --shadow-primary-soft: 0 8px 20px rgba(255, 107, 0, 0.25);
+    --shadow-primary-hover: 0 12px 24px rgba(255, 107, 0, 0.35);
 
     /* Espacements & Transitions */
     --section-spacing-desktop: 80px 20px;
@@ -107,14 +136,14 @@
     color: var(--light);
     text-decoration: none;
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(255, 107, 0, 0.35);
+    box-shadow: var(--shadow-primary-hover);
 }
 
 .cam-btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-glass-light);
     backdrop-filter: blur(4px);
     color: var(--light);
-    border: 2px solid rgba(255, 255, 255, 0.4);
+    border: 2px solid var(--border-glass-light);
     box-shadow: var(--shadow-sm);
 }
 
@@ -130,7 +159,7 @@
 /* ===== HERO SECTION ===== */
 .cam-hero {
     position: relative;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.82) 0%, rgba(15, 23, 42, 0.75) 100%),
+    background: linear-gradient(180deg, var(--hero-overlay-start) 0%, var(--hero-overlay-end) 100%),
                 url('/cam_surveillance/static/src/img/hero-bg.webp') center/cover no-repeat;
     padding: 140px 20px 100px;
     text-align: center;
@@ -145,11 +174,11 @@
 .cam-hero-badge {
     display: inline-flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--bg-glass-badge);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     color: var(--light);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--border-glass-badge);
     padding: 8px 22px;
     border-radius: var(--radius-full);
     font-weight: var(--font-weight-semibold);
@@ -174,7 +203,7 @@
 
 .cam-hero-subtitle {
     font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text-white-90);
     margin-bottom: 40px;
     line-height: 1.6;
     max-width: 720px;
@@ -200,10 +229,10 @@
 .cam-stat {
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--bg-glass-stat);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border-glass-stat);
     border-radius: var(--radius-lg);
     padding: 20px 36px;
     min-width: 160px;
@@ -212,8 +241,8 @@
 }
 
 .cam-stat:hover {
-    border-color: rgba(255, 107, 0, 0.5);
-    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-orange-50);
+    background: var(--bg-glass-light);
 }
 
 .cam-stat-number {
@@ -224,7 +253,7 @@
 }
 
 .cam-stat-label {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--color-text-white-85);
     font-size: var(--font-size-sm);
     margin-top: 6px;
     font-weight: var(--font-weight-semibold);
@@ -237,7 +266,7 @@
     padding: 16px 0;
     overflow: hidden;
     white-space: nowrap;
-    border-bottom: 2px solid var(--orange);
+    border-bottom: 2px solid var(--color-primary);
 }
 
 .cam-promo-track {
@@ -253,7 +282,7 @@
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-sm);
     letter-spacing: 0.01em;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--color-text-white-95);
 }
 
 .cam-promo-item i {
@@ -297,7 +326,7 @@
 .cam-product-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
-    border-color: rgba(255, 107, 0, 0.3);
+    border-color: var(--color-orange-30);
     text-decoration: none;
 }
 
@@ -307,7 +336,7 @@
 
 .cam-product-img {
     height: 200px;
-    background: #f8f9fa;
+    background: var(--gray-img-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -485,7 +514,7 @@
 
 .cam-rating-stars, 
 .cam-review-stars {
-    color: #ffc107;
+    color: var(--color-star);
     font-size: 1.2rem;
 }
 
@@ -499,7 +528,7 @@
 }
 
 .cam-rating-text strong {
-    color: #198754;
+    color: var(--color-success);
     font-size: 1.1rem;
 }
 
@@ -560,7 +589,7 @@
 }
 
 .cam-badge {
-    background: #3a3a3a;
+    background: var(--dark-badge);
     color: var(--color-primary);
     padding: 5px 12px;
     border-radius: var(--radius-sm);
@@ -593,7 +622,7 @@
 }
 
 .cam-footer-bottom {
-    border-top: 1px solid #3a3a3a;
+    border-top: 1px solid var(--border-dark-footer);
     padding: 20px 0;
 }
 
