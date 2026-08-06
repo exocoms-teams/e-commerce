@@ -782,6 +782,38 @@
                 color: var(--oa-mauve);
             }
         }
+
+        // Liens réseaux sociaux avec SVG inline
+        .oa-social-link {
+            display: flex;
+            align-items: center;
+
+            .oa-social-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: rgba(226, 216, 204, 0.15);
+                transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
+                flex-shrink: 0;
+
+                svg {
+                    transition: fill 0.3s ease;
+                }
+            }
+
+            &:hover .oa-social-icon {
+                background: var(--oa-prune);
+                color: white !important;
+                transform: scale(1.12);
+
+                svg {
+                    fill: white;
+                }
+            }
+        }
     }
 
     // Bottom Row
@@ -2489,34 +2521,35 @@ html[dir="rtl"] {
             background: rgba(54, 34, 59, 0.0);
             transition: background 0.4s ease;
         }
-    }
 
-    .oa-quick-add {
-        position: absolute;
-        bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%) translateY(20px);
-        opacity: 0;
-        background: var(--oa-prune);
-        color: white;
-        font-family: var(--oa-font-body);
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        padding: 10px 24px;
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        z-index: 3;
-        white-space: nowrap;
-
-        &:hover {
-            background: var(--oa-mauve);
+        // Bouton chariot ancré DANS l'image — ne peut pas chevaucher le titre
+        .oa-quick-add {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            background: var(--oa-prune);
             color: white;
-            transform: translateX(-50%) translateY(18px) scale(1.03);
+            font-family: var(--oa-font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            z-index: 3;
+            white-space: nowrap;
+
+            &:hover {
+                background: var(--oa-mauve);
+                color: white;
+                transform: translateX(-50%) translateY(0) scale(1.03);
+            }
         }
     }
 
@@ -2555,7 +2588,7 @@ html[dir="rtl"] {
             transform: scale(1.04);
         }
 
-        .oa-quick-add {
+        .oa-product-img .oa-quick-add {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }

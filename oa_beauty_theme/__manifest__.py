@@ -62,6 +62,7 @@
             'oa_beauty_theme/static/src/scss/oa_beauty.scss',
             'oa_beauty_theme/static/src/js/advisor.js',
             'oa_beauty_theme/static/src/js/chatbot.js',
+            'oa_beauty_theme/static/src/js/newsletter.js',
         ],
     },
 
