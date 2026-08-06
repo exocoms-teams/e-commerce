@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Données de démo pour WIN-45 / WIN-50 : permet de visualiser le
+         dashboard (/dashboard) et de tester les filtres dynamiques
+         (catégorie, pays) sans avoir à créer manuellement des produits
+         via le backend ou le formulaire /submit-trend.
+
+         Chargé uniquement si le module est installé avec les données de
+         démo (comportement standard des environnements de dev/staging
+         OdooSH, comme observé pour les autres modules du projet). -->
+
+    <!-- Catégories -->
+    <record id="demo_category_electronique" model="trend.category">
+        <field name="name">Électronique</field>
+    </record>
+    <record id="demo_category_maison" model="trend.category">
+        <field name="name">Maison</field>
+    </record>
+    <record id="demo_category_mode" model="trend.category">
+        <field name="name">Mode</field>
+    </record>
+
+    <!-- Produits -->
+    <record id="demo_product_ecouteurs" model="trend.product">
+        <field name="name">Écouteurs sans fil</field>
+        <field name="product_ref">DEMO-0001</field>
+        <field name="category_id" ref="demo_category_electronique"/>
+        <field name="country">FR</field>
+        <field name="source">api</field>
+        <field name="sales_count">312</field>
+    </record>
+
+    <record id="demo_product_lampe" model="trend.product">
+        <field name="name">Lampe LED connectée</field>
+        <field name="product_ref">DEMO-0002</field>
+        <field name="category_id" ref="demo_category_maison"/>
+        <field name="country">MA</field>
+        <field name="source">api</field>
+        <field name="sales_count">154</field>
+    </record>
+
+    <record id="demo_product_sac" model="trend.product">
+        <field name="name">Sac à dos minimaliste</field>
+        <field name="product_ref">DEMO-0003</field>
+        <field name="category_id" ref="demo_category_mode"/>
+        <field name="country">FR</field>
+        <field name="source">crowdsourcing</field>
+        <field name="sales_count">89</field>
+    </record>
+
+    <record id="demo_product_montre" model="trend.product">
+        <field name="name">Montre connectée sport</field>
+        <field name="product_ref">DEMO-0004</field>
+        <field name="category_id" ref="demo_category_electronique"/>
+        <field name="country">MA</field>
+        <field name="source">api</field>
+        <field name="sales_count">201</field>
+    </record>
+
+    <record id="demo_product_coussin" model="trend.product">
+        <field name="name">Coussin ergonomique</field>
+        <field name="product_ref">DEMO-0005</field>
+        <field name="category_id" ref="demo_category_maison"/>
+        <field name="country">US</field>
+        <field name="source">scraping</field>
+        <field name="sales_count">47</field>
+    </record>
+
+    <!-- Scores de tendance (current_score de trend.product est calculé à
+         partir du dernier trend.score lié) -->
+    <record id="demo_score_ecouteurs" model="trend.score">
+        <field name="product_id" ref="demo_product_ecouteurs"/>
+        <field name="computed_score">92.5</field>
+        <field name="search_volume">8400</field>
+    </record>
+    <record id="demo_score_lampe" model="trend.score">
+        <field name="product_id" ref="demo_product_lampe"/>
+        <field name="computed_score">71.0</field>
+        <field name="search_volume">2100</field>
+    </record>
+    <record id="demo_score_sac" model="trend.score">
+        <field name="product_id" ref="demo_product_sac"/>
+        <field name="computed_score">58.3</field>
+        <field name="search_volume">1500</field>
+    </record>
+    <record id="demo_score_montre" model="trend.score">
+        <field name="product_id" ref="demo_product_montre"/>
+        <field name="computed_score">84.7</field>
+        <field name="search_volume">6200</field>
+    </record>
+    <record id="demo_score_coussin" model="trend.score">
+        <field name="product_id" ref="demo_product_coussin"/>
+        <field name="computed_score">33.9</field>
+        <field name="search_volume">700</field>
+    </record>
+</odoo>

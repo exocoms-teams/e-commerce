@@ -22,31 +22,26 @@ class TrendSubmissionController(http.Controller):
     def submit_trend_process(self, **post):
         if post:
             # --- NOUVELLE LOGIQUE : Tri intelligent Lien ou Description ---
-            # On récupère le champ unique du formulaire web
             user_input = post.get('link_or_desc', '').strip()
             final_ref = False
             final_desc = False
             
-            # Si ça commence par http et qu'il n'y a pas d'espaces, c'est un lien
             if user_input.startswith('http') and ' ' not in user_input:
                 final_ref = user_input
-            # Sinon, on considère que c'est une description texte
             else:
                 final_desc = user_input
             # --------------------------------------------------------------
 
-            # sudo() permet au visiteur non connecté de créer l'enregistrement sans bloquer sur les droits
             request.env['trend.submission'].sudo().create({
                 'name': post.get('name'),
-                'product_ref': final_ref,  # Sera rempli si c'est un lien (sinon False)
-                'description': final_desc, # Sera rempli si c'est du texte (sinon False)
+                'product_ref': final_ref,
+                'description': final_desc,
                 'category': post.get('category'),
                 'country': post.get('country'),
                 'submission_reason': post.get('submission_reason'),
                 'email': post.get('email'),
                 'submitted_by': request.env.user.name if request.env.user.name != 'Public user' else 'Visiteur Anonyme',
             })
-        # Redirection vers la page avec un message de succès
         return request.redirect('/submit-trend?success=1')
 
 
@@ -57,10 +52,6 @@ class TrendProductDetailController(http.Controller):
 
     @http.route('/product/<int:id>', type='http', auth='public', website=True)
     def product_detail(self, id, **kwargs):
-        # NB : get_product_detail lève werkzeug.exceptions.NotFound si
-        # l'id n'existe pas. On laisse volontairement l'exception remonter :
-        # sur une route website=True, Odoo l'intercepte lui-même et affiche
-        # la page 404 du thème (pas de try/except ici, pas de stacktrace).
         api = TrendDashboardAPI(request.env)
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
@@ -72,13 +63,30 @@ class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='public', website=True)
     def dashboard(self, **kwargs):
-        """Affiche la page dashboard (classement produits), plafonnée à 5
-        résultats pour les comptes Freemium (WIN-48)."""
+        """Affiche la page dashboard (classement produits) avec le panneau
+        de filtres et la limite Freemium (WIN-48).
+        """
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
+        
+        # On récupère les options pour les filtres ET les produits avec la limite
+        options = api.get_filter_options() if hasattr(api, 'get_filter_options') else {'categories': [], 'countries': []}
+        
         return request.render('produits_tendance.winners_dashboard_template', {
-            'products': api.get_dashboard_products(limit=limit),
+            'products': api.get_dashboard_products(limit=limit) if hasattr(api, 'get_dashboard_products') else api.get_product_list(),
+            'categories': options.get('categories', []),
+            'countries': options.get('countries', []),
         })
+
+    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, **kwargs):
+        """Route JSON interne consommée en AJAX par dashboard_filters.js."""
+        api = TrendDashboardAPI(request.env)
+        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        return request.make_response(
+            json.dumps({'status': 'success', 'products': products}),
+            headers=[('Content-Type', 'application/json')],
+        )
 
     # Route pour AFFICHER le Dashboard d'ingestion eBay
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
@@ -104,7 +112,6 @@ class TrendDashboardController(http.Controller):
         base_url = Param.get_param('web.base.url')
         odoo_url = f"{base_url}/api/trend/ingest"
         
-        # 2. Exécution avec injection des paramètres
         result = run_ingestion_for_keyword(
             keyword=keyword,
             app_id=ebay_app_id,
@@ -114,6 +121,7 @@ class TrendDashboardController(http.Controller):
         )
         
         return result
+
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
 # -----------------------------------------------------------
@@ -173,12 +181,6 @@ class TrendIngestController(http.Controller):
         if not category:
             category = env['trend.category'].create({'name': payload['category']})
 
-        # product_ref est la seule cle unique en base (contrainte SQL
-        # _product_ref_source_uniq sur trend.product, malgre son nom - elle
-        # ne porte que sur product_ref). Filtrer aussi sur source ici ferait
-        # echouer ce search() a tort si le meme product_ref revient d'une
-        # source differente, puis planter le create() qui suit sur la
-        # contrainte unique(product_ref).
         existing = env['trend.product'].search([
             ('product_ref', '=', payload['product_ref']),
         ], limit=1)
@@ -207,30 +209,33 @@ class TrendIngestController(http.Controller):
         )
 
     def _handle_ad(self, payload):
-         required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
-         for field in required_fields:
-              if not payload.get(field):
-                 return self._json_response(
-                {'status': 'error', 'code': 'missing_field', 'field': field}, 400
-            )
+        required_fields = ['ad_ref', 'product_ref', 'country', 'social_network']
+        for field in required_fields:
+            if not payload.get(field):
+                return self._json_response(
+                    {'status': 'error', 'code': 'missing_field', 'field': field}, 400
+                )
 
-         env = request.env(su=True)
+        env = request.env(su=True)
 
-         vals = {
-          'ad_ref': payload['ad_ref'],
-          'product_ref': payload['product_ref'],
-          'country': payload['country'],
-           'social_network': payload['social_network'],
-          'likes_count': payload.get('likes_count', 0),
-          'shares_count': payload.get('shares_count', 0),
-             }
-         if payload.get('collected_at'):
-             vals['collected_at'] = payload['collected_at']
-         record = env['trend.ad'].create(vals)
+        vals = {
+            'ad_ref': payload['ad_ref'],
+            'product_ref': payload['product_ref'],
+            'country': payload['country'],
+            'social_network': payload['social_network'],
+            'likes_count': payload.get('likes_count', 0),
+            'shares_count': payload.get('shares_count', 0),
+        }
+        
+        # Prise en compte de la date de collecte ajoutée par ton collègue
+        if payload.get('collected_at'):
+            vals['collected_at'] = payload['collected_at']
+            
+        record = env['trend.ad'].create(vals)
 
-         return self._json_response(
-        {'status': 'success', 'type': 'ad', 'id': record.id}, 200
-    )
+        return self._json_response(
+            {'status': 'success', 'type': 'ad', 'id': record.id}, 200
+        )
 
     def _handle_score(self, payload):
         required_fields = ['product_ref', 'computed_score']
