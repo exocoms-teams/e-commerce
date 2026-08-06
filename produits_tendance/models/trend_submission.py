@@ -1,3 +1,5 @@
+from markupsafe import escape
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
@@ -45,9 +47,13 @@ class TrendSubmission(models.Model):
             # --- LOGIQUE DE RECHERCHE ---
             # 1. Si product_ref contient un lien web valide (commence par http)
             if record.product_ref and record.product_ref.startswith('http'):
+                # product_ref est la seule cle unique en base (contrainte SQL
+                # sur trend.product) : ne pas filtrer sur source ici, sinon un
+                # lien deja importe par une autre source (api/scraping) ne
+                # serait pas detecte, et le create() plus bas planterait sur
+                # la contrainte unique(product_ref).
                 domain = [
                     ('product_ref', '=', record.product_ref),
-                    ('source', '=', 'crowdsourcing')
                 ]
                 actual_ref = record.product_ref # On garde le lien comme référence pour la BDD
                 
@@ -97,17 +103,23 @@ class TrendSubmission(models.Model):
             if not record.email:
                 continue
 
+            # échappement HTML : record.name vient d'un formulaire public non
+            # authentifié (/submit-trend/process) - ne jamais l'insérer tel
+            # quel dans un corps d'email HTML (même pattern que le fix
+            # WIN-67 sur trend_score_alert.py).
+            safe_name = escape(record.name)
+
             if action_type == 'validated_new':
                 subject = f"🎉 Félicitations ! Votre produit '{record.name}' a été sélectionné"
-                body = f"<p>Bonjour,</p><p>Merci beaucoup pour votre contribution ! Après validation par notre équipe, nous avons l'honneur de vous informer que votre produit <strong>{record.name}</strong> a été validé.</p><p>Il a été évalué avec un pourcentage très respectable en tant que produit tendance et a été officiellement ajouté à notre algorithme.</p><p>Nous serions fiers de recevoir d'autres suggestions de votre part !</p>"
-            
+                body = f"<p>Bonjour,</p><p>Merci beaucoup pour votre contribution ! Après validation par notre équipe, nous avons l'honneur de vous informer que votre produit <strong>{safe_name}</strong> a été validé.</p><p>Il a été évalué avec un pourcentage très respectable en tant que produit tendance et a été officiellement ajouté à notre algorithme.</p><p>Nous serions fiers de recevoir d'autres suggestions de votre part !</p>"
+
             elif action_type == 'validated_existing':
                 subject = f"💡 Merci pour votre suggestion '{record.name}' !"
-                body = f"<p>Bonjour,</p><p>Nous vous remercions chaleureusement pour votre contribution. Vous avez l'œil ! Le produit <strong>{record.name}</strong> est effectivement très pertinent et figure d'ailleurs déjà dans notre base de données.</p><p>N'hésitez pas à nous soumettre d'autres pépites, nous serons ravis de découvrir vos prochaines propositions !</p>"
-            
+                body = f"<p>Bonjour,</p><p>Nous vous remercions chaleureusement pour votre contribution. Vous avez l'œil ! Le produit <strong>{safe_name}</strong> est effectivement très pertinent et figure d'ailleurs déjà dans notre base de données.</p><p>N'hésitez pas à nous soumettre d'autres pépites, nous serons ravis de découvrir vos prochaines propositions !</p>"
+
             elif action_type == 'rejected':
                 subject = f"Mise à jour concernant votre produit '{record.name}'"
-                body = f"<p>Bonjour,</p><p>Nous avons bien étudié votre suggestion pour <strong>{record.name}</strong>. Veuillez accepter nos excuses, mais elle n'a pas été retenue pour le moment.</p><p>N'hésitez pas à nous soumettre d'autres idées à l'avenir !</p>"
+                body = f"<p>Bonjour,</p><p>Nous avons bien étudié votre suggestion pour <strong>{safe_name}</strong>. Veuillez accepter nos excuses, mais elle n'a pas été retenue pour le moment.</p><p>N'hésitez pas à nous soumettre d'autres idées à l'avenir !</p>"
 
             mail_values = {
                 'subject': subject,

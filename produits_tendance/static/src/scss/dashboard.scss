@@ -2,17 +2,21 @@
 /* Aucune couleur en dur : uniquement les variables de
    _winners_variables.scss. Toute classe custom est préfixée o_winners_. */
 
-.o_winners_dashboard_header {
+/* Encapsulation globale du Dashboard */
+.o_winners_dashboard {
     font-family: $o-winners-font-family;
+    color: $o-winners-text-dark;
 
-    h1 {
-        font-weight: 700;
-        color: $o-winners-primary;
-    }
+    &__header {
+        h1 {
+            font-weight: 700;
+            color: $o-winners-primary;
+        }
 
-    &__subtitle {
-        color: $o-winners-text-muted;
-        font-size: 16px;
+        &-subtitle {
+            color: $o-winners-text-muted;
+            font-size: 16px;
+        }
     }
 }
 
@@ -57,6 +61,7 @@
 .o_winners_product_card {
     display: block;
     background-color: $o-winners-white;
+    border: $o-winners-border-soft;
     border-radius: $o-winners-radius;
     box-shadow: $o-winners-shadow-soft;
     padding: ($o-winners-spacing-unit * 2);
@@ -96,10 +101,27 @@
         margin-bottom: $o-winners-spacing-unit;
     }
 
-    &__score {
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin-top: $o-winners-spacing-unit;
     }
-}
-.o_winners_product_card .o_winners_score_badge {
-    height: auto;
+
+    &__score {
+        background-color: $o-winners-primary;
+        color: $o-winners-white;
+        border-radius: $o-winners-radius;
+        padding: ($o-winners-spacing-unit / 2) $o-winners-spacing-unit;
+        font-weight: 700;
+    }
+
+    &__country {
+        color: $o-winners-text-muted;
+        font-size: 14px;
+    }
+
+    .o_winners_score_badge {
+        height: auto;
+    }
 }

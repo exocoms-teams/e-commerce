@@ -9,8 +9,27 @@
     <record id="group_trend_api" model="res.groups">
         <field name="name">Integration/API technique</field>
     </record>
-    <!-- Groupe : Utilisateur Gratuit (attribué par défaut à l'inscription) -->
+    <!-- Groupe : Utilisateur Gratuit / Freemium (attribué par défaut à l'inscription)
+         implied_ids = group_trend_user : donne les mêmes droits de lecture
+         (trend.product, trend.ad, trend.category, trend.score) pour que
+         request.env['trend.product'].search([]) fonctionne directement pour
+         un utilisateur connecté de ce groupe, sans passer par sudo(). -->
     <record id="group_trend_free" model="res.groups">
       <field name="name">Utilisateur Gratuit</field>
+      <field name="implied_ids" eval="[(4, ref('produits_tendance.group_trend_user'))]"/>
+    </record>
+
+    <!-- WIN-66 : Tunnel d'abonnement SaaS. Hiérarchie de droits :
+         group_trend_pro implique group_trend_standard implique group_trend_user
+         (lecture trend.product/ad/category/score). Assignés automatiquement à
+         la validation de la facture d'abonnement, voir models/account_move.py. -->
+    <record id="group_trend_standard" model="res.groups">
+        <field name="name">Abonné Standard</field>
+        <field name="implied_ids" eval="[(4, ref('produits_tendance.group_trend_user'))]"/>
+    </record>
+
+    <record id="group_trend_pro" model="res.groups">
+        <field name="name">Abonné Pro</field>
+        <field name="implied_ids" eval="[(4, ref('produits_tendance.group_trend_standard'))]"/>
     </record>
 </odoo>

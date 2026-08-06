@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-
-from .trend_score_calculator import compute_product_trend_score
+from .trend_ad import latest_ads_by_ref
+from odoo.addons.produits_tendance.services.scoring_engine import ScoringEngine
 
 
 class TrendProduct(models.Model):
@@ -15,6 +15,7 @@ class TrendProduct(models.Model):
     date = fields.Date(string="Date de collecte")
     score_site_x = fields.Float(string="Score site source")
     country = fields.Char(string="Pays")
+    image_url = fields.Char(string="URL de l'image")
 
     source = fields.Selection([
         ('scraping', 'Scraping'),
@@ -42,6 +43,23 @@ class TrendProduct(models.Model):
         store=True,
         help="Reflète toujours le dernier score calculé pour ce produit."
     )
+    rank_number = fields.Integer(
+        string="Classement",
+        compute="_compute_rank_number",
+        help="Position dans le classement général par score décroissant"
+    )
+    is_top_10 = fields.Boolean(
+        string="Dans le Top 10",
+        compute="_compute_rank_number",
+        search="_search_is_top_10",
+        help="Vrai si le produit fait partie des 10 meilleurs scores"
+    )
+    is_top_3 = fields.Boolean(
+        string="Dans le Top 3",
+        compute="_compute_rank_number",
+        search="_search_is_top_3",
+        help="Vrai si le produit fait partie des 3 meilleurs scores"
+    )
 
     # --- CONTRAINTES SQL ---
     _product_ref_source_uniq = models.Constraint(
@@ -62,6 +80,76 @@ class TrendProduct(models.Model):
             else:
                 product.current_score = 0.0
 
+    @api.depends('current_score')
+    def _compute_rank_number(self):
+        """Compute the rank of each product based on current_score (highest first).
+        Also computes whether the product is in the top 10 and top 3.
+        """
+        if not self:
+            return
+        # Get all products ordered by score descending to compute ranks
+        all_products = self.search([], order='current_score desc, id')
+        # Create a mapping from product ID to rank
+        rank_map = {product.id: idx + 1 for idx, product in enumerate(all_products)}
+        for product in self:
+            product.rank_number = rank_map.get(product.id, 0)
+            product.is_top_10 = (product.rank_number <= 10)
+            product.is_top_3 = (product.rank_number <= 3)
+
+    # Search methods to make non‑stored boolean fields usable in domains
+    @api.model
+    def _search_is_top_10(self, operator, value):
+        """Convert a domain on is_top_10 into an equivalent domain on current_score."""
+        # Normalise to boolean want_true
+        if isinstance(value, (list, tuple)):
+            want_true = True in value
+        else:
+            want_true = (value is True)
+        if operator == '!=':
+            want_true = not want_true
+        # For other operators (<, >, etc.) we fall back to false domain (should not appear in UI)
+        if operator not in ('=', '!='):
+            return []
+        Product = self.env['trend.product']
+        top = Product.search([], order='current_score desc', limit=10)
+        if not top:
+            return [] if want_true else [('id', '=', False)]
+        if len(top) < 10:
+            # Fewer than 10 records => all are in top 10
+            return [] if want_true else [('id', '=', False)]
+        # 10th highest score
+        sorted_scores = sorted(top.mapped('current_score'), reverse=True)
+        cutoff = sorted_scores[9]  # zero-indexed
+        if want_true:
+            return [('current_score', '>=', cutoff)]
+        else:
+            return [('current_score', '<', cutoff)]
+
+    @api.model
+    def _search_is_top_3(self, operator, value):
+        """Convert a domain on is_top_3 into an equivalent domain on current_score."""
+        if isinstance(value, (list, tuple)):
+            want_true = True in value
+        else:
+            want_true = (value is True)
+        if operator == '!=':
+            want_true = not want_true
+        if operator not in ('=', '!='):
+            return []
+        Product = self.env['trend.product']
+        top = Product.search([], order='current_score desc', limit=3)
+        if not top:
+            return [] if want_true else [('id', '=', False)]
+        if len(top) < 3:
+            return [] if want_true else [('id', '=', False)]
+        # 3rd highest score
+        sorted_scores = sorted(top.mapped('current_score'), reverse=True)
+        cutoff = sorted_scores[2]  # zero-indexed
+        if want_true:
+            return [('current_score', '>=', cutoff)]
+        else:
+            return [('current_score', '<', cutoff)]
+
     # --- MÉTHODES DE VALIDATION ---
     @api.constrains('sales_count')
     def _check_sales_count_positive(self):
@@ -77,5 +165,27 @@ class TrendProduct(models.Model):
         score.md) en croisant sales_count/score_site_x (trend.product) avec
         les likes_count/shares_count agrégés des trend.ad liés.
         """
+        # Create ScoringEngine instance
+        scoring_engine = ScoringEngine()
+
+        # Handle the case where previous_metrics is None (convert to required dict)
+        if previous_metrics is None:
+            previous_metrics = {'ventes': 0, 'likes': 0, 'partages': 0, 'ads': 0}
+        # FILTRER LES PUBLICITÉS EN DOUBLE AVANT LE CALCUL
+        latest_ads = latest_ads_by_ref(self.ad_ids)
+        # Build current metrics (same logic as in trend_score_calculator.build_current_metrics)
+        current_metrics = {
+            'ventes': self.sales_count or 0,
+            'likes': sum(latest_ads.mapped('likes_count')),
+            'partages': sum(latest_ads.mapped('shares_count')),
+            'ads': len(latest_ads),
+        }
+
+        # Normalize source score (same logic as in trend_score_calculator.normalize_source_score)
+        source_score = 0.0
+        if self.score_site_x:
+            source_score = max(0.0, min(self.score_site_x / 10.0, 1.0))
+
         self.ensure_one()
-        return compute_product_trend_score(self, previous_metrics=previous_metrics)
+        # Calculate score using ScoringEngine
+        return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
