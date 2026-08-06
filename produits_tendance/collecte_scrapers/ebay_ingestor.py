@@ -2,6 +2,7 @@ import requests
 import base64
 import time
 from datetime import datetime
+import urllib.parse
 
 def get_real_ebay_token(app_id, cert_id):
     """Génère le Token d'accès OAuth 2.0 pour eBay"""
@@ -34,9 +35,11 @@ def get_real_ebay_token(app_id, cert_id):
 
 def fetch_winning_products(keyword, token, attempt=1):
     """Recherche ciblée : Uniquement Achat Immédiat + Neuf"""
+    safe_keyword = urllib.parse.quote(keyword)
+    
     url = (
         f"https://api.ebay.com/buy/browse/v1/item_summary/search?"
-        f"q={keyword}&limit=3&"
+        f"q={safe_keyword}&limit=3&"
         f"filter=buyingOptions:{{FIXED_PRICE}},conditionIds:{{1000}}"
     )
     

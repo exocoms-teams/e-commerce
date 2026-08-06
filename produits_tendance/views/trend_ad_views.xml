@@ -5,58 +5,89 @@
         <field name="name">trend.ad.list</field>
         <field name="model">trend.ad</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="ad_ref"/>
+            <list decoration-muted="is_active == False" decoration-success="days_active > 10">
+                <field name="is_active" widget="boolean_toggle" string="Active"/>
+                <field name="competitor_page"/>
+                <field name="product_id"/>
+                <field name="days_active" string="Jours en ligne"/>
                 <field name="social_network"/>
                 <field name="country"/>
-                <field name="likes_count"/>
-                <field name="shares_count"/>
-                <field name="product_id"/>
+                <!-- On cache l'ID technique par défaut, mais il reste disponible -->
+                <field name="ad_ref" optional="hide"/>
             </list>
         </field>
     </record>
 
-    <!-- 2. VUE FORMULAIRE (Épurée pour Odoo 19) -->
+    <!-- 2. VUE FORMULAIRE (Mode TrendTracker) -->
     <record id="view_trend_ad_form" model="ir.ui.view">
         <field name="name">trend.ad.form</field>
         <field name="model">trend.ad</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="competitor_page" placeholder="Boutique Concurrente" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <!-- Colonne de gauche -->
-                        <group>
-                            <field name="ad_ref"/>
-                            <field name="social_network"/>
-                            <field name="country"/>
+                        <!-- Colonne de gauche : Intelligence Concurrentielle -->
+                        <group string="Intelligence TrendTracker">
+                            <field name="is_active" widget="boolean_toggle"/>
+                            <field name="days_active"/>
+                            <field name="ad_start_date"/>
+                            <field name="snapshot_url" widget="url" text="Voir la publicité en direct"/>
                         </group>
-                            <!-- Colonne de droite -->
-                            <group>
-                                <field name="product_ref" placeholder="Ex: PROD-123"/>
-                                <field name="product_name" placeholder="Ex: Montre Connectée X"/>
-                                <field name="product_id" readonly="1" force_save="1"/>
-                                <field name="likes_count"/>
-                                <field name="shares_count"/>
-                            </group>
+                        
+                        <!-- Colonne de droite : Ciblage & Plateformes -->
+                        <group string="Diffusion">
+                            <field name="country"/>
+                            <field name="social_network"/>
+                            <field name="platforms"/>
+                            <field name="ad_ref"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <!-- Section : Produit lié -->
+                        <group string="Produit Lié">
+                            <field name="product_id" readonly="1" force_save="1"/>
+                            <field name="product_ref" readonly="1"/>
+                            <field name="product_name" readonly="1"/>
+                        </group>
+                        
+                        <!-- Section : Anciennes métriques (Compatibilité TikTok etc.) -->
+                        <group string="Engagement Brut (Si disponible)">
+                            <field name="likes_count"/>
+                            <field name="shares_count"/>
+                            <field name="collected_at"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- 3. VUE RECHERCHE (Épurée pour Odoo 19) -->
+    <!-- 3. VUE RECHERCHE (Avec filtres intelligents) -->
     <record id="view_trend_ad_search" model="ir.ui.view">
         <field name="name">trend.ad.search</field>
         <field name="model">trend.ad</field>
         <field name="arch" type="xml">
             <search>
-                <field name="social_network"/>
+                <field name="competitor_page" string="Boutique Concurrente"/>
+                <field name="product_id"/>
                 <field name="country"/>
                 
-                <!-- Le group_by moderne et strict -->
+                <!-- Filtres rapides hyper utiles pour l'e-commerce -->
+                <filter string="Publicités Actives" name="filter_active" domain="[('is_active', '=', True)]"/>
+                <filter string="Winners potentiels (> 7 jours)" name="filter_winners" domain="[('days_active', '>', 7)]"/>
+                <separator/>
+                
+                <!-- Groupements -->
                 <group>
                     <filter string="Réseau Social" name="group_by_network" context="{'group_by': 'social_network'}"/>
                     <filter string="Pays" name="group_by_country" context="{'group_by': 'country'}"/>
+                    <filter string="Boutique Concurrente" name="group_by_competitor" context="{'group_by': 'competitor_page'}"/>
                 </group>
             </search>
         </field>
@@ -64,14 +95,15 @@
 
     <!-- 4. L'ACTION -->
     <record id="action_trend_ad" model="ir.actions.act_window">
-        <field name="name">Publicités</field>
+        <field name="name">Publicités (TrendTracker)</field>
         <field name="res_model">trend.ad</field>
         <field name="view_mode">list,form</field>
+        <!-- On active le filtre des pubs actives par défaut -->
+        <field name="context">{'search_default_filter_active': 1}</field>
         <field name="search_view_id" ref="view_trend_ad_search"/>
     </record>
 
     <!-- 5. LES MENUS OFFICIELS D'APPLICATION -->
     <menuitem id="menu_trend_root" name="Produits Tendance" sequence="10"/>
     <menuitem id="menu_trend_ad" name="Publicités" parent="menu_trend_root" action="action_trend_ad" sequence="20"/>
-
 </odoo>
