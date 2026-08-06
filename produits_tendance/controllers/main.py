@@ -69,11 +69,14 @@ class TrendDashboardController(http.Controller):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
         options = api.get_filter_options()
+        stats = api.get_dashboard_stats()
 
         return request.render('produits_tendance.template_dashboard', {
             'products': api.get_product_list(limit=limit),
             'categories': options.get('categories', []),
             'countries': options.get('countries', []),
+            'total_products': stats['total_products'],
+            'avg_score': stats['avg_score'],
         })
 
     @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)

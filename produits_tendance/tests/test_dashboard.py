@@ -61,3 +61,35 @@ class TestDashboardAPI(TransactionCase):
         api = TrendDashboardAPI(self.env(user=free_user))
         result = api.get_dashboard_products(limit=5)
         self.assertEqual(len(result), 5)
+
+    def test_get_dashboard_stats_counts_all_products(self):
+        """get_dashboard_stats() ne connaît pas les 7 produits créés dans
+        setUp() comme un ensemble à part : il compte TOUT trend.product en
+        base (y compris les données de demo). On vérifie donc un delta
+        avant/après création plutôt qu'un total absolu, pour rester robuste
+        indépendamment des données de démo déjà présentes."""
+        api = TrendDashboardAPI(self.env)
+        before = api.get_dashboard_stats()
+
+        extra = self.env['trend.product'].create({
+            'name': 'Produit stats supplémentaire',
+            'product_ref': 'TEST-DASHBOARD-STATS-EXTRA',
+            'country': 'MA',
+            'source': 'api',
+        })
+        self.env['trend.score'].create({
+            'product_id': extra.id,
+            'computed_score': 2000.0,
+        })
+
+        after = api.get_dashboard_stats()
+        self.assertEqual(after['total_products'], before['total_products'] + 1)
+        self.assertGreater(after['avg_score'], before['avg_score'])
+
+    def test_get_dashboard_stats_avg_score_zero_without_products(self):
+        """Cas limite : aucun trend.product en base -> score moyen à 0.0,
+        pas de ZeroDivisionError."""
+        self.env['trend.product'].search([]).unlink()
+        api = TrendDashboardAPI(self.env)
+        stats = api.get_dashboard_stats()
+        self.assertEqual(stats, {'total_products': 0, 'avg_score': 0.0})

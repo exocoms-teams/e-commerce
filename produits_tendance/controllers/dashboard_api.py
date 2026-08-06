@@ -142,3 +142,23 @@ class TrendDashboardAPI:
             'categories': [{'id': c.id, 'name': c.name} for c in categories],
             'countries': countries,
         }
+
+    def get_dashboard_stats(self):
+        """Statistiques globales affichées en tuiles au-dessus du
+        classement (nombre de produits suivis, score moyen). Basé sur les
+        données déjà disponibles (pas de nouveau champ) : nombre de
+        trend.product et moyenne de current_score.
+
+        :rtype: dict {'total_products': int, 'avg_score': float}
+        """
+        env = self.env(su=True)
+        products = env['trend.product'].search([])
+        total_products = len(products)
+        avg_score = (
+            sum(products.mapped('current_score')) / total_products
+            if total_products else 0.0
+        )
+        return {
+            'total_products': total_products,
+            'avg_score': round(avg_score, 1),
+        }
