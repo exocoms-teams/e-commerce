@@ -22,7 +22,11 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-48
+        'views/dashboard_templates.xml',   # WIN-45 / WIN-50
+    ],
+    
+    'demo': [
+        'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
     ],
     'assets': {
         'web.assets_frontend': [
@@ -31,6 +35,7 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/subscription_pricing.scss',
+            'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
         ],
     },
