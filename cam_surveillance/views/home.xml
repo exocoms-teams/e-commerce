@@ -11,52 +11,43 @@
                 <t t-call="website.layout">
                     <div id="wrap">
 
-                        <!-- Hero -->
+                        <!-- Hero Section Slide 4 -->
                         <section class="cam-hero">
                             <div class="cam-hero-content">
-                                <div class="cam-hero-badge">Revendeur certifié AXIS · Vidéosurveillance professionnelle</div>
+                                <div class="cam-hero-badge">
+                                    <i class="fa fa-check-circle me-1" aria-hidden="true"/> Revendeur certifié AXIS · Vidéosurveillance professionnelle
+                                </div>
                                 <h1 class="cam-hero-title">La sécurité intelligente
                                     <span>pour votre entreprise</span>
                                 </h1>
                                 <p class="cam-hero-subtitle">Caméras réseau, contrôle d'accès et solutions de vidéosurveillance. Livraison rapide et support technique gratuit.</p>
+                                
                                 <div class="cam-hero-buttons">
                                     <a href="/shop" class="cam-btn-primary">Voir nos produits</a>
-                                   <a href="/contactus" class="cam-btn-secondary cam-btn-audit">Demander un audit gratuit</a>
+                                    <a href="/contactus" class="cam-btn-secondary cam-btn-audit">Demander un audit gratuit</a>
                                 </div>
+
                                 <div class="cam-hero-stats">
                                     <div class="cam-stat">
                                         <span class="cam-stat-number">500+</span>
-                                        <span class="cam-stat-label">Produits</span>
+                                        <span class="cam-stat-label">Produits certifiés</span>
                                     </div>
                                     <div class="cam-stat">
                                         <span class="cam-stat-number">24/7</span>
-                                        <span class="cam-stat-label">Support</span>
+                                        <span class="cam-stat-label">Support expert</span>
                                     </div>
                                     <div class="cam-stat">
                                         <span class="cam-stat-number">5 ans</span>
-                                        <span class="cam-stat-label">Garantie</span>
+                                        <span class="cam-stat-label">Garantie constructeur</span>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- Bandeau promo -->
-                        <div class="cam-promo-banner">
-                            <div class="cam-promo-track">
-                                <span>Livraison gratuite dès 500€</span>
-                                <span>Support technique offert</span>
-                                <span>Garantie 5 ans AXIS</span>
-                                <span>Revendeur certifié AXIS</span>
-                                <span>Expédition sous 24h</span>
-                                <span>Livraison gratuite dès 500€</span>
-                                <span>Support technique offert</span>
-                                <span>Garantie 5 ans AXIS</span>
-                                <span>Revendeur certifié AXIS</span>
-                                <span>Expédition sous 24h</span>
-                            </div>
-                        </div>
+                        <!-- Appel du composant unique du bandeau de réassurance
+                        <t t-call="cam_surveillance.reassurance_banner"/> -->
 
-                        <!-- Produits -->
+                        <!-- Produits les plus demandés -->
                         <section class="cam-products">
                             <div class="cam-container">
                                 <div class="cam-section-header">
@@ -64,12 +55,11 @@
                                     <p>Caméras et équipements AXIS certifiés, prêts à déployer</p>
                                 </div>
                                 <div class="cam-products-grid">
-                                    <!-- Tri SQL direct et performant grâce au champ stocké 'view_count' -->
                                     <t t-foreach="request.env['product.template'].search([('is_published','=',True)], order='view_count desc', limit=8)" t-as="product">
                                         <a t-attf-href="/shop/#{product.id}" class="cam-product-card">
                                             <div class="cam-product-img">
                                                 <t t-if="product.image_512">
-                                                    <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name"/>
+                                                    <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" loading="lazy"/>
                                                 </t>
                                                 <t t-else="">
                                                     <div class="cam-product-noimg">—</div>
@@ -77,7 +67,7 @@
                                             </div>
                                             <div class="cam-product-body">
                                                 <h3 t-esc="product.name"/>
-                                
+                                                
                                                 <div class="cam-stock-status mt-1 mb-2">
                                                     <t t-if="'qty_available' in product._fields">
                                                         <t t-if="product.sudo().qty_available &gt; 0">
@@ -87,13 +77,11 @@
                                                             </span>
                                                         </t>
                                                         <t t-else="">
-                                                            <span class="badge bg-danger text-white">
-                                                                Rupture
-                                                            </span>
+                                                            <span class="badge bg-danger text-white">Rupture</span>
                                                         </t>
                                                     </t>
                                                 </div>
-                                
+                                                
                                                 <div class="cam-product-footer">
                                                     <span class="cam-product-price">
                                                         <span t-field="product.list_price"
@@ -134,7 +122,7 @@
                             </div>
                         </section>
 
-                        <!-- Pourquoi nous -->
+                        <!-- Pourquoi nous choisir -->
                         <section class="cam-why">
                             <div class="cam-container">
                                 <div class="cam-section-header">
@@ -161,13 +149,13 @@
                                 </div>
                             </div>
                         </section>
-                        <!-- test Avis clients -->
+
+                        <!-- Avis clients (Conditionnel au module portal_rating) -->
                         <t t-if="env['ir.module.module'].sudo().search([('name', '=', 'portal_rating'), ('state', '=', 'installed')])">
                             <section class="cam-reviews-simple py-5">
                                 <div class="cam-container text-center">
-                                    <!-- En-tête avec note globale -->
                                     <div class="cam-section-header mb-4">
-                                        <h2>Ce que dicen nos clients</h2>
+                                        <h2>Ce que disent nos clients</h2>
                                         <div class="cam-global-rating mt-2">
                                             <span class="cam-rating-stars">
                                                 <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
@@ -176,7 +164,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 3 Témoignages simples -->
                                     <div class="cam-reviews-grid">
                                         <div class="cam-review-card">
                                             <div class="cam-review-stars">
@@ -205,6 +192,7 @@
                                 </div>
                             </section>
                         </t>
+
                     </div>
                 </t>
             </t>
