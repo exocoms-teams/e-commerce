@@ -18,6 +18,7 @@
         'views/templates/header.xml',
         'views/templates/footer.xml',
         'views/templates/product_card.xml',
+        'views/templates/seo_head.xml',
         
 
         'views/pages/home.xml',

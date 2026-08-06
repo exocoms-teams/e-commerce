@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="seo_head" inherit_id="website.head" name="Sneakers SEO Head">
+
+        <xpath expr="//head" position="inside">
+
+            <!-- Open Graph -->
+            <meta t-if="og_title" property="og:title" t-att-content="og_title"/>
+            <meta t-if="og_description" property="og:description" t-att-content="og_description"/>
+            <meta t-if="og_image" property="og:image" t-att-content="og_image"/>
+            <meta property="og:type" content="website"/>
+            <meta t-if="request.httprequest.path" property="og:url"
+                   t-att-content="'%s%s' % (request.httprequest.url_root.rstrip('/'), request.httprequest.path)"/>
+            <meta property="og:site_name" content="Sneakers"/>
+
+            <!-- Twitter Card -->
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta t-if="og_title" name="twitter:title" t-att-content="og_title"/>
+            <meta t-if="og_description" name="twitter:description" t-att-content="og_description"/>
+            <meta t-if="og_image" name="twitter:image" t-att-content="og_image"/>
+
+            <!-- Canonical URL -->
+            <t t-if="canonical_url">
+                <link rel="canonical" t-att-href="canonical_url"/>
+            </t>
+
+        </xpath>
+
+    </template>
+
+    <!-- JSON-LD: Organization (all pages) -->
+    <template id="seo_schema_organization" name="SEO Organization Schema">
+        <t t-set="_base" t-value="request.httprequest.url_root.rstrip('/')"/>
+        <script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Sneakers","url":"<t t-esc="_base"/>","logo":"<t t-esc="_base"/>/sneakers/static/src/img/logo.png","sameAs":[]}
+        </script>
+    </template>
+
+    <!-- JSON-LD: Product (product pages only) -->
+    <template id="seo_schema_product" name="SEO Product Schema">
+        <t t-if="product">
+            <t t-set="_base" t-value="request.httprequest.url_root.rstrip('/')"/>
+            <t t-set="_p" t-value="product"/>
+            <script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Product","name":"<t t-esc="_p.name"/>","image":"<t t-esc="'%s/web/image/product.template/%s/image_1024' % (_base, _p.id)"/>","description":"<t t-esc="(_p.description_sale or _p.name)[:500]"/>","sku":"<t t-esc="getattr(_p.product_variant_ids[:1] if _p.product_variant_ids else False, 'default_code', '') or ''"/>","offers":{"@type":"Offer","url":"<t t-esc="'%s%s' % (_base, request.httprequest.path)"/>","priceCurrency":"EUR","price":"<t t-esc="'%.2f' % _p.list_price"/>","availability":"<t t-if="_p.is_published">https://schema.org/InStock</t><t t-else="">https://schema.org/OutOfStock</t>","itemCondition":"https://schema.org/NewCondition"}<t t-if="_p.brand_id">,"brand":{"@type":"Brand","name":"<t t-esc="_p.brand_id.name"/>"}    </t><t t-if="average_rating">,"aggregateRating":{"@type":"AggregateRating","ratingValue":"<t t-esc="'%.1f' % average_rating"/>","reviewCount":"<t t-esc="review_count or 0"/>"}    </t>}
+            </script>
+        </t>
+    </template>
+
+    <!-- JSON-LD: BreadcrumbList (pages with breadcrumbs) -->
+    <template id="seo_schema_breadcrumb" name="SEO Breadcrumb Schema">
+        <t t-if="breadcrumbs">
+            <script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[<t t-foreach="breadcrumbs" t-as="crumb">{"@type":"ListItem","position":<t t-esc="crumb_index + 1"/>,"name":"<t t-esc="crumb['name']"/>","item":"<t t-esc="crumb.get('url', '')"/>"}<t t-if="not crumb_last">,</t></t>]}
+            </script>
+        </t>
+    </template>
+
+</odoo>
