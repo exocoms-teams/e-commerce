@@ -3,7 +3,8 @@ import json
 from collections import defaultdict
 
 from werkzeug.exceptions import NotFound
-
+from ..models.trend_ad import latest_ads_by_ref
+from ..services.scoring_engine import ScoringEngine
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques
@@ -22,6 +23,19 @@ class TrendDashboardAPI:
         self.env = env
 
     # ------------------------------------------------------------------
+    # Garde-fou abonnement (WIN-66)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def is_pro_user(env):
+        """Garde-fou réutilisable pour toute future fonctionnalité réservée
+        aux abonnés Pro (ex: données prédictives du dashboard, WIN-66).
+
+        N'est appelé par aucune page existante pour l'instant : le dashboard
+        WIN-48 reste géré par sa propre logique de limite Freemium. Ce
+        utilitaire est prêt à être branché (`if not TrendDashboardAPI.is_pro_user(request.env): ...`)
+        par un futur contrôleur sans modifier de comportement déjà livré.
+        """
+        return env.user.has_group('produits_tendance.group_trend_pro')
     # Classement / dashboard (liste)
     # ------------------------------------------------------------------
     def get_dashboard_products(self, limit=None):
@@ -61,7 +75,11 @@ class TrendDashboardAPI:
         # Trends (purement informatif, cf. trend.score.search_volume).
         latest_score = product.score_ids.sorted('computed_at', reverse=True)[:1]
 
-        ads = product.ad_ids
+        # WIN-XX (mode historique trend.ad) : une publicité peut désormais
+        # avoir plusieurs lignes horodatées (une par collecte). On ne garde
+        # que la dernière par ad_ref pour l'affichage et les totaux, sinon
+        # les compteurs likes/partages gonflent à chaque nouvelle collecte.
+        ads = latest_ads_by_ref(product.ad_ids)
         score_history = self.get_score_history(product)
 
         return {
@@ -99,3 +117,55 @@ class TrendDashboardAPI:
             {'date': date_key, 'score': sum(scores) / len(scores)}
             for date_key, scores in sorted(by_date.items())
         ]
+
+    # ------------------------------------------------------------------
+    # Liste / filtres dynamiques (WIN-45 / WIN-50)
+    # ------------------------------------------------------------------
+    def get_product_list(self, category_id=None, country=None):
+        """Retourne les produits triés par score de tendance décroissant,
+        optionnellement filtrés par catégorie et/ou pays.
+
+        :param int|None category_id: id d'un trend.category, ou None/0 pour
+            ne pas filtrer sur la catégorie.
+        :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
+            pas filtrer sur le pays.
+        :rtype: list[dict]
+        """
+        env = self.env(su=True)
+        domain = []
+        if category_id:
+            domain.append(('category_id', '=', int(category_id)))
+        if country:
+            domain.append(('country', '=', country))
+
+        products = env['trend.product'].search(domain, order='current_score desc')
+
+        return [{
+            'id': product.id,
+            'name': product.name,
+            'category': product.category_id.name or '',
+            'country': product.country or '',
+            'score': round(product.current_score, 1),
+            'sales_count': product.sales_count,
+        } for product in products]
+
+    def get_filter_options(self):
+        """Retourne les valeurs disponibles pour peupler les selects du
+        panneau de filtres (.o_winners_filter_panel) : catégories connues
+        et pays distincts déjà présents sur des trend.product.
+        """
+        env = self.env(su=True)
+        categories = env['trend.category'].search([], order='name asc')
+
+        # _read_group (API 19.0) remplace read_group (déprécié) : sans
+        # aggregates, il renvoie directement une liste de tuples à 1 élément
+        # (une entrée par valeur distincte de country).
+        country_groups = env['trend.product']._read_group(
+            [('country', '!=', False)], groupby=['country']
+        )
+        countries = sorted(country for (country,) in country_groups if country)
+
+        return {
+            'categories': [{'id': c.id, 'name': c.name} for c in categories],
+            'countries': countries,
+        }

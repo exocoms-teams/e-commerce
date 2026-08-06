@@ -1,6 +1,9 @@
 import json
+import os
+import re
 from odoo import http
 from odoo.http import request
+from ..collecte_scrapers.ebay_ingestor import run_ingestion_for_keyword
 
 from .dashboard_api import TrendDashboardAPI
 
@@ -19,31 +22,26 @@ class TrendSubmissionController(http.Controller):
     def submit_trend_process(self, **post):
         if post:
             # --- NOUVELLE LOGIQUE : Tri intelligent Lien ou Description ---
-            # On récupère le champ unique du formulaire web
             user_input = post.get('link_or_desc', '').strip()
             final_ref = False
             final_desc = False
             
-            # Si ça commence par http et qu'il n'y a pas d'espaces, c'est un lien
             if user_input.startswith('http') and ' ' not in user_input:
                 final_ref = user_input
-            # Sinon, on considère que c'est une description texte
             else:
                 final_desc = user_input
             # --------------------------------------------------------------
 
-            # sudo() permet au visiteur non connecté de créer l'enregistrement sans bloquer sur les droits
             request.env['trend.submission'].sudo().create({
                 'name': post.get('name'),
-                'product_ref': final_ref,  # Sera rempli si c'est un lien (sinon False)
-                'description': final_desc, # Sera rempli si c'est du texte (sinon False)
+                'product_ref': final_ref,
+                'description': final_desc,
                 'category': post.get('category'),
                 'country': post.get('country'),
                 'submission_reason': post.get('submission_reason'),
                 'email': post.get('email'),
                 'submitted_by': request.env.user.name if request.env.user.name != 'Public user' else 'Visiteur Anonyme',
             })
-        # Redirection vers la page avec un message de succès
         return request.redirect('/submit-trend?success=1')
 
 
@@ -54,34 +52,75 @@ class TrendProductDetailController(http.Controller):
 
     @http.route('/product/<int:id>', type='http', auth='public', website=True)
     def product_detail(self, id, **kwargs):
-        # NB : get_product_detail lève werkzeug.exceptions.NotFound si
-        # l'id n'existe pas. On laisse volontairement l'exception remonter :
-        # sur une route website=True, Odoo l'intercepte lui-même et affiche
-        # la page 404 du thème (pas de try/except ici, pas de stacktrace).
         api = TrendDashboardAPI(request.env)
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
-
 # -----------------------------------------------------------
-# 2bis. CONTROLEUR DASHBOARD (Classement des produits, WIN-48)
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
 # -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
-    @http.route('/dashboard', type='http', auth='user', website=True)
+    @http.route('/dashboard', type='http', auth='public', website=True)
     def dashboard(self, **kwargs):
-        # Restriction Freemium (WIN-48) : limit=5 appliqué côté ORM, jamais
-        # côté template/JS, pour qu'elle ne puisse pas être contournée en
-        # lisant le HTML brut ou en interceptant la requête.
+        """Affiche la page dashboard (classement produits) avec le panneau
+        de filtres et la limite Freemium (WIN-48).
+        """
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
-
         api = TrendDashboardAPI(request.env)
-        products = api.get_dashboard_products(limit=limit)
-
+        
+        # On récupère les options pour les filtres ET les produits avec la limite
+        options = api.get_filter_options() if hasattr(api, 'get_filter_options') else {'categories': [], 'countries': []}
+        
         return request.render('produits_tendance.winners_dashboard_template', {
-            'products': products,
+            'products': api.get_dashboard_products(limit=limit) if hasattr(api, 'get_dashboard_products') else api.get_product_list(),
+            'categories': options.get('categories', []),
+            'countries': options.get('countries', []),
         })
 
+    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, **kwargs):
+        """Route JSON interne consommée en AJAX par dashboard_filters.js."""
+        api = TrendDashboardAPI(request.env)
+        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        return request.make_response(
+            json.dumps({'status': 'success', 'products': products}),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    # Route pour AFFICHER le Dashboard d'ingestion eBay
+    @http.route('/winners/dashboard', type='http', auth='user', website=True)
+    def show_dashboard(self, **kwargs):
+        return request.render('produits_tendance.template_winners_dashboard', {})
+    
+    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
+    def run_ebay_scan(self, keyword):
+        is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
+        is_admin = request.env.user.has_group('base.group_erp_manager')
+        
+        if not (is_api_user or is_admin):
+            return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
+
+        if not keyword:
+            return {"status": "error", "message": "Mot-clé manquant."}
+
+        Param = request.env['ir.config_parameter'].sudo()
+        ebay_app_id = Param.get_param('ebay.app_id')
+        ebay_cert_id = Param.get_param('ebay.cert_id')
+        odoo_api_key = Param.get_param('winners.api_key')
+        
+        base_url = Param.get_param('web.base.url')
+        odoo_url = f"{base_url}/api/trend/ingest"
+        
+        result = run_ingestion_for_keyword(
+            keyword=keyword,
+            app_id=ebay_app_id,
+            cert_id=ebay_cert_id,
+            odoo_url=odoo_url,
+            odoo_api_key=odoo_api_key
+        )
+        
+        return result
 
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
@@ -144,7 +183,6 @@ class TrendIngestController(http.Controller):
 
         existing = env['trend.product'].search([
             ('product_ref', '=', payload['product_ref']),
-            ('source', '=', payload['source']),
         ], limit=1)
 
         vals = {
@@ -156,6 +194,7 @@ class TrendIngestController(http.Controller):
             'score_site_x': payload.get('score_site_x'),
             'country': payload['country'],
             'source': payload['source'],
+            'image_url': payload.get('image_url'),
         }
         vals = {k: v for k, v in vals.items() if v is not None}
 
@@ -179,10 +218,6 @@ class TrendIngestController(http.Controller):
 
         env = request.env(su=True)
 
-        existing = env['trend.ad'].search(
-            [('ad_ref', '=', payload['ad_ref'])], limit=1
-        )
-
         vals = {
             'ad_ref': payload['ad_ref'],
             'product_ref': payload['product_ref'],
@@ -191,12 +226,12 @@ class TrendIngestController(http.Controller):
             'likes_count': payload.get('likes_count', 0),
             'shares_count': payload.get('shares_count', 0),
         }
-
-        if existing:
-            existing.write(vals)
-            record = existing
-        else:
-            record = env['trend.ad'].create(vals)
+        
+        # Prise en compte de la date de collecte ajoutée par ton collègue
+        if payload.get('collected_at'):
+            vals['collected_at'] = payload['collected_at']
+            
+        record = env['trend.ad'].create(vals)
 
         return self._json_response(
             {'status': 'success', 'type': 'ad', 'id': record.id}, 200
@@ -237,7 +272,7 @@ class TrendIngestController(http.Controller):
     def check_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
         return valid_key and key == valid_key
-
+    
     def _json_response(self, payload, status):
         return request.make_response(
             json.dumps(payload),

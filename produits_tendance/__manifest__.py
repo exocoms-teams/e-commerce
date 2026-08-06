@@ -4,7 +4,10 @@
     'category': 'Website',
     'author': 'winners',
     'license': 'LGPL-3',
-    'depends': ['website', 'website_sale', 'auth_signup'],
+    'depends': [
+        'website', 'website_sale', 'auth_signup',
+        'sale_subscription', 'website_sale_subscription',   # WIN-66
+    ],
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -12,14 +15,23 @@
         'views/website_templates.xml',
         'views/trend_product_views.xml',
         'views/trend_submission_views.xml',
+        'views/ebay_collection_templates.xml',
         'views/trend_submission_templates.xml',
         'views/auth_templates.xml',   # WIN-47
         'views/trend_product_detail_templates.xml',
-        'views/dashboard_templates.xml',   # WIN-48
+        'data/subscription_plans.xml',           # WIN-66
+        'data/subscription_products.xml',        # WIN-66
+        'views/subscription_templates.xml',      # WIN-66
+        'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
+    ],
+    
+    'demo': [
+        'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
     ],
     'assets': {
         'web.assets_frontend': [
             'produits_tendance/static/src/scss/_winners_variables.scss',
+            'produits_tendance/static/src/js/dashboard_ingestion.js',
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/trend_chart.scss',
@@ -28,6 +40,8 @@
             'web/static/lib/Chart/Chart.js',
             'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
             'produits_tendance/static/src/js/trend_chart.js',
+            'produits_tendance/static/src/scss/subscription_pricing.scss',
+            'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
         ],
     },
