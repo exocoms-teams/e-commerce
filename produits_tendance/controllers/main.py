@@ -73,7 +73,7 @@ class TrendDashboardController(http.Controller):
         return request.render('produits_tendance.template_winners_dashboard', {})
     
     # --- ROUTE EBAY ---
-    @http.route('/dashboard/run_ebay_scan', type='json', auth='user')
+    @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
     def run_ebay_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
@@ -102,7 +102,7 @@ class TrendDashboardController(http.Controller):
         
         return result
     # --- ROUTE META ADS (MANUELLE) ---
-    @http.route('/dashboard/run_meta_scan', type='json', auth='user')
+    @http.route('/dashboard/run_meta_scan', type='jsonrpc', auth='user')
     def run_meta_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
