@@ -13,6 +13,7 @@
         'data/attributs.xml',
         'data/products.xml',
         'views/layout.xml',
+        'views/reasurance_banner.xml',
         'views/home.xml',
         'views/items/counter_stock.xml',
         'views/items/related_products.xml'
