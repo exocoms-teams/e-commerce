@@ -86,10 +86,13 @@
 /* Boutons */
 .cam-btn-primary,
 .cam-btn-secondary {
+    display: inline-block;
     padding: 15px 35px;
+    border: none;
     border-radius: var(--radius-md);
     text-decoration: none;
     font-weight: var(--font-weight-bold);
+    cursor: pointer;
     transition: var(--transition-standard);
 }
 .cam-btn-primary {
@@ -103,6 +106,18 @@
     text-decoration: none;
     transform: translateY(-2px);
 }
+.cam-btn-primary:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+.cam-btn-primary:disabled,
+.cam-btn-primary[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+}
 .cam-btn-secondary {
     background: var(--color-bg-main);
     color: var(--color-primary);
@@ -112,6 +127,18 @@
     background: var(--color-primary);
     color: var(--color-text-light);
     text-decoration: none;
+}
+.cam-btn-secondary:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+.cam-btn-secondary:disabled,
+.cam-btn-secondary[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #ccc;
+    color: #ccc;
+    pointer-events: none;
 }
 
 /* Hero Section */
@@ -354,12 +381,34 @@
     text-decoration: none;
 }
 .cam-btn-sm {
+    display: inline-block;
     background: var(--color-primary);
     color: var(--color-text-light);
     padding: 8px 18px;
+    border: none;
     border-radius: var(--radius-md);
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-standard);
+}
+.cam-btn-sm:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-text-light);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+.cam-btn-sm:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+.cam-btn-sm:disabled,
+.cam-btn-sm[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    pointer-events: none;
 }
 .cam-products-footer {
     text-align: center;
@@ -462,6 +511,57 @@
         grid-template-columns: 1fr;
         gap: 13px;
     }
+}
+
+/* ===== BADGES DE STOCK ===== */
+.cam-badge-stock-in,
+.cam-badge-stock-out {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: var(--radius-xl);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.cam-badge-stock-in {
+    background: #2ea043;
+    color: var(--color-text-light);
+}
+.cam-badge-stock-out {
+    background: #e53e3e;
+    color: var(--color-text-light);
+}
+/* Variante large pour la fiche produit */
+.cam-badge-stock-in--lg,
+.cam-badge-stock-out--lg {
+    padding: 8px 16px;
+    font-size: var(--font-size-sm);
+}
+
+/* ===== CARTE PRODUIT — Variante produits associés ===== */
+.cam-product-card--related {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.cam-product-card--related .cam-product-img {
+    height: 160px;
+}
+.cam-product-card--related .cam-product-img img {
+    height: 160px;
+}
+.cam-product-card--related .cam-product-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.cam-product-card--related .cam-product-body h3 {
+    font-size: 1rem;
+    min-height: 40px;
 }
 
 /* Section Avis & Témoignages */

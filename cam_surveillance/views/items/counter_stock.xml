@@ -8,7 +8,7 @@
                 
                 <!-- Si le stock est strictement supérieur à 0 -->
                 <t t-if="product.sudo().qty_available &gt; 0">
-                    <span class="badge bg-success text-white p-2" style="font-size: 0.9rem;">
+                    <span class="cam-badge-stock-in cam-badge-stock-in--lg">
                         <i class="fa fa-check-circle me-1"/>
                         <span t-esc="int(product.sudo().qty_available)"/> unités en stock
                     </span>
@@ -16,7 +16,7 @@
                 
                 <!-- Si le stock est égal ou inférieur à 0 -->
                 <t t-else="">
-                    <span class="badge bg-danger text-white p-2" style="font-size: 0.9rem;">
+                    <span class="cam-badge-stock-out cam-badge-stock-out--lg">
                         <i class="fa fa-exclamation-triangle me-1"/>
                         Rupture de stock
                     </span>
@@ -32,13 +32,13 @@
             <t t-set="prod_obj" t-value="product or record"/>
             <div t-if="prod_obj and 'qty_available' in prod_obj._fields" class="mt-2 custom-shop-stock-badge">
                 <t t-if="prod_obj.sudo().qty_available &gt; 0">
-                    <span class="badge bg-success text-white">
+                    <span class="cam-badge-stock-in">
                         <i class="fa fa-box me-1"/>
                         <span t-esc="int(prod_obj.sudo().qty_available)"/> en stock
                     </span>
                 </t>
                 <t t-else="">
-                    <span class="badge bg-danger text-white">
+                    <span class="cam-badge-stock-out">
                         Rupture
                     </span>
                 </t>

@@ -14,6 +14,7 @@
         'data/products.xml',
         'views/layout.xml',
         'views/home.xml',
+        'views/sandbox.xml',
         'views/items/counter_stock.xml',
         'views/items/related_products.xml'
     ],
