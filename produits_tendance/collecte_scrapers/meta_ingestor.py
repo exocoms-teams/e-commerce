@@ -16,10 +16,11 @@ def fetch_meta_ads(keyword, access_token, attempt=1):
     params = {
         "access_token": access_token,
         "search_terms": safe_keyword,
-        "ad_reached_countries": "['US', 'FR', 'MA']",
-        "ad_active_status": "ALL", # On permet de récupérer aussi les pubs coupées pour analyser le passé
+        # États-Unis, Canada, Royaume-Uni, Australie, France, Allemagne, Espagne, Italie, Maroc
+        "ad_reached_countries": "['US', 'CA', 'GB', 'AU', 'FR', 'DE', 'ES', 'IT', 'MA']", 
+        "ad_active_status": "ALL", 
         "fields": "id,page_name,ad_delivery_start_time,ad_delivery_stop_time,ad_snapshot_url,publisher_platforms",
-        "limit": 5
+        "limit": 15 # On augmente un peu la limite pour ratisser plus large
     }
     
     try:
