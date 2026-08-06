@@ -68,21 +68,27 @@ class TrendDashboardController(http.Controller):
         """
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
-        
-        # On récupère les options pour les filtres ET les produits avec la limite
-        options = api.get_filter_options() if hasattr(api, 'get_filter_options') else {'categories': [], 'countries': []}
-        
-        return request.render('produits_tendance.winners_dashboard_template', {
-            'products': api.get_dashboard_products(limit=limit) if hasattr(api, 'get_dashboard_products') else api.get_product_list(),
+        options = api.get_filter_options()
+
+        return request.render('produits_tendance.template_dashboard', {
+            'products': api.get_product_list(limit=limit),
             'categories': options.get('categories', []),
             'countries': options.get('countries', []),
         })
 
     @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
     def dashboard_filter(self, category_id=None, country=None, **kwargs):
-        """Route JSON interne consommée en AJAX par dashboard_filters.js."""
+        """Route JSON interne consommée en AJAX par dashboard_filters.js.
+
+        Applique la meme limite Freemium (WIN-48) que le rendu initial :
+        sans ca, un compte Freemium filtrant via le panneau contournerait
+        la limite de 5 produits (celle-ci n'etait appliquee que sur le
+        rendu QWeb initial, jamais sur cette route AJAX)."""
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
-        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        products = api.get_product_list(
+            category_id=category_id or None, country=country or None, limit=limit,
+        )
         return request.make_response(
             json.dumps({'status': 'success', 'products': products}),
             headers=[('Content-Type', 'application/json')],

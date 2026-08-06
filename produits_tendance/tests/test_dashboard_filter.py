@@ -82,3 +82,14 @@ class TestDashboardFilterAPI(HttpCase):
         ids = [p['id'] for p in payload['products']]
         self.assertIn(self.product_fr.id, ids)
         self.assertNotIn(self.product_ma.id, ids)
+
+    def test_get_product_list_applies_limit(self):
+        """La limite Freemium (WIN-48) doit etre appliquee cote ORM, meme
+        principe que get_dashboard_products - regression du merge des
+        filtres dynamiques (WIN-45/50) qui l'avait perdue sur /dashboard
+        et /api/dashboard/filter."""
+        api = TrendDashboardAPI(self.env)
+        data = api.get_product_list(limit=1)
+        self.assertEqual(len(data), 1)
+        # Le mieux score (FR, 80.0) doit etre celui retourne.
+        self.assertEqual(data[0]['id'], self.product_fr.id)

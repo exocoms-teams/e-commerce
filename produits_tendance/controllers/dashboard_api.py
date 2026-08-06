@@ -90,7 +90,7 @@ class TrendDashboardAPI:
     # ------------------------------------------------------------------
     # Liste / filtres dynamiques (WIN-45 / WIN-50)
     # ------------------------------------------------------------------
-    def get_product_list(self, category_id=None, country=None):
+    def get_product_list(self, category_id=None, country=None, limit=None):
         """Retourne les produits triés par score de tendance décroissant,
         optionnellement filtrés par catégorie et/ou pays.
 
@@ -98,6 +98,10 @@ class TrendDashboardAPI:
             ne pas filtrer sur la catégorie.
         :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
             pas filtrer sur le pays.
+        :param int|None limit: si fourni, plafonne le nombre de résultats
+            (restriction Freemium, WIN-48) - appliqué ici, côté ORM, jamais
+            seulement côté template/JS (même principe que
+            get_dashboard_products).
         :rtype: list[dict]
         """
         env = self.env(su=True)
@@ -107,7 +111,7 @@ class TrendDashboardAPI:
         if country:
             domain.append(('country', '=', country))
 
-        products = env['trend.product'].search(domain, order='current_score desc')
+        products = env['trend.product'].search(domain, order='current_score desc', limit=limit)
 
         return [{
             'id': product.id,
