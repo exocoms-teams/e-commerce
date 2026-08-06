@@ -25,8 +25,7 @@
 /* CART */
 
 .sn-cart {
-    padding: 10px 0 60px;
-    background: var(--gray-50);
+    padding: 10px 0;
 }
 
 .sn-cart-layout {
@@ -51,13 +50,11 @@
     align-items: center;
     gap: 24px;
 
-    background: var(--gray-100);
+    background: var(--white);
 
-    padding: 16px 20px;
+    padding: 10px;
 
     border-radius: 24px;
-
-    border: 1px solid var(--gray-200);
 
     box-shadow: var(--shadow-sm);
 
@@ -95,7 +92,7 @@
 
     margin-bottom: 10px;
 
-    color: var(--gray-500);
+    color: var(--primary-color);
 
     font-size: .95rem;
 
@@ -122,7 +119,7 @@
 }
 
 .sn-cart-price {
-    color: var(--black);
+    color: var(--primary-color);
 
     font-size: 1rem;
 
@@ -144,7 +141,11 @@
     border: 1px solid #e5e7eb;
     border-radius: 12px;
 
-    background: #f3f3f3;
+    background: #fff;
+    color: var(--text-dark);
+
+    font-size: 1.1rem;
+    font-weight: 600;
 
     cursor: pointer;
     transition: all .2s;
@@ -174,7 +175,6 @@
     font-size: 0.95rem;
 
     outline: none;
-    appearance: none;
     -moz-appearance: textfield;
 }
 
@@ -205,9 +205,9 @@
 
     border-radius: 50%;
 
-    background: var(--gray-200);
+    background: #fff4f1;
 
-    color: var(--gray-600);
+    color: var(--primary-color);
 
     cursor: pointer;
 
@@ -215,7 +215,7 @@
 }
 
 .sn-cart-remove:hover {
-    background: var(--black);
+    background: var(--primary-color);
     color: white;
 }
 
@@ -260,7 +260,7 @@
 .sn-checkout-btn {
     width: 100%;
 
-    height: 50px;
+    height: 60px;
 
     margin-top: 28px;
 
@@ -311,15 +311,10 @@
     gap: 0;
 }
 
-.sn-promo-form input {
-    flex: 1;
-
-    height: 52px;
-
-    border: 1px solid #ddd;
-
-    border-radius: 14px;
-
+.sn-promo-section .form-control {
+    height: 50px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px 0 0 14px;
     padding: 0 16px;
     background: var(--secondary-color, #f9fafb);
     font-size: 0.95rem;
@@ -411,6 +406,47 @@
     color: #333;
 }
 
+/* RESPONSIVE */
+
+@media (max-width:992px){
+
+    .sn-cart-layout{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .sn-cart-item{
+
+        grid-template-columns:1fr;
+
+        text-align:center;
+
+    }
+
+    .sn-cart-image{
+
+        margin:auto;
+
+    }
+
+    .sn-cart-attributes{
+
+        justify-content:center;
+
+    }
+
+    .sn-cart-quantity{
+
+        justify-content:center;
+
+    }
+
+}
 
 /* DELIVERY METHOD SELECTOR */
 
@@ -427,7 +463,7 @@
 }
 
 .sn-delivery-option {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
@@ -438,11 +474,11 @@
 }
 
 .sn-delivery-option:hover {
-    border-color: var(--black);
+    border-color: var(--primary, #ff6b35);
 }
 
 .sn-delivery-option input[type="radio"] {
-    accent-color: var(--black);
+    accent-color: var(--primary, #ff6b35);
 }
 
 .sn-delivery-name {
@@ -452,5 +488,5 @@
 
 .sn-delivery-price {
     font-weight: 600;
-    color: var(--black);
+    color: var(--primary, #ff6b35);
 }

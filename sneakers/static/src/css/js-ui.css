@@ -41,13 +41,38 @@
 .sn-hamburger--active span:nth-child(2) { opacity: 0; }
 .sn-hamburger--active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
-/* Menu mobile — overlay + en-tête (générés par header.js) */
-.sn-nav-overlay,
-.sn-nav-header {
-    display: none;
+@media (max-width: 992px) {
+    .sn-hamburger { display: flex; }
+
+    .sn-nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: var(--white);
+        box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+        z-index: 1000;
+        transition: right 0.35s ease;
+        padding: 80px 30px 30px;
+        overflow-y: auto;
+    }
+
+    .sn-nav--open { right: 0; }
+
+    .sn-nav ul {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sn-nav ul li a {
+        display: block;
+        padding: 14px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 1.05rem;
+    }
 }
 
- 
 /* AUTOCOMPLETE SEARCH (search.js) */
 
 .sn-autocomplete {
@@ -89,8 +114,8 @@
 
 .sn-autocomplete-item:hover,
 .sn-autocomplete-item--focused {
-    background: var(--gray-100);
-    color: var(--black);
+    background: #fff5f2;
+    color: var(--primary-color);
 }
 
 .sn-autocomplete-item i {
@@ -100,8 +125,8 @@
 }
 
 .sn-autocomplete-label mark {
-    background: var(--gray-200);
-    color: var(--black);
+    background: #ffd4c2;
+    color: var(--primary-color);
     border-radius: 2px;
     padding: 0 2px;
 }
@@ -125,7 +150,7 @@
     transition: background 0.15s;
 }
 
-.sn-autocomplete-see-all:hover { background: var(--gray-100); }
+.sn-autocomplete-see-all:hover { background: #fff5f2; }
 
 /* TOAST NOTIFICATION (home.js / product.js) */
 
@@ -160,7 +185,14 @@
     color: var(--white, #fff);
 }
 
-
+@media (max-width: 576px) {
+    .sn-toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        max-width: none;
+    }
+}
 
 /* BADGE PANIER — Animation bump (cart.js / home.js) */
 
@@ -193,12 +225,12 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
+    background: #fff5f2;
+    border: 1px solid #ffd4c2;
     border-radius: 30px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--black);
+    color: var(--primary-color);
     margin: 4px;
 }
 
@@ -208,7 +240,7 @@
     cursor: pointer;
     font-size: 16px;
     line-height: 1;
-    color: var(--gray-600);
+    color: var(--primary-color);
     padding: 0;
     margin: 0;
     display: flex;
@@ -250,6 +282,25 @@
     display: block;
 }
 
+@media (max-width: 992px) {
+    .sn-shop-sidebar {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        background: var(--white);
+        z-index: 100;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+        padding: 30px 20px;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    }
+
+    .sn-shop-sidebar--open {
+        left: 0;
+    }
+}
 
 /* PRODUCT — Lightbox (product.js) */
 
@@ -332,7 +383,7 @@
 
 .sn-wishlist-btn--active,
 .sn-btn-heart--active {
-    color: var(--black) !important;
+    color: var(--primary-color) !important;
 }
 
 .sn-size-options button.active {
@@ -407,7 +458,7 @@
     gap: 6px;
 }
 
-.sn-step-prev-btn:hover { color: var(--black); }
+.sn-step-prev-btn:hover { color: var(--primary-color); }
 
 /* Autocomplétion villes */
 .sn-city-autocomplete {
@@ -435,8 +486,8 @@
 }
 
 .sn-city-autocomplete li:hover {
-    background: var(--gray-100);
-    color: var(--black);
+    background: #fff5f2;
+    color: var(--primary-color);
 }
 
 /* CART — Panier vide + message promo */

@@ -19,7 +19,7 @@
             <div class="sn-shop-banner__content">
 
 
-                <span class="sn-section-subtitle">
+                <span class="sn-shop-subtitle">
 
                     Sneakers Collection
 
@@ -561,131 +561,6 @@
         </div>
         <!-- END mn-container -->
 
-
-        <!-- ===== BOUTON FLOTTANT + DRAWER FILTRE (MOBILE) ===== -->
-
-        <!-- Bouton flottant -->
-        <button class="sn-mobile-filter-btn" id="sn-mobile-filter-open" aria-label="Filtrer les produits">
-            <i class="fa fa-sliders"/>
-            Filtres
-            <span class="sn-mobile-filter-count hidden" id="sn-mobile-filter-count">0</span>
-        </button>
-
-        <!-- Overlay fond sombre -->
-        <div class="sn-mobile-filter-overlay" id="sn-mobile-filter-overlay"/>
-
-        <!-- Drawer -->
-        <div class="sn-mobile-filter-drawer" id="sn-mobile-filter-drawer" aria-hidden="true">
-
-            <div class="sn-mobile-filter-handle"><span/></div>
-
-            <div class="sn-mobile-filter-header">
-                <h3>Filtres</h3>
-                <button class="sn-mobile-filter-close" id="sn-mobile-filter-close" aria-label="Fermer">
-                    <i class="fa fa-times"/>
-                </button>
-            </div>
-
-            <div class="sn-mobile-filter-body">
-
-                <!-- Tri -->
-                <div class="sn-filter-box">
-                    <h3>Trier par</h3>
-                    <div class="sn-size-list" style="display:flex;flex-wrap:wrap;gap:8px;">
-                        <button class="sn-mobile-sort-btn active" data-sort="popular">Popularité</button>
-                        <button class="sn-mobile-sort-btn" data-sort="newest">Nouveauté</button>
-                        <button class="sn-mobile-sort-btn" data-sort="price-low">Prix ↑</button>
-                        <button class="sn-mobile-sort-btn" data-sort="price-high">Prix ↓</button>
-                    </div>
-                </div>
-
-                <!-- Catégories -->
-                <div class="sn-filter-box">
-                    <h3>Categories</h3>
-                    <ul class="sn-filter-list">
-                        <t t-foreach="categories" t-as="category">
-                            <li>
-                                <a href="#" t-att-data-category-id="category.id">
-                                    <t t-out="category.name"/>
-                                </a>
-                            </li>
-                        </t>
-                    </ul>
-                </div>
-
-                <!-- Marques -->
-                <div class="sn-filter-box">
-                    <h3>Brands</h3>
-                    <t t-foreach="brands" t-as="brand">
-                        <label class="sn-checkbox">
-                            <input type="checkbox" t-att-value="brand.id"/>
-                            <t t-out="brand.name"/>
-                        </label>
-                    </t>
-                </div>
-
-                <!-- Tailles -->
-                <div class="sn-filter-box">
-                    <h3>Sizes</h3>
-                    <div class="sn-size-list">
-                        <t t-foreach="sizes" t-as="size">
-                            <button t-att-data-size="size.id">
-                                <t t-out="size.name"/>
-                            </button>
-                        </t>
-                    </div>
-                </div>
-
-                <!-- Couleurs -->
-                <div class="sn-filter-box">
-                    <h3>Colors</h3>
-                    <div class="sn-color-list">
-                        <t t-foreach="colors" t-as="color">
-                            <span class="sn-color"
-                                t-att-title="color.name"
-                                t-att-data-color-id="color.id"
-                                t-att-style="'background-color:%s;%s' % (
-                                    color.html_color,
-                                    'border:1px solid #d1d5db;'
-                                    if color.html_color in ['#FFFFFF','#ffffff','white']
-                                    else ''
-                                )">
-                            </span>
-                        </t>
-                    </div>
-                </div>
-
-                <!-- Prix -->
-                <div class="sn-filter-box">
-                    <h3>Price</h3>
-                    <div class="sn-price-filter">
-                        <div class="sn-price-labels">
-                            <span class="sn-price-label-min">$0</span>
-                            <span class="sn-price-label-max">$500</span>
-                        </div>
-                        <div class="sn-price-range-wrap">
-                            <input type="range" class="sn-price-min" min="0" max="500" value="0" step="5"/>
-                            <input type="range" class="sn-price-slider" min="0" max="500" value="500" step="5"/>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Disponibilité -->
-                <div class="sn-filter-box">
-                    <h3>Availability</h3>
-                    <label class="sn-checkbox"><input type="checkbox"/> In Stock</label>
-                    <label class="sn-checkbox"><input type="checkbox"/> Out of Stock</label>
-                </div>
-
-            </div>
-
-            <div class="sn-mobile-filter-footer">
-                <button class="sn-btn-reset" id="sn-mobile-filter-reset">Réinitialiser</button>
-                <button class="sn-btn-apply" id="sn-mobile-filter-apply">Voir les résultats</button>
-            </div>
-
-        </div>
-        <!-- END drawer -->
 
 
     </section>
