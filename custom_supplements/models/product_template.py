@@ -35,3 +35,8 @@ class ProductTemplate(models.Model):
                 ('allergen_ids', 'not in', allergen_ids),
             ])
         return result
+
+    @api.onchange("is_supplement")
+    def _onchange_is_supplement(self):
+        if self.is_supplement==True:
+            self.is_storable=True
