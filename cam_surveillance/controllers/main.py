@@ -14,6 +14,10 @@ class CamSurveillance(Monetique):
             return request.render('cam_surveillance.cam_home', {})
         return super().home(**kw)
 
+    @http.route('/cam-sandbox', type='http', auth='user', website=True, sitemap=False)
+    def cam_sandbox(self, **kw):
+        return request.render('cam_surveillance.cam_sandbox', {})
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
