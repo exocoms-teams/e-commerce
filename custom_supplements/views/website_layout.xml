@@ -1,150 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_header" inherit_id="website.layout" priority="1000">
-
+    <template id="custom_header" inherit_id="website.layout" name="Compléments — navigation premium" priority="1000">
         <xpath expr="//header" position="replace">
-
-            <header id="top" class="o_affix_enabled o_header_fixed">
-                <!-- Navbar Desktop -->
-                <nav class="cs-header d-none d-lg-block navbar navbar-expand-lg">
-                    <div class="container">
+            <header id="top" class="cs-site-header">
+                <div class="cs-announcement">Livraison offerte dès 49 € <span>•</span> Formules sélectionnées avec exigence</div>
+                <nav class="navbar navbar-expand-lg cs-navbar" aria-label="Navigation principale">
+                    <div class="container cs-navbar-inner">
                         <t t-call="website.placeholder_header_brand"/>
-                        <ul class="navbar-nav me-auto">
-                                <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                    <t t-call="website.submenu">
-                                        <t t-set="is_mobile" t-value="False"/>
-                                        <t t-set="is_vertical_nav" t-value="False"/>
-                                        <t t-set="offcanvas_is_leftside" t-value="False"/>
-                                        <t t-set="item_class" t-value="'nav-item'"/>
-                                        <t t-set="link_class" t-value="'nav-link'"/>
-                                    </t>
-                                </t>
-                        </ul>
-                        <ul class="navbar-nav align-items-center ms-auto gap-2">
-                            <li class="nav-item">
-                                <t t-call="website.placeholder_header_search_box"/>
-                            </li>
-                            <li class="nav-item">
-                                <t t-call="website_sale.header_cart_link">
-                                    <t t-set="_item_class">nav-item</t>
-                                    <t t-set="_link_class">nav-link</t>
-                                    <t t-set="_icon_wrap_class">position-relative</t>
-                                    <t t-set="_badge_class">position-absolute top-0 start-100 translate-middle</t>
-                                    <t t-set="_icon" t-value="True"/>
-                                    <t t-set="_text" t-value="False"/>
-                                </t>
-
-                            </li>
-                            <li class="nav-item">
-                                <t t-call="portal.placeholder_user_sign_in"/>
-                                <t t-call="portal.user_dropdown" _user_name="True"/>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-                <!-- Navbar Mobile -->
-                <nav class="cs-header d-lg-none d-block navbar">
-                    <div class="container flex-wrap justify-content-between">
-                        <t t-call="website.placeholder_header_brand"/>
-                        <ul class="navbar-nav ms-auto">
-                            <t t-call="website_sale.header_cart_link">
-                                <t t-set="_item_class">nav-item</t>
-                                <t t-set="_link_class">nav-link</t>
-                                <t t-set="_icon_wrap_class">position-relative</t>
-                                <t t-set="_badge_class">position-absolute top-0 start-100 translate-middle</t>
-                                <t t-set="_icon" t-value="True"/>
-                                <t t-set="_text" t-value="False"/>
-                            </t>
-                            
-                        </ul>
-                        <button class="navbar-toggler"
-                            type="button"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#mobile_menu"
-                            aria-controls="mobile_menu"
-                            aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"/>
+                        <button class="navbar-toggler cs-menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#cs-mobile-menu" aria-controls="cs-mobile-menu" aria-label="Ouvrir le menu">
+                            <i class="fa fa-bars" aria-hidden="true"/>
                         </button>
-                        <div class="offcanvas offcanvas-end" id="mobile_menu">
-                            <div class="offcanvas-header">
-                                <ul class="navbar-nav">
-                                    <t t-call="website.placeholder_header_search_box"/>
-                                </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"/>
-                            </div>
-                            <div class="offcanvas-body">
-                                <ul class="navbar-nav">
-                                    <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                        <t t-call="website.submenu">
-                                            <t t-set="is_mobile" t-value="True"/>
-                                            <t t-set="is_vertical_nav" t-value="False"/>
-                                            <t t-set="offcanvas_is_leftside" t-value="False"/>
-                                            <t t-set="item_class" t-value="'nav-item'"/>
-                                            <t t-set="link_class" t-value="'nav-link'"/>
-                                        </t>
-                                    </t>
-                                </ul>
-                            </div>
+                        <div class="collapse navbar-collapse d-none d-lg-flex">
+                            <ul class="navbar-nav mx-auto cs-main-nav">
+                                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/shop">Boutique</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/shop?order=create_date+desc">Nouveautés</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/shop?order=website_sequence">Meilleures ventes</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/shop?discounted=1">Promotions</a></li>
+                                <li class="nav-item dropdown cs-mega-parent">
+                                    <a class="nav-link dropdown-toggle" href="/shop" data-bs-toggle="dropdown" aria-expanded="false">Explorer</a>
+                                    <div class="dropdown-menu cs-mega-menu p-4">
+                                        <div class="row g-4">
+                                            <div class="col-lg-4">
+                                                <span class="cs-menu-label">Catégories</span>
+                                                <t t-foreach="website.get_supplement_categories()" t-as="category">
+                                                    <a class="cs-menu-link" t-att-href="'/shop/category/%s' % slug(category)"><t t-esc="category.name"/></a>
+                                                    <t t-foreach="website.get_supplement_category_children(category)" t-as="child">
+                                                        <a class="cs-menu-link cs-menu-link-child" t-att-href="'/shop/category/%s' % slug(child)"><t t-esc="child.name"/></a>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <span class="cs-menu-label">Ingrédients</span>
+                                                <t t-foreach="website.get_supplement_attribute_values('ingrédient')" t-as="value">
+                                                    <a class="cs-menu-link" t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
+                                                </t>
+                                                <a class="cs-menu-link cs-menu-link-muted" href="/shop">Voir tous les ingrédients <i class="fa fa-arrow-right ms-1"/></a>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <span class="cs-menu-label">Marques</span>
+                                                <t t-foreach="website.get_supplement_attribute_values('marque')" t-as="value">
+                                                    <a class="cs-menu-link" t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
+                                                </t>
+                                                <a class="cs-menu-link cs-menu-link-muted" href="/shop">Toutes les marques <i class="fa fa-arrow-right ms-1"/></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="/blog">Conseils</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/aboutus">À propos</a></li>
+                            </ul>
+                            <ul class="navbar-nav align-items-center cs-action-nav">
+                                <li class="nav-item"><t t-call="website.placeholder_header_search_box"/></li>
+                                <li class="nav-item"><t t-call="website_sale.header_cart_link"><t t-set="_icon" t-value="True"/><t t-set="_text" t-value="False"/></t></li>
+                                <li class="nav-item"><t t-call="portal.placeholder_user_sign_in"/><t t-call="portal.user_dropdown" _user_name="False"/></li>
+                            </ul>
                         </div>
                     </div>
                 </nav>
+                <div class="offcanvas offcanvas-end cs-mobile-menu" tabindex="-1" id="cs-mobile-menu" aria-labelledby="cs-mobile-menu-title">
+                    <div class="offcanvas-header"><h2 class="h5 mb-0" id="cs-mobile-menu-title">Explorer</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"/></div>
+                    <div class="offcanvas-body"><a class="cs-mobile-link" href="/">Accueil</a><a class="cs-mobile-link" href="/shop">Boutique</a><a class="cs-mobile-link" href="/shop?order=create_date+desc">Nouveautés</a><a class="cs-mobile-link" href="/shop?order=website_sequence">Meilleures ventes</a><a class="cs-mobile-link" href="/shop?discounted=1">Promotions</a><a class="cs-mobile-link" href="/blog">Conseils</a><a class="cs-mobile-link" href="/aboutus">À propos</a></div>
+                </div>
             </header>
-
         </xpath>
-
         <xpath expr="//div[@id='footer']" position="replace">
-            <div id="footer" class="oe_structure oe_structure_solo border text-break" t-ignore="true" t-if="not no_footer" style="--box-border-left-width: 0px; --box-border-right-width: 0px;">
-                <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Container">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-2 pt24 pb24">
-                                <h5>Useful Links</h5>
-                                <ul class="list-unstyled">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/aboutus">A Propos</a></li>
-                                    <li><a href="/shop">Produits</a></li>
-                                    <li><a href="/legals">Mentions Légales</a></li>
-                                    <t t-set="configurator_footer_links" t-value="[]"/>
-                                    <li t-foreach="configurator_footer_links" t-as="link">
-                                        <a t-att-href="link['href']" t-out="link['text']"/>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-lg-5 pt24 pb24">
-                                <h5>A Propos</h5>
-                                <p>Nous croyons que le bien-être commence de l’intérieur. Notre mission est de vous proposer des compléments alimentaires de qualité, conçus pour accompagner votre santé, votre énergie et votre bien-être au quotidien. 
-                                <br/><br/>Des ingrédients soigneusement sélectionnés et des formules fiables pour vous aider à prendre soin de vous, simplement.</p>
-                            </div>
-                            <div class="col-lg-4 offset-lg-1 pt24 pb24">
-                                <h5>Connect with us</h5>
-                                <ul class="list-unstyled">
-                                    <li><i class="fa fa-comment fa-fw me-2"/><a href="/contactus">Contact us</a></li>
-                                    <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:info@yourcompany.example.com">info@yourcompany.example.com</a></li>
-                                    <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:+1 555-555-5556"><span class="o_force_ltr">+1 555-555-5556</span></a></li>
-                                </ul>
-                                <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media" contenteditable="false">
-                                    <h5 class="s_social_media_title d-none" contenteditable="true">Follow us</h5>
-                                    <a href="/website/social/facebook" class="s_social_media_facebook" target="_blank" aria-label="Facebook">
-                                        <i class="fa fa-facebook rounded-circle shadow-sm o_editable_media"/>
-                                    </a>
-                                    <a href="/website/social/twitter" class="s_social_media_twitter" target="_blank" aria-label="X">
-                                        <i class="fa fa-twitter rounded-circle shadow-sm o_editable_media"/>
-                                    </a>
-                                    <a href="/website/social/linkedin" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn">
-                                        <i class="fa fa-linkedin rounded-circle shadow-sm o_editable_media"/>
-                                    </a>
-                                    <a href="/" class="text-800" aria-label="Extra page">
-                                        <i class="fa fa-home rounded-circle shadow-sm o_editable_media"/>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
+            <footer id="footer" class="cs-footer" t-if="not no_footer">
+                <div class="container"><div class="row g-5"><div class="col-lg-5"><t t-call="website.placeholder_footer_logo"/><p class="cs-footer-copy">Des formules ciblées, des ingrédients transparents et une routine bien-être qui vous ressemble.</p></div><div class="col-6 col-lg-2"><span class="cs-menu-label">Boutique</span><a href="/shop">Tous les produits</a><a href="/shop">Nouveautés</a><a href="/contactus">Nous contacter</a></div><div class="col-6 col-lg-2"><span class="cs-menu-label">Aide</span><a href="/faq">FAQ</a><a href="/shipping_delivery">Livraison</a><a href="/privacy">Confidentialité</a></div><div class="col-lg-3"><span class="cs-menu-label">Une question ?</span><a href="mailto:bonjour@complements.example">bonjour@complements.example</a><p class="small mt-3 mb-0">© 2026 Boutique Compléments</p></div></div></div>
+            </footer>
         </xpath>
     </template>
-
-
-
 </odoo>

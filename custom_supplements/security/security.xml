@@ -1,29 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <!-- 1. Création de la catégorie principale -->
-        <record id="module_category_supplements" model="ir.module.category">
-            <field name="name">Boutique Compléments</field>
-            <field name="description">Droits d'accès pour les compléments alimentaires.</field>
-            <field name="sequence">10</field>
-        </record>
+    <record id="module_category_supplements" model="ir.module.category">
+        <field name="name">Boutique Compléments</field>
+        <field name="description">Droits de gestion des compléments alimentaires.</field>
+        <field name="sequence">10</field>
+    </record>
 
-        <!-- 2. NOUVEAU : Création de la couche de Privilège (Odoo 19) -->
-        <record id="privilege_supplements_access" model="res.groups.privilege">
-            <field name="name">Accès Compléments</field>
-            <field name="category_id" ref="module_category_supplements"/>
-        </record>
-
-        <!-- 3. Création du Groupe de sécurité (utilisation stricte de privilege_id) -->
-        <record id="group_supplement_manager" model="res.groups">
-            <field name="name">Gestionnaire de la nutrition</field>
-            <!-- C'est ce champ qui remplace category_id -->
-            <field name="privilege_id" ref="privilege_supplements_access"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="base.group_system" model="res.groups">
-            <field name="implied_ids" eval="[(4, ref('group_supplement_manager'))]"/>
-        </record>
-    </data>
+    <record id="group_supplement_manager" model="res.groups">
+        <field name="name">Gestionnaire de la nutrition</field>
+        <field name="category_id" ref="module_category_supplements"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
 </odoo>

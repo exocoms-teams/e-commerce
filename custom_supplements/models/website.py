@@ -1,17 +1,20 @@
 from odoo import models
-from odoo.http import request
-from odoo.fields import Domain
+
 
 class Website(models.Model):
     _inherit = 'website'
 
-    def sale_product_domain(self):
-        # 1. On récupère le domaine de base
-        domain = super().sale_product_domain()
-        
-        # 2. Vérification de l'URL
-        if request and hasattr(request, 'params') and request.params.get('vegan'):
-            # 3. Nouvelle syntaxe Odoo 18/19+ avec l'opérateur & (AND) et l'objet Domain
-            domain = Domain(domain) & Domain([('is_vegan', '=', True)])
-            
-        return domain
+    def get_supplement_categories(self):
+        self.ensure_one()
+        return self.env['product.public.category'].sudo().search(
+            [('parent_id', '=', False)], order='sequence, name'
+        )
+
+    def get_supplement_category_children(self, category):
+        return category.child_id.sorted(key=lambda child: (child.sequence, child.name))
+
+    def get_supplement_attribute_values(self, label):
+        attribute = self.env['product.attribute'].sudo().search(
+            [('name', 'ilike', label)], limit=1
+        )
+        return attribute.value_ids if attribute else self.env['product.attribute.value']

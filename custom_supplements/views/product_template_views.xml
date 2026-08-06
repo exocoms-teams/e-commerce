@@ -1,61 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- 1. Modification de la fiche produit (Onglet Nutrition Complet Unifié) -->
     <record id="view_product_template_form_inherit_supplements" model="ir.ui.view">
         <field name="name">product.template.form.inherit.supplements</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
-            
             <xpath expr="//notebook" position="inside">
-                <!-- SÉCURITÉ : L'onglet entier est réservé au groupe Gestionnaire -->
-                <page string="Infos Nutritionnelles" name="nutritional_info" groups="custom_supplements.group_supplement_manager">
-                    
-                    <!-- Organisation sur deux colonnes pour une interface plus claire -->
+                <page string="Infos nutritionnelles" name="supplement_nutrition" groups="custom_supplements.group_supplement_manager">
                     <group>
                         <group string="Configuration">
                             <field name="is_supplement" widget="boolean_toggle"/>
                             <field name="is_vegan" widget="boolean_toggle"/>
                         </group>
-                        <group string="Posologie &amp; Composition">
+                        <group string="Posologie et composition">
                             <field name="dosage"/>
                             <field name="allergen_ids" widget="many2many_tags"/>
                             <field name="ingredients"/>
                         </group>
                     </group>
-                    
-                    <group string="Tableau des Valeurs Nutritionnelles">
-                        <field name="nutritional_info" nolabel="1" placeholder="Ex: Calories: 380kcal, Protéines: 85g..."/>
-                    </group>
-                    
+                    <field name="nutritional_info" nolabel="1" placeholder="Valeurs nutritionnelles, tableaux et recommandations..."/>
                 </page>
             </xpath>
-            
         </field>
     </record>
 
-    <!-- 2. L'Action (Ce qui se passe quand on clique sur le menu) -->
     <record id="action_supplements_products" model="ir.actions.act_window">
-        <field name="name">Compléments Alimentaires</field>
+        <field name="name">Compléments alimentaires</field>
         <field name="res_model">product.template</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('is_supplement', '=', True)]</field>
         <field name="context">{'default_is_supplement': True}</field>
     </record>
 
-    <!-- 3. Le Menu Racine (Celui qui apparaîtra sur le tableau de bord) -->
-    <!-- SÉCURITÉ : L'application n'est visible que par le groupe Gestionnaire -->
-    <menuitem id="menu_supplements_root" 
-              name="Compléments" 
-              sequence="10"
-              groups="custom_supplements.group_supplement_manager"/>
-
-    <!-- 4. Le Sous-Menu (Le lien cliquable dans votre nouvelle application) -->
-    <menuitem id="menu_supplements_products" 
-              name="Catalogue" 
-              parent="menu_supplements_root" 
-              action="action_supplements_products" 
-              sequence="10"/>
-
+    <menuitem id="menu_supplements_root" name="Compléments" sequence="10" groups="custom_supplements.group_supplement_manager"/>
+    <menuitem id="menu_supplements_products" name="Catalogue" parent="menu_supplements_root" action="action_supplements_products" sequence="10"/>
 </odoo>

@@ -1,50 +1,112 @@
-/* Fichier CSS aplati pour garantir la compatibilité avec libsass dans Odoo */
-
-.cs-font-heading { font-weight: 700; letter-spacing: -0.02em; }
-.cs-font-body { font-weight: 300; line-height: 1.7; }
-
-.cs-header { background-color: #10B981;  }
-.cs-header a { color :black;}
-.cs-badge-accent { background-color: #10B981 !important; color: #fff; border-radius: 8px; }
-.cs-btn-primary { background-color: #000000; color: #fff; border-radius: 8px; border: none; }
-.cs-btn-primary:hover { background-color: #1a1a1a; color: #fff; }
-
-.cs-card { border: none; border-radius: 16px; background-color: #FFFFFF; transition: transform 0.2s ease; }
-.cs-card:hover { transform: translateY(-5px); }
-
-.cs-section-muted { background-color: #F3F4F6; }
-
-.cs-hero-media { position: relative; overflow: hidden; border-radius: 0; background-color: #000; }
-.cs-hero-media video, .cs-hero-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-.cs-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
-
-.cs-kinetic-title { font-weight: 900; letter-spacing: -0.04em; line-height: 0.95; }
-.cs-outline { color: #10B981 }
-.cs-eyebrow { text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; font-size: 0.85rem; color: #10B981; }
-
-.cs-marquee { overflow: hidden; white-space: nowrap; width: 100%; background: #fff; }
-.cs-marquee-track { display: inline-block; animation: marquee 25s linear infinite; }
-.cs-marquee-track span { margin: 0 2.5rem; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-.cs-bento { display: grid; gap: 1rem; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 280px); }
-.cs-bento-tile { position: relative; border-radius: 16px; overflow: hidden; display: block; background: #000; }
-.cs-bento-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; }
-.cs-bento-tile:hover img { transform: scale(1.05); opacity: 0.8; }
-.cs-bento-caption { position: absolute; bottom: 1.5rem; left: 1.5rem; color: #fff; z-index: 2; font-size: 1.5rem; }
-.cs-bento-lg { grid-column: span 2; grid-row: span 2; }
-.cs-bento-md { grid-column: span 2; grid-row: span 1; }
-
-.cs-spotlight { position: relative; }
-.cs-callout { position: absolute; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 1.2rem; border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); z-index: 10; min-width: 220px; transition: transform 0.3s ease; }
-.cs-callout:hover { transform: translateY(-5px); }
-
-@media (max-width: 992px) {
-    .cs-bento { grid-template-columns: 1fr; grid-template-rows: auto; }
-    .cs-bento-lg { grid-column: span 1; grid-row: span 1; height: 350px; }
-    .cs-bento-md { grid-column: span 1; grid-row: span 1; height: 250px; }
-    .cs-callout { position: relative !important; top: auto !important; left: auto !important; bottom: auto !important; right: auto !important; margin-bottom: 1rem; width: 100%; transform: none !important; }
-    
+/* Boutique Compléments — palette: crème, encre, sauge, corail */
+:root {
+    --cs-ink: #17342d;
+    --cs-ink-soft: #49645b;
+    --cs-cream: #f7f4ee;
+    --cs-paper: #fffdf9;
+    --cs-sage: #c9d9c8;
+    --cs-coral: #e47e5b;
+    --cs-line: #dfe6de;
 }
 
+.cs-site-header { background: var(--cs-paper); color: var(--cs-ink); position: relative; z-index: 100; }
+.cs-announcement { background: var(--cs-ink); color: var(--cs-paper); font-size: .72rem; letter-spacing: .08em; padding: .55rem 1rem; text-align: center; text-transform: uppercase; }
+.cs-announcement span { color: var(--cs-coral); padding: 0 .4rem; }
+.cs-navbar { background: var(--cs-paper); border-bottom: 1px solid var(--cs-line); }
+.cs-navbar-inner { min-height: 76px; }
+.cs-navbar .navbar-brand img { max-height: 42px; width: auto; }
+.cs-main-nav { gap: .15rem; }
+.cs-main-nav .nav-link { color: var(--cs-ink); font-size: .82rem; font-weight: 600; padding: 1.4rem .7rem; }
+.cs-main-nav .nav-link:hover, .cs-main-nav .nav-link:focus { color: var(--cs-coral); }
+.cs-mega-menu { border: 1px solid var(--cs-line); border-radius: 0 0 18px 18px; box-shadow: 0 18px 44px rgba(23,52,45,.12); min-width: 620px; left: 50%; transform: translateX(-50%); }
+.cs-menu-label { color: var(--cs-ink-soft); display: block; font-size: .7rem; font-weight: 700; letter-spacing: .12em; margin-bottom: .8rem; text-transform: uppercase; }
+.cs-menu-link { color: var(--cs-ink); display: block; font-size: .9rem; padding: .3rem 0; text-decoration: none; }
+.cs-menu-link:hover { color: var(--cs-coral); }
+.cs-menu-link-child { color: var(--cs-ink-soft); font-size: .82rem; padding-left: .8rem; }
+.cs-menu-link-muted { color: var(--cs-coral); font-size: .8rem; margin-top: .6rem; }
+.cs-action-nav { gap: .4rem; }
+.cs-action-nav a { color: var(--cs-ink); }
+.cs-menu-toggle { border: 0; color: var(--cs-ink); font-size: 1.3rem; }
+.cs-mobile-menu { background: var(--cs-cream); }
+.cs-mobile-link { border-bottom: 1px solid var(--cs-line); color: var(--cs-ink); display: block; font-size: 1.15rem; padding: 1rem 0; text-decoration: none; }
 
+.cs-home-hero { background: var(--cs-cream); padding: 7rem 0 6rem; }
+.cs-eyebrow { color: var(--cs-coral); display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .15em; margin-bottom: 1rem; text-transform: uppercase; }
+.cs-home-hero h1, .cs-home-section h2, .cs-home-editorial h2 { color: var(--cs-ink); font-size: clamp(2.6rem, 5vw, 5.4rem); font-weight: 600; letter-spacing: -.06em; line-height: .98; margin-bottom: 1.5rem; }
+.cs-home-hero h1 em { color: var(--cs-coral); font-style: normal; }
+.cs-hero-lead { color: var(--cs-ink-soft); font-size: 1.08rem; line-height: 1.7; max-width: 510px; }
+.cs-btn-primary { background: var(--cs-ink); border: 1px solid var(--cs-ink); border-radius: 999px; color: var(--cs-paper); font-weight: 600; padding: .85rem 1.4rem; }
+.cs-btn-primary:hover, .cs-btn-primary:focus { background: var(--cs-coral); border-color: var(--cs-coral); color: var(--cs-paper); }
+.cs-btn-quiet { border: 1px solid var(--cs-ink); border-radius: 999px; color: var(--cs-ink); padding: .85rem 1.4rem; }
+.cs-btn-quiet:hover { background: var(--cs-sage); color: var(--cs-ink); }
+.cs-hero-proof { color: var(--cs-ink-soft); display: flex; flex-wrap: wrap; font-size: .78rem; gap: 1.2rem; margin-top: 2.5rem; }
+.cs-hero-proof i { color: var(--cs-coral); margin-right: .35rem; }
+.cs-hero-product { background: var(--cs-sage); border-radius: 50% 50% 18px 18px; min-height: 540px; overflow: hidden; padding: 3rem 2rem 0; position: relative; }
+.cs-hero-product img { display: block; height: 390px; margin: 2rem auto 0; max-width: 100%; object-fit: contain; }
+.cs-hero-sticker { background: var(--cs-coral); border-radius: 50%; color: var(--cs-paper); display: grid; font-size: .7rem; font-weight: 700; height: 92px; letter-spacing: .04em; line-height: 1.1; place-items: center; padding: 1rem; position: absolute; right: 2rem; text-align: center; text-transform: uppercase; top: 2rem; transform: rotate(8deg); width: 92px; }
+.cs-hero-product-caption { background: rgba(255,253,249,.94); bottom: 1rem; display: flex; flex-direction: column; left: 1rem; padding: 1rem 1.2rem; position: absolute; right: 1rem; }
+.cs-hero-product-caption span { color: var(--cs-coral); font-size: .7rem; text-transform: uppercase; }
+.cs-hero-product-caption strong { color: var(--cs-ink); font-size: 1.1rem; }
+.cs-hero-product-caption a { color: var(--cs-ink); font-size: .8rem; margin-top: .4rem; text-decoration: none; }
+.cs-trust-band { background: var(--cs-ink); color: var(--cs-paper); padding: 2rem 0; }
+.cs-trust-band i { color: var(--cs-coral); display: block; font-size: 1.4rem; margin-bottom: .7rem; }
+.cs-trust-band strong, .cs-trust-band span { display: block; }
+.cs-trust-band strong { font-size: .85rem; }
+.cs-trust-band span { color: var(--cs-sage); font-size: .75rem; margin-top: .2rem; }
+.cs-home-section { padding: 6rem 0; }
+.cs-home-section-soft { background: var(--cs-cream); }
+.cs-section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 2.5rem; }
+.cs-section-heading h2 { font-size: clamp(2rem, 4vw, 3.4rem); margin: 0; }
+.cs-section-heading > a, .cs-text-link { color: var(--cs-coral); font-size: .85rem; text-decoration: none; }
+.cs-category-card { background: var(--cs-sage); color: var(--cs-ink); display: block; min-height: 230px; padding: 1.5rem; position: relative; text-decoration: none; transition: transform .25s ease; }
+.cs-category-card:nth-child(2n) { background: var(--cs-ink); color: var(--cs-paper); }
+.cs-category-card:hover { color: inherit; transform: translateY(-5px); }
+.cs-category-index { color: var(--cs-coral); font-size: .75rem; font-weight: 700; }
+.cs-category-card h3 { bottom: 3.4rem; font-size: 1.45rem; left: 1.5rem; margin: 0; position: absolute; }
+.cs-category-card > span:last-child { bottom: 1.4rem; font-size: .78rem; left: 1.5rem; position: absolute; }
+.cs-product-card { height: 100%; }
+.cs-product-image { align-items: center; background: var(--cs-paper); display: flex; height: 280px; justify-content: center; overflow: hidden; position: relative; }
+.cs-product-image img { height: 85%; object-fit: contain; transition: transform .3s ease; width: 85%; }
+.cs-product-image:hover img { transform: scale(1.05); }
+.cs-product-badge { background: var(--cs-coral); color: var(--cs-paper); font-size: .65rem; left: .8rem; padding: .4rem .6rem; position: absolute; text-transform: uppercase; top: .8rem; z-index: 1; }
+.cs-product-copy { padding: 1rem 0; }
+.cs-product-kind { color: var(--cs-ink-soft); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; }
+.cs-product-copy h3 { font-size: 1rem; margin: .4rem 0 1rem; }
+.cs-product-copy h3 a { color: var(--cs-ink); text-decoration: none; }
+.cs-product-price { color: var(--cs-ink); font-weight: 700; }
+.cs-product-arrow { align-items: center; border: 1px solid var(--cs-line); border-radius: 50%; color: var(--cs-ink); display: flex; height: 32px; justify-content: center; text-decoration: none; width: 32px; }
+.cs-home-editorial { background: var(--cs-sage); padding: 6rem 0; }
+.cs-home-editorial h2 { font-size: clamp(2.3rem, 5vw, 4.5rem); }
+.cs-home-editorial p { color: var(--cs-ink-soft); font-size: 1.15rem; line-height: 1.7; }
+.cs-footer { background: var(--cs-ink); color: var(--cs-paper); padding: 4rem 0; }
+.cs-footer .navbar-brand, .cs-footer a { color: var(--cs-paper); display: block; text-decoration: none; }
+.cs-footer a { font-size: .85rem; margin-bottom: .6rem; }
+.cs-footer .cs-menu-label { color: var(--cs-sage); }
+.cs-footer-copy { color: var(--cs-sage); line-height: 1.7; margin-top: 1rem; max-width: 330px; }
+.cs-filter-strip { margin-bottom: 1.5rem; }
+.cs-filter-pill { border: 1px solid var(--cs-ink); border-radius: 999px; color: var(--cs-ink); display: inline-block; font-size: .8rem; padding: .55rem .9rem; text-decoration: none; }
+.cs-filter-pill.is-active { background: var(--cs-ink); color: var(--cs-paper); }
+.cs-product-badge { background: var(--cs-coral); border-radius: 999px; color: var(--cs-paper); font-size: .7rem; padding: .35rem .7rem; position: absolute; right: .7rem; top: .7rem; z-index: 3; }
+.cs-product-info { background: var(--cs-cream); margin-top: 2rem; padding: 1.5rem; }
+.cs-product-facts { display: flex; flex-wrap: wrap; gap: 1rem; }
+.cs-product-facts > div { align-items: center; display: flex; gap: .5rem; }
+.cs-product-facts i { color: var(--cs-coral); }
+.cs-allergen-note, .cs-allergen-alert { background: #fff1e8; color: var(--cs-ink); padding: 1rem; }
+.cs-allergen-note span { display: block; margin-top: .3rem; }
+.cs-allergen-alert { margin-top: 1rem; }
+
+@media (max-width: 991.98px) {
+    .cs-home-hero { padding: 4rem 0; }
+    .cs-hero-product { min-height: 420px; }
+    .cs-hero-product img { height: 290px; }
+    .cs-section-heading { align-items: start; flex-direction: column; gap: 1rem; }
+    .cs-mega-menu { min-width: 0; }
+}
+@media (max-width: 575.98px) {
+    .cs-announcement { font-size: .62rem; }
+    .cs-home-hero h1 { font-size: 3rem; }
+    .cs-home-section { padding: 4rem 0; }
+    .cs-hero-product { min-height: 360px; }
+    .cs-hero-product img { height: 230px; }
+    .cs-product-image { height: 210px; }
+}
