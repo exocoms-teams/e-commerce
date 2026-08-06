@@ -95,5 +95,5 @@ class TestDashboardFilterAPI(HttpCase):
         api = TrendDashboardAPI(self.env)
         data = api.get_product_list(limit=1)
         self.assertEqual(len(data), 1)
-        # Le mieux score (FR, 80.0) doit etre celui retourne.
+        # Le mieux score (FR, 999.0) doit etre celui retourne.
         self.assertEqual(data[0]['id'], self.product_fr.id)
