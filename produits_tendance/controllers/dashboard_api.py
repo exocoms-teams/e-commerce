@@ -1,4 +1,7 @@
 # controllers/dashboard_api.py
+import json
+from collections import defaultdict
+
 from werkzeug.exceptions import NotFound
 from ..models.trend_ad import latest_ads_by_ref
 from ..services.scoring_engine import ScoringEngine
@@ -77,6 +80,7 @@ class TrendDashboardAPI:
         # que la dernière par ad_ref pour l'affichage et les totaux, sinon
         # les compteurs likes/partages gonflent à chaque nouvelle collecte.
         ads = latest_ads_by_ref(product.ad_ids)
+        score_history = self.get_score_history(product)
 
         return {
             'product': product,
@@ -86,7 +90,34 @@ class TrendDashboardAPI:
             'ads': ads,
             'total_likes': sum(ads.mapped('likes_count')),
             'total_shares': sum(ads.mapped('shares_count')),
+            'score_history': score_history,
+            'score_history_json': json.dumps(score_history),
         }
+
+    def get_score_history(self, product):
+        """Historique agrégé du computed_score pour la courbe de tendance
+        (WIN-52) : un point par date (moyenne si plusieurs trend.score le
+        même jour), trié chronologiquement.
+
+        Agrégation faite ici, côté ORM/Python, pour n'envoyer qu'un point
+        par jour au JS plutôt qu'un par trend.score — cf. contrainte du
+        ticket "alléger le rendu DOM".
+
+        :param trend.product product: le produit (déjà chargé)
+        :rtype: list[dict] — [{'date': 'YYYY-MM-DD', 'score': float}, ...]
+        """
+        by_date = defaultdict(list)
+        for score in product.score_ids:
+            if not score.computed_at:
+                continue
+            date_key = score.computed_at.date().isoformat()
+            by_date[date_key].append(score.computed_score)
+
+        return [
+            {'date': date_key, 'score': sum(scores) / len(scores)}
+            for date_key, scores in sorted(by_date.items())
+        ]
+
     # ------------------------------------------------------------------
     # Liste / filtres dynamiques (WIN-45 / WIN-50)
     # ------------------------------------------------------------------
