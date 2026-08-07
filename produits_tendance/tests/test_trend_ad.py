@@ -1,5 +1,5 @@
-from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestTrendAdAutoLinking(TransactionCase):
@@ -79,8 +79,12 @@ class TestTrendAdRequiredFields(TransactionCase):
         vals.update(overrides)
         return vals
 
+    @mute_logger('odoo.sql_db')
     def test_missing_social_network_raises(self):
-        with self.assertRaises(ValidationError):
+        # social_network est required=True : Odoo laisse passer la valeur
+        # jusqu'au SQL (pas de ValidationError ORM ici) et c'est la
+        # contrainte NOT NULL de la table qui bloque la création.
+        with self.assertRaises(Exception):
             self.env['trend.ad'].create(self._base_vals(social_network=False))
 
     def test_valid_minimal_ad_is_created(self):
