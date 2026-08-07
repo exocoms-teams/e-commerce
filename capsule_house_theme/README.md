@@ -1242,6 +1242,37 @@ sur la `<section>`, `oe_editable` sur l'eyebrow/titre/sous-titre/
 bouton — il en était complètement dépourvu jusqu'ici malgré son
 schéma FR/EN déjà correct.
 
+## Test diagnostique cartes flottantes du hero (v19.0.1.0.53)
+
+Malgré tous les correctifs précédents (data-snippet, data-name,
+o_colored_level, oe_editable, zone `oe_structure` interne, scission
+FR/EN), le panneau Style restait toujours vide sur le hero. Hypothèse
+du client à tester : le bloc des 2 cartes flottantes de produits dans
+`hero.xml` (`<t t-if="featured_products">` /
+`<t t-foreach="featured_products[:2]" t-as="hero_product">`, contenu
+100 % dynamique) pourrait empêcher Odoo de traiter la `<section
+data-snippet>` comme éditable — même logique que la règle
+"`oe_structure` ne doit jamais être posé sur un élément contenant des
+`<t>`" déjà identifiée.
+
+**Rien n'est supprimé.** Changement strictement réversible et
+temporaire : la condition est passée de `t-if="featured_products"` à
+`t-if="False"` dans `partial_hero_fr` ET `partial_hero_en` — le bloc
+entier (cartes, badges, prix, bouton "Ajouter au panier") reste
+intact dans le code, juste désactivé à l'affichage.
+
+**Résultat attendu par le client** : retester le panneau Style sur le
+hero après déploiement.
+- Panneau Style apparaît maintenant → le bloc dynamique était bien la
+  cause ; prochaine étape : trouver comment le garder (ex : le sortir
+  de la `<section data-snippet>`, le repositionner en CSS) sans
+  bloquer l'éditeur.
+- Panneau Style toujours vide → piste écartée, remettre
+  `t-if="featured_products"` aux deux endroits et chercher ailleurs
+  (piste suggérée : inspecter la console du navigateur en mode Édition
+  pour une éventuelle erreur JS, plutôt que continuer à deviner à
+  partir du seul code source).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
