@@ -1119,11 +1119,43 @@ Entreprise) : suppression du `<div id="wrap" class="oe_structure">`
 englobant, remplacé par des placeholders vides
 (`oe_structure_ch_<page>_after_hero` / `_bottom`) aux mêmes endroits
 qu'exocoms_theme — après le hero sur Accueil et Avis, en bas de page
-partout. Le hero et tout le reste du contenu ne sont donc plus
-éditables/supprimables depuis le Website Builder. Aucun changement
+partout. Aucun changement
 visuel : les classes CSS posées sur le div supprimé (`.ch-home`,
 `.ch-aide-page`, `.ch-avis-page`, `.ch-entreprise-page`) n'étaient
 ciblées par aucune règle CSS (vérifié dans `static/src/css/`).
+
+**Correctif de ce correctif (v19.0.1.0.49)** : l'affirmation ci-dessus
+("le hero et tout le reste du contenu ne sont donc plus éditables")
+était en partie fausse — erreur repérée par le client (capture
+d'écran : panneau Style vide en cliquant sur le hero) et confirmée en
+relisant cette fois le contenu réel de
+`exocoms_theme/views/partials/hero.xml`, pas seulement `home.xml`. Le
+hero d'exocoms N'EST PAS verrouillé : sa `<section>` porte
+`data-snippet="s_exocoms_hero"` + `data-name="Exocoms Hero"` (donc
+sélectionnable, panneau Style actif), et le texte marketing statique
+(badge, titre, sous-titre, boutons, bandeau de confiance) porte la
+classe `oe_editable` (donc éditable en ligne). Seul leur SVG décoratif
+est explicitement `o_not_editable`. Le correctif 19.0.1.0.48
+(suppression de l'`oe_structure` englobant) restait juste — c'est bien
+ainsi qu'exocoms structure ses pages — mais il manquait ce second
+niveau : sans `data-snippet`/`oe_editable` sur le hero lui-même, celui-
+ci se retrouvait totalement verrouillé au lieu de reproduire le
+comportement réel d'exocoms.
+
+Corrigé sur `views/partials/hero.xml` : `data-snippet="s_ch_hero"` +
+`data-name="Capsule House Hero"` sur la `<section class="ch-hero">`,
+`oe_editable` sur le titre, le sous-titre, le bloc des 3 pastilles et
+le bandeau de confiance (même granularité par bloc qu'exocoms, pas
+span par span), `o_not_editable` sur le SVG de l'illustration.
+Restent volontairement NON éditables — déviation assumée, propre à
+Capsule House puisque ce contenu n'existe pas chez exocoms — les 3
+statistiques (nombres ET libellés) et le formulaire de recherche : ces
+zones affichent des valeurs calculées dynamiquement à chaque rendu
+(`t-esc published_products_count` / `units_installed_count`) ; les
+rendre éditables aurait risqué de figer un chiffre en dur au premier
+Save et de casser le comptage automatique aux rendus suivants. Même
+raisonnement pour le bouton "Ajouter au panier" et les cartes produits
+flottantes (contenu 100 % dynamique).
 
 ## Point de vérification connu
 

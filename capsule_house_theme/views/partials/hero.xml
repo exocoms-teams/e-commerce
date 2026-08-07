@@ -31,9 +31,35 @@
         place depuis plus tôt dans ce module) active fr_FR/en_US et
         pose le sélecteur natif ; ce bloc fournit le texte réellement
         affiché dans chaque langue.
+
+        Édition native (v19.0.1.0.49, voir README "Blocs non éditables
+        comme sur exocoms_theme" — correctif) : d'après le vrai code
+        d'exocoms_theme (views/partials/hero.xml), leur hero N'EST PAS
+        verrouillé : la <section> porte data-snippet + data-name (donc
+        sélectionnable dans le panneau Style), et le texte marketing
+        statique (titre, sous-titre, boutons, bandeau de confiance) est
+        marqué oe_editable (donc éditable en ligne). Reproduit ici à
+        l'identique : data-snippet="s_ch_hero" sur la <section>, et
+        oe_editable sur le titre, le sous-titre, les 3 pastilles et le
+        bandeau de confiance — groupés par bloc, pas span par span,
+        même granularité que le "s_exocoms_hero_trust oe_editable" et
+        "s_exocoms_hero_badge oe_editable" d'exocoms. À L'INVERSE,
+        RESTENT NON éditables (déviation volontaire, absente chez
+        exocoms mais nécessaire ici) : les libellés des 3 statistiques
+        (ch-hero-stat-label) ET leurs valeurs (ch-hero-stat-number) —
+        ces valeurs sont calculées dynamiquement (t-esc
+        published_products_count / units_installed_count) ; les rendre
+        éditables risquerait de figer un chiffre en dur au premier
+        Save et de casser le comptage automatique aux rendus suivants.
+        Idem pour le formulaire de recherche et le bouton "Ajouter au
+        panier" (contrôles fonctionnels, pas du texte marketing) et
+        pour les cartes produits flottantes (contenu 100% dynamique).
+        L'illustration SVG est explicitement marquée o_not_editable,
+        comme le SVG décoratif d'exocoms (s_exocoms_hero_svg
+        o_not_editable).
     -->
     <template id="partial_hero" name="Capsule House - Hero">
-        <section class="ch-hero">
+        <section class="ch-hero" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
                 <div class="ch-hero-content" t-if="request.env.lang == 'fr_FR'">
                     <div class="ch-rating-badge" t-if="rating_value">
@@ -43,11 +69,11 @@
                         <span t-esc="'%s avis' % rating_count"/>
                     </div>
 
-                    <h1 class="ch-hero-title">
+                    <h1 class="ch-hero-title oe_editable">
                         Le pod design fait pour<br/>
                         <span class="ch-hero-title-accent">votre terrain</span>
                     </h1>
-                    <p class="ch-hero-subtitle">
+                    <p class="ch-hero-subtitle oe_editable">
                         Comparez nos modèles, configurez le vôtre et commandez en
                         ligne. Livraison, installation et garantie 10 ans incluses.
                     </p>
@@ -57,7 +83,7 @@
                         <button type="submit" class="ch-btn ch-btn-black">Rechercher</button>
                     </form>
 
-                    <div class="ch-hero-pills">
+                    <div class="ch-hero-pills oe_editable">
                         <span class="ch-pill">18-40 m²</span>
                         <span class="ch-pill">Livré en 6 semaines</span>
                         <span class="ch-pill">Financement possible</span>
@@ -81,7 +107,7 @@
                         </div>
                     </div>
 
-                    <div class="ch-trust-row">
+                    <div class="ch-trust-row oe_editable">
                         <span class="ch-trust-item"><i class="fa fa-truck"/> Livraison &amp; installation offertes</span>
                         <span class="ch-trust-item"><i class="fa fa-shield"/> Garantie constructeur 10 ans</span>
                         <span class="ch-trust-item"><i class="fa fa-credit-card"/> Paiement sécurisé, 3x sans frais</span>
@@ -96,11 +122,11 @@
                         <span t-esc="'%s reviews' % rating_count"/>
                     </div>
 
-                    <h1 class="ch-hero-title">
+                    <h1 class="ch-hero-title oe_editable">
                         Design pods built for<br/>
                         <span class="ch-hero-title-accent">your land</span>
                     </h1>
-                    <p class="ch-hero-subtitle">
+                    <p class="ch-hero-subtitle oe_editable">
                         Compare our models, configure yours and order online.
                         Delivery, installation and 10-year warranty included.
                     </p>
@@ -110,7 +136,7 @@
                         <button type="submit" class="ch-btn ch-btn-black">Search</button>
                     </form>
 
-                    <div class="ch-hero-pills">
+                    <div class="ch-hero-pills oe_editable">
                         <span class="ch-pill">18-40 sqm</span>
                         <span class="ch-pill">Delivered in 6 weeks</span>
                         <span class="ch-pill">Financing available</span>
@@ -131,7 +157,7 @@
                         </div>
                     </div>
 
-                    <div class="ch-trust-row">
+                    <div class="ch-trust-row oe_editable">
                         <span class="ch-trust-item"><i class="fa fa-truck"/> Free delivery &amp; installation</span>
                         <span class="ch-trust-item"><i class="fa fa-shield"/> 10-year manufacturer warranty</span>
                         <span class="ch-trust-item"><i class="fa fa-credit-card"/> Secure payment, 3x interest-free</span>
@@ -145,7 +171,7 @@
                              repris tel quel (couleurs différentes du badge
                              logo : teintes supplémentaires EAD9C4/FFF3E0/
                              E3A48A propres à cette illustration). -->
-                        <svg class="ch-pod-illustration-svg" viewBox="0 0 300 220" width="80%">
+                        <svg class="ch-pod-illustration-svg o_not_editable" viewBox="0 0 300 220" width="80%">
                             <defs>
                                 <linearGradient id="ch-pod-body" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF"/>
