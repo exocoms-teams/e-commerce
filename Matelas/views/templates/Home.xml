@@ -127,52 +127,51 @@
       <!-- Nouveautés : produits choisis via le tag "Nouveauté" sur la fiche
            produit (Ventes > Produits > Tags produit) — modifiable par le
            maître de stage sans toucher au code. -->
-      <t t-if="nouveautes">
-        <section class="bestsellers container">
-          <p class="section-label">FRAÎCHEMENT ARRIVÉ</p>
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <h2>Nos nouveautés</h2>
-            <a href="/shop" class="voir-tout">Voir tout →</a>
-          </div>
-          <p class="section-subtitle">Découvrez nos tout derniers produits arrivés en boutique.</p>
+      <section class="bestsellers container">
+        <p class="section-label">FRAÎCHEMENT ARRIVÉ</p>
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h2>Nos nouveautés</h2>
+          <a href="/shop" class="voir-tout">Voir tout →</a>
+        </div>
+        <p class="section-subtitle">Découvrez nos tout derniers produits arrivés en boutique.</p>
+      </section>
 
-          <div class="auto-scroll-wrapper">
-            <div class="auto-scroll-track">
-              <t t-foreach="[1, 2]" t-as="_pass">
-                <t t-foreach="nouveautes" t-as="product">
-                  <div class="bestseller-scroll-item">
-                    <div class="product-card position-relative">
-                      <span class="badge-nouveaute">Nouveau</span>
-                      <a t-att-href="product.website_url">
-                        <img class="product-image"
-                          t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
-                          alt="Matelas" />
-                      </a>
-                      <p class="product-type">MATELAS</p>
+      <div class="bestsellers-carousel container">
+        <div class="auto-scroll-wrapper">
+          <div class="auto-scroll-track">
+            <t t-foreach="[1, 2]" t-as="_pass">
+              <t t-foreach="nouveautes" t-as="product">
+                <div class="bestseller-scroll-item">
+                  <div class="product-card position-relative">
+                    <span class="badge-nouveaute">Nouveau</span>
+                    <a t-att-href="product.website_url">
+                      <img class="product-image"
+                        t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                        alt="Matelas" />
+                    </a>
+                    <p class="product-type">MATELAS</p>
 
-                      <h4
-                        t-esc="product.name" />
+                    <h4
+                      t-esc="product.name" />
 
-                      <div class="price-action">
-                        <p class="price">
-                          <span t-esc="product.list_price" /> € </p>
+                    <div class="price-action">
+                      <p class="price">
+                        <span t-esc="product.list_price" /> € </p>
 
-                        <a href="#" class="btn-add"
-                          t-att-data-product-url="product.website_url"
-                          t-att-data-product-id="product.product_variant_id.id"
-                          t-att-data-template-id="product.id"
-                          t-att-data-category-id="product.categ_id.id"
-                          t-att-data-product-type="product.type">Ajouter</a>
-                      </div>
+                      <a href="#" class="btn-add"
+                        t-att-data-product-url="product.website_url"
+                        t-att-data-product-id="product.product_variant_id.id"
+                        t-att-data-template-id="product.id"
+                        t-att-data-category-id="product.categ_id.id"
+                        t-att-data-product-type="product.type">Ajouter</a>
                     </div>
                   </div>
-                </t>
+                </div>
               </t>
-            </div>
+            </t>
           </div>
-
-        </section>
-      </t>
+        </div>
+      </div>
 
       <!-- Best-sellers : rangée qui défile automatiquement -->
       <section class="bestsellers container">
@@ -182,7 +181,9 @@
           <a href="/shop" class="voir-tout">Voir tout →</a>
         </div>
         <p class="section-subtitle">Les matelas préférés de nos clients, plébiscités pour leur confort.</p>
+      </section>
 
+      <div class="bestsellers-carousel container">
         <div class="auto-scroll-wrapper">
           <div class="auto-scroll-track">
             <t t-foreach="[1, 2]" t-as="_pass">
@@ -216,8 +217,7 @@
             </t>
           </div>
         </div>
-
-      </section>
+      </div>
 
       <!-- Vu récemment -->
       <section class="bestsellers container" id="recently-viewed-section" style="display:none">
