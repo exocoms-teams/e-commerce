@@ -14,14 +14,21 @@
                 <div class="container mt-5 mb-5">
 
                     <div class="o_winners_product_detail__header">
+                        <img t-if="product.image_url" t-att-src="product.image_url"
+                             alt="" class="o_winners_product_detail__image"/>
                         <span t-if="product.category_id"
                               class="o_winners_product_detail__category">
                             <t t-esc="product.category_id.name"/>
                         </span>
+                        <span t-if="product.is_top_3" class="o_winners_product_detail__rank_badge o_winners_product_detail__rank_badge--top3">Top 3</span>
+                        <span t-elif="product.is_top_10" class="o_winners_product_detail__rank_badge">Top 10</span>
                         <h1 t-esc="product.name"/>
                         <div class="o_winners_product_detail__meta">
+                            <span t-if="product.product_ref">
+                                Réf. <t t-esc="product.product_ref"/>
+                            </span>
                             <span t-if="product.country">
-                                <t t-esc="product.country"/>
+                                · <t t-esc="product.country"/>
                             </span>
                             <span t-if="product.date">
                                 · <t t-esc="product.date"/>
@@ -71,6 +78,36 @@
                         </div>
                     </div>
 
+                    <!-- Attributs complémentaires : n'affiche que ce qui est
+                         réellement disponible sur le produit (pas de valeur
+                         inventée quand l'attribut n'a pas encore de donnée). -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="o_winners_product_detail__stat">
+                                <div class="o_winners_product_detail__stat_label">Classement</div>
+                                <div class="o_winners_product_detail__stat_value">
+                                    #<t t-esc="product.rank_number"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3" t-if="product.score_site_x">
+                            <div class="o_winners_product_detail__stat">
+                                <div class="o_winners_product_detail__stat_label">Score site source</div>
+                                <div class="o_winners_product_detail__stat_value">
+                                    <t t-esc="'%.1f' % product.score_site_x"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3" t-if="ads">
+                            <div class="o_winners_product_detail__stat">
+                                <div class="o_winners_product_detail__stat_label">Publicités liées</div>
+                                <div class="o_winners_product_detail__stat_value">
+                                    <t t-esc="len(ads)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Courbe de tendance (WIN-52) : historique du computed_score,
                          un point par date (agrégé côté ORM, voir get_score_history)
                          pour alléger le rendu DOM. Rendu via Chart.js (widget public
@@ -96,6 +133,8 @@
                             <li t-foreach="ads" t-as="ad">
                                 <t t-esc="dict(ad._fields['social_network'].selection).get(ad.social_network)"/>
                                 — <t t-esc="ad.likes_count"/> likes, <t t-esc="ad.shares_count"/> partages
+                                <t t-if="ad.country"> · <t t-esc="ad.country"/></t>
+                                <t t-if="ad.collected_at"> · <t t-esc="ad.collected_at.date()"/></t>
                             </li>
                         </ul>
                     </div>
