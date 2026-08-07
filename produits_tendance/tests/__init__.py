@@ -8,4 +8,5 @@ from . import test_scoring_engine
 from . import test_subscription
 from . import test_dashboard
 from . import test_ad_ingestion
+from . import test_score_alert
 from . import test_api_security

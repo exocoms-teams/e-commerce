@@ -23,8 +23,9 @@
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
+        'data/webhook_queue_cron.xml',      # WIN-67
     ],
-    
+
     'demo': [
         'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
     ],
