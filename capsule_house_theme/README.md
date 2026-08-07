@@ -1157,6 +1157,21 @@ Save et de casser le comptage automatique aux rendus suivants. Même
 raisonnement pour le bouton "Ajouter au panier" et les cartes produits
 flottantes (contenu 100 % dynamique).
 
+**Suite (v19.0.1.0.50)** : après déploiement de la 19.0.1.0.49, le
+panneau Style restait toujours vide en cliquant sur le hero
+(nouvelle capture d'écran du client) — `data-snippet`/`data-name`
+seuls n'ont pas suffi. En recomparant précisément les classes de la
+`<section>` hero d'exocoms (`o_colored_level pt32 pb32 oe_img_bg
+o_bg_img_center`, en plus de `data-snippet`) à la nôtre, `o_colored_level`
+est ajoutée par hypothèse — c'est une classe cœur d'Odoo qui enregistre
+un `<section>` auprès du panneau d'options générique Background/
+Layout/Visibility, exactement ce qu'affiche la capture d'écran sur
+exocoms. **Non vérifié à 100 %** faute d'accès au JS cœur d'Odoo en
+local (seuls les modules thème sont montés) — à confirmer par un
+nouveau test après déploiement. Si ça ne suffit toujours pas, prochaine
+piste : `oe_img_bg`/`o_bg_img_center` (liées à une image de fond, que
+notre hero n'a pas — fond en dégradé CSS, pas image).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

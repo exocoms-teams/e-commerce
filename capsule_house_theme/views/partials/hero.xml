@@ -57,9 +57,29 @@
         L'illustration SVG est explicitement marquée o_not_editable,
         comme le SVG décoratif d'exocoms (s_exocoms_hero_svg
         o_not_editable).
+
+        SUITE DU CORRECTIF (v19.0.1.0.50) : après déploiement de la
+        19.0.1.0.49, le client a montré (capture d'écran) que le
+        panneau Style restait toujours vide en cliquant sur le hero —
+        data-snippet/data-name seuls n'ont donc pas suffi à faire
+        apparaître le panneau "Layout / Background / Image / Position /
+        Scroll Effect / Color Filter / Content Width / Height /
+        Visibility" qu'affiche exocoms pour son propre hero. En
+        recomparant précisément la liste de classes de leur <section>
+        (`s_exocoms_hero o_colored_level pt32 pb32 oe_img_bg
+        o_bg_img_center`) à la nôtre (`ch-hero` seul), la classe
+        `o_colored_level` est la plus probable responsable : c'est une
+        classe cœur d'Odoo (pas spécifique à exocoms) qui enregistre un
+        <section> auprès du panneau d'options générique Background/
+        Layout/Visibility du Website Builder — c'est justement cet
+        ensemble d'options qu'on voit dans la capture d'écran du
+        client sur exocoms. Ajoutée ici par hypothèse la plus probable,
+        pas une certitude à 100 % faute d'accès au JS cœur d'Odoo en
+        local pour la vérifier ligne à ligne — à confirmer par un
+        nouveau test du client après déploiement.
     -->
     <template id="partial_hero" name="Capsule House - Hero">
-        <section class="ch-hero" data-snippet="s_ch_hero" data-name="Capsule House Hero">
+        <section class="ch-hero o_colored_level" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
                 <div class="ch-hero-content" t-if="request.env.lang == 'fr_FR'">
                     <div class="ch-rating-badge" t-if="rating_value">
