@@ -4,14 +4,22 @@
         Rendue par CapsuleHouseWebsite.avis_page() (controllers/main.py)
         sur la route '/avis'. Scopée à notre site via
         _scope_layout_views() (external id capsule_house_theme.avis_page).
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel — le
+        hero et le contenu avis sont t-call-és directement, seuls des
+        placeholders <div class="oe_structure oe_empty"> réellement vides
+        servent de points d'insertion pour le Website Builder, exactement
+        comme exocoms_theme/views/pages/avis.xml.
     -->
     <template id="avis_page" name="Capsule House - Avis clients">
         <t t-call="website.layout">
             <t t-set="title">Avis clients | Capsule House</t>
-            <div id="wrap" class="ch-avis-page oe_structure">
-                <t t-call="capsule_house_theme.avis_hero"/>
-                <t t-call="capsule_house_theme.avis_content"/>
-            </div>
+            <t t-call="capsule_house_theme.avis_hero"/>
+            <div class="oe_structure oe_empty" id="oe_structure_ch_avis_after_hero"/>
+            <t t-call="capsule_house_theme.avis_content"/>
+            <div class="oe_structure oe_empty" id="oe_structure_ch_avis_bottom"/>
         </t>
     </template>
 </odoo>

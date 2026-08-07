@@ -1084,6 +1084,47 @@ nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
 brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
 aux pages Aide).
 
+## Blocs non éditables comme sur exocoms_theme (v19.0.1.0.48)
+
+Question posée par le client, capture d'écran à l'appui (Website
+Builder ouvert sur la page d'accueil) : comment le hero d'accueil, et
+plus largement le contenu de la page d'accueil, sont-ils protégés pour
+ne pas être éditables nativement via le panneau "Blocks" d'Odoo — comme
+c'est le cas sur exocoms_theme ?
+
+Réponse honnête après relecture du code local d'exocoms_theme : ce
+n'était **pas** le cas jusqu'à cette version. Les 8 templates de page
+de ce module enveloppaient tout leur contenu réel (hero compris) dans
+un même `<div id="wrap" class="oe_structure">`. Deux problèmes :
+
+1. `website.layout` pose déjà lui-même un `#wrap` natif — on créait
+   donc un second `id="wrap"` dupliqué (HTML invalide) à l'intérieur.
+2. `oe_structure` marque toute la zone comme un conteneur de blocs
+   éditable par le Website Builder (glisser-déposer, édition inline).
+   En l'appliquant à tout le contenu, celui-ci restait exposé à
+   l'édition ou à la suppression accidentelle depuis "Edit" — ce n'est
+   pas ainsi qu'exocoms_theme fonctionne réellement.
+
+Vérification directe du code d'exocoms_theme (`views/pages/home.xml`,
+`avis.xml`, `services.xml`) : aucun de ces templates n'enveloppe son
+contenu réel dans `oe_structure`. Les sections (hero, contenu) sont
+`t-call`-ées directement ; seuls des `<div class="oe_structure
+oe_empty">` séparés et **réellement vides** sont insérés entre les
+sections, comme simples points d'ancrage pour ajouter de nouveaux blocs
+— sans jamais rendre éditable le contenu déjà codé en dur.
+
+Corrigé en reproduisant exactement ce principe sur les 8 pages du
+module (`page_home`, `avis_page`, les 4 pages Aide, les 2 pages
+Entreprise) : suppression du `<div id="wrap" class="oe_structure">`
+englobant, remplacé par des placeholders vides
+(`oe_structure_ch_<page>_after_hero` / `_bottom`) aux mêmes endroits
+qu'exocoms_theme — après le hero sur Accueil et Avis, en bas de page
+partout. Le hero et tout le reste du contenu ne sont donc plus
+éditables/supprimables depuis le Website Builder. Aucun changement
+visuel : les classes CSS posées sur le div supprimé (`.ch-home`,
+`.ch-aide-page`, `.ch-avis-page`, `.ch-entreprise-page`) n'étaient
+ciblées par aucune règle CSS (vérifié dans `static/src/css/`).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

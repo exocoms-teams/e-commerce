@@ -7,14 +7,19 @@
         "Contacter le service client" pointe vers /contactus, la page
         de contact NATIVE d'Odoo (v19.0.1.0.47, voir README "Pages
         Entreprise") — jamais de formulaire reconstruit à la main.
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel —
+        seul un placeholder réellement vide en bas de page sert de point
+        d'insertion pour le Website Builder.
     -->
     <template id="aide_retours_page" name="Capsule House - Aide - Retours">
         <t t-call="website.layout">
             <t t-set="title" t-if="request.env.lang == 'fr_FR'">Retours &amp; rétractation | Capsule House</t>
             <t t-set="title" t-if="request.env.lang != 'fr_FR'">Returns &amp; withdrawal | Capsule House</t>
-            <div id="wrap" class="ch-aide-page oe_structure">
 
-                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
                     <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Aide</span>
                 </div>
                 <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
@@ -84,7 +89,8 @@
                         <a href="/contactus" class="ch-aide-btn-dark">Contact customer service</a>
                     </div>
                 </div>
-            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_aide_retours_bottom"/>
         </t>
     </template>
 </odoo>
