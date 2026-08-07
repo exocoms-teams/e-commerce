@@ -105,11 +105,11 @@ class TrendProduct(models.Model):
         if isinstance(value, (list, tuple)):
             want_true = True in value
         else:
-            want_true = (value is True)
-        if operator == '!=':
+            want_true = bool(value)
+        if operator in ('!=', 'not in'):
             want_true = not want_true
-        # For other operators (<, >, etc.) we fall back to false domain (should not appear in UI)
-        if operator not in ('=', '!='):
+        elif operator not in ('=', 'in'):
+            # For other operators (<, >, etc.) we fall back to false domain (should not appear in UI)
             return []
         top_ids = self.search([], order='current_score desc', limit=limit).ids
         if want_true:
