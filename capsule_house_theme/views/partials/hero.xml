@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        Partiel réutilisable (t-call), pas de page à part entière. Scopé à
-        notre site via _scope_layout_views() (external id
-        capsule_house_theme.partial_hero). Structure calquée sur la
-        maquette de référence.
+        RESTRUCTURATION (v19.0.1.0.51) : hypothèse du client, à tester —
+        le panneau Style restait vide sur le hero malgré data-snippet +
+        data-name + o_colored_level + oe_editable (v19.0.1.0.50). Piste
+        suivante : l'ORGANISATION du template lui-même, pas seulement
+        ses classes CSS.
+
+        Avant cette version, `partial_hero` était UN SEUL template
+        contenant tout le FR ET tout le EN à l'intérieur, choisis par
+        t-if/t-else internes — la <section data-snippet> elle-même
+        n'était PAS le résultat direct d'un t-call vers un template
+        dédié à une seule langue.
+
+        Vérification du vrai code d'exocoms_theme
+        (views/partials/hero.xml) : leur organisation est différente.
+        `hero_section` n'est qu'un AIGUILLEUR (2 lignes, un t-if par
+        langue), qui t-call soit `hero_section_fr` soit
+        `hero_section_en` — DEUX templates COMPLETS et INDÉPENDANTS,
+        chacun avec sa PROPRE <section data-snippet="s_exocoms_hero"
+        data-name="Exocoms Hero">...</section> entière (rien de partagé
+        entre les deux, tout dupliqué). Reproduit ici à l'identique :
+        `partial_hero_fr` et `partial_hero_en` sont maintenant deux
+        templates complets et indépendants (illustration + cartes
+        flottantes dupliquées dans chacun, plus seulement le texte),
+        et `partial_hero` n'est plus qu'un aiguilleur t-if/t-call.
+
+        Scopés à notre site via _scope_layout_views() (external ids
+        capsule_house_theme.partial_hero, .partial_hero_fr,
+        .partial_hero_en).
 
         Attend, fournis par CapsuleHouseWebsite.homepage()
         (controllers/main.py) :
@@ -23,65 +47,25 @@
         garantie) sont repris tels quels de la maquette fournie — à
         confirmer avec le client avant mise en ligne.
 
-        Traduction FR/EN (v19.0.1.0.36) : même convention que
-        exocoms_theme (texte statique dupliqué dans un bloc
-        t-if/t-else sur request.env.lang, pas de traduction native
-        .po pour le corps de page) — voir README "Traduction des
-        pages comme sur exocoms_theme". _setup_languages() (déjà en
-        place depuis plus tôt dans ce module) active fr_FR/en_US et
-        pose le sélecteur natif ; ce bloc fournit le texte réellement
-        affiché dans chaque langue.
-
-        Édition native (v19.0.1.0.49, voir README "Blocs non éditables
-        comme sur exocoms_theme" — correctif) : d'après le vrai code
-        d'exocoms_theme (views/partials/hero.xml), leur hero N'EST PAS
-        verrouillé : la <section> porte data-snippet + data-name (donc
-        sélectionnable dans le panneau Style), et le texte marketing
-        statique (titre, sous-titre, boutons, bandeau de confiance) est
-        marqué oe_editable (donc éditable en ligne). Reproduit ici à
-        l'identique : data-snippet="s_ch_hero" sur la <section>, et
-        oe_editable sur le titre, le sous-titre, les 3 pastilles et le
-        bandeau de confiance — groupés par bloc, pas span par span,
-        même granularité que le "s_exocoms_hero_trust oe_editable" et
-        "s_exocoms_hero_badge oe_editable" d'exocoms. À L'INVERSE,
-        RESTENT NON éditables (déviation volontaire, absente chez
-        exocoms mais nécessaire ici) : les libellés des 3 statistiques
-        (ch-hero-stat-label) ET leurs valeurs (ch-hero-stat-number) —
-        ces valeurs sont calculées dynamiquement (t-esc
-        published_products_count / units_installed_count) ; les rendre
-        éditables risquerait de figer un chiffre en dur au premier
-        Save et de casser le comptage automatique aux rendus suivants.
-        Idem pour le formulaire de recherche et le bouton "Ajouter au
-        panier" (contrôles fonctionnels, pas du texte marketing) et
-        pour les cartes produits flottantes (contenu 100% dynamique).
-        L'illustration SVG est explicitement marquée o_not_editable,
+        Édition native (v19.0.1.0.49/50, voir README "Blocs non
+        éditables comme sur exocoms_theme") : data-snippet + data-name
+        sur chaque <section>, oe_editable sur le titre, le sous-titre,
+        les 3 pastilles et le bandeau de confiance — même granularité
+        que "s_exocoms_hero_trust oe_editable" / "s_exocoms_hero_badge
+        oe_editable" chez exocoms. Restent volontairement NON éditables
+        (déviation assumée, propre à Capsule House) : les statistiques
+        (valeurs ET libellés — valeurs calculées dynamiquement via
+        t-esc), le formulaire de recherche, le bouton "Ajouter au
+        panier" et les cartes produits flottantes (contenu 100 %
+        dynamique). L'illustration SVG est marquée o_not_editable,
         comme le SVG décoratif d'exocoms (s_exocoms_hero_svg
         o_not_editable).
-
-        SUITE DU CORRECTIF (v19.0.1.0.50) : après déploiement de la
-        19.0.1.0.49, le client a montré (capture d'écran) que le
-        panneau Style restait toujours vide en cliquant sur le hero —
-        data-snippet/data-name seuls n'ont donc pas suffi à faire
-        apparaître le panneau "Layout / Background / Image / Position /
-        Scroll Effect / Color Filter / Content Width / Height /
-        Visibility" qu'affiche exocoms pour son propre hero. En
-        recomparant précisément la liste de classes de leur <section>
-        (`s_exocoms_hero o_colored_level pt32 pb32 oe_img_bg
-        o_bg_img_center`) à la nôtre (`ch-hero` seul), la classe
-        `o_colored_level` est la plus probable responsable : c'est une
-        classe cœur d'Odoo (pas spécifique à exocoms) qui enregistre un
-        <section> auprès du panneau d'options générique Background/
-        Layout/Visibility du Website Builder — c'est justement cet
-        ensemble d'options qu'on voit dans la capture d'écran du
-        client sur exocoms. Ajoutée ici par hypothèse la plus probable,
-        pas une certitude à 100 % faute d'accès au JS cœur d'Odoo en
-        local pour la vérifier ligne à ligne — à confirmer par un
-        nouveau test du client après déploiement.
     -->
-    <template id="partial_hero" name="Capsule House - Hero">
+
+    <template id="partial_hero_fr" name="Capsule House - Hero FR">
         <section class="ch-hero o_colored_level" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
-                <div class="ch-hero-content" t-if="request.env.lang == 'fr_FR'">
+                <div class="ch-hero-content">
                     <div class="ch-rating-badge" t-if="rating_value">
                         <i class="fa fa-star"/>
                         <span t-esc="rating_value"/>
@@ -134,7 +118,82 @@
                         <span class="ch-trust-item"><i class="fa fa-map-marker"/> Installation partout en France</span>
                     </div>
                 </div>
-                <div class="ch-hero-content" t-if="request.env.lang != 'fr_FR'">
+
+                <div class="ch-hero-visual">
+                    <div class="ch-hero-illustration">
+                        <!-- SVG de l'illustration pod validée par le client —
+                             repris tel quel (couleurs différentes du badge
+                             logo : teintes supplémentaires EAD9C4/FFF3E0/
+                             E3A48A propres à cette illustration). Ids de
+                             dégradé suffixés _fr pour rester uniques même
+                             si les deux templates FR/EN venaient à
+                             coexister dans le même document (prudence,
+                             même principe que entreprise_apropos.xml). -->
+                        <svg class="ch-pod-illustration-svg o_not_editable" viewBox="0 0 300 220" width="80%">
+                            <defs>
+                                <linearGradient id="ch-pod-body-fr" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF"/>
+                                    <stop offset="100%" stop-color="#EAD9C4"/>
+                                </linearGradient>
+                                <radialGradient id="ch-pod-win-fr" cx="35%" cy="35%" r="75%">
+                                    <stop offset="0%" stop-color="#FFF3E0"/>
+                                    <stop offset="55%" stop-color="#E3A48A"/>
+                                    <stop offset="100%" stop-color="#C1694F"/>
+                                </radialGradient>
+                            </defs>
+                            <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
+                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body-fr)" stroke="#1F2421" stroke-opacity="0.08"/>
+                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win-fr)"/>
+                            <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
+                            <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
+                        </svg>
+                    </div>
+
+                    <t t-if="featured_products">
+                        <t t-foreach="featured_products[:2]" t-as="hero_product">
+                            <a t-attf-href="/shop/#{ hero_product['url'] }"
+                               t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
+                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">Nouveau</span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Promo</span>
+                                <div class="ch-hero-float-img">
+                                    <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
+                                         t-att-alt="hero_product['name']"/>
+                                </div>
+                                <div class="ch-hero-float-body">
+                                    <span class="ch-hero-float-name" t-esc="hero_product['name']"/>
+                                    <span class="ch-hero-float-price"
+                                          t-esc="hero_product['price']"
+                                          t-options="{'widget': 'monetary', 'display_currency': hero_product['currency']}"/>
+                                </div>
+                            </a>
+                        </t>
+
+                        <!-- Raccourci "Ajouter au panier" repris de la maquette,
+                             rattaché au 2e produit vedette (même logique que les
+                             cartes flottantes ci-dessus : rien ne s'affiche tant
+                             qu'il n'y a pas au moins 2 produits publiés). Route
+                             native website_sale (/shop/cart/update), sans JS
+                             custom : soumission de formulaire classique. -->
+                        <form t-if="len(featured_products) > 1"
+                              t-attf-action="/shop/cart/update" method="post"
+                              class="ch-hero-cart-shortcut">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
+                            <input type="hidden" name="add_qty" value="1"/>
+                            <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
+                                <i class="fa fa-plus"/> Ajouter au panier
+                            </button>
+                        </form>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="partial_hero_en" name="Capsule House - Hero EN">
+        <section class="ch-hero o_colored_level" data-snippet="s_ch_hero" data-name="Capsule House Hero">
+            <div class="container ch-hero-grid">
+                <div class="ch-hero-content">
                     <div class="ch-rating-badge" t-if="rating_value">
                         <i class="fa fa-star"/>
                         <span t-esc="rating_value"/>
@@ -187,25 +246,21 @@
 
                 <div class="ch-hero-visual">
                     <div class="ch-hero-illustration">
-                        <!-- SVG de l'illustration pod validée par le client —
-                             repris tel quel (couleurs différentes du badge
-                             logo : teintes supplémentaires EAD9C4/FFF3E0/
-                             E3A48A propres à cette illustration). -->
                         <svg class="ch-pod-illustration-svg o_not_editable" viewBox="0 0 300 220" width="80%">
                             <defs>
-                                <linearGradient id="ch-pod-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="ch-pod-body-en" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF"/>
                                     <stop offset="100%" stop-color="#EAD9C4"/>
                                 </linearGradient>
-                                <radialGradient id="ch-pod-win" cx="35%" cy="35%" r="75%">
+                                <radialGradient id="ch-pod-win-en" cx="35%" cy="35%" r="75%">
                                     <stop offset="0%" stop-color="#FFF3E0"/>
                                     <stop offset="55%" stop-color="#E3A48A"/>
                                     <stop offset="100%" stop-color="#C1694F"/>
                                 </radialGradient>
                             </defs>
                             <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
-                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body)" stroke="#1F2421" stroke-opacity="0.08"/>
-                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win)"/>
+                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body-en)" stroke="#1F2421" stroke-opacity="0.08"/>
+                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win-en)"/>
                             <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
                             <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
                         </svg>
@@ -215,14 +270,8 @@
                         <t t-foreach="featured_products[:2]" t-as="hero_product">
                             <a t-attf-href="/shop/#{ hero_product['url'] }"
                                t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
-                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">
-                                    <t t-if="request.env.lang == 'fr_FR'">Nouveau</t>
-                                    <t t-else="">New</t>
-                                </span>
-                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">
-                                    <t t-if="request.env.lang == 'fr_FR'">Promo</t>
-                                    <t t-else="">Sale</t>
-                                </span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">New</span>
+                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Sale</span>
                                 <div class="ch-hero-float-img">
                                     <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
                                          t-att-alt="hero_product['name']"/>
@@ -236,32 +285,26 @@
                             </a>
                         </t>
 
-                        <!-- Raccourci "Ajouter au panier" repris de la maquette,
-                             rattaché au 2e produit vedette (même logique que les
-                             cartes flottantes ci-dessus : rien ne s'affiche tant
-                             qu'il n'y a pas au moins 2 produits publiés). Route
-                             native website_sale (/shop/cart/update), sans JS
-                             custom : soumission de formulaire classique. -->
                         <form t-if="len(featured_products) > 1"
                               t-attf-action="/shop/cart/update" method="post"
                               class="ch-hero-cart-shortcut">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
                             <input type="hidden" name="add_qty" value="1"/>
-                            <t t-if="request.env.lang == 'fr_FR'">
-                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
-                                    <i class="fa fa-plus"/> Ajouter au panier
-                                </button>
-                            </t>
-                            <t t-else="">
-                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
-                                    <i class="fa fa-plus"/> Add to cart
-                                </button>
-                            </t>
+                            <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
+                                <i class="fa fa-plus"/> Add to cart
+                            </button>
                         </form>
                     </t>
                 </div>
             </div>
         </section>
+    </template>
+
+    <!-- Aiguilleur — choisit quel template complet appeler selon la
+         langue, même principe que exocoms_theme.hero_section. -->
+    <template id="partial_hero" name="Capsule House - Hero">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="capsule_house_theme.partial_hero_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="capsule_house_theme.partial_hero_en"/>
     </template>
 </odoo>

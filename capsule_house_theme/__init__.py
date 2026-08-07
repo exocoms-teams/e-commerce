@@ -81,6 +81,9 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.theme_footer',
     'capsule_house_theme.theme_layout',
     'capsule_house_theme.partial_hero',
+    # Ajoutés en 19.0.1.0.51 (hero scindé en FR/EN, voir hero.xml).
+    'capsule_house_theme.partial_hero_fr',
+    'capsule_house_theme.partial_hero_en',
     'capsule_house_theme.partial_featured_products',
     'capsule_house_theme.page_home',
     'capsule_house_theme.page_shop',

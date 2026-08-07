@@ -1172,6 +1172,33 @@ nouveau test après déploiement. Si ça ne suffit toujours pas, prochaine
 piste : `oe_img_bg`/`o_bg_img_center` (liées à une image de fond, que
 notre hero n'a pas — fond en dégradé CSS, pas image).
 
+**Suite (v19.0.1.0.51)** : module bien mis à niveau à chaque test
+(confirmé par le client), donc pas un problème de déploiement — le
+panneau Style restait quand même vide après la 19.0.1.0.50. Piste
+suivante, proposée par le client : l'**organisation** du template, pas
+seulement ses classes. Avant cette version, `partial_hero` était un
+seul template contenant le FR ET le EN à l'intérieur (t-if/t-else
+internes) — la `<section data-snippet>` n'était donc pas le résultat
+direct d'un `t-call` vers un template dédié à une seule langue.
+
+Vérification du vrai code d'exocoms_theme : leur `hero_section` n'est
+qu'un aiguilleur (2 lignes, un `t-if` par langue) qui `t-call` soit
+`hero_section_fr` soit `hero_section_en` — deux templates complets et
+indépendants, chacun avec sa propre `<section data-snippet="...">`
+entière (rien de partagé, tout dupliqué y compris l'illustration). Par
+comparaison, leur `features_section` (pas de `data-snippet`, section
+"normale") utilise lui un simple `t-if/t-else` interne à un seul
+template — donc CE N'EST QUE pour le hero (élément formellement
+"snippet") qu'exocoms scinde en deux templates par langue.
+
+Reproduit à l'identique (v19.0.1.0.51) : `hero.xml` scindé en
+`partial_hero_fr` / `partial_hero_en` (templates complets et
+indépendants), `partial_hero` devenu un simple aiguilleur. Les deux
+nouveaux ids ajoutés à `SCOPED_VIEW_XML_IDS`.
+`partial_featured_products` ("Meilleures ventes", pas de
+`data-snippet`) n'est pas concerné, comme son équivalent
+`features_section` chez exocoms.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
