@@ -1273,6 +1273,18 @@ hero après déploiement.
   pour une éventuelle erreur JS, plutôt que continuer à deviner à
   partir du seul code source).
 
+**Suite (v19.0.1.0.54)** : remarque juste du client — avec
+`t-if="False"`, la balise `<t>` reste malgré tout présente dans l'arch
+compilé par QWeb, seul son contenu ne s'affiche pas. Ça ne teste donc
+pas correctement l'hypothèse "la simple présence d'une balise `<t>`
+dans la section bloque l'édition". Corrigé : le bloc est maintenant
+neutralisé par un **vrai commentaire XML** (`<!-- ... -->`) au lieu de
+`t-if="False"` — un commentaire XML est éliminé par le parseur avant
+que QWeb ne compile le template, donc les balises `<t>` à l'intérieur
+disparaissent réellement de l'arch tant qu'elles restent commentées.
+Toujours rien de supprimé : décommenter restaure le bloc à
+l'identique.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
