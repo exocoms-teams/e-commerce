@@ -6,8 +6,8 @@
     'license': 'LGPL-3',
     'depends': [
         'website', 'website_sale', 'auth_signup',
-        'sale_subscription', 'website_sale_subscription',   # WIN-66
-    ],
+        'sale_subscription',],# 'website_sale_subscription',   # WIN-66
+    
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
@@ -22,11 +22,7 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-45 / WIN-50
-    ],
-    
-    'demo': [
-        'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
+        'views/dashboard_templates.xml',   # WIN-48
     ],
     'assets': {
         'web.assets_frontend': [
@@ -35,8 +31,9 @@
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
             'produits_tendance/static/src/scss/subscription_pricing.scss',
-            'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
+            'produits_tendance/static/src/scss/header.scss',
+            'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },
     'installable': True,
