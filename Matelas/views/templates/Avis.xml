@@ -54,32 +54,25 @@
       <section class="avis-form-section container" id="avis-form">
         <div class="avis-form-box">
 
-          <!-- Cas 1 : pas connecté -->
-          <t t-if="not user_connected">
-            <div class="avis-message-info">
-              <i class="bi bi-lock-fill" />
-              <h3>Connectez-vous pour laisser un avis</h3>
-              <p>Vous devez être connecté et avoir effectué un achat
-                pour laisser un avis.</p>
-              <a href="/web/login" class="btn-avis-action">
-                <i class="bi bi-box-arrow-in-right" /> Se connecter </a>
-            </div>
-          </t>
+          <div class="avis-message-info avis-state avis-state-login" style="display:none">
+            <i class="bi bi-lock-fill" />
+            <h3>Connectez-vous pour laisser un avis</h3>
+            <p>Vous devez être connecté et avoir effectué un achat
+              pour laisser un avis.</p>
+            <a href="/web/login" class="btn-avis-action">
+              <i class="bi bi-box-arrow-in-right" /> Se connecter </a>
+          </div>
 
-          <!-- Cas 2 : connecté mais n'a pas acheté -->
-          <t t-elif="user_connected and not a_achete">
-            <div class="avis-message-info">
-              <i class="bi bi-bag-x-fill" />
-              <h3>Achat requis</h3>
-              <p>Vous devez avoir effectué un achat sur notre site
-                pour pouvoir laisser un avis.</p>
-              <a href="/shop" class="btn-avis-action">
-                <i class="bi bi-shop" /> Découvrir nos matelas </a>
-            </div>
-          </t>
+          <div class="avis-message-info avis-state avis-state-purchase" style="display:none">
+            <i class="bi bi-bag-x-fill" />
+            <h3>Achat requis</h3>
+            <p>Vous devez avoir effectué un achat sur notre site
+              pour pouvoir laisser un avis.</p>
+            <a href="/shop" class="btn-avis-action">
+              <i class="bi bi-shop" /> Découvrir nos matelas </a>
+          </div>
 
-          <!-- Cas 3 : connecté et a acheté → formulaire visible -->
-          <t t-elif="a_achete">
+          <div class="avis-state avis-state-form" style="display:none">
             <h2>Laisser un avis</h2>
 
             <div id="avis-success" class="avis-success" style="display:none">
@@ -120,10 +113,27 @@
               <i class="bi bi-send-fill" />
               Envoyer mon avis
             </button>
-          </t>
+          </div>
 
         </div>
       </section>
+
+      <script type="text/javascript">
+        (function () {
+          var connected = <t t-esc="'true' if user_connected else 'false'" />;
+          var achete = <t t-esc="'true' if a_achete else 'false'" />;
+          var toShow;
+          if (!connected) {
+            toShow = '.avis-state-login';
+          } else if (!achete) {
+            toShow = '.avis-state-purchase';
+          } else {
+            toShow = '.avis-state-form';
+          }
+          var el = document.querySelector(toShow);
+          if (el) { el.style.display = ''; }
+        })();
+      </script>
 
 
       <!-- Newsletter -->
