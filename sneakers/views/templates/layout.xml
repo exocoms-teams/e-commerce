@@ -6,6 +6,10 @@
         inherit_id="website.layout"
         name="Sneakers Layout">
 
+        <xpath expr="//html" position="attributes">
+            <attribute name="t-att-dir">('rtl' if request.env.lang and request.env.lang.startswith('ar') else 'ltr')</attribute>
+        </xpath>
+
         <xpath expr="//header" position="replace">
 
             <t t-call="sneakers.header"/>
