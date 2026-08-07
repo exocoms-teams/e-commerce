@@ -32,6 +32,7 @@
     'assets': {
         'web.assets_frontend': [
             'produits_tendance/static/src/scss/_winners_variables.scss',
+            'produits_tendance/static/src/scss/how_it_works.scss',
             'produits_tendance/static/src/js/winners_dashboard.js',
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
