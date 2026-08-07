@@ -22,7 +22,6 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-48
         'views/dashboard_templates.xml',   # WIN-45 / WIN-50
     ],
     
