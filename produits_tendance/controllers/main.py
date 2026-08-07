@@ -1,3 +1,4 @@
+import hmac
 import json
 import os
 import re
@@ -280,7 +281,10 @@ class TrendIngestController(http.Controller):
 
     def check_api_key(self, key):
         valid_key = request.env['ir.config_parameter'].sudo().get_param('winners.api_key')
-        return valid_key and key == valid_key
+        # hmac.compare_digest() : comparaison en temps constant, plutot que
+        # == qui peut fuiter la longueur/le prefixe correct de la cle via
+        # une attaque temporelle (Epic 1.D, "Securiser l'endpoint (cle API)").
+        return bool(valid_key) and hmac.compare_digest(key, valid_key)
     
     def _json_response(self, payload, status):
         return request.make_response(
