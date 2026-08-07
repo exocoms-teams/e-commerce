@@ -7,7 +7,6 @@
 
     <t t-call="website.layout">
       <t t-call-assets="web.assets_frontend" t-js="false" />
-      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
       <div class="o_page_content">
 
@@ -46,26 +45,14 @@
 
         <div class="hero-overlay">
           <div class="container">
-            <t t-if="is_en">
-              <p class="label-top">SLEEP AS A PRIORITY</p>
-              <h1>Welcome to Matelas</h1>
-              <p class="subtitle"> Sleep better, live better.<br /> Mattresses designed for your
-                body shape. </p>
-              <div class="hero-buttons">
-                <a href="/shop" class="btn btn-primary">Discover our mattresses →</a>
-                <a href="/contact" class="btn btn-outline">Contact us</a>
-              </div>
-            </t>
-            <t t-else="">
-              <p class="label-top">LE SOMMEIL COMME PRIORITÉ</p>
-              <h1>Bienvenue chez Matelas</h1>
-              <p class="subtitle"> Dormez mieux, vivez mieux.<br /> Des matelas conçus pour votre
-                morphologie. </p>
-              <div class="hero-buttons">
-                <a href="/shop" class="btn btn-primary">Découvrir nos matelas →</a>
-                <a href="/contact" class="btn btn-outline">Nous contacter</a>
-              </div>
-            </t>
+            <p class="label-top">LE SOMMEIL COMME PRIORITÉ</p>
+            <h1>Bienvenue chez Matelas</h1>
+            <p class="subtitle"> Dormez mieux, vivez mieux.<br /> Des matelas conçus pour votre
+              morphologie. </p>
+            <div class="hero-buttons">
+              <a href="/shop" class="btn btn-primary">Découvrir nos matelas →</a>
+              <a href="/contact" class="btn btn-outline">Nous contacter</a>
+            </div>
           </div>
         </div>
 
@@ -78,32 +65,32 @@
             <span class="icon">
               <i class="bi bi-truck"></i>
             </span>
-            <h3 t-esc="'Fast delivery' if is_en else 'Livraison rapide'" />
-            <p t-esc="'Within 3 to 5 business days, straight to your door' if is_en else 'En 3 à 5 jours ouvrés, directement chez vous'" />
+            <h3>Livraison rapide</h3>
+            <p>En 3 à 5 jours ouvrés, directement chez vous</p>
           </div>
           <div class="col-md-4 avantage-card">
             <span class="icon">
               <i class="bi bi-bullseye"></i>
             </span>
-            <h3 t-esc="'Personalized advice' if is_en else 'Conseil personnalisé'" />
-            <p t-esc="'Our experts guide you to the mattress that fits your needs' if is_en else 'Nos experts vous guident pour choisir le matelas adapté à vos besoins'" />
+            <h3>Conseil personnalisé</h3>
+            <p>Nos experts vous guident pour choisir le matelas adapté à vos besoins</p>
           </div>
           <div class="col-md-4 avantage-card">
             <span class="icon">
               <i class="bi bi-shield-check"></i>
             </span>
-            <h3 t-esc="'5-year warranty' if is_en else 'Garantie 5 ans'" />
-            <p t-esc="'Invest with confidence in your sleep' if is_en else 'Investissez sereinement dans votre sommeil'" />
+            <h3>Garantie 5 ans</h3>
+            <p>Investissez sereinement dans votre sommeil</p>
           </div>
         </div>
       </section>
 
       <!-- Ticket -->
       <t t-set="ticker_items" t-value="[
-          ('bi-badge-sd', 'Mattresses' if is_en else 'Matelas'),
-          ('bi-house-heart', 'Sofa beds' if is_en else 'Canapés convertibles'),
-          ('bi-cloud', 'Pillows' if is_en else 'Oreillers'),
-          ('bi-layers', ('Duvets ' + chr(38) + ' sheets') if is_en else ('Couettes ' + chr(38) + ' draps')),
+          ('bi-badge-sd', 'Matelas'),
+          ('bi-house-heart', 'Canapés convertibles'),
+          ('bi-cloud', 'Oreillers'),
+          ('bi-layers', 'Couettes &amp; draps'),
       ]" />
       <div class="ticker-wrapper">
         <div class="ticker">
@@ -124,13 +111,12 @@
            maître de stage sans toucher au code. -->
       <t t-if="nouveautes">
         <section class="bestsellers container">
-          <p class="section-label" t-esc="'FRESH ARRIVALS' if is_en else 'FRAÎCHEMENT ARRIVÉ'" />
+          <p class="section-label">FRAÎCHEMENT ARRIVÉ</p>
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <h2 t-esc="'Our new arrivals' if is_en else 'Nos nouveautés'" />
-            <a href="/shop" class="voir-tout" t-esc="'See all →' if is_en else 'Voir tout →'" />
+            <h2>Nos nouveautés</h2>
+            <a href="/shop" class="voir-tout">Voir tout →</a>
           </div>
-          <p class="section-subtitle"
-            t-esc="'Discover the latest products just arrived in store.' if is_en else 'Découvrez nos tout derniers produits arrivés en boutique.'" />
+          <p class="section-subtitle">Découvrez nos tout derniers produits arrivés en boutique.</p>
 
           <div class="auto-scroll-wrapper">
             <div class="auto-scroll-track">
@@ -138,13 +124,13 @@
                 <t t-foreach="nouveautes" t-as="product">
                   <div class="bestseller-scroll-item">
                     <div class="product-card position-relative">
-                      <span class="badge-nouveaute" t-esc="'New' if is_en else 'Nouveau'" />
+                      <span class="badge-nouveaute">Nouveau</span>
                       <a t-att-href="product.website_url">
                         <img class="product-image"
                           t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
                           alt="Matelas" />
                       </a>
-                      <p class="product-type" t-esc="'MATTRESS' if is_en else 'MATELAS'" />
+                      <p class="product-type">MATELAS</p>
 
                       <h4
                         t-esc="product.name" />
@@ -158,8 +144,7 @@
                           t-att-data-product-id="product.product_variant_id.id"
                           t-att-data-template-id="product.id"
                           t-att-data-category-id="product.categ_id.id"
-                          t-att-data-product-type="product.type"
-                          t-esc="'Add' if is_en else 'Ajouter'" />
+                          t-att-data-product-type="product.type">Ajouter</a>
                       </div>
                     </div>
                   </div>
@@ -173,13 +158,12 @@
 
       <!-- Best-sellers : rangée qui défile automatiquement -->
       <section class="bestsellers container">
-        <p class="section-label" t-esc="'SELECTION' if is_en else 'SÉLECTION'" />
+        <p class="section-label">SÉLECTION</p>
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <h2 t-esc="'Our best-sellers' if is_en else 'Nos best-sellers'" />
-          <a href="/shop" class="voir-tout" t-esc="'See all →' if is_en else 'Voir tout →'" />
+          <h2>Nos best-sellers</h2>
+          <a href="/shop" class="voir-tout">Voir tout →</a>
         </div>
-        <p class="section-subtitle"
-          t-esc="(chr(39).join(['Our customers', ' favorite mattresses, praised for their comfort.'])) if is_en else 'Les matelas préférés de nos clients, plébiscités pour leur confort.'" />
+        <p class="section-subtitle">Les matelas préférés de nos clients, plébiscités pour leur confort.</p>
 
         <div class="auto-scroll-wrapper">
           <div class="auto-scroll-track">
@@ -192,7 +176,7 @@
                         t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
                         alt="Matelas" />
                     </a>
-                    <p class="product-type" t-esc="'MATTRESS' if is_en else 'MATELAS'" />
+                    <p class="product-type">MATELAS</p>
 
                     <h4
                       t-esc="product.name" />
@@ -206,8 +190,7 @@
                         t-att-data-product-id="product.product_variant_id.id"
                         t-att-data-template-id="product.id"
                         t-att-data-category-id="product.categ_id.id"
-                        t-att-data-product-type="product.type"
-                        t-esc="'Add' if is_en else 'Ajouter'" />
+                        t-att-data-product-type="product.type">Ajouter</a>
                     </div>
                   </div>
                 </div>
@@ -222,12 +205,11 @@
            navigateur) à partir des fiches produit consultées. Caché tant
            qu'il n'y a rien à montrer. -->
       <section class="bestsellers container" id="recently-viewed-section" style="display:none">
-        <p class="section-label" t-esc="'HISTORY' if is_en else 'HISTORIQUE'" />
+        <p class="section-label">HISTORIQUE</p>
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <h2 t-esc="'Recently viewed' if is_en else 'Vu récemment'" />
+          <h2>Vu récemment</h2>
         </div>
-        <p class="section-subtitle"
-          t-esc="('Find the products you' + chr(39) + 've recently viewed.') if is_en else 'Retrouvez les produits que vous avez récemment consultés.'" />
+        <p class="section-subtitle">Retrouvez les produits que vous avez récemment consultés.</p>
 
         <div class="bestseller-scroll" id="recently-viewed-container"></div>
       </section>
@@ -235,24 +217,18 @@
       <!-- Bannière promo -->
       <section class="promo-banner container">
         <div class="promo-content">
-          <p class="section-label" t-esc="'LIMITED OFFER' if is_en else 'OFFRE LIMITÉE'" />
-          <t t-if="is_en">
-            <h2>-20% on your first order</h2>
-            <p>Code: <strong>SLEEP20</strong> — valid until August 31</p>
-          </t>
-          <t t-else="">
-            <h2>-20 % sur votre première commande</h2>
-            <p>Code : <strong>SLEEP20</strong> — valable jusqu'au 31 août</p>
-          </t>
+          <p class="section-label">OFFRE LIMITÉE</p>
+          <h2>-20 % sur votre première commande</h2>
+          <p>Code : <strong>SLEEP20</strong> — valable jusqu'au 31 août</p>
         </div>
-        <a href="/shop" class="btn btn-dark" t-esc="'Take advantage →' if is_en else 'En profiter →'" />
+        <a href="/shop" class="btn btn-dark">En profiter →</a>
       </section>
 
 
       <!-- Témoignages -->
       <section class="temoignages container">
-        <p class="section-label" t-esc="'TESTIMONIALS' if is_en else 'TÉMOIGNAGES'" />
-        <h2 t-esc="'What our customers say about us' if is_en else 'Ce que nos clients disent de nous'" />
+        <p class="section-label">TÉMOIGNAGES</p>
+        <h2>Ce que nos clients disent de nous</h2>
         <div class="row">
 
           <!-- Vrais avis publiés, s'il y en a -->
@@ -272,43 +248,23 @@
           <t t-else="">
             <div class="col-md-4 temoignage-card">
               <div class="stars">★★★★★</div>
-              <t t-if="is_en">
-                <p>"Finally, truly restorative sleep! The mattress adapted
-                to my body shape within just a few nights."</p>
-                <strong>Sophie M.</strong> — 3 days ago
-              </t>
-              <t t-else="">
-                <p>"Enfin un vrai sommeil réparateur ! Le matelas s'est
-                adapté à ma morphologie en quelques nuits seulement."</p>
-                <strong>Sophie M.</strong> — il
-                y a 3 jours
-              </t>
+              <p>"Enfin un vrai sommeil réparateur ! Le matelas s'est
+              adapté à ma morphologie en quelques nuits seulement."</p>
+              <strong>Sophie M.</strong> — il
+              y a 3 jours
             </div>
             <div class="col-md-4 temoignage-card">
               <div class="stars">★★★★★</div>
-              <t t-if="is_en">
-                <p>"Express delivery, easy set-up. Premium quality at a
-                  very reasonable price."</p>
-                <strong>Thomas L.</strong> — 1 week ago
-              </t>
-              <t t-else="">
-                <p>"Livraison express, installation facile.
-                  Qualité premium pour un prix très raisonnable."</p>
-                <strong>Thomas L.</strong> — il y a
-                1 semaine
-              </t>
+              <p>"Livraison express, installation facile.
+                Qualité premium pour un prix très raisonnable."</p>
+              <strong>Thomas L.</strong> — il y a
+              1 semaine
             </div>
             <div class="col-md-4 temoignage-card">
               <div class="stars">★★★★☆</div>
-              <t t-if="is_en">
-                <p>"After 2 weeks, I simply can't go without it anymore."</p>
-                <strong>Camille D.</strong> — 2 weeks ago
-              </t>
-              <t t-else="">
-                <p>"Après 2 semaines, je ne peux plus m'en passer."</p>
-                <strong>Camille
-                D.</strong> — il y a 2 semaines
-              </t>
+              <p>"Après 2 semaines, je ne peux plus m'en passer."</p>
+              <strong>Camille
+              D.</strong> — il y a 2 semaines
             </div>
           </t>
 
@@ -318,7 +274,7 @@
       <div class="text-center my-4">
         <a href="/avis" class="btn btn-avis">
           <i class="bi bi-pencil-fill"></i>
-          <t t-esc="' Write a review' if is_en else ' Écrire un avis'" />
+          Écrire un avis
         </a>
       </div>
 
@@ -328,16 +284,16 @@
           <div class="newsletter-box">
             <div class="newsletter-text">
               <p class="section-label"><i class="bi bi-envelope-fill"></i>
-                <t t-esc="' STAY UPDATED' if is_en else ' RESTEZ INFORMÉ'" />
+                RESTEZ INFORMÉ
               </p>
-              <h2 t-esc="'Don' + chr(39) + 't miss any exclusive offer!' if is_en else 'Ne ratez aucune offre exclusive !'" />
-              <p t-esc="'Sign up and receive our best offers directly in your inbox.' if is_en else 'Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.'" />
+              <h2>Ne ratez aucune offre exclusive !</h2>
+              <p>Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.</p>
             </div>
             <div class="newsletter-form">
               <input type="email" class="newsletter-input"
                 t-att-data-list-id="request.env.ref('Matelas.newsletter_mailing_list').sudo().id"
-                t-att-placeholder="'Your email address...' if is_en else 'Votre adresse email...'" />
-              <a href="#" class="btn btn-newsletter" t-esc="'Sign up →' if is_en else ('S' + chr(39) + 'inscrire →')" />
+                placeholder="Votre adresse email..." />
+              <a href="#" class="btn btn-newsletter">S'inscrire →</a>
             </div>
           </div>
         </div>
