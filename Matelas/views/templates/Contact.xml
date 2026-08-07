@@ -3,7 +3,6 @@
 
   <template id="contact_page" name="Contact">
     <t t-call="website.layout">
-      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
       <div class="o_page_content">
 
@@ -14,16 +13,9 @@
       <section class="contact-hero">
         <div class="contact-hero-overlay">
           <div class="container text-center">
-            <t t-if="is_en">
-              <h1>We're here for you 💬</h1>
-              <p class="contact-hero-sub"> A question, some advice, an order?<br /> Our team
-                replies within 24h. </p>
-            </t>
-            <t t-else="">
-              <h1>Nous sommes là pour vous 💬</h1>
-              <p class="contact-hero-sub"> Une question, un conseil, une commande ?<br /> Notre équipe
-                vous répond sous 24h. </p>
-            </t>
+            <h1>Nous sommes là pour vous 💬</h1>
+            <p class="contact-hero-sub"> Une question, un conseil, une commande ?<br /> Notre équipe
+              vous répond sous 24h. </p>
           </div>
         </div>
       </section>
@@ -34,20 +26,11 @@
 
           <!-- GAUCHE : INFOS -->
           <div class="col-lg-5 col-md-5">
-            <t t-if="is_en">
-              <h2>Let's talk about sleep!</h2>
-              <p class="contact-intro">
-                Our team is here to help you
-                choose your mattress.
-              </p>
-            </t>
-            <t t-else="">
-              <h2>Parlons sommeil !</h2>
-              <p class="contact-intro">
-                Notre équipe est là pour vous accompagner
-                dans le choix de votre matelas.
-              </p>
-            </t>
+            <h2>Parlons sommeil !</h2>
+            <p class="contact-intro">
+              Notre équipe est là pour vous accompagner
+              dans le choix de votre matelas.
+            </p>
             <div class="contact-info-card">
 
               <div class="contact-info-item">
@@ -55,7 +38,7 @@
                   <i class="bi bi-geo-alt-fill" />
                 </div>
                 <div>
-                  <p class="contact-info-label" t-esc="'Address' if is_en else 'Adresse'" />
+                  <p class="contact-info-label">Adresse</p>
                   <a href="https://maps.google.com" target="_blank">
                     123 Rue du Sommeil, Paris
                   </a>
@@ -67,7 +50,7 @@
                   <i class="bi bi-telephone-fill" />
                 </div>
                 <div>
-                  <p class="contact-info-label" t-esc="'Phone' if is_en else 'Téléphone'" />
+                  <p class="contact-info-label">Téléphone</p>
                   <a href="tel:+33600000000">+33 6 00 00 00 00</a>
                 </div>
               </div>
@@ -89,13 +72,8 @@
                   <i class="bi bi-clock-fill" />
                 </div>
                 <div>
-                  <p class="contact-info-label" t-esc="'Hours' if is_en else 'Horaires'" />
-                  <t t-if="is_en">
-                    <p class="contact-info-value"> Mon – Fri: 9am – 6pm<br />Sat: 10am – 4pm </p>
-                  </t>
-                  <t t-else="">
-                    <p class="contact-info-value"> Lun – Ven : 9h – 18h<br />Sam : 10h – 16h </p>
-                  </t>
+                  <p class="contact-info-label">Horaires</p>
+                  <p class="contact-info-value"> Lun – Ven : 9h – 18h<br />Sam : 10h – 16h </p>
                 </div>
               </div>
 
@@ -105,27 +83,27 @@
           <!-- DROITE : FORMULAIRE -->
           <div class="col-lg-6 col-md-7">
             <div class="contact-form-box">
-              <h2 t-esc="'Send us a message' if is_en else 'Envoyez-nous un message'" />
+              <h2>Envoyez-nous un message</h2>
 
               <div id="contact-success" class="contact-success" style="display:none">
                 <i class="bi bi-check-circle-fill" />
 
-                <h3 t-esc="'Thank you for your message!' if is_en else 'Merci pour votre message !'" />
+                <h3>Merci pour votre message !</h3>
 
-                <p t-esc="'Our team will respond as soon as possible.' if is_en else 'Notre équipe vous répondra dans les plus brefs délais.'" />
+                <p>Notre équipe vous répondra dans les plus brefs délais.</p>
 
               </div>
 
               <div class="mb-3">
-                <label class="contact-label" t-esc="'Last name *' if is_en else 'Nom *'" />
+                <label class="contact-label">Nom *</label>
                 <input type="text" id="c-nom" class="contact-input"
-                  t-att-placeholder="'Your last name' if is_en else 'Votre nom'" />
+                  placeholder="Votre nom" />
               </div>
 
               <div class="mb-3">
-                <label class="contact-label" t-esc="'First name *' if is_en else 'Prénom *'" />
+                <label class="contact-label">Prénom *</label>
                 <input type="text" id="c-prenom" class="contact-input"
-                  t-att-placeholder="'Your first name' if is_en else 'Votre prénom'" />
+                  placeholder="Votre prénom" />
               </div>
 
               <div class="mb-3">
@@ -135,42 +113,32 @@
               </div>
 
               <div class="mb-3">
-                <label class="contact-label" t-esc="'Phone' if is_en else 'Téléphone'" />
+                <label class="contact-label">Téléphone</label>
                 <input type="tel" id="c-tel" class="contact-input"
                   placeholder="+33 6 00 00 00 00" />
               </div>
 
               <div class="mb-3">
-                <label class="contact-label" t-esc="'Subject' if is_en else 'Sujet'" />
+                <label class="contact-label">Sujet</label>
                 <select id="c-sujet" class="contact-input">
-                  <t t-if="is_en">
-                    <option value="">Choose a subject...</option>
-                    <option>Product question</option>
-                    <option>Order tracking</option>
-                    <option>Return / Refund</option>
-                    <option>Personalized advice</option>
-                    <option>Other</option>
-                  </t>
-                  <t t-else="">
-                    <option value="">Choisir un sujet...</option>
-                    <option>Question sur un produit</option>
-                    <option>Suivi de commande</option>
-                    <option>Retour / Remboursement</option>
-                    <option>Conseil personnalisé</option>
-                    <option>Autre</option>
-                  </t>
+                  <option value="">Choisir un sujet...</option>
+                  <option>Question sur un produit</option>
+                  <option>Suivi de commande</option>
+                  <option>Retour / Remboursement</option>
+                  <option>Conseil personnalisé</option>
+                  <option>Autre</option>
                 </select>
               </div>
 
               <div class="mb-3">
-                <label class="contact-label" t-esc="'Message *' if is_en else 'Message *'" />
+                <label class="contact-label">Message *</label>
                 <textarea id="c-message" class="contact-input contact-textarea"
-                  t-att-placeholder="'Your message...' if is_en else 'Votre message...'" />
+                  placeholder="Votre message..." />
               </div>
 
               <button class="btn-contact-send" id="btn-contact-send">
                 <i class="bi bi-send-fill me-2" />
-                <t t-esc="' Send my message' if is_en else ' Envoyer mon message'" />
+                Envoyer mon message
               </button>
 
             </div>
@@ -183,9 +151,8 @@
       <section class="contact-faq-section container">
         <div class="text-center mb-5">
           <p class="section-label">FAQ</p>
-          <h2 class="contact-faq-title" t-esc="'Frequently asked questions' if is_en else 'Questions fréquentes'" />
-          <p class="contact-faq-subtitle"
-            t-esc="'Everything you need to know about our mattresses and services.' if is_en else 'Tout ce que vous devez savoir sur nos matelas et services.'" />
+          <h2 class="contact-faq-title">Questions fréquentes</h2>
+          <p class="contact-faq-subtitle">Tout ce que vous devez savoir sur nos matelas et services.</p>
         </div>
 
         <div class="faq-accordion">
@@ -193,19 +160,13 @@
           <div class="faq-item">
             <button class="faq-question">
               <span><i class="bi bi-truck"></i>
-                <t t-esc="' What are the delivery times?' if is_en else ' Quels sont les délais de livraison ?'" />
+                Quels sont les délais de livraison ?
               </span>
               <i class="bi bi-chevron-down faq-chevron" />
             </button>
             <div class="faq-answer">
-              <t t-if="is_en">
-                <p>We deliver within 3 to 5 business days directly to
-                  you, anywhere in mainland France.</p>
-              </t>
-              <t t-else="">
-                <p>Nous livrons en 3 à 5 jours ouvrés directement chez vous,
-                  partout en France métropolitaine.</p>
-              </t>
+              <p>Nous livrons en 3 à 5 jours ouvrés directement chez vous,
+                partout en France métropolitaine.</p>
             </div>
           </div>
 
@@ -213,68 +174,53 @@
             <button class="faq-question">
               <span>
                 <i class="bi bi-bullseye"></i>
-                <t t-esc="' Personalized advice?' if is_en else ' Conseil personnalisé ?'" />
+                Conseil personnalisé ?
               </span>
               <i class="bi bi-chevron-down faq-chevron" />
             </button>
             <div class="faq-answer">
-              <p t-esc="'Our experts guide you to choose the mattress that fits your needs.' if is_en else 'Nos experts vous guident pour choisir le matelas adapté à vos besoins.'" />
+              <p>Nos experts vous guident pour choisir le matelas adapté à vos besoins.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
               <span><i class="bi bi-shield-check"></i>
-                <t t-esc="' What is the warranty on the mattresses?' if is_en else ' Quelle est la garantie sur les matelas ?'" />
+                Quelle est la garantie sur les matelas ?
               </span>
               <i class="bi bi-chevron-down faq-chevron" />
             </button>
             <div class="faq-answer">
-              <t t-if="is_en">
-                <p>All our mattresses come with a 5-year parts and
-                  labor warranty. In case of a manufacturing defect, we
-                  replace your mattress free of charge.</p>
-              </t>
-              <t t-else="">
-                <p>Tous nos matelas sont garantis 5 ans pièces et main
-                  d'œuvre. En cas de défaut de fabrication, nous remplaçons
-                  votre matelas gratuitement.</p>
-              </t>
+              <p>Tous nos matelas sont garantis 5 ans pièces et main
+                d'œuvre. En cas de défaut de fabrication, nous remplaçons
+                votre matelas gratuitement.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
               <span><i class="bi bi-credit-card"></i>
-                <t t-esc="' What payment methods do you accept?' if is_en else ' Quels moyens de paiement acceptez-vous ?'" />
+                Quels moyens de paiement acceptez-vous ?
               </span>
               <i class="bi bi-chevron-down faq-chevron" />
             </button>
             <div class="faq-answer">
-              <p t-esc="'We accept credit cards (Visa, Mastercard), and PayPal.' if is_en else 'Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal.'" />
+              <p>Nous acceptons les cartes bancaires (Visa, Mastercard), PayPal.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
               <span><i class="bi bi-house-heart"></i>
-                <t t-esc="' How do I choose the right mattress?' if is_en else ' Comment choisir le bon matelas ?'" />
+                Comment choisir le bon matelas ?
               </span>
               <i class="bi bi-chevron-down faq-chevron" />
             </button>
             <div class="faq-answer">
-              <t t-if="is_en">
-                <p>The choice depends on your body shape, sleeping
-                  position, and firmness preference. Our team is
-                  available to guide you personally — don't hesitate
-                  to contact us via this form!</p>
-              </t>
-              <t t-else="">
-                <p>Le choix dépend de votre morphologie, votre position
-                  de sommeil et vos préférences de fermeté. Notre équipe
-                  est disponible pour vous guider personnellement —
-                  n'hésitez pas à nous contacter via ce formulaire !</p>
-              </t>
+              <p>Le choix dépend de votre morphologie, votre position
+                de sommeil et vos préférences de fermeté. Notre équipe
+                est disponible pour vous guider personnellement —
+                n'hésitez pas à nous contacter via ce formulaire !</p>
             </div>
           </div>
 
@@ -288,15 +234,15 @@
           <div class="newsletter-box">
             <div class="newsletter-text">
               <p class="section-label"><i class="bi bi-envelope-fill"></i>
-                <t t-esc="' STAY UPDATED' if is_en else ' RESTEZ INFORMÉ'" />
+                RESTEZ INFORMÉ
               </p>
-              <h2 t-esc="'Don' + chr(39) + 't miss any exclusive offer!' if is_en else 'Ne ratez aucune offre exclusive !'" />
-              <p t-esc="'Sign up and receive our best offers directly in your inbox.' if is_en else 'Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.'" />
+              <h2>Ne ratez aucune offre exclusive !</h2>
+              <p>Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.</p>
             </div>
             <div class="newsletter-form">
               <input type="email" class="newsletter-input"
                 placeholder="Votre adresse email..." />
-              <a href="#" class="btn btn-newsletter" t-esc="'Sign up →' if is_en else ('S' + chr(39) + 'inscrire →')" />
+              <a href="#" class="btn btn-newsletter">S'inscrire →</a>
             </div>
           </div>
         </div>

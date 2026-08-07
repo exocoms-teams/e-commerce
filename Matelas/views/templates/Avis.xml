@@ -3,7 +3,6 @@
 
   <template id="avis_page" name="Avis clients">
     <t t-call="website.layout">
-      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
       <div class="o_page_content">
 
@@ -14,18 +13,10 @@
       <section class="avis-hero">
         <div class="avis-hero-overlay">
           <div class="container text-center">
-            <t t-if="is_en">
-              <h1><i class="bi bi-star-fill"></i> Our customers' reviews</h1>
-              <p class="avis-hero-subtitle">
-                Better nights, confirmed by our customers.
-              </p>
-            </t>
-            <t t-else="">
-              <h1><i class="bi bi-star-fill"></i> Avis de nos clients</h1>
-              <p class="avis-hero-subtitle">
-                Des nuits meilleures, confirmées par nos clients.
-              </p>
-            </t>
+            <h1><i class="bi bi-star-fill"></i> Avis de nos clients</h1>
+            <p class="avis-hero-subtitle">
+              Des nuits meilleures, confirmées par nos clients.
+            </p>
           </div>
         </div>
       </section>
@@ -53,8 +44,7 @@
 
         <div class="text-center mt-3">
           <a href="#avis-form" class="btn btn-ecrire">
-            ✏️
-            <t t-esc="' Write a review' if is_en else ' Écrire un avis'" />
+            ✏️ Écrire un avis
           </a>
         </div>
 
@@ -68,20 +58,11 @@
           <t t-if="not user_connected">
             <div class="avis-message-info">
               <i class="bi bi-lock-fill" />
-              <t t-if="is_en">
-                <h3>Log in to leave a review</h3>
-                <p>You must be logged in and have made a purchase
-                  to leave a review.</p>
-                <a href="/web/login" class="btn-avis-action">
-                  <i class="bi bi-box-arrow-in-right" /> Log in </a>
-              </t>
-              <t t-else="">
-                <h3>Connectez-vous pour laisser un avis</h3>
-                <p>Vous devez être connecté et avoir effectué un achat
-                  pour laisser un avis.</p>
-                <a href="/web/login" class="btn-avis-action">
-                  <i class="bi bi-box-arrow-in-right" /> Se connecter </a>
-              </t>
+              <h3>Connectez-vous pour laisser un avis</h3>
+              <p>Vous devez être connecté et avoir effectué un achat
+                pour laisser un avis.</p>
+              <a href="/web/login" class="btn-avis-action">
+                <i class="bi bi-box-arrow-in-right" /> Se connecter </a>
             </div>
           </t>
 
@@ -89,40 +70,30 @@
           <t t-elif="user_connected and not a_achete">
             <div class="avis-message-info">
               <i class="bi bi-bag-x-fill" />
-              <t t-if="is_en">
-                <h3>Purchase required</h3>
-                <p>You must have made a purchase on our site
-                  to be able to leave a review.</p>
-                <a href="/shop" class="btn-avis-action">
-                  <i class="bi bi-shop" /> Discover our mattresses </a>
-              </t>
-              <t t-else="">
-                <h3>Achat requis</h3>
-                <p>Vous devez avoir effectué un achat sur notre site
-                  pour pouvoir laisser un avis.</p>
-                <a href="/shop" class="btn-avis-action">
-                  <i class="bi bi-shop" /> Découvrir nos matelas </a>
-              </t>
+              <h3>Achat requis</h3>
+              <p>Vous devez avoir effectué un achat sur notre site
+                pour pouvoir laisser un avis.</p>
+              <a href="/shop" class="btn-avis-action">
+                <i class="bi bi-shop" /> Découvrir nos matelas </a>
             </div>
           </t>
 
           <!-- Cas 3 : connecté et a acheté → formulaire visible -->
           <t t-elif="a_achete">
-            <h2 t-esc="'Leave a review' if is_en else 'Laisser un avis'" />
+            <h2>Laisser un avis</h2>
 
             <div id="avis-success" class="avis-success" style="display:none">
-              ✅
-              <t t-esc="' Thank you! Your review has been submitted.' if is_en else ' Merci ! Votre avis a bien été envoyé.'" />
+              ✅ Merci ! Votre avis a bien été envoyé.
             </div>
 
             <div class="avis-field">
-              <label t-esc="'Name / Nickname *' if is_en else 'Nom / Pseudonyme *'" />
+              <label>Nom / Pseudonyme *</label>
               <input type="text" id="avis-nom" class="avis-input"
-                t-att-placeholder="'Your name' if is_en else 'Votre nom'" />
+                placeholder="Votre nom" />
             </div>
 
             <div class="avis-field">
-              <label t-esc="'Rating (out of 5) *' if is_en else 'Note (sur 5) *'" />
+              <label>Note (sur 5) *</label>
               <div class="star-rating" id="star-rating">
                 <span class="star" data-value="1">★</span>
                 <span class="star" data-value="2">★</span>
@@ -134,20 +105,20 @@
             </div>
 
             <div class="avis-field">
-              <label t-esc="'Title *' if is_en else 'Titre *'" />
+              <label>Titre *</label>
               <input type="text" id="avis-produit" class="avis-input"
-                t-att-placeholder="'E.g.: SÉRÉNITÉ Mattress' if is_en else 'Ex: Matelas SÉRÉNITÉ'" />
+                placeholder="Ex: Matelas SÉRÉNITÉ" />
             </div>
 
             <div class="avis-field">
-              <label t-esc="'Comment *' if is_en else 'Commentaire *'" />
+              <label>Commentaire *</label>
               <textarea id="avis-commentaire" class="avis-input avis-textarea"
-                t-att-placeholder="'Your review...' if is_en else 'Votre avis...'" />
+                placeholder="Votre avis..." />
             </div>
 
             <button class="btn btn-send-avis" id="btn-envoyer-avis">
               <i class="bi bi-send-fill" />
-              <t t-esc="' Submit my review' if is_en else ' Envoyer mon avis'" />
+              Envoyer mon avis
             </button>
           </t>
 
@@ -161,15 +132,15 @@
           <div class="newsletter-box">
             <div class="newsletter-text">
               <p class="section-label"><i class="bi bi-envelope-fill"></i>
-                <t t-esc="' STAY UPDATED' if is_en else ' RESTEZ INFORMÉ'" />
+                RESTEZ INFORMÉ
               </p>
-              <h2 t-esc="'Don' + chr(39) + 't miss any exclusive offer!' if is_en else 'Ne ratez aucune offre exclusive !'" />
-              <p t-esc="'Sign up and receive our best offers directly in your inbox.' if is_en else 'Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.'" />
+              <h2>Ne ratez aucune offre exclusive !</h2>
+              <p>Inscrivez-vous et recevez nos meilleures offres directement dans votre boîte mail.</p>
             </div>
             <div class="newsletter-form">
               <input type="email" class="newsletter-input"
                 placeholder="Votre adresse email..." />
-              <a href="#" class="btn btn-newsletter" t-esc="'Sign up →' if is_en else ('S' + chr(39) + 'inscrire →')" />
+              <a href="#" class="btn btn-newsletter">S'inscrire →</a>
             </div>
           </div>
         </div>

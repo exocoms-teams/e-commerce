@@ -5,7 +5,6 @@
   <template id="cookie_policy_custom" inherit_id="website.cookie_policy">
     <xpath expr="//div[@id='wrap']" position="replace">
       <div id="wrap">
-        <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
         <div class="oe_structure oe_empty" id="oe_structure_cookies_1" />
 
@@ -13,14 +12,8 @@
         <section class="ml-hero">
           <div class="ml-hero-overlay">
             <div class="container text-center">
-              <t t-if="is_en">
-                <h1>🍪 Cookie Policy</h1>
-                <p>Transparency and respect for your privacy</p>
-              </t>
-              <t t-else="">
-                <h1>🍪 Politique de cookies</h1>
-                <p>Transparence et respect de votre vie privée</p>
-              </t>
+              <h1>🍪 Politique de cookies</h1>
+              <p>Transparence et respect de votre vie privée</p>
             </div>
           </div>
         </section>
@@ -29,162 +22,94 @@
         <section class="ml-content container">
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>1. What is a cookie?</h2>
-              <p>A cookie is a small text file stored on your device
-              when you visit a website. It allows the site to remember
-              your preferences and improve your browsing experience.</p>
-            </t>
-            <t t-else="">
-              <h2>1. Qu'est-ce qu'un cookie ?</h2>
-              <p>Un cookie est un petit fichier texte déposé sur votre
-              appareil lorsque vous visitez un site web. Il permet au
-              site de mémoriser vos préférences et d'améliorer votre
-              expérience de navigation.</p>
-            </t>
+            <h2>1. Qu'est-ce qu'un cookie ?</h2>
+            <p>Un cookie est un petit fichier texte déposé sur votre
+            appareil lorsque vous visitez un site web. Il permet au
+            site de mémoriser vos préférences et d'améliorer votre
+            expérience de navigation.</p>
           </div>
 
           <div class="ml-box">
-            <h2 t-esc="'2. Cookies we use' if is_en else '2. Les cookies que nous utilisons'" />
+            <h2>2. Les cookies que nous utilisons</h2>
 
             <div class="cookie-table">
               <div class="cookie-row cookie-header">
-                <t t-if="is_en">
-                  <span>Type</span>
-                  <span>Name</span>
-                  <span>Duration</span>
-                  <span>Purpose</span>
-                </t>
-                <t t-else="">
-                  <span>Type</span>
-                  <span>Nom</span>
-                  <span>Durée</span>
-                  <span>Finalité</span>
-                </t>
+                <span>Type</span>
+                <span>Nom</span>
+                <span>Durée</span>
+                <span>Finalité</span>
               </div>
               <div class="cookie-row">
-                <span t-attf-class="cookie-badge essentiel" t-esc="'Essential' if is_en else 'Essentiel'" />
-                <span t-att-data-label="'Name' if is_en else 'Nom'">session_id</span>
-                <span t-att-data-label="'Duration' if is_en else 'Durée'"
-                  t-esc="'Session' if is_en else 'Session'" />
-                <span t-att-data-label="'Purpose' if is_en else 'Finalité'"
-                  t-esc="'Keeps your session active' if is_en else 'Maintien de votre session'" />
+                <span class="cookie-badge essentiel">Essentiel</span>
+                <span data-label="Nom">session_id</span>
+                <span data-label="Durée">Session</span>
+                <span data-label="Finalité">Maintien de votre session</span>
               </div>
               <div class="cookie-row">
-                <span class="cookie-badge essentiel" t-esc="'Essential' if is_en else 'Essentiel'" />
-                <span t-att-data-label="'Name' if is_en else 'Nom'">website_lang</span>
-                <span t-att-data-label="'Duration' if is_en else 'Durée'"
-                  t-esc="'1 year' if is_en else '1 an'" />
-                <span t-att-data-label="'Purpose' if is_en else 'Finalité'"
-                  t-esc="'Remembers your language' if is_en else 'Mémorisation de la langue'" />
+                <span class="cookie-badge essentiel">Essentiel</span>
+                <span data-label="Nom">website_lang</span>
+                <span data-label="Durée">1 an</span>
+                <span data-label="Finalité">Mémorisation de la langue</span>
               </div>
               <div class="cookie-row">
-                <span class="cookie-badge analytique" t-esc="'Analytics' if is_en else 'Analytique'" />
-                <span t-att-data-label="'Name' if is_en else 'Nom'">_ga</span>
-                <span t-att-data-label="'Duration' if is_en else 'Durée'"
-                  t-esc="'2 years' if is_en else '2 ans'" />
-                <span t-att-data-label="'Purpose' if is_en else 'Finalité'"
-                  t-esc="'Google Analytics audience measurement' if is_en else 'Mesure d\'audience Google Analytics'" />
+                <span class="cookie-badge analytique">Analytique</span>
+                <span data-label="Nom">_ga</span>
+                <span data-label="Durée">2 ans</span>
+                <span data-label="Finalité">Mesure d'audience Google Analytics</span>
               </div>
               <div class="cookie-row">
-                <span class="cookie-badge fonctionnel" t-esc="'Functional' if is_en else 'Fonctionnel'" />
-                <span t-att-data-label="'Name' if is_en else 'Nom'">cart_quantity</span>
-                <span t-att-data-label="'Duration' if is_en else 'Durée'"
-                  t-esc="'Session' if is_en else 'Session'" />
-                <span t-att-data-label="'Purpose' if is_en else 'Finalité'"
-                  t-esc="'Content of your cart' if is_en else 'Contenu de votre panier'" />
+                <span class="cookie-badge fonctionnel">Fonctionnel</span>
+                <span data-label="Nom">cart_quantity</span>
+                <span data-label="Durée">Session</span>
+                <span data-label="Finalité">Contenu de votre panier</span>
               </div>
             </div>
           </div>
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>3. Essential cookies</h2>
-              <p>These cookies are essential for the site to function.
-              Without them, you would not be able to browse normally or
-              use the shopping cart. They cannot be disabled.</p>
-            </t>
-            <t t-else="">
-              <h2>3. Cookies essentiels</h2>
-              <p>Ces cookies sont indispensables au fonctionnement du
-              site. Sans eux, vous ne pourriez pas naviguer normalement
-              ni utiliser le panier d'achat. Ils ne peuvent pas être
-              désactivés.</p>
-            </t>
+            <h2>3. Cookies essentiels</h2>
+            <p>Ces cookies sont indispensables au fonctionnement du
+            site. Sans eux, vous ne pourriez pas naviguer normalement
+            ni utiliser le panier d'achat. Ils ne peuvent pas être
+            désactivés.</p>
           </div>
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>4. Analytics cookies</h2>
-              <p>These cookies let us understand how you use our site
-              so we can improve it. All information collected is
-              anonymous. You can refuse them without any impact on your
-              browsing.</p>
-            </t>
-            <t t-else="">
-              <h2>4. Cookies analytiques</h2>
-              <p>Ces cookies nous permettent de comprendre comment vous
-              utilisez notre site afin de l'améliorer. Toutes les
-              informations collectées sont anonymes. Vous pouvez les
-              refuser sans impact sur votre navigation.</p>
-            </t>
+            <h2>4. Cookies analytiques</h2>
+            <p>Ces cookies nous permettent de comprendre comment vous
+            utilisez notre site afin de l'améliorer. Toutes les
+            informations collectées sont anonymes. Vous pouvez les
+            refuser sans impact sur votre navigation.</p>
           </div>
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>5. Functional cookies</h2>
-              <p>These cookies remember your preferences (language,
-              cart, etc.) to offer you a personalized experience.
-              Disabling them may limit certain features.</p>
-            </t>
-            <t t-else="">
-              <h2>5. Cookies fonctionnels</h2>
-              <p>Ces cookies mémorisent vos préférences (langue,
-              panier, etc.) pour vous offrir une expérience
-              personnalisée. Leur désactivation peut limiter certaines
-              fonctionnalités.</p>
-            </t>
+            <h2>5. Cookies fonctionnels</h2>
+            <p>Ces cookies mémorisent vos préférences (langue,
+            panier, etc.) pour vous offrir une expérience
+            personnalisée. Leur désactivation peut limiter certaines
+            fonctionnalités.</p>
           </div>
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>6. Manage your preferences</h2>
-              <p>You can change your cookie preferences at any time by
-              clicking the button below.</p>
-            </t>
-            <t t-else="">
-              <h2>6. Gérer vos préférences</h2>
-              <p>Vous pouvez à tout moment modifier vos préférences
-              en matière de cookies en cliquant sur le bouton
-              ci-dessous.</p>
-            </t>
+            <h2>6. Gérer vos préférences</h2>
+            <p>Vous pouvez à tout moment modifier vos préférences
+            en matière de cookies en cliquant sur le bouton
+            ci-dessous.</p>
             <div class="mt-3">
               <a href="#" class="btn-cookie-manage"
                  onclick="document.cookie='cookiesBar=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; location.reload();">
-                ⚙️
-                <t t-esc="' Manage my cookies' if is_en else ' Gérer mes cookies'" />
+                ⚙️ Gérer mes cookies
               </a>
             </div>
           </div>
 
           <div class="ml-box">
-            <t t-if="is_en">
-              <h2>7. Contact</h2>
-              <p>
-                For any question about our use of cookies, contact us at:
-                <a href="mailto:contact@matelas.com">
-                  contact@matelas.com
-                </a>
-              </p>
-            </t>
-            <t t-else="">
-              <h2>7. Contact</h2>
-              <p>Pour toute question concernant notre utilisation des
-              cookies, contactez-nous à :
-              <a href="mailto:contact@matelas.com">
-                contact@matelas.com
-              </a></p>
-            </t>
+            <h2>7. Contact</h2>
+            <p>Pour toute question concernant notre utilisation des
+            cookies, contactez-nous à :
+            <a href="mailto:contact@matelas.com">
+              contact@matelas.com
+            </a></p>
           </div>
 
         </section>

@@ -3,7 +3,6 @@
 
   <template id="fiche_technique" name="Fiche technique produit">
     <t t-call="website.layout">
-      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
       <div class="o_page_content">
 
@@ -14,29 +13,27 @@
         <div class="fiche-actions">
           <a t-att-href="product.website_url" class="btn-fiche-retour">
             <i class="bi bi-arrow-left" />
-            <t t-esc="'Back to product' if is_en else 'Retour au produit'" />
+            Retour au produit
           </a>
           <div class="fiche-actions-right">
             <button type="button" id="btn-fiche-imprimer" class="btn-fiche btn-fiche-print">
               <i class="bi bi-printer" />
-              <t t-esc="'Print' if is_en else 'Imprimer'" />
+              Imprimer
             </button>
             <button type="button" id="btn-fiche-partager" class="btn-fiche btn-fiche-share">
               <i class="bi bi-share" />
-              <t t-esc="'Share' if is_en else 'Partager'" />
+              Partager
             </button>
           </div>
         </div>
         <p id="fiche-partage-confirmation" class="fiche-partage-confirmation">
-          <t t-esc="'Link copied!' if is_en else 'Lien copié !'" />
+          Lien copié !
         </p>
 
         <div class="fiche-sheet" id="fiche-sheet">
 
           <div class="fiche-entete">
-            <h1 class="fiche-titre">
-              <t t-esc="'Product data sheet' if is_en else 'Fiche technique produit'" />
-            </h1>
+            <h1 class="fiche-titre">Fiche technique produit</h1>
             <p class="fiche-soustitre">MATELAS</p>
           </div>
 
@@ -54,62 +51,42 @@
               <table class="fiche-table">
                 <tbody>
                   <tr>
-                    <th>
-                      <t t-esc="'Dimensions' if is_en else 'Dimensions'" />
-                    </th>
+                    <th>Dimensions</th>
                     <td t-esc="product.matelas_dimensions or '—'" />
                   </tr>
                   <tr>
-                    <th>
-                      <t t-esc="'Material' if is_en else 'Matière'" />
-                    </th>
+                    <th>Matière</th>
                     <td t-esc="product.matelas_matiere or '—'" />
                   </tr>
                   <tr>
-                    <th>
-                      <t t-esc="'Thickness' if is_en else 'Épaisseur'" />
-                    </th>
+                    <th>Épaisseur</th>
                     <td t-esc="product.matelas_epaisseur or '—'" />
                   </tr>
                   <tr>
-                    <th>
-                      <t t-esc="'Firmness' if is_en else 'Fermeté'" />
-                    </th>
+                    <th>Fermeté</th>
                     <td>
-                      <t t-if="product.matelas_fermete == 'souple'">
-                        <t t-esc="'Soft' if is_en else 'Souple'" />
-                      </t>
-                      <t t-elif="product.matelas_fermete == 'medium'">
-                        <t t-esc="'Medium' if is_en else 'Médium'" />
-                      </t>
-                      <t t-elif="product.matelas_fermete == 'ferme'">
-                        <t t-esc="'Firm' if is_en else 'Ferme'" />
-                      </t>
+                      <t t-if="product.matelas_fermete == 'souple'">Souple</t>
+                      <t t-elif="product.matelas_fermete == 'medium'">Médium</t>
+                      <t t-elif="product.matelas_fermete == 'ferme'">Ferme</t>
                       <t t-else="">—</t>
                     </td>
                   </tr>
                   <tr>
-                    <th>
-                      <t t-esc="'Warranty' if is_en else 'Garantie'" />
-                    </th>
+                    <th>Garantie</th>
                     <td t-esc="product.matelas_garantie or '—'" />
                   </tr>
                 </tbody>
               </table>
 
               <div class="fiche-description" t-if="product.description_sale">
-                <h3>
-                  <t t-esc="'Description' if is_en else 'Description'" />
-                </h3>
+                <h3>Description</h3>
                 <p t-esc="product.description_sale" />
               </div>
             </div>
           </div>
 
           <div class="fiche-pied">
-            <p>
-              <t t-esc="'Sheet generated from matelas.example' if is_en else 'Fiche générée depuis matelas.example'" />
-            </p>
+            <p>Fiche générée depuis matelas.example</p>
           </div>
         </div>
 

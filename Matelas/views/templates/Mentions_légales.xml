@@ -3,7 +3,6 @@
 
   <template id="mentions_legales" name="Mentions Légales">
     <t t-call="website.layout">
-      <t t-set="is_en" t-value="request.env.context.get('lang', '').startswith('en')" />
 
       <div class="o_page_content">
 
@@ -14,14 +13,8 @@
       <section class="ml-hero">
         <div class="ml-hero-overlay">
           <div class="container text-center">
-            <t t-if="is_en">
-              <h1>Legal Notice</h1>
-              <p>Legal information for the Matelas website</p>
-            </t>
-            <t t-else="">
-              <h1>Mentions Légales</h1>
-              <p>Informations légales du site Matelas</p>
-            </t>
+            <h1>Mentions Légales</h1>
+            <p>Informations légales du site Matelas</p>
           </div>
         </div>
       </section>
@@ -30,128 +23,63 @@
       <section class="ml-content container">
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>1. Site publisher</h2>
-            <p>This site is published by the company <strong>Matelas</strong>, with capital of
-              €XX,XXX, registered with the Paris Trade and Companies Register (RCS) under
-              number XXX XXX XXX.</p>
-            <p>Registered office: 123 Rue du Sommeil, 75001 Paris, France</p>
-            <p>Email: <a href="mailto:contact@matelas.com">
-                contact@matelas.com</a></p>
-            <p>Phone: +33 (0)6 00 00 00 00</p>
-          </t>
-          <t t-else="">
-            <h2>1. Éditeur du site</h2>
-            <p>Le site est édité par la société <strong>Matelas</strong>, au capital de XX XXX €,
-              immatriculée au RCS de Paris sous le numéro XXX XXX XXX.</p>
-            <p>Siège social : 123 Rue du Sommeil, 75001 Paris</p>
-            <p>Email : <a href="mailto:contact@matelas.com">
-                contact@matelas.com</a></p>
-            <p>Téléphone : +33 (0)6 00 00 00 00</p>
-          </t>
+          <h2>1. Éditeur du site</h2>
+          <p>Le site est édité par la société <strong>Matelas</strong>, au capital de XX XXX €,
+            immatriculée au RCS de Paris sous le numéro XXX XXX XXX.</p>
+          <p>Siège social : 123 Rue du Sommeil, 75001 Paris</p>
+          <p>Email : <a href="mailto:contact@matelas.com">
+              contact@matelas.com</a></p>
+          <p>Téléphone : +33 (0)6 00 00 00 00</p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>2. Publication director</h2>
-            <p>The publication director is [Manager's name],
-              acting as [Position].</p>
-          </t>
-          <t t-else="">
-            <h2>2. Directeur de la publication</h2>
-            <p>Le directeur de la publication est [Nom du responsable],
-              en qualité de [Fonction].</p>
-          </t>
+          <h2>2. Directeur de la publication</h2>
+          <p>Le directeur de la publication est [Nom du responsable],
+            en qualité de [Fonction].</p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>3. Hosting</h2>
-            <p>This site is hosted by <strong>Odoo S.A.</strong></p>
-            <p>Chaussée de Namur 40, 1367 Grand-Rosière, Belgium</p>
-            <p>Website: <a href="https://www.odoo.com" target="_blank">
-                www.odoo.com</a></p>
-          </t>
-          <t t-else="">
-            <h2>3. Hébergement</h2>
-            <p>Le site est hébergé par <strong>Odoo S.A.</strong></p>
-            <p>Chaussée de Namur 40, 1367 Grand-Rosière, Belgique</p>
-            <p>Site : <a href="https://www.odoo.com" target="_blank">
-                www.odoo.com</a></p>
-          </t>
+          <h2>3. Hébergement</h2>
+          <p>Le site est hébergé par <strong>Odoo S.A.</strong></p>
+          <p>Chaussée de Namur 40, 1367 Grand-Rosière, Belgique</p>
+          <p>Site : <a href="https://www.odoo.com" target="_blank">
+              www.odoo.com</a></p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>4. Intellectual property</h2>
-            <p>All content on this site (text, images, videos,
-              logos) is the exclusive property of Matelas and is protected
-              by French and international intellectual property laws.</p>
-            <p>Any reproduction, even partial, is strictly
-              prohibited without prior authorization.</p>
-          </t>
-          <t t-else="">
-            <h2>4. Propriété intellectuelle</h2>
-            <p>L'ensemble du contenu de ce site (textes, images, vidéos,
-              logos) est la propriété exclusive de Matelas et est protégé
-              par les lois françaises et internationales relatives à la
-              propriété intellectuelle.</p>
-            <p>Toute reproduction, même partielle, est strictement
-              interdite sans autorisation préalable.</p>
-          </t>
+          <h2>4. Propriété intellectuelle</h2>
+          <p>L'ensemble du contenu de ce site (textes, images, vidéos,
+            logos) est la propriété exclusive de Matelas et est protégé
+            par les lois françaises et internationales relatives à la
+            propriété intellectuelle.</p>
+          <p>Toute reproduction, même partielle, est strictement
+            interdite sans autorisation préalable.</p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>5. Personal data</h2>
-            <p>In accordance with the General Data Protection Regulation
-              (GDPR) and the French Data Protection Act, you have the
-              right to access, rectify, and delete your personal data.</p>
-            <p>To exercise these rights, contact us at: <a href="mailto:contact@matelas.com">
-              contact@matelas.com</a>
-            </p>
-          </t>
-          <t t-else="">
-            <h2>5. Données personnelles</h2>
-            <p>Conformément au Règlement Général sur la Protection des
-              Données (RGPD) et à la loi Informatique et Libertés, vous
-              disposez d'un droit d'accès, de rectification et de
-              suppression de vos données personnelles.</p>
-            <p>Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@matelas.com">
-              contact@matelas.com</a>
-            </p>
-          </t>
+          <h2>5. Données personnelles</h2>
+          <p>Conformément au Règlement Général sur la Protection des
+            Données (RGPD) et à la loi Informatique et Libertés, vous
+            disposez d'un droit d'accès, de rectification et de
+            suppression de vos données personnelles.</p>
+          <p>Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@matelas.com">
+            contact@matelas.com</a>
+          </p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>6. Cookies</h2>
-            <p>This site uses cookies to improve your browsing
-              experience. By continuing to browse this site, you accept
-              their use in accordance with our privacy policy.</p>
-          </t>
-          <t t-else="">
-            <h2>6. Cookies</h2>
-            <p>Ce site utilise des cookies pour améliorer votre
-              expérience de navigation. En continuant à naviguer sur ce
-              site, vous acceptez leur utilisation conformément à notre
-              politique de confidentialité.</p>
-          </t>
+          <h2>6. Cookies</h2>
+          <p>Ce site utilise des cookies pour améliorer votre
+            expérience de navigation. En continuant à naviguer sur ce
+            site, vous acceptez leur utilisation conformément à notre
+            politique de confidentialité.</p>
         </div>
 
         <div class="ml-box">
-          <t t-if="is_en">
-            <h2>7. Applicable law</h2>
-            <p>This legal notice is governed by French law. In the
-              event of a dispute, French courts shall have sole
-              jurisdiction.</p>
-          </t>
-          <t t-else="">
-            <h2>7. Droit applicable</h2>
-            <p>Les présentes mentions légales sont soumises au droit
-              français. En cas de litige, les tribunaux français seront
-              seuls compétents.</p>
-          </t>
+          <h2>7. Droit applicable</h2>
+          <p>Les présentes mentions légales sont soumises au droit
+            français. En cas de litige, les tribunaux français seront
+            seuls compétents.</p>
         </div>
 
       </section>
