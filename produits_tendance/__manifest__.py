@@ -22,7 +22,7 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-45 / WIN-50
+        'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
     ],
     
     'demo': [
@@ -34,6 +34,12 @@
             'produits_tendance/static/src/js/winners_dashboard.js',
             'produits_tendance/static/src/scss/trend_submission_form.scss',
             'produits_tendance/static/src/scss/trend_product_detail.scss',
+            'produits_tendance/static/src/scss/trend_chart.scss',
+            # WIN-52 : Chart.js + adaptateur Luxon, déjà bundlés par Odoo (web).
+            'web/static/lib/luxon/luxon.js',
+            'web/static/lib/Chart/Chart.js',
+            'web/static/lib/chartjs-adapter-luxon/chartjs-adapter-luxon.js',
+            'produits_tendance/static/src/js/trend_chart.js',
             'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
