@@ -1,5 +1,5 @@
 from odoo import models
-from odoo.osv.expression import Domain
+from odoo.orm.domains import Domain
 
 class WebsiteSnippetFilter(models.Model):
     _inherit = "website.snippet.filter"
