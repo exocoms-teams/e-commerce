@@ -4,7 +4,6 @@ from . import trend_product
 from . import trend_ad
 from . import trend_score
 from . import trend_submission
-from . import trend_score_calculator
 from . import trend_webhook_queue
 from . import trend_score_alert
 from . import product_template

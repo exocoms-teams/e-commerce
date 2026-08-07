@@ -1,8 +1,10 @@
 # controllers/dashboard_api.py
+import json
+from collections import defaultdict
+
 from werkzeug.exceptions import NotFound
-
-from ..models.trend_score_calculator import latest_ads_by_ref
-
+from ..models.trend_ad import latest_ads_by_ref
+from ..services.scoring_engine import ScoringEngine
 
 class TrendDashboardAPI:
     """Façade regroupant les lectures ORM utilisées par les pages publiques
@@ -78,6 +80,7 @@ class TrendDashboardAPI:
         # que la dernière par ad_ref pour l'affichage et les totaux, sinon
         # les compteurs likes/partages gonflent à chaque nouvelle collecte.
         ads = latest_ads_by_ref(product.ad_ids)
+        score_history = self.get_score_history(product)
 
         return {
             'product': product,
@@ -87,4 +90,106 @@ class TrendDashboardAPI:
             'ads': ads,
             'total_likes': sum(ads.mapped('likes_count')),
             'total_shares': sum(ads.mapped('shares_count')),
+            'score_history': score_history,
+            'score_history_json': json.dumps(score_history),
+        }
+
+    def get_score_history(self, product):
+        """Historique agrégé du computed_score pour la courbe de tendance
+        (WIN-52) : un point par date (moyenne si plusieurs trend.score le
+        même jour), trié chronologiquement.
+
+        Agrégation faite ici, côté ORM/Python, pour n'envoyer qu'un point
+        par jour au JS plutôt qu'un par trend.score — cf. contrainte du
+        ticket "alléger le rendu DOM".
+
+        :param trend.product product: le produit (déjà chargé)
+        :rtype: list[dict] — [{'date': 'YYYY-MM-DD', 'score': float}, ...]
+        """
+        by_date = defaultdict(list)
+        for score in product.score_ids:
+            if not score.computed_at:
+                continue
+            date_key = score.computed_at.date().isoformat()
+            by_date[date_key].append(score.computed_score)
+
+        return [
+            {'date': date_key, 'score': sum(scores) / len(scores)}
+            for date_key, scores in sorted(by_date.items())
+        ]
+
+    # ------------------------------------------------------------------
+    # Liste / filtres dynamiques (WIN-45 / WIN-50)
+    # ------------------------------------------------------------------
+    def get_product_list(self, category_id=None, country=None, limit=None):
+        """Retourne les produits triés par score de tendance décroissant,
+        optionnellement filtrés par catégorie et/ou pays.
+
+        :param int|None category_id: id d'un trend.category, ou None/0 pour
+            ne pas filtrer sur la catégorie.
+        :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
+            pas filtrer sur le pays.
+        :param int|None limit: si fourni, plafonne le nombre de résultats
+            (restriction Freemium, WIN-48) - appliqué ici, côté ORM, jamais
+            seulement côté template/JS (même principe que
+            get_dashboard_products).
+        :rtype: list[dict]
+        """
+        env = self.env(su=True)
+        domain = []
+        if category_id:
+            domain.append(('category_id', '=', int(category_id)))
+        if country:
+            domain.append(('country', '=', country))
+
+        products = env['trend.product'].search(domain, order='current_score desc', limit=limit)
+
+        return [{
+            'id': product.id,
+            'name': product.name,
+            'category': product.category_id.name or '',
+            'country': product.country or '',
+            'score': round(product.current_score, 1),
+            'sales_count': product.sales_count,
+        } for product in products]
+
+    def get_filter_options(self):
+        """Retourne les valeurs disponibles pour peupler les selects du
+        panneau de filtres (.o_winners_filter_panel) : catégories connues
+        et pays distincts déjà présents sur des trend.product.
+        """
+        env = self.env(su=True)
+        categories = env['trend.category'].search([], order='name asc')
+
+        # _read_group (API 19.0) remplace read_group (déprécié) : sans
+        # aggregates, il renvoie directement une liste de tuples à 1 élément
+        # (une entrée par valeur distincte de country).
+        country_groups = env['trend.product']._read_group(
+            [('country', '!=', False)], groupby=['country']
+        )
+        countries = sorted(country for (country,) in country_groups if country)
+
+        return {
+            'categories': [{'id': c.id, 'name': c.name} for c in categories],
+            'countries': countries,
+        }
+
+    def get_dashboard_stats(self):
+        """Statistiques globales affichées en tuiles au-dessus du
+        classement (nombre de produits suivis, score moyen). Basé sur les
+        données déjà disponibles (pas de nouveau champ) : nombre de
+        trend.product et moyenne de current_score.
+
+        :rtype: dict {'total_products': int, 'avg_score': float}
+        """
+        env = self.env(su=True)
+        products = env['trend.product'].search([])
+        total_products = len(products)
+        avg_score = (
+            sum(products.mapped('current_score')) / total_products
+            if total_products else 0.0
+        )
+        return {
+            'total_products': total_products,
+            'avg_score': round(avg_score, 1),
         }
