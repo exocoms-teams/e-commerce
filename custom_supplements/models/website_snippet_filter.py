@@ -7,7 +7,7 @@ class WebsiteSnippetFilter(models.Model):
     def _get_products_alternative_products(
         self, website, limit, domain, product_template_id=None, **kwargs,
     ):
-        domain = Domain(domain) & Domain('free_qty', '>', 0)
+        return Domain(domain) & Domain('free_qty', '>', 0)
         products = super()._get_products_alternative_products(
             website,
             limit,
