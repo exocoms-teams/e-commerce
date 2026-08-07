@@ -1285,6 +1285,28 @@ disparaissent réellement de l'arch tant qu'elles restent commentées.
 Toujours rien de supprimé : décommenter restaure le bloc à
 l'identique.
 
+**Résultat du test (v19.0.1.0.55) : NÉGATIF**, confirmé par le client.
+Même avec le bloc entièrement absent de l'arch compilé, le panneau
+Style restait vide sur le hero. Cette hypothèse est écartée. Le bloc
+est restauré à l'identique (rien n'avait été supprimé).
+
+**Bilan après 6 versions de correctifs sur le hero (49 à 55)**, aucun
+n'a résolu le symptôme, bien que chacun reproduise fidèlement le vrai
+code d'exocoms_theme et reste légitime à conserver : data-snippet +
+data-name (49), + o_colored_level (50), scission FR/EN (51), zone
+oe_structure interne (52), retrait du contenu dynamique par
+t-if=False puis par commentaire XML réel (53/54) — négatif (55).
+
+**Prochaine étape recommandée** : la cause n'est probablement plus à
+chercher dans le code de `hero.xml` lui-même. Sans accès direct à
+l'instance Odoo.sh du client pour tester en direct, la piste la plus
+fiable est d'inspecter la console du navigateur (F12 > Console) en
+mode Édition au moment du clic sur le hero, à la recherche d'une
+erreur JavaScript. Si le panneau Style reste vide sur TOUT le site
+(pas seulement le hero), la cause est probablement plus générale
+(chargement du bundle JS du Website Builder pour ce site, conflit
+d'assets) plutôt que spécifique au code de ce module.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

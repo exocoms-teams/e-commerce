@@ -149,19 +149,16 @@
                         </svg>
                     </div>
 
-                    <!-- TEST DIAGNOSTIC TEMPORAIRE (v19.0.1.0.54) : bloc
-                         retiré du rendu par un VRAI commentaire XML (pas
-                         juste t-if="False") — un commentaire XML est
-                         éliminé AVANT que QWeb ne compile le template,
-                         donc les balises <t t-if>/<t t-foreach> ci-dessous
-                         ne font structurellement plus partie de l'arch
-                         compilé tant qu'elles restent commentées. Ça
-                         répond précisément à la remarque du client : avec
-                         t-if="False" seul, Odoo "voit" quand même la
-                         balise <t> dans l'arch ; en commentaire XML, non.
-                         Rien n'est supprimé : décommenter ce bloc pour le
-                         restaurer à l'identique. Voir README "Test
-                         diagnostique cartes flottantes du hero".
+                    <!-- Cartes flottantes produits. Test diagnostique
+                         (v19.0.1.0.53/54, voir README "Test diagnostique
+                         cartes flottantes du hero") : ce bloc a été
+                         temporairement neutralisé (t-if="False" puis
+                         commentaire XML) pour vérifier s'il empêchait le
+                         panneau Style d'apparaître sur le hero — RÉSULTAT
+                         NÉGATIF, confirmé par le client (v19.0.1.0.55) :
+                         le panneau restait vide même avec ce bloc
+                         entièrement absent de l'arch compilé. Cette piste
+                         est donc écartée, le bloc est restauré tel quel. -->
                     <t t-if="featured_products">
                         <t t-foreach="featured_products[:2]" t-as="hero_product">
                             <a t-attf-href="/shop/#{ hero_product['url'] }"
@@ -181,6 +178,12 @@
                             </a>
                         </t>
 
+                        <!-- Raccourci "Ajouter au panier" repris de la maquette,
+                             rattaché au 2e produit vedette (même logique que les
+                             cartes flottantes ci-dessus : rien ne s'affiche tant
+                             qu'il n'y a pas au moins 2 produits publiés). Route
+                             native website_sale (/shop/cart/update), sans JS
+                             custom : soumission de formulaire classique. -->
                         <form t-if="len(featured_products) > 1"
                               t-attf-action="/shop/cart/update" method="post"
                               class="ch-hero-cart-shortcut">
@@ -192,7 +195,6 @@
                             </button>
                         </form>
                     </t>
-                    -->
                 </div>
             </div>
 
@@ -276,11 +278,11 @@
                         </svg>
                     </div>
 
-                    <!-- TEST DIAGNOSTIC TEMPORAIRE (v19.0.1.0.54) : voir
-                         commentaire identique dans partial_hero_fr
-                         ci-dessus (vrai commentaire XML, pas t-if="False",
-                         pour que la balise <t> disparaisse réellement de
-                         l'arch compilé). Décommenter pour restaurer.
+                    <!-- Cartes flottantes produits — test diagnostique
+                         terminé, résultat négatif, bloc restauré (voir
+                         commentaire identique dans partial_hero_fr et
+                         README "Test diagnostique cartes flottantes du
+                         hero"). -->
                     <t t-if="featured_products">
                         <t t-foreach="featured_products[:2]" t-as="hero_product">
                             <a t-attf-href="/shop/#{ hero_product['url'] }"
@@ -311,7 +313,6 @@
                             </button>
                         </form>
                     </t>
-                    -->
                 </div>
             </div>
 
