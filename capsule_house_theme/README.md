@@ -1199,6 +1199,49 @@ nouveaux ids ajoutés à `SCOPED_VIEW_XML_IDS`.
 `data-snippet`) n'est pas concerné, comme son équivalent
 `features_section` chez exocoms.
 
+**Root cause confirmée (v19.0.1.0.52)**, rapport transmis par le
+client : le Website Builder ne pouvait déposer aucun bloc car Odoo se
+base sur l'attribut `data-oe-model` pour détecter les zones éditables.
+Quand `oe_structure oe_empty` est posé sur un élément qui contient des
+balises `<t>` (`t-call`, `t-if`, `t-foreach`, `t-set`), Odoo considère
+cet élément comme un conteneur de template et supprime `data-oe-model`
+au rendu — aucune zone de dépôt n'est créée. C'est exactement le bug
+de la structure d'AVANT la 19.0.1.0.48 (`<div id="wrap"
+class="oe_structure">` contenant directement des `<t t-call>`).
+
+**Règles retenues pour tout futur développement sur ce module :**
+1. Ne jamais poser `oe_structure oe_empty` sur un élément contenant
+   des `<t>` descendants — toujours un `<div>` enfant à part, sans
+   aucune balise `<t>` dedans ni autour.
+2. Ne jamais imbriquer un `<section>` dans un `<section>`, ni un
+   `<aside>` dans un `<aside>` — un `<div>` pour les conteneurs
+   internes.
+3. Ne jamais imbriquer plusieurs `<div class="oe_structure oe_empty">`
+   l'un dans l'autre au sein d'une même zone éditable (des divs sœurs/
+   successives à différents endroits d'une page restent autorisées —
+   c'est ce que fait ce module et exocoms_theme lui-même).
+4. Chaque `<section>` destinée à accepter des blocs doit avoir sa
+   propre zone `oe_structure oe_empty` interne, juste avant sa
+   fermeture.
+5. Images produit : toujours via `/web/image/product.template/<id>/
+   image_<taille>`, jamais via le champ binaire directement dans un
+   template.
+6. Après chaque modification XML : vérifier que le mode Édition
+   permet bien d'insérer/déplacer des blocs ; si non, vérifier en
+   premier le placement de `oe_structure`.
+
+**Audit du module contre ces règles** : règles 1, 2, 3, 5 déjà
+respectées (rien à corriger). Règle 4 manquante sur `hero.xml`
+(`partial_hero_fr`/`_en`) et `avis_hero.xml` (`avis_hero_fr`/`_en`) —
+corrigé : `oe_structure_ch_hero_extra` / `oe_structure_ch_avis_hero_
+extra` ajoutés juste avant `</section>` dans chacun, comme
+`oe_structure_hero_extra` / `oe_structure_avis_hero_extra` chez
+exocoms. Au passage, `avis_hero.xml` a aussi été mis au même niveau
+que le hero d'accueil : `data-snippet`, `data-name`, `o_colored_level`
+sur la `<section>`, `oe_editable` sur l'eyebrow/titre/sous-titre/
+bouton — il en était complètement dépourvu jusqu'ici malgré son
+schéma FR/EN déjà correct.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
