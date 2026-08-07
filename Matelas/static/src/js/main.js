@@ -161,13 +161,7 @@
                     return;
                 }
 
-                const listId = input.dataset.listId;
-                if (!listId) {
-                    alert(en ? 'Subscription is temporarily unavailable.' : 'Inscription temporairement indisponible.');
-                    return;
-                }
-
-                fetch('/website_mass_mailing/subscribe', {
+                fetch('/newsletter/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -175,20 +169,18 @@
                         method: 'call',
                         id: Date.now(),
                         params: {
-                            list_id: listId,
-                            value: email,
-                            subscription_type: 'email'
+                            value: email
                         }
                     })
                 })
                     .then(function(r) { return r.json(); })
                     .then(function(data) {
                         const result = data && data.result;
-                        if (result && result.toast_type === 'success') {
+                        if (result && result.success) {
                             input.value = '';
                             btnNewsletter.textContent = en ? '✅ Subscribed!' : '✅ Inscrit !';
                         } else {
-                            const message = (result && result.toast_content) ||
+                            const message = (result && result.error) ||
                                 (en ? 'Something went wrong.' : 'Une erreur est survenue.');
                             alert(message);
                         }

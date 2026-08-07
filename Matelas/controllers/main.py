@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+import re
+
 from odoo import http
 from odoo.http import request
+
+EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+
 
 class MatelasVente(http.Controller):
 
@@ -108,3 +113,42 @@ class MatelasVente(http.Controller):
         return request.render('Matelas.fiche_technique', {
             'product': product,
         })
+
+    @http.route('/newsletter/subscribe', type='jsonrpc', auth='public', website=True)
+    def newsletter_subscribe(self, value=None, **kwargs):
+        """Inscription à la newsletter : la liste de diffusion est résolue
+        ici côté serveur (via son external id) plutôt que d'être injectée
+        dynamiquement dans le HTML, pour que le bloc newsletter reste un
+        bloc 100% statique (donc éditable via le Website Builder)."""
+        email = (value or '').strip()
+        if not email or not EMAIL_REGEX.match(email):
+            return {'success': False, 'error': "Adresse email invalide."}
+
+        mailing_list = request.env.ref(
+            'Matelas.newsletter_mailing_list', raise_if_not_found=False)
+        if not mailing_list:
+            return {'success': False, 'error': "Liste de diffusion introuvable."}
+
+        Contacts = request.env['mailing.contact'].sudo()
+        Subscriptions = request.env['mailing.subscription'].sudo()
+
+        subscription = Subscriptions.search([
+            ('list_id', '=', mailing_list.id),
+            ('contact_id.email', '=', email),
+        ], limit=1)
+
+        if not subscription:
+            contact = Contacts.search([('email', '=', email)], limit=1)
+            if not contact:
+                contact = Contacts.create({
+                    'name': email.split('@')[0],
+                    'email': email,
+                })
+            Subscriptions.create({
+                'contact_id': contact.id,
+                'list_id': mailing_list.id,
+            })
+        elif subscription.opt_out:
+            subscription.opt_out = False
+
+        return {'success': True}
