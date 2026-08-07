@@ -27,9 +27,20 @@
         la <section> — ce module n'avait jusqu'ici copié ni l'un ni
         l'autre, contrairement au hero d'accueil (déjà corrigé en
         19.0.1.0.49/50/51). Reproduit ici à l'identique.
+
+        CAUSE TROUVÉE (v19.0.1.0.56, voir hero.xml pour l'analyse
+        complète via comparaison DOM en direct) : ajout de
+        `oe_img_bg o_bg_img_center o_bg_img_origin_border_box` sur la
+        <section>, classes qui déclenchent l'ajout automatique par
+        Odoo de `data-oe-model`/`data-oe-id`/`data-oe-xpath` +
+        `o_editable` DIRECTEMENT sur la section (pas seulement ses
+        enfants oe_editable). `o_colored_level` seul était
+        insuffisant. Aucune image de fond définie en style inline :
+        rien ne change visuellement, le dégradé CSS existant
+        (.ch-avis-hero dans avis.css) reste inchangé.
     -->
     <template id="avis_hero_fr" name="Capsule House - Avis Hero FR">
-        <section class="ch-avis-hero o_colored_level" data-snippet="s_ch_avis_hero" data-name="Capsule House Avis Hero">
+        <section class="ch-avis-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_avis_hero" data-name="Capsule House Avis Hero">
             <div class="container ch-avis-hero-inner text-center">
                 <div class="ch-avis-hero-eyebrow oe_editable">
                     <span class="ch-avis-hero-stars">
@@ -57,7 +68,7 @@
     </template>
 
     <template id="avis_hero_en" name="Capsule House - Avis Hero EN">
-        <section class="ch-avis-hero o_colored_level" data-snippet="s_ch_avis_hero" data-name="Capsule House Avis Hero">
+        <section class="ch-avis-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_avis_hero" data-name="Capsule House Avis Hero">
             <div class="container ch-avis-hero-inner text-center">
                 <div class="ch-avis-hero-eyebrow oe_editable">
                     <span class="ch-avis-hero-stars">

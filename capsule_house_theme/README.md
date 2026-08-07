@@ -1307,6 +1307,40 @@ erreur JavaScript. Si le panneau Style reste vide sur TOUT le site
 (chargement du bundle JS du Website Builder pour ce site, conflit
 d'assets) plutôt que spécifique au code de ce module.
 
+## Cause trouvée — hero et Style panel (v19.0.1.0.56)
+
+Le client a fourni deux captures DevTools (onglet Elements) montrant
+le DOM rendu réel du hero sur exocoms_theme face à celui de Capsule
+House — comparaison du rendu final, pas seulement du code source.
+
+Différence identifiée : la `<section>` hero d'exocoms porte, en plus
+de `data-snippet`/`data-name`/`o_colored_level`, les classes
+`oe_img_bg o_bg_img_center o_bg_img_origin_border_box` (gestion
+d'image de fond). Conséquence visible directement dans le DOM rendu :
+Odoo ajoute alors automatiquement, sur la `<section>` elle-même, la
+classe `o_editable` et les attributs `data-oe-model="ir.ui.view"`
+`data-oe-id` `data-oe-field="arch"` `data-oe-xpath="/t[1]/section[1]"`.
+
+Sur le hero de Capsule House (jusqu'à la 19.0.1.0.55), ces attributs
+n'apparaissaient que sur les enfants `oe_editable` (titre, sous-titre),
+jamais sur la `<section>` — Odoo ne la reconnaissait donc que comme un
+conteneur de texte, pas comme un bloc sélectionnable pour le panneau
+Style. `o_colored_level` seul était insuffisant ; il fallait la
+combinaison avec `oe_img_bg`/`o_bg_img_center`.
+
+Corrigé : ces classes ajoutées à la `<section>` de `hero.xml`
+(`partial_hero_fr`/`_en`) et `avis_hero.xml`
+(`avis_hero_fr`/`_en`, même diagnostic probable). Aucune image de
+fond en `style` inline : rien ne change visuellement, les fonds CSS
+existants restent inchangés. Effet secondaire positif possible : le
+panneau Background qui doit apparaître permettra au client de
+remplacer ce fond par une vraie photo directement depuis le Website
+Builder.
+
+Ce diagnostic est basé sur une comparaison directe du DOM rendu réel
+des deux sites (pas du code source), plus fiable que les tentatives
+précédentes (49 à 55).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
