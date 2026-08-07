@@ -1,6 +1,6 @@
 {
     'name': 'monetiques.fr — Infrastructure de Paiement',
-    'version': '19.0.1.0.7',
+    'version': '19.0.1.0.6',
     'category': 'Website',
     'author': 'monetiques.fr',
     'license': 'LGPL-3',
@@ -84,5 +84,4 @@
 
     'installable': True,
     'application': False,
-    'post_init_hook': 'post_init_hook',
 }
