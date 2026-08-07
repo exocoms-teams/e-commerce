@@ -66,13 +66,13 @@
     --font-weight-bold: 700;
     --font-weight-extrabold: 800;
 
-    /* Rayons de bordures (Coins arrondis Slide 4) */
+    /* Rayons de bordures */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
     --radius-full: 9999px;
 
-    /* Ombres légères (Tokens J1) */
+    /* Ombres */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12);
@@ -401,7 +401,6 @@
     margin-top: 40px;
 }
 
-/* Boutons secondaires hors du Hero (ex: sous la liste produits) */
 .cam-products-footer .cam-btn-secondary {
     background: var(--color-bg-main);
     color: var(--color-primary);
@@ -434,6 +433,9 @@
     text-align: center;
     text-decoration: none;
     transition: var(--transition-standard);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .cam-cat-card:hover {
@@ -457,12 +459,77 @@
 .cam-cat-link {
     color: var(--color-primary);
     font-weight: var(--font-weight-bold);
+    transition: var(--transition-standard);
+}
+
+.cam-cat-card:hover .cam-cat-link {
+    color: var(--color-primary-hover);
+}
+
+/* ===== SECTION MARQUES PARTENAIRES ===== */
+.cam-brands {
+    padding: var(--section-spacing-desktop);
+    background: var(--color-bg-main);
+}
+
+.cam-brands-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+}
+
+.cam-brand-card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 25px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-standard);
+    min-height: 100px;
+}
+
+.cam-brand-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-orange-30);
+}
+
+.cam-brand-card img {
+    max-width: 80%;
+    max-height: 40px;
+    object-fit: contain;
+    filter: grayscale(100%);
+    opacity: 0.7;
+    transition: var(--transition-standard);
+}
+
+.cam-brand-card:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+.cam-brand-logo {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: var(--transition-standard);
+}
+
+.cam-brand-card:hover .cam-brand-logo {
+    color: var(--color-primary);
 }
 
 /* ===== SECTION POURQUOI NOUS ===== */
 .cam-why {
     padding: var(--section-spacing-desktop);
-    background: var(--color-bg-main);
+    background: var(--color-bg-alt);
 }
 
 .cam-why-grid {
@@ -478,6 +545,12 @@
     text-align: center;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--color-border);
+    transition: var(--transition-standard);
+}
+
+.cam-why-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 }
 
 .cam-why-card h3 {
@@ -494,7 +567,7 @@
 
 /* ===== SECTION AVIS & TÉMOIGNAGES ===== */
 .cam-reviews-simple {
-    background-color: var(--color-bg-alt);
+    background-color: var(--color-bg-main);
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
     padding: var(--section-spacing-desktop);
@@ -647,6 +720,8 @@
     .cam-hero { padding: 100px 20px 80px; }
     .cam-hero-title { font-size: 2.75rem; }
     .cam-products-grid { grid-template-columns: repeat(2, 1fr); }
+    .cam-cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .cam-brands-grid { grid-template-columns: repeat(3, 1fr); }
     .cam-why-grid { grid-template-columns: repeat(2, 1fr); }
     .cam-footer-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -659,13 +734,15 @@
     .cam-btn-primary, .cam-btn-secondary { width: 100%; }
     .cam-stat { min-width: 100%; }
 
+    .cam-products-grid,
     .cam-cat-grid,
+    .cam-brands-grid,
     .cam-why-grid,
-    .cam-footer-grid,
-    .cam-products-grid { grid-template-columns: 1fr; }
+    .cam-footer-grid { grid-template-columns: repeat(2, 1fr); }
 
     .cam-categories,
     .cam-why,
+    .cam-brands,
     .cam-products,
     .cam-reviews-simple {
         padding: var(--section-spacing-mobile);
@@ -674,4 +751,11 @@
 
 @media (max-width: 480px) {
     .cam-hero-title { font-size: 1.8rem; }
+    .cam-section-header h2 { font-size: 1.75rem; }
+
+    .cam-products-grid,
+    .cam-cat-grid,
+    .cam-brands-grid,
+    .cam-why-grid,
+    .cam-footer-grid { grid-template-columns: 1fr; }
 }
