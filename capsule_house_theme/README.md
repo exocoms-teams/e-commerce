@@ -1341,6 +1341,72 @@ Ce diagnostic est basé sur une comparaison directe du DOM rendu réel
 des deux sites (pas du code source), plus fiable que les tentatives
 précédentes (49 à 55).
 
+**Correctif de ce correctif** : la v56 seule n'a pas suffi — voir
+"Cause réelle trouvée — routing de l'accueil" ci-dessous (v19.0.1.0.57).
+Le hero de `/avis` fonctionnait déjà avant même la v56 (aucune classe
+`oe_img_bg` nécessaire côté avis), ce qui aurait dû alerter plus tôt
+que la différence n'était pas dans le balisage du hero lui-même.
+
+## Cause réelle trouvée — routing de l'accueil (v19.0.1.0.57)
+
+À la demande explicite du client (« regarde bien les deux projets,
+fais une analyse complète des deux projets ») après l'échec de la
+v56 à résoudre le problème sur l'accueil (alors que `/avis`
+fonctionnait avec un balisage désormais identique), analyse
+comparative complète de `capsule_house_theme` et `exocoms_theme` :
+contrôleurs, `__init__.py`, manifestes, pages.
+
+Une seule différence structurelle restait entre les deux thèmes une
+fois le balisage des heros aligné : **comment chaque site sert sa
+page d'accueil.**
+
+- `exocoms_theme` sert `/` directement : `ExocomsWebsite` hérite du
+  contrôleur natif `Website` et surcharge `index()` via
+  `@http.route()` **sans argument** (réutilise la route native
+  existante, n'en crée aucune nouvelle), avec une garde
+  `_is_our_site()` et un `super().index(**kw)` pour les 16 autres
+  sites. Un seul rendu, aucun redirect.
+- `capsule_house_theme` (jusqu'à la 19.0.1.0.56) servait l'accueil
+  sur une route dédiée `/capsule-house/home`, atteinte depuis `/`
+  via le champ natif `website.homepage_url` (posé par
+  `_setup_homepage()`) — un **vrai redirect HTTP côté navigateur**,
+  confirmé par le propre commentaire du module dans `_setup_menus()`
+  (écrit bien avant ce diagnostic, pour un bug de surlignage de menu
+  sans rapport avec l'éditeur à l'époque). Deux hops : `/` → 302 →
+  `/capsule-house/home`.
+
+La page `/avis`, elle, était déjà servie en un seul rendu direct
+(comme `/` chez exocoms) — et fonctionnait. C'est la variable qui
+manquait : le redirect empêchait apparemment le Website Builder de
+garder le fil de « quelle page suis-je en train d'éditer » pendant
+ce second hop, laissant la `<section>` hero sans `data-oe-model`/
+`data-oe-id`/`data-oe-xpath` propres, alors que ses enfants
+`oe_editable` (rendus dans la page finale) les récupéraient bien.
+
+**Corrigé** : `CapsuleHouseWebsite.index()` surcharge maintenant `/`
+directement, exactement comme `exocoms_theme` — même garde stricte
+(`_is_our_website` + `super().index(**kw)` pour tous les autres
+sites), même sécurité multi-site (aucune nouvelle route sur `/`,
+seulement une surcharge héritée). C'est le pattern déjà éprouvé sans
+incident en production sur `exocoms_theme` depuis longtemps.
+
+- `_setup_homepage()` vide désormais `website.homepage_url` au lieu
+  de le pointer vers `/capsule-house/home` (plus nécessaire, et
+  cohérent avec exocoms_theme qui ne pose jamais ce champ).
+- L'ancienne route `/capsule-house/home` est conservée en simple
+  redirect 301 permanent vers `/` (`homepage_legacy_redirect`), pour
+  ne pas casser d'éventuels favoris/liens déjà partagés.
+- Le menu "Accueil" et les breadcrumbs des pages Aide/Entreprise
+  pointent de nouveau vers `/` (`_setup_menus()`, `aide_*.xml`,
+  `entreprise_*.xml`) — cohérent avec l'URL réellement affichée
+  maintenant que le redirect n'existe plus.
+
+Sécurité : ce changement reprend un pattern déjà validé en
+production sur 17 sites (`exocoms_theme`), pas une nouvelle
+tentative de surcharge de `'/'` — la garde `_is_our_website` +
+fallback `super()` systématique protège les 16 autres sites de la
+base mutualisée exactement comme chez exocoms.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

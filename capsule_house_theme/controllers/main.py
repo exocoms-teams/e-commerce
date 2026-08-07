@@ -18,18 +18,34 @@ class CapsuleHouseWebsite(Website):
     HTTP Python enregistrée sur le chemin '/' s'applique à TOUTE la base
     mutualisée (~17 sites), pas seulement à Capsule House — contrairement
     aux vues QWeb et aux ir.asset, qui eux sont scopables via website_id.
-    Une première version de ce contrôleur surchargeait directement '/' et
-    cassait donc la page d'accueil des 16 autres sites (et tentait
-    d'appeler `super().homepage()`, qui n'existe même pas sur le
-    contrôleur `Website` natif — `AttributeError` en prod).
+    Une première version de ce contrôleur redéclarait '/' comme une route
+    TOUTE NEUVE (pas une surcharge héritée) et cassait donc la page
+    d'accueil des 16 autres sites (et tentait d'appeler
+    `super().homepage()`, qui n'existe même pas sur le contrôleur
+    `Website` natif — `AttributeError` en prod).
 
-    La page d'accueil est donc servie sur une route dédiée et unique
-    (`/capsule-house/home`, jamais réutilisée ailleurs dans la base), et
-    c'est le champ natif `website.homepage_url` — déjà scopé par site,
-    aucun risque de fuite — qui indique à Odoo de servir cette route
-    quand un visiteur de NOTRE site demande '/'. Posé par
-    `_setup_homepage()` dans __init__.py. On ne touche donc JAMAIS au
-    routing partagé du contrôleur Website natif.
+    HISTORIQUE (jusqu'à la 19.0.1.0.56) : pour éviter de retoucher '/',
+    l'accueil était servi sur une route dédiée (`/capsule-house/home`),
+    atteinte via `website.homepage_url` + le redirect natif Odoo de '/'
+    vers cette URL. Ça évitait tout risque de casser les autres sites,
+    mais avait un effet de bord découvert en 19.0.1.0.56 : ce redirect
+    (un vrai aller-retour HTTP, confirmé par capture DevTools client)
+    empêchait le Website Builder de reconnaître correctement la section
+    hero comme un bloc sélectionnable (panneau Style vide), alors que le
+    même hero sur /avis — servie en un seul rendu, sans redirect —
+    fonctionnait normalement. Comparaison directe des deux thèmes
+    (capsule_house_theme vs exocoms_theme, analyse complète du
+    19.0.1.0.57) : exocoms_theme sert '/' en HÉRITANT du contrôleur
+    natif `Website` et en surchargeant `index()` via un `@http.route()`
+    SANS argument (donc réutilisant la route native, pas une nouvelle),
+    avec une garde stricte `_is_our_site()` et un `super().index(**kw)`
+    pour tous les autres sites — pattern déjà éprouvé en production sur
+    17 sites sans jamais avoir cassé personne. C'est ce même pattern
+    (hérité, gardé, avec fallback super()) qui est repris ci-dessous
+    pour `index()`, à la différence de la première tentative fautive :
+    ici on N'ENREGISTRE PAS de nouvelle route, on ne fait QUE surcharger
+    la méthode héritée, et le fallback vers les 16 autres sites est
+    systématique.
     """
 
     def _is_our_website(self, website):
@@ -85,15 +101,19 @@ class CapsuleHouseWebsite(Website):
             })
         return items
 
-    @http.route('/capsule-house/home', type='http', auth='public',
-                website=True, sitemap=False)
-    def homepage(self, **kwargs):
+    @http.route()
+    def index(self, **kw):
+        """Surcharge héritée de la route native '/' (voir docstring de
+        classe pour l'historique complet). Aucun nouveau chemin
+        enregistré : `@http.route()` sans argument réutilise la route
+        exacte du parent `Website.index()`. Le guard `_is_our_website`
+        + le fallback `super().index(**kw)` garantissent que les 16
+        autres sites de la base mutualisée continuent d'être servis
+        exactement comme avant, sans aucun changement de comportement.
+        """
         website = request.website
         if not self._is_our_website(website):
-            # Route unique à ce module : ne devrait jamais être atteinte
-            # pour un autre site. Filet de sécurité si jamais un admin
-            # pointait par erreur le homepage_url d'un autre site ici.
-            return request.redirect('/')
+            return super().index(**kw)
 
         Product = request.env['product.template'].sudo()
         domain = [
@@ -129,6 +149,17 @@ class CapsuleHouseWebsite(Website):
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
         })
+
+    @http.route('/capsule-house/home', type='http', auth='public',
+                website=True, sitemap=False)
+    def homepage_legacy_redirect(self, **kw):
+        """Ancienne route dédiée de l'accueil (jusqu'à la 19.0.1.0.56),
+        remplacée en 19.0.1.0.57 par une surcharge directe de '/' (voir
+        `index()` ci-dessus). Conservée uniquement en redirect permanent
+        pour ne pas casser d'éventuels favoris/liens déjà partagés vers
+        cette URL — jamais réutilisée comme page réelle.
+        """
+        return request.redirect('/', code=301)
 
     def _get_avis_stats(self, website):
         """Note moyenne + nombre d'avis PUBLIÉS de notre site, ou
@@ -272,7 +303,7 @@ class CapsuleHouseWebsite(Website):
         email = (email or '').strip()
         website = request.website
         if not email:
-            return request.redirect('/capsule-house/home?newsletter=error')
+            return request.redirect('/?newsletter=error')
 
         env = request.env
         # Registry se comporte comme un Mapping {nom_modele: classe} : c'est
@@ -306,4 +337,4 @@ class CapsuleHouseWebsite(Website):
                 'email_to': website.email or 'contact@capsule-house.fr',
             }).send()
 
-        return request.redirect('/capsule-house/home?newsletter=ok')
+        return request.redirect('/?newsletter=ok')
