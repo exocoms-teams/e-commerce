@@ -4,7 +4,7 @@ import io
 
 from odoo import http
 from odoo.http import request
-from odoo.tools.image import guess_mimetype
+from odoo.tools.mimetypes import guess_mimetype
 
 
 class ExocomsBrandController(http.Controller):
