@@ -937,9 +937,6 @@
     .o_address_card .o_portal_address{
         font-size: 12px;
     }
-    .o_cart_summary button, .oe_website_sale button {
-        color: #000000 !important;
-    }
 
     /* ── CHECKOUT — CARDS ───────────────────────────────────── */
     
@@ -1095,10 +1092,6 @@
     .col-form-label{
         font-size: 14px;
     }
-    .btn-fill-primary,
-     .btn-primary{
-        --btn-bg: var(--primary-color);
-    }
     .pb-5{
         font-size: 10px;
     }
@@ -1108,7 +1101,13 @@
    768px - 1024px */
 
 @media (min-width: 768px) and (max-width: 1024px){
-
+    /* nav bar */
+    .sn-topbar .mn-container,
+    .sn-language-switcher {
+        font-size: 13px;
+    }
+    
+    /* header */
     .sn-logo h2{
         font-size: 18px;
     }
@@ -1116,18 +1115,44 @@
         font-size: 10px;
     }
     .sn-header .mn-container {
-        padding: 0 15px;
+        position: relative;
         flex-wrap: wrap;
+        align-items: center;
+        height: auto;
+        min-height: 70px;
+        padding: 10px 16px 14px;
+        row-gap: 12px;
+        height: 120px; 
     }
     .sn-nav ul{
         gap: 20px;
         font-size: 12px;
     }
 
+    .sn-header .sn-actions {
+        display: contents;
+    }
+
+    .sn-header .sn-actions .sn-icon:first-of-type {
+        margin-left: auto;
+    }
+    /* Barre de recherche — ligne 2, style desktop */
+    .sn-header .sn-search {
+        order: 10;
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+    .sn-icon {
+        width: 36px;
+        height: 36px;
+    }
     .sn-search{
         flex-basis: 100%;
         order: 2;
     }
+
     /* hero */
     .sn-hero{
         height: 550px;
@@ -1229,10 +1254,12 @@
         display: none;
     }
         /* filter */
+    .sn-mobile-filter-body > .sn-filter-box:first-child {
+        display: none;
+    }
          /* ── BOUTON FLOTTANT FILTRE ────────────────────────────────── */
     .sn-size-list button{
-        width: 25%;
-        height: 20%;
+        width: 10%;
         font-size: 12px;
     }
 
@@ -1373,11 +1400,15 @@
         cursor: pointer;
         font-family: inherit;
     }
-    .sn-size-list{
-        display:none
-    }
     .sn-filter-box h2{
         display: none;
+    }
+    .sn-price-range-wrap{
+        width: 360px;
+    }
+    .sn-price-labels {
+        justify-content: flex-start;
+        gap: 310px;
     }
 
     /* product page */
@@ -1421,6 +1452,17 @@
         grid-template-columns: repeat(3,1fr);
     }
     /* cart page */
+    .sn-cart-layout{
+        grid-template-columns: repeat(1,1fr);
+    }
+    /* wishlist */
+    .sn-empty-card {
+        padding: 48px 28px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-column: 1 / -1;
+    }
+
 
 
 
