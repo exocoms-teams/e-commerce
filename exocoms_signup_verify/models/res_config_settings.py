@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
+
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
-    
+
     exocoms_signup_check_mx = fields.Boolean(
         string="Vérifier le domaine de l'email",
         config_parameter="exocoms_signup_verify.check_mx",
