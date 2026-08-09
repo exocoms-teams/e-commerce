@@ -20,9 +20,13 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 3px;
-    color: var(--color-accent, #FF5A1F);
+    color: var(--secondary-color);
     margin-bottom: 8px;
     font-weight: 600;
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 100px;
+    background: var(--primary-dark);
 }
 
 .sn-static-subtitle {
@@ -82,4 +86,41 @@
     .sn-static-content {
         padding: 40px 0 60px;
     }
+}
+
+.sn-static-content h3 {
+  cursor: pointer;
+  position: relative;
+  padding-right: 34px;
+}
+
+.sn-static-content h3 + p {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  margin: 0;
+}
+
+.sn-static-content h3.open + p {
+  max-height: 500px; 
+  margin-bottom: 10px; 
+}
+
+.sn-static-content h3::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transition: transform 0.25s ease;
+}
+
+.sn-static-content h3.open::after {
+  transform: translateY(-50%) rotate(180deg);
 }
