@@ -9,7 +9,7 @@
     ============================================================ -->
 
     <template id="homepage" name="Landing Page - Détection Produits Tendance"
-          inherit_id="website.homepage" priority="99">
+              inherit_id="website.homepage" priority="99">
 
         <xpath expr="//div[hasclass('oe_structure')]" position="replace">
             <div class="oe_structure" id="oe_structure_produits_tendance_homepage">
@@ -48,8 +48,7 @@
         </xpath>
 
     </template>
-
-    <!-- Sous-template autonome (aucun t-call="website.layout", aucun accès
+<!-- Sous-template autonome (aucun t-call="website.layout", aucun accès
          à `request`) : uniquement du QWeb statique, pour rester testable
          hors contexte HTTP. -->
     <template id="template_how_it_works" name="Comment ça marche - 3 étapes">
@@ -87,6 +86,51 @@
                 </div>
             </div>
         </section>
+    </template>
+
+    <!-- Footer Winners -->
+    <template id="widgets_footer" name="Winners Footer" inherit_id="website.footer" priority="99">
+        <xpath expr="//*" position="replace">
+            <footer class="o_winners_footer">
+                <div class="o_winners_footer_container">
+                    <div class="o_winners_footer_row">
+                        <!-- À propos -->
+                        <div class="o_winners_footer_col o_winners_footer_about">
+                            <span class="o_winners_footer_logo">Winners</span>
+                            <p class="o_winners_footer_description">Winners vous aide à détecter les produits tendance avant vos concurrents grâce à l'analyse en temps réel des signaux e-commerce.</p>
+                        </div>
+                        <!-- Produit -->
+                        <div class="o_winners_footer_col o_winners_footer_product">
+                            <h4 class="o_winners_footer_title">Produit</h4>
+                            <ul class="o_winners_footer_list">
+                                <li><a href="/dashboard" class="o_winners_footer_link">Dashboard</a></li>
+                                <li><a href="/submit-trend" class="o_winners_footer_link">Soumettre un produit</a></li>
+                            </ul>
+                        </div>
+                        <!-- Ressources -->
+                        <div class="o_winners_footer_col o_winners_footer_resources">
+                            <h4 class="o_winners_footer_title">Ressources</h4>
+                            <ul class="o_winners_footer_list">
+                                <li><a href="/page/comment-ca-marche" class="o_winners_footer_link">Comment ça marche</a></li>
+                                <li><a href="/contact" class="o_winners_footer_link">Contact</a></li>
+                            </ul>
+                        </div>
+                        <!-- Légal -->
+                        <div class="o_winners_footer_col o_winners_footer_legal">
+                            <h4 class="o_winners_footer_title">Légal</h4>
+                            <ul class="o_winners_footer_list">
+                                <li><a href="/page/mentions-legales" class="o_winners_footer_link">Mentions légales</a></li>
+                                <li><a href="/page/confidentialite" class="o_winners_footer_link">Confidentialité</a></li>
+                                <li><a href="/page/cgv" class="o_winners_footer_link">CGU</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="o_winners_footer_bottom">
+                        <p class="o_winners_footer_copyright">&copy; <t t-esc="datetime.datetime.now().year"/> Winners. Tous droits réservés.</p>
+                    </div>
+                </div>
+            </footer>
+        </xpath>
     </template>
 
 </odoo>

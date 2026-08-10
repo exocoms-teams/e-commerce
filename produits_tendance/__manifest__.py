@@ -22,8 +22,9 @@
         'data/subscription_plans.xml',           # WIN-66
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
-        'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'data/webhook_queue_cron.xml',      # WIN-67
+        'views/dashboard_templates.xml',   # WIN-45 / WIN-50
+        'data/pages.xml',
     ],
 
     'demo': [
@@ -45,6 +46,7 @@
             'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
+            'produits_tendance/static/src/scss/footer.scss',
         ],
     },
     'installable': True,
