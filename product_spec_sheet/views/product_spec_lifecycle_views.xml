@@ -106,14 +106,13 @@
                 <separator/>
                 <filter name="f_recent" string="7 derniers jours"
                         domain="[('last_change_date','&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                <group expand="0" string="Regrouper par">
-                    <filter name="g_product" string="Produit"
-                            context="{'group_by': 'product_tmpl_id'}"/>
-                    <filter name="g_source" string="Origine"
-                            context="{'group_by': 'change_source'}"/>
-                    <filter name="g_user" string="Utilisateur"
-                            context="{'group_by': 'last_change_uid'}"/>
-                </group>
+                <separator/>
+                <filter name="g_product" string="Produit"
+                        context="{'group_by': 'product_tmpl_id'}"/>
+                <filter name="g_source" string="Origine"
+                        context="{'group_by': 'change_source'}"/>
+                <filter name="g_user" string="Utilisateur"
+                        context="{'group_by': 'last_change_uid'}"/>
             </search>
         </field>
     </record>
