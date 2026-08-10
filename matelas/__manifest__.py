@@ -15,6 +15,7 @@
         'website_mass_mailing',
         'crm',
         'payment_demo',
+        'auth_signup',
     ],
     'author': 'Equipe matelas',
     'license': 'LGPL-3',
@@ -38,6 +39,7 @@
         'views/templates/Mentions_légales.xml',
         'views/templates/Cookies.xml',
         'views/templates/FicheTechnique.xml',
+        'views/templates/EmailConfirm.xml',
         'data/SEO.xml',
 
     ],
