@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         OPEN GRAPH / TWITTER CARD
+         Fait qu'un lien partagé affiche photo, titre et prix
+         au lieu d'une URL nue, sur LinkedIn, WhatsApp, X, Slack…
+    ===================================================== -->
+    <template id="product_spec_social_meta"
+              inherit_id="website.layout"
+              name="Métadonnées sociales produit">
+        <xpath expr="//head" position="inside">
+            <t t-if="main_object and main_object._name == 'product.template'">
+                <t t-set="og_product" t-value="main_object"/>
+                <t t-set="og_base"
+                   t-value="request.env['ir.config_parameter'].sudo().get_param('web.base.url', '')"/>
+
+                <meta property="og:type" content="product"/>
+                <meta property="og:title"
+                      t-att-content="og_product.name"/>
+                <meta property="og:description"
+                      t-att-content="og_product.description_sale or og_product.name"/>
+                <meta property="og:url"
+                      t-att-content="og_base + (og_product.website_url or '')"/>
+                <meta property="og:image"
+                      t-attf-content="{{ og_base }}/web/image/product.template/{{ og_product.id }}/image_1024"/>
+                <meta property="og:image:width" content="1024"/>
+                <meta property="og:image:height" content="1024"/>
+                <meta property="og:site_name"
+                      t-att-content="res_company.name"/>
+
+                <t t-if="og_product.list_price">
+                    <meta property="product:price:amount"
+                          t-att-content="'%.2f' % og_product.list_price"/>
+                    <meta property="product:price:currency"
+                          t-att-content="og_product.currency_id.name"/>
+                </t>
+                <t t-if="og_product.default_code">
+                    <meta property="product:retailer_item_id"
+                          t-att-content="og_product.default_code"/>
+                </t>
+                <meta property="product:availability"
+                      t-att-content="'in stock' if og_product.lifecycle_is_sellable else 'discontinued'"/>
+
+                <!-- Twitter / X -->
+                <meta name="twitter:card" content="summary_large_image"/>
+                <meta name="twitter:title" t-att-content="og_product.name"/>
+                <meta name="twitter:description"
+                      t-att-content="og_product.description_sale or og_product.name"/>
+                <meta name="twitter:image"
+                      t-attf-content="{{ og_base }}/web/image/product.template/{{ og_product.id }}/image_1024"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- =====================================================
+         LIENS RÉSEAUX SOCIAUX DE L'ENTREPRISE
+         Affichés sous le bloc caractéristiques
+    ===================================================== -->
+    <template id="product_spec_company_socials"
+              inherit_id="product_spec_sheet.product_spec_table"
+              name="Réseaux sociaux entreprise">
+        <xpath expr="//div[hasclass('o_product_spec_table')]" position="inside">
+            <t t-set="socials" t-value="request.env.company"/>
+            <div t-if="socials.social_linkedin or socials.social_facebook or socials.social_twitter or socials.social_youtube or socials.social_instagram"
+                 class="o_spec_company_socials mt-3 pt-3 border-top">
+                <span class="text-muted small me-2">Suivez-nous</span>
+                <a t-if="socials.social_linkedin"
+                   t-att-href="socials.social_linkedin"
+                   target="_blank" rel="noopener"
+                   class="me-2 text-decoration-none"
+                   aria-label="LinkedIn">
+                    <i class="fa fa-linkedin-square fa-lg" style="color:#0A66C2"></i>
+                </a>
+                <a t-if="socials.social_facebook"
+                   t-att-href="socials.social_facebook"
+                   target="_blank" rel="noopener"
+                   class="me-2 text-decoration-none"
+                   aria-label="Facebook">
+                    <i class="fa fa-facebook-square fa-lg" style="color:#1877F2"></i>
+                </a>
+                <a t-if="socials.social_twitter"
+                   t-att-href="socials.social_twitter"
+                   target="_blank" rel="noopener"
+                   class="me-2 text-decoration-none"
+                   aria-label="X">
+                    <i class="fa fa-twitter-square fa-lg" style="color:#000000"></i>
+                </a>
+                <a t-if="socials.social_instagram"
+                   t-att-href="socials.social_instagram"
+                   target="_blank" rel="noopener"
+                   class="me-2 text-decoration-none"
+                   aria-label="Instagram">
+                    <i class="fa fa-instagram fa-lg" style="color:#E4405F"></i>
+                </a>
+                <a t-if="socials.social_youtube"
+                   t-att-href="socials.social_youtube"
+                   target="_blank" rel="noopener"
+                   class="me-2 text-decoration-none"
+                   aria-label="YouTube">
+                    <i class="fa fa-youtube-play fa-lg" style="color:#FF0000"></i>
+                </a>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

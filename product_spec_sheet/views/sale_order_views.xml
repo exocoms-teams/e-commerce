@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_sale_order_spec_form" model="ir.ui.view">
+        <field name="name">sale.order.spec.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Bouton principal dans l'en-tête -->
+            <xpath expr="//header" position="inside">
+                <button name="action_attach_spec_sheets"
+                        type="object"
+                        string="Joindre les fiches techniques"
+                        icon="fa-paperclip"
+                        invisible="spec_product_count == 0"/>
+            </xpath>
+
+            <!-- Compteur en bouton statistique -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_print_spec_sheets"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-pdf-o"
+                        invisible="spec_product_count == 0">
+                    <field name="spec_product_count" widget="statinfo"
+                           string="Fiches techniques"/>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Rapports accessibles depuis le menu Imprimer du devis -->
+    <record id="action_report_sale_spec_sheets" model="ir.actions.server">
+        <field name="name">Fiches techniques des produits</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_spec_sheets()</field>
+    </record>
+
+    <record id="action_report_sale_spec_comparison" model="ir.actions.server">
+        <field name="name">Comparatif des produits du devis</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_spec_comparison()</field>
+    </record>
+
+</odoo>

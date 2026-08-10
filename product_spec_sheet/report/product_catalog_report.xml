@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         CATALOGUE PRODUITS — PDF paginé avec sommaire
+    ===================================================== -->
+    <template id="report_product_catalog">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+
+                <!-- ══ PAGE DE COUVERTURE ══ -->
+                <div class="page">
+                    <div style="text-align: center; padding-top: 90px;">
+                        <h1 style="font-size: 34px; margin-bottom: 10px; letter-spacing: -0.5px;">
+                            Catalogue produits
+                        </h1>
+                        <p style="font-size: 14px; color: #777; margin-bottom: 40px;">
+                            <t t-out="len(docs)"/> références —
+                            édité le <t t-out="datetime.datetime.now().strftime('%d/%m/%Y')"/>
+                        </p>
+                        <div style="width: 90px; height: 2px; background: #1a1a1a; margin: 0 auto 40px;"/>
+                        <p style="font-size: 13px; color: #555; max-width: 380px; margin: 0 auto; line-height: 1.8;">
+                            <t t-out="res_company.name"/><br/>
+                            <t t-if="res_company.phone"><t t-out="res_company.phone"/><br/></t>
+                            <t t-if="res_company.email"><t t-out="res_company.email"/><br/></t>
+                            <t t-if="res_company.website"><t t-out="res_company.website"/></t>
+                        </p>
+                        <t t-set="cmp" t-value="res_company"/>
+                        <p t-if="cmp.social_linkedin or cmp.social_facebook or cmp.social_twitter"
+                           style="font-size: 11px; color: #888; margin-top: 24px;">
+                            <t t-if="cmp.social_linkedin">
+                                LinkedIn : <t t-out="cmp.social_linkedin"/><br/>
+                            </t>
+                            <t t-if="cmp.social_facebook">
+                                Facebook : <t t-out="cmp.social_facebook"/><br/>
+                            </t>
+                            <t t-if="cmp.social_twitter">
+                                X : <t t-out="cmp.social_twitter"/>
+                            </t>
+                        </p>
+                    </div>
+
+                    <!-- ══ SOMMAIRE ══ -->
+                    <div style="page-break-before: always; padding-top: 20px;">
+                        <h2 style="font-size: 20px; padding-bottom: 10px; border-bottom: 2px solid #1a1a1a; margin-bottom: 20px;">
+                            Sommaire
+                        </h2>
+                        <t t-set="categories" t-value="docs.mapped('categ_id').sorted('name')"/>
+                        <t t-foreach="categories" t-as="categ">
+                            <t t-set="cat_products" t-value="docs.filtered(lambda p: p.categ_id == categ)"/>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; border-bottom: 0.5px dotted #ccc; padding-bottom: 4px;">
+                                    <strong style="font-size: 13px;"><t t-out="categ.name"/></strong>
+                                    <span style="font-size: 11px; color: #888;">
+                                        <t t-out="len(cat_products)"/> référence(s)
+                                    </span>
+                                </div>
+                                <div style="font-size: 10px; color: #666; margin-top: 5px; line-height: 1.7;">
+                                    <t t-foreach="cat_products" t-as="cp">
+                                        <t t-out="cp.name"/><t t-if="not cp_last"> · </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- ══ FICHES PRODUIT, GROUPÉES PAR CATÉGORIE ══ -->
+                <t t-set="categories" t-value="docs.mapped('categ_id').sorted('name')"/>
+                <t t-foreach="categories" t-as="categ">
+                    <t t-set="cat_products" t-value="docs.filtered(lambda p: p.categ_id == categ).sorted('name')"/>
+
+                    <!-- Intercalaire de catégorie -->
+                    <div class="page" style="page-break-before: always;">
+                        <div style="background: #f4f4f4; padding: 14px 18px; margin-bottom: 20px; border-left: 4px solid #1a1a1a;">
+                            <h2 style="font-size: 18px; margin: 0;"><t t-out="categ.name"/></h2>
+                            <p style="font-size: 11px; color: #777; margin: 3px 0 0;">
+                                <t t-out="len(cat_products)"/> référence(s)
+                            </p>
+                        </div>
+
+                        <!-- Deux produits par page -->
+                        <t t-foreach="cat_products" t-as="product">
+                            <div t-attf-style="margin-bottom: 26px; padding-bottom: 20px; border-bottom: 0.5px solid #e0e0e0; #{'page-break-before: always;' if product_index and product_index % 2 == 0 else ''}">
+
+                                <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px;">
+                                    <div t-if="product.image_1920"
+                                         style="width: 100px; height: 100px; border: 1px solid #e8e8e8; padding: 4px; flex-shrink: 0;">
+                                        <img t-att-src="image_data_uri(product.image_1920)"
+                                             style="width: 100%; height: 100%; object-fit: contain;"
+                                             alt="Photo produit"/>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h3 style="font-size: 15px; margin: 0 0 3px;">
+                                            <t t-out="product.name"/>
+                                        </h3>
+                                        <p style="font-size: 10px; color: #888; margin: 0 0 6px;">
+                                            <t t-if="product.default_code">Réf. <t t-out="product.default_code"/></t>
+                                        </p>
+                                        <p t-if="product.list_price" style="font-size: 15px; font-weight: 600; margin: 0 0 6px;">
+                                            <t t-out="'%.2f' % product.list_price"/> €
+                                            <span style="font-size: 9px; color: #888; font-weight: normal;">HT</span>
+                                        </p>
+                                        <p t-if="product.description_sale"
+                                           style="font-size: 10px; color: #555; margin: 0; line-height: 1.6;">
+                                            <t t-out="product.description_sale"/>
+                                        </p>
+                                        <!-- Bandeau cycle de vie -->
+                                        <p t-if="product.lifecycle_state in ('eol_soon','eol','obsolete')"
+                                           style="font-size: 9px; color: #99400e; background: #fdf0e6; padding: 4px 8px; margin: 6px 0 0; border-left: 2px solid #cc6622;">
+                                            <t t-out="product.lifecycle_warning"/>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Caractéristiques en deux colonnes -->
+                                <t t-if="product.spec_line_ids">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px;">
+                                        <t t-foreach="product._get_spec_categories()" t-as="spec_cat">
+                                            <tr>
+                                                <td colspan="2" style="padding: 5px 4px 2px; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; font-weight: 600;">
+                                                    <t t-out="spec_cat.name"/>
+                                                </td>
+                                            </tr>
+                                            <t t-foreach="product._get_spec_lines_by_category(spec_cat)" t-as="sl">
+                                                <tr style="border-bottom: 0.5px solid #f0f0f0;">
+                                                    <td style="width: 34%; padding: 3px 4px; color: #666;">
+                                                        <t t-out="sl.attribute_id.name"/>
+                                                    </td>
+                                                    <td style="padding: 3px 4px;">
+                                                        <t t-out="sl.value"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </table>
+                                </t>
+                                <p t-else="" style="font-size: 10px; color: #bbb; font-style: italic;">
+                                    Caractéristiques techniques non renseignées.
+                                </p>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_product_catalog" model="ir.actions.report">
+        <field name="name">Catalogue produits (PDF)</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">product_spec_sheet.report_product_catalog</field>
+        <field name="report_file">product_spec_sheet.report_product_catalog</field>
+        <field name="print_report_name">'Catalogue produits - %s references' % (len(objects))</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

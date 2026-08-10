@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         VUE LISTE — QUALITÉ DES FICHES
+    ===================================================== -->
+    <record id="view_product_spec_quality_list" model="ir.ui.view">
+        <field name="name">product.template.spec.quality.list</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <list string="Qualité des fiches produit"
+                  decoration-success="spec_quality_level == 'complete'"
+                  decoration-warning="spec_quality_level == 'partial'"
+                  decoration-danger="spec_quality_level == 'empty'">
+                <field name="default_code" string="Réf."/>
+                <field name="name"/>
+                <field name="categ_id" string="Catégorie" optional="show"/>
+                <field name="spec_completeness" widget="progressbar" string="Complétude"/>
+                <field name="spec_count" string="Caract." optional="show"/>
+                <field name="spec_has_weight" string="Poids" widget="boolean_toggle" readonly="1"/>
+                <field name="spec_has_dimensions" string="Dim." widget="boolean_toggle" readonly="1"/>
+                <field name="spec_has_image" string="Photo" widget="boolean_toggle" readonly="1"/>
+                <field name="spec_missing_summary" string="Manquant"/>
+                <field name="spec_quality_level" widget="badge"
+                       decoration-success="spec_quality_level == 'complete'"
+                       decoration-warning="spec_quality_level == 'partial'"
+                       decoration-danger="spec_quality_level == 'empty'"/>
+                <button name="action_open_spec_fetch_wizard"
+                        type="object"
+                        string="Compléter"
+                        icon="fa-globe"
+                        invisible="spec_quality_level == 'complete'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         VUE KANBAN — GROUPÉE PAR NIVEAU
+    ===================================================== -->
+    <record id="view_product_spec_quality_kanban" model="ir.ui.view">
+        <field name="name">product.template.spec.quality.kanban</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="spec_quality_level" class="o_kanban_small_column">
+                <field name="spec_quality_level"/>
+                <field name="spec_completeness"/>
+                <field name="spec_missing_summary"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong><field name="name"/></strong>
+                                    <small class="text-muted d-block">
+                                        <field name="default_code"/>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <field name="spec_completeness" widget="progressbar"/>
+                            </div>
+                            <div class="mt-1 text-muted small">
+                                Manquant : <field name="spec_missing_summary"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         VUE RECHERCHE — FILTRES QUALITÉ
+    ===================================================== -->
+    <record id="view_product_spec_quality_search" model="ir.ui.view">
+        <field name="name">product.template.spec.quality.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search string="Qualité des fiches">
+                <field name="name" string="Produit"/>
+                <field name="default_code" string="Référence"/>
+
+                <separator/>
+                <filter name="f_incomplete" string="Fiches incomplètes"
+                        domain="[('spec_quality_level','!=','complete')]"/>
+                <filter name="f_empty" string="Fiches vides"
+                        domain="[('spec_quality_level','=','empty')]"/>
+                <filter name="f_complete" string="Fiches complètes"
+                        domain="[('spec_quality_level','=','complete')]"/>
+
+                <separator/>
+                <filter name="f_no_weight" string="Sans poids"
+                        domain="[('spec_has_weight','=',False)]"/>
+                <filter name="f_no_dims" string="Sans dimensions"
+                        domain="[('spec_has_dimensions','=',False)]"/>
+                <filter name="f_no_image" string="Sans photo"
+                        domain="[('spec_has_image','=',False)]"/>
+                <filter name="f_no_specs" string="Sans caractéristiques"
+                        domain="[('spec_count','=',0)]"/>
+
+                <separator/>
+                <filter name="f_shippable" string="Calcul de port impossible"
+                        domain="['|',('spec_has_weight','=',False),('spec_has_dimensions','=',False)]"
+                        help="Produits dont le poids ou les dimensions manquent : les frais de port ne peuvent pas être calculés."/>
+
+                <separator/>
+                <filter name="f_published" string="Publiés sur le site"
+                        domain="[('website_published','=',True)]"/>
+
+                <group expand="0" string="Regrouper par">
+                    <filter name="g_quality" string="Qualité"
+                            context="{'group_by': 'spec_quality_level'}"/>
+                    <filter name="g_categ" string="Catégorie produit"
+                            context="{'group_by': 'categ_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         ACTION ET MENU
+    ===================================================== -->
+    <record id="action_product_spec_quality" model="ir.actions.act_window">
+        <field name="name">Qualité des fiches</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_product_spec_quality_search"/>
+        <field name="context">{'search_default_f_incomplete': 1}</field>
+        <field name="domain">[('sale_ok','=',True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Toutes vos fiches produit sont complètes.
+            </p>
+            <p>
+                Cette vue liste les produits dont la fiche technique est incomplète :
+                caractéristiques, poids, dimensions ou photo manquants.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_product_spec_quality_list_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_product_spec_quality_list"/>
+        <field name="act_window_id" ref="action_product_spec_quality"/>
+    </record>
+
+    <record id="action_product_spec_quality_kanban_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_product_spec_quality_kanban"/>
+        <field name="act_window_id" ref="action_product_spec_quality"/>
+    </record>
+
+    <menuitem id="menu_product_spec_quality"
+              name="Qualité des fiches"
+              parent="menu_product_spec_root"
+              action="action_product_spec_quality"
+              sequence="5"/>
+
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         ONGLET CARACTÉRISTIQUES SUR LA FICHE PRODUIT
+         + bouton "Récupérer sur internet"
+    ===================================================== -->
+    <record id="product_template_form_view_spec_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.spec.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Caractéristiques" name="specifications">
+
+                    <!-- Barre d'actions : bouton de récupération automatique -->
+                    <div class="d-flex justify-content-end mb-2">
+                        <button name="%(product_spec_sheet.action_product_spec_fetch_wizard)d"
+                                type="action"
+                                string="Récupérer sur internet"
+                                class="btn btn-sm btn-secondary"
+                                icon="fa-globe"/>
+                    </div>
+
+                    <!-- Liste éditable des caractéristiques -->
+                    <field name="spec_line_ids">
+                        <list editable="bottom">
+                            <field name="category_id" readonly="1" optional="show"/>
+                            <field name="attribute_id"/>
+                            <field name="value"/>
+                        </list>
+                    </field>
+
+                    <p class="text-muted small mt-2">
+                        La catégorie est reprise automatiquement depuis la caractéristique choisie.
+                        Pour ajouter une catégorie ou une caractéristique manquante :
+                        <em>Ventes &gt; Configuration &gt; Caractéristiques produit</em>.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         PARAMÈTRE CLÉ API ANTHROPIC
+         Ventes > Configuration > Paramètres > section "Caractéristiques produit"
+    ===================================================== -->
+    <record id="view_product_spec_settings" model="ir.ui.view">
+        <field name="name">product.spec.settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <block title="Caractéristiques produit" name="product_spec_sheet_settings">
+                    <setting string="Clé API Anthropic"
+                             help="Améliore la précision de la recherche automatique. Obtenez une clé sur console.anthropic.com.">
+                        <field name="product_spec_anthropic_api_key"
+                               placeholder="sk-ant-…"
+                               password="True"/>
+                    </setting>
+                    <setting string="Récupération automatique"
+                             help="Complète chaque nuit les fiches produit incomplètes, en priorisant les moins renseignées.">
+                        <field name="product_spec_autofetch_enabled"/>
+                        <div class="content-group mt8" invisible="not product_spec_autofetch_enabled">
+                            <div class="row">
+                                <label for="product_spec_autofetch_batch" class="col-lg-5 o_light_label"/>
+                                <field name="product_spec_autofetch_batch"/>
+                            </div>
+                            <div class="row">
+                                <label for="product_spec_autofetch_notify_uid" class="col-lg-5 o_light_label"/>
+                                <field name="product_spec_autofetch_notify_uid"
+                                       options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <field name="product_spec_autofetch_published_only"/>
+                                <label for="product_spec_autofetch_published_only" class="o_light_label"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

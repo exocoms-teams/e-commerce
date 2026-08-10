@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         ASSETS : JS partage + impression
+    ===================================================== -->
+    <template id="product_spec_share_assets" inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript">
+            (function () {
+                'use strict';
+
+                /* ---- Copier dans le presse-papier ---- */
+                function copyToClipboard(text, btn) {
+                    navigator.clipboard.writeText(text).then(function () {
+                        var orig = btn.innerHTML;
+                        btn.innerHTML = '<i class="fa fa-check me-1"></i> Copié !';
+                        setTimeout(function () { btn.innerHTML = orig; }, 2000);
+                    });
+                }
+
+                /* ---- Partage natif (mobile) ou fallback ---- */
+                function shareSpec(title, url, btn) {
+                    if (navigator.share) {
+                        navigator.share({ title: title, url: url });
+                    } else {
+                        copyToClipboard(url, btn);
+                    }
+                }
+
+                /* ---- Lien e-mail ---- */
+                function shareEmail(subject, body) {
+                    window.location.href = 'mailto:?subject=' +
+                        encodeURIComponent(subject) + '&amp;body=' + encodeURIComponent(body);
+                }
+
+                /* ---- WhatsApp ---- */
+                function shareWhatsapp(text) {
+                    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+                }
+
+                /* ---- LinkedIn ---- */
+                function shareLinkedin(url) {
+                    window.open(
+                        'https://www.linkedin.com/sharing/share-offsite/?url=' +
+                        encodeURIComponent(url),
+                        '_blank', 'width=600,height=600'
+                    );
+                }
+
+                /* ---- Facebook ---- */
+                function shareFacebook(url) {
+                    window.open(
+                        'https://www.facebook.com/sharer/sharer.php?u=' +
+                        encodeURIComponent(url),
+                        '_blank', 'width=600,height=600'
+                    );
+                }
+
+                /* ---- X (Twitter) ---- */
+                function shareX(text, url) {
+                    window.open(
+                        'https://twitter.com/intent/tweet?text=' +
+                        encodeURIComponent(text) + '&amp;url=' + encodeURIComponent(url),
+                        '_blank', 'width=600,height=400'
+                    );
+                }
+
+                /* ---- Telegram ---- */
+                function shareTelegram(text, url) {
+                    window.open(
+                        'https://t.me/share/url?url=' + encodeURIComponent(url) +
+                        '&amp;text=' + encodeURIComponent(text),
+                        '_blank'
+                    );
+                }
+
+                /* ---- Toggle dropdown ---- */
+                function initShareDropdowns() {
+                    document.querySelectorAll('.o_spec_share_toggle').forEach(function (toggle) {
+                        toggle.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            var menu = toggle.nextElementSibling;
+                            var isOpen = menu.classList.contains('show');
+                            document.querySelectorAll('.o_spec_share_menu').forEach(function (m) {
+                                m.classList.remove('show');
+                            });
+                            if (!isOpen) menu.classList.add('show');
+                        });
+                    });
+                    document.addEventListener('click', function () {
+                        document.querySelectorAll('.o_spec_share_menu').forEach(function (m) {
+                            m.classList.remove('show');
+                        });
+                    });
+                }
+
+                /* ---- Boutons d'action ---- */
+                function initShareActions() {
+                    /* Copier le lien fiche produit */
+                    document.querySelectorAll('[data-spec-action="copy-link"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            copyToClipboard(window.location.href, btn);
+                        });
+                    });
+
+                    /* Partager (natif ou clipboard) */
+                    document.querySelectorAll('[data-spec-action="share"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var title = btn.dataset.specTitle || document.title;
+                            shareSpec(title, window.location.href, btn);
+                        });
+                    });
+
+                    /* E-mail fiche */
+                    document.querySelectorAll('[data-spec-action="email"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var title = btn.dataset.specTitle || document.title;
+                            var url   = window.location.href;
+                            shareEmail(
+                                'Fiche technique : ' + title,
+                                'Bonjour,\n\nVoici la fiche technique du produit ' + title +
+                                ' :\n' + url + '\n\nCordialement.'
+                            );
+                        });
+                    });
+
+                    /* WhatsApp fiche */
+                    document.querySelectorAll('[data-spec-action="whatsapp"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var title = btn.dataset.specTitle || document.title;
+                            shareWhatsapp('Fiche technique ' + title + ' : ' + window.location.href);
+                        });
+                    });
+
+                    /* LinkedIn — fiche produit */
+                    document.querySelectorAll('[data-spec-action="linkedin"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            shareLinkedin(window.location.href);
+                        });
+                    });
+
+                    /* Facebook — fiche produit */
+                    document.querySelectorAll('[data-spec-action="facebook"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            shareFacebook(window.location.href);
+                        });
+                    });
+
+                    /* X — fiche produit */
+                    document.querySelectorAll('[data-spec-action="x"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var title = btn.dataset.specTitle || document.title;
+                            shareX(title, window.location.href);
+                        });
+                    });
+
+                    /* Telegram — fiche produit */
+                    document.querySelectorAll('[data-spec-action="telegram"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var title = btn.dataset.specTitle || document.title;
+                            shareTelegram(title, window.location.href);
+                        });
+                    });
+
+                    /* LinkedIn — comparatif */
+                    document.querySelectorAll('[data-spec-action="linkedin-compare"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var ids = btn.dataset.productIds || '';
+                            shareLinkedin(window.location.origin +
+                                '/product-specs/compare?product_ids=' + ids);
+                        });
+                    });
+
+                    /* X — comparatif */
+                    document.querySelectorAll('[data-spec-action="x-compare"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var ids = btn.dataset.productIds || '';
+                            shareX('Comparatif produits',
+                                window.location.origin +
+                                '/product-specs/compare?product_ids=' + ids);
+                        });
+                    });
+
+                    /* Copier lien comparatif */
+                    document.querySelectorAll('[data-spec-action="copy-compare"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var ids = btn.dataset.productIds || '';
+                            var url = window.location.origin +
+                                '/product-specs/compare?product_ids=' + ids;
+                            copyToClipboard(url, btn);
+                        });
+                    });
+
+                    /* E-mail comparatif */
+                    document.querySelectorAll('[data-spec-action="email-compare"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var ids = btn.dataset.productIds || '';
+                            var url = window.location.origin +
+                                '/product-specs/compare?product_ids=' + ids;
+                            shareEmail(
+                                'Comparatif produits',
+                                'Bonjour,\n\nVoici le comparatif des produits sélectionnés :\n' +
+                                url + '\n\nCordialement.'
+                            );
+                        });
+                    });
+
+                    /* WhatsApp comparatif */
+                    document.querySelectorAll('[data-spec-action="whatsapp-compare"]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            var ids = btn.dataset.productIds || '';
+                            var url = window.location.origin +
+                                '/product-specs/compare?product_ids=' + ids;
+                            shareWhatsapp('Comparatif produits : ' + url);
+                        });
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    initShareDropdowns();
+                    initShareActions();
+                });
+            })();
+            </script>
+            <style>
+                /* ---- Dropdown partage ---- */
+                .o_spec_share_wrapper { position: relative; display: inline-block; }
+
+                .o_spec_share_menu {
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 6px);
+                    right: 0;
+                    min-width: 230px;
+                    background: #fff;
+                    border: 1px solid rgba(0,0,0,.1);
+                    border-radius: .5rem;
+                    box-shadow: 0 4px 16px rgba(0,0,0,.12);
+                    z-index: 1050;
+                    overflow: hidden;
+                }
+                .o_spec_share_menu.show { display: block; }
+
+                .o_spec_share_menu .o_share_item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 10px 14px;
+                    cursor: pointer;
+                    font-size: .85rem;
+                    color: #212529;
+                    border: none;
+                    background: none;
+                    width: 100%;
+                    text-align: left;
+                    text-decoration: none;
+                }
+                .o_spec_share_menu .o_share_item:hover { background: #f8f9fa; }
+                .o_spec_share_menu .o_share_item i { font-size: 1rem; color: #6c757d; width: 20px; }
+                .o_spec_share_menu .o_share_item .o_share_lbl { font-weight: 500; }
+                .o_spec_share_menu .o_share_item .o_share_sub { font-size: .75rem; color: #6c757d; }
+                .o_spec_share_menu .dropdown-divider { margin: .25rem 0; border-top: 1px solid #e9ecef; }
+
+                /* ---- Barre d'actions ---- */
+                .o_spec_action_bar {
+                    display: flex;
+                    align-items: center;
+                    gap: .5rem;
+                    flex-wrap: wrap;
+                    margin-bottom: .75rem;
+                }
+
+                /* ---- QR code sur PDF (masqué en écran) ---- */
+                @media screen { .o_spec_print_only { display: none !important; } }
+                @media print  { .o_spec_screen_only { display: none !important; } }
+            </style>
+        </xpath>
+    </template>
+
+    <!-- =====================================================
+         PAGE DE COMPARAISON
+    ===================================================== -->
+    <template id="product_spec_compare_page" name="Comparer les caractéristiques">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container my-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                        <h1 class="mb-0 h4">Comparer les caractéristiques</h1>
+
+                        <div class="o_spec_action_bar" t-if="products">
+
+                            <!-- Imprimer comparatif PDF -->
+                            <a t-attf-href="/product-specs/compare/print?product_ids={{ product_ids_str }}"
+                               class="btn btn-sm btn-outline-secondary o_spec_screen_only"
+                               target="_blank">
+                                <i class="fa fa-print me-1"></i> Imprimer
+                            </a>
+
+                            <!-- Dropdown Partager -->
+                            <div class="o_spec_share_wrapper o_spec_screen_only">
+                                <button class="btn btn-sm btn-outline-secondary o_spec_share_toggle">
+                                    <i class="fa fa-share-alt me-1"></i> Partager
+                                    <i class="fa fa-caret-down ms-1"></i>
+                                </button>
+                                <div class="o_spec_share_menu">
+                                    <button class="o_share_item"
+                                            data-spec-action="copy-compare"
+                                            t-att-data-product-ids="product_ids_str">
+                                        <i class="fa fa-link"></i>
+                                        <div>
+                                            <div class="o_share_lbl">Copier le lien du comparatif</div>
+                                            <div class="o_share_sub">URL avec les produits sélectionnés</div>
+                                        </div>
+                                    </button>
+                                    <button class="o_share_item"
+                                            data-spec-action="email-compare"
+                                            t-att-data-product-ids="product_ids_str">
+                                        <i class="fa fa-envelope"></i>
+                                        <div>
+                                            <div class="o_share_lbl">Envoyer par email</div>
+                                            <div class="o_share_sub">Lien en corps de message</div>
+                                        </div>
+                                    </button>
+                                    <button class="o_share_item"
+                                            data-spec-action="whatsapp-compare"
+                                            t-att-data-product-ids="product_ids_str">
+                                        <i class="fa fa-whatsapp" style="color:#25D366"></i>
+                                        <div>
+                                            <div class="o_share_lbl">WhatsApp</div>
+                                            <div class="o_share_sub">Partager le lien</div>
+                                        </div>
+                                    </button>
+                                    <button class="o_share_item"
+                                            data-spec-action="linkedin-compare"
+                                            t-att-data-product-ids="product_ids_str">
+                                        <i class="fa fa-linkedin" style="color:#0A66C2"></i>
+                                        <div>
+                                            <div class="o_share_lbl">LinkedIn</div>
+                                            <div class="o_share_sub">Partage professionnel</div>
+                                        </div>
+                                    </button>
+                                    <button class="o_share_item"
+                                            data-spec-action="x-compare"
+                                            t-att-data-product-ids="product_ids_str">
+                                        <i class="fa fa-twitter" style="color:#000000"></i>
+                                        <div>
+                                            <div class="o_share_lbl">X</div>
+                                            <div class="o_share_sub">Partager le comparatif</div>
+                                        </div>
+                                    </button>
+                                    <div class="dropdown-divider"></div>
+                                    <a t-attf-href="/product-specs/compare/print?product_ids={{ product_ids_str }}"
+                                       class="o_share_item" target="_blank">
+                                        <i class="fa fa-file-pdf-o"></i>
+                                        <div>
+                                            <div class="o_share_lbl">Télécharger PDF</div>
+                                            <div class="o_share_sub">Tableau A4 paysage</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="not products" class="alert alert-info">
+                        Sélectionnez au moins un produit ci-dessous pour commencer la comparaison.
+                    </div>
+
+                    <div t-if="products" class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 220px;">Caractéristique</th>
+                                    <t t-foreach="products" t-as="product">
+                                        <th class="text-center align-bottom">
+                                            <a t-att-href="product.website_url" class="d-block mb-2">
+                                                <img t-attf-src="/web/image/product.template/#{ product.id }/image_256"
+                                                     class="img-fluid"
+                                                     style="max-height: 110px; object-fit: contain;"
+                                                     t-att-alt="product.name"/>
+                                            </a>
+                                            <div><a t-att-href="product.website_url"><t t-out="product.name"/></a></div>
+                                            <div t-if="product.list_price" class="fw-bold">
+                                                <span t-field="product.list_price"
+                                                      t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                            </div>
+                                            <a class="small text-muted"
+                                               t-attf-href="/product-specs/compare?product_ids=#{ remove_ids_map.get(product.id, '') }">
+                                                Retirer
+                                            </a>
+                                        </th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="categories" t-as="spec_category">
+                                    <tr class="table-light">
+                                        <th t-attf-colspan="#{ 1 + len(products) }">
+                                            <t t-out="spec_category.name"/>
+                                        </th>
+                                    </tr>
+                                    <t t-foreach="category_attributes.get(spec_category.id, [])" t-as="spec_attribute">
+                                        <tr>
+                                            <td><t t-out="spec_attribute.name"/></td>
+                                            <t t-foreach="products" t-as="product">
+                                                <t t-set="spec_value" t-value="product._get_spec_value(spec_attribute)"/>
+                                                <td class="text-center">
+                                                    <t t-if="spec_value"><t t-out="spec_value"/></t>
+                                                    <t t-else=""><span class="text-muted">—</span></t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <form method="get" action="/product-specs/compare" class="row g-2 align-items-end mt-3" style="max-width: 600px;">
+                        <input type="hidden" name="product_ids" t-att-value="product_ids_str"/>
+                        <div class="col-8">
+                            <label class="form-label" for="compare_add_product">Ajouter un produit</label>
+                            <select id="compare_add_product" name="add" class="form-select">
+                                <t t-foreach="available_products" t-as="avail">
+                                    <option t-att-value="avail.id"><t t-out="avail.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- =====================================================
+         BLOC CARACTÉRISTIQUES SUR LA FICHE PRODUIT
+         Avec barre d'actions : imprimer + partager
+    ===================================================== -->
+    <template id="product_spec_table" name="Tableau des caractéristiques produit">
+        <div class="o_product_spec_table mt-4" t-if="product.spec_line_ids">
+
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                <h5 class="mb-0">Caractéristiques techniques</h5>
+
+                <div class="o_spec_action_bar o_spec_screen_only">
+
+                    <!-- Imprimer la fiche seule -->
+                    <a t-attf-href="/report/pdf/product_spec_sheet.report_product_spec_sheet_single/#{ product.id }"
+                       class="btn btn-sm btn-outline-secondary"
+                       target="_blank"
+                       title="Imprimer la fiche technique">
+                        <i class="fa fa-print me-1"></i> Imprimer
+                    </a>
+
+                    <!-- Copier le lien direct -->
+                    <button class="btn btn-sm btn-outline-secondary"
+                            data-spec-action="copy-link"
+                            t-att-data-spec-title="product.name"
+                            title="Copier le lien de cette fiche">
+                        <i class="fa fa-link me-1"></i> Copier le lien
+                    </button>
+
+                    <!-- Dropdown Partager -->
+                    <div class="o_spec_share_wrapper">
+                        <button class="btn btn-sm btn-outline-secondary o_spec_share_toggle"
+                                t-att-data-spec-title="product.name">
+                            <i class="fa fa-share-alt me-1"></i> Partager
+                            <i class="fa fa-caret-down ms-1"></i>
+                        </button>
+                        <div class="o_spec_share_menu">
+                            <button class="o_share_item"
+                                    data-spec-action="email"
+                                    t-att-data-spec-title="product.name">
+                                <i class="fa fa-envelope"></i>
+                                <div>
+                                    <div class="o_share_lbl">Envoyer par email</div>
+                                    <div class="o_share_sub">Lien vers cette fiche</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="whatsapp"
+                                    t-att-data-spec-title="product.name">
+                                <i class="fa fa-whatsapp"></i>
+                                <div>
+                                    <div class="o_share_lbl">WhatsApp</div>
+                                    <div class="o_share_sub">Partager le lien</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="linkedin">
+                                <i class="fa fa-linkedin" style="color:#0A66C2"></i>
+                                <div>
+                                    <div class="o_share_lbl">LinkedIn</div>
+                                    <div class="o_share_sub">Partage professionnel</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="x"
+                                    t-att-data-spec-title="product.name">
+                                <i class="fa fa-twitter" style="color:#000000"></i>
+                                <div>
+                                    <div class="o_share_lbl">X</div>
+                                    <div class="o_share_sub">Anciennement Twitter</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="facebook">
+                                <i class="fa fa-facebook-official" style="color:#1877F2"></i>
+                                <div>
+                                    <div class="o_share_lbl">Facebook</div>
+                                    <div class="o_share_sub">Partager la fiche</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="telegram"
+                                    t-att-data-spec-title="product.name">
+                                <i class="fa fa-telegram" style="color:#26A5E4"></i>
+                                <div>
+                                    <div class="o_share_lbl">Telegram</div>
+                                    <div class="o_share_sub">Envoyer le lien</div>
+                                </div>
+                            </button>
+                            <button class="o_share_item"
+                                    data-spec-action="share"
+                                    t-att-data-spec-title="product.name">
+                                <i class="fa fa-mobile"></i>
+                                <div>
+                                    <div class="o_share_lbl">Autres options</div>
+                                    <div class="o_share_sub">AirDrop, SMS, apps…</div>
+                                </div>
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <a t-attf-href="/report/pdf/product_spec_sheet.report_product_spec_sheet_single/#{ product.id }"
+                               class="o_share_item" target="_blank">
+                                <i class="fa fa-file-pdf-o"></i>
+                                <div>
+                                    <div class="o_share_lbl">Télécharger PDF</div>
+                                    <div class="o_share_sub">Fiche technique complète</div>
+                                </div>
+                            </a>
+                            <a t-attf-href="/product-specs/compare?product_ids=#{ product.id }"
+                               class="o_share_item">
+                                <i class="fa fa-columns"></i>
+                                <div>
+                                    <div class="o_share_lbl">Comparer et partager</div>
+                                    <div class="o_share_sub">Ajouter à la comparaison</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galerie photos du produit -->
+            <t t-set="spec_images" t-value="product.product_template_image_ids"/>
+            <div t-if="spec_images" class="row g-2 mb-3">
+                <t t-foreach="spec_images[:4]" t-as="spec_img">
+                    <div class="col-3">
+                        <img t-attf-src="/web/image/product.image/#{ spec_img.id }/image_256"
+                             class="img-fluid border rounded"
+                             style="height: 90px; width: 100%; object-fit: contain; background: #fff;"
+                             t-att-alt="spec_img.name or product.name"/>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Tableau des caractéristiques groupées -->
+            <t t-foreach="product._get_spec_categories()" t-as="spec_category">
+                <div class="o_product_spec_category mb-3">
+                    <p class="text-muted text-uppercase small mb-1">
+                        <t t-out="spec_category.name"/>
+                    </p>
+                    <table class="table table-sm mb-0">
+                        <t t-foreach="product._get_spec_lines_by_category(spec_category)" t-as="spec_line">
+                            <tr>
+                                <td class="text-muted" style="width: 45%;">
+                                    <t t-out="spec_line.attribute_id.name"/>
+                                </td>
+                                <td><t t-out="spec_line.value"/></td>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- Injection sur la fiche produit e-commerce -->
+    <record id="website_sale_product_spec_table_inherit" model="ir.ui.view">
+        <field name="name">website_sale.product.spec.table.inherit</field>
+        <field name="model">ir.ui.view</field>
+        <field name="inherit_id" ref="website_sale.product"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='product_full_description']" position="after">
+                <t t-call="product_spec_sheet.product_spec_table"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

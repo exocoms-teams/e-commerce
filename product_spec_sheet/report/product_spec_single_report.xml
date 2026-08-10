@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_product_spec_sheet_single">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="product">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- En-tête produit -->
+                        <div style="padding-bottom: 14px; border-bottom: 2px solid #1a1a1a; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                                <!-- Photo principale du produit -->
+                                <div t-if="product.image_1920"
+                                     style="width: 110px; height: 110px; border: 1px solid #e0e0e0; padding: 4px; flex-shrink: 0;">
+                                    <img t-att-src="image_data_uri(product.image_1920)"
+                                         style="width: 100%; height: 100%; object-fit: contain;"
+                                         alt="Photo du produit"/>
+                                </div>
+                                <div>
+                                    <h2 style="font-size: 20px; margin: 0 0 4px;">
+                                        <t t-out="product.name"/>
+                                    </h2>
+                                    <p style="color: #666; font-size: 12px; margin: 0;">
+                                        <t t-if="product.default_code">Réf. <t t-out="product.default_code"/> — </t>
+                                        <t t-out="product.categ_id.name"/>
+                                    </p>
+                                    <p t-if="product.list_price" style="color: #1a1a1a; font-size: 15px; font-weight: 600; margin: 8px 0 0;">
+                                        <t t-out="'%.2f' % product.list_price"/> €
+                                        <span style="font-size: 10px; color: #888; font-weight: normal;">HT</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- QR code vers la fiche produit en ligne -->
+                            <div t-if="product.website_url" style="text-align: center; flex-shrink: 0;">
+                                <t t-set="qr_url" t-value="(res_company.get_base_url() or '') + product.website_url"/>
+                                <img t-attf-src="/report/barcode/QR/{{ qr_url }}?width=80&amp;height=80"
+                                     style="width: 80px; height: 80px;"
+                                     alt="QR code vers la fiche en ligne"/>
+                                <div style="font-size: 9px; color: #aaa; margin-top: 3px;">Voir en ligne</div>
+                            </div>
+                        </div>
+
+                        <!-- Description commerciale -->
+                        <p t-if="product.description_sale"
+                           style="color: #444; font-size: 12px; margin-bottom: 18px; line-height: 1.7;">
+                            <t t-out="product.description_sale"/>
+                        </p>
+
+                        <!-- Caractéristiques groupées par catégorie -->
+                        <t t-if="product.spec_line_ids">
+                            <t t-foreach="product._get_spec_categories()" t-as="spec_category">
+                                <h4 style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #888; font-weight: 600; margin: 16px 0 5px; padding-bottom: 3px; border-bottom: 0.5px solid #e0e0e0;">
+                                    <t t-out="spec_category.name"/>
+                                </h4>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <t t-foreach="product._get_spec_lines_by_category(spec_category)" t-as="spec_line">
+                                        <tr style="border-bottom: 0.5px solid #ebebeb;">
+                                            <td style="width: 42%; padding: 6px 4px; color: #555; font-size: 12px;">
+                                                <t t-out="spec_line.attribute_id.name"/>
+                                            </td>
+                                            <td style="padding: 6px 4px; font-size: 12px;">
+                                                <t t-out="spec_line.value"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <p style="color: #aaa; font-style: italic; font-size: 12px;">
+                                Aucune caractéristique technique renseignée pour ce produit.
+                            </p>
+                        </t>
+
+                        <!-- Galerie photos supplémentaires -->
+                        <t t-set="extra_images" t-value="product.product_template_image_ids"/>
+                        <div t-if="extra_images" style="margin-top: 22px;">
+                            <h4 style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #888; font-weight: 600; margin: 0 0 8px; padding-bottom: 3px; border-bottom: 0.5px solid #e0e0e0;">
+                                Photos du produit
+                            </h4>
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 6px 0;">
+                                <tr>
+                                    <t t-foreach="extra_images[:4]" t-as="extra_img">
+                                        <td style="width: 25%; text-align: center; vertical-align: top;">
+                                            <div style="border: 1px solid #e8e8e8; padding: 4px; height: 90px;">
+                                                <img t-att-src="image_data_uri(extra_img.image_1920)"
+                                                     style="width: 100%; height: 100%; object-fit: contain;"
+                                                     alt="Photo produit"/>
+                                            </div>
+                                            <div t-if="extra_img.name"
+                                                 style="font-size: 8px; color: #999; margin-top: 3px;">
+                                                <t t-out="extra_img.name"/>
+                                            </div>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Pied de page -->
+                        <div style="margin-top: 28px; padding-top: 10px; border-top: 0.5px solid #e0e0e0; font-size: 9px; color: #aaa;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Fiche générée automatiquement — les informations sont susceptibles de changer</span>
+                                <span t-if="product.website_url"><t t-out="product.website_url"/></span>
+                            </div>
+                            <t t-set="cmp" t-value="res_company"/>
+                            <div t-if="cmp.social_linkedin or cmp.social_facebook or cmp.social_twitter or cmp.social_instagram"
+                                 style="margin-top: 6px; color: #999;">
+                                Retrouvez-nous sur :
+                                <t t-if="cmp.social_linkedin">
+                                    LinkedIn <span style="color:#ccc;">·</span>
+                                </t>
+                                <t t-if="cmp.social_facebook">
+                                    Facebook <span style="color:#ccc;">·</span>
+                                </t>
+                                <t t-if="cmp.social_twitter">
+                                    X <span style="color:#ccc;">·</span>
+                                </t>
+                                <t t-if="cmp.social_instagram">
+                                    Instagram
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_product_spec_sheet_single" model="ir.actions.report">
+        <field name="name">Fiche technique</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">product_spec_sheet.report_product_spec_sheet_single</field>
+        <field name="report_file">product_spec_sheet.report_product_spec_sheet_single</field>
+        <field name="print_report_name">'Fiche technique - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

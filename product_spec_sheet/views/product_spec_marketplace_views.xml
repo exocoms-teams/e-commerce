@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         CANAL MARKETPLACE
+    ===================================================== -->
+    <record id="view_marketplace_list" model="ir.ui.view">
+        <field name="name">product.spec.marketplace.list</field>
+        <field name="model">product.spec.marketplace</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="channel_type" widget="badge"/>
+                <field name="product_count" string="Produits"/>
+                <field name="auto_publish" widget="boolean_toggle" string="Flux en ligne"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_marketplace_form" model="ir.ui.view">
+        <field name="name">product.spec.marketplace.form</field>
+        <field name="model">product.spec.marketplace</field>
+        <field name="arch" type="xml">
+            <form string="Canal marketplace">
+                <header>
+                    <button name="action_export_now" type="object"
+                            string="Générer et télécharger" class="btn-primary"
+                            icon="fa-download"/>
+                    <button name="action_regenerate_token" type="object"
+                            string="Régénérer le jeton" icon="fa-refresh"
+                            confirm="L'ancienne URL de flux sera immédiatement invalidée. Continuer ?"
+                            invisible="not auto_publish"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ex : Google Shopping France"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Format">
+                            <field name="channel_type"/>
+                            <field name="csv_delimiter"
+                                   invisible="channel_type in ('google','generic_json')"/>
+                            <field name="currency_id" options="{'no_create': True}"/>
+                            <field name="price_markup"/>
+                        </group>
+                        <group string="Caractéristiques">
+                            <field name="include_specs"/>
+                            <field name="spec_format" invisible="not include_specs"/>
+                            <field name="product_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Sélection des produits" name="selection">
+                            <group>
+                                <group string="Filtres">
+                                    <field name="categ_ids" widget="many2many_tags"
+                                           options="{'no_create': True}"/>
+                                    <field name="min_price"/>
+                                </group>
+                                <group string="Conditions">
+                                    <field name="only_published"/>
+                                    <field name="only_in_stock"/>
+                                    <field name="only_complete"/>
+                                    <field name="exclude_eol"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert">
+                                <strong><field name="product_count" readonly="1"/></strong>
+                                produit(s) correspondent actuellement à ces critères.
+                            </div>
+                        </page>
+
+                        <page string="Correspondance des champs" name="mapping">
+                            <div class="alert alert-info" role="alert">
+                                Laissez vide pour utiliser le mapping standard du type de flux.
+                                Chaque ligne définit une colonne du fichier exporté.
+                            </div>
+                            <field name="mapping_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="column_name"/>
+                                    <field name="source_type"/>
+                                    <field name="field_path"
+                                           placeholder="name, default_code, categ_id.name…"/>
+                                    <field name="spec_attribute_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="static_value"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Flux en ligne" name="feed">
+                            <group>
+                                <field name="auto_publish"/>
+                                <field name="feed_url" widget="CopyClipboardChar"
+                                       invisible="not auto_publish"/>
+                                <field name="feed_token" readonly="1" password="True"
+                                       invisible="not auto_publish"/>
+                            </group>
+                            <div class="alert alert-warning" role="alert"
+                                 invisible="not auto_publish">
+                                Cette URL est publique et protégée uniquement par le jeton.
+                                Communiquez-la à la marketplace, et régénérez le jeton
+                                si vous suspectez une fuite.
+                            </div>
+                        </page>
+
+                        <page string="Historique" name="exports">
+                            <field name="export_ids">
+                                <list create="false">
+                                    <field name="export_date"/>
+                                    <field name="product_count"/>
+                                    <field name="file_size" string="Taille (o)"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'done'"
+                                           decoration-danger="state == 'error'"/>
+                                    <button name="action_download" type="object"
+                                            string="Télécharger" icon="fa-download"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_marketplace" model="ir.actions.act_window">
+        <field name="name">Canaux marketplace</field>
+        <field name="res_model">product.spec.marketplace</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier canal d'export marketplace.
+            </p>
+            <p>
+                Google Shopping, Amazon, Cdiscount ou format personnalisé —
+                le catalogue et les caractéristiques sont exportés automatiquement.
+            </p>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         CLÉS API REST
+    ===================================================== -->
+    <record id="view_api_key_list" model="ir.ui.view">
+        <field name="name">product.spec.api.key.list</field>
+        <field name="model">product.spec.api.key</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="call_count" string="Appels"/>
+                <field name="last_call_date" string="Dernier appel"/>
+                <field name="rate_limit_hour" string="Quota/h"/>
+                <field name="expiry_date"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_api_key_form" model="ir.ui.view">
+        <field name="name">product.spec.api.key.form</field>
+        <field name="model">product.spec.api.key</field>
+        <field name="arch" type="xml">
+            <form string="Clé API">
+                <header>
+                    <button name="action_regenerate_key" type="object"
+                            string="Régénérer la clé" icon="fa-refresh"
+                            confirm="L'ancienne clé sera immédiatement invalidée. Le partenaire devra mettre à jour son intégration. Continuer ?"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_logs" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="call_count" widget="statinfo" string="Appels"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Désactivée" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ex : Revendeur Dupont"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Identification">
+                            <field name="partner_id"/>
+                            <field name="api_key" readonly="1"
+                                   widget="CopyClipboardChar"/>
+                            <field name="expiry_date"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Restrictions">
+                            <field name="rate_limit_hour"/>
+                            <field name="price_markup"/>
+                            <field name="ip_whitelist"
+                                   placeholder="192.168.1.10, 82.65.4.22"/>
+                        </group>
+                    </group>
+
+                    <group string="Permissions">
+                        <group>
+                            <field name="allow_products"/>
+                            <field name="allow_specs"/>
+                            <field name="allow_prices"/>
+                        </group>
+                        <group>
+                            <field name="allow_stock"/>
+                            <field name="allow_shipping"/>
+                        </group>
+                    </group>
+
+                    <group string="Catégories autorisées">
+                        <field name="categ_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="Vide = tout le catalogue"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Documentation" name="docs">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Authentification</strong> — en-tête HTTP
+                                <code>X-Api-Key: [la clé ci-dessus]</code>
+                            </div>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr><th>Méthode</th><th>Endpoint</th><th>Description</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><code>GET</code></td><td><code>/api/catalog/v1/ping</code></td>
+                                        <td>Vérifie la clé et liste les permissions</td></tr>
+                                    <tr><td><code>GET</code></td><td><code>/api/catalog/v1/products</code></td>
+                                        <td>Liste paginée — paramètres : limit, offset, search, category, reference, updated_since, sellable_only</td></tr>
+                                    <tr><td><code>GET</code></td><td><code>/api/catalog/v1/products/{ref}</code></td>
+                                        <td>Détail complet avec caractéristiques et images</td></tr>
+                                    <tr><td><code>GET</code></td><td><code>/api/catalog/v1/categories</code></td>
+                                        <td>Catégories avec nombre de produits</td></tr>
+                                    <tr><td><code>GET</code></td><td><code>/api/catalog/v1/attributes</code></td>
+                                        <td>Caractéristiques disponibles par catégorie</td></tr>
+                                    <tr><td><code>POST</code></td><td><code>/api/catalog/v1/shipping/quote</code></td>
+                                        <td>Calcul de frais de port — corps : {items: [{reference, quantity}], zone}</td></tr>
+                                </tbody>
+                            </table>
+                            <p class="text-muted small">
+                                Exemple :
+                                <code>curl -H "X-Api-Key: VOTRE_CLE" https://exocoms.fr/api/catalog/v1/products?limit=10</code>
+                            </p>
+                        </page>
+                        <page string="Journal des appels" name="logs">
+                            <field name="log_ids" readonly="1">
+                                <list create="false">
+                                    <field name="create_date" string="Date"/>
+                                    <field name="endpoint"/>
+                                    <field name="status_code" string="HTTP"/>
+                                    <field name="duration_ms" string="Durée (ms)"/>
+                                    <field name="remote_ip" string="IP"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_api_key" model="ir.actions.act_window">
+        <field name="name">Clés API catalogue</field>
+        <field name="res_model">product.spec.api.key</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez une clé API pour donner accès à votre catalogue.
+            </p>
+            <p>
+                Chaque revendeur ou partenaire reçoit sa propre clé, avec ses
+                permissions, son quota et sa majoration tarifaire.
+            </p>
+        </field>
+    </record>
+
+    <record id="view_api_log_list" model="ir.ui.view">
+        <field name="name">product.spec.api.log.list</field>
+        <field name="model">product.spec.api.log</field>
+        <field name="arch" type="xml">
+            <list create="false"
+                  decoration-danger="status_code >= 400"
+                  decoration-success="status_code == 200">
+                <field name="create_date" string="Date"/>
+                <field name="api_key_id" string="Clé"/>
+                <field name="partner_id"/>
+                <field name="endpoint"/>
+                <field name="status_code" string="HTTP"/>
+                <field name="duration_ms" string="Durée (ms)"/>
+                <field name="remote_ip" string="IP"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_api_log" model="ir.actions.act_window">
+        <field name="name">Journal API</field>
+        <field name="res_model">product.spec.api.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- =====================================================
+         MENUS
+    ===================================================== -->
+    <menuitem id="menu_marketplace"
+              name="Canaux marketplace"
+              parent="menu_product_spec_root"
+              action="action_marketplace"
+              sequence="60"/>
+
+    <menuitem id="menu_api_key"
+              name="Clés API catalogue"
+              parent="menu_product_spec_root"
+              action="action_api_key"
+              sequence="70"/>
+
+    <menuitem id="menu_api_log"
+              name="Journal API"
+              parent="menu_product_spec_root"
+              action="action_api_log"
+              sequence="75"/>
+
+</odoo>

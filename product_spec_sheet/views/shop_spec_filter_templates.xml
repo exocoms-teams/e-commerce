@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         PAGE BOUTIQUE FILTRÉE PAR CARACTÉRISTIQUES
+    ===================================================== -->
+    <template id="shop_spec_filter_page" name="Boutique — filtres par caractéristique">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container my-4">
+
+                    <div class="row">
+
+                        <!-- ══ SIDEBAR FILTRES ══ -->
+                        <div class="col-lg-3 mb-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <strong>Filtrer</strong>
+                                    <a t-if="filters" href="/shop/spec-filter"
+                                       class="small text-muted">Tout effacer</a>
+                                </div>
+                                <div class="card-body p-0">
+
+                                    <t t-foreach="facets" t-as="facet">
+                                        <div class="border-bottom p-3">
+                                            <p class="fw-bold small text-uppercase mb-2">
+                                                <t t-out="facet['attribute'].name"/>
+                                            </p>
+                                            <t t-foreach="facet['values']" t-as="val">
+                                                <t t-set="is_sel"
+                                                   t-value="val['value'] in facet['selected']"/>
+                                                <div class="form-check">
+                                                    <input class="form-check-input o_spec_facet"
+                                                           type="checkbox"
+                                                           t-att-id="'f_%s_%s' % (facet['attribute'].id, val_index)"
+                                                           t-att-data-attr-id="facet['attribute'].id"
+                                                           t-att-data-value="val['value']"
+                                                           t-att-checked="is_sel or None"/>
+                                                    <label class="form-check-label small"
+                                                           t-att-for="'f_%s_%s' % (facet['attribute'].id, val_index)">
+                                                        <t t-out="val['value']"/>
+                                                        <span class="text-muted">(<t t-out="val['count']"/>)</span>
+                                                    </label>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </t>
+
+                                    <div t-if="not facets" class="p-3 text-muted small">
+                                        Aucune caractéristique n'est marquée comme filtrable.
+                                        Activez l'option depuis
+                                        <em>Ventes &gt; Configuration &gt; Caractéristiques</em>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ RÉSULTATS ══ -->
+                        <div class="col-lg-9">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h1 class="h4 mb-0">Nos produits</h1>
+                                <div class="text-muted small">
+                                    <t t-out="shown_count"/> produit(s)
+                                    <t t-if="shown_count != total_count">
+                                        sur <t t-out="total_count"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Filtres actifs -->
+                            <div t-if="filters" class="mb-3">
+                                <t t-foreach="facets" t-as="facet">
+                                    <t t-foreach="facet['selected']" t-as="sel">
+                                        <span class="badge bg-primary me-1 mb-1">
+                                            <t t-out="facet['attribute'].name"/> :
+                                            <t t-out="sel"/>
+                                        </span>
+                                    </t>
+                                </t>
+                            </div>
+
+                            <div t-if="not products" class="alert alert-info">
+                                Aucun produit ne correspond à ces critères.
+                                Essayez d'élargir votre sélection.
+                            </div>
+
+                            <!-- Grille produits -->
+                            <div class="row g-3">
+                                <t t-foreach="products" t-as="product">
+                                    <div class="col-6 col-md-4">
+                                        <div class="card h-100">
+                                            <a t-att-href="product.website_url">
+                                                <img t-attf-src="/web/image/product.template/#{ product.id }/image_512"
+                                                     class="card-img-top p-3"
+                                                     style="height: 160px; object-fit: contain;"
+                                                     t-att-alt="product.name"/>
+                                            </a>
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-1">
+                                                    <a t-att-href="product.website_url"
+                                                       class="text-decoration-none">
+                                                        <t t-out="product.name"/>
+                                                    </a>
+                                                </h6>
+                                                <p t-if="product.default_code"
+                                                   class="text-muted small mb-2">
+                                                    Réf. <t t-out="product.default_code"/>
+                                                </p>
+                                                <p class="fw-bold mb-2">
+                                                    <span t-field="product.list_price"
+                                                          t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                                </p>
+                                                <!-- Aperçu des caractéristiques clés -->
+                                                <t t-set="preview" t-value="product.spec_line_ids[:3]"/>
+                                                <ul t-if="preview" class="list-unstyled small text-muted mb-0">
+                                                    <t t-foreach="preview" t-as="pl">
+                                                        <li class="text-truncate">
+                                                            <t t-out="pl.attribute_id.name"/> :
+                                                            <t t-out="pl.value"/>
+                                                        </li>
+                                                    </t>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- =====================================================
+         JS — applique les filtres au changement de case
+    ===================================================== -->
+    <template id="spec_filter_assets" inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript">
+            (function () {
+                'use strict';
+                document.addEventListener('DOMContentLoaded', function () {
+                    var boxes = document.querySelectorAll('.o_spec_facet');
+                    if (!boxes.length) { return; }
+
+                    function applyFilters() {
+                        var grouped = {};
+                        document.querySelectorAll('.o_spec_facet:checked').forEach(function (cb) {
+                            var aid = cb.dataset.attrId;
+                            if (!grouped[aid]) { grouped[aid] = []; }
+                            grouped[aid].push(cb.dataset.value);
+                        });
+                        var params = new URLSearchParams();
+                        Object.keys(grouped).forEach(function (aid) {
+                            params.set('spec_' + aid, grouped[aid].join(','));
+                        });
+                        var cat = new URLSearchParams(window.location.search).get('category');
+                        if (cat) { params.set('category', cat); }
+                        window.location.href = '/shop/spec-filter?' + params.toString();
+                    }
+
+                    boxes.forEach(function (cb) {
+                        cb.addEventListener('change', applyFilters);
+                    });
+                });
+            })();
+            </script>
+        </xpath>
+    </template>
+
+</odoo>

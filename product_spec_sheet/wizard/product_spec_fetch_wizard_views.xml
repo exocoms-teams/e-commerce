@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_product_spec_fetch_wizard_form" model="ir.ui.view">
+        <field name="name">product.spec.fetch.wizard.form</field>
+        <field name="model">product.spec.fetch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Récupérer les caractéristiques sur internet">
+                <sheet>
+
+                    <group>
+                        <field name="product_tmpl_id"
+                               readonly="state != 'draft'"/>
+                        <field name="product_search_name"
+                               placeholder="Nom exact à rechercher (ex: Ingenico Desk/5000)"
+                               readonly="state != 'draft'"/>
+                    </group>
+
+                    <!-- ÉTAPE DRAFT : message informatif -->
+                    <div invisible="state != 'draft'">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Comment ça fonctionne ?</strong><br/>
+                            Le module recherche les caractéristiques sur internet (fiche
+                            fabricant, distributeurs), extrait le poids et les dimensions,
+                            puis calcule automatiquement les frais de port pour tous les
+                            transporteurs configurés.
+                            <br/><br/>
+                            Pour de meilleurs résultats, configurez une clé API Anthropic
+                            dans <em>Configuration &gt; Paramètres &gt; Caractéristiques produit</em>.
+                        </div>
+                    </div>
+
+                    <!-- RÉSULTATS (état done ou applied) -->
+                    <div invisible="state == 'draft'">
+
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <label class="o_form_label">Source</label>
+                                <div><field name="source_url" widget="url" readonly="1"/></div>
+                            </div>
+                            <div class="col-4">
+                                <label class="o_form_label">Confiance</label>
+                                <div>
+                                    <field name="confidence" widget="badge"
+                                           decoration-success="confidence == 'high'"
+                                           decoration-warning="confidence == 'medium'"
+                                           decoration-danger="confidence == 'low'"
+                                           readonly="1"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <group string="Poids et dimensions" col="4">
+                            <field name="weight_kg"  string="Poids (kg)"/>
+                            <field name="length_mm"  string="Long. (mm)"/>
+                            <field name="width_mm"   string="Larg. (mm)"/>
+                            <field name="height_mm"  string="Haut. (mm)"/>
+                            <field name="volume_cm3" string="Volume (cm³)" readonly="1"/>
+                        </group>
+
+                        <group string="Caractéristiques techniques" col="2">
+                            <field name="spec_os"            string="Système d'exploitation"/>
+                            <field name="spec_cpu"           string="Processeur"/>
+                            <field name="spec_memory"        string="Mémoire"/>
+                            <field name="spec_screen"        string="Écran"/>
+                            <field name="spec_connectivity"  string="Réseaux"/>
+                            <field name="spec_card_reader"   string="Lecteur de carte"/>
+                            <field name="spec_ports"         string="Ports"/>
+                            <field name="spec_battery"       string="Batterie"/>
+                            <field name="spec_certification" string="Certification"/>
+                        </group>
+
+                        <separator string="Frais de port estimés (tarifs HT)"/>
+                        <field name="shipping_html" widget="html" readonly="1"/>
+
+                        <separator string="Options d'application"
+                                   invisible="state == 'applied'"/>
+                        <group invisible="state == 'applied'" col="2">
+                            <field name="apply_weight"/>
+                            <field name="apply_spec_lines"/>
+                            <field name="update_existing"/>
+                        </group>
+
+                        <div invisible="state != 'applied'"
+                             class="alert alert-success" role="alert">
+                            <i class="fa fa-check-circle me-2"/>
+                            Caractéristiques appliquées sur le produit.
+                        </div>
+                    </div>
+
+                </sheet>
+
+                <footer>
+                    <button name="action_fetch"
+                            type="object"
+                            string="Rechercher sur internet"
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_fetch"
+                            type="object"
+                            string="Relancer la recherche"
+                            class="btn-secondary"
+                            invisible="state == 'draft'"/>
+                    <button name="action_apply"
+                            type="object"
+                            string="Appliquer sur le produit"
+                            class="btn-primary"
+                            invisible="state != 'done'"/>
+                    <button string="Fermer" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_spec_fetch_wizard" model="ir.actions.act_window">
+        <field name="name">Récupérer les caractéristiques sur internet</field>
+        <field name="res_model">product.spec.fetch.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+</odoo>

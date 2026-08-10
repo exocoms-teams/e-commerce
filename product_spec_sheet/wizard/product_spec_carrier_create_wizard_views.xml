@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_carrier_create_wizard_form" model="ir.ui.view">
+        <field name="name">product.spec.carrier.create.wizard.form</field>
+        <field name="model">product.spec.carrier.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ajouter un transporteur">
+                <sheet>
+
+                    <!-- Indicateur d'étape — Odoo 19 : statusbar classique -->
+                    <div class="d-flex gap-0 mb-3 border rounded overflow-hidden">
+                        <div class="flex-fill text-center py-2 px-3 fw-bold bg-primary text-white"
+                             invisible="state != 'method'">1 — Méthode</div>
+                        <div class="flex-fill text-center py-2 px-3 text-muted"
+                             invisible="state == 'method'">1 — Méthode ✓</div>
+                        <div class="flex-fill text-center py-2 px-3 fw-bold bg-primary text-white border-start"
+                             invisible="state != 'config'">2 — Configuration</div>
+                        <div class="flex-fill text-center py-2 px-3 text-muted border-start"
+                             invisible="state == 'config'">2 — Configuration</div>
+                        <div class="flex-fill text-center py-2 px-3 fw-bold bg-primary text-white border-start"
+                             invisible="state != 'summary'">3 — Récapitulatif</div>
+                        <div class="flex-fill text-center py-2 px-3 text-muted border-start"
+                             invisible="state == 'summary'">3 — Récapitulatif</div>
+                    </div>
+
+                    <!-- ══════ ÉTAPE 1 : MÉTHODE ══════ -->
+                    <div invisible="state != 'method'">
+                        <group string="Méthode de configuration">
+                            <field name="method" widget="radio"/>
+                        </group>
+                        <group string="Informations générales">
+                            <field name="name"
+                                   placeholder="Ex : FedEx, Mondial Relay, TNT…"
+                                   required="1"/>
+                            <field name="volumetric_divisor"/>
+                            <field name="max_weight_kg"/>
+                            <field name="note"
+                                   placeholder="Conditions contractuelles, remises négociées…"/>
+                        </group>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Connexion API</strong> — Les tarifs sont calculés en temps réel
+                            depuis l'API du transporteur (Colissimo, DHL, UPS, GLS…). Nécessite des
+                            identifiants fournis par le transporteur.
+                            <br/>
+                            <strong>Grille manuelle</strong> — Saisissez vos propres paliers de prix
+                            par zone et par poids. Idéal pour un contrat négocié ou un transporteur
+                            sans API.
+                        </div>
+                    </div>
+
+                    <!-- ══════ ÉTAPE 2a : CONFIG API ══════ -->
+                    <div invisible="state != 'config' or method != 'api'">
+                        <div class="alert alert-info" role="alert">
+                            Renseignez les identifiants fournis par le transporteur,
+                            puis testez la connexion avant de continuer.
+                        </div>
+                        <group string="Fournisseur">
+                            <field name="api_provider"/>
+                            <field name="api_base_url"
+                                   placeholder="https://api.transporteur.com/v1"/>
+                            <field name="api_account_no"
+                                   placeholder="Numéro de contrat"/>
+                            <field name="api_depot_code"
+                                   placeholder="Code agence (facultatif)"/>
+                        </group>
+                        <group string="Identifiants">
+                            <field name="api_key"    password="True"
+                                   placeholder="Clé API ou Client ID"/>
+                            <field name="api_secret" password="True"
+                                   placeholder="Secret ou token"/>
+                            <field name="api_timeout"/>
+                        </group>
+                        <group string="Comportement">
+                            <field name="api_use_live"/>
+                            <field name="api_fallback"
+                                   invisible="not api_use_live"/>
+                        </group>
+
+                        <!-- Résultat du test de connexion -->
+                        <div class="alert alert-success" role="alert"
+                             invisible="not api_test_ok">
+                            <i class="fa fa-check-circle me-2"/>
+                            <field name="api_test_msg" readonly="1"/>
+                        </div>
+                        <div class="alert alert-danger" role="alert"
+                             invisible="not api_tested or api_test_ok">
+                            <i class="fa fa-times-circle me-2"/>
+                            <field name="api_test_msg" readonly="1"/>
+                        </div>
+
+                        <button name="action_test_api"
+                                type="object"
+                                string="Tester la connexion"
+                                icon="fa-plug"
+                                class="btn btn-secondary mt-2"/>
+                    </div>
+
+                    <!-- ══════ ÉTAPE 2b : GRILLE MANUELLE ══════ -->
+                    <div invisible="state != 'config' or method != 'manual'">
+                        <div class="alert alert-info" role="alert">
+                            Ajoutez vos zones géographiques, puis saisissez les paliers
+                            de poids avec le tarif HT correspondant.
+                        </div>
+                        <field name="zone_ids">
+                            <list editable="bottom" string="Zones">
+                                <field name="sequence" widget="handle"/>
+                                <field name="name"
+                                       placeholder="Ex : France, Europe zone 1…"/>
+                            </list>
+                        </field>
+                        <p class="text-muted small mt-2">
+                            Cliquez sur une zone pour y configurer les paliers tarifaires.
+                        </p>
+                    </div>
+
+                    <!-- ══════ ÉTAPE 3 : RÉCAPITULATIF ══════ -->
+                    <div invisible="state != 'summary'">
+                        <div class="alert alert-success" role="alert">
+                            <i class="fa fa-check-circle me-2"/>
+                            Tout est prêt. Vérifiez le récapitulatif, puis cliquez sur
+                            <strong>Enregistrer</strong> pour créer le transporteur.
+                        </div>
+                        <field name="summary_html" widget="html" readonly="1"/>
+                    </div>
+
+                </sheet>
+
+                <footer>
+                    <button name="action_back"
+                            type="object"
+                            string="Retour"
+                            class="btn btn-secondary"
+                            invisible="state == 'method'"/>
+                    <button name="action_next"
+                            type="object"
+                            string="Suivant"
+                            class="btn btn-primary"
+                            invisible="state == 'summary'"/>
+                    <button name="action_save"
+                            type="object"
+                            string="Enregistrer le transporteur"
+                            class="btn btn-success"
+                            invisible="state != 'summary'"/>
+                    <button string="Annuler"
+                            special="cancel"
+                            class="btn btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue formulaire zone (pour éditer les paliers) -->
+    <record id="view_carrier_create_wizard_zone_form" model="ir.ui.view">
+        <field name="name">product.spec.carrier.create.wizard.zone.form</field>
+        <field name="model">product.spec.carrier.create.wizard.zone</field>
+        <field name="arch" type="xml">
+            <form string="Zone tarifaire">
+                <sheet>
+                    <group>
+                        <field name="name"
+                               placeholder="Ex : France, Europe zone 1, Monde…"/>
+                        <field name="sequence"/>
+                    </group>
+                    <separator string="Paliers tarifaires (poids max → prix HT)"/>
+                    <field name="threshold_ids">
+                        <list editable="bottom">
+                            <field name="max_weight_g" string="Poids max (g)"/>
+                            <field name="max_weight_display"
+                                   string="Équivalent" readonly="1"/>
+                            <field name="price_eur" string="Tarif HT (€)"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_carrier_create_wizard" model="ir.actions.act_window">
+        <field name="name">Ajouter un transporteur</field>
+        <field name="res_model">product.spec.carrier.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

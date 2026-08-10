@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- =====================================================
+         LISTE TRANSPORTEURS
+    ===================================================== -->
+    <record id="view_product_spec_carrier_list" model="ir.ui.view">
+        <field name="name">product.spec.carrier.list</field>
+        <field name="model">product.spec.carrier</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="api_provider" widget="badge"
+                       decoration-success="api_provider != 'none'"
+                       decoration-muted="api_provider == 'none'"/>
+                <field name="api_last_status" widget="badge"
+                       decoration-success="api_last_status == 'ok'"
+                       decoration-danger="api_last_status == 'error'"
+                       decoration-muted="api_last_status == 'untested'"/>
+                <field name="api_use_live" widget="boolean_toggle" string="Tarifs live"/>
+                <field name="volumetric_divisor"/>
+                <field name="max_weight_kg" string="Poids max (kg)"/>
+                <field name="zone_count" string="Nb zones"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         FORMULAIRE TRANSPORTEUR (Odoo 19 — sans attrs)
+    ===================================================== -->
+    <record id="view_product_spec_carrier_form" model="ir.ui.view">
+        <field name="name">product.spec.carrier.form</field>
+        <field name="model">product.spec.carrier</field>
+        <field name="arch" type="xml">
+            <form string="Transporteur">
+                <header>
+                    <button name="action_test_api"
+                            type="object"
+                            string="Tester la connexion API"
+                            icon="fa-plug"
+                            invisible="api_provider in ['none', '']"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nom du transporteur"/></h1>
+                    </div>
+                    <group>
+                        <group string="Paramètres de base">
+                            <field name="volumetric_divisor"/>
+                            <field name="max_weight_kg"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Statut API">
+                            <field name="api_last_status" widget="badge"
+                                   decoration-success="api_last_status == 'ok'"
+                                   decoration-danger="api_last_status == 'error'"
+                                   decoration-muted="api_last_status == 'untested'"
+                                   readonly="1"/>
+                            <field name="api_last_check" readonly="1"/>
+                            <field name="api_last_message" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Connexion API" name="api_config">
+                            <group string="Fournisseur">
+                                <field name="api_provider"/>
+                                <field name="api_base_url"
+                                       invisible="api_provider == 'none'"/>
+                                <field name="api_account_no"
+                                       invisible="api_provider == 'none'"/>
+                                <field name="api_depot_code"
+                                       invisible="api_provider == 'none'"/>
+                            </group>
+                            <group string="Identifiants"
+                                   invisible="api_provider == 'none'">
+                                <field name="api_key"    password="True"/>
+                                <field name="api_secret" password="True"/>
+                                <field name="api_timeout"/>
+                            </group>
+                            <group string="Comportement"
+                                   invisible="api_provider == 'none'">
+                                <field name="api_use_live"/>
+                                <field name="api_fallback"
+                                       invisible="not api_use_live"/>
+                            </group>
+
+                            <div class="alert alert-info" role="alert"
+                                 invisible="api_provider != 'none'">
+                                Sélectionnez un fournisseur API pour activer les tarifs
+                                en temps réel. Sans API, les tarifs sont calculés depuis
+                                la grille statique de l'onglet Zones et tarifs.
+                            </div>
+
+                            <div class="alert alert-warning" role="alert"
+                                 invisible="not api_use_live">
+                                Les tarifs live sont activés.
+                                En cas d'indisponibilité de l'API, le module utilisera
+                                la grille statique comme fallback si l'option est activée.
+                            </div>
+                        </page>
+
+                        <page string="Zones et tarifs" name="zones">
+                            <p class="text-muted small mb-2">
+                                Grille utilisée quand l'API est désactivée ou indisponible (fallback).
+                            </p>
+                            <field name="zone_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" string="Zone"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Note" name="note_page">
+                            <field name="note" widget="char"
+                                   placeholder="Conditions contractuelles, délais, remises…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         FORMULAIRE ZONE (grille tarifaire)
+    ===================================================== -->
+    <record id="view_product_spec_carrier_zone_form" model="ir.ui.view">
+        <field name="name">product.spec.carrier.zone.form</field>
+        <field name="model">product.spec.carrier.zone</field>
+        <field name="arch" type="xml">
+            <form string="Zone tarifaire">
+                <sheet>
+                    <group>
+                        <field name="carrier_id"/>
+                        <field name="name" placeholder="Ex : France, Europe zone 1…"/>
+                        <field name="sequence"/>
+                    </group>
+                    <separator string="Grille tarifaire (paliers poids → prix HT)"/>
+                    <field name="threshold_ids">
+                        <list editable="bottom">
+                            <field name="max_weight_g" string="Poids max (g)"/>
+                            <field name="max_weight_display" string="Équivalent" readonly="1"/>
+                            <field name="price_eur" string="Tarif HT (€)"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         ACTIONS ET MENUS
+    ===================================================== -->
+    <record id="view_product_spec_carrier_list_buttons" model="ir.ui.view">
+        <field name="name">product.spec.carrier.list.buttons</field>
+        <field name="model">product.spec.carrier</field>
+        <field name="inherit_id" ref="view_product_spec_carrier_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="before">
+                <header>
+                    <button name="%(action_carrier_create_wizard)d"
+                            type="action"
+                            string="Ajouter un transporteur"
+                            class="btn-primary"
+                            icon="fa-plus"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_product_spec_carrier" model="ir.actions.act_window">
+        <field name="name">Transporteurs</field>
+        <field name="res_model">product.spec.carrier</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Ajoutez votre premier transporteur via le bouton "Ajouter un transporteur".
+            </p>
+            <p>
+                Choisissez entre une connexion API (tarifs en temps réel) ou une grille
+                tarifaire manuelle (paliers poids / prix HT).
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_product_spec_carrier"
+              name="Transporteurs"
+              parent="menu_product_spec_root"
+              action="action_product_spec_carrier"
+              sequence="30"/>
+
+</odoo>

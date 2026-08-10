@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_delivery_carrier_spec_form" model="ir.ui.view">
+        <field name="name">delivery.carrier.spec.form</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Transporteur (caractéristiques)"
+                      name="spec_carrier"
+                      invisible="delivery_type != 'spec_carrier'">
+                    <div class="alert alert-info" role="alert">
+                        Ce mode de livraison utilise les transporteurs et grilles tarifaires
+                        configurés dans <em>Ventes &gt; Configuration &gt; Transporteurs</em>.
+                        Le poids et le volume proviennent des fiches produit.
+                    </div>
+                    <group>
+                        <group string="Transporteur">
+                            <field name="spec_carrier_id"
+                                   options="{'no_create': True}"/>
+                            <field name="spec_carrier_zone_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Calcul">
+                            <field name="spec_use_volumetric"/>
+                            <field name="spec_margin_percent"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not spec_use_volumetric">
+                        Le poids volumétrique sera comparé au poids réel, et le plus
+                        élevé des deux sera facturé — comme le font les transporteurs.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

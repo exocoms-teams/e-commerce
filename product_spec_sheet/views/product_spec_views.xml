@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Catégories de caractéristiques -->
+    <record id="view_product_spec_category_list" model="ir.ui.view">
+        <field name="name">product.spec.category.list</field>
+        <field name="model">product.spec.category</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_product_spec_category" model="ir.actions.act_window">
+        <field name="name">Catégories de caractéristiques</field>
+        <field name="res_model">product.spec.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez une catégorie pour regrouper vos caractéristiques (ex: Connectivité, Écran, Alimentation).
+            </p>
+        </field>
+    </record>
+
+    <!-- Caractéristiques -->
+    <record id="view_product_spec_attribute_list" model="ir.ui.view">
+        <field name="name">product.spec.attribute.list</field>
+        <field name="model">product.spec.attribute</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="category_id"/>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="website_filter" string="Filtre site" widget="boolean_toggle"/>
+                <field name="filter_sequence" string="Ordre filtre" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_product_spec_attribute" model="ir.actions.act_window">
+        <field name="name">Caractéristiques</field>
+        <field name="res_model">product.spec.attribute</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_category_id': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez les caractéristiques disponibles (ex: Réseaux, Batterie, Encombrement)
+                et rattachez-les à une catégorie.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menus, sous Ventes > Configuration -->
+    <menuitem id="menu_product_spec_root"
+              name="Caractéristiques produit"
+              parent="sale.menu_sale_config"
+              sequence="60"/>
+
+    <menuitem id="menu_product_spec_category"
+              name="Catégories"
+              parent="menu_product_spec_root"
+              action="action_product_spec_category"
+              sequence="10"/>
+
+    <menuitem id="menu_product_spec_attribute"
+              name="Caractéristiques"
+              parent="menu_product_spec_root"
+              action="action_product_spec_attribute"
+              sequence="20"/>
+
+</odoo>
