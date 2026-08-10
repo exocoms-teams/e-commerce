@@ -44,13 +44,10 @@ class ProductTemplateSpecLine(models.Model):
         string="Origine", default="manual", readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'uniq_attribute_per_product',
-            'unique(product_tmpl_id, attribute_id)',
-            "Cette caractéristique est déjà renseignée pour ce produit.",
-        ),
-    ]
+    _uniq_attribute_per_product = models.Constraint(
+        'unique(product_tmpl_id, attribute_id)',
+        "Cette caractéristique est déjà renseignée pour ce produit.",
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

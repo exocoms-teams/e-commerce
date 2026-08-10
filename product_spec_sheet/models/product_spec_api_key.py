@@ -62,9 +62,10 @@ class ProductSpecApiKey(models.Model):
         "product.spec.api.log", "api_key_id", string="Journal des appels",
     )
 
-    _sql_constraints = [
-        ("uniq_api_key", "unique(api_key)", "Cette clé API existe déjà."),
-    ]
+    _uniq_api_key = models.Constraint(
+        "unique(api_key)",
+        "Cette clé API existe déjà.",
+    )
 
     def action_regenerate_key(self):
         """Régénère la clé — invalide immédiatement l'ancienne."""

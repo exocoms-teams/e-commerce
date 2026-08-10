@@ -175,16 +175,19 @@ class ProductTemplate(models.Model):
     )
     lifecycle_is_sellable = fields.Boolean(
         string="Encore vendable",
-        compute="_compute_lifecycle_warning", store=True,
+        compute="_compute_lifecycle_is_sellable", store=True,
     )
+
+    @api.depends("lifecycle_state")
+    def _compute_lifecycle_is_sellable(self):
+        for rec in self:
+            rec.lifecycle_is_sellable = rec.lifecycle_state in ("new", "active", "eol_soon")
 
     @api.depends("lifecycle_state", "lifecycle_eol_date",
                  "lifecycle_support_end", "lifecycle_replacement_id")
     def _compute_lifecycle_warning(self):
         today = fields.Date.context_today(self)
         for rec in self:
-            rec.lifecycle_is_sellable = rec.lifecycle_state in ("new", "active", "eol_soon")
-
             msg = ""
             if rec.lifecycle_state == "obsolete":
                 msg = _("Produit obsolète — ne doit plus être vendu.")
