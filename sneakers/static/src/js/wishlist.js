@@ -795,7 +795,7 @@ document.addEventListener(
 
                     window.snShowToast(
 
-                        "Ajouté à la wishlist !"
+                        "Added to wishlist !"
 
                     );
 
@@ -988,11 +988,18 @@ function checkEmptyWishlist(){
             ".sn-wishlist-item, .sn-product-card"
         );
 
+    var wishlistTop =
+    wishlistSection.querySelector(
+        ".sn-wishlist-top"
+    );
+
 
 
     if(!items.length){
 
-
+        if (wishlistTop) {
+            wishlistTop.style.display = "none";
+        }
 
         var grid =
             wishlistSection.querySelector(
@@ -1008,20 +1015,24 @@ function checkEmptyWishlist(){
             grid.innerHTML =
             `
 
-            <div class="sn-wishlist-empty">
+            <div class="sn-empty-card">
 
+                <div class="sn-empty-icon">
 
-                <i class="fa fa-heart-o"></i>
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+
+                </div>
 
 
                 <h3>
-                    Votre wishlist est vide
+                    Your wishlist is empty
                 </h3>
 
 
 
                 <p>
-                    Explorez notre catalogue et sauvegardez vos sneakers préférées.
+                    You haven't added any sneakers to your wishlist yet.
+                    Discover our latest collection and save your favorite pairs.
                 </p>
 
 
@@ -1029,7 +1040,12 @@ function checkEmptyWishlist(){
                 <a href="/shop-sneakers"
                    class="sn-btn-primary">
 
-                    Parcourir le catalogue
+                    Explore collection
+
+                </a>
+                <a href="/" class="sn-btn-outline-wl sn-back-home-btn">
+
+                    ← Back to Home
 
                 </a>
 
