@@ -8,15 +8,28 @@
     'license': 'LGPL-3',
     'depends': ['website', 'website_sale', 'monetique_theme', 'stock'],
     'data': [
+        # Data
         'data/website_data.xml',
         'data/categories.xml',
         'data/attributs.xml',
         'data/products.xml',
-        'views/layout.xml',
+
+        # Views
         'views/reasurance_banner.xml',
+        'views/layout.xml',
+
+        # Views items
+        'views/items/card_product.xml',
+        
+        # Views home
+        'views/home/hero.xml',
+        'views/home/brands.xml',
+        'views/home/categories.xml',
+        'views/home/products.xml',
+        'views/home/reviews.xml',
+        'views/home/why.xml',
+        
         'views/home.xml',
-        'views/items/counter_stock.xml',
-        'views/items/related_products.xml'
     ],
     'assets': {
         'web.assets_frontend': [
