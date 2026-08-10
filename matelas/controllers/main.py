@@ -13,7 +13,7 @@ class MatelasVente(http.Controller):
     def index(self, **kwargs):
         products = request.env['product.template'].sudo().search([
             ('is_published', '=', True)
-        ], limit=6)
+        ], limit=4)
 
         
         nouveaute_tag = request.env.ref(
