@@ -28,23 +28,22 @@
         </xpath>
     </template>
 
-    <!-- ============================================================
-         NOUVEAU HEADER GLOBAL
+<!-- ============================================================
+         NOUVEAU HEADER GLOBAL (Design SaaS)
          Surcharge du header natif de Odoo pour imposer la charte
     ============================================================ -->
     <template id="header_winners" inherit_id="website.layout" name="Header Winners">
-        <!-- On remplace le header par défaut -->
         <xpath expr="//header" position="replace">
-            <!-- sticky-top de Bootstrap permet au header de rester visible au scroll -->
+            <!-- sticky-top pour rester visible au scroll, bg-white pour le fond -->
             <header class="o_winners_header sticky-top">
-                <!-- navbar-expand-md gère le passage au menu hamburger sur mobile (<768px) -->
                 <nav class="navbar navbar-expand-md">
-                    <div class="container">
+                    <div class="container-fluid px-md-5"> <!-- px-md-5 pour écarter un peu plus sur grand écran comme la maquette -->
                         
                         <!-- 1. Logo (Gauche) -->
-                        <a href="/" class="navbar-brand o_winners_header__logo">
-                            <!-- Tu pourras remplacer ce texte par une balise <img> si tu as un logo image -->
-                            <span class="fw-bold">WINNERS</span>
+                        <a href="/" class="navbar-brand o_winners_header__logo d-flex align-items-center">
+                            <!-- Tu pourras remplacer cette icône par ton vrai logo SVG/PNG -->
+                            <i class="fa fa-bullseye me-2" style="color: #FF6B35;"></i>
+                            <span class="fw-bold text-dark">VotreLogo</span>
                         </a>
 
                         <!-- Bouton Hamburger (Responsive Mobile) -->
@@ -52,46 +51,43 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
 
-                        <!-- Conteneur Central & Droite (Caché sur mobile, affiché au clic) -->
+                        <!-- Conteneur Central & Droite -->
                         <div class="collapse navbar-collapse" id="winnersMenu">
                             
-                            <!-- 2. Menu Central -->
+                            <!-- 2. Menu Central (Mix de la maquette et de tes besoins) -->
                             <ul class="navbar-nav mx-auto o_winners_header__nav">
-                                <li class="nav-item">
-                                    <a href="/" class="nav-link o_winners_header__nav_link">Accueil</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/dashboard" class="nav-link o_winners_header__nav_link">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/submit-trend" class="nav-link o_winners_header__nav_link">Soumettre un produit</a>
-                                </li>
+                                <li class="nav-item"><a href="#" class="nav-link o_winners_header__nav_link">Fonctionnalités</a></li>
+                                <li class="nav-item"><a href="#" class="nav-link o_winners_header__nav_link">Tarifs</a></li>
+                                <!-- Liens obligatoires conservés -->
+                                <li class="nav-item"><a href="/dashboard" class="nav-link o_winners_header__nav_link">Dashboard</a></li>
+                                <li class="nav-item"><a href="/submit-trend" class="nav-link o_winners_header__nav_link">Soumettre un produit</a></li>
                             </ul>
 
                             <!-- 3. CTA (Droite) : Logique de connexion -->
                             <ul class="navbar-nav o_winners_header__auth align-items-center">
-                                <!-- Odoo check : _is_public() vérifie si le visiteur n'est pas connecté -->
                                 <t t-if="request.env.user._is_public()">
+                                    <!-- Visiteur : Texte "Se connecter" + Bouton Orange "Essayer gratuitement" -->
+                                    <li class="nav-item me-3">
+                                        <a href="/web/login" class="nav-link o_winners_header__login_text">Se connecter</a>
+                                    </li>
                                     <li class="nav-item">
-                                        <a href="/web/login" class="btn o_winners_btn_primary o_winners_header__login_btn">Se connecter</a>
+                                        <!-- Pointe vers l'inscription pour l'instant -->
+                                        <a href="/web/signup" class="btn o_winners_btn_accent shadow-sm">Essayer gratuitement</a>
                                     </li>
                                 </t>
-                                <!-- Utilisateur connecté -->
                                 <t t-else="">
+                                    <!-- Utilisateur connecté : Avatar -->
                                     <li class="nav-item dropdown">
                                         <a href="#" class="nav-link dropdown-toggle o_winners_header__user d-flex align-items-center" data-bs-toggle="dropdown">
-                                            <!-- Affichage de l'avatar Odoo -->
                                             <img t-attf-src="/web/image?model=res.users&amp;field=avatar_128&amp;id=#{request.env.user.id}" 
                                                  class="rounded-circle o_winners_header__avatar me-2" 
-                                                 alt="Avatar" />
-                                            <!-- Nom tronqué s'il est trop long -->
-                                            <span class="o_winners_header__username" t-esc="request.env.user.name[:15] + '...' if len(request.env.user.name) &gt; 15 else request.env.user.name"/>
+                                                 alt="Avatar" style="width:32px; height:32px; object-fit:cover;" />
+                                            <span class="o_winners_header__username fw-bold" t-esc="request.env.user.name[:15] + '...' if len(request.env.user.name) &gt; 15 else request.env.user.name"/>
                                         </a>
-                                        <!-- Sous-menu du profil -->
-                                        <div class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <div class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                             <a href="/my/home" class="dropdown-item">Mon compte</a>
                                             <div class="dropdown-divider"></div>
-                                            <a href="/web/session/logout?redirect=/" class="dropdown-item">Se déconnecter</a>
+                                            <a href="/web/session/logout?redirect=/" class="dropdown-item text-danger">Se déconnecter</a>
                                         </div>
                                     </li>
                                 </t>
@@ -103,5 +99,4 @@
             </header>
         </xpath>
     </template>
-
 </odoo>
