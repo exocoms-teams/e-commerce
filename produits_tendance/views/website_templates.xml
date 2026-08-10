@@ -37,6 +37,23 @@
                     </div>
                 </section>
 
+                <!-- WIN-104 : bandeau d'indicateurs clés, juste sous le hero.
+                     Chiffres calculés ici (seul endroit de ce template ayant
+                     accès à `request`) puis passés au sous-template
+                     paramétré template_key_indicators - même principe que
+                     template_how_it_works : le sous-template lui-même ne
+                     dépend d'aucun contexte HTTP, donc testable directement. -->
+                <t t-set="win104_total_products"
+                   t-value="request.env['trend.product'].sudo().search_count([])"/>
+                <t t-set="win104_scores"
+                   t-value="request.env['trend.product'].sudo().search([]).mapped('current_score')"/>
+                <t t-set="win104_avg_score"
+                   t-value="(sum(win104_scores) / len(win104_scores)) if win104_scores else 0.0"/>
+                <t t-call="produits_tendance.template_key_indicators">
+                    <t t-set="total_products" t-value="win104_total_products"/>
+                    <t t-set="avg_score" t-value="win104_avg_score"/>
+                </t>
+
                 <!-- WIN-103 : "Comment ça marche" - 3 étapes juste sous le
                      hero. Sous-template dédié (template_how_it_works,
                      ci-dessous) : pas de dépendance à website.layout/request,
@@ -47,6 +64,44 @@
             </div>
         </xpath>
 
+    </template>
+
+    <!-- WIN-104 : sous-template paramétré (total_products, avg_score fournis
+         par l'appelant) - aucun accès à `request`, testable directement en
+         lui passant des valeurs explicites, même principe que
+         template_product_cards. Le 3e indicateur (canaux de collecte) est
+         un fait d'architecture verifiable (les 3 valeurs du champ
+         trend.product.source : api/scraping/crowdsourcing), pas une
+         statistique de croissance inventée - contrainte explicite du
+         ticket ("jamais un chiffre qui ne reflète pas la réalité"). Pas de
+         4e indicateur "fréquence de mise à jour du classement" (suggéré en
+         exemple par le ticket) : aucun cron ne recalcule les scores
+         aujourd'hui, l'afficher serait un chiffre faux. -->
+    <template id="template_key_indicators" name="Bandeau d'indicateurs clés">
+        <section class="o_winners_key_indicators py-4">
+            <div class="container">
+                <div class="o_winners_stat_tiles row g-3">
+                    <div class="col-md-4">
+                        <div class="o_winners_stat_tile">
+                            <span class="o_winners_stat_tile__label">Produits suivis</span>
+                            <span class="o_winners_stat_tile__value"><t t-esc="total_products"/></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="o_winners_stat_tile">
+                            <span class="o_winners_stat_tile__label">Score de tendance moyen</span>
+                            <span class="o_winners_stat_tile__value"><t t-esc="'%.1f' % avg_score"/><small>/100</small></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="o_winners_stat_tile">
+                            <span class="o_winners_stat_tile__label">Canaux de collecte</span>
+                            <span class="o_winners_stat_tile__value">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </template>
 
     <!-- Sous-template autonome (aucun t-call="website.layout", aucun accès

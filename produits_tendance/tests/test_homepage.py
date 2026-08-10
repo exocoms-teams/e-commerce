@@ -25,3 +25,31 @@ class TestHomepageHowItWorks(TransactionCase):
         html = self.env['ir.qweb']._render('produits_tendance.template_how_it_works')
         body = str(html)
         self.assertEqual(body.count('o_winners_how_it_works__step_title'), 3)
+
+
+class TestKeyIndicatorsBanner(TransactionCase):
+    """WIN-104 : bandeau d'indicateurs clés sous le hero.
+
+    template_key_indicators est paramétré (total_products/avg_score fournis
+    par l'appelant) et n'accède jamais à `request` : testable directement en
+    lui passant des valeurs explicites, sans dépendre de l'état réel de la
+    base ni d'un contexte HTTP - même principe que template_how_it_works.
+    """
+
+    def test_key_indicators_renders_given_values(self):
+        html = self.env['ir.qweb']._render(
+            'produits_tendance.template_key_indicators',
+            {'total_products': 42, 'avg_score': 67.8},
+        )
+        body = str(html)
+        self.assertIn('o_winners_key_indicators', body)
+        self.assertIn('42', body)
+        self.assertIn('67.8', body)
+
+    def test_key_indicators_has_three_tiles(self):
+        html = self.env['ir.qweb']._render(
+            'produits_tendance.template_key_indicators',
+            {'total_products': 0, 'avg_score': 0.0},
+        )
+        body = str(html)
+        self.assertEqual(body.count('o_winners_stat_tile__label'), 3)
