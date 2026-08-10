@@ -29,7 +29,7 @@ class TestDashboardFilterAPI(HttpCase):
             'product_ref': 'TEST-FILTER-0002',
             'category_id': self.cat_electronique.id,
             'country': 'FR',
-            'source': 'api',
+            'source': 'scraping',
             'price': 300.0,
         })
         # Score tres eleve pour garantir que ce produit reste le mieux
