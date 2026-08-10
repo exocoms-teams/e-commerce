@@ -7,7 +7,8 @@
     </template>
 
     <template id="filter_vegan_sidebar" inherit_id="website_sale.products" name="Compléments — filtres boutique">
-        <xpath expr="//div[@id='products_grid']" position="before">
+        <!-- Modification de l'XPath ici pour cibler l'intérieur de la grille -->
+        <xpath expr="//div[@id='products_grid']/*[1]" position="before">
             <div class="cs-filter-strip" role="region" aria-label="Filtres complémentaires">
                 <a t-att-href="keep('/shop', vegan=('' if supplement_vegan else '1'))" t-attf-class="cs-filter-pill #{'is-active' if supplement_vegan else ''}"><i class="fa fa-leaf me-2" aria-hidden="true"/>100% vegan</a>
                 <t t-foreach="allergens" t-as="allergen"><a t-att-href="keep('/shop', allergens_exclude=allergen.id)" class="cs-filter-pill"><i class="fa fa-slash me-1" aria-hidden="true"/>Sans <t t-esc="allergen.name"/></a></t>
@@ -17,11 +18,36 @@
 
     <template id="custom_supplements_product_page" inherit_id="website_sale.product" name="Compléments — informations produit">
         <xpath expr="//div[@id='product_details']" position="inside">
-            <t t-if="product.is_supplement"><section class="cs-product-info" aria-labelledby="cs-product-info-title"><h2 id="cs-product-info-title" class="h5">La formule en détail</h2><div class="cs-product-facts"><div t-if="product.is_vegan"><i class="fa fa-leaf" aria-hidden="true"/><span>100% vegan</span></div><div t-if="product.dosage"><i class="fa fa-clock-o" aria-hidden="true"/><span t-esc="product.dosage"/></div></div><div t-if="product.ingredients" class="mt-3"><strong>Ingrédients actifs</strong><p class="mb-0" t-esc="product.ingredients"/></div><div t-if="product.allergen_ids" class="cs-allergen-note mt-3"><strong>Allergènes</strong><span t-esc="', '.join(product.allergen_ids.mapped('name'))"/></div><div t-if="product.nutritional_info" class="mt-4"><h3 class="h6">Valeurs nutritionnelles</h3><div t-out="product.nutritional_info"/></div></section></t>
+            <t t-if="product.is_supplement">
+                <section class="cs-product-info" aria-labelledby="cs-product-info-title">
+                    <h2 id="cs-product-info-title" class="h5">La formule en détail</h2>
+                    <div class="cs-product-facts">
+                        <div t-if="product.is_vegan"><i class="fa fa-leaf" aria-hidden="true"/><span>100% vegan</span></div>
+                        <div t-if="product.dosage"><i class="fa fa-clock-o" aria-hidden="true"/><span t-esc="product.dosage"/></div>
+                    </div>
+                    <div t-if="product.ingredients" class="mt-3">
+                        <strong>Ingrédients actifs</strong>
+                        <p class="mb-0" t-esc="product.ingredients"/>
+                    </div>
+                    <div t-if="product.allergen_ids" class="cs-allergen-note mt-3">
+                        <strong>Allergènes</strong>
+                        <span t-esc="', '.join(product.allergen_ids.mapped('name'))"/>
+                    </div>
+                    <div t-if="product.nutritional_info" class="mt-4">
+                        <h3 class="h6">Valeurs nutritionnelles</h3>
+                        <div t-out="product.nutritional_info"/>
+                    </div>
+                </section>
+            </t>
         </xpath>
     </template>
 
     <template id="cart_allergen_alert" inherit_id="website_sale.total" name="Compléments — rappel santé">
-        <xpath expr="." position="inside"><t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/><div t-if="has_supplements" class="cs-allergen-alert" role="alert"><i class="fa fa-info-circle me-2" aria-hidden="true"/><strong>Rappel santé :</strong> vérifiez toujours l’étiquette et les allergènes avant consommation.</div></xpath>
+        <xpath expr="." position="inside">
+            <t t-set="has_supplements" t-value="any(line.product_id.is_supplement for line in website_sale_order.website_order_line)"/>
+            <div t-if="has_supplements" class="cs-allergen-alert" role="alert">
+                <i class="fa fa-info-circle me-2" aria-hidden="true"/><strong>Rappel santé :</strong> vérifiez toujours l’étiquette et les allergènes avant consommation.
+            </div>
+        </xpath>
     </template>
 </odoo>
