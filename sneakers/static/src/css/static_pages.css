@@ -88,39 +88,90 @@
     }
 }
 
-.sn-static-content h3 {
-  cursor: pointer;
-  position: relative;
-  padding-right: 34px;
+/* FAQ ACCORDION*/
+
+.sn-faq-item{
+
+    border-bottom:1px solid #e5e5e5;
+
 }
 
-.sn-static-content h3 + p {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.25s ease;
-  margin: 0;
+.sn-faq-question{
+
+    width:100%;
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:22px 0;
+
+    text-align:left;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    color:#111;
+
 }
 
-.sn-static-content h3.open + p {
-  max-height: 500px; 
-  margin-bottom: 10px; 
+.sn-faq-question span:first-child{
+
+    flex:1;
+
 }
 
-.sn-static-content h3::after {
-  content: "";
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  transform: translateY(-50%);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transition: transform 0.25s ease;
+.sn-faq-icon{
+
+    font-size:28px;
+
+    font-weight:300;
+
+    transition:.3s;
+
+    margin-left:20px;
+
 }
 
-.sn-static-content h3.open::after {
-  transform: translateY(-50%) rotate(180deg);
+.sn-faq-answer{
+
+    max-height:0;
+
+    overflow:hidden;
+
+    transition:max-height .35s ease;
+
+}
+
+.sn-faq-answer p{
+
+    padding-bottom:22px;
+
+    margin:0;
+
+    color:#555;
+
+    line-height:1.8;
+
+}
+
+.sn-faq-item.active .sn-faq-answer{
+
+    max-height:250px;
+
+}
+
+.sn-faq-item.active .sn-faq-icon{
+
+    transform:rotate(180deg);
+
 }

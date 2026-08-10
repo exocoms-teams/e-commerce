@@ -192,15 +192,6 @@
         });
     }
 
-    function initFaqToggle() {
-
-        document.addEventListener("click", function (e) {
-
-            var question = e.target.closest(".sn-static-content h3");
-            if (!question) return;
-
-            question.classList.toggle("open");
-        });
-    }
+    
 
 })();
