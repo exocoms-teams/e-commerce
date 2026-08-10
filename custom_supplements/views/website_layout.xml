@@ -18,66 +18,11 @@
                     </a>
                     
                     <nav class="main-nav">
-                        <div><a class="nav-link" href="/">Accueil</a></div>
-                        
-                        <!-- Menu Boutique + Boucle dynamique des catégories Odoo -->
-                        <div>
-                            <a class="nav-link" href="/shop">Boutique <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
-                            <div class="dropdown">
-                                <div class="dropdown-col">
-                                    <div class="label">Découvrir</div>
-                                    <a href="/shop?order=create_date+desc">Nouveautés</a>
-                                    <a href="/shop?order=website_sequence">Meilleures Ventes</a>
-                                    <a href="/shop?discounted=1">Promotions</a>
-                                </div>
-                                <div class="dropdown-col">
-                                    <div class="label">Catégories</div>
-                                    <t t-foreach="website.get_supplement_categories()" t-as="category">
-                                        <a t-att-href="'/shop/category/%s' % slug(category)"><t t-esc="category.name"/></a>
-                                    </t>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Menu Ingrédients Odoo -->
-                        <div>
-                            <a class="nav-link" href="#">Ingrédients <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
-                            <div class="dropdown">
-                                <div class="dropdown-col">
-                                    <div class="label">Par ingrédient</div>
-                                    <t t-foreach="website.get_supplement_attribute_values('ingrédient')" t-as="value">
-                                        <a t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
-                                    </t>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Menu Marques Odoo -->
-                        <div>
-                            <a class="nav-link" href="#">Marques <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
-                            <div class="dropdown">
-                                <div class="dropdown-col">
-                                    <div class="label">Par marque</div>
-                                    <t t-foreach="website.get_supplement_attribute_values('marque')" t-as="value">
-                                        <a t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
-                                    </t>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Menu Conseils -->
-                        <div>
-                            <a class="nav-link" href="/blog">Conseils <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
-                            <div class="dropdown">
-                                <div class="dropdown-col">
-                                    <div class="label">Ressources</div>
-                                    <a href="/blog">Articles</a>
-                                    <a href="/faq">FAQ</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div><a class="nav-link" href="/aboutus">À propos</a></div>
+                        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                            <t t-call="website.submenu"
+                                item_class.f="nav-item"
+                                link_class.f="nav-link"/>
+                        </t>
                     </nav>
 
                     <!-- Intégration des composants natifs d'Odoo (Recherche, Compte, Panier) -->
