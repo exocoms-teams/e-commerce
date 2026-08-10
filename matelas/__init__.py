@@ -4,17 +4,11 @@ from . import models
 
 
 def _assign_nouveaute_tag(env):
-    """Pose automatiquement le tag "Nouveauté" sur quelques produits
-    publiés à l'installation du module, pour que la section "Nouveautés"
-    de la page d'accueil ne soit pas vide par défaut. Le maître de stage
-    peut ensuite ajouter/retirer ce tag sur n'importe quel produit
-    (Ventes > Produits > champ "Tags produit") pour changer la sélection,
-    sans toucher au code.
-    """
+    """Pose automatiquement le tag "Nouveauté" sur quelques produits"""
     _ensure_french_is_default_language(env)
     _seed_matelas_caracteristiques(env)
 
-    tag = env.ref('Matelas.product_tag_nouveaute', raise_if_not_found=False)
+    tag = env.ref('matelas.product_tag_nouveaute', raise_if_not_found=False)
     if not tag:
         return
 
@@ -27,12 +21,7 @@ def _assign_nouveaute_tag(env):
 
 
 def _seed_matelas_caracteristiques(env):
-    """Pré-remplit des caractéristiques d'exemple (dimensions, matière,
-    épaisseur, fermeté, garantie) sur les premiers produits publiés, pour
-    que la fiche technique ne soit pas vide dès l'installation. Le maître
-    de stage peut ensuite modifier ces valeurs produit par produit (Ventes
-    > Produits > onglet "Caractéristiques matelas"), sans toucher au code.
-    """
+    """Pré-remplit des caractéristiques d'exemple"""
     exemples = [
         {
             'matelas_dimensions': '140 x 190 cm',

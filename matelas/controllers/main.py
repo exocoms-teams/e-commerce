@@ -17,7 +17,7 @@ class MatelasVente(http.Controller):
 
         
         nouveaute_tag = request.env.ref(
-            'Matelas.product_tag_nouveaute', raise_if_not_found=False)
+            'matelas.product_tag_nouveaute', raise_if_not_found=False)
 
         nouveautes = request.env['product.template']
         if nouveaute_tag:
@@ -36,7 +36,7 @@ class MatelasVente(http.Controller):
             ('is_published', '=', True),
         ], order='note desc, create_date desc', limit=30)
 
-        return request.render('Matelas.home', {
+        return request.render('matelas.home', {
             'products': products,
             'nouveautes': nouveautes,
             'temoignages': temoignages,
@@ -58,7 +58,7 @@ class MatelasVente(http.Controller):
             ('is_published', '=', True),
         ], order='create_date desc', limit=20)
 
-        return request.render('Matelas.avis_page', {
+        return request.render('matelas.avis_page', {
             'a_achete': a_achete,
             'user_connected': request.env.user.id != request.env.ref('base.public_user').id,
             'avis_list': avis_list,
@@ -102,15 +102,15 @@ class MatelasVente(http.Controller):
 
     @http.route('/contact', auth='public', website=True)
     def contact(self, **kwargs):
-        return request.render('Matelas.contact_page', {})
+        return request.render('matelas.contact_page', {})
 
     @http.route('/mentions-legales', auth='public', website=True)
     def mentions_legales(self, **kwargs):
-        return request.render('Matelas.mentions_legales', {})
+        return request.render('matelas.mentions_legales', {})
 
     @http.route('/produit/<model("product.template"):product>/fiche', auth='public', website=True, sitemap=False)
     def fiche_technique(self, product, **kwargs):
-        return request.render('Matelas.fiche_technique', {
+        return request.render('matelas.fiche_technique', {
             'product': product,
         })
 
@@ -125,7 +125,7 @@ class MatelasVente(http.Controller):
             return {'success': False, 'error': "Adresse email invalide."}
 
         mailing_list = request.env.ref(
-            'Matelas.newsletter_mailing_list', raise_if_not_found=False)
+            'matelas.newsletter_mailing_list', raise_if_not_found=False)
         if not mailing_list:
             return {'success': False, 'error': "Liste de diffusion introuvable."}
 

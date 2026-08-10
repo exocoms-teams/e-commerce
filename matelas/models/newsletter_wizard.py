@@ -14,14 +14,14 @@ class MatelasNewsletterWizard(models.TransientModel):
         self.ensure_one()
         env = self.env
 
-        mailing_list = env.ref('Matelas.newsletter_mailing_list', raise_if_not_found=False)
+        mailing_list = env.ref('matelas.newsletter_mailing_list', raise_if_not_found=False)
         if not mailing_list:
             mailing_list = env['mailing.list'].search(
                 [('name', '=', 'Newsletter Matelas')], limit=1)
         if not mailing_list:
             mailing_list = env['mailing.list'].create({'name': 'Newsletter Matelas'})
 
-        nouveaute_tag = env.ref('Matelas.product_tag_nouveaute', raise_if_not_found=False)
+        nouveaute_tag = env.ref('matelas.product_tag_nouveaute', raise_if_not_found=False)
         products = env['product.template']
         if nouveaute_tag:
             products = env['product.template'].search([
