@@ -1,6 +1,5 @@
 from odoo import api, fields, models
-from odoo.fields import Domain
-
+from odoo.osv import expression
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -30,13 +29,15 @@ class ProductTemplate(models.Model):
     def _search_get_detail(self, website, order, options):
         result = super()._search_get_detail(website, order, options)
         allergen_ids = options.get('allergens_exclude_ids')
+        
         if allergen_ids:
-            result['base_domain'] = Domain(result['base_domain']) & Domain([
-                ('allergen_ids', 'not in', allergen_ids),
-            ])
+            # Utilisation de expression.AND pour éviter le crash lié au caractère '&'
+            filtre_allergenes = [('allergen_ids', 'not in', allergen_ids)]
+            result['search_extra'] = expression.AND([result.get('search_extra', []), filtre_allergenes])
+            
         return result
 
     @api.onchange("is_supplement")
     def _onchange_is_supplement(self):
-        if self.is_supplement==True:
-            self.is_storable=True
+        if self.is_supplement == True:
+            self.is_storable = True
