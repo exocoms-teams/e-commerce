@@ -6,8 +6,8 @@
     'license': 'LGPL-3',
     'depends': [
         'website', 'website_sale', 'auth_signup',
-        'sale_subscription',],# 'website_sale_subscription',   # WIN-66
-    
+        'sale_subscription', 'website_sale_subscription',
+    ],   # WIN-66
     'data': [
         'security/security_groups.xml',
         'security/ir.model.access.csv',
