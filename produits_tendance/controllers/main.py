@@ -19,6 +19,7 @@ class TrendSubmissionController(http.Controller):
     @http.route('/submit-trend/process', type='http', auth='public', website=True, methods=['POST'], csrf=True)
     def submit_trend_process(self, **post):
         if post:
+            # --- NOUVELLE LOGIQUE : Tri intelligent Lien ou Description ---
             user_input = post.get('link_or_desc', '').strip()
             final_ref = False
             final_desc = False
@@ -51,23 +52,40 @@ class TrendProductDetailController(http.Controller):
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
+# -----------------------------------------------------------
+# 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
+# -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='public', website=True)
     def dashboard(self, **kwargs):
-
-        """Affiche la page dashboard (classement produits), plafonnée à 5
-        résultats pour les comptes Freemium (WIN-48)."""
-        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         """Affiche la page dashboard (classement produits) avec le panneau
-        de filtres (.o_winners_filter_panel) et la grille de cartes
-        produit (.o_winners_product_card), pré-remplie sans filtre.
+        de filtres et la limite Freemium (WIN-48).
         """
+        limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
+        
         api = TrendDashboardAPI(request.env)
+        
+        # On récupère les options pour les filtres ET les produits avec la limite
+        options = api.get_filter_options() if hasattr(api, 'get_filter_options') else {'categories': [], 'countries': []}
+        
         return request.render('produits_tendance.winners_dashboard_template', {
-            'products': api.get_dashboard_products(limit=limit),
+            'products': api.get_dashboard_products(limit=limit) if hasattr(api, 'get_dashboard_products') else api.get_product_list(),
+            'categories': options.get('categories', []),
+            'countries': options.get('countries', []),
         })
 
+    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    def dashboard_filter(self, category_id=None, country=None, **kwargs):
+        """Route JSON interne consommée en AJAX par dashboard_filters.js."""
+        api = TrendDashboardAPI(request.env)
+        products = api.get_product_list(category_id=category_id or None, country=country or None)
+        return request.make_response(
+            json.dumps({'status': 'success', 'products': products}),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    # Route pour AFFICHER le Dashboard d'ingestion eBay/Meta
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
     def show_dashboard(self, **kwargs):
         return request.render('produits_tendance.template_winners_dashboard', {})
@@ -101,6 +119,7 @@ class TrendDashboardController(http.Controller):
         )
         
         return result
+
     # --- ROUTE META ADS (MANUELLE) ---
     @http.route('/dashboard/run_meta_scan', type='jsonrpc', auth='user')
     def run_meta_scan(self, keyword):
@@ -130,16 +149,6 @@ class TrendDashboardController(http.Controller):
         )
         
         return result
-    
-    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
-    def dashboard_filter(self, category_id=None, country=None, **kwargs):
-        api = TrendDashboardAPI(request.env)
-        products = api.get_product_list(category_id=category_id or None, country=country or None)
-        return request.make_response(
-            json.dumps({'status': 'success', 'products': products}),
-            headers=[('Content-Type', 'application/json')],
-        )
-
 
 # -----------------------------------------------------------
 # 3. CONTROLEUR DE L'API (Réception des données de l'extension)
@@ -189,12 +198,6 @@ class TrendIngestController(http.Controller):
         if not category:
             category = env['trend.category'].create({'name': payload['category']})
 
-        # product_ref est la seule cle unique en base (contrainte SQL
-        # _product_ref_source_uniq sur trend.product, malgre son nom - elle
-        # ne porte que sur product_ref). Filtrer aussi sur source ici ferait
-        # echouer ce search() a tort si le meme product_ref revient d'une
-        # source differente, puis planter le create() qui suit sur la
-        # contrainte unique(product_ref).
         existing = env['trend.product'].search([
             ('product_ref', '=', payload['product_ref']),
         ], limit=1)
@@ -261,11 +264,15 @@ class TrendIngestController(http.Controller):
             'likes_count': payload.get('likes_count', 0),
             'shares_count': payload.get('shares_count', 0),
         }
+        
+        # Prise en compte de la date de collecte ajoutée par ton collègue
         if payload.get('collected_at'):
             vals['collected_at'] = payload['collected_at']
+            
         record = env['trend.ad'].create(vals)
 
         return self._json_response({'status': 'success', 'type': 'ad', 'id': record.id}, 200)
+
     def _handle_score(self, payload):
         required_fields = ['product_ref', 'computed_score']
         for field in required_fields:
