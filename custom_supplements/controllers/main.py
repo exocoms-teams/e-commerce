@@ -1,7 +1,7 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.osv import expression
+from odoo.fields import Domain
 
 class WebsiteSaleSupplements(WebsiteSale):
     """Keep supplement filters compatible with the native Odoo shop flow."""
@@ -10,11 +10,9 @@ class WebsiteSaleSupplements(WebsiteSale):
         domain = super()._get_search_domain(
             search, category, attrib_values, search_in_description, **kwargs
         )
-        
-        # Modification sécurisée du domaine via expression.AND
         if request.httprequest.args.get('vegan'):
-            domain = expression.AND([domain, [('is_vegan', '=', True)]])
-            
+            # Utilisation standard Odoo 19+
+            domain = Domain(domain) & Domain([('is_vegan', '=', True)])
         return domain
 
     def _get_search_options(self, **kwargs):

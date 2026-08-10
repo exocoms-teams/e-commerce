@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.osv import expression
+from odoo.fields import Domain
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -31,9 +31,9 @@ class ProductTemplate(models.Model):
         allergen_ids = options.get('allergens_exclude_ids')
         
         if allergen_ids:
-            # Utilisation de expression.AND pour éviter le crash lié au caractère '&'
             filtre_allergenes = [('allergen_ids', 'not in', allergen_ids)]
-            result['search_extra'] = expression.AND([result.get('search_extra', []), filtre_allergenes])
+            # Syntaxe propre et moderne (Odoo 18/19+)
+            result['search_extra'] = Domain(result.get('search_extra', [])) & Domain(filtre_allergenes)
             
         return result
 
