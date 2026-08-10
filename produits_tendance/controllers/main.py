@@ -59,36 +59,40 @@ class TrendProductDetailController(http.Controller):
 class TrendDashboardController(http.Controller):
 
     @http.route('/dashboard', type='http', auth='public', website=True)
-    def dashboard(self, **kwargs):
-        """Affiche la page dashboard (classement produits) avec le panneau
-        de filtres et la limite Freemium (WIN-48).
-        """
+    def dashboard(self, price_max=None, source=None, category_id=None, country=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
-        
         api = TrendDashboardAPI(request.env)
         options = api.get_filter_options()
         stats = api.get_dashboard_stats()
-
         return request.render('produits_tendance.template_dashboard', {
-            'products': api.get_product_list(limit=limit),
+            'products': api.get_product_list(
+                category_id=category_id or None,
+                country=country or None,
+                price_max=price_max or None,
+                source=source or None,
+                limit=limit,
+            ),
             'categories': options.get('categories', []),
             'countries': options.get('countries', []),
+            'sources': options.get('sources', []),
             'total_products': stats['total_products'],
             'avg_score': stats['avg_score'],
+            'selected_category_id': category_id or '',
+            'selected_country': country or '',
+            'selected_price_max': price_max or '',
+            'selected_source': source or '',
         })
 
     @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
-    def dashboard_filter(self, category_id=None, country=None, **kwargs):
-        """Route JSON interne consommée en AJAX par dashboard_filters.js.
-
-        Applique la meme limite Freemium (WIN-48) que le rendu initial :
-        sans ca, un compte Freemium filtrant via le panneau contournerait
-        la limite de 5 produits (celle-ci n'etait appliquee que sur le
-        rendu QWeb initial, jamais sur cette route AJAX)."""
+    def dashboard_filter(self, category_id=None, country=None, price_max=None, source=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
         products = api.get_product_list(
-            category_id=category_id or None, country=country or None, limit=limit,
+            category_id=category_id or None,
+            country=country or None,
+            price_max=price_max or None,
+            source=source or None,
+            limit=limit,
         )
         return request.make_response(
             json.dumps({'status': 'success', 'products': products}),
