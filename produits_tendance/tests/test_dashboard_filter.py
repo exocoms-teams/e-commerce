@@ -30,9 +30,13 @@ class TestDashboardFilterAPI(HttpCase):
             'country': 'FR',
             'source': 'api',
         })
+        # Score tres eleve pour garantir que ce produit reste le mieux
+        # score globalement (test_get_product_list_applies_limit), quelles
+        # que soient les donnees de demo presentes (demo/dashboard_demo.xml,
+        # WIN-45/50, monte jusqu'a 92.5).
         self.env['trend.score'].create({
             'product_id': self.product_fr.id,
-            'computed_score': 80.0,
+            'computed_score': 999.0,
         })
 
     def test_get_product_list_without_filter_returns_all_sorted_by_score(self):
@@ -41,7 +45,7 @@ class TestDashboardFilterAPI(HttpCase):
         ids = [p['id'] for p in data]
         self.assertIn(self.product_ma.id, ids)
         self.assertIn(self.product_fr.id, ids)
-        # Score décroissant : le produit FR (80.0) doit précéder le MA (30.0)
+        # Score décroissant : le produit FR (999.0) doit précéder le MA (30.0)
         self.assertLess(ids.index(self.product_fr.id), ids.index(self.product_ma.id))
 
     def test_get_product_list_filters_by_category(self):
@@ -82,3 +86,14 @@ class TestDashboardFilterAPI(HttpCase):
         ids = [p['id'] for p in payload['products']]
         self.assertIn(self.product_fr.id, ids)
         self.assertNotIn(self.product_ma.id, ids)
+
+    def test_get_product_list_applies_limit(self):
+        """La limite Freemium (WIN-48) doit etre appliquee cote ORM, meme
+        principe que get_dashboard_products - regression du merge des
+        filtres dynamiques (WIN-45/50) qui l'avait perdue sur /dashboard
+        et /api/dashboard/filter."""
+        api = TrendDashboardAPI(self.env)
+        data = api.get_product_list(limit=1)
+        self.assertEqual(len(data), 1)
+        # Le mieux score (FR, 999.0) doit etre celui retourne.
+        self.assertEqual(data[0]['id'], self.product_fr.id)

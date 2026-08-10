@@ -8,6 +8,8 @@
     <template id="homepage" name="Landing Page - Détection Produits Tendance" inherit_id="website.homepage" priority="99">
         <xpath expr="//div[hasclass('oe_structure')]" position="replace">
             <div class="oe_structure" id="oe_structure_produits_tendance_homepage">
+                
+                <!-- Section Hero (Cover) -->
                 <section class="s_cover parallax s_parallax_is_fixed pt96 pb96 o_colored_level" data-scroll-background-ratio="0" data-snippet="s_cover">
                     <div class="o_we_bg_filter bg-black-50"/>
                     <div class="container">
@@ -24,11 +26,15 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- WIN-103 : "Comment ça marche" - 3 étapes juste sous le hero. -->
+                <t t-call="produits_tendance.template_how_it_works"/>
+
             </div>
         </xpath>
     </template>
 
-<!-- ============================================================
+    <!-- ============================================================
          NOUVEAU HEADER GLOBAL (Design SaaS)
          Surcharge du header natif de Odoo pour imposer la charte
     ============================================================ -->
@@ -37,14 +43,11 @@
             <!-- sticky-top pour rester visible au scroll, bg-white pour le fond -->
             <header class="o_winners_header sticky-top">
                 <nav class="navbar navbar-expand-md">
-                    <div class="container-fluid px-md-5"> <!-- px-md-5 pour écarter un peu plus sur grand écran comme la maquette -->
-                        
+                    <div class="container-fluid px-md-5">
                         
                         <!-- 1. Logo (Gauche) pointant vers l'accueil -->
                         <a href="/" class="navbar-brand o_winners_header__logo d-flex align-items-center">
-                            <!-- L'image de ton logo -->
                             <img src="/produits_tendance/static/src/img/logo_winners.png" alt="Logo Winners" class="o_winners_header__logo_img me-2"/>
-                            <!-- Le texte stylisé -->
                             <span class="o_winners_header__logo_text">winners</span>
                         </a>
 
@@ -56,12 +59,11 @@
                         <!-- Conteneur Central & Droite -->
                         <div class="collapse navbar-collapse" id="winnersMenu">
                             
-                            <!-- 2. Menu Central (Mix de la maquette et de tes besoins) -->
+                            <!-- 2. Menu Central -->
                             <ul class="navbar-nav mx-auto o_winners_header__nav">
                                 <li class="nav-item"><a href="/" class="nav-link o_winners_header__nav_link">Accueil</a></li>
                                 <li class="nav-item"><a href="#" class="nav-link o_winners_header__nav_link">Fonctionnalités</a></li>
                                 <li class="nav-item"><a href="#" class="nav-link o_winners_header__nav_link">Tarifs</a></li>
-                                <!-- Liens obligatoires conservés -->
                                 <li class="nav-item"><a href="/dashboard" class="nav-link o_winners_header__nav_link">Dashboard</a></li>
                                 <li class="nav-item"><a href="/submit-trend" class="nav-link o_winners_header__nav_link">Soumettre un produit</a></li>
                             </ul>
@@ -69,17 +71,16 @@
                             <!-- 3. CTA (Droite) : Logique de connexion -->
                             <ul class="navbar-nav o_winners_header__auth align-items-center">
                                 <t t-if="request.env.user._is_public()">
-                                    <!-- Visiteur : Texte "Se connecter" + Bouton Orange "Essayer gratuitement" -->
+                                    <!-- Visiteur -->
                                     <li class="nav-item me-3">
                                         <a href="/web/login" class="nav-link o_winners_header__login_text">Se connecter</a>
                                     </li>
                                     <li class="nav-item">
-                                        <!-- Pointe vers l'inscription pour l'instant -->
                                         <a href="/web/signup" class="btn o_winners_btn_accent shadow-sm">Essayer gratuitement</a>
                                     </li>
                                 </t>
                                 <t t-else="">
-                                    <!-- Utilisateur connecté : Avatar -->
+                                    <!-- Utilisateur connecté -->
                                     <li class="nav-item dropdown">
                                         <a href="#" class="nav-link dropdown-toggle o_winners_header__user d-flex align-items-center" data-bs-toggle="dropdown">
                                             <img t-attf-src="/web/image?model=res.users&amp;field=avatar_128&amp;id=#{request.env.user.id}" 
@@ -102,4 +103,45 @@
             </header>
         </xpath>
     </template>
+
+    <!-- ============================================================
+         WIN-103 : Sous-template "Comment ça marche" 
+    ============================================================ -->
+    <template id="template_how_it_works" name="Comment ça marche - 3 étapes">
+        <section class="o_winners_how_it_works py-5">
+            <div class="container">
+                <h2 class="o_winners_how_it_works__title text-center">Comment ça marche</h2>
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="o_winners_how_it_works__step">
+                            <i class="fa fa-search o_winners_how_it_works__icon"/>
+                            <h3 class="o_winners_how_it_works__step_title">1. On collecte les données</h3>
+                            <p class="o_winners_how_it_works__step_text">
+                                Scraping, API officielles et signalements de la communauté, en continu.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="o_winners_how_it_works__step">
+                            <i class="fa fa-line-chart o_winners_how_it_works__icon"/>
+                            <h3 class="o_winners_how_it_works__step_title">2. On calcule un score de tendance</h3>
+                            <p class="o_winners_how_it_works__step_text">
+                                Chaque produit est noté selon ses ventes, ses publicités et son engagement social.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="o_winners_how_it_works__step">
+                            <i class="fa fa-trophy o_winners_how_it_works__icon"/>
+                            <h3 class="o_winners_how_it_works__step_title">3. Vous découvrez les produits gagnants</h3>
+                            <p class="o_winners_how_it_works__step_text">
+                                Accédez au classement avant que la concurrence ne s'en aperçoive.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
 </odoo>
