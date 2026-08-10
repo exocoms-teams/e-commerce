@@ -16,7 +16,7 @@
         'views/reasurance_banner.xml',
         'views/home.xml',
         'views/items/counter_stock.xml',
-        'views/items/related_products.xml'
+        #'views/items/related_products.xml'
     ],
     'assets': {
         'web.assets_frontend': [
