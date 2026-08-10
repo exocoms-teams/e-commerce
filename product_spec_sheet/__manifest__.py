@@ -78,6 +78,13 @@ Compatibilité : Odoo 19 / Odoo.sh
         'data/product_spec_cron.xml',
         'data/product_spec_marketplace_cron.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'product_spec_sheet/static/src/js/product_spec_share.js',
+            'product_spec_sheet/static/src/js/shop_spec_filter.js',
+            'product_spec_sheet/static/src/css/product_spec_share.css',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,
