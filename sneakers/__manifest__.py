@@ -77,6 +77,7 @@
             'sneakers/static/src/js/checkout.js',
             'sneakers/static/src/js/wishlist.js',
             'sneakers/static/src/js/confirmation.js',
+            'sneakers/static/src/js/faq.js',
             
 
         ],
