@@ -1,73 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_header" inherit_id="website.layout" name="Compléments — navigation premium" priority="1000">
+    <template id="custom_header" inherit_id="website.layout" name="Vitalo — navigation premium" priority="1000">
+        
+        <!-- Injection des polices Google Fonts dans le head -->
+        <xpath expr="//head" position="inside">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        </xpath>
+
+        <!-- Remplacement du Header natif -->
         <xpath expr="//header" position="replace">
-            <header id="top" class="cs-site-header">
-                <div class="cs-announcement">Livraison offerte dès 49 € <span>•</span> Formules sélectionnées avec exigence</div>
-                <nav class="navbar navbar-expand-lg cs-navbar" aria-label="Navigation principale">
-                    <div class="container cs-navbar-inner">
-                        <t t-call="website.placeholder_header_brand"/>
-                        <button class="navbar-toggler cs-menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#cs-mobile-menu" aria-controls="cs-mobile-menu" aria-label="Ouvrir le menu">
-                            <i class="fa fa-bars" aria-hidden="true"/>
-                        </button>
-                        <div class="collapse navbar-collapse d-none d-lg-flex">
-                            <ul class="navbar-nav mx-auto cs-main-nav">
-                                <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/shop">Boutique</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/shop?order=create_date+desc">Nouveautés</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/shop?order=website_sequence">Meilleures ventes</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/shop?discounted=1">Promotions</a></li>
-                                <li class="nav-item dropdown cs-mega-parent">
-                                    <a class="nav-link dropdown-toggle" href="/shop" data-bs-toggle="dropdown" aria-expanded="false">Explorer</a>
-                                    <div class="dropdown-menu cs-mega-menu p-4">
-                                        <div class="row g-4">
-                                            <div class="col-lg-4">
-                                                <span class="cs-menu-label">Catégories</span>
-                                                <t t-foreach="website.get_supplement_categories()" t-as="category">
-                                                    <a class="cs-menu-link" t-att-href="'/shop/category/%s' % slug(category)"><t t-esc="category.name"/></a>
-                                                    <t t-foreach="website.get_supplement_category_children(category)" t-as="child">
-                                                        <a class="cs-menu-link cs-menu-link-child" t-att-href="'/shop/category/%s' % slug(child)"><t t-esc="child.name"/></a>
-                                                    </t>
-                                                </t>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <span class="cs-menu-label">Ingrédients</span>
-                                                <t t-foreach="website.get_supplement_attribute_values('ingrédient')" t-as="value">
-                                                    <a class="cs-menu-link" t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
-                                                </t>
-                                                <a class="cs-menu-link cs-menu-link-muted" href="/shop">Voir tous les ingrédients <i class="fa fa-arrow-right ms-1"/></a>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <span class="cs-menu-label">Marques</span>
-                                                <t t-foreach="website.get_supplement_attribute_values('marque')" t-as="value">
-                                                    <a class="cs-menu-link" t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
-                                                </t>
-                                                <a class="cs-menu-link cs-menu-link-muted" href="/shop">Toutes les marques <i class="fa fa-arrow-right ms-1"/></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="nav-item"><a class="nav-link" href="/blog">Conseils</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/aboutus">À propos</a></li>
-                            </ul>
-                            <ul class="navbar-nav align-items-center cs-action-nav">
-                                <li class="nav-item"><t t-call="website.placeholder_header_search_box"/></li>
-                                <li class="nav-item"><t t-call="website_sale.header_cart_link"><t t-set="_icon" t-value="True"/><t t-set="_text" t-value="False"/></t></li>
-                                <li class="nav-item"><t t-call="portal.placeholder_user_sign_in"/><t t-call="portal.user_dropdown" _user_name="False"/></li>
-                            </ul>
+            <div class="topbar">Livraison offerte dès 49 € · Fabriqué en France</div>
+            <header class="vitalo-header">
+                <div class="nav-wrap">
+                    <a class="brand" href="/">
+                        <span class="brand-mark">V</span> Vitalo
+                    </a>
+                    
+                    <nav class="main-nav">
+                        <div><a class="nav-link" href="/">Accueil</a></div>
+                        
+                        <!-- Menu Boutique + Boucle dynamique des catégories Odoo -->
+                        <div>
+                            <a class="nav-link" href="/shop">Boutique <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                            <div class="dropdown">
+                                <div class="dropdown-col">
+                                    <div class="label">Découvrir</div>
+                                    <a href="/shop?order=create_date+desc">Nouveautés</a>
+                                    <a href="/shop?order=website_sequence">Meilleures Ventes</a>
+                                    <a href="/shop?discounted=1">Promotions</a>
+                                </div>
+                                <div class="dropdown-col">
+                                    <div class="label">Catégories</div>
+                                    <t t-foreach="website.get_supplement_categories()" t-as="category">
+                                        <a t-att-href="'/shop/category/%s' % slug(category)"><t t-esc="category.name"/></a>
+                                    </t>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Menu Ingrédients Odoo -->
+                        <div>
+                            <a class="nav-link" href="#">Ingrédients <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                            <div class="dropdown">
+                                <div class="dropdown-col">
+                                    <div class="label">Par ingrédient</div>
+                                    <t t-foreach="website.get_supplement_attribute_values('ingrédient')" t-as="value">
+                                        <a t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menu Marques Odoo -->
+                        <div>
+                            <a class="nav-link" href="#">Marques <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                            <div class="dropdown">
+                                <div class="dropdown-col">
+                                    <div class="label">Par marque</div>
+                                    <t t-foreach="website.get_supplement_attribute_values('marque')" t-as="value">
+                                        <a t-att-href="'/shop?attrib=%s-%s' % (value.attribute_id.id, value.id)"><t t-esc="value.name"/></a>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Menu Conseils -->
+                        <div>
+                            <a class="nav-link" href="/blog">Conseils <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+                            <div class="dropdown">
+                                <div class="dropdown-col">
+                                    <div class="label">Ressources</div>
+                                    <a href="/blog">Articles</a>
+                                    <a href="/faq">FAQ</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div><a class="nav-link" href="/aboutus">À propos</a></div>
+                    </nav>
+
+                    <!-- Intégration des composants natifs d'Odoo (Recherche, Compte, Panier) -->
+                    <div class="nav-icons" style="display:flex; align-items:center; gap:22px;">
+                        <t t-call="website.placeholder_header_search_box"/>
+                        <t t-call="portal.placeholder_user_sign_in"/>
+                        <t t-call="website_sale.header_cart_link">
+                            <t t-set="_icon" t-value="True"/>
+                            <t t-set="_text" t-value="False"/>
+                        </t>
                     </div>
-                </nav>
-                <div class="offcanvas offcanvas-end cs-mobile-menu" tabindex="-1" id="cs-mobile-menu" aria-labelledby="cs-mobile-menu-title">
-                    <div class="offcanvas-header"><h2 class="h5 mb-0" id="cs-mobile-menu-title">Explorer</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"/></div>
-                    <div class="offcanvas-body"><a class="cs-mobile-link" href="/">Accueil</a><a class="cs-mobile-link" href="/shop">Boutique</a><a class="cs-mobile-link" href="/shop?order=create_date+desc">Nouveautés</a><a class="cs-mobile-link" href="/shop?order=website_sequence">Meilleures ventes</a><a class="cs-mobile-link" href="/shop?discounted=1">Promotions</a><a class="cs-mobile-link" href="/blog">Conseils</a><a class="cs-mobile-link" href="/aboutus">À propos</a></div>
                 </div>
             </header>
         </xpath>
+
+        <!-- Remplacement du Footer natif -->
         <xpath expr="//div[@id='footer']" position="replace">
-            <footer id="footer" class="cs-footer" t-if="not no_footer">
-                <div class="container"><div class="row g-5"><div class="col-lg-5"><t t-call="website.placeholder_footer_logo"/><p class="cs-footer-copy">Des formules ciblées, des ingrédients transparents et une routine bien-être qui vous ressemble.</p></div><div class="col-6 col-lg-2"><span class="cs-menu-label">Boutique</span><a href="/shop">Tous les produits</a><a href="/shop">Nouveautés</a><a href="/contactus">Nous contacter</a></div><div class="col-6 col-lg-2"><span class="cs-menu-label">Aide</span><a href="/faq">FAQ</a><a href="/shipping_delivery">Livraison</a><a href="/privacy">Confidentialité</a></div><div class="col-lg-3"><span class="cs-menu-label">Une question ?</span><a href="mailto:bonjour@complements.example">bonjour@complements.example</a><p class="small mt-3 mb-0">© 2026 Boutique Compléments</p></div></div></div>
+            <footer id="footer" class="vitalo-footer" t-if="not no_footer">
+                <div class="footer-wrap">
+                    <div class="footer-brand">
+                        <h3>Vitalo</h3>
+                        <p>Compléments alimentaires formulés en France, dosés à l'efficacité et testés en laboratoire indépendant.</p>
+                    </div>
+                    <div class="footer-col">
+                        <div class="label">Boutique</div>
+                        <ul>
+                            <li><a href="/shop">Nouveautés</a></li>
+                            <li><a href="/shop">Meilleures Ventes</a></li>
+                            <li><a href="/shop">Promotions</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <div class="label">Objectifs</div>
+                        <ul>
+                            <li><a href="/shop">Énergie &amp; Vitalité</a></li>
+                            <li><a href="/shop">Sommeil &amp; Stress</a></li>
+                            <li><a href="/shop">Sport</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <div class="label">Conseils</div>
+                        <ul>
+                            <li><a href="/blog">Articles</a></li>
+                            <li><a href="/faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <div class="label">À propos</div>
+                        <ul>
+                            <li><a href="/aboutus">Notre Histoire</a></li>
+                            <li><a href="/contactus">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">© 2026 Vitalo — Tous droits réservés.</div>
             </footer>
         </xpath>
+        
     </template>
 </odoo>

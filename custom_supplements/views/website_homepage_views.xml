@@ -1,14 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="homepage_hero_split" inherit_id="website.homepage" name="Compléments — accueil premium">
+    <template id="homepage_hero_split" inherit_id="website.homepage" name="Vitalo — accueil">
         <xpath expr="//div[@id='wrap']" position="replace">
             <div id="wrap">
-            <t t-set="featured_product" t-value="request.env['product.template'].sudo().search([('is_published', '=', True), ('is_supplement', '=', True)], order='website_sequence, create_date desc', limit=1)"/>
-            <section class="cs-home-hero">
-                <div class="container"><div class="row align-items-center g-5"><div class="col-lg-6"><span class="cs-eyebrow">Compléments essentiels · collection 2026</span><h1>Une meilleure routine commence <em>ici.</em></h1><p class="cs-hero-lead">Des formules lisibles, des dosages utiles et des ingrédients choisis pour accompagner chaque objectif du quotidien.</p><div class="d-flex flex-wrap gap-3"><a href="/shop" class="btn cs-btn-primary btn-lg">Découvrir la boutique <i class="fa fa-arrow-right ms-2" aria-hidden="true"/></a><a href="/aboutus" class="btn cs-btn-quiet btn-lg">Notre démarche</a></div><div class="cs-hero-proof"><span><i class="fa fa-check-circle" aria-hidden="true"/> Formules transparentes</span><span><i class="fa fa-check-circle" aria-hidden="true"/> Livraison offerte dès 49 €</span></div></div><div class="col-lg-5 offset-lg-1"><div class="cs-hero-product"><span class="cs-hero-sticker">Favori de la communauté</span><t t-if="featured_product"><img t-attf-src="/web/image/product.template/#{featured_product.id}/image_1024" t-att-alt="featured_product.name"/></t><div class="cs-hero-product-caption" t-if="featured_product"><span>À découvrir</span><strong t-esc="featured_product.name"/><a t-attf-href="/shop/#{slug(featured_product)}">Voir la formule <i class="fa fa-arrow-right" aria-hidden="true"/></a></div></div></div></div></div></section>
-            <section class="cs-home-section"><div class="container"><div class="cs-section-heading"><div><span class="cs-eyebrow">Explorer par besoin</span><h2>Ce qui vous accompagne aujourd’hui</h2></div><a href="/shop">Voir tout <i class="fa fa-arrow-right ms-1" aria-hidden="true"/></a></div><div class="row g-3"><t t-foreach="website.get_supplement_categories()" t-as="category"><div class="col-md-4"><a class="cs-category-card" t-att-href="'/shop/category/%s' % slug(category)"><span class="cs-category-index">0<t t-esc="category_index + 1"/></span><h3 t-esc="category.name"/><span>Explorer la sélection <i class="fa fa-arrow-right" aria-hidden="true"/></span></a></div></t></div></div></section>
-            <section class="cs-home-section cs-home-section-soft"><div class="container"><div class="cs-section-heading"><div><span class="cs-eyebrow">Sélection du moment</span><h2>Les essentiels de la boutique</h2></div><a href="/shop">Tout le catalogue <i class="fa fa-arrow-right ms-1" aria-hidden="true"/></a></div><div class="row g-4"><t t-foreach="request.env['product.template'].sudo().search([('is_published', '=', True), ('is_supplement', '=', True)], order='website_sequence, create_date desc', limit=4)" t-as="product"><div class="col-6 col-lg-3"><article class="cs-product-card"><a class="cs-product-image" t-attf-href="/shop/#{slug(product)}"><span t-if="product.is_vegan" class="cs-product-badge">Vegan</span><img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name"/></a><div class="cs-product-copy"><span class="cs-product-kind">Complément alimentaire</span><h3><a t-attf-href="/shop/#{slug(product)}" t-esc="product.name"/></h3><div class="d-flex justify-content-between align-items-center"><span class="cs-product-price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/><a class="cs-product-arrow" t-attf-href="/shop/#{slug(product)}" aria-label="Voir le produit"><i class="fa fa-arrow-up-right" aria-hidden="true"/></a></div></div></article></div></t></div></div></section>
-            <section class="cs-home-editorial"><div class="container"><div class="row align-items-center"><div class="col-lg-6"><span class="cs-eyebrow">Notre exigence</span><h2>La clarté avant le bruit.</h2></div><div class="col-lg-5 offset-lg-1"><p>Nous croyons qu’une bonne formule n’a pas besoin de cacher sa composition. Chaque référence est pensée pour être comprise, choisie et adoptée avec confiance.</p><a href="/aboutus" class="cs-text-link">En savoir plus <i class="fa fa-arrow-right ms-1" aria-hidden="true"/></a></div></div></div></section>
+                <section class="hero">
+                    <div>
+                        <div class="badge">✨ Nouvelle gamme Énergie 2026</div>
+                        <h1>La nutrition qui<br/><span class="accent">travaille pour vous</span></h1>
+                        <p class="lead">Des compléments dosés à l'efficacité, formulés avec des nutritionnistes et fabriqués en France. Choisissez par objectif, pas par hasard.</p>
+                        <div class="btn-row">
+                            <a class="btn-vitalo btn-primary" href="/shop">Découvrir la boutique ↗</a>
+                            <a class="btn-vitalo btn-secondary" href="/shop">Trouver mon objectif</a>
+                        </div>
+                        <div class="stats-row">
+                            <div class="stat"><b>120k+</b><span>clients accompagnés</span></div>
+                            <div class="stat"><b>4,8/5</b><span>note moyenne</span></div>
+                            <div class="stat"><b>100%</b><span>traçabilité</span></div>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="origin-chip">
+                            <div class="ico">🌿</div>
+                            <div>
+                                <b>Origine vérifiée</b>
+                                <span>Chaque ingrédient tracé</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="feature-strip">
+                    <div class="feature-item">
+                        <div class="ico">🌱</div>
+                        <div><b>Formules propres</b><p>Sans additifs controversés, ni colorants.</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="ico">🛡️</div>
+                        <div><b>Testé en labo</b><p>Analyses indépendantes sur chaque lot.</p></div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="ico">🚚</div>
+                        <div><b>Expédition 24 h</b><p>Livraison offerte dès 49 € d'achat.</p></div>
+                    </div>
+                </div>
+
+                <!-- Boucle Dynamique Odoo : Catégories -->
+                <section class="section">
+                    <div class="eyebrow">Par objectif</div>
+                    <h2>Dites-nous ce dont votre corps a besoin</h2>
+                    <div class="goal-grid">
+                        <t t-foreach="website.get_supplement_categories()" t-as="category">
+                            <a class="goal-card" t-att-href="'/shop/category/%s' % slug(category)">
+                                <h3 t-esc="category.name"/>
+                                <div class="count">Explorer ↗</div>
+                            </a>
+                        </t>
+                    </div>
+                </section>
+
+                <!-- Boucle Dynamique Odoo : Produits -->
+                <section class="section" style="padding-top:0;">
+                    <div class="section-head">
+                        <div>
+                            <div class="eyebrow">Meilleures ventes</div>
+                            <h2>Les incontournables</h2>
+                        </div>
+                        <a class="see-all" href="/shop">Voir toute la boutique →</a>
+                    </div>
+                    <div class="product-grid">
+                        <t t-foreach="request.env['product.template'].sudo().search([('is_published', '=', True), ('is_supplement', '=', True)], order='website_sequence, create_date desc', limit=4)" t-as="product">
+                            <div class="product-card">
+                                <a class="product-thumb" t-attf-href="/shop/#{slug(product)}">
+                                    <span t-if="product.is_vegan" class="promo-tag">Vegan</span>
+                                    <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name"/>
+                                </a>
+                                <div class="product-info">
+                                    <div class="product-cat">Complément</div>
+                                    <h4><a t-attf-href="/shop/#{slug(product)}" t-esc="product.name" style="color:inherit; text-decoration:none;"/></h4>
+                                    <div class="rating">★ 4.8</div>
+                                    <div class="price-row">
+                                        <span class="price" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                        <a t-attf-href="/shop/#{slug(product)}" class="btn-add" style="text-decoration:none;">Ajouter</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+
+                <section class="section" style="padding-top:0;">
+                    <div class="story">
+                        <div class="story-text">
+                            <div class="eyebrow">Notre histoire</div>
+                            <h2>La transparence comme seul ingrédient secret</h2>
+                            <p>Chaque formule est publiée en clair : dosages, origines, analyses. Pas de mélanges propriétaires, pas de promesses floues.</p>
+                            <a class="btn-vitalo btn-primary" style="background:var(--orange);" href="/aboutus">Qualité &amp; Fabrication ↗</a>
+                        </div>
+                        <div class="story-img"></div>
+                    </div>
+                </section>
             </div>
         </xpath>
     </template>
