@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="home_categories" name="Cam categories section">
+        <section class="cam-categories">
+            <div class="cam-container">
+                <div class="cam-section-header">
+                    <h2>Nos catégories de produits</h2>
+                    <p>Large gamme de produits IP à plateforme ouverte AXIS</p>
+                </div>
+                <div class="cam-cat-grid">
+                    <t t-foreach="request.env['product.public.category'].search([('parent_id', '=', False)])" t-as="cat">
+                        <a t-attf-href="/shop/category/#{slug(cat)}" class="cam-cat-card">
+                            <h3 t-field="cat.name"/>
+                            <p>Découvrez notre gamme</p>
+                            <span class="cam-cat-link">Voir la catégorie</span>
+                        </a>
+                    </t>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>
