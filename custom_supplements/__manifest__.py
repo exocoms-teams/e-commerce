@@ -25,7 +25,7 @@
         'data/ecommerce_categories.xml',
         'data/allergens.xml',
         'data/ecommerce_products.xml', # Nos produits de test
-        'data/website_menus.xml'
+        'data/website_menus.xml',
         'views/product_template_views.xml',
         'views/allergen_views.xml',
         'views/website_layout.xml',
