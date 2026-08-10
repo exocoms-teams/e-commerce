@@ -1043,7 +1043,7 @@ function checkEmptyWishlist(){
                     Explore collection
 
                 </a>
-                <a href="/" class="sn-btn-outline-wl">
+                <a href="/" class="sn-btn-outline-wl sn-back-home-btn">
 
                     ← Back to Home
 
