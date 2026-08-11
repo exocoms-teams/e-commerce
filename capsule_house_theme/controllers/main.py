@@ -193,12 +193,18 @@ class CapsuleHouseWebsite(Website):
             rating_count = ICP.get_param('capsule_house_theme.rating_count')
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
-        rating_message = None
-        if rating_value:
-            if request.env.lang == 'fr_FR':
-                rating_message = '%s avis' % rating_count
-            else:
-                rating_message = '%s reviews' % rating_count
+        # v19.0.1.0.61 : le badge de note reste maintenant TOUJOURS affiché
+        # (retour client : "affiche quand même en mettant 0 ... aucun
+        # élément pour le moment"), plutôt que masqué tant qu'aucun avis
+        # n'existe. Toujours un vrai chiffre (0 si aucun avis publié),
+        # jamais de note fabriquée.
+        if not rating_value:
+            rating_value = 0
+            rating_count = 0
+        if request.env.lang == 'fr_FR':
+            rating_message = '%s avis' % rating_count
+        else:
+            rating_message = '%s reviews' % rating_count
 
         hero_products = self._serialize_products(featured_products)[:2]
         featured_json = [{

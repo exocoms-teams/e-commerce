@@ -72,13 +72,14 @@
             });
     }
 
+    // v19.0.1.0.61 : le badge reste toujours affiché, même sans aucun avis
+    // publié (affiche "0" plutôt que de rester masqué) — retour client.
     function applyHeroRatingBadge(hero, data) {
-        if (!data.rating_value) return;
         var badge = hero.querySelector('[data-ch-rating-badge]');
         if (!badge) return;
         var valueEl = badge.querySelector('[data-ch-rating-value]');
         var messageEl = badge.querySelector('[data-ch-rating-message]');
-        if (valueEl) valueEl.textContent = data.rating_value;
+        if (valueEl) valueEl.textContent = (data.rating_value != null) ? data.rating_value : 0;
         if (messageEl) messageEl.textContent = data.rating_message || '';
         badge.classList.remove('d-none');
     }
