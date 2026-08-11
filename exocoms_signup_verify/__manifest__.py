@@ -38,9 +38,9 @@ Le parcours d'inscription sur invitation (lien avec jeton) reste inchangé.
     "depends": [
         "auth_signup",
         "base_setup",
+        "exocoms_signup_activation"
     ],
     "data": [
-        "data/ir_cron.xml",
         "views/auth_signup_templates.xml",
         "views/res_config_settings_views.xml",
     ],

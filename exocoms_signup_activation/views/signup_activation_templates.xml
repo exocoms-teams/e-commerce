@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================== -->
+    <!-- Inscription enregistrée : email envoyé                          -->
+    <!-- ============================================================== -->
+    <template id="signup_pending" name="Inscription : email d'activation envoyé">
+        <t t-call="web.login_layout">
+            <div class="text-center">
+                <i class="fa fa-envelope-o fa-3x text-primary mb-3" role="img" aria-label="Email"/>
+                <h3 class="mb-3">Vérifiez votre boîte mail</h3>
+
+                <div t-if="notice == 'not_activated'" class="alert alert-warning text-start" role="alert">
+                    Votre compte n'est pas encore activé. Merci de cliquer sur le lien
+                    contenu dans l'email que nous vous avons envoyé.
+                </div>
+
+                <div t-if="error" class="alert alert-warning text-start" role="alert">
+                    <span t-out="error"/>
+                </div>
+                <div t-elif="resent" class="alert alert-success text-start" role="alert">
+                    Un nouvel email d'activation vient d'être envoyé.
+                </div>
+
+                <p class="mb-1">
+                    Un email d'activation a été envoyé à
+                    <strong t-out="login">votre adresse</strong>.
+                </p>
+                <p class="text-muted small">
+                    Cliquez sur le lien qu'il contient pour activer votre compte.
+                    Pensez à consulter vos courriers indésirables.
+                </p>
+
+                <form action="/signup/resend" method="post" class="mt-4 mb-0">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="login" t-att-value="login"/>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        Renvoyer l'email d'activation
+                    </button>
+                </form>
+
+                <div class="mt-4 small">
+                    <a href="/web/login">Retour à la page de connexion</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- Activation réussie                                              -->
+    <!-- ============================================================== -->
+    <template id="signup_activated" name="Compte activé">
+        <t t-call="web.login_layout">
+            <div class="text-center">
+                <i class="fa fa-check-circle fa-3x text-success mb-3" role="img" aria-label="Succès"/>
+                <h3 t-if="not already" class="mb-3">Votre compte est activé</h3>
+                <h3 t-else="" class="mb-3">Ce compte est déjà activé</h3>
+
+                <p class="mb-1">
+                    Identifiant de connexion : <strong t-out="login">email</strong>
+                </p>
+                <p class="text-muted small">
+                    Vous pouvez dès à présent accéder à votre espace client.
+                </p>
+
+                <a t-att-href="login_url" class="btn btn-primary mt-3">
+                    Me connecter
+                </a>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================== -->
+    <!-- Lien invalide ou expiré                                         -->
+    <!-- ============================================================== -->
+    <template id="signup_activation_failed" name="Activation impossible">
+        <t t-call="web.login_layout">
+            <div class="text-center">
+                <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3" role="img" aria-label="Attention"/>
+
+                <t t-if="state == 'expired'">
+                    <h3 class="mb-3">Lien expiré</h3>
+                    <p class="text-muted small">
+                        Ce lien d'activation n'est plus valable. Demandez-en un nouveau
+                        ci-dessous, il sera envoyé à <strong t-out="login">votre adresse</strong>.
+                    </p>
+                    <form action="/signup/resend" method="post" class="mt-3 mb-0">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="login" t-att-value="login"/>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Recevoir un nouveau lien
+                        </button>
+                    </form>
+                </t>
+                <t t-else="">
+                    <h3 class="mb-3">Lien invalide</h3>
+                    <p class="text-muted small">
+                        Ce lien d'activation n'est pas reconnu. Il a peut-être déjà été
+                        utilisé, ou le compte a été supprimé après expiration.
+                    </p>
+                    <a href="/web/signup" class="btn btn-primary btn-sm mt-2">
+                        Créer un compte
+                    </a>
+                </t>
+
+                <div class="mt-4 small">
+                    <a href="/web/login">Retour à la page de connexion</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

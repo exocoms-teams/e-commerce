@@ -35,44 +35,6 @@
                     indésirables.
                 </p>
 
-                <!-- DEBUT DU COMPTEUR DE 15 MINUTES -->
-                <div id="countdown_box" class="alert alert-warning mt-4 text-center" role="alert">
-                    <i class="fa fa-clock-o me-2"></i>
-                    Ce lien d'activation expirera et votre compte invité sera supprimé dans : 
-                    <strong id="timer_display" style="font-size: 1.2em;">5:00</strong>
-                </div>
-
-                <script type="text/javascript">
-                    document.addEventListener("DOMContentLoaded", function() {
-                        var timerDisplay = document.getElementById('timer_display');
-                        var countdownBox = document.getElementById('countdown_box');
-                        var duration = 5 * 60; // 5 minutes en secondes
-                        var timer = duration, minutes, seconds;
-                        
-                        var interval = setInterval(function () {
-                            minutes = parseInt(timer / 60, 10);
-                            seconds = parseInt(timer % 60, 10);
-
-                            minutes = minutes &lt; 10 ? "0" + minutes : minutes;
-                            seconds = seconds &lt; 10 ? "0" + seconds : seconds;
-
-                            if (timerDisplay) {
-                                timerDisplay.textContent = minutes + ":" + seconds;
-                            }
-
-                            if (--timer &lt; 0) {
-                                clearInterval(interval);
-                                if (countdownBox) {
-                                    countdownBox.classList.remove('alert-warning');
-                                    countdownBox.classList.add('alert-danger');
-                                    countdownBox.innerHTML = "&lt;strong&gt;Délai expiré.&lt;/strong&gt; Le lien n'est plus valide, veuillez recommencer votre inscription.";
-                                }
-                            }
-                        }, 1000);
-                    });
-                </script>
-                <!-- FIN DU COMPTEUR -->
-
                 <div class="d-grid pt-2 mt-4">
                     <a href="/web/login" class="btn btn-primary">
                         Retour à la connexion
