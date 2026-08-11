@@ -1407,6 +1407,67 @@ tentative de surcharge de `'/'` — la garde `_is_our_website` +
 fallback `super()` systématique protège les 16 autres sites de la
 base mutualisée exactement comme chez exocoms.
 
+Ce correctif seul n'a **pas** résolu le problème (confirmé par le
+client après déploiement) — voir la section suivante pour la cause
+réelle, trouvée juste après.
+
+## Cause réelle #2 — ancêtre `o_editable` manquant (v19.0.1.0.58)
+
+Le correctif de routing (v57) était bien fondé mais insuffisant : le
+panneau Style restait vide sur le hero même en servant `/`
+directement. Test décisif proposé pour trancher entre "problème
+spécifique au hero" et "problème de l'éditeur sur cette page" : le
+client a glissé un bloc **natif** Odoo ("Masonry") depuis le panneau
+Blocks juste après le hero, sur la même page, dans la même session
+d'édition. Résultat : le panneau Style s'affiche normalement pour ce
+bloc natif — donc l'éditeur fonctionne très bien sur cette page ;
+seul le hero pose problème.
+
+Capture du code du bloc natif fournie par le client :
+
+```html
+<section class="s_masonry_block pt48 pb48 o_colored_level"
+         data-snippet="s_masonry_block" data-name="Masonry"
+         contenteditable="false">
+```
+
+**Aucun `data-oe-model`/`data-oe-id`/`data-oe-xpath` sur cette
+`<section>` non plus.** Toute la piste suivie depuis la v56 (faire
+apparaître ces attributs sur la section du hero via `oe_img_bg` etc.)
+reposait donc sur une fausse corrélation : ce n'est pas cet attribut
+qui déclenche le panneau Style.
+
+La vraie différence, visible dans le même DOM (fourni par le
+client) : le bloc Masonry est un **enfant** de :
+
+```html
+<div id="oe_structure_ch_home_after_hero"
+     class="oe_structure oe_empty o_editable" contenteditable="true">
+```
+
+— alors que notre `<section class="ch-hero">` n'avait **aucun
+ancêtre** portant `o_editable` ni `contenteditable="true"`, jusqu'à
+`<main>` inclus. Le SnippetsMenu d'Odoo cherche, au clic, le plus
+proche ancêtre marqué comme zone éditable pour savoir si l'élément
+cliqué (ou son ancêtre `[data-snippet]`) est sélectionnable — sans
+cet ancêtre, aucun clic ne peut jamais activer la sélection de bloc,
+quel que soit le balisage du hero lui-même. Ça explique pourquoi 8
+tentatives successives sur le balisage du hero (v49 à v56) n'ont rien
+changé : le problème était un niveau au-dessus, dans
+`home.xml`/`avis.xml`, pas dans `hero.xml`/`avis_hero.xml`.
+
+**Corrigé** : le `<t t-call="capsule_house_theme.partial_hero"/>`
+(et `avis_hero`) est maintenant enveloppé dans un `<div
+class="o_editable" contenteditable="true">` simple — **pas** un
+`oe_structure` (qui redéclencherait le bug de la v48 : Odoo strip
+`data-oe-model` sur le contenu atteint via `<t t-call>` à l'intérieur
+d'un `oe_structure`), juste les classes/attributs minimaux qui
+rendent la zone visible au SnippetsMenu. La `<section>` elle-même
+garde `contenteditable="false"` (inchangé), donc aucun risque de
+taper du texte libre dans ce nouveau wrapper — les enfants marqués
+`oe_editable` (h1, p, etc.) restent les seuls points d'entrée pour
+l'édition de texte, exactement comme avant.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
