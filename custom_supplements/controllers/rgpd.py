@@ -23,18 +23,18 @@ class CustomPortal(CustomerPortal):
                 user = request.env.user.sudo()
                 partner = user.partner_id
 
-                partner.write({
+                partner.with_context(mail_notrack=True).write({
                     'name': 'Utilisateur supprimé',
                     'email': f'deleted_{partner.id}@deleted.invalid',
-                    # 'phone': False,
+                    'phone': False,
                     # 'mobile': False,
                     # 'street': False,
                     # 'street2': False,
-                    # 'city': False,
-                    # 'zip': False,
-                    # 'country_id': False,
+                    'city': False,
+                    'zip': False,
+                    'country_id': False,
                 })
-                user.write({
+                user.with_context(mail_notrack=True).write({
                     'login': f'deleted_{user.id}@deleted.invalid',
                 })
 
