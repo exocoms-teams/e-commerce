@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="page_contrat_monetique" name="Contrat monétique CB">
+        <t t-call="website.layout">
+
+            <!-- ============================================================
+                 HERO — présentation
+            ============================================================ -->
+            <section class="cmq-hero">
+                <div class="mq-container cmq-hero__grid">
+                    <div class="cmq-hero__content">
+                        <span class="cmq-hero__badge">
+                            <i class="fa fa-credit-card"/>
+                            Contrat commerçant EXOCOMS
+                        </span>
+                        <h1 class="cmq-hero__title">
+                            Encaissez par carte à
+                            <span class="cmq-hero__rate">0,25&#160;%</span>.
+                            <br/>Pas un centime de plus.
+                        </h1>
+                        <p class="cmq-hero__text">
+                            Votre banque vous facture entre 0,60&#160;% et 1,80&#160;% par transaction, plus la location
+                            du terminal, plus les frais fixes. EXOCOMS vous propose un contrat monétique transparent&#160;:
+                            un taux unique de 0,25&#160;%, terminal inclus, sans changer de banque.
+                        </p>
+                        <div class="cmq-hero__actions">
+                            <a href="/contact" class="mq-btn-primary">Obtenir mon étude gratuite</a>
+                            <a href="#cmq-calculateur" class="mq-btn-secondary">Calculer mes économies</a>
+                            <a href="/shop" class="cmq-btn-soft">Voir nos produits <i class="fa fa-arrow-right"/></a>
+                        </div>
+                        <div class="cmq-hero__trust">
+                            <span><i class="fa fa-check-circle"/>Audit de vos relevés monétiques offert — réponse sous 48 h.</span>
+                            <!-- <span><i class="fa fa-check-circle"/> Terminal inclus</span>
+                            <span><i class="fa fa-check-circle"/> Sans changer de banque</span>
+                            <span><i class="fa fa-check-circle"/> Versement J+1</span> -->
+                        </div>
+                    </div>
+                        <div class="cmq-hero__visual">
+                            <span class="cmq-float cmq-float--top"><i class="fa fa-check-circle"/> TPE inclus</span>
+                            <span class="cmq-float cmq-float--bottom"><i class="fa fa-check-circle"/> 0&#160;€ de frais cachés</span>
+                            <img class="cmq-hero__img" src="/contrat_monetique_cb/static/src/img/happy-man.png" alt="Commerçant satisfait d'encaisser ses paiements à 0,25 % de commission"/>
+                        </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PREUVES
+            ============================================================ -->
+            <section class="mq-stats-section">
+                <div class="mq-container">
+                    <div class="mq-stats-grid">
+                        <div class="mq-stat-card">
+                            <span class="mq-stat-number">0,25&#160;%</span>
+                            <span class="mq-stat-label">Taux unique, toutes cartes CB / Visa / Mastercard</span>
+                        </div>
+                        <div class="mq-stat-card">
+                            <span class="mq-stat-number">0&#160;€</span>
+                            <span class="mq-stat-label">Frais de dossier &amp; frais cachés</span>
+                        </div>
+                        <div class="mq-stat-card">
+                            <span class="mq-stat-number">TPE</span>
+                            <span class="mq-stat-label">Terminal dernière génération inclus</span>
+                        </div>
+                        <div class="mq-stat-card">
+                            <span class="mq-stat-number">J+1</span>
+                            <span class="mq-stat-label">Versement des fonds sur votre compte</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 PROBLÈME
+            ============================================================ -->
+            <section class="cmq-section">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Ce que votre relevé ne montre pas</span>
+                        <h2 class="mq-section-title">Le vrai coût d'un contrat bancaire</h2>
+                        <p class="mq-section-sub">Le taux annoncé par votre banque n'est que la partie visible. En additionnant toutes les lignes de votre relevé, le coût réel de l'encaissement carte dépasse souvent 1,5&#160;% de votre chiffre d'affaires.</p>
+                    </div>
+                    <div class="mq-garanties-grid cmq-garanties-3">
+                        <div class="mq-garantie-card">
+                            <span class="cmq-tag">Ligne 1 — Commission</span>
+                            <h4 class="mq-garantie-title">Un taux gonflé et opaque</h4>
+                            <p class="mq-garantie-p">Entre 0,60&#160;% et 1,80&#160;% selon la carte, avec des grilles différentes pour les cartes étrangères, professionnelles ou premium. Impossible d'anticiper ce que vous paierez réellement.</p>
+                        </div>
+                        <div class="mq-garantie-card">
+                            <span class="cmq-tag">Ligne 2 — Matériel</span>
+                            <h4 class="mq-garantie-title">La location du TPE en plus</h4>
+                            <p class="mq-garantie-p">20 à 45&#160;€ par mois pour un terminal que vous ne possédez jamais, souvent avec des frais de maintenance, de mise à jour ou de paramétrage facturés séparément.</p>
+                        </div>
+                        <div class="mq-garantie-card">
+                            <span class="cmq-tag">Ligne 3 — Frais fixes</span>
+                            <h4 class="mq-garantie-title">Des frais qui s'empilent</h4>
+                            <p class="mq-garantie-p">Minimum de perception par transaction, frais de télécollecte, abonnement monétique, frais de dossier à l'ouverture… autant de lignes qui alourdissent la facture chaque mois.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CALCULATEUR
+            ============================================================ -->
+            <section class="cmq-calc" id="cmq-calculateur">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Simulateur d'économies</span>
+                        <h2 class="mq-section-title">Combien votre banque vous coûte-t-elle vraiment&#160;?</h2>
+                    </div>
+                    <div class="cmq-calc__grid">
+                        <div>
+                            <div class="cmq-field">
+                                <label for="cmq-ca">
+                                    <span>Chiffre d'affaires carte bancaire mensuel</span>
+                                    <span class="cmq-val" id="cmq-ca-val">20&#160;000&#160;€</span>
+                                </label>
+                                <input type="range" class="cmq-range" id="cmq-ca" min="2000" max="200000" step="1000" value="20000"/>
+                                <p class="cmq-field-hint">Montant total encaissé par carte chaque mois.</p>
+                            </div>
+                            <div class="cmq-field">
+                                <label for="cmq-taux">
+                                    <span>Taux actuel de votre banque</span>
+                                    <span class="cmq-val" id="cmq-taux-val">0,90&#160;%</span>
+                                </label>
+                                <input type="range" class="cmq-range" id="cmq-taux" min="0.3" max="2" step="0.01" value="0.9"/>
+                                <p class="cmq-field-hint">Indiqué sur votre contrat monétique ou votre relevé de commissions.</p>
+                            </div>
+                            <div class="cmq-field">
+                                <label for="cmq-tpe">
+                                    <span>Location mensuelle de votre TPE</span>
+                                    <span class="cmq-val" id="cmq-tpe-val">30&#160;€</span>
+                                </label>
+                                <input type="range" class="cmq-range" id="cmq-tpe" min="0" max="90" step="5" value="30"/>
+                            </div>
+                            <p class="cmq-calc-note">Simulation indicative basée sur les informations que vous saisissez, hors frais annexes éventuels (télécollecte, minimum de perception, frais de dossier), qui augmenteraient encore l'écart en faveur d'EXOCOMS.</p>
+                        </div>
+
+                        <div class="cmq-receipt" aria-live="polite">
+                            <div class="cmq-receipt__head">
+                                <strong>EXOCOMS GROUP</strong>
+                                <span>COMPARATIF MENSUEL — ENCAISSEMENT CB</span>
+                            </div>
+                            <div class="cmq-receipt__row"><span>VOTRE BANQUE</span><span></span></div>
+                            <div class="cmq-receipt__row cmq-receipt__row--sub"><span>Commissions (<span id="cmq-r-taux">0,90</span>&#160;%)</span><span id="cmq-r-combq">180,00&#160;€</span></div>
+                            <div class="cmq-receipt__row cmq-receipt__row--sub"><span>Location TPE</span><span id="cmq-r-loc">30,00&#160;€</span></div>
+                            <div class="cmq-receipt__row cmq-receipt__total"><span>TOTAL BANQUE</span><span id="cmq-r-totbq">210,00&#160;€</span></div>
+                            <hr class="cmq-receipt__sep"/>
+                            <div class="cmq-receipt__row"><span>EXOCOMS</span><span></span></div>
+                            <div class="cmq-receipt__row cmq-receipt__row--sub"><span>Commissions (0,25&#160;%)</span><span id="cmq-r-comexo">50,00&#160;€</span></div>
+                            <div class="cmq-receipt__row cmq-receipt__row--sub"><span>Location TPE</span><span>INCLUS</span></div>
+                            <div class="cmq-receipt__row cmq-receipt__total"><span>TOTAL EXOCOMS</span><span id="cmq-r-totexo">50,00&#160;€</span></div>
+                            <div class="cmq-receipt__save">
+                                <span>Économie estimée</span>
+                                <strong id="cmq-r-save">160,00&#160;€ / mois</strong>
+                                <span id="cmq-r-savey">soit 1&#160;920&#160;€ / an</span>
+                            </div>
+                            <p class="cmq-receipt__foot">*** MERCI DE VOTRE CONFIANCE ***</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 INCLUS
+            ============================================================ -->
+            <section class="cmq-section cmq-dark">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Un contrat, tout compris</span>
+                        <h2 class="mq-section-title">Ce que comprend le contrat à 0,25&#160;%</h2>
+                        <p class="mq-section-sub">Un seul taux, un seul interlocuteur, zéro mauvaise surprise. Tout ce dont vous avez besoin pour encaisser est inclus dans le contrat.</p>
+                    </div>
+                    <div class="cmq-features">
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>Terminal de paiement fourni</h3>
+                            <p>TPE dernière génération (fixe, portable ou Android) livré paramétré, sans contact, compatible Apple&#160;Pay et Google&#160;Pay.</p>
+                        </div>
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>Toutes les cartes acceptées</h3>
+                            <p>CB, Visa, Mastercard, cartes étrangères et sans contact — au même taux de 0,25&#160;%, sans grille tarifaire à rallonge.</p>
+                        </div>
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>Versement rapide des fonds</h3>
+                            <p>Vos encaissements sont versés à J+1 ouvré directement sur votre compte bancaire actuel. Vous ne changez pas de banque.</p>
+                        </div>
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>SAV et échange de matériel</h3>
+                            <p>Assistance technique par des experts monétique et échange du terminal en cas de panne, sans facturation supplémentaire.</p>
+                        </div>
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>Suivi de vos transactions</h3>
+                            <p>Espace de suivi en ligne&#160;: transactions en temps réel, exports comptables et relevés de commissions clairs et détaillés.</p>
+                        </div>
+                        <div class="cmq-feature">
+                            <span class="cmq-feature__check"><i class="fa fa-check"/> Inclus</span>
+                            <h3>Accompagnement à la migration</h3>
+                            <p>Nous gérons la transition depuis votre contrat bancaire actuel, sans interruption d'encaissement pour votre commerce.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 COMPARATIF
+            ============================================================ -->
+            <section class="cmq-section">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Comparatif</span>
+                        <h2 class="mq-section-title">Contrat bancaire classique vs contrat EXOCOMS</h2>
+                        <p class="mq-section-sub">Même volume d'encaissement, deux façons de facturer&#160;: l'écart se lit ligne par ligne.</p>
+                    </div>
+                    <div class="cmq-compare__scroll">
+                    <div class="cmq-compare">
+                        <div class="cmq-compare__head-gap"></div>
+                        <div class="cmq-plan__head cmq-plan__head--bank">
+                            <div class="cmq-plan__badge cmq-plan__badge--bank">Banque traditionnelle*</div>
+                            <div class="cmq-plan__price">1,80<span class="cmq-plan__unit">&#160;%</span></div>
+                            <p class="cmq-plan__desc">Taux maximum selon la carte, hors location du TPE et frais annexes.</p>
+                        </div>
+                        <div class="cmq-plan__head cmq-plan__head--exo">
+                            <div class="cmq-plan__badge cmq-plan__badge--exo">EXOCOMS 0,25&#160;%</div>
+                            <div class="cmq-plan__price">0,25<span class="cmq-plan__unit">&#160;%</span></div>
+                            <p class="cmq-plan__desc">Taux unique toutes cartes, terminal inclus, 0&#160;€ de frais cachés.</p>
+                        </div>
+
+                        <span class="cmq-compare__label">Commission par transaction</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">0,60&#160;% à 1,80&#160;% selon la carte</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">0,25&#160;% taux unique</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Terminal de paiement</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Location 20 à 45&#160;€ / mois</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">Inclus</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Frais de dossier</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Souvent 50 à 150&#160;€</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">0&#160;€</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Minimum de perception</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Fréquent (ex.&#160;: 0,10&#160;€ / transaction)</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">Aucun</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Lisibilité du relevé</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Grilles multiples, lignes de frais dispersées</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">Un taux, un relevé clair</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Changement de banque requis</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Non</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--neutral"><i class="fa fa-minus"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">Non — vous gardez votre compte</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+
+                        <span class="cmq-compare__label">Interlocuteur</span>
+                        <div class="cmq-plan__cell cmq-plan__cell--bank">
+                            <span class="cmq-plan__value">Plateforme téléphonique mutualisée</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ko"><i class="fa fa-times"/></span>
+                        </div>
+                        <div class="cmq-plan__cell cmq-plan__cell--exo">
+                            <span class="cmq-plan__value">Expert monétique dédié EXOCOMS</span>
+                            <span class="cmq-plan__icon cmq-plan__icon--ok"><i class="fa fa-check"/></span>
+                        </div>
+                    </div>
+                    </div>
+                    <p class="cmq-compare__note">* Fourchettes constatées sur le marché français des contrats monétiques bancaires pour commerçants. Les conditions exactes varient selon les établissements et les profils.</p>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 ÉTAPES
+            ============================================================ -->
+            <section class="cmq-section cmq-pale">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Migration sans coupure</span>
+                        <h2 class="mq-section-title">Passer chez EXOCOMS en trois étapes</h2>
+                    </div>
+                    <div class="cmq-steps">
+                        <div class="cmq-step">
+                            <span class="cmq-step__num">Étape 1</span>
+                            <h3>Audit gratuit de vos relevés</h3>
+                            <p>Envoyez-nous vos trois derniers relevés de commissions monétiques. Nous chiffrons précisément ce que vous payez aujourd'hui et ce que vous économiserez.</p>
+                            <span class="cmq-step__time"><i class="fa fa-arrow-right"/> Réponse sous 48&#160;h</span>
+                        </div>
+                        <div class="cmq-step">
+                            <span class="cmq-step__num">Étape 2</span>
+                            <h3>Signature et paramétrage</h3>
+                            <p>Signature électronique du contrat, ouverture de votre dossier commerçant et préparation de votre terminal, paramétré à votre activité et à votre caisse.</p>
+                            <span class="cmq-step__time"><i class="fa fa-arrow-right"/> Sous 5 jours ouvrés</span>
+                        </div>
+                        <div class="cmq-step">
+                            <span class="cmq-step__num">Étape 3</span>
+                            <h3>Installation et bascule</h3>
+                            <p>Livraison et mise en service du TPE, tests d'encaissement, puis résiliation de votre ancien contrat gérée avec vous. Vous encaissez sans interruption.</p>
+                            <span class="cmq-step__time"><i class="fa fa-arrow-right"/> Sans coupure d'activité</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 FAQ
+            ============================================================ -->
+            <section class="cmq-section">
+                <div class="mq-container">
+                    <div class="mq-section-head">
+                        <span class="mq-section-tag">Questions fréquentes</span>
+                        <h2 class="mq-section-title">Tout savoir sur le contrat à 0,25&#160;%</h2>
+                    </div>
+                    <div class="cmq-faq">
+                        <details>
+                            <summary>Le taux de 0,25&#160;% est-il vraiment le seul coût&#160;?</summary>
+                            <div>Oui. La commission de 0,25&#160;% s'applique sur le montant de chaque transaction encaissée, et c'est tout&#160;: le terminal, le SAV, le paramétrage et l'espace de suivi sont inclus. Il n'y a ni frais de dossier, ni minimum de perception, ni frais de télécollecte. Les conditions détaillées figurent dans votre contrat avant signature.</div>
+                        </details>
+                        <details>
+                            <summary>Dois-je changer de banque pour en bénéficier&#160;?</summary>
+                            <div>Non. Le contrat commerçant EXOCOMS est indépendant de votre banque&#160;: vos encaissements sont simplement versés sur votre compte professionnel actuel. Vous conservez votre banque, vos crédits et vos habitudes — seul votre contrat monétique change.</div>
+                        </details>
+                        <details>
+                            <summary>Quelles cartes sont acceptées, et à quel taux&#160;?</summary>
+                            <div>CB, Visa et Mastercard, y compris en sans contact, via Apple&#160;Pay et Google&#160;Pay, au taux unique de 0,25&#160;%. Contrairement aux grilles bancaires, il n'y a pas de surcoût opaque selon le type de carte&#160;: le taux est le même et votre relevé reste lisible.</div>
+                        </details>
+                        <details>
+                            <summary>Quand suis-je payé après un encaissement&#160;?</summary>
+                            <div>Les fonds sont versés à J+1 ouvré sur votre compte bancaire, avec un relevé détaillé de chaque transaction et des commissions prélevées, exportable pour votre comptabilité.</div>
+                        </details>
+                        <details>
+                            <summary>Que se passe-t-il si mon terminal tombe en panne&#160;?</summary>
+                            <div>Notre SAV est inclus dans le contrat. En cas de panne, nous diagnostiquons à distance et, si nécessaire, échangeons votre terminal sans facturation supplémentaire, pour que votre commerce continue d'encaisser.</div>
+                        </details>
+                        <details>
+                            <summary>Suis-je engagé sur une longue durée&#160;?</summary>
+                            <div>Les modalités d'engagement sont précisées clairement dans votre contrat avant signature, sans clause cachée ni tacite reconduction opaque. Lors de l'audit gratuit, nous vous présentons l'ensemble des conditions, noir sur blanc.</div>
+                        </details>
+                        <details>
+                            <summary>Comment se passe la résiliation de mon contrat bancaire actuel&#160;?</summary>
+                            <div>Nous vous accompagnons&#160;: vérification du préavis de votre contrat monétique en cours, préparation du courrier de résiliation et planification de la bascule pour que vous n'ayez jamais d'interruption d'encaissement.</div>
+                        </details>
+                        <details>
+                            <summary>Le terminal est-il compatible avec ma caisse&#160;?</summary>
+                            <div>Nos TPE s'intègrent aux principales solutions d'encaissement du marché (protocole caisse, TPE Android autonomes ou connectés). EXOCOMS étant spécialiste monétique et point de vente, nous validons la compatibilité avec votre installation lors de l'audit.</div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CTA FINAL
+            ============================================================ -->
+            <section class="cmq-section cmq-final-wrap">
+                <div class="mq-container">
+                    <div class="cmq-final">
+                        <h2>Vos relevés parlent d'eux-mêmes.<br/>Envoyez-les nous.</h2>
+                        <p>Audit gratuit et sans engagement de vos trois derniers relevés monétiques&#160;: nous chiffrons vos économies réelles, noir sur blanc, sous 48&#160;heures.</p>
+                        <a href="/contact" class="mq-btn-primary">Demander mon audit gratuit</a>
+                        <p class="cmq-final-note">EXOCOMS GROUP — Spécialiste monétique &amp; encaissement</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 LÉGAL
+            ============================================================ -->
+            <div class="mq-container cmq-legal">
+                <p>Offre réservée aux professionnels. Taux de commission de 0,25&#160;% applicable sur le montant des transactions encaissées par carte bancaire dans le cadre du contrat commerçant EXOCOMS, sous réserve d'acceptation du dossier. Les conditions complètes (durée, modalités de versement, périmètre des cartes acceptées) sont détaillées dans les conditions contractuelles remises avant signature. Simulateur fourni à titre indicatif, sur la base des données saisies par l'utilisateur&#160;; il ne constitue pas un engagement contractuel.</p>
+            </div>
+
+        </t>
+    </template>
+
+    <template id="contrat_monetique_assets" name="Contrat Monétique CB Assets" inherit_id="website.layout">
+        <xpath expr="//link[@rel='canonical']" position="after">
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500&amp;display=swap"/>
+        </xpath>
+    </template>
+
+</odoo>
