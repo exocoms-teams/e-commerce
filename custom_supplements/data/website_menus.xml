@@ -39,11 +39,12 @@
             <field name="sequence">20</field>
         </record> -->
 
+        <!-- on applique le parent_id à la volée pour récupérer la rev -->
         <function model="website.menu" name="write">
             <value model="website.menu" eval="[ref('custom_supplements.menu_home'), ref('custom_supplements.menu_shop')]"/>
             <value eval="{
-                'parent_id': env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).id,
-                'website_id': env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).website_id.id,
+                'parent_id': obj.env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).id,
+                'website_id': obj.env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).website_id.id,
             }"/>
         </function>
     </data>
