@@ -40,6 +40,7 @@ Le parcours d'inscription sur invitation (lien avec jeton) reste inchangé.
         "base_setup",
     ],
     "data": [
+        "data/ir_cron.xml",
         "views/auth_signup_templates.xml",
         "views/res_config_settings_views.xml",
     ],
