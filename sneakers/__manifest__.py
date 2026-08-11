@@ -39,6 +39,7 @@
 
         'views/delivery_carrier_views.xml',
         'views/sendcloud_shipping_method_views.xml',
+        'views/product_brand_views.xml',
     ],
 
     'assets': {
