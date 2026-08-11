@@ -17,7 +17,7 @@ class ResUsers(models.Model):
         if cron and not cron.active:
             cron.sudo().write({
                 'active': True,
-                'nextcall': fields.Datetime.now() + timedelta(minutes=15)
+                'nextcall': fields.Datetime.now() + timedelta(minutes=5)
             })
             
         return res
@@ -26,7 +26,7 @@ class ResUsers(models.Model):
     def _cron_purge_unconfirmed_signups(self):
         """Le Cron se réveille, nettoie, et calcule l'heure exacte de son prochain réveil."""
         now = fields.Datetime.now()
-        limit_date = now - timedelta(minutes=15)
+        limit_date = now - timedelta(minutes=5)
         
         # 1. On supprime ceux dont les 15 minutes sont écoulées
         expired_users = self.search([
@@ -44,7 +44,7 @@ class ResUsers(models.Model):
             if next_user_in_queue:
                 # Il reste un client dans la file ! 
                 # On calcule l'heure exacte de la fin de ses 15 minutes
-                exact_expiration_time = next_user_in_queue.create_date + timedelta(minutes=15)
+                exact_expiration_time = next_user_in_queue.create_date + timedelta(minutes=5)
                 
                 # On programme le prochain réveil du Cron EXACTEMENT à cette seconde-là
                 cron.write({
