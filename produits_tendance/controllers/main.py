@@ -226,6 +226,7 @@ class TrendIngestController(http.Controller):
             'country': payload['country'],
             'source': payload['source'],
             'image_url': payload.get('image_url'),
+            'price': payload.get('price'),
         }
         vals = {k: v for k, v in vals.items() if v is not None}
 
