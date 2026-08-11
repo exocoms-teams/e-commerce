@@ -931,13 +931,8 @@ function updateWishlistBadge(){
 
 
 
-            badge.textContent =
-                data.result.length;
-
-
-
             badge.style.display =
-                "flex";
+                data.result.length > 0 ? "block" : "none";
 
 
 
