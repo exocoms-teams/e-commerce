@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_product" name="Sneakers Product">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'%s — %s | Sneakers' % (product.name, product.brand_id.name or 'Premium Sneakers')"/>
+            <t t-set="description" t-value="(product.description_sale or product.name)[:160]"/>
+            <t t-set="og_title" t-value="'%s — %s' % (product.name, product.brand_id.name or 'Sneakers')"/>
+            <t t-set="og_description" t-value="(product.description_sale or product.name)[:200]"/>
+            <t t-set="og_image" t-value="'%s/web/image/product.template/%s/image_1024' % (request.httprequest.url_root.rstrip('/'), product.id)"/>
+            <t t-set="canonical_url" t-value="'%s%s' % (request.httprequest.url_root.rstrip('/'), request.httprequest.path)"/>
+            <t t-set="breadcrumbs" t-value="[{'name': 'Home', 'url': '%s/' % request.httprequest.url_root.rstrip('/')}, {'name': 'Shop', 'url': '%s/shop-sneakers' % request.httprequest.url_root.rstrip('/')}, {'name': product.name}]"/>
+
+            <!-- Website Builder editable zone -->
+            <div class="oe_structure oe_empty"/>
+
+            <!-- PRODUCT DETAILS -->
+            <section class="sn-product-details oe_structure oe_empty">
+                <div class="mn-container">
+                    <div class="sn-product-layout">
+
+                        <!-- PRODUCT GALLERY -->
+                        <div class="sn-product-gallery">
+                            <div class="sn-product-main-image">
+                                <img
+                                    t-att-src="'/web/image/product.template/%s/image_256' % product.id"
+                                    t-att-alt="product.name"/>
+                            </div>
+
+                            <div class="sn-product-thumbnails">
+                                <!-- Main Product Image -->
+                                <div class="sn-product-thumb active">
+                                    <img
+                                        t-att-src="'/web/image/product.template/%s/image_256' % product.id"
+                                        t-att-alt="product.name"/>
+                                </div>
+
+                                <!-- Ecommerce Additional Images -->
+                                <t t-foreach="ecommerce_images" t-as="img">
+                                    <div class="sn-product-thumb">
+                                        <img
+                                            t-att-src="'/web/image/product.image/%s/image_256' % img.id"
+                                            t-att-alt="product.name"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- PRODUCT INFORMATION -->
+                        <div class="sn-product-content">
+
+                            <!-- Product Title -->
+                            <div class="sn-product-title">
+                                <span class="sn-product-brand">
+                                    <t t-out="product_brand or ''"/>
+                                </span>
+                                <h1>
+                                    <t t-out="product.name"/>
+                                </h1>
+                                <span class="sn-product-sku">
+                                    SKU :
+                                    <t t-out="product_variant.default_code or '-'"/>
+                                </span>
+                            </div>
+
+                            <div class="sn-product-rating">
+                                <div class="sn-stars">
+                                <t t-foreach="[1,2,3,4,5]" t-as="star">
+
+                                <i t-att-class="
+                                    'fa fa-star'
+                                    if star &lt;= round(average_rating)
+                                    else 'fa fa-star-o'
+                                "/>
+
+                            </t>
+                            </div>
+
+                                <span class="sn-rating-value">
+                                <t t-out="'%.1f' % average_rating if average_rating else 0"/>
+                            </span>
+
+                            <span class="sn-review-count">
+                                (
+                                <t t-out="review_count or 0"/>
+                                Reviews
+                                )
+                            </span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="sn-product-price">
+                                <span class="sn-current-price">
+                                    $
+                                    <t t-out="'%.2f' % product.list_price"/>
+                                </span>
+                                <t t-if="product.compare_list_price and product.compare_list_price > product.list_price">
+                                    <span class="sn-old-price">
+                                        $
+                                        <t t-out="'%.2f' % product.compare_list_price"/>
+                                    </span>
+                                    <span class="sn-discount">
+                                        -
+                                        <t t-out="
+                                        round(
+                                            (product.compare_list_price - product.list_price)
+                                            / product.compare_list_price * 100
+                                        )
+                                        "/>
+                                        %
+                                    </span>
+                                </t>
+                            </div>
+
+                            <!-- Stock Badge -->
+                            <t t-if="stock_state != 'hidden'">
+                                <div class="sn-stock-badge">
+                                    <t t-if="stock_state == 'in_stock'">
+                                        <span class="sn-stock-in">
+                                            <i class="fa fa-check-circle"/> In Stock
+                                        </span>
+                                    </t>
+                                    <t t-elif="stock_state == 'low_stock'">
+                                        <span class="sn-stock-low">
+                                            <i class="fa fa-exclamation-triangle"/>
+                                            Only <t t-esc="stock_qty"/> left in stock
+                                        </span>
+                                    </t>
+                                    <t t-elif="stock_state == 'out_of_stock'">
+                                        <t t-if="allow_out_of_stock_order">
+                                            <span class="sn-stock-backorder">
+                                                <i class="fa fa-clock-o"/> Available on Backorder
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="sn-stock-out">
+                                                <i class="fa fa-times-circle"/> Out of Stock
+                                            </span>
+                                        </t>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- Short Description -->
+                            <div class="sn-product-description-short">
+                                <p>
+                                    <t t-out="product.description_sale or ''"/>
+                                </p>
+                            </div>
+
+                            <!-- Colors -->
+                            <div class="sn-product-colors">
+                                <h4>Color</h4>
+                                <div class="sn-color-options">
+                                    <t t-foreach="colors" t-as="color">
+                                        <span class="sn-color"
+                                            t-att-title="color.product_attribute_value_id.name"
+                                            t-att-data-color-id="color.id"
+                                            t-att-data-color="color.product_attribute_value_id.name"
+                                            t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Sizes -->
+                            <div class="sn-product-sizes">
+                                <h4>Size</h4>
+                                <div class="sn-size-options">
+                                    <t t-foreach="sizes" t-as="size">
+                                        <button
+                                            class="sn-size-btn"
+                                            t-att-data-size-id="size.id"
+                                            t-att-data-size="size.product_attribute_value_id.name">
+                                            <t t-out="size.product_attribute_value_id.name"/>
+                                        </button>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="sn-product-quantity">
+                                <h4>Quantity</h4>
+                                <div class="sn-quantity-selector">
+                                    <button
+                                        class="sn-qty-btn"
+                                        data-action="decrease">
+                                        -
+                                    </button>
+                                    <input
+                                        class="sn-qty-input"
+                                        type="number"
+                                        value="1"
+                                        min="1"
+                                        t-att-max="stock_qty"
+                                        t-att-data-stock="str(stock_qty)"/>
+                                    <button
+                                        class="sn-qty-btn"
+                                        data-action="increase">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="sn-buttons">
+                                <t t-if="stock_state == 'out_of_stock' and not allow_out_of_stock_order">
+                                    <button style="width:50%" class="sn-btn-primary sn-add-cart" disabled="disabled">
+                                        Out of Stock
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <button style="width:50%"
+                                        class="sn-btn-primary sn-add-cart"
+                                        t-att-data-template-id="product.id"
+                                        t-att-data-stock="stock_qty"
+                                        data-cart-qty="0">
+                                        <t t-if="stock_state == 'out_of_stock'">
+                                            Add to Cart (Backorder)
+                                        </t>
+                                        <t t-else="">
+                                            Add to Cart
+                                        </t>
+                                    </button>
+                                </t>
+                                <a
+                                    href="#categories"
+                                    class="sn-btn-outline-wl">
+                                    Buy Now
+                                </a>
+                            </div>
+
+                            <!-- Product Meta -->
+                            <div class="sn-product-meta">
+                                <div>
+                                    <strong>Category :</strong>
+
+                                    <t t-foreach="product.public_categ_ids" t-as="cat">
+
+                                        <t t-if="cat.parent_id">
+                                            <t t-out="cat.parent_id.name"/>
+                                            /
+                                        </t>
+
+                                        <t t-out="cat.name"/>
+
+                                    </t>
+
+                                </div>
+                                <div>
+                                    <strong>Brand :</strong>
+                                    <t t-out="product.brand_id.name or ''"/>
+                                </div>
+                                <div>
+                                    <strong>Availability :</strong>
+                                    <t t-if="stock_state == 'hidden'">
+                                        --
+                                    </t>
+                                    <t t-elif="stock_state == 'in_stock'">
+                                        In Stock
+                                    </t>
+                                    <t t-elif="stock_state == 'low_stock'">
+                                        Low Stock (<t t-esc="stock_qty"/> left)
+                                    </t>
+                                    <t t-elif="stock_state == 'out_of_stock'">
+                                        <t t-if="allow_out_of_stock_order">
+                                            Available on Backorder
+                                        </t>
+                                        <t t-else="">
+                                            Out of Stock
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUCT TABS -->
+            <section class="sn-product-tabs oe_structure oe_empty">
+                <div class="mn-container">
+                    <div class="oe_structure oe_empty"/>
+
+                    <!-- Tabs Buttons -->
+                    <div class="sn-tabs">
+                        <button
+                            class="active"
+                            t-att-data-tab="'tab-description'">
+                            Description
+                        </button>
+                        <button
+                            t-att-data-tab="'tab-specifications'">
+                            Specifications
+                        </button>
+                        <button
+                            t-att-data-tab="'tab-reviews'">
+                            Reviews
+                            (
+                            <t t-out="review_count"/>
+                            )
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div
+                        id="tab-description"
+                        class="sn-tab-content">
+                        <p>
+                            <t t-out="product_description"/>
+                        </p>
+                        <ul>
+                            <t t-foreach="product_features" t-as="feature">
+                                <li>
+                                    <t t-out="feature"/>
+                                </li>
+                            </t>
+                        </ul>
+                    </div>
+
+                    <!-- Specifications -->
+                    <div
+                        id="tab-specifications"
+                        class="sn-tab-content"
+                        style="display:none">
+                        <p>
+                            <strong>Brand:</strong>
+                            <t t-out="product_brand"/>
+                        </p>
+                        <p>
+                            <strong>Model:</strong>
+                            <t t-out="product_model"/>
+                        </p>
+                        <p>
+                            <strong>Material:</strong>
+
+                            <t t-if="materials">
+                                <t t-foreach="materials" t-as="material">
+                                    <span t-out="material.name"/>
+                                </t>
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
+                        </p>
+
+
+                        <p>
+                            <strong>Sole:</strong>
+
+                            <t t-if="soles">
+                                <t t-foreach="soles" t-as="sole">
+                                    <span t-out="sole.name"/>
+                                </t>
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
+                        </p>
+                        <p>
+                            <strong>Available Sizes:</strong>
+                            <t t-out="product_sizes"/>
+                        </p>
+                        <p>
+                            <strong>Weight:</strong>
+
+                            <t t-if="product_weight">
+                                <t t-out="'%.2f' % product_weight"/> kg
+                            </t>
+
+                            <t t-else="">
+                                -
+                            </t>
+                        </p>
+                        <p>
+                            <strong>Origin:</strong>
+                            <t t-if="product_origin">
+                                <t t-out="product_origin"/>
+                            </t>
+                            <t t-else="">
+                                -
+                            </t>
+                        </p>
+                    </div>
+                </div>
+
+                  <div
+    id="tab-reviews"
+    class="sn-tab-content"
+    style="display:none">
+
+    <t t-if="reviews">
+
+        <t t-foreach="reviews" t-as="review">
+
+    <p>
+        <strong>
+            <t t-out="review.rating"/> ★
+        </strong>
+
+        —
+        "<t t-out="review.feedback"/>"
+
+        —
+        <t t-if="review.partner_id">
+            <t t-out="review.partner_id.name"/>
+        </t>
+        <t t-else="">
+            Anonymous
+        </t>
+
+    </p>
+
+</t>
+
+    </t>
+
+    <t t-else="">
+        <p>No reviews yet.</p>
+    </t>
+
+</div>
+            </section>
+
+            <!-- RELATED PRODUCTS -->
+            <section class="sn-related-products oe_structure oe_empty">
+                <div class="mn-container">
+
+                    <!-- Section Header -->
+                    <div class="sn-section-header"
+                         style="text-align:center;margin-bottom:45px;">
+                        <span class="sn-section-subtitle">
+                            You May Also Like
+                        </span>
+                        <h2>
+                            Related Products
+                        </h2>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="sn-products-grid sn-related-products-grid">
+                        <t t-foreach="related_products" t-as="related_product">
+                            <t t-call="sneakers.product_card">
+                                <t t-set="product" t-value="related_product"/>
+                            </t>
+                        </t>
+                    </div>
+
+                </div>
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>
