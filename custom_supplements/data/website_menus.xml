@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-         <delete model="website.menu" id="website.menu_home"/>
-         <delete model="website.menu" id="website_sale.menu_shop"/>
-         <delete model="website.menu" id="website.menu_contactus"/>
-
+        <delete model="website.menu" id="website.menu_home"/>
+        <delete model="website.menu" id="website_sale.menu_shop"/>
+        <delete model="website.menu" id="website.menu_contactus"/>
     </data>
-    <data>
 
+    <data noupdate="1">
         <record id="menu_home" model="website.menu">
             <field name="name">Accueil</field>
             <field name="url">/</field>
@@ -15,29 +14,26 @@
             <field name="page_id" ref="website.homepage_page"/>
             <field name="sequence" type="int">10</field>
         </record>
-        
+
         <record id="menu_shop" model="website.menu">
             <field name="name">Boutique</field>
-            <field name="url">#</field>
+            <field name="url">/shop</field>
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence">20</field>
         </record>
 
         <record id="menu_new" model="website.menu">
             <field name="name">Nouveautés</field>
-            <field name="url">#</field>
+            <field name="url">/shop?order=date_desc</field>
             <field name="parent_id" ref="menu_shop"/>
             <field name="sequence">10</field>
         </record>
 
         <record id="menu_offer" model="website.menu">
             <field name="name">Promotions</field>
-            <field name="url">#</field>
+            <field name="url">/shop?sale=1</field>
             <field name="parent_id" ref="menu_shop"/>
             <field name="sequence">20</field>
         </record>
     </data>
-
-    
-
 </odoo>
