@@ -25,7 +25,7 @@ le comportement natif : elles ne sont pas soumises a la verification.
     "author": "EXOCOMS Group",
     "website": "https://exocoms.fr",
     "license": "LGPL-3",
-    "depends": ["auth_signup", "website", "mail"],
+    "depends": ["auth_signup", "website", "mail", "base_setup"],
     "data": [
         "data/ir_config_parameter_data.xml",
         "data/mail_template_data.xml",
