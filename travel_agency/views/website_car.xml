@@ -7,11 +7,11 @@
                 <h1 class="mb-4">Location de voiture</h1>
 
                 <form method="get" class="row g-2 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="text" name="destination" class="form-control"
                                placeholder="Ville ou pays" t-att-value="filters.get('destination', '')"/>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <select name="categorie" class="form-select">
                             <option value="">Toutes catégories</option>
                             <option value="economique">Économique</option>
@@ -21,6 +21,14 @@
                             <option value="luxe">Luxe</option>
                             <option value="utilitaire">Utilitaire</option>
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                         <input type="date" name="date_debut" class="form-control"
+                                 t-att-value="filters.get('date_debut', '')" placeholder="Date de prise en charge"/>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" name="date_fin" class="form-control"
+                               t-att-value="filters.get('date_fin', '')" placeholder="Date de restitution"/>
                     </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary w-100">Rechercher</button>
@@ -120,7 +128,10 @@
                                 </t>
                             </ul>
                         </t>
-
+                        <a t-attf-href="/voitures/book/#{car.id}" class="btn btn-primary btn-lg mb-2">
+                            <i class="fa fa-calendar-check me-2"/>
+                            Réserver
+                        </a>
                         <a href="/voitures" class="btn btn-outline-secondary btn-lg">Retour à la liste</a>
                     </div>
                 </div>
@@ -128,4 +139,187 @@
         </t>
     </template>
 
+    <template id="car_booking_page" name="Formulaire de réservation voiture">
+         <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <h1 class="mb-4">
+                            <i class="fa fa-calendar me-2"/>
+                            Réserver — <t t-esc="car.name"/>
+                        </h1>
+
+                        <div t-if="error" class="alert alert-danger">
+                            <t t-esc="error"/>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <t t-if="car.image_1920">
+                                            <img t-attf-src="/web/image/travel.car/#{car.id}/image_1920"
+                                                class="img-fluid rounded"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h4><t t-esc="car.marque"/> <t t-esc="car.modele"/></h4>
+                                        <p><strong>Prix par jour :</strong> <t t-esc="car.prix_par_jour"/> €</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="/voitures/book/submit" method="POST">
+
+                                    <input type="hidden" name="csrf_token"
+                                        t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="car_id"
+                                        t-att-value="car.id"/>
+
+                                    <h5 class="mb-3">Vos informations</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Prénom *</strong></label>
+                                            <input type="text" name="client_firstname"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Nom *</strong></label>
+                                            <input type="text" name="client_lastname"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Email *</strong></label>
+                                            <input type="email" name="client_email"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Téléphone</strong></label>
+                                            <input type="tel" name="client_phone"
+                                                class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Pays</strong></label>
+                                            <input type="text" name="client_country"
+                                                class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="mb-3 mt-4">Dates de location</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de prise en charge *</strong></label>
+                                            <input type="date" name="date_debut"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label"><strong>Date de restitution *</strong></label>
+                                            <input type="date" name="date_fin"
+                                                class="form-control" required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Notes / Demandes spéciales</strong></label>
+                                        <textarea name="notes" class="form-control" rows="3"/>
+                                    </div>
+
+                                    <h5 class="mb-3 mt-4">Mode de paiement</h5>
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Prestataire de paiement *</strong></label>
+                                        <select name="payment_provider_id" class="form-select" required="1">
+                                            <option value="">-- Choisir --</option>
+                                            <t t-foreach="providers" t-as="provider">
+                                                <option t-att-value="provider.id"><t t-esc="provider.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fa fa-check me-2"/>
+                                            Confirmer la réservation
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="car_payment_page" name="paiment location voiture">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="mb-4"><i class="fa fa-credit-card me-2"/>Paiement</h1>
+                        <div class="card">
+                            <div class="card-body">
+                                <p><strong>Réservation :</strong> <t t-esc="transaction.reservation_id.name"/></p>
+                                <p><strong>Montant :</strong> <t t-esc="transaction.amount"/> €</p>
+                                <p><strong>Prestataire :</strong> <t t-esc="transaction.provider_id.name"/></p>
+                                <form action="/voitures/payment/submit" method="POST">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="transaction_id" t-att-value="transaction.id"/>
+                                    <div class="mb-3">
+                                        <label class="form-label">Numéro de carte (simulateur, 16 chiffres)</label>
+                                        <input type="text" name="card_number" class="form-control" maxlength="16" required="1"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">Payer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="car_confirm_page" name="Confirmation location voiture">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center">
+
+                        <i class="fa fa-check-circle fa-5x text-success mb-4"/>
+                        <h1>Réservation enregistrée !</h1>
+
+                        <p class="lead">
+                            Merci <strong><t t-esc="reservation.client_name"/></strong> !
+                            Votre demande a bien été enregistrée.
+                            Nous vous contacterons à l'adresse
+                            <strong><t t-esc="reservation.client_email"/></strong>.
+                        </p>
+
+                        <div class="card mt-4 text-start">
+                            <div class="card-body">
+                                <p><strong>Référence :</strong> <t t-esc="reservation.name"/></p>
+                                <p><strong>Véhicule :</strong> <t t-esc="reservation.car_id.name"/></p>
+                                <p><strong>Prise en charge :</strong> <t t-esc="reservation.date_depart"/></p>
+                                <p><strong>Restitution :</strong> <t t-esc="reservation.date_retour"/></p>
+                                <p><strong>Prix total :</strong> <t t-esc="reservation.prix_total"/> €</p>
+                            </div>
+                        </div>
+
+                        <a href="/voitures" class="btn btn-primary mt-4">
+                            Voir d'autres voitures
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
 </odoo>

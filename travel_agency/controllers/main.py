@@ -338,6 +338,122 @@ class TravelController(http.Controller):
             'car': car,
         })
 
+    @http.route('/voitures/book/<int:car_id>', type='http', auth='public', website=True)
+    def car_booking_page(self, car_id, **kwargs):
+        car = request.env['travel.car'].sudo().browse(car_id)
+        if not car.exists():
+            return request.redirect('/voitures')
+        providers = request.env['travel.payment.provider'].sudo().search([('active', '=', True)])
+        return request.render('travel_agency.car_booking_page', {
+            'car': car,
+            'providers': providers,
+        })
+    @http.route('/voitures/book/submit', type='http', auth='public', website=True, methods=['POST'])
+    def car_book_submit(self, **kwargs):
+        car_id = int(kwargs.get('car_id', 0))
+        client_firstname = kwargs.get('client_firstname', '').strip()
+        client_lastname = kwargs.get('client_lastname', '').strip()
+        client_email = kwargs.get('client_email', '').strip()
+        client_phone = kwargs.get('client_phone', '').strip()
+        client_country = kwargs.get('client_country', '').strip()
+        date_debut_str = kwargs.get('date_debut', '')
+        date_fin_str = kwargs.get('date_fin', '')
+        notes = kwargs.get('notes', '').strip()
+
+        car = request.env['travel.car'].sudo().browse(car_id)
+        if not car.exists():
+            return request.redirect('/voitures')
+
+        providers = request.env['travel.payment.provider'].sudo().search([('active', '=', True)])
+        try: 
+            date_debut = datetime.strptime(date_debut_str, '%Y-%m-%d').date()
+            date_fin = datetime.strptime(date_fin_str, '%Y-%m-%d').date()
+        except ValueError:
+            return request.render('travel_agency.car_booking_page', {
+                'car': car,
+                'providers': providers,
+                'error': 'Dates invalides.',
+
+            })
+        if date_fin <= date_debut:
+            return request.render('travel_agency.car_booking_page', {
+                'car': car,
+                'providers': providers,
+                'error': 'La date de restitution doit être après la date de prise de charge .',
+            })
+        payment_provider_id = int(kwargs.get('payment_provider_id', 0) or 0)
+        if not payment_provider_id:
+            return request.render('travel_agency.car_booking_page', {
+                'car': car,
+                'providers': providers,
+                'error': 'Veuillez choisir un prestataire de paiement.',
+            })
+
+        reservation = request.env['travel.reservation'].sudo().create({
+            'client_firstname': client_firstname,
+            'client_lastname': client_lastname,
+            'client_email': client_email,
+            'client_phone': client_phone,
+            'client_country': client_country,
+            'car_id': car_id,
+            'date_depart': date_debut,
+            'date_retour': date_fin,
+            'nb_adultes': 1,
+            'nb_enfants': 0,
+            'notes': notes,
+            'payment_provider_id': payment_provider_id,
+            'state': 'en_attente',
+            })
+
+        transaction = request.env['travel.payment.transaction'].sudo().create({
+            'reservation_id': reservation.id,
+            'provider_id': payment_provider_id,
+            'state': 'pending',
+            'first_name': client_firstname,
+            'last_name': client_lastname,
+            'email': client_email,
+            'phone': client_phone,
+        })
+
+        return request.redirect('/voitures/payment/%d' % transaction.id)
+    
+    @http.route('/voitures/payment/<int:transaction_id>', type='http', auth='public', website=True)
+    def car_payment_page(self, transaction_id, **kwargs):
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists() or transaction.state != 'pending':
+            return request.redirect('/voitures')
+        return request.render('travel_agency.car_payment_page', {
+            'transaction': transaction,
+        })
+    @http.route('/voitures/payment/submit', type='http', auth='public', website=True, methods=['POST'])
+    def car_payment_submit(self, **kwargs):
+        transaction_id = int(kwargs.get('transaction_id', 0))
+        transaction = request.env['travel.payment.transaction'].sudo().browse(transaction_id)
+        if not transaction.exists():
+            return request.redirect('/voitures')
+
+        card_number = kwargs.get('card_number', '').strip()
+        card_last_4 = card_number[-4:] if len(card_number) >= 4 else ''
+
+        # Simulateur : on valide juste que le numéro de carte a bien 16 chiffres
+        if len(card_number.replace(' ', '')) == 16:
+            transaction.write({
+                'state': 'done',
+                'card_last_4': card_last_4,
+            })
+            transaction.action_done()
+            transaction.reservation_id.action_confirm()
+        else:
+            transaction.action_failed()
+            return request.render('travel_agency.car_payment_page', {
+                'transaction': transaction,
+                'error': 'Numéro de carte invalide (simulateur : 16 chiffres requis).',
+            })
+
+        return request.render('travel_agency.car_confirm_page', {
+            'reservation': transaction.reservation_id,
+        }) 
+
     # ============================================
     # NOUVELLES ROUTES - TRAVEL GUIDE (Guides touristiques)
     # ============================================
