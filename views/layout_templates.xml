@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         LAYOUT GLOBAL — monetiques.fr
+         Surcharge website.layout : topbar + header + footer
+    ============================================================ -->
+
+    <template id="layout" name="Monetiques Layout" inherit_id="website.layout" primary="True">
+
+        <!-- TOPBAR -->
+        <xpath expr="//header" position="before">
+            <div class="mq-topbar">
+                <div class="mq-container">
+                    <div class="mq-topbar-left">
+                        <div class="mq-topbar-item">
+                            <i class="fa fa-phone"/>
+                            <a href="tel:+33184800222">01 84 80 02 22</a>
+                        </div>
+                        <div class="mq-topbar-item">
+                            <i class="fa fa-envelope"/>
+                            <a href="mailto:contact@monetiques.fr">contact@monetiques.fr</a>
+                        </div>
+                    </div>
+                    <a href="#" class="mq-topbar-cta" data-rappel-trigger="1">
+                        <i class="fa fa-phone"/> Être rappelé
+                    </a>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- HEADER -->
+        <xpath expr="//header" position="replace">
+            <header class="mq-header" id="top">
+                <div class="mq-container">
+                    <a href="/" class="mq-logo">MONÉTIQUES</a>
+
+                    <ul class="mq-nav" id="mqNav">
+                        <li class="mq-nav-item mq-nav-has-drop">
+                            <a href="/solutions" class="mq-nav-link">
+                                Solutions <i class="fa fa-chevron-down"/>
+                            </a>
+                            <div class="mq-dropdown">
+                                <a href="/solutions#terminaux-fixes" class="mq-dropdown-item">Terminaux de paiement</a>
+                                <a href="/solutions#mobile" class="mq-dropdown-item">Paiement mobile</a>
+                                <a href="/solutions#en-ligne" class="mq-dropdown-item">Paiement en ligne</a>
+                                <a href="/solutions#support" class="mq-dropdown-item">Services &amp; support</a>
+                            </div>
+                        </li>
+                        <li class="mq-nav-item">
+                            <a href="/shop" class="mq-nav-link">Terminaux</a>
+                        </li>
+                        <li class="mq-nav-item">
+                            <a href="/shop" class="mq-nav-link">Tarifs</a>
+                        </li>
+                        <li class="mq-nav-item mq-nav-has-drop">
+                            <a href="/a-propos" class="mq-nav-link">
+                                À propos <i class="fa fa-chevron-down"/>
+                            </a>
+                            <div class="mq-dropdown">
+                                <a href="/a-propos" class="mq-dropdown-item">Notre entreprise</a>
+                                <a href="/a-propos#mission" class="mq-dropdown-item">Notre mission</a>
+                            </div>
+                        </li>
+                        <li class="mq-nav-item">
+                            <a href="/contact" class="mq-nav-link">Contact</a>
+                        </li>
+                    </ul>
+
+                    <div class="mq-nav-actions">
+                        <!-- Panier website_sale -->
+                        <a href="/shop/cart" class="mq-nav-cart" aria-label="Mon panier">
+                            <i class="fa fa-shopping-bag"/>
+                            <t t-if="website_sale_order and website_sale_order.cart_quantity">
+                                <span class="mq-cart-badge"
+                                      t-esc="website_sale_order.cart_quantity"/>
+                            </t>
+                        </a>
+                        <!-- Compte -->
+                        <t t-if="request.env.user._is_public()">
+                            <a href="/web/login" class="mq-btn-secondary"
+                               style="padding:8px 18px;font-size:11px">
+                                Connexion
+                            </a>
+                        </t>
+                        <t t-else="">
+                            <a href="/my/orders" class="mq-btn-secondary"
+                               style="padding:8px 18px;font-size:11px">
+                                <i class="fa fa-user"/> Mon compte
+                            </a>
+                        </t>
+                        <!-- Rappel CTA -->
+                        <a href="#" class="mq-btn-primary" data-rappel-trigger="1">
+                            <i class="fa fa-phone"/> Être rappelé
+                        </a>
+                        <!-- Burger -->
+                        <button class="mq-burger" id="mqBurger"
+                                aria-label="Menu" aria-expanded="false">
+                            <span/><span/><span/>
+                        </button>
+                    </div>
+                </div>
+            </header>
+        </xpath>
+
+        <!-- FOOTER -->
+        <xpath expr="//footer" position="replace">
+            <footer class="mq-footer">
+                <div class="mq-container">
+                    <div class="mq-footer-top">
+                        <!-- Brand -->
+                        <div class="mq-footer-brand">
+                            <a href="/" class="mq-footer-logo">MONÉTIQUES</a>
+                            <p class="mq-footer-about">
+                                Monétiques est un acteur français spécialisé dans les solutions
+                                de paiement pour les professionnels.
+                            </p>
+                            <div class="mq-footer-social">
+                                <a href="#" class="mq-footer-social-link" aria-label="Facebook">
+                                    <i class="fa fa-facebook"/>
+                                </a>
+                                <a href="#" class="mq-footer-social-link" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin"/>
+                                </a>
+                                <a href="#" class="mq-footer-social-link" aria-label="Twitter">
+                                    <i class="fa fa-twitter"/>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Solutions -->
+                        <div class="mq-footer-col">
+                            <h4>Solutions</h4>
+                            <a href="/solutions">Terminaux de paiement</a>
+                            <a href="/solutions#mobile">Paiement mobile</a>
+                            <a href="/solutions#en-ligne">Paiement en ligne</a>
+                            <a href="/solutions#support">Services &amp; support</a>
+                        </div>
+                        <!-- Entreprise -->
+                        <div class="mq-footer-col">
+                            <h4>Entreprise</h4>
+                            <a href="/a-propos">À propos</a>
+                            <a href="/a-propos#mission">Notre mission</a>
+                            <a href="/contact">Recrutement</a>
+                            <a href="/page/mentions-legales">Mentions légales</a>
+                        </div>
+                        <!-- Ressources -->
+                        <div class="mq-footer-col">
+                            <h4>Ressources</h4>
+                            <a href="/shop">Tarifs</a>
+                            <a href="/blog">Actualités</a>
+                            <a href="/page/faq">FAQ</a>
+                            <a href="/page/documentation">Documentation</a>
+                        </div>
+                        <!-- Contact -->
+                        <div class="mq-footer-col">
+                            <h4>Contact</h4>
+                            <a href="tel:+33184800222">
+                                <i class="fa fa-phone" style="font-size:11px;margin-right:5px"/>
+                                01 84 80 02 22
+                            </a>
+                            <a href="mailto:contact@monetiques.fr">
+                                <i class="fa fa-envelope" style="font-size:11px;margin-right:5px"/>
+                                contact@monetiques.fr
+                            </a>
+                            <a href="/contact">
+                                <i class="fa fa-map-marker" style="font-size:11px;margin-right:5px"/>
+                                Demande de rappel
+                            </a>
+                            <div class="mq-footer-col-cta">
+                                <a href="#" class="mq-btn-primary" data-rappel-trigger="1"
+                                   style="font-size:11px;padding:9px 16px">
+                                    Être rappelé
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mq-footer-bottom">
+                        <p class="mq-footer-copy">
+                            © <t t-esc="datetime.datetime.now().year"/> Monétiques — Tous droits réservés
+                        </p>
+                        <div class="mq-footer-legal">
+                            <a href="/page/mentions-legales">Mentions légales</a>
+                            <a href="/page/cgv">CGU</a>
+                            <a href="/page/confidentialite">Politique de confidentialité</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </xpath>
+
+    </template>
+
+    <!-- MODAL RAPPEL (global, injecté dans le layout) -->
+    <template id="rappel_modal" name="Modal Rappel" inherit_id="website.layout">
+        <xpath expr="//body" position="inside">
+            <div id="mqRappelModal" style="
+                display:none; position:fixed; inset:0; z-index:9999;
+                background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
+            ">
+                <div style="
+                    background:#fff; border-radius:12px; padding:40px;
+                    width:100%; max-width:440px; position:relative;
+                    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+                ">
+                    <button data-rappel-close="1" style="
+                        position:absolute; top:16px; right:16px; background:none;
+                        border:none; font-size:20px; cursor:pointer; color:#888;
+                        line-height:1;
+                    ">&#215;</button>
+                    <h2 style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:#1A1A2E;margin-bottom:8px">
+                        Être rappelé
+                    </h2>
+                    <p style="font-size:14px;color:#888;margin-bottom:24px">
+                        Laissez-nous vos coordonnées, nous vous rappelons sous 1h ouvrée.
+                    </p>
+                    <form method="POST" action="/rappel">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+                            <label style="font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px">
+                                Nom
+                            </label>
+                            <input type="text" name="name" placeholder="Votre nom"
+                                   style="padding:11px 14px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;outline:none;font-family:'Roboto',sans-serif"/>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:24px">
+                            <label style="font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px">
+                                Téléphone <span style="color:#0D47A1">*</span>
+                            </label>
+                            <input type="tel" name="phone" required="required" placeholder="01 84 80 02 22"
+                                   style="padding:11px 14px;border:1.5px solid #E8EEF8;border-radius:8px;font-size:14px;outline:none;font-family:'Roboto',sans-serif"/>
+                        </div>
+                        <button type="submit" class="mq-btn-primary" style="width:100%;justify-content:center">
+                            <i class="fa fa-phone"/> Me faire rappeler
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
