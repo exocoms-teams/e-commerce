@@ -29,20 +29,12 @@
             <field name="website_id" ref="website.default_website" />
         </record>
 
-        <!-- <record id="menu_offer" model="website.menu">
+        <record id="menu_offer" model="website.menu">
             <field name="name">Promotions</field>
             <field name="url">/shop?sale=1</field>
             <field name="parent_id" ref="menu_shop"/>
             <field name="sequence">20</field>
-        </record> -->
+        </record>
 
-        <!-- on applique le parent_id à la volée pour récupérer la rev -->
-        <function model="website.menu" name="write">
-            <value model="website.menu" eval="[ref('custom_supplements.menu_home'), ref('custom_supplements.menu_shop')]"/>
-            <value eval="{
-                'parent_id': obj.env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).id,
-                'website_id': obj.env['website.menu'].search([('parent_id', '=', False), ('website_id', '!=', False)], limit=1).website_id.id,
-            }"/>
-        </function>
     </data>
 </odoo>
