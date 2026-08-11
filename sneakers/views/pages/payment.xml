@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="page_payment" name="Sneakers Payment">
+
+        <t t-call="website.layout">
+
+            <t t-set="title" t-value="'Payment | SNEAKERS Premium Footwear'"/>
+            <t t-set="description" t-value="'Choose your payment method to complete your order.'"/>
+            <t t-set="body_class" t-value="'sn-checkout-page'"/>
+
+            <div class="oe_structure oe_empty"/>
+
+            <!-- PAYMENT HEADER -->
+            <section class="sn-checkout-header oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-section-header">
+
+                        <span class="sn-section-subtitle">
+                            Payment
+                        </span>
+
+                        <h2>
+                            Choose Payment Method
+                        </h2>
+
+                        <p>
+                            Select how you'd like to pay for your order.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ERROR BANNER -->
+            <t t-if="error == 'select_method'">
+                <div class="mn-container">
+                    <div class="sn-checkout-error">
+                        Please select a payment method to continue.
+                    </div>
+                </div>
+            </t>
+
+            <!-- PAYMENT PROGRESS -->
+            <section class="sn-checkout-progress oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-progress-container">
+
+                        <div class="sn-progress-line"></div>
+
+                        <div class="sn-progress-step done">
+                            <div class="sn-step-circle">✓</div>
+                            <span>Cart</span>
+                        </div>
+
+                        <div class="sn-progress-step done">
+                            <div class="sn-step-circle">✓</div>
+                            <span>Address</span>
+                        </div>
+
+                        <div class="sn-progress-step done">
+                            <div class="sn-step-circle">✓</div>
+                            <span>Shipping</span>
+                        </div>
+
+                        <div class="sn-progress-step active">
+                            <div class="sn-step-circle">4</div>
+                            <span>Payment</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- PAYMENT CONTENT -->
+            <section class="sn-checkout oe_structure oe_empty">
+
+                <div class="mn-container">
+
+                    <div class="sn-checkout-layout">
+
+                        <form id="sn-payment-form" method="POST" action="/payment">
+
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <!-- PAYMENT METHOD -->
+                                <div class="sn-checkout-card">
+
+                                    <h3>Select Payment Method</h3>
+
+                                    <t t-foreach="payment_providers" t-as="provider">
+                                        <label class="sn-radio-card">
+                                            <input type="radio" name="payment_provider_id"
+                                                   t-att-value="provider.id"
+                                                   checked="checked"/>
+                                            <div>
+                                                <div class="sn-radio-title">
+                                                    <strong t-out="provider.name"/>
+                                                </div>
+                                                <p t-if="provider.auth_msg" t-out="provider.auth_msg"/>
+                                                <p t-elif="provider.code == 'manual'">
+                                                    Pay via bank transfer. Your order will be confirmed after we verify your payment.
+                                                </p>
+                                            </div>
+                                        </label>
+                                    </t>
+
+                                    <t t-if="not payment_providers">
+                                        <p style="color:#999;text-align:center;padding:20px 0;">
+                                            No payment methods available. Please contact support.
+                                        </p>
+                                    </t>
+
+                                </div>
+
+                                <!-- PAY BUTTON -->
+                                <button class="sn-confirm-btn" type="submit" t-if="payment_providers">
+                                    Pay Now →
+                                </button>
+
+                        </form>
+
+                        <aside class="sn-checkout-summary">
+                            <div class="sn-summary-card">
+
+                                <h3>Order Summary</h3>
+
+                                <t t-foreach="order_lines" t-as="line">
+                                    <div class="sn-summary-product">
+                                        <img t-if="line.product_id.image_256"
+                                             t-att-src="'/web/image/product.product/%d/image_256' % line.product_id.id"
+                                             t-att-alt="line.product_id.name"/>
+                                        <img t-else=""
+                                             src="/sneakers/static/src/img/products/product-1.jpg"
+                                             t-att-alt="line.product_id.name"/>
+                                        <div>
+                                            <h4 t-out="line.name"/>
+                                            <span>Qty: <t t-out="line.product_uom_qty"/></span>
+                                        </div>
+                                        <strong t-out="'%.2f $' % line.price_subtotal"/>
+                                    </div>
+                                </t>
+
+                                <div class="sn-summary-divider"/>
+
+                                <div class="sn-summary-row">
+                                    <span>Subtotal</span>
+                                    <span t-out="'%.2f $' % subtotal"/>
+                                </div>
+
+                                <div class="sn-summary-row" t-if="delivery_price > 0">
+                                    <span>Shipping</span>
+                                    <span t-out="'%.2f $' % delivery_price"/>
+                                </div>
+                                <div class="sn-summary-row" t-else="">
+                                    <span>Shipping</span>
+                                    <span>Free</span>
+                                </div>
+
+                                <div class="sn-summary-row" t-if="tax > 0">
+                                    <span>Tax</span>
+                                    <span t-out="'%.2f $' % tax"/>
+                                </div>
+
+                                <div class="sn-promo-section">
+                                    <t t-set="redirect" t-value="'/shop/payment'"/>
+                                    <t t-call="website_sale.coupon_form"/>
+                                </div>
+
+                                <div class="sn-summary-divider"/>
+
+                                <div class="sn-summary-row sn-summary-total">
+                                    <span>Total</span>
+                                    <span t-out="'%.2f $' % total"/>
+                                </div>
+
+                                <!-- Address summary -->
+                                <div class="sn-summary-divider"/>
+
+                                <div class="sn-summary-address">
+                                    <h4>Shipping to</h4>
+                                    <p t-out="partner.name"/>
+                                    <p t-if="partner.street" t-out="partner.street"/>
+                                    <p t-if="partner.city">
+                                        <t t-out="partner.city"/>
+                                        <t t-if="partner.zip">, <t t-out="partner.zip"/></t>
+                                    </p>
+                                    <p t-if="partner.country_id" t-out="partner.country_id.name"/>
+                                </div>
+
+                                <!-- Back to checkout -->
+                                <a href="/shop/checkout" class="sn-back-cart">
+                                    ← Back to Checkout
+                                </a>
+
+                            </div>
+
+                        </aside>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </t>
+
+    </template>
+
+</odoo>
