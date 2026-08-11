@@ -27,35 +27,7 @@
     <template id="page_home" name="Capsule House - Accueil">
         <t t-call="website.layout">
             <t t-set="title">Capsule House — Maisons modulaires</t>
-            <!--
-                CORRECTIF (v19.0.1.0.58) : comparaison DIRECTE, dans la même
-                session d'édition, entre notre hero (jamais sélectionnable)
-                et un bloc natif Odoo ("Masonry") glissé juste après lui.
-                Le bloc natif n'a LUI NON PLUS aucun data-oe-model sur sa
-                propre <section> — donc cet attribut n'est PAS ce qui
-                déclenche le panneau Style, contrairement à ce qu'on
-                pensait depuis la v56. La vraie différence : le bloc natif
-                est un enfant du <div id="oe_structure_ch_home_after_hero">
-                juste en dessous, qui porte lui `class="oe_structure
-                oe_empty o_editable" contenteditable="true"` — c'est CETTE
-                classe `o_editable` + `contenteditable="true"` sur un
-                ANCÊTRE qui rend un `[data-snippet]` sélectionnable au clic
-                (le SnippetsMenu d'Odoo cherche le plus proche ancêtre
-                o_editable). Notre hero n'avait AUCUN ancêtre o_editable
-                jusqu'à <main> inclus.
-
-                On ne réutilise PAS `oe_structure` ici (ça redéclencherait
-                le bug de la v48 : Odoo strip data-oe-model sur le contenu
-                atteint via <t t-call> à l'intérieur d'un oe_structure) —
-                seulement les classes/attributs qui rendent la zone
-                "éditable" aux yeux du SnippetsMenu, sans activer le
-                mécanisme de zone de dépôt/réécriture d'arch. La <section>
-                elle-même garde contenteditable="false" (inchangé), donc
-                aucun risque de taper du texte libre dans cette div.
-            -->
-            <div class="o_editable" contenteditable="true">
-                <t t-call="capsule_house_theme.partial_hero"/>
-            </div>
+            <t t-call="capsule_house_theme.partial_hero"/>
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_after_hero"/>
             <t t-call="capsule_house_theme.partial_featured_products"/>
             <div class="oe_structure oe_empty" id="oe_structure_ch_home_bottom"/>
