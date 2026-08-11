@@ -60,41 +60,25 @@
         dynamique). L'illustration SVG est marquée o_not_editable,
         comme le SVG décoratif d'exocoms (s_exocoms_hero_svg
         o_not_editable).
-
-        CAUSE TROUVÉE (v19.0.1.0.56), via comparaison DIRECTE du DOM
-        RENDU des deux sites (capture DevTools du client, onglet
-        Elements) et non plus seulement du code source : la
-        <section> d'exocoms porte, en plus de data-snippet/data-name/
-        o_colored_level, les classes `oe_img_bg o_bg_img_center
-        o_bg_img_origin_border_box` (gestion d'image de fond) — et
-        Odoo lui ajoute alors AUTOMATIQUEMENT au rendu la classe
-        `o_editable` ainsi que `data-oe-model="ir.ui.view"`
-        `data-oe-id` `data-oe-field="arch"` `data-oe-xpath="/t[1]/
-        section[1]"` DIRECTEMENT SUR LA SECTION. Sur notre hero (avant
-        cette version), ces attributs n'apparaissaient que sur les
-        enfants (titre, sous-titre...), jamais sur la <section>
-        elle-même : Odoo ne la reconnaissait donc pas comme "bloc"
-        sélectionnable, seulement son contenu texte. `o_colored_level`
-        seul (v19.0.1.0.50) était insuffisant ; il fallait aussi
-        `oe_img_bg`/`o_bg_img_center` pour déclencher ce marquage
-        complet. Ajoutées ici SANS changer le fond actuel (dégradé/
-        blanc CSS existant, .ch-hero dans homepage.css) : aucune image
-        de fond n'est définie en style inline, donc rien ne change
-        visuellement — ces classes servent uniquement à activer le
-        mécanisme d'édition. Le client pourra, s'il le souhaite, plus
-        tard remplacer ce fond par une vraie photo directement depuis
-        le Website Builder (bouton "Replace" du panneau Background).
     -->
 
     <template id="partial_hero_fr" name="Capsule House - Hero FR">
         <section class="ch-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
                 <div class="ch-hero-content">
-                    <div class="ch-rating-badge" t-if="rating_value">
+                    <!-- Note/comptages/produits vedettes : valeurs dynamiques
+                         désormais injectées côté client (voir
+                         static/src/js/main.js, initHeroDynamicContent) via
+                         /capsule-house/hero-data.json, PAS via t-esc/t-if
+                         ici (v19.0.1.0.60, voir README "Cause réelle #3").
+                         Placeholders statiques, masqués par défaut (d-none),
+                         affichés par le JS uniquement si la donnée existe
+                         réellement — aucune donnée fabriquée. -->
+                    <div class="ch-rating-badge d-none" data-ch-rating-badge="1">
                         <i class="fa fa-star"/>
-                        <span t-esc="rating_value"/>
+                        <span data-ch-rating-value="1"/>
                         <span class="ch-rating-sep">·</span>
-                        <span t-esc="'%s avis' % rating_count"/>
+                        <span data-ch-rating-message="1"/>
                     </div>
 
                     <h1 class="ch-hero-title oe_editable">
@@ -119,14 +103,14 @@
 
                     <div class="ch-hero-stats">
                         <div class="ch-hero-stat">
-                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-number" data-ch-stat="published_products_count">0</span>
                             <span class="ch-hero-stat-label">modèles disponibles</span>
                         </div>
                         <!-- "pods installés" : métrique commerciale non vérifiée
                              par ce module, masquée tant qu'elle n'est pas
                              renseignée (ir.config_parameter). -->
-                        <div class="ch-hero-stat" t-if="units_installed_count">
-                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                        <div class="ch-hero-stat d-none" data-ch-stat-block="units_installed_count">
+                            <span class="ch-hero-stat-number" data-ch-stat="units_installed_count">0</span>
                             <span class="ch-hero-stat-label">pods installés</span>
                         </div>
                         <div class="ch-hero-stat">
@@ -173,45 +157,25 @@
                         </svg>
                     </div>
 
-                    <!-- Cartes flottantes produits. Test diagnostique
-                         (v19.0.1.0.53/54, voir README "Test diagnostique
-                         cartes flottantes du hero") : ce bloc a été
-                         temporairement neutralisé (t-if="False" puis
-                         commentaire XML) pour vérifier s'il empêchait le
-                         panneau Style d'apparaître sur le hero — RÉSULTAT
-                         NÉGATIF, confirmé par le client (v19.0.1.0.55) :
-                         le panneau restait vide même avec ce bloc
-                         entièrement absent de l'arch compilé. Cette piste
-                         est donc écartée, le bloc est restauré tel quel. -->
-                 <!--  <t t-if="featured_products">
-                        <t t-foreach="featured_products[:2]" t-as="hero_product">
-                            <a t-attf-href="/shop/#{ hero_product['url'] }"
-                               t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
-                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">Nouveau</span>
-                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Promo</span>
-                                <div class="ch-hero-float-img">
-                                    <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
-                                         t-att-alt="hero_product['name']"/>
-                                </div>
-                                <div class="ch-hero-float-body">
-                                    <span class="ch-hero-float-name" t-esc="hero_product['name']"/>
-                                    <span class="ch-hero-float-price"
-                                          t-esc="hero_product['price']"
-                                          t-options="{'widget': 'monetary', 'display_currency': hero_product['currency']}"/>
-                                </div>
-                            </a>
-                        </t>
-                        <form t-if="len(featured_products) > 1"
-                              t-attf-action="/shop/cart/update" method="post"
-                              class="ch-hero-cart-shortcut">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
-                            <input type="hidden" name="add_qty" value="1"/>
-                            <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
-                                <i class="fa fa-plus"/> Ajouter au panier
-                            </button>
-                        </form>
-                    </t> -->
+                    <!-- Cartes flottantes produits + raccourci "Ajouter au
+                         panier" : contenu 100% dynamique, désormais construit
+                         côté client par le JS (voir plus haut) à partir de
+                         /capsule-house/hero-data.json — squelette statique
+                         vide ici, rien ne s'affiche tant que le JS n'a pas
+                         reçu de vrais produits publiés (aucune donnée
+                         fabriquée). Route du formulaire native website_sale
+                         (/shop/cart/update), CSRF token injecté par le JS. -->
+                    <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="Nouveau" data-ch-label-promo="Promo"/>
+
+                    <form action="/shop/cart/update" method="post"
+                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
+                        <input type="hidden" name="csrf_token" value=""/>
+                        <input type="hidden" name="product_id" value=""/>
+                        <input type="hidden" name="add_qty" value="1"/>
+                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
+                            <i class="fa fa-plus"/> Ajouter au panier
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -223,11 +187,14 @@
         <section class="ch-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
                 <div class="ch-hero-content">
-                    <div class="ch-rating-badge" t-if="rating_value">
+                    <!-- Voir partial_hero_fr pour l'explication complète
+                         (v19.0.1.0.60) : valeurs dynamiques injectées côté
+                         client via /capsule-house/hero-data.json. -->
+                    <div class="ch-rating-badge d-none" data-ch-rating-badge="1">
                         <i class="fa fa-star"/>
-                        <span t-esc="rating_value"/>
+                        <span data-ch-rating-value="1"/>
                         <span class="ch-rating-sep">·</span>
-                        <span t-esc="'%s reviews' % rating_count"/>
+                        <span data-ch-rating-message="1"/>
                     </div>
 
                     <h1 class="ch-hero-title oe_editable">
@@ -252,11 +219,11 @@
 
                     <div class="ch-hero-stats">
                         <div class="ch-hero-stat">
-                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-number" data-ch-stat="published_products_count">0</span>
                             <span class="ch-hero-stat-label">models available</span>
                         </div>
-                        <div class="ch-hero-stat" t-if="units_installed_count">
-                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                        <div class="ch-hero-stat d-none" data-ch-stat-block="units_installed_count">
+                            <span class="ch-hero-stat-number" data-ch-stat="units_installed_count">0</span>
                             <span class="ch-hero-stat-label">pods installed</span>
                         </div>
                         <div class="ch-hero-stat">
@@ -294,36 +261,20 @@
                             <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
                         </svg>
                     </div>
-                    <!--  <t t-if="featured_products">
-                        <t t-foreach="featured_products[:2]" t-as="hero_product">
-                            <a t-attf-href="/shop/#{ hero_product['url'] }"
-                               t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
-                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">New</span>
-                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">Sale</span>
-                                <div class="ch-hero-float-img">
-                                    <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
-                                         t-att-alt="hero_product['name']"/>
-                                </div>
-                                <div class="ch-hero-float-body">
-                                    <span class="ch-hero-float-name" t-esc="hero_product['name']"/>
-                                    <span class="ch-hero-float-price"
-                                          t-esc="hero_product['price']"
-                                          t-options="{'widget': 'monetary', 'display_currency': hero_product['currency']}"/>
-                                </div>
-                            </a>
-                        </t>
 
-                        <form t-if="len(featured_products) > 1"
-                              t-attf-action="/shop/cart/update" method="post"
-                              class="ch-hero-cart-shortcut">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
-                            <input type="hidden" name="add_qty" value="1"/>
-                            <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
-                                <i class="fa fa-plus"/> Add to cart
-                            </button>
-                        </form>
-                    </t> -->
+                    <!-- Voir partial_hero_fr : cartes flottantes + raccourci
+                         panier construits côté client par le JS. -->
+                    <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="New" data-ch-label-promo="Sale"/>
+
+                    <form action="/shop/cart/update" method="post"
+                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
+                        <input type="hidden" name="csrf_token" value=""/>
+                        <input type="hidden" name="product_id" value=""/>
+                        <input type="hidden" name="add_qty" value="1"/>
+                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
+                            <i class="fa fa-plus"/> Add to cart
+                        </button>
+                    </form>
                 </div>
             </div>
 

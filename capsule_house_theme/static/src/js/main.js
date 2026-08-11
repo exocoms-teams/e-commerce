@@ -34,8 +34,131 @@
         });
     }
 
+    /**
+     * Valeurs dynamiques du hero (note, comptages, produits vedettes) —
+     * v19.0.1.0.60, voir README "Cause réelle #3 — contenu dynamique dans
+     * le hero". hero.xml ne contient plus aucun t-esc/t-if : ces valeurs
+     * sont injectées ICI, après le chargement de la page, exactement
+     * comme les snippets dynamiques natifs d'Odoo (doc officielle
+     * "Building blocks > Dynamic Content templates"). Objectif : que
+     * l'arch de hero.xml reste 100% statique, condition nécessaire pour
+     * qu'Odoo marque la <section> du hero comme un bloc sélectionnable
+     * (data-oe-model, panneau Style) — un sous-arbre contenant une
+     * expression dynamique n'est jamais marqué comme "bloc" par Odoo,
+     * confirmé par comparaison directe avec un bloc natif Odoo ET avec
+     * le hero d'exocoms_theme (aucun contenu dynamique dans son arch).
+     *
+     * Dégradation gracieuse : en cas d'échec du fetch (réseau, route
+     * indisponible...), le hero reste utilisable tel quel (aucune donnée
+     * fabriquée en JS de secours, les placeholders restent simplement
+     * masqués/à zéro).
+     */
+    function initHeroDynamicContent() {
+        var hero = document.querySelector('.ch-hero');
+        if (!hero) return;
+
+        fetch('/capsule-house/hero-data.json', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) {
+                if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                return response.json();
+            })
+            .then(function (data) {
+                applyHeroRatingBadge(hero, data);
+                applyHeroStats(hero, data);
+                applyHeroFloatCards(hero, data);
+            })
+            .catch(function () {
+                // Silencieux : dégradation gracieuse, voir docstring ci-dessus.
+            });
+    }
+
+    function applyHeroRatingBadge(hero, data) {
+        if (!data.rating_value) return;
+        var badge = hero.querySelector('[data-ch-rating-badge]');
+        if (!badge) return;
+        var valueEl = badge.querySelector('[data-ch-rating-value]');
+        var messageEl = badge.querySelector('[data-ch-rating-message]');
+        if (valueEl) valueEl.textContent = data.rating_value;
+        if (messageEl) messageEl.textContent = data.rating_message || '';
+        badge.classList.remove('d-none');
+    }
+
+    function applyHeroStats(hero, data) {
+        var publishedEl = hero.querySelector('[data-ch-stat="published_products_count"]');
+        if (publishedEl) publishedEl.textContent = data.published_products_count || 0;
+
+        if (data.units_installed_count) {
+            var unitsBlock = hero.querySelector('[data-ch-stat-block="units_installed_count"]');
+            var unitsValueEl = hero.querySelector('[data-ch-stat="units_installed_count"]');
+            if (unitsValueEl) unitsValueEl.textContent = data.units_installed_count;
+            if (unitsBlock) unitsBlock.classList.remove('d-none');
+        }
+    }
+
+    function applyHeroFloatCards(hero, data) {
+        var container = hero.querySelector('[data-ch-float-cards]');
+        var products = data.featured_products || [];
+        if (!container || !products.length) return;
+
+        var labelNew = container.getAttribute('data-ch-label-new') || 'New';
+        var labelPromo = container.getAttribute('data-ch-label-promo') || 'Sale';
+
+        products.forEach(function (product, index) {
+            var card = document.createElement('a');
+            card.href = product.url;
+            card.className = 'ch-hero-float-card' + (index === 1 ? ' ch-hero-float-card-2' : '');
+
+            if (product.is_new) {
+                var newBadge = document.createElement('span');
+                newBadge.className = 'ch-hero-float-badge ch-hero-float-badge-new';
+                newBadge.textContent = labelNew;
+                card.appendChild(newBadge);
+            }
+            if (product.has_discount) {
+                var promoBadge = document.createElement('span');
+                promoBadge.className = 'ch-hero-float-badge ch-hero-float-badge-promo';
+                promoBadge.textContent = labelPromo;
+                card.appendChild(promoBadge);
+            }
+
+            var imgWrap = document.createElement('div');
+            imgWrap.className = 'ch-hero-float-img';
+            var img = document.createElement('img');
+            img.src = product.image_url;
+            img.alt = product.name;
+            imgWrap.appendChild(img);
+            card.appendChild(imgWrap);
+
+            var body = document.createElement('div');
+            body.className = 'ch-hero-float-body';
+            var nameEl = document.createElement('span');
+            nameEl.className = 'ch-hero-float-name';
+            nameEl.textContent = product.name;
+            var priceEl = document.createElement('span');
+            priceEl.className = 'ch-hero-float-price';
+            priceEl.textContent = product.price_formatted;
+            body.appendChild(nameEl);
+            body.appendChild(priceEl);
+            card.appendChild(body);
+
+            container.appendChild(card);
+        });
+
+        if (data.cart_product_id) {
+            var cartForm = hero.querySelector('[data-ch-cart-shortcut]');
+            if (cartForm) {
+                var productIdInput = cartForm.querySelector('[name="product_id"]');
+                var csrfInput = cartForm.querySelector('[name="csrf_token"]');
+                if (productIdInput) productIdInput.value = data.cart_product_id;
+                if (csrfInput) csrfInput.value = data.csrf_token || '';
+                cartForm.classList.remove('d-none');
+            }
+        }
+    }
+
     function init() {
         initScrollReveal();
+        initHeroDynamicContent();
     }
 
     if (document.readyState === 'loading') {

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 
 from odoo import http
 from odoo.http import request
@@ -149,6 +150,102 @@ class CapsuleHouseWebsite(Website):
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
         })
+
+    @http.route('/capsule-house/hero-data.json', type='http', auth='public',
+                website=True, sitemap=False)
+    def hero_data(self, **kw):
+        """Valeurs dynamiques du hero (note, comptages, produits vedettes),
+        en JSON — récupérées côté client par static/src/js/main.js
+        (initHeroDynamicContent) après le chargement de la page.
+
+        CAUSE DE CE CHANGEMENT (v19.0.1.0.60, voir README "Cause réelle
+        #3") : ces valeurs étaient auparavant rendues via t-esc
+        directement dans hero.xml. Analyse comparative directe (bloc
+        natif Odoo vs notre hero, dans la même session d'édition) a
+        montré qu'Odoo refuse de marquer comme "bloc" sélectionnable
+        (data-oe-model, panneau Style) tout conteneur dont le sous-arbre
+        contient une expression dynamique (t-esc/t-foreach) — confirmé
+        en comparant avec le hero d'exocoms_theme (0% de contenu
+        dynamique dans son arch) et la doc officielle Odoo 19 sur les
+        "Dynamic Content templates", qui montre que les snippets
+        dynamiques NATIFS d'Odoo (ex: Articles de blog) gardent leur
+        <section> 100% statique et injectent le contenu réel via JS
+        après coup — jamais via t-esc dans l'arch. Reproduit ici à
+        l'identique : hero.xml ne contient plus aucune expression
+        dynamique, cette route fournit les vraies valeurs (aucune
+        donnée fabriquée, mêmes calculs qu'avant) pour affichage
+        post-chargement.
+        """
+        website = request.website
+
+        Product = request.env['product.template'].sudo()
+        domain = [
+            ('website_id', '=', website.id),
+            ('is_published', '=', True),
+        ]
+        featured_products = Product.search(domain, limit=8, order='website_sequence asc')
+        published_products_count = Product.search_count(domain)
+
+        rating_value, rating_count = self._get_avis_stats(website)
+        ICP = request.env['ir.config_parameter'].sudo()
+        if rating_value is None:
+            rating_value = ICP.get_param('capsule_house_theme.rating_value')
+            rating_count = ICP.get_param('capsule_house_theme.rating_count')
+        units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
+
+        rating_message = None
+        if rating_value:
+            if request.env.lang == 'fr_FR':
+                rating_message = '%s avis' % rating_count
+            else:
+                rating_message = '%s reviews' % rating_count
+
+        hero_products = self._serialize_products(featured_products)[:2]
+        featured_json = [{
+            'id': item['id'],
+            'url': item['url'],
+            'name': item['name'],
+            'image_url': '/web/image/product.template/%d/image_128' % item['id'],
+            'price_formatted': self._format_price_display(item['currency'], item['price']),
+            'is_new': item['is_new'],
+            'has_discount': item['has_discount'],
+        } for item in hero_products]
+
+        cart_product_id = hero_products[1]['id'] if len(hero_products) > 1 else None
+
+        try:
+            units_installed_count = int(units_installed_count) if units_installed_count else None
+        except (TypeError, ValueError):
+            units_installed_count = None
+
+        data = {
+            'rating_value': rating_value,
+            'rating_message': rating_message,
+            'published_products_count': published_products_count,
+            'units_installed_count': units_installed_count,
+            'featured_products': featured_json,
+            'cart_product_id': cart_product_id,
+            'csrf_token': request.csrf_token(),
+        }
+        return request.make_response(
+            json.dumps(data),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    def _format_price_display(self, currency, amount):
+        """Formatage simple prix+devise pour les cartes flottantes du hero
+        (affichage uniquement — jamais utilisé pour une transaction
+        réelle, le vrai prix/devise reste géré nativement par
+        website_sale à l'achat).
+        """
+        decimals = currency.decimal_places or 2
+        amount_str = '{:,.{}f}'.format(amount, decimals)
+        if request.env.lang == 'fr_FR':
+            amount_str = amount_str.replace(',', ' ').replace('.', ',')
+        symbol = currency.symbol or currency.name
+        if currency.position == 'before':
+            return '%s%s' % (symbol, amount_str)
+        return '%s %s' % (amount_str, symbol)
 
     @http.route('/capsule-house/home', type='http', auth='public',
                 website=True, sitemap=False)

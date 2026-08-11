@@ -1456,17 +1456,75 @@ tentatives successives sur le balisage du hero (v49 à v56) n'ont rien
 changé : le problème était un niveau au-dessus, dans
 `home.xml`/`avis.xml`, pas dans `hero.xml`/`avis_hero.xml`.
 
-**Corrigé** : le `<t t-call="capsule_house_theme.partial_hero"/>`
-(et `avis_hero`) est maintenant enveloppé dans un `<div
-class="o_editable" contenteditable="true">` simple — **pas** un
-`oe_structure` (qui redéclencherait le bug de la v48 : Odoo strip
-`data-oe-model` sur le contenu atteint via `<t t-call>` à l'intérieur
-d'un `oe_structure`), juste les classes/attributs minimaux qui
-rendent la zone visible au SnippetsMenu. La `<section>` elle-même
-garde `contenteditable="false"` (inchangé), donc aucun risque de
-taper du texte libre dans ce nouveau wrapper — les enfants marqués
-`oe_editable` (h1, p, etc.) restent les seuls points d'entrée pour
-l'édition de texte, exactement comme avant.
+**Corrigé (tentative v58, REVERT EN v59)** : le `<t
+t-call="capsule_house_theme.partial_hero"/>` (et `avis_hero`) a été
+enveloppé dans un `<div class="o_editable" contenteditable="true">`.
+**Erreur** : `contenteditable="true"` écrit en dur dans le code source
+est un attribut HTML natif du navigateur, appliqué à TOUS les
+visiteurs en permanence — pas une classe Odoo activée seulement en
+mode édition. Résultat en conditions réelles : le hero devenait
+éditable pour n'importe quel visiteur, sans jamais cliquer sur
+"Edit". Signalé immédiatement par le client ("ça rendait le hero
+éditable sans que je ne clique sur edit") et reverté en v59. Ce que
+montrait la capture DevTools (le `contenteditable="true"` sur le div
+`oe_structure` généré automatiquement) était injecté dynamiquement
+par Odoo, côté serveur, UNIQUEMENT pour la session de l'éditeur
+connecté — jamais présent dans le code source, jamais statique.
+Leçon : ne plus jamais coder `contenteditable` en dur dans un
+template.
+
+## Cause réelle #3 — contenu dynamique dans le hero (v19.0.1.0.60)
+
+Après le revert de la v58/59, retour à l'analyse : comparaison
+directe, dans la même session d'édition, entre le hero (toujours pas
+sélectionnable) et un bloc natif Odoo ("Masonry") glissé juste après
+lui. Le bloc natif s'est révélé parfaitement fonctionnel (panneau
+Style complet), et surtout **sa propre `<section>` n'avait elle non
+plus AUCUN `data-oe-model`** — ce qui invalide rétroactivement toute
+la piste suivie depuis la v56 (cet attribut n'a jamais été le
+déclencheur du panneau Style, la corrélation observée était fausse).
+
+Comparaison précise du DOM complet fourni par le client : tout ce qui
+est purement statique dans le hero est marqué `o_editable`/
+`data-oe-*` par Odoo — y compris des conteneurs entiers comme
+`.ch-hero-visual` (toute la colonne illustration). Mais
+`.ch-hero-content`, `.ch-hero-grid` et la `<section>` elle-même ne le
+sont jamais. La seule chose commune à ces trois-là, absente de
+`.ch-hero-visual` : ils contiennent quelque part `.ch-hero-stats`, qui
+affichait de VRAIES valeurs dynamiques via `t-esc`
+(`published_products_count`, `units_installed_count`), ainsi que le
+badge de note (`rating_value`/`rating_count`) et les cartes flottantes
+de produits vedettes (`t-foreach` sur `featured_products`).
+
+Vérification croisée, deux sources indépendantes :
+- Lecture directe du code source complet d'exocoms_theme
+  (`views/partials/hero.xml`) : **aucune** expression dynamique nulle
+  part dans leur hero, uniquement du texte fixe. `avis_hero.xml` (qui
+  fonctionne chez nous aussi) n'en a pas non plus.
+- Doc officielle Odoo 19 ("Building blocks > Dynamic Content
+  templates") : les snippets dynamiques natifs d'Odoo (ex: Articles de
+  blog) gardent leur `<section>` 100% statique dans l'arch source, et
+  injectent le contenu réel via **JavaScript après le chargement de la
+  page** — jamais via `t-esc`/`t-foreach` directement dans l'arch.
+
+**Corrigé**, à la demande du client ("avoir tout ce qu'on veut en
+pensant par le JS") : `hero.xml` (`partial_hero_fr`/`_en`) ne contient
+plus aucune expression dynamique. Les 4 zones concernées (badge de
+note, comptage produits publiés, comptage unités installées, cartes
+flottantes + raccourci panier) sont désormais des placeholders
+statiques (masqués par défaut via `d-none` quand la donnée peut être
+absente), peuplés côté client par `static/src/js/main.js`
+(`initHeroDynamicContent`) à partir d'une nouvelle route JSON dédiée,
+`/capsule-house/hero-data.json` (`CapsuleHouseWebsite.hero_data()`,
+`controllers/main.py`) — mêmes calculs qu'avant, aucune donnée
+fabriquée, juste injectés après coup au lieu d'être rendus côté
+serveur dans l'arch. Dégradation gracieuse : en cas d'échec du fetch,
+le hero reste utilisable, les placeholders restent simplement masqués.
+
+Effet attendu : la `<section>` du hero redevient 100% statique dans
+l'arch source — condition nécessaire, confirmée par comparaison
+directe avec exocoms_theme et le bloc natif Masonry, pour qu'Odoo la
+marque comme un bloc sélectionnable avec panneau Style complet.
 
 ## Point de vérification connu
 
