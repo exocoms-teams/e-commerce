@@ -5,14 +5,6 @@
 
         <t t-call="website.layout">
 
-            <t t-set="title" t-value="'%s — %s | Sneakers' % (product.name, product.brand_id.name or 'Premium Sneakers')"/>
-            <t t-set="description" t-value="(product.description_sale or product.name)[:160]"/>
-            <t t-set="og_title" t-value="'%s — %s' % (product.name, product.brand_id.name or 'Sneakers')"/>
-            <t t-set="og_description" t-value="(product.description_sale or product.name)[:200]"/>
-            <t t-set="og_image" t-value="'%s/web/image/product.template/%s/image_1024' % (request.httprequest.url_root.rstrip('/'), product.id)"/>
-            <t t-set="canonical_url" t-value="'%s%s' % (request.httprequest.url_root.rstrip('/'), request.httprequest.path)"/>
-            <t t-set="breadcrumbs" t-value="[{'name': 'Home', 'url': '%s/' % request.httprequest.url_root.rstrip('/')}, {'name': 'Shop', 'url': '%s/shop-sneakers' % request.httprequest.url_root.rstrip('/')}, {'name': product.name}]"/>
-
             <!-- Website Builder editable zone -->
             <div class="oe_structure oe_empty"/>
 
@@ -49,6 +41,7 @@
                         </div>
 
                         <!-- PRODUCT INFORMATION -->
+                                                 <!-- PRODUCT INFORMATION -->
                         <div class="sn-product-content">
 
                             <!-- Product Title -->
@@ -143,6 +136,12 @@
                                 </div>
                             </t>
 
+                        </div>
+                        <!-- END sn-product-content -->
+
+                        <!-- CONTENU SOUS L'IMAGE sur mobile -->
+                        <div class="sn-product-content-bottom">
+
                             <!-- Short Description -->
                             <div class="sn-product-description-short">
                                 <p>
@@ -225,11 +224,6 @@
                                         </t>
                                     </button>
                                 </t>
-                                <a
-                                    href="#categories"
-                                    class="sn-btn-outline-wl">
-                                    Buy Now
-                                </a>
                             </div>
 
                             <!-- Product Meta -->
@@ -276,6 +270,8 @@
                             </div>
 
                         </div>
+                        <!-- END sn-product-content-bottom -->
+                        
                     </div>
                 </div>
             </section>

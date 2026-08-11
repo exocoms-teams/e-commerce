@@ -85,7 +85,7 @@
 
     function launchConfetti() {
         
-        var COLORS   = ["#FF5A1F", "#F9FAFB", "#111111", "#22C55E", "#E74A11"];
+        var COLORS   = ["#111111", "#FFFFFF", "#F9FAFB", "#22C55E", "#6B7280", "#E5E7EB"];
         var container = document.createElement("div");
         container.style.cssText = [
             "position:fixed", "top:0", "left:0", "width:100%", "height:100%",
