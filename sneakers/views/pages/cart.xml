@@ -42,11 +42,12 @@
                                         <div class="sn-cart-attributes">
                                             <span>
                                                 Size :
-                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name == 'Size').mapped('name'))"/>
+                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name.lower() == 'size'
+).mapped('name'))"/>
                                             </span>
                                             <span>
                                                 Color :
-                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name == 'Color').mapped('name'))"/>
+                                                <t t-esc="', '.join(line.product_id.product_template_attribute_value_ids.filtered(lambda a: a.attribute_id.name.lower() == 'color').mapped('name'))"/>
                                             </span>
                                         </div>
                                         <div class="sn-cart-price">
