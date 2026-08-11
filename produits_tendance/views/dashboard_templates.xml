@@ -29,6 +29,22 @@
                         </p>
                     </div>
 
+                    <!-- Tuiles de statistiques (charte graphique Winners) -->
+                    <div class="o_winners_stat_tiles row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="o_winners_stat_tile">
+                                <span class="o_winners_stat_tile__label">Produits analysés</span>
+                                <span class="o_winners_stat_tile__value"><t t-esc="total_products"/></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="o_winners_stat_tile">
+                                <span class="o_winners_stat_tile__label">Score moyen</span>
+                                <span class="o_winners_stat_tile__value"><t t-esc="'%.1f' % avg_score"/><small>/100</small></span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Panneau de filtres : catégorie + pays -->
                     <div class="o_winners_filter_panel mb-4" id="o_winners_filter_panel">
                         <div class="row g-3 align-items-end">
@@ -81,20 +97,21 @@
             </div>
         </t>
         <t t-foreach="products" t-as="p">
+            <t t-set="_score" t-value="p.get('score', p.get('current_score', 0.0))"/>
             <div class="col-md-4 col-sm-6 mb-4">
                 <a t-attf-href="/product/#{p['id']}" class="o_winners_product_card">
                     <!-- Catégorie -->
                     <span class="o_winners_product_card__category" t-if="p.get('category')">
                         <t t-esc="p['category']"/>
                     </span>
-                    
+
                     <!-- Nom du produit -->
                     <h3 class="o_winners_product_card__name"><t t-esc="p['name']"/></h3>
-                    
+
                     <!-- Footer dynamique : Score + Pays -->
                     <div class="o_winners_product_card__footer">
-                        <span class="o_winners_product_card__score">
-                            <t t-esc="'%.1f' % p.get('score', p.get('current_score', 0.0))"/>
+                        <span t-attf-class="o_winners_product_card__score #{'o_winners_product_card__score--high' if _score >= 75 else ('o_winners_product_card__score--mid' if _score >= 50 else 'o_winners_product_card__score--low')}">
+                            <t t-esc="'%.1f' % _score"/>
                         </span>
                         <span class="o_winners_product_card__country" t-if="p.get('country')">
                             <t t-esc="p['country']"/>
