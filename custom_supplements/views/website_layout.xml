@@ -12,23 +12,20 @@
         <xpath expr="//header" position="replace">
             <div class="topbar">Livraison offerte dès 49 € · Fabriqué en France</div>
             <header class="vitalo-header">
-                <div class="nav-wrap">
+                <nav class="navbar navbar-expand-lg d-none d-lg-block">
                     <a class="brand" href="/">
                         <span class="brand-mark">V</span> Vitalo
                     </a>
-                    
-                    <nav class="main-nav">
-                        <ul>
-                            <t t-foreach="website.menu_id.child_id" t-as="submenu">
-                                <t t-call="website.submenu"
-                                    item_class.f="nav-item"
-                                    link_class.f="nav-link"/>
-                            </t>
-                        </ul>
-                    </nav>
+                    <ul class="nav navbar-nav top_menu">
+                        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                            <t t-call="website.submenu"
+                                item_class.f="nav-item"
+                                link_class.f="nav-link"/>
+                        </t>
+                    </ul>
 
                     <!-- Intégration des composants natifs d'Odoo (Recherche, Compte, Panier) -->
-                    <div class="nav-icons" style="display:flex; align-items:center; gap:22px;">
+                    <ul class="nav-icons" style="display:flex; align-items:center; gap:22px;">
                         <t t-call="website.placeholder_header_search_box"/>
                         <t t-call="portal.placeholder_user_sign_in"/>
                         <t t-call="portal.user_dropdown"
@@ -40,8 +37,8 @@
                             <t t-set="_icon" t-value="True"/>
                             <t t-set="_text" t-value="False"/>
                         </t>
-                    </div>
-                </div>
+                    </ul>
+                </nav>
             </header>
         </xpath>
 
