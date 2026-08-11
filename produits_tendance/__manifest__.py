@@ -27,7 +27,6 @@
         'data/webhook_queue_cron.xml',      # WIN-67
     ],
 
-    ],
 
     'demo': [
         'demo/dashboard_demo.xml',   # WIN-45 / WIN-50 : produits de test pour /dashboard
