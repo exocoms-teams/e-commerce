@@ -26,13 +26,13 @@ class CustomPortal(CustomerPortal):
                 partner.write({
                     'name': 'Utilisateur supprimé',
                     'email': f'deleted_{partner.id}@deleted.invalid',
-                    'phone': False,
-                    'mobile': False,
-                    'street': False,
-                    'street2': False,
-                    'city': False,
-                    'zip': False,
-                    'country_id': False,
+                    # 'phone': False,
+                    # 'mobile': False,
+                    # 'street': False,
+                    # 'street2': False,
+                    # 'city': False,
+                    # 'zip': False,
+                    # 'country_id': False,
                 })
                 user.write({
                     'login': f'deleted_{user.id}@deleted.invalid',
