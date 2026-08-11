@@ -23,6 +23,7 @@
         'data/subscription_products.xml',        # WIN-66
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-45 / WIN-50
+        'views/legal_templates.xml',   # WIN-102
     ],
     
     'demo': [
