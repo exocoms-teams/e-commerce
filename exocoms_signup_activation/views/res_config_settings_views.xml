@@ -4,11 +4,11 @@
     <record id="res_config_settings_view_form_activation" model="ir.ui.view">
         <field name="name">res.config.settings.form.exocoms.activation</field>
         <field name="model">res.config.settings</field>
-        <!-- On hérite directement de la vue auth_signup qui est toujours présente -->
-        <field name="inherit_id" ref="auth_signup.res_config_settings_view_form"/>
+        <!-- On remet la vue parente d'origine demandée par Eric -->
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <!-- On se positionne de manière robuste sur un élément stable -->
-            <xpath expr="//setting[.//field[@name='auth_signup_uninvited']]" position="after">
+            <!-- XPath universel : s'accroche au premier bloc de paramètres disponible -->
+            <xpath expr="//app[@name='base_setup']" position="inside">
                 <block title="Activation des comptes portail (EXOCOMS)"
                        name="exocoms_signup_activation_block">
                     <setting string="Validité du lien d'activation"
