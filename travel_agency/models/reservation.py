@@ -13,6 +13,7 @@ class TravelReservation(models.Model):
     client_phone = fields.Char(string='Téléphone')
     client_country = fields.Char(string='Pays')
     product_id = fields.Many2one('product.template', string='Offre de voyage')
+    car_id = fields.Many2one('travel.car', string='Voiture louée')
     date_depart = fields.Date(string='Date de départ')
     date_retour = fields.Date(string='Date de retour')
     nb_jours = fields.Integer(string='Durée', compute='_compute_duration', store=True)
@@ -49,10 +50,12 @@ class TravelReservation(models.Model):
         for rec in self:
             rec.nb_voyageurs = rec.nb_adultes + rec.nb_enfants
 
-    @api.depends('nb_voyageurs', 'product_id')
+    @api.depends('nb_voyageurs', 'product_id', 'car_id', 'nb_jours')
     def _compute_prix_total(self):
         for rec in self:
-            if rec.product_id and rec.nb_voyageurs:
+            if rec.car_id and rec.nb_jours:
+                rec.prix_total = rec.nb_jours * rec.car_id.prix_par_jour
+            elif rec.product_id and rec.nb_voyageurs:
                 rec.prix_total = rec.nb_voyageurs * rec.product_id.prix_par_personne
             else:
                 rec.prix_total = 0.0
