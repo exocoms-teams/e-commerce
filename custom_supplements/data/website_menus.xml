@@ -7,10 +7,15 @@
     </data>
 
     <data noupdate="1">
+        <record id="menu_root" model="website.menu">
+            <field name="name">Menu Supplement</field>
+            <field name="website_id">website.default_website</field>
+        </record>
+
         <record id="menu_home" model="website.menu">
             <field name="name">Accueil</field>
             <field name="url">/</field>
-            <field name="parent_id" ref="website.main_menu"/>
+            <field name="parent_id" ref="menu_root"/>
             <field name="page_id" ref="website.homepage_page"/>
             <field name="sequence" type="int">10</field>
         </record>
@@ -18,7 +23,7 @@
         <record id="menu_shop" model="website.menu">
             <field name="name">Boutique</field>
             <field name="url"></field>
-            <field name="parent_id" ref="website.main_menu"/>
+            <field name="parent_id" ref="menu_root"/>
             <field name="sequence">20</field>
         </record>
 
@@ -29,11 +34,11 @@
             <field name="sequence">10</field>
         </record>
 
-        <record id="menu_offer" model="website.menu">
+        <!-- <record id="menu_offer" model="website.menu">
             <field name="name">Promotions</field>
             <field name="url">/shop?sale=1</field>
             <field name="parent_id" ref="menu_shop"/>
             <field name="sequence">20</field>
-        </record>
+        </record> -->
     </data>
 </odoo>
