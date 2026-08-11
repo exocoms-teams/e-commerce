@@ -97,3 +97,55 @@ a:not(.btn) {
     background-color: #FEE2E2 !important;
     color: #B91C1C !important;
 }
+
+// ============================================================
+// Jour 2 - Travel Reservation (BLOQUANT)
+// Le bandeau "Missing required fields" (notification Odoo) colle contre
+// la barre de statut sticky du formulaire. On lui donne de l'air et on
+// s'assure qu'il reste toujours visible au-dessus (z-index).
+// ============================================================
+.o_notification_manager {
+    position: fixed !important;
+    z-index: 1200 !important;
+    top: 65px !important;
+}
+
+.o_notification {
+    margin-bottom: 8px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+// La barre de statut du formulaire doit rester sous la notification
+.o_form_statusbar {
+    z-index: 2;
+}
+
+// ============================================================
+// Jour 3 - Travel Reservation (IMPORTANT)
+// Liste des reservations : les en-tetes longs ("Offre de voyage",
+// "Date de depart"...) etaient tronques avec "..." aux largeurs par defaut.
+// On autorise le retour a la ligne des en-tetes et on fixe des largeurs
+// minimales sur les colonnes concernees.
+// ============================================================
+.o_travel_reservation_list {
+    table-layout: auto !important;
+
+    // Odoo applique parfois le troncage (ellipsis) sur un element enfant du
+    // th/td (span, div) plutot que sur la cellule elle-meme : on reinitialise
+    // sur la cellule ET tous ses enfants.
+    th, td, th *, td * {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+
+    th {
+        vertical-align: bottom;
+    }
+
+    // min-width seulement (pas de width fixe) pour ne pas forcer les autres
+    // colonnes a se retrecir en dessous de leur contenu.
+    th[data-name="product_id"] { min-width: 160px !important; }
+    th[data-name="date_depart"] { min-width: 130px !important; }
+    th[data-name="client_name"] { min-width: 190px !important; }
+}

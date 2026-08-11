@@ -33,7 +33,7 @@
                             <field name="client_phone"/>
                             <field name="client_country"/>
                         </group>
-                        <group string="Voyage">
+                        <group string="Destination / Package">
                             <field name="product_id"/>
                             <field name="date_depart"/>
                             <field name="date_retour"/>
@@ -43,6 +43,8 @@
                             <field name="nb_adultes"/>
                             <field name="nb_enfants"/>
                             <field name="nb_voyageurs"/>
+                        </group>
+                        <group string="Paiement">
                             <field name="prix_total"/>
                             <field name="payment_provider_id"/>
                             <field name="commission_amount"/>
@@ -90,12 +92,6 @@
                 <filter string="Cancelled" name="filter_cancel"
                         domain="[('state', '=', 'cancel')]"/>
 
-                <group expand="0" string="Group By">
-                    <filter string="Status" name="groupby_state" context="{'group_by': 'state'}"/>
-                    <filter string="Travel Offer" name="groupby_product" context="{'group_by': 'product_id'}"/>
-                    <filter string="Country" name="groupby_country" context="{'group_by': 'client_country'}"/>
-                    <filter string="Departure Date" name="groupby_departure" context="{'group_by': 'date_depart'}"/>
-                </group>
             </search>
         </field>
     </record>
@@ -142,11 +138,12 @@
         <field name="name">travel.reservation.list</field>
         <field name="model">travel.reservation</field>
         <field name="arch" type="xml">
-            <list string="Réservations">
+            <list string="Réservations" class="o_travel_reservation_list">
                 <field name="name"/>
                 <field name="client_name"/>
                 <field name="product_id"/>
                 <field name="date_depart"/>
+                <field name="prix_total"/>
                 <field name="state" widget="badge"
                        decoration-muted="state == 'draft'"
                        decoration-warning="state == 'en_attente'"
