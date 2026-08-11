@@ -45,7 +45,7 @@
     ],
     'assets': {
         'web.assets_frontend': [
-            'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css',
+            'matelas/static/src/css/lib/bootstrap-icons/bootstrap-icons.css',
             'matelas/static/src/css/Home.css',
             'matelas/static/src/css/Avis.css',
             'matelas/static/src/css/Contact.css',
