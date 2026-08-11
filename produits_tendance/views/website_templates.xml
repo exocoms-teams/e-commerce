@@ -6,11 +6,9 @@
          Hérite de la homepage Odoo standard.
     ============================================================ -->
 
-    <!-- CORRECTION 1 : Préfixe de l'ID pour éviter les conflits -->
     <template id="winners_homepage" name="Landing Page - Détection Produits Tendance"
               inherit_id="website.homepage" priority="99">
 
-        <!-- CORRECTION 2 : Cibler spécifiquement l'ID 'wrap' et le conserver -->
         <xpath expr="//div[@id='wrap']" position="replace">
             <div id="wrap" class="oe_structure oe_empty" data-name="Homepage">
 
@@ -79,12 +77,10 @@
     </template>
 
     <!-- Footer Winners -->
-    <!-- CORRECTION 1 : Préfixe de l'ID -->
     <template id="winners_widgets_footer" name="Winners Footer" inherit_id="website.layout" priority="99">
-        <xpath expr="//div[@id='footer']" position="replace">
-            
-            <!-- CORRECTION 3 : Ajout de t-if="not no_footer" -->
-            <div id="footer" class="o_winners_footer" t-if="not no_footer">
+        <!-- Ciblage universel de l'ancre du footer Odoo -->
+        <xpath expr="//*[@id='bottom']" position="replace">
+            <footer id="bottom" data-anchor="true" class="o_winners_footer" t-if="not no_footer">
                 <div class="o_winners_footer_container">
                     <div class="o_winners_footer_row">
                         <!-- À propos -->
@@ -119,11 +115,11 @@
                         </div>
                     </div>
                     <div class="o_winners_footer_bottom">
-                        <!-- CORRECTION 4 & 5 : t-out et time.strftime au lieu de datetime -->
                         <p class="o_winners_footer_copyright">© <t t-out="time.strftime('%Y')"/> Winners. Tous droits réservés.</p>
                     </div>
                 </div>
-            </div>
+            </footer>
         </xpath>
     </template>
+
 </odoo>
