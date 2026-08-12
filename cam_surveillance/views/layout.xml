@@ -1,82 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!--  Footer  -->
-    <template id="cam_footer" name="Cam Surveillance Footer"
-              inherit_id="monetique_theme.layout" priority="20">
-        <xpath expr="//t[@t-call='monetique_theme.footer']" position="replace">
-
-            <t t-if="website and 'Cam Surveillance' in website.name">
-                <footer class="cam-footer">
-                    <div class="cam-footer-top">
-                        <div class="cam-container">
-                            <div class="cam-footer-grid">
-
-                                <div class="cam-footer-brand">
-                                    <a href="/" class="cam-footer-logo">Cam<span>Surveillance</span></a>
-                                    <p>Spécialiste en vidéosurveillance professionnelle.</p>
-                                    <div class="cam-footer-badges">
-                                        <span class="cam-badge">Certifié AXIS</span>
-                                        <span class="cam-badge">Garantie 5 ans</span>
-                                    </div>
-                                </div>
-
-                                <div class="cam-footer-col">
-                                    <h4>Produits</h4>
-                                    <ul>
-                                        <li><a t-attf-href="/shop/category/#{slug(request.env.ref('cam_surveillance.public_camera_reseau'))}">Caméras réseau</a></li>
-                                        <li><a t-attf-href="/shop/category/#{slug(request.env.ref('cam_surveillance.public_stockage_enregistreurs'))}">Enregistreurs</a></li>
-                                        <li><a t-attf-href="/shop/category/#{slug(request.env.ref('cam_surveillance.public_controle_acces'))}">Contrôle d'accès</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="cam-footer-col">
-                                    <h4>Services</h4>
-                                    <ul>
-                                        <li><a href="/contactus">Support technique</a></li>
-                                        <li><a href="/contactus">Installation</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="cam-footer-col">
-                                    <h4>Entreprise</h4>
-                                    <ul>
-                                        <li><a href="/contactus">À propos</a></li>
-                                        <li><a href="/contactus">Contact</a></li>
-                                    </ul>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="cam-footer-bottom">
-                        <div class="cam-container">
-                            <p>© 2026 Cam Surveillance Store. Tous droits réservés.</p>
-                            <nav>
-                                <a href="/contactus">Mentions légales</a>
-                                <a href="/contactus">Confidentialité</a>
-                            </nav>
-                        </div>
-                    </div>
-                </footer>
-            </t>
-
-            <t t-else="">
-                <t t-call="monetique_theme.footer"/>
-            </t>
-
-        </xpath>
-    </template>
-
-        <!-- Extension du layout global pour ajouter le bandeau de réassurance tout en haut -->
-    <template id="cam_promo_banner_global" inherit_id="website.layout" name="Cam Surveillance Global Banner">
-        <!-- on l'injecte directement a la fin du header -->
-        <xpath expr="//header" position="after">
-            <t t-if="website and 'Cam Surveillance' in website.name">
-                <!-- afficher uniquement sur shop et produit -->
-                <t t-call="cam_surveillance.reassurance_banner"/>
-            </t>
-        </xpath>
+    <template id="cam_layout_wrapper" name="Cam Surveillance Layout Wrapper">
+        <t t-call="cam_surveillance.cam_header"/>
+        <t t-call="cam_surveillance.reasurance_banner"/>
+        <t t-call="cam_surveillance.reassurance_banner"/>
     </template>
 </odoo>
