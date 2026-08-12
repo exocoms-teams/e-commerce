@@ -1,14 +1,16 @@
 /**
  * oa_beauty_theme — Newsletter Subscription Handler
- * Envoie l'adresse email à n8n via webhook (POST JSON)
- * N8N peut ensuite ajouter le contact à Mailchimp ou toute autre liste.
+ * 1) Envoie l'email au controller Odoo (/newsletter/subscribe)
+ *    → Odoo appelle directement l'API Brevo (ex-Sendinblue)
+ *    → Odoo peut aussi déclencher le webhook n8n (optionnel)
+ * 2) Fallback : si Odoo échoue, essaie le webhook n8n directement
  */
 
 (function () {
     'use strict';
 
     // ── Configuration ──────────────────────────────────────────────────────────
-    // Remplacez cette URL par l'URL de votre webhook n8n
+    // URL du webhook n8n (utilisé en fallback uniquement)
     const N8N_WEBHOOK_URL = 'http://82.165.251.136:5678/webhook/newsletter';
 
     // ── Helpers ────────────────────────────────────────────────────────────────
@@ -17,7 +19,6 @@
     }
 
     function showFeedback(container, type, message) {
-        // Supprimer ancien feedback
         const old = container.querySelector('.oa-newsletter-feedback');
         if (old) old.remove();
 
@@ -42,125 +43,129 @@
                 : 'background: rgba(220,53,69,0.08); color: #a0243c; border: 1px solid rgba(220,53,69,0.2);',
         ].join(';');
 
-        const icon = isSuccess ? '✓' : '⚠';
-        div.textContent = icon + '  ' + message;
+        div.textContent = (isSuccess ? '\u2713  ' : '\u26A0  ') + message;
         container.appendChild(div);
 
-        // Fade-in
-        requestAnimationFrame(() => { div.style.opacity = '1'; });
+        requestAnimationFrame(function() { div.style.opacity = '1'; });
 
-        // Auto-hide après 6 s pour les succès
         if (isSuccess) {
-            setTimeout(() => {
+            setTimeout(function() {
                 div.style.opacity = '0';
-                setTimeout(() => div.remove(), 400);
-            }, 6000);
+                setTimeout(function() { div.remove(); }, 400);
+            }, 7000);
         }
     }
 
     function setLoading(btn, emailInput, loading) {
         btn.disabled = loading;
         emailInput.disabled = loading;
-        btn.textContent = loading ? 'Envoi…' : "S'abonner";
+        btn.textContent = loading ? 'Envoi...' : "S'abonner";
         btn.style.opacity = loading ? '0.7' : '1';
+    }
+
+    // ── Appel principal : controller Odoo → Mailchimp ──────────────────────────
+    function subscribeViaOdoo(email) {
+        return fetch('/newsletter/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'call',
+                id: 1,
+                params: { email: email },
+            }),
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            return data.result || {};
+        });
+    }
+
+    // ── Fallback : webhook n8n direct ─────────────────────────────────────────
+    function subscribeViaN8n(email) {
+        return fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                source: 'footer_newsletter',
+                site: window.location.hostname,
+                subscribed_at: new Date().toISOString(),
+            }),
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('n8n HTTP ' + response.status);
+            return { success: true, message: 'Bienvenue dans le Cercle O&A Beauty ! Vous recevrez bientot nos exclusivites.' };
+        });
     }
 
     // ── Main Handler ───────────────────────────────────────────────────────────
     function initNewsletterForm() {
-        const forms = document.querySelectorAll('.oa-newsletter-form');
+        var forms = document.querySelectorAll('.oa-newsletter-form');
 
-        forms.forEach(function (form) {
-            const emailInput = form.querySelector('.oa-newsletter-email');
-            const submitBtn  = form.querySelector('.oa-newsletter-btn');
-            const wrapper    = form.closest('.oa-newsletter-wrapper') || form;
+        forms.forEach(function(form) {
+            var emailInput = form.querySelector('.oa-newsletter-email');
+            var submitBtn  = form.querySelector('.oa-newsletter-btn');
+            var wrapper    = form.closest('.oa-newsletter-wrapper') || form;
 
             if (!emailInput || !submitBtn) return;
 
-            submitBtn.addEventListener('click', async function (e) {
+            submitBtn.addEventListener('click', function(e) {
                 e.preventDefault();
 
-                const email = emailInput.value.trim();
+                var email = emailInput.value.trim();
 
-                // Validation côté client
                 if (!email) {
                     showFeedback(wrapper, 'error', 'Veuillez saisir votre adresse e-mail.');
                     emailInput.focus();
                     return;
                 }
                 if (!isValidEmail(email)) {
-                    showFeedback(wrapper, 'error', 'Adresse e-mail invalide. Veuillez la vérifier.');
+                    showFeedback(wrapper, 'error', 'Adresse e-mail invalide. Veuillez la verifier.');
                     emailInput.focus();
                     return;
                 }
 
                 setLoading(submitBtn, emailInput, true);
 
-                try {
-                    const response = await fetch(N8N_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            email: email,
-                            source: 'footer_newsletter',
-                            site: window.location.hostname,
-                            subscribed_at: new Date().toISOString(),
-                        }),
+                // 1) Priorite : Odoo → Mailchimp
+                subscribeViaOdoo(email)
+                    .catch(function(odooErr) {
+                        // 2) Fallback : n8n direct
+                        console.warn('[OA Newsletter] Odoo indisponible, fallback n8n:', odooErr);
+                        return subscribeViaN8n(email);
+                    })
+                    .then(function(result) {
+                        if (result.success) {
+                            showFeedback(wrapper, 'success', result.message || 'Inscription reussie !');
+                            emailInput.value = '';
+                        } else {
+                            showFeedback(wrapper, 'error', result.message || 'Une erreur est survenue.');
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('[OA Newsletter] Toutes les methodes ont echoue:', err);
+                        showFeedback(wrapper, 'error', 'Une erreur est survenue. Veuillez reessayer ou nous contacter directement.');
+                    })
+                    .finally(function() {
+                        setLoading(submitBtn, emailInput, false);
                     });
-
-                    if (response.ok) {
-                        showFeedback(
-                            wrapper,
-                            'success',
-                            'Bienvenue dans le Cercle O&A Beauty ! 🌸 Vous recevrez bientôt nos exclusivités.'
-                        );
-                        emailInput.value = '';
-                    } else {
-                        throw new Error('Réponse serveur : ' + response.status);
-                    }
-                } catch (err) {
-                    console.warn('[OA Newsletter] Erreur webhook n8n :', err);
-                    // Fallback : enregistrement local via Odoo (si disponible)
-                    try {
-                        await fetch('/web/dataset/call_kw', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                jsonrpc: '2.0',
-                                method: 'call',
-                                params: {
-                                    model: 'mailing.contact',
-                                    method: 'create',
-                                    args: [{ name: email, email: email }],
-                                    kwargs: {},
-                                },
-                            }),
-                        });
-                        showFeedback(
-                            wrapper,
-                            'success',
-                            'Inscription enregistrée ! Nous vous contacterons bientôt. 🌸'
-                        );
-                        emailInput.value = '';
-                    } catch (_) {
-                        showFeedback(
-                            wrapper,
-                            'error',
-                            'Une erreur est survenue. Veuillez réessayer ou nous contacter directement.'
-                        );
-                    }
-                } finally {
-                    setLoading(submitBtn, emailInput, false);
-                }
             });
 
-            // Soumission par touche Entrée
-            emailInput.addEventListener('keydown', function (e) {
+            // Soumission par touche Entree
+            emailInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') submitBtn.click();
             });
         });
     }
 
-    // Initialisation après chargement du DOM
+    // Initialisation apres chargement du DOM
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initNewsletterForm);
     } else {
