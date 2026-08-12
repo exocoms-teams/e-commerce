@@ -34,6 +34,7 @@
         if (btnAvis) {
             btnAvis.addEventListener('click', function() {
                 const nom = document.getElementById('avis-nom').value.trim();
+                const profession = document.getElementById('avis-profession').value.trim();
                 const note = document.getElementById('avis-note').value;
                 const produit = document.getElementById('avis-produit').value.trim();
                 const commentaire = document.getElementById('avis-commentaire').value.trim();
@@ -54,6 +55,7 @@
                         id: Date.now(),
                         params: {
                             name: nom,
+                            profession: profession,
                             note: parseInt(note),
                             titre: produit,
                             commentaire: commentaire
@@ -79,6 +81,7 @@
                                     ${produit ? `<p class="avis-produit">🛏️ ${produit}</p>` : ''}
                                     <p class="avis-texte">"${commentaire}"</p>
                                     <strong class="avis-auteur">${nom}</strong>
+                                    ${profession ? `<span class="avis-profession"> — ${profession}</span>` : ''}
                                     <span class="avis-date"> — ${justNow}</span>
                                 </div>
                             </div>
@@ -87,6 +90,7 @@
                         document.getElementById('avis-container').innerHTML += card;
                         document.getElementById('avis-success').style.display = 'block';
                         document.getElementById('avis-nom').value = '';
+                        document.getElementById('avis-profession').value = '';
                         document.getElementById('avis-note').value = 0;
                         document.getElementById('avis-produit').value = '';
                         document.getElementById('avis-commentaire').value = '';

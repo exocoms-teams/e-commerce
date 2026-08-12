@@ -65,7 +65,7 @@ class MatelasVente(http.Controller):
         })
 
     @http.route('/avis/submit', type='jsonrpc', auth='user', website=True)
-    def avis_submit(self, name=None, note=None, titre=None, commentaire=None, **kwargs):
+    def avis_submit(self, name=None, note=None, titre=None, commentaire=None, profession=None, **kwargs):
         partner = request.env.user.partner_id
 
         commandes = request.env['sale.order'].sudo().search([
@@ -92,6 +92,7 @@ class MatelasVente(http.Controller):
 
         request.env['matelas.avis'].sudo().create({
             'name': name,
+            'profession': profession or '',
             'note': note,
             'titre': titre or '',
             'commentaire': commentaire,
