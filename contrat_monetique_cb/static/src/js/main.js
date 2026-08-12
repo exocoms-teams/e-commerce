@@ -16,6 +16,16 @@
         return Math.round(n).toLocaleString('fr-FR') + '\u00a0€';
     };
 
+    var BLUE = getComputedStyle(document.documentElement).getPropertyValue('--mq-blue').trim() || '#0D47A1';
+
+    function updateSliderBackground(slider) {
+        var min = parseFloat(slider.min);
+        var max = parseFloat(slider.max);
+        var val = parseFloat(slider.value);
+        var pct = ((val - min) / (max - min)) * 100;
+        slider.style.background = 'linear-gradient(to right, ' + BLUE + ' 0%, ' + BLUE + ' ' + pct + '%, #E2E8F0 ' + pct + '%, #E2E8F0 100%)';
+    }
+
     function update() {
         var vCA = parseFloat(ca.value);
         var vTaux = parseFloat(taux.value);
@@ -38,6 +48,10 @@
         document.getElementById('cmq-r-totexo').textContent = fmtEUR(comExo);
         document.getElementById('cmq-r-save').textContent = fmtEUR(save) + ' / mois';
         document.getElementById('cmq-r-savey').textContent = 'soit ' + fmtEUR0(save * 12) + ' / an';
+
+        updateSliderBackground(ca);
+        updateSliderBackground(taux);
+        updateSliderBackground(tpe);
     }
 
     [ca, taux, tpe].forEach(function (el) {
