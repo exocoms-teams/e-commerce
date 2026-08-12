@@ -22,6 +22,8 @@
 
         var categorySelect = document.getElementById('o_winners_filter_category');
         var countrySelect = document.getElementById('o_winners_filter_country');
+        var priceMaxInput = document.getElementById('o_winners_filter_price_max');
+        var sourceSelect = document.getElementById('o_winners_filter_source');
         var resetBtn = document.getElementById('o_winners_filter_reset');
 
         function escapeHtml(value) {
@@ -35,21 +37,27 @@
             col.className = 'col-md-4 col-sm-6 mb-4';
 
             var categoryHtml = p.category
-                ? '<div class="o_winners_product_card__category">' + escapeHtml(p.category) + '</div>'
+                ? '<span class="o_winners_product_card__category">' + escapeHtml(p.category) + '</span>'
                 : '';
             var countryHtml = p.country
-                ? '<div class="o_winners_product_card__meta">' + escapeHtml(p.country) + '</div>'
+                ? '<span class="o_winners_product_card__country">' + escapeHtml(p.country) + '</span>'
                 : '';
-            var score = (typeof p.score === 'number') ? p.score.toFixed(1) : '0.0';
+            var scoreValue = (typeof p.score === 'number') ? p.score : 0.0;
+            var scoreTier = scoreValue >= 75 ? '--high' : (scoreValue >= 50 ? '--mid' : '--low');
+            var scoreText = scoreValue.toFixed(1);
 
+            // Structure alignée sur produits_tendance.template_product_cards
+            // (mêmes classes, y compris le modificateur de palier de score)
+            // pour que le rendu JS soit identique au rendu serveur initial.
             col.innerHTML =
                 '<a href="/product/' + encodeURIComponent(p.id) + '" class="o_winners_product_card">' +
                     categoryHtml +
-                    '<div class="o_winners_product_card__name">' + escapeHtml(p.name) + '</div>' +
-                    countryHtml +
-                    '<div class="o_winners_score_badge o_winners_product_card__score">' +
-                        '<div class="o_winners_score_badge__label">Score</div>' +
-                        '<div class="o_winners_score_badge__value">' + score + '</div>' +
+                    '<h3 class="o_winners_product_card__name">' + escapeHtml(p.name) + '</h3>' +
+                    '<div class="o_winners_product_card__footer">' +
+                        '<span class="o_winners_product_card__score o_winners_product_card__score' + scoreTier + '">' +
+                            scoreText +
+                        '</span>' +
+                        countryHtml +
                     '</div>' +
                 '</a>';
             return col;
@@ -57,8 +65,11 @@
 
         function renderEmptyState() {
             var col = document.createElement('div');
-            col.className = 'col-12 o_winners_product_grid__empty';
-            col.textContent = 'Aucun produit ne correspond à ces filtres.';
+            col.className = 'col-12';
+            var alert = document.createElement('div');
+            alert.className = 'alert alert-info text-center o_winners_product_grid__empty';
+            alert.textContent = 'Aucun produit ne correspond à ces filtres pour le moment.';
+            col.appendChild(alert);
             return col;
         }
 
@@ -84,6 +95,12 @@
             }
             if (countrySelect && countrySelect.value) {
                 params.set('country', countrySelect.value);
+            }
+            if (priceMaxInput && priceMaxInput.value) {
+                params.set('price_max', priceMaxInput.value);
+            }
+            if (sourceSelect && sourceSelect.value) {
+                params.set('source', sourceSelect.value);
             }
 
             var currentToken = ++requestToken;
@@ -113,16 +130,35 @@
                 });
         }
 
+        // Le prix max est un input texte/numérique : on écoute "input" (frappe
+        // en direct) mais avec un léger debounce pour éviter une requête par
+        // caractère tapé.
+        var priceMaxDebounceTimer = null;
+        function applyFiltersDebounced() {
+            if (priceMaxDebounceTimer) {
+                clearTimeout(priceMaxDebounceTimer);
+            }
+            priceMaxDebounceTimer = setTimeout(applyFilters, 400);
+        }
+
         if (categorySelect) {
             categorySelect.addEventListener('change', applyFilters);
         }
         if (countrySelect) {
             countrySelect.addEventListener('change', applyFilters);
         }
+        if (priceMaxInput) {
+            priceMaxInput.addEventListener('input', applyFiltersDebounced);
+        }
+        if (sourceSelect) {
+            sourceSelect.addEventListener('change', applyFilters);
+        }
         if (resetBtn) {
             resetBtn.addEventListener('click', function () {
                 if (categorySelect) { categorySelect.value = ''; }
                 if (countrySelect) { countrySelect.value = ''; }
+                if (priceMaxInput) { priceMaxInput.value = ''; }
+                if (sourceSelect) { sourceSelect.value = ''; }
                 applyFilters();
             });
         }

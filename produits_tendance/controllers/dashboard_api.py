@@ -121,36 +121,35 @@ class TrendDashboardAPI:
     # ------------------------------------------------------------------
     # Liste / filtres dynamiques (WIN-45 / WIN-50)
     # ------------------------------------------------------------------
-    def get_product_list(self, category_id=None, country=None, limit=None):
-        """Retourne les produits triés par score de tendance décroissant,
-        optionnellement filtrés par catégorie et/ou pays.
-
-        :param int|None category_id: id d'un trend.category, ou None/0 pour
-            ne pas filtrer sur la catégorie.
-        :param str|None country: code pays (ex. 'MA'), ou None/'' pour ne
-            pas filtrer sur le pays.
-        :param int|None limit: si fourni, plafonne le nombre de résultats
-            (restriction Freemium, WIN-48) - appliqué ici, côté ORM, jamais
-            seulement côté template/JS (même principe que
-            get_dashboard_products).
-        :rtype: list[dict]
+    def get_product_list(self, category_id=None, country=None, price_max=None, source=None, limit=None):
+       """
+         :param float|None price_max: prix maximum, ou None/'' pour ne pas filtrer.
+         :param str|None source: valeur de la Selection trend.product.source
+        ('scraping', 'crowdsourcing', 'api'), ou None/'' pour ne pas filtrer.
         """
-        env = self.env(su=True)
-        domain = []
-        if category_id:
-            domain.append(('category_id', '=', int(category_id)))
-        if country:
-            domain.append(('country', '=', country))
+       env = self.env(su=True)
+       domain = []
+       if category_id:
+          domain.append(('category_id', '=', int(category_id)))
+       if country:
+           domain.append(('country', '=', country))
+       if price_max not in (None, ''):
+         try:
+            domain.append(('price', '<=', float(price_max)))
+         except (TypeError, ValueError):
+            pass  # paramètre invalide ignoré, comportement identique à l'absence du filtre
+       if source:
+         domain.append(('source', '=', source))
 
-        products = env['trend.product'].search(domain, order='current_score desc', limit=limit)
+       products = env['trend.product'].search(domain, order='current_score desc', limit=limit)
 
-        return [{
-            'id': product.id,
-            'name': product.name,
-            'category': product.category_id.name or '',
-            'country': product.country or '',
-            'score': round(product.current_score, 1),
-            'sales_count': product.sales_count,
+       return [{
+          'id': product.id,
+          'name': product.name,
+          'category': product.category_id.name or '',
+          'country': product.country or '',
+          'score': round(product.current_score, 1),
+          'sales_count': product.sales_count,
         } for product in products]
 
     def get_filter_options(self):
@@ -168,10 +167,11 @@ class TrendDashboardAPI:
             [('country', '!=', False)], groupby=['country']
         )
         countries = sorted(country for (country,) in country_groups if country)
-
+        sources = env['trend.product']._fields['source'].selection
         return {
             'categories': [{'id': c.id, 'name': c.name} for c in categories],
             'countries': countries,
+            'sources': [{'value': v, 'label': l} for v, l in sources],
         }
 
     def get_dashboard_stats(self):
