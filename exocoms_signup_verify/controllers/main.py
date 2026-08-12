@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 import logging
+from urllib.parse import urlencode
 
 import werkzeug
 
 from odoo import _, http
+from odoo.addons.auth_signup.models.res_partner import SignupError
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools import email_normalize
 
 # On importe le contrôleur du module d'Eric pour l'étendre
 from odoo.addons.exocoms_signup_activation.controllers.main import AuthSignupHome
-from odoo.addons.auth_signup.models.res_users import SignupError
 
 _logger = logging.getLogger(__name__)
 
 try:
     import email_validator
-except ImportError:  # pragma: no cover
+except ImportError:
     email_validator = None
     _logger.info(
         "exocoms_signup_verify : librairie 'email_validator' absente, "
@@ -24,23 +25,18 @@ except ImportError:  # pragma: no cover
     )
 
 
-class ExocomsAuthSignupHome(AuthSignupHome):
-    """Impose la validation de l'adresse email avant activation du compte en héritant d'Eric."""
-
-    @http.route()
-    def web_auth_signup(self, *args, **kw):
-        # On conserve la logique de sécurité et de rendu existante
-        return super().web_auth_signup(*args, **kw)
+class ExocomsAuthSignupHomeVerify(AuthSignupHome):
+    """Surcharge le contrôleur d'Eric pour injecter nos contrôles de sécurité (MX & Blacklist)."""
 
     def _exocoms_validate_signup_email(self, login):
-        """
-        Hook fourni par Eric dans exocoms_signup_activation.
-        On y injecte toute notre logique de sécurité (Liste noire et MX).
-        """
-        # Toujours appeler le parent par bonne pratique
-        super(ExocomsAuthSignupHome, self)._exocoms_validate_signup_email(login)
+        """Hook de validation de l'adresse email avant la création du compte.
 
-        # 1. Normalisation de l'email
+        Lève une UserError dont le message sera proprement affiché sur le formulaire.
+        """
+        # 1. Appel du comportement parent (si nécessaire)
+        super(ExocomsAuthSignupHomeVerify, self)._exocoms_validate_signup_email(login)
+
+        # 2. Normalisation de l'email
         email = email_normalize(login)
         if not email:
             raise UserError(_("Cette adresse email n'est pas valide."))
@@ -48,19 +44,17 @@ class ExocomsAuthSignupHome(AuthSignupHome):
         get_param = request.env["ir.config_parameter"].sudo().get_param
         domain = email.rsplit("@", 1)[-1]
 
-        # 2. Vérification de la liste noire
-        blocked = [
-            d.strip().lower()
-            for d in (get_param("exocoms_signup_verify.blocked_domains") or "").split(",")
-            if d.strip()
-        ]
-        if domain in blocked:
-            raise UserError(
-                _("Les adresses email jetables ne sont pas acceptées. "
-                  "Merci d'utiliser une adresse professionnelle.")
-            )
+        # 3. Contrôle de la liste noire (domaines jetables)
+        blocked_domains_str = get_param("exocoms_signup_verify.blocked_domains", "")
+        if blocked_domains_str:
+            blocked_domains = [d.strip().lower() for d in blocked_domains_str.split(",") if d.strip()]
+            if domain in blocked_domains:
+                raise UserError(
+                    _("Les adresses email jetables ne sont pas acceptées. "
+                      "Merci d'utiliser une adresse valide.")
+                )
 
-        # 3. Vérification MX (email-validator)
+        # 4. Contrôle MX (email-validator)
         check_mx = get_param("exocoms_signup_verify.check_mx", "True") == "True"
         if check_mx and email_validator:
             try:
