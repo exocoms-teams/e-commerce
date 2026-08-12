@@ -3,7 +3,9 @@ from odoo.http import route, request
 from odoo import _
 from odoo.exceptions import AccessDenied, UserError
 from werkzeug import urls
+import logging
 
+_logger = logging.getLogger(__name__)
 class CustomPortal(CustomerPortal):
 
     @route('/my/deactivate_account', type='http', auth='user', website=True, methods=['POST'])
@@ -58,7 +60,15 @@ class CustomPortal(CustomerPortal):
                     ('model', '=', 'res.partner'),
                     ('res_id', '=', partner_id),
                 ])
-                console.log(messages)
+                for message in messages:
+                    _logger.warning(
+                        "MESSAGE %s | date=%s | subtype=%s | tracking=%s | body=%s",
+                        message.id,
+                        message.date,
+                        message.subtype_id.name,
+                        message.tracking_value_ids.ids,
+                        message.body,
+                    )
                 messages.unlink()
 
                 # Désactivation standard
