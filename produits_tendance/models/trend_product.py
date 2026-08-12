@@ -12,6 +12,7 @@ class TrendProduct(models.Model):
     product_ref = fields.Char(string="Référence produit (site source)")
     category_id = fields.Many2one('trend.category', string="Catégorie")
     sales_count = fields.Integer(string="Nombre de ventes")
+    price = fields.Float(string="Prix", help="Prix du produit sur le site source, utilisé pour le filtre price_max (WIN-45/76).")
     date = fields.Date(string="Date de collecte")
     score_site_x = fields.Float(string="Score site source")
     country = fields.Char(string="Pays")

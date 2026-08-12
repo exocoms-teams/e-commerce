@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 
 def _make_product(env, ref_suffix):
@@ -173,6 +174,7 @@ class TestWebhookQueueCron(TransactionCase):
         mock_post.assert_called_once()
         self.assertEqual(job.state, 'sent')
 
+    @mute_logger('odoo.addons.produits_tendance.models.trend_webhook_queue')
     def test_cron_marks_failed_on_error(self):
         job = self.env['trend.webhook.queue'].create({
             'url': 'https://hooks.example.com/webhook-test',
