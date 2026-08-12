@@ -22,6 +22,13 @@
         <t t-call="website.layout">
             <t t-set="title" t-if="request.env.lang == 'fr_FR'">À propos | Capsule House</t>
             <t t-set="title" t-if="request.env.lang != 'fr_FR'">About | Capsule House</t>
+            <t t-set="head">
+                <!-- SEO page-spécifique (v19.0.1.0.63), voir layout.xml. -->
+                <meta name="description" content="Capsule House conçoit et fabrique des pods habitables en atelier, installés en quelques semaines sur votre terrain. Découvrez notre histoire et nos valeurs."/>
+                <link rel="canonical" href="https://capsule-house.fr/a-propos"/>
+                <meta property="og:title" content="À propos | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/a-propos"/>
+            </t>
 
             <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
                     <a href="/">Accueil</a><span class="sep">/</span><span>Entreprise</span>

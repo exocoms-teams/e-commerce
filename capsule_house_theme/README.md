@@ -1526,6 +1526,39 @@ l'arch source — condition nécessaire, confirmée par comparaison
 directe avec exocoms_theme et le bloc natif Masonry, pour qu'Odoo la
 marque comme un bloc sélectionnable avec panneau Style complet.
 
+## SEO — même principe que exocoms_theme (v19.0.1.0.63)
+
+Jusqu'ici, `data/seo_data.xml` était vide (juste un commentaire
+"réservé pour plus tard") : aucune meta description, robots, Open
+Graph, Twitter Card ni schema.org n'existait nulle part dans le
+module — contrairement à `exocoms_theme`, dont `layout.xml` pose un
+bloc SEO global et dont plusieurs pages (`avis.xml`, `boutique.xml`,
+`services.xml`, `mentions_legales.xml`) surchargent ce bloc avec leur
+propre contenu.
+
+Reproduit à l'identique :
+- **Bloc global** (`views/templates/layout.xml`, xpath `//head`) :
+  meta description, `robots`, Open Graph, Twitter Card, schema.org
+  `Organization` en JSON-LD. Image de partage : le logo du site
+  (`capsule-house-logo.png`), même logique que `EXOCOMS.png` chez
+  exocoms.
+- **Surcharges page par page** (`t-set="head"`) : `home.xml`,
+  `avis.xml`, les 4 pages Aide, les 2 pages Entreprise — description et
+  `canonical` propres à chaque page.
+
+Tout le texte est réutilisé depuis du contenu déjà validé sur le site
+(sous-titres, h1 existants) — jamais de texte SEO inventé. Coordonnées
+schema.org (téléphone, adresse) : reprises à l'identique de celles
+d'exocoms_theme, à la demande explicite du client ("c'est la même
+entreprise qui gère les deux") — Exocoms Group gère les deux sites. À
+ajuster si Capsule House obtient ses propres coordonnées dédiées.
+
+**Non couvert** : `views/pages/shop.xml` (page boutique native
+`website_sale.products`) — structure de vue héritée moins prévisible
+pour un xpath `//head` fiable, laissé de côté plutôt que de risquer un
+xpath qui casse à l'installation. À traiter dans une prochaine version
+si besoin.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
