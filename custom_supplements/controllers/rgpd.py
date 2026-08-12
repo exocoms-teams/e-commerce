@@ -62,7 +62,7 @@ class CustomPortal(CustomerPortal):
                 ])
 
                 # Supprimer les tracking values
-                tracking_values = request.env['mail.tracking.value'].search([
+                tracking_values = request.env['mail.tracking.value'].sudo().search([
                     ('mail_message_id', 'in', messages.ids),
                 ])
                 tracking_values.unlink()
