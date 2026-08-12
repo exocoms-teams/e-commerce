@@ -13,15 +13,15 @@
             <h3 t-esc="product.name"/>
             
             <!-- Badge Stock -->
-            <div class="cam-stock-status mt-1 mb-2">
+            <div class="cam-stock-status">
                 <t t-if="'qty_available' in product._fields">
                     <t t-if="product.sudo().qty_available &gt; 0">
-                        <span class="badge bg-success text-white">
+                        <span class="cam-badge-stock">
                             <i class="fa fa-box me-1"/> En stock (<t t-esc="int(product.sudo().qty_available)"/>)
                         </span>
                     </t>
                     <t t-else="">
-                        <span class="badge bg-danger text-white">
+                        <span class="cam-badge-rupture">
                             <i class="fa fa-times-circle me-1"/> Rupture de stock
                         </span>
                     </t>
