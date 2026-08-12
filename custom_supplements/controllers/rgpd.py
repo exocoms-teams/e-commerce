@@ -41,17 +41,17 @@ class CustomPortal(CustomerPortal):
                 })
                 # 3. Commandes — on garde les montants mais on anonymise
                 #    les champs nominatifs sur les lignes et notes
-                sales = request.env['sale.order'].search([('partner_id', '=', partner_id)])
-                sales.write({
-                    'note': False,
-                })
+                # sales = request.env['sale.order'].search([('partner_id', '=', partner_id)])
+                # sales.write({
+                #     'note': False,
+                # })
 
                 # 4. Factures — on garde le document légal mais on retire
                 #    les références nominatives non obligatoires
-                invoices = request.env['account.move'].search([('partner_id', '=', partner_id)])
-                invoices.write({
-                    'narration': False,
-                })
+                # invoices = request.env['account.move'].search([('partner_id', '=', partner_id)])
+                # invoices.write({
+                #     'narration': False,
+                # })
 
                 # 5. Messages/chatter — suppression des messages non contractuels
                 request.env['mail.message'].search([
