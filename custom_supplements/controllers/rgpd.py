@@ -54,10 +54,12 @@ class CustomPortal(CustomerPortal):
                 # })
 
                 # 5. Messages/chatter — suppression des messages non contractuels
-                request.env['mail.message'].search([
-                    ('res_id', '=', partner_id),
+                messages = request.env['mail.message'].search([
                     ('model', '=', 'res.partner'),
-                ]).unlink()
+                    ('res_id', '=', partner_id),
+                ])
+                console.log(messages)
+                messages.unlink()
 
                 # Désactivation standard
                 user._deactivate_portal_user(**post)
