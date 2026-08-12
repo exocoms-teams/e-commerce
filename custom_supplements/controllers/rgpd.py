@@ -30,9 +30,9 @@ class CustomPortal(CustomerPortal):
                     # 'mobile': False,
                     # 'street': False,
                     # 'street2': False,
-                    'city': False,
-                    'zip': False,
-                    'country_id': False,
+                    # 'city': False,
+                    # 'zip': False,
+                    # 'country_id': False,
                 })
                 user.with_context(mail_notrack=True).write({
                     'login': f'deleted_{user.id}@deleted.invalid',
