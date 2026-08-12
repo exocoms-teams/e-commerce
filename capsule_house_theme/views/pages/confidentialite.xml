@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.confidentialite() (controllers/main.py)
+        sur la route '/confidentialite'. Scopée à notre site via
+        _scope_layout_views() (external id
+        capsule_house_theme.confidentialite_page).
+
+        Créée en v19.0.1.0.64, voir mentions_legales.xml pour le contexte.
+
+        Contenu : décrit les traitements de données RÉELLEMENT en place
+        dans ce module — formulaire d'avis (models/avis.py : nom,
+        commentaire, note), newsletter (newsletter_subscribe(), email
+        uniquement), commandes (website_sale natif), live chat
+        (_setup_livechat, im_livechat/website_livechat). Aucun outil
+        d'analytics ou pixel publicitaire tiers n'est configuré dans ce
+        module (vérifié : aucune occurrence de Google Analytics, Meta
+        Pixel, etc. dans le code) — seuls des cookies fonctionnels
+        (panier, langue, session, chat) sont utilisés, énoncé tel quel
+        ici plutôt que de décrire des cookies qui n'existent pas.
+    -->
+    <template id="confidentialite_page" name="Capsule House - Confidentialité">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Politique de confidentialité | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Privacy policy | Capsule House</t>
+            <t t-set="head">
+                <meta name="description" content="Politique de confidentialité Capsule House — données collectées, finalités, cookies et droits RGPD."/>
+                <meta name="robots" content="noindex, follow"/>
+                <link rel="canonical" href="https://capsule-house.fr/confidentialite"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a><span class="sep">/</span><span>Confidentialité</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a><span class="sep">/</span><span>Privacy</span>
+            </div>
+
+            <div class="container" style="max-width:840px;padding:32px 16px 64px;">
+                <div t-if="request.env.lang == 'fr_FR'">
+                    <h1 class="ch-aide-title">Politique de confidentialité</h1>
+                    <p class="ch-aide-subtitle">Exocoms Group, éditeur de capsule-house.fr, s'engage à protéger la vie privée des visiteurs et clients du site, conformément au RGPD (Règlement UE 2016/679).</p>
+
+                    <h2 style="margin-top:32px;">1. Données collectées</h2>
+                    <p>Selon votre usage du site, nous pouvons collecter :</p>
+                    <p>— Formulaire d'avis client : nom, commentaire, note, produit concerné.<br/>
+                       — Inscription à la newsletter : adresse email.<br/>
+                       — Commande en ligne : coordonnées de facturation/livraison, nécessaires au traitement de votre commande (gérées nativement par la boutique en ligne).<br/>
+                       — Chat en ligne : contenu des messages échangés avec notre équipe.</p>
+
+                    <h2 style="margin-top:32px;">2. Finalités et base légale</h2>
+                    <p>Ces données sont utilisées pour : publier les avis clients (après modération), envoyer la newsletter (sur consentement, désinscription possible à tout moment), traiter vos commandes (exécution du contrat) et répondre à vos demandes via le chat. Aucune donnée n'est vendue à des tiers.</p>
+
+                    <h2 style="margin-top:32px;">3. Cookies</h2>
+                    <p>Ce site utilise uniquement des cookies fonctionnels, nécessaires à son fonctionnement : panier d'achat, préférence de langue, session de navigation, chat en ligne. Aucun cookie publicitaire ou de traçage tiers n'est utilisé à ce jour.</p>
+
+                    <h2 style="margin-top:32px;">4. Durée de conservation</h2>
+                    <p>Les données sont conservées le temps nécessaire aux finalités décrites ci-dessus (durée légale de conservation des factures, durée de la relation commerciale pour les autres données), puis supprimées ou anonymisées.</p>
+
+                    <h2 style="margin-top:32px;">5. Vos droits</h2>
+                    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression, de limitation et de portabilité de vos données, ainsi que d'un droit d'opposition. Pour exercer ces droits, contactez-nous à : contact@capsule-house.fr. Vous disposez également du droit d'introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+                </div>
+
+                <div t-if="request.env.lang != 'fr_FR'">
+                    <h1 class="ch-aide-title">Privacy policy</h1>
+                    <p class="ch-aide-subtitle">Exocoms Group, publisher of capsule-house.fr, is committed to protecting the privacy of the site's visitors and customers, in accordance with the GDPR (EU Regulation 2016/679).</p>
+
+                    <h2 style="margin-top:32px;">1. Data collected</h2>
+                    <p>Depending on how you use the site, we may collect:</p>
+                    <p>— Customer review form: name, comment, rating, related product.<br/>
+                       — Newsletter sign-up: email address.<br/>
+                       — Online order: billing/delivery details, needed to process your order (handled natively by the online shop).<br/>
+                       — Live chat: the content of messages exchanged with our team.</p>
+
+                    <h2 style="margin-top:32px;">2. Purposes and legal basis</h2>
+                    <p>This data is used to: publish customer reviews (after moderation), send the newsletter (based on consent, you can unsubscribe at any time), process your orders (contract performance), and respond to your requests via chat. No data is sold to third parties.</p>
+
+                    <h2 style="margin-top:32px;">3. Cookies</h2>
+                    <p>This website only uses functional cookies necessary for it to work: shopping cart, language preference, browsing session, live chat. No advertising or third-party tracking cookies are currently used.</p>
+
+                    <h2 style="margin-top:32px;">4. Retention period</h2>
+                    <p>Data is kept for as long as necessary for the purposes described above (statutory retention period for invoices, duration of the business relationship for other data), then deleted or anonymised.</p>
+
+                    <h2 style="margin-top:32px;">5. Your rights</h2>
+                    <p>Under the GDPR, you have the right to access, rectify, delete, restrict and port your data, as well as the right to object. To exercise these rights, contact us at: contact@capsule-house.fr. You also have the right to lodge a complaint with the CNIL (www.cnil.fr).</p>
+                </div>
+            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_confidentialite_bottom"/>
+        </t>
+    </template>
+</odoo>

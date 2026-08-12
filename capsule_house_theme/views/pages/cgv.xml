@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.cgv() (controllers/main.py) sur la
+        route '/cgv'. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.cgv_page).
+
+        Créée en v19.0.1.0.64, voir mentions_legales.xml pour le contexte
+        (liens du footer cassés depuis le début du projet, détecté par
+        l'outil SEO natif d'Odoo).
+
+        Contenu : PAS de conditions inventées — chaque clause reprend un
+        fait déjà établi et publié ailleurs sur ce même site :
+        - Acompte 20% / fabrication 4-5 semaines / livraison 6 semaines
+          France métro : déjà dans aide_livraison.xml.
+        - Absence de droit de rétractation pour un bien personnalisé
+          fabriqué sur mesure (déjà énoncé dans aide_retours.xml : "Nos
+          pods sont fabriqués sur mesure : les conditions de retour
+          diffèrent d'un achat standard") — fondement légal réel : article
+          L221-28 3° du Code de la consommation (biens confectionnés
+          selon les spécifications du consommateur, exclus du droit de
+          rétractation de 14 jours).
+        - Garantie constructeur 10 ans : déjà dans aide_garantie.xml.
+        - Paiement 3x sans frais : déjà affiché dans le hero de l'accueil.
+        Rien n'est fabriqué ; ce texte formalise juridiquement des
+        informations déjà validées et publiées par le client.
+    -->
+    <template id="cgv_page" name="Capsule House - CGV">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Conditions générales de vente | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Terms of sale | Capsule House</t>
+            <t t-set="head">
+                <meta name="description" content="Conditions générales de vente Capsule House — commande, paiement, fabrication, livraison, rétractation et garantie."/>
+                <meta name="robots" content="noindex, follow"/>
+                <link rel="canonical" href="https://capsule-house.fr/cgv"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a><span class="sep">/</span><span>CGV</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a><span class="sep">/</span><span>Terms of sale</span>
+            </div>
+
+            <div class="container" style="max-width:840px;padding:32px 16px 64px;">
+                <div t-if="request.env.lang == 'fr_FR'">
+                    <h1 class="ch-aide-title">Conditions générales de vente</h1>
+                    <p class="ch-aide-subtitle">Les présentes conditions régissent toute commande passée sur capsule-house.fr, édité par Exocoms Group. Voir aussi nos pages <a href="/livraison">Livraison</a>, <a href="/retours">Retours</a> et <a href="/garantie">Garantie</a>.</p>
+
+                    <h2 style="margin-top:32px;">1. Objet et champ d'application</h2>
+                    <p>Les présentes CGV s'appliquent à toute vente de maisons modulaires (pods) et accessoires proposés sur ce site, entre Exocoms Group et tout client professionnel ou consommateur.</p>
+
+                    <h2 style="margin-top:32px;">2. Prix</h2>
+                    <p>Les prix affichés sont exprimés en euros, toutes taxes comprises (TTC), hors frais de livraison le cas échéant. Exocoms Group se réserve le droit de modifier ses prix à tout moment, les produits étant facturés sur la base du tarif en vigueur au moment de la validation de la commande.</p>
+
+                    <h2 style="margin-top:32px;">3. Commande et paiement</h2>
+                    <p>Toute commande est confirmée par le versement d'un acompte de 20 % du montant total. Le paiement peut être effectué en une fois ou en 3 fois sans frais, selon les modalités proposées au moment du paiement. Le solde est exigible avant l'installation du pod sur le terrain du client.</p>
+
+                    <h2 style="margin-top:32px;">4. Fabrication et délais</h2>
+                    <p>Chaque pod est fabriqué sur mesure en atelier, sous un délai moyen de 4 à 5 semaines à compter de la confirmation de commande. Les délais de livraison et d'installation indicatifs sont détaillés sur notre page <a href="/livraison">Livraison &amp; installation</a> (6 semaines en moyenne en France métropolitaine, davantage pour la Corse et les DOM-TOM).</p>
+
+                    <h2 style="margin-top:32px;">5. Droit de rétractation</h2>
+                    <p>Conformément à l'article L221-28 3° du Code de la consommation, le droit de rétractation ne s'applique pas aux biens confectionnés selon les spécifications du consommateur ou nettement personnalisés — c'est le cas de nos pods, fabriqués sur mesure à la commande. Les conditions de retour applicables sont détaillées sur notre page <a href="/retours">Retours &amp; rétractation</a>.</p>
+
+                    <h2 style="margin-top:32px;">6. Garantie</h2>
+                    <p>Chaque pod Capsule House est couvert par une garantie constructeur de 10 ans, dans les conditions détaillées sur notre page <a href="/garantie">Garantie constructeur</a>. Cette garantie s'applique sans préjudice de la garantie légale de conformité et de la garantie des vices cachés, prévues par les articles L217-3 et suivants et 1641 et suivants du Code civil.</p>
+
+                    <h2 style="margin-top:32px;">7. Litiges</h2>
+                    <p>Les présentes CGV sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. À défaut d'accord, les tribunaux du ressort du siège social d'Exocoms Group seront seuls compétents.</p>
+                </div>
+
+                <div t-if="request.env.lang != 'fr_FR'">
+                    <h1 class="ch-aide-title">Terms of sale</h1>
+                    <p class="ch-aide-subtitle">These terms govern any order placed on capsule-house.fr, published by Exocoms Group. See also our <a href="/livraison">Delivery</a>, <a href="/retours">Returns</a> and <a href="/garantie">Warranty</a> pages.</p>
+
+                    <h2 style="margin-top:32px;">1. Purpose and scope</h2>
+                    <p>These terms apply to any sale of modular homes (pods) and accessories offered on this website, between Exocoms Group and any professional or consumer customer.</p>
+
+                    <h2 style="margin-top:32px;">2. Price</h2>
+                    <p>Prices are shown in euros, including all taxes, excluding delivery fees where applicable. Exocoms Group reserves the right to change its prices at any time; products are invoiced based on the price in effect when the order is confirmed.</p>
+
+                    <h2 style="margin-top:32px;">3. Order and payment</h2>
+                    <p>Every order is confirmed by a 20% deposit of the total amount. Payment can be made in full or in 3 interest-free instalments, as offered at checkout. The remaining balance is due before the pod is installed on the customer's land.</p>
+
+                    <h2 style="margin-top:32px;">4. Manufacturing and lead times</h2>
+                    <p>Each pod is custom-built in our workshop, typically within 4 to 5 weeks of order confirmation. Indicative delivery and installation timelines are detailed on our <a href="/livraison">Delivery &amp; installation</a> page (around 6 weeks for mainland France, longer for Corsica and overseas territories).</p>
+
+                    <h2 style="margin-top:32px;">5. Right of withdrawal</h2>
+                    <p>Under Article L221-28 3° of the French Consumer Code, the right of withdrawal does not apply to goods made to the consumer's specifications or clearly personalised — which is the case for our pods, custom-built to order. Applicable return conditions are detailed on our <a href="/retours">Returns &amp; withdrawal</a> page.</p>
+
+                    <h2 style="margin-top:32px;">6. Warranty</h2>
+                    <p>Every Capsule House pod is covered by a 10-year manufacturer warranty, under the conditions detailed on our <a href="/garantie">Manufacturer warranty</a> page. This warranty applies without prejudice to the statutory warranty of conformity and warranty against hidden defects under French law.</p>
+
+                    <h2 style="margin-top:32px;">7. Disputes</h2>
+                    <p>These terms are governed by French law. In the event of a dispute, an amicable resolution will be sought before any legal action. Failing agreement, the courts of the jurisdiction of Exocoms Group's registered office shall have sole jurisdiction.</p>
+                </div>
+            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_cgv_bottom"/>
+        </t>
+    </template>
+</odoo>

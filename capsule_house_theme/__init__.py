@@ -111,6 +111,12 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.entreprise_nav',
     'capsule_house_theme.entreprise_apropos_page',
     'capsule_house_theme.entreprise_concept_page',
+    # Ajoutés en 19.0.1.0.64 (pages légales : Mentions légales/CGV/
+    # Confidentialité — liens du footer cassés depuis le début du projet,
+    # détecté par l'outil SEO natif d'Odoo — voir README).
+    'capsule_house_theme.mentions_legales_page',
+    'capsule_house_theme.cgv_page',
+    'capsule_house_theme.confidentialite_page',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de

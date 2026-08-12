@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.63',
+    'version': '19.0.1.0.64',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -74,6 +74,13 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Liv
         'views/partials/entreprise_nav.xml',
         'views/pages/entreprise_apropos.xml',
         'views/pages/entreprise_concept.xml',
+        # Pages légales (19.0.1.0.64) : Mentions légales, CGV,
+        # Confidentialité — liens du footer présents depuis le début du
+        # projet mais jamais construits jusqu'ici (liens cassés détectés
+        # par l'outil SEO natif d'Odoo).
+        'views/pages/mentions_legales.xml',
+        'views/pages/cgv.xml',
+        'views/pages/confidentialite.xml',
     ],
     # NB: pas de clé 'assets' ici. Les CSS/JS de ce thème sont enregistrés
     # dynamiquement à l'installation via `_setup_theme_assets()` (ir.asset

@@ -381,13 +381,17 @@ fichier (contrôleurs, `__init__.py`, vues, CSS) plutôt que réactive.
   widget "vus récemment" (`ExocomsWebsiteSale.product()`), pages
   Services/Contact/À propos (déjà actées "au fur et à mesure" par le
   client).
-- **Écart connu, non corrigé pour l'instant** : le footer
-  (`footer.xml`) contient des liens vers `/mentions-legales`, `/cgv`,
+- **Écart connu, CORRIGÉ EN v19.0.1.0.64** : le footer (`footer.xml`)
+  contenait des liens vers `/mentions-legales`, `/cgv`,
   `/confidentialite`, `/livraison`, `/retours`, `/garantie`, `/faq`,
-  `/a-propos`, `/le-concept`, `/contact` — aucune de ces pages n'existe
-  encore dans ce module (elles mèneront à un 404 tant qu'elles ne sont
-  pas créées), cohérent avec le calendrier "au fur et à mesure" déjà
-  acté pour Services/Contact/À propos.
+  `/a-propos`, `/le-concept`, `/contact` sans que ces pages n'existent
+  encore. `/livraison`, `/retours`, `/garantie`, `/faq`, `/a-propos`,
+  `/le-concept` ont été livrées au fil des versions suivantes (voir
+  sections dédiées plus bas) ; `/contact` reste volontairement la page
+  NATIVE Odoo `/contactus`. Les 3 pages légales restantes
+  (`/mentions-legales`, `/cgv`, `/confidentialite`) sont restées
+  cassées jusqu'à ce que l'outil SEO natif d'Odoo les signale
+  explicitement — voir section "Pages légales" plus bas.
 
 ### CRITIQUE — panne totale de chargement du module (v19.0.1.0.18)
 
@@ -1558,6 +1562,42 @@ ajuster si Capsule House obtient ses propres coordonnées dédiées.
 pour un xpath `//head` fiable, laissé de côté plutôt que de risquer un
 xpath qui casse à l'installation. À traiter dans une prochaine version
 si besoin.
+
+## Pages légales — Mentions légales, CGV, Confidentialité (v19.0.1.0.64)
+
+En ouvrant le panneau SEO natif d'Odoo (Promote > Optimize SEO), le
+client a découvert des liens cassés : `/mentions-legales`, `/cgv`,
+`/confidentialite`. Pas une régression — ces liens sont dans le footer
+depuis le tout début du projet, documentés comme "écart connu, non
+corrigé pour l'instant" (voir plus haut), jamais construits.
+
+`/shop/category/4` (Accessoires) apparaissait aussi cassé dans le même
+panneau : pas un bug de routing (la catégorie est bien créée par
+`_setup_shop_categories()`), simplement une conséquence du catalogue
+actuellement vide (0 produit publié) — devrait se résoudre de
+lui-même une fois de vrais produits publiés.
+
+**Corrigé** : trois nouvelles pages (`views/pages/mentions_legales.xml`,
+`cgv.xml`, `confidentialite.xml`), routes dédiées dans
+`controllers/main.py`. Contenu — rien d'inventé :
+- **Mentions légales** : coordonnées légales réelles d'Exocoms Group
+  (SIRET, adresse, forme juridique, hébergeur), reprises à l'identique
+  de `exocoms_theme` — même société gérant les deux sites, confirmé
+  explicitement par le client ("c'est la même entreprise qui gère les
+  deux"). Seule l'activité déclarée est adaptée (vente de maisons
+  modulaires) et l'email de contact reprend la convention déjà en
+  place ailleurs dans ce module (`contact@capsule-house.fr`).
+  Hébergement (IONOS) repris tel quel — à confirmer/corriger si
+  l'hébergement réel diffère.
+- **CGV** : chaque clause reprend un fait déjà publié ailleurs sur le
+  site (acompte 20 %, délais de fabrication/livraison, garantie 10 ans,
+  paiement 3x sans frais), formalisé juridiquement — y compris le
+  fondement légal réel de l'absence de rétractation pour un bien
+  personnalisé (art. L221-28 3° du Code de la consommation).
+- **Confidentialité** : décrit les traitements de données réellement en
+  place (avis, newsletter, commandes, live chat) ; vérifié qu'aucun
+  outil d'analytics/pixel tiers n'est configuré dans le module avant
+  d'écrire la section cookies (uniquement des cookies fonctionnels).
 
 ## Point de vérification connu
 

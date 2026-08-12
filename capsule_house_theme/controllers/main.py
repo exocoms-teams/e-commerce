@@ -387,6 +387,24 @@ class CapsuleHouseWebsite(Website):
         """Page Entreprise "Le concept"."""
         return request.render('capsule_house_theme.entreprise_concept_page', {})
 
+    @http.route('/mentions-legales', type='http', auth='public', website=True, sitemap=True)
+    def mentions_legales(self, **kw):
+        """Page légale — créée en v19.0.1.0.64, liens du footer cassés
+        depuis le début du projet (détecté par l'outil SEO natif d'Odoo,
+        voir README "Écart connu, non corrigé pour l'instant").
+        """
+        return request.render('capsule_house_theme.mentions_legales_page', {})
+
+    @http.route('/cgv', type='http', auth='public', website=True, sitemap=True)
+    def cgv(self, **kw):
+        """Conditions générales de vente — voir mentions_legales() ci-dessus."""
+        return request.render('capsule_house_theme.cgv_page', {})
+
+    @http.route('/confidentialite', type='http', auth='public', website=True, sitemap=True)
+    def confidentialite(self, **kw):
+        """Politique de confidentialité — voir mentions_legales() ci-dessus."""
+        return request.render('capsule_house_theme.confidentialite_page', {})
+
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def newsletter_subscribe(self, email=None, **kwargs):
