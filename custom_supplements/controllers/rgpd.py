@@ -22,10 +22,13 @@ class CustomPortal(CustomerPortal):
                 # Anonymisation avant désactivation
                 user = request.env.user.sudo()
                 partner = user.partner_id
+                partner_id = partner.id
+                anon_name = f'Client supprimé #{partner_id}'
+                anon_email = f'deleted_{partner_id}@deleted.invalid'
 
                 partner.with_context(mail_notrack=True).write({
-                    'name': 'Utilisateur supprimé',
-                    'email': f'deleted_{partner.id}@deleted.invalid',
+                    'name': anon_name,
+                    'email': anon_email,
                     'phone': False,
                     'street': False,
                     'street2': False,
@@ -34,8 +37,27 @@ class CustomPortal(CustomerPortal):
                     'country_id': False,
                 })
                 user.with_context(mail_notrack=True).write({
-                    'login': f'deleted_{user.id}@deleted.invalid',
+                    'login': anon_email,
                 })
+                # 3. Commandes — on garde les montants mais on anonymise
+                #    les champs nominatifs sur les lignes et notes
+                sales = request.env['sale.order'].search([('partner_id', '=', partner_id)])
+                sales.write({
+                    'note': False,
+                })
+
+                # 4. Factures — on garde le document légal mais on retire
+                #    les références nominatives non obligatoires
+                invoices = request.env['account.move'].search([('partner_id', '=', partner_id)])
+                invoices.write({
+                    'narration': False,
+                })
+
+                # 5. Messages/chatter — suppression des messages non contractuels
+                request.env['mail.message'].search([
+                    ('res_id', '=', partner_id),
+                    ('model', '=', 'res.partner'),
+                ]).unlink()
 
                 # Désactivation standard
                 user._deactivate_portal_user(**post)
