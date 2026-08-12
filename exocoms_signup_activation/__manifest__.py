@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "EXOCOMS - Activation de compte par email",
-    "version": "19.0.1.0.0",
+    "version": "19.0.2.0.0",
     "category": "Website/Website",
     "summary": "Double opt-in : le compte portail n'est actif qu'apres clic sur le lien recu par email",
     "description": """
@@ -25,7 +25,7 @@ le comportement natif : elles ne sont pas soumises a la verification.
     "author": "EXOCOMS Group",
     "website": "https://exocoms.fr",
     "license": "LGPL-3",
-    "depends": ["auth_signup", "website", "mail", "base_setup"],
+    "depends": ["auth_signup", "website", "mail"],
     "data": [
         "data/ir_config_parameter_data.xml",
         "data/mail_template_data.xml",

@@ -84,8 +84,19 @@ class ExocomsAuthSignupHome(AuthSignupHome):
         # et on relance l'email plutôt que de renvoyer une erreur.
         pending = Users._exocoms_find_pending(login)
         if pending:
-            pending._exocoms_prepare_activation()
-            pending._exocoms_send_activation_email(silent=True)
+            # Le mot de passe et le nom soumis sont volontairement ignorés : un
+            # tiers qui connaît l'adresse ne doit pas pouvoir écraser les
+            # identifiants d'une inscription en cours. On se contente de
+            # relancer l'email — soumis aux mêmes limites que le bouton de
+            # renvoi, sans quoi le formulaire deviendrait un outil de mail bomb.
+            try:
+                pending._exocoms_check_resend_allowed()
+                pending._exocoms_prepare_activation(
+                    base_url=self._exocoms_request_base_url())
+                pending._exocoms_send_activation_email(silent=True)
+            except UserError:
+                _logger.info(
+                    "Ré-inscription ignorée (limite d'envoi atteinte) : %s", login)
             return pending
 
         created_login, _password = Users.signup(values, None)
@@ -95,13 +106,33 @@ class ExocomsAuthSignupHome(AuthSignupHome):
         if not user_sudo:
             raise SignupError(_("Impossible de créer le compte."))
 
-        user_sudo._exocoms_prepare_activation()
+        user_sudo._exocoms_prepare_activation(
+            base_url=self._exocoms_request_base_url())
         # On sécurise la création du compte avant l'envoi du mail : si le
         # serveur SMTP échoue, l'inscription n'est pas perdue et le visiteur
         # peut demander un nouvel envoi.
         request.env.cr.commit()
-        user_sudo._exocoms_send_activation_email(silent=True)
+        try:
+            user_sudo._exocoms_send_activation_email(silent=True)
+        except Exception:  # noqa: BLE001 - SMTP indisponible, quota, etc.
+            _logger.exception(
+                "Envoi de l'email d'activation impossible pour %s", login)
         return user_sudo
+
+    def _exocoms_request_base_url(self):
+        """Racine d'URL du site sur lequel la demande a ete deposee.
+
+        En multi-societe / multi-site, garantit que le client recoit un lien
+        pointant vers le domaine par lequel il s'est inscrit, et non vers le
+        `web.base.url` global de la base.
+        """
+        website = getattr(request, 'website', None)
+        if website and website.domain:
+            domain = website.domain.strip()
+            if not domain.startswith(('http://', 'https://')):
+                domain = 'https://%s' % domain
+            return domain
+        return request.httprequest.url_root
 
     def _exocoms_validate_signup_email(self, login):
         """Hook de validation de l'adresse email avant création du compte.
@@ -176,8 +207,12 @@ class ExocomsAuthSignupHome(AuthSignupHome):
         user = request.env['res.users'].sudo()._exocoms_find_pending(login)
         if user:
             try:
-                user._exocoms_prepare_activation()
-                user._exocoms_send_activation_email()
+                # Contrôle AVANT régénération : un renvoi refusé ne doit pas
+                # invalider le lien déjà reçu par le client.
+                user._exocoms_check_resend_allowed()
+                user._exocoms_prepare_activation(
+                    base_url=self._exocoms_request_base_url())
+                user._exocoms_send_activation_email(silent=True)
             except UserError as exc:
                 error = exc.args[0]
 
