@@ -60,17 +60,18 @@ class CustomPortal(CustomerPortal):
                     ('model', '=', 'res.partner'),
                     ('res_id', '=', partner_id),
                 ])
-                _logger.warning("CECI EST UN TEST %s", messages)
-                for message in messages:
-                    _logger.warning(
-                        "MESSAGE %s | date=%s | subtype=%s | tracking=%s | body=%s",
-                        message.id,
-                        message.date,
-                        message.subtype_id.name,
-                        message.tracking_value_ids.ids,
-                        message.body,
-                    )
-                messages.unlink()
+
+                # Supprimer les tracking values
+                tracking_values = request.env['mail.tracking.value'].search([
+                    ('mail_message_id', 'in', messages.ids),
+                ])
+                tracking_values.unlink()
+
+                # Puis vider le body des messages
+                messages._write({
+                    'body': '',
+                    'subject': False,
+                })
 
                 # Désactivation standard
                 user._deactivate_portal_user(**post)
