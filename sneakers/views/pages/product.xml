@@ -154,12 +154,23 @@
                                 <h4>Color</h4>
                                 <div class="sn-color-options">
                                     <t t-foreach="colors" t-as="color">
-                                        <span class="sn-color"
-                                            t-att-title="color.product_attribute_value_id.name"
-                                            t-att-data-color-id="color.id"
-                                            t-att-data-color="color.product_attribute_value_id.name"
-                                            t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
-                                        </span>
+                                        <t t-if="color.product_attribute_value_id.attribute_id.display_type == 'image'">
+                                            <span class="sn-color sn-color--image"
+                                                t-att-title="color.product_attribute_value_id.name"
+                                                t-att-data-color-id="color.id"
+                                                t-att-data-color="color.product_attribute_value_id.name">
+                                                <img t-att-src="'/web/image/product.attribute.value/%d/image_512' % color.product_attribute_value_id.id"
+                                                     t-att-alt="color.product_attribute_value_id.name"/>
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="sn-color"
+                                                t-att-title="color.product_attribute_value_id.name"
+                                                t-att-data-color-id="color.id"
+                                                t-att-data-color="color.product_attribute_value_id.name"
+                                                t-att-style="'background-color:%s;' % color.product_attribute_value_id.html_color">
+                                            </span>
+                                        </t>
                                     </t>
                                 </div>
                             </div>

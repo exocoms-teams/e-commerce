@@ -96,11 +96,16 @@ if (wishlistSection) {
 
 
             if(data.result){
-
+                // ponytail: sync localStorage so navbar dot updates
+                var wishItemId = wishlistItem.dataset.wishId;
+                var wishProductId = wishlistItem.dataset.productId;
+                if (wishProductId) {
+                    var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
+                    wl = wl.filter(function(id) { return id !== String(wishProductId); });
+                    localStorage.setItem("sn_wishlist", JSON.stringify(wl));
+                }
                 updateWishlistBadge();
-
                 window.location.reload();
-
             }
 
 
@@ -805,6 +810,12 @@ document.addEventListener(
 
 
 
+                // ponytail: sync localStorage so navbar dot updates
+                var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
+                if (wl.indexOf(String(productId)) === -1) {
+                    wl.push(String(productId));
+                    localStorage.setItem("sn_wishlist", JSON.stringify(wl));
+                }
                 updateWishlistBadge();
 
 
@@ -849,125 +860,11 @@ document.addEventListener(
 // UPDATE WISHLIST BADGE
 // ============================
 
-
 function updateWishlistBadge(){
-
-
-
-    fetch(
-
-        "/shop/wishlist/get_product_ids",
-
-        {
-
-
-            method:"POST",
-
-
-            headers:{
-
-
-                "Content-Type":"application/json",
-
-                "X-CSRFToken": odoo.csrf_token
-
-
-            },
-
-
-
-            body:JSON.stringify({
-
-
-                jsonrpc:"2.0",
-
-
-                method:"call",
-
-
-                params:{}
-
-
-            })
-
-
-        }
-
-    )
-
-
-
-    .then(response => response.json())
-
-
-
-    .then(data => {
-
-
-
-        console.log(
-
-            "WISHLIST IDS:",
-
-            data
-
-        );
-
-
-
-
-        var badge =
-            document.querySelector(
-                ".sn-wishlist-count"
-            );
-
-
-
-
-        if(
-            badge &&
-            data.result
-        ){
-
-
-
-            badge.textContent =
-                data.result.length;
-
-
-
-            badge.style.display =
-                "flex";
-
-
-
-        }
-
-
-
-
-    })
-
-
-
-    .catch(function(error){
-
-
-
-        console.error(
-
-            "WISHLIST BADGE ERROR:",
-
-            error
-
-        );
-
-
-
-    });
-
-
-
+    var wl = JSON.parse(localStorage.getItem("sn_wishlist") || "[]");
+    var badge = document.querySelector(".sn-wishlist-count");
+    if (!badge) return;
+    badge.style.display = wl.length > 0 ? "block" : "none";
 }
 
 // ============================

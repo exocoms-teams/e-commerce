@@ -348,11 +348,11 @@ class SneakersWebsiteSale(website_sale_main.WebsiteSale):
         brands = request.env['product.brand'].sudo().search([])
 
         size_attribute = request.env['product.attribute'].sudo().search([
-            ('name', '=', 'Size')
+            ('name', 'ilike', 'Size')
         ], limit=1)
 
         color_attribute = request.env['product.attribute'].sudo().search([
-            ('name', '=', 'Color')
+            ('name', 'ilike', 'Color')
         ], limit=1)
 
         sizes = request.env['product.attribute.value'].sudo().search([
@@ -505,12 +505,12 @@ class SneakersController(CustomerPortal):
         # ==========================
 
         color_values = product.attribute_line_ids.filtered(
-            lambda line: line.attribute_id.name == "Color"
+            lambda line: line.attribute_id.name.lower() == "color"
         ).value_ids
 
 
         size_values = product.attribute_line_ids.filtered(
-            lambda line: line.attribute_id.name == "Size"
+            lambda line: line.attribute_id.name.lower() == "size"
         ).value_ids
 
 
@@ -532,12 +532,12 @@ class SneakersController(CustomerPortal):
 
 
         material_values = product.attribute_line_ids.filtered(
-            lambda line: line.attribute_id.name == "Material"
+            lambda line: line.attribute_id.name.lower() == "material"
         ).value_ids
 
 
         sole_values = product.attribute_line_ids.filtered(
-            lambda line: line.attribute_id.name == "Sole"
+            lambda line: line.attribute_id.name.lower() == "sole"
         ).value_ids
 
         # ==========================
@@ -598,7 +598,7 @@ class SneakersController(CustomerPortal):
         product_sizes = ', '.join(
             product.attribute_line_ids
             .filtered(
-                lambda l: l.attribute_id.name == "Size"
+                lambda l: l.attribute_id.name.lower() == "size"
             )
             .value_ids
             .mapped('name')
