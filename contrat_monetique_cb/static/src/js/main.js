@@ -1,4 +1,35 @@
 /**
+ * Contrat monétique CB — révélations au scroll
+ */
+(function () {
+    'use strict';
+
+    if (!('IntersectionObserver' in window)) {
+        return;
+    }
+
+    document.documentElement.classList.add('cmq-js');
+
+    var sections = document.querySelectorAll('.mq-stats-section, .cmq-section, .cmq-calc, .cmq-final-wrap');
+    if (!sections.length) {
+        return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    sections.forEach(function (section) {
+        observer.observe(section);
+    });
+})();
+
+/**
  * Contrat monétique CB — simulateur d'économies
  */
 (function () {

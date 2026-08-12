@@ -7,6 +7,10 @@
 
 /* :root de secours — miroir de static/src/css/variables.css (design system).
    Garantit le rendu même si le thème n'injecte pas variables.css. */
+
+html {
+    scroll-behavior: smooth;
+}
 :root {
     --mq-blue:          #0D47A1;
     --mq-blue-mid:      #1565C0;
@@ -54,6 +58,29 @@
 
 .cmq-section {
     padding: 70px 0;
+}
+
+/* Révélation au scroll : le contenu d'une section grandit depuis la taille 0
+   quand elle entre dans le viewport. Activé uniquement via la classe .cmq-js
+   posée par main.js (contenu toujours visible sans JS / motion réduite). */
+@media (prefers-reduced-motion: no-preference) {
+    .cmq-js .mq-stats-section > .mq-container,
+    .cmq-js .cmq-section > .mq-container,
+    .cmq-js .cmq-calc > .mq-container,
+    .cmq-js .cmq-final-wrap > .mq-container {
+        transform: scale(0);
+        opacity: 0;
+        transform-origin: center;
+        transition: transform 1s cubic-bezier(.22, .61, .36, 1), opacity 1s ease;
+    }
+
+    .cmq-js .mq-stats-section.is-revealed > .mq-container,
+    .cmq-js .cmq-section.is-revealed > .mq-container,
+    .cmq-js .cmq-calc.is-revealed > .mq-container,
+    .cmq-js .cmq-final-wrap.is-revealed > .mq-container {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* .cmq-dark {
