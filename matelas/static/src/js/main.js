@@ -470,6 +470,22 @@
             mo.observe(document.body, { childList: true, subtree: true, characterData: true });
         })();
 
+        // ===== Masquer le bandeau "Free Testimonials Slider Widget" d'Elfsight =====
+        (function() {
+            const temoignages = document.querySelector('.temoignages');
+            if (!temoignages) { return; }
+
+            function removeElfsightBadge() {
+                temoignages.querySelectorAll('a[href*="elfsight.com/testimonials-slider-widget"]').forEach(function(badge) {
+                    badge.remove();
+                });
+            }
+
+            removeElfsightBadge();
+            const badgeObserver = new MutationObserver(removeElfsightBadge);
+            badgeObserver.observe(temoignages, { childList: true, subtree: true });
+        })();
+
     }
 
     if (document.readyState === 'loading') {
