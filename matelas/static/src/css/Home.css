@@ -339,15 +339,19 @@ header#top a[href*="contact-us"] {
     height: 100%;
 }
 
-/* Rangée de produits (best-sellers, nouveautés) */
+/* Rangée de produits (best-sellers, nouveautés) : 4 produits sur une même ligne */
 .auto-scroll-wrapper {
     margin-top: 2rem;
 }
 
 .auto-scroll-track {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+}
+
+.auto-scroll-track .bestseller-scroll-item {
+    width: auto;
 }
 
 .voir-tout {
@@ -823,6 +827,10 @@ footer.o_footer a:hover {
 
     .bestseller-scroll-item {
         width: 220px;
+    }
+
+    .auto-scroll-track {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .product-image {

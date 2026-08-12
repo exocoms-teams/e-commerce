@@ -24,13 +24,13 @@ class MatelasVente(http.Controller):
             nouveautes = request.env['product.template'].sudo().search([
                 ('is_published', '=', True),
                 ('product_tag_ids', 'in', nouveaute_tag.ids),
-            ], limit=6)
+            ], limit=4)
 
         if not nouveautes:
 
             nouveautes = request.env['product.template'].sudo().search([
                 ('is_published', '=', True),
-            ], order='create_date desc', limit=6)
+            ], order='create_date desc', limit=4)
 
         temoignages = request.env['matelas.avis'].sudo().search([
             ('is_published', '=', True),
