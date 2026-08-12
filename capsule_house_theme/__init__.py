@@ -1152,7 +1152,11 @@ def _setup_menus(env, website, categories):
         lambda m: m.id not in kept_menu_ids and m.url not in known_urls
     )
     if stray_menus:
-        _logger.warning(
+        # v19.0.1.0.62 : passé de warning à info — suppression attendue et
+        # idempotente (menu par défaut d'Odoo type "Contact Us", jamais une
+        # anomalie), ne devrait pas remonter comme un signal d'alerte côté
+        # Odoo.sh (voir README "Warning Odoo.sh récurrent").
+        _logger.info(
             "capsule_house_theme: suppression de %d menu(s) par défaut non "
             "reconnu(s) sur le site id=%s : %s.",
             len(stray_menus), website.id, stray_menus.mapped('name'),
