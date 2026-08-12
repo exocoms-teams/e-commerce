@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "EXOCOMS - Activation de compte par email",
-    "version": "19.0.2.0.0",
+    "version": "19.0.2.0.1",
     "category": "Website/Website",
     "summary": "Double opt-in : le compte portail n'est actif qu'apres clic sur le lien recu par email",
     "description": """

@@ -57,17 +57,34 @@ class ExocomsAuthSignupHome(AuthSignupHome):
     def _exocoms_signup_pending(self, qcontext):
         """Crée le compte en attente de validation et envoie l'email."""
         Users = request.env['res.users'].sudo()
-        login = (qcontext.get('login') or '').strip()
-        values = {
-            'login': login,
-            'name': qcontext.get('name'),
-            'password': qcontext.get('password'),
-        }
-        if not values['login'] or not values['name'] or not values['password']:
-            raise UserError(_("Le formulaire n'a pas été correctement rempli."))
-        if values['password'] != qcontext.get('confirm_password'):
+
+        def _get(key):
+            # get_auth_signup_qcontext() filtre les paramètres via
+            # SIGN_UP_REQUEST_PARAMS ; on retombe sur request.params pour rester
+            # tolérant si le formulaire du thème poste des champs différents.
+            value = qcontext.get(key) or request.params.get(key) or ''
+            return value.strip() if isinstance(value, str) else value
+
+        login = _get('login') or _get('email')
+        password = _get('password')
+        # Odoo natif ne rend pas le nom obligatoire : signup() le dérive de
+        # l'adresse email lorsqu'il est absent. On garde ce comportement.
+        name = _get('name') or login
+
+        if not login or not password:
+            _logger.warning(
+                "Inscription refusée : champs manquants. Champs reçus = %s",
+                sorted(request.params.keys()))
+            raise UserError(_(
+                "Merci de renseigner votre adresse email et un mot de passe."))
+        # La confirmation n'est comparée que si le formulaire la transmet
+        # réellement : certains thèmes n'affichent pas ce second champ.
+        confirm = _get('confirm_password')
+        if confirm and password != confirm:
             raise UserError(_("Les mots de passe ne correspondent pas ; "
                               "merci de les saisir à nouveau."))
+
+        values = {'login': login, 'name': name, 'password': password}
 
         # Point d'extension : contrôles supplémentaires sur l'adresse email
         # (format, enregistrement MX, domaines jetables...). Surchargez cette
