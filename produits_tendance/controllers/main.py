@@ -131,7 +131,15 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
+        # WIN-83 : journalisation best-effort, ne doit jamais faire
+        # échouer le scan lui-même (déjà terminé à ce stade).
+        request.env['tracker.cron.log'].log_execution(
+            cron_name='ebay_ingestor',
+            status='success' if result.get('status') == 'success' else 'error',
+            message=str(result),
+        )
+
         return result
 
     # --- ROUTE META ADS (MANUELLE) ---
@@ -161,7 +169,15 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
+        # WIN-83 : journalisation best-effort, ne doit jamais faire
+        # échouer le scan lui-même (déjà terminé à ce stade).
+        request.env['tracker.cron.log'].log_execution(
+            cron_name='meta_ingestor',
+            status='success' if result.get('status') == 'success' else 'error',
+            message=str(result),
+        )
+
         return result
 
 # -----------------------------------------------------------

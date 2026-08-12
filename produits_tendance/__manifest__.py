@@ -24,6 +24,7 @@
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'data/webhook_queue_cron.xml',      # WIN-67
+        'views/tracker_cron_log_views.xml',   # WIN-83
     ],
 
     'demo': [
