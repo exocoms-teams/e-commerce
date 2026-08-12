@@ -56,7 +56,7 @@ class CustomPortal(CustomerPortal):
                 # })
 
                 # 5. Messages/chatter — suppression des messages non contractuels
-                messages = request.env['mail.message'].search([
+                messages = request.env['mail.message'].sudo().search([
                     ('model', '=', 'res.partner'),
                     ('res_id', '=', partner_id),
                 ])
