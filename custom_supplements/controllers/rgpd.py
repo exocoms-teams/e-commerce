@@ -60,7 +60,7 @@ class CustomPortal(CustomerPortal):
                     ('model', '=', 'res.partner'),
                     ('res_id', '=', partner_id),
                 ])
-                _logger.warning("CECI EST UN TEST %s", messages.count())
+                _logger.warning("CECI EST UN TEST %s", messages)
                 for message in messages:
                     _logger.warning(
                         "MESSAGE %s | date=%s | subtype=%s | tracking=%s | body=%s",
