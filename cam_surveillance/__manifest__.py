@@ -15,7 +15,10 @@
         'data/products.xml',
 
         # Views
-        'views/reasurance_banner.xml',
+        'views/layout/reasurance_banner.xml',
+        'views/layout/cart_custom.xml',
+        'views/layout/header.xml',
+        'views/layout/footer.xml',
         'views/layout.xml',
 
         # Views items
