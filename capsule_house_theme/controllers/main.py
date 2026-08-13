@@ -143,15 +143,13 @@ class CapsuleHouseWebsite(Website):
             rating_count = ICP.get_param('capsule_house_theme.rating_count')
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
-        values = {
+        return request.render('capsule_house_theme.page_home', {
             'featured_products': self._serialize_products(featured_products),
             'published_products_count': Product.search_count(domain),
             'rating_value': rating_value,
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
-        }
-        values.update(self._get_home_avis_context(website))
-        return request.render('capsule_house_theme.page_home', values)
+        })
 
     @http.route('/capsule-house/hero-data.json', type='http', auth='public',
                 website=True, sitemap=False)
@@ -281,38 +279,6 @@ class CapsuleHouseWebsite(Website):
         avg = sum(a.rating for a in published) / len(published)
         return round(avg, 1), len(published)
 
-    def _get_home_avis_context(self, website):
-        """Avis publiés de notre site, pour le carousel témoignages de la
-        home (même source que la page /avis). Réplique le mécanisme
-        observé sur exocoms_theme (_get_home_avis_context) — ajouté en
-        19.0.1.0.66 suite à la demande client de reprendre ce qui est
-        nécessaire d'exocoms_theme pour Capsule House.
-
-        Volontairement INDÉPENDANT de `_get_avis_stats()` : celui-ci sert
-        au badge du hero, qui retombe sur un réglage manuel
-        (ir.config_parameter) tant qu'aucun avis réel n'existe. La
-        section témoignages, elle, ne doit JAMAIS afficher autre chose
-        que de vrais avis — donc son état vide ("soyez le premier...")
-        doit apparaître même si le badge du hero affiche un chiffre de
-        secours.
-        """
-        Avis = request.env['capsule.house.avis'].sudo()
-        all_avis = Avis.search([
-            ('website_id', '=', website.id),
-            ('state', '=', 'published'),
-        ], order='date desc, id desc')
-
-        home_avis_stats = False
-        if all_avis:
-            total = len(all_avis)
-            avg = sum(a.rating for a in all_avis) / total
-            home_avis_stats = {'avg': round(avg, 1), 'total': total}
-
-        return {
-            'home_avis_list': all_avis[:6],
-            'home_avis_stats': home_avis_stats,
-        }
-
     @http.route('/boutique', type='http', auth='public', website=True,
                 sitemap=True)
     def boutique(self, **kw):
@@ -325,6 +291,102 @@ class CapsuleHouseWebsite(Website):
         la logique de la page boutique elle-même ici.
         """
         return request.redirect('/shop')
+
+    @http.route('/nos-modeles', type='http', auth='public', website=True,
+                sitemap=True)
+    def nos_modeles(self, **kw):
+        """Page vitrine des 4 gammes de pods (Studio/Duo/Panorama/
+        Accessoires), ajoutée en 19.0.1.0.67.
+
+        Origine de la demande : le client a montré la page "Application"
+        de guosegroup.com (fabricant chinois de maisons capsules) et
+        demandé un équivalent. Analyse : leurs cartes cliquables ("loger",
+        "bureau", "boutique"...) montrent de VRAIES photos de leurs
+        propres installations — impossible à répliquer ici sans inventer
+        des usages que Capsule House n'a jamais publiés (voir échange
+        précédent : aucune mention de bureau/boutique/salle d'exposition
+        nulle part sur ce site). Le client a alors précisé : "c'est comme
+        ma page service sur exocoms, indique juste leur domaine
+        d'expertise" — et confirmé ensuite vouloir cette page-là comme
+        modèle ("la page service devrait être la page application").
+
+        Chez exocoms_theme, `/nos-services` est justement une grille de
+        cartes qui ne fait QUE présenter chaque domaine en une ou deux
+        phrases, sans fabriquer de contenu propre à chaque carte : ce
+        sont les vraies pages catégorie de la boutique qui font foi.
+        Reproduit ici à l'identique : chaque carte pointe vers le VRAI
+        filtre boutique (/shop/category/<id>, déjà utilisé par le menu
+        de nav, voir _setup_menus) — aucune page de contenu inventée par
+        catégorie.
+
+        Contenu textuel strictement réel :
+        - Tailles (18 m² Studio, jusqu'à 40 m² Panorama) : déjà publiées
+          sur /faq (aide_faq.xml).
+        - Trilogie "Studio, duo ou famille" : déjà publiée sur /shop
+          (shop.xml, sous-titre du hero boutique).
+        - "Duo" : aucune surface publiée nulle part sur ce site — la
+          carte se limite donc à ce que le nom affirme de lui-même
+          (format pensé pour deux), sans inventer de m².
+        """
+        website = request.website
+        Category = request.env['product.public.category'].sudo()
+        Product = request.env['product.template'].sudo()
+
+        # Import différé (après chargement complet du module) — évite tout
+        # risque d'import circulaire avec __init__.py, même principe que
+        # les migrations qui font `from odoo.addons.capsule_house_theme
+        # import run_theme_maintenance` à l'intérieur de migrate().
+        from odoo.addons.capsule_house_theme import SHOP_CATEGORIES
+
+        # Descriptions strictement réelles (voir docstring ci-dessus) :
+        # Studio/Panorama reprennent les surfaces déjà publiées sur /faq,
+        # "Duo" ne reprend QUE ce que le nom affirme de lui-même (aucune
+        # surface publiée nulle part sur ce site pour ce modèle).
+        if request.env.lang == 'fr_FR':
+            descriptions = {
+                'Studio': "Le format compact, 18 m² — pour une personne ou un usage indépendant.",
+                'Duo': "Le format intermédiaire de la gamme, pensé pour deux.",
+                'Panorama': "Le plus grand de la gamme, jusqu'à 40 m² — pensé pour un usage familial.",
+                'Accessoires': "Équipements et options pour compléter votre pod.",
+            }
+        else:
+            descriptions = {
+                'Studio': "The compact format, 18 sqm — for one person or standalone use.",
+                'Duo': "The mid-size format in the range, designed for two.",
+                'Panorama': "The largest in the range, up to 40 sqm — designed for family use.",
+                'Accessoires': "Equipment and options to complete your pod.",
+            }
+
+        model_cards = []
+        for name in SHOP_CATEGORIES:
+            category = Category.search([
+                ('name', '=', name),
+                '|', ('website_id', '=', website.id), ('website_id', '=', False),
+            ], limit=1)
+            if not category:
+                continue
+            domain = [
+                ('website_id', '=', website.id),
+                ('is_published', '=', True),
+                ('public_categ_ids', 'child_of', category.id),
+            ]
+            first_product = Product.search(domain, limit=1, order='website_sequence asc')
+            # "Accessoires" est un nom commun (contrairement à Studio/Duo/
+            # Panorama, nom de gamme = nom propre, jamais traduit ailleurs
+            # dans ce module) : traduit ici en anglais, même exception que
+            # EN_MENU_NAMES dans _setup_menus() (__init__.py).
+            display_name = 'Accessories' if (name == 'Accessoires' and request.env.lang != 'fr_FR') else name
+            model_cards.append({
+                'name': display_name,
+                'description': descriptions.get(name, ''),
+                'url': '/shop/category/%d' % category.id,
+                'count': Product.search_count(domain),
+                'image_id': first_product.id if first_product else None,
+            })
+
+        return request.render('capsule_house_theme.page_nos_modeles', {
+            'model_cards': model_cards,
+        })
 
     @http.route('/avis', type='http', auth='public', website=True, sitemap=True)
     def avis_page(self, **kw):

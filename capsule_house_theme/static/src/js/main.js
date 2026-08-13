@@ -157,45 +157,9 @@
         }
     }
 
-    /**
-     * Défilement automatique du carousel témoignages (.ch-testimonials-track,
-     * voir views/partials/home_trust.xml) — v19.0.1.0.66, repris
-     * d'exocoms_theme (features.xml) mais déplacé ici plutôt que laissé en
-     * <script> inline dans le template QWeb, pour rester cohérent avec le
-     * reste de ce module (tout le JS du thème vit dans main.js, jamais
-     * dans les vues). Pause au survol, boucle infinie par duplication des
-     * cartes. Ne fait rien si moins de 2 avis (rien à faire défiler).
-     */
-    function initTestimonialsCarousel() {
-        var track = document.getElementById('ch-testimonials-track');
-        if (!track || track.dataset.chInit) return;
-        track.dataset.chInit = '1';
-
-        var originals = Array.prototype.slice.call(track.children);
-        if (originals.length < 2) return;
-        originals.forEach(function (node) { track.appendChild(node.cloneNode(true)); });
-
-        var paused = false;
-        track.addEventListener('mouseenter', function () { paused = true; });
-        track.addEventListener('mouseleave', function () { paused = false; });
-
-        var pos = track.scrollLeft;
-        function step() {
-            if (!paused) {
-                pos += 0.6;
-                var half = track.scrollWidth / 2;
-                if (half > 0 && pos >= half) pos -= half;
-                track.scrollLeft = pos;
-            }
-            window.requestAnimationFrame(step);
-        }
-        window.requestAnimationFrame(step);
-    }
-
     function init() {
         initScrollReveal();
         initHeroDynamicContent();
-        initTestimonialsCarousel();
     }
 
     if (document.readyState === 'loading') {

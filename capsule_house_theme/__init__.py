@@ -122,9 +122,9 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.mentions_legales_page',
     'capsule_house_theme.cgv_page',
     'capsule_house_theme.confidentialite_page',
-    # Ajouté en 19.0.1.0.66 (témoignages + réassurance sur la home,
-    # repris d'exocoms_theme — voir home_trust.xml).
-    'capsule_house_theme.partial_home_trust',
+    # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de "Nos
+    # services" d'exocoms_theme — voir nos_modeles.xml).
+    'capsule_house_theme.page_nos_modeles',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -1083,6 +1083,11 @@ def _setup_menus(env, website, categories):
     Menu = env['website.menu'].sudo()
     entries = [
         ('Accueil', '/', 10),
+        # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de
+        # "Nos services" chez exocoms_theme, qui a aussi sa propre entrée
+        # de menu dédiée) : vitrine des 4 gammes avant le catalogue
+        # complet.
+        ('Nos modèles', '/nos-modeles', 15),
         ('Tous les pods', '/shop', 20),
     ]
     sequence = 30
@@ -1108,6 +1113,7 @@ def _setup_menus(env, website, categories):
     # cohérent avec le choix de ne jamais traduire les noms de produits.
     EN_MENU_NAMES = {
         'Accueil': 'Home',
+        'Nos modèles': 'Our models',
         'Tous les pods': 'All pods',
         'Promotions': 'Deals',
         'Avis clients': 'Reviews',

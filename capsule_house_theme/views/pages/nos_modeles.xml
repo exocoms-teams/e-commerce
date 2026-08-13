@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.nos_modeles() (controllers/main.py)
+        sur la route '/nos-modeles'. Scopée à notre site via
+        _scope_layout_views() (external id
+        capsule_house_theme.page_nos_modeles).
+
+        Créée en v19.0.1.0.67, à la demande du client, sur le modèle de
+        exocoms_theme/views/pages/services.xml ("Nos services") — voir la
+        docstring de nos_modeles() dans controllers/main.py pour
+        l'historique complet de la demande (page "Application" de
+        guosegroup.com montrée par le client, puis clarification :
+        "c'est comme ma page service sur exocoms, indique juste leur
+        domaine d'expertise").
+
+        Chaque carte pointe vers le VRAI filtre boutique
+        (/shop/category/<id>, même URL que les entrées de menu créées
+        par _setup_menus dans __init__.py) — aucune page de contenu
+        inventée par catégorie, exactement comme les cartes "Monétique",
+        "Informatique"... d'exocoms pointent en réalité vers de vrais
+        libellés de domaine, tandis que ce sont les tags du hero qui
+        pointent vers les vraies catégories boutique.
+
+        Textes (tailles, trilogie "Studio, duo ou famille") strictement
+        repris de ce qui est déjà publié ailleurs sur ce site (/faq,
+        /shop) — voir docstring du contrôleur pour le détail exact.
+    -->
+    <template id="page_nos_modeles" name="Capsule House - Nos modèles">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Nos modèles | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Our models | Capsule House</t>
+            <t t-set="head">
+                <meta name="description" content="Studio, duo ou famille : découvrez les gammes de pods Capsule House et trouvez le modèle qui vous correspond."/>
+                <link rel="canonical" href="https://capsule-house.fr/nos-modeles"/>
+                <meta property="og:title" content="Nos modèles | Capsule House"/>
+                <meta property="og:description" content="Studio, duo ou famille : découvrez les gammes de pods Capsule House et trouvez le modèle qui vous correspond."/>
+                <meta property="og:url" content="https://capsule-house.fr/nos-modeles"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a><span class="sep">/</span><span>Nos modèles</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a><span class="sep">/</span><span>Our models</span>
+            </div>
+
+            <section class="ch-models-hero">
+                <div class="container">
+                    <div t-if="request.env.lang == 'fr_FR'">
+                        <span class="ch-models-badge"><i class="fa fa-th-large"/> 4 gammes de pods</span>
+                        <h1 class="ch-aide-title">Un modèle pour chaque usage</h1>
+                        <p class="ch-aide-subtitle">Studio, duo ou famille — trouvez le module qui vous correspond.</p>
+                    </div>
+                    <div t-if="request.env.lang != 'fr_FR'">
+                        <span class="ch-models-badge"><i class="fa fa-th-large"/> 4 pod ranges</span>
+                        <h1 class="ch-aide-title">A model for every need</h1>
+                        <p class="ch-aide-subtitle">Studio, duo or family — find the module that suits you.</p>
+                    </div>
+                    <div class="ch-models-tags" t-if="model_cards">
+                        <a t-foreach="model_cards" t-as="card" t-att-href="card['url']" class="ch-models-tag" t-esc="card['name']"/>
+                    </div>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_nos_modeles_after_hero"/>
+
+            <section class="ch-models-content">
+                <div class="container">
+                    <div class="ch-models-grid" t-if="model_cards">
+                        <a t-foreach="model_cards" t-as="card" t-att-href="card['url']" class="ch-model-card">
+                            <div class="ch-model-card-img">
+                                <img t-if="card['image_id']" t-attf-src="/web/image/product.template/#{ card['image_id'] }/image_512" t-att-alt="card['name']"/>
+                                <i t-if="not card['image_id']" class="fa fa-cube ch-model-card-icon"/>
+                            </div>
+                            <div class="ch-model-card-body">
+                                <h3 t-esc="card['name']"/>
+                                <p t-esc="card['description']"/>
+                                <span class="ch-model-card-count" t-if="card['count'] and request.env.lang == 'fr_FR'">
+                                    <t t-esc="card['count']"/> modèle(s) en ligne
+                                </span>
+                                <span class="ch-model-card-count" t-if="card['count'] and request.env.lang != 'fr_FR'">
+                                    <t t-esc="card['count']"/> model(s) online
+                                </span>
+                                <span class="ch-model-card-cta" t-if="request.env.lang == 'fr_FR'">Voir les modèles <i class="fa fa-arrow-right"/></span>
+                                <span class="ch-model-card-cta" t-if="request.env.lang != 'fr_FR'">View models <i class="fa fa-arrow-right"/></span>
+                            </div>
+                        </a>
+                    </div>
+                    <p class="ch-models-empty" t-else="">
+                        <t t-if="request.env.lang == 'fr_FR'">Nos gammes seront bientôt en ligne.</t>
+                        <t t-else="">Our ranges are coming online soon.</t>
+                    </p>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_nos_modeles_bottom"/>
+        </t>
+    </template>
+</odoo>

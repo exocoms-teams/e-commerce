@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.66',
+    'version': '19.0.1.0.68',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
+Pages actuellement livrées : Accueil, Nos modèles (/nos-modeles), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -49,12 +49,11 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Liv
         'views/templates/layout.xml',
         'views/partials/hero.xml',
         'views/partials/featured_products.xml',
-        # Ajouté en 19.0.1.0.66 : témoignages + réassurance sur la home,
-        # repris d'exocoms_theme (voir home_trust.xml). Doit être chargé
-        # avant home.xml, qui le t-call.
-        'views/partials/home_trust.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
+        # Ajouté en 19.0.1.0.67 : page /nos-modeles, sur le modèle de
+        # "Nos services" d'exocoms_theme (voir nos_modeles.xml).
+        'views/pages/nos_modeles.xml',
         # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis
         # soumis par les clients, modérés avant publication. Vues backend
         # de modération d'abord, puis partiels/page frontend.

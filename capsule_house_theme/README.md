@@ -1619,7 +1619,7 @@ Enregistré dans `THEME_ASSETS` (`__init__.py`) comme les autres feuilles
 du thème, via `ir.asset` scopé `website_id` (jamais dans
 `web.assets_frontend` global). Aucun contenu juridique modifié.
 
-## Audit exocoms_theme — témoignages & réassurance sur la home (v19.0.1.0.66)
+## Audit exocoms_theme — témoignages & réassurance sur la home (v19.0.1.0.66, RETIRÉ EN v19.0.1.0.68)
 
 Demande client : "regarde exocoms et ajoute ce qui est nécessaire pour
 capsule house et si tu peux l'améliorer tu le fais". Comparaison complète
@@ -1674,6 +1674,64 @@ le script de défilement automatique du carousel témoignages est un
 dans `static/src/js/main.js` (`initTestimonialsCarousel`) — cohérent avec
 le reste de ce module, où tout le JS du thème vit dans `main.js`, jamais
 dans les vues.
+
+**RETIRÉ EN v19.0.1.0.68** : retour client — "j'ai pas aimé tes ajout sur
+la page acceuil trouve tu ca necessaire sur capsule ?", puis "retire
+ca". Question posée honnêtement en retour : ni les témoignages ni la
+réassurance n'étaient réellement NÉCESSAIRES pour Capsule House (contrairement
+à la demande initiale du 19.0.1.0.66) — les deux avaient été ajoutés sous
+couvert de "si tu peux l'améliorer, fais-le", pas d'un besoin identifié.
+Les témoignages arrivaient prématurément (peu/pas d'avis publiés encore,
+`/avis` existe déjà en page dédiée) et la réassurance était redondante
+avec le hero et les pages Aide. Tout le code de cette section a été
+retiré (`home_trust.xml` supprimé, `_get_home_avis_context()` retiré du
+contrôleur, CSS/JS associés retirés) — voir migration 19.0.1.0.68. La
+page `/nos-modeles` (section suivante) n'est PAS concernée par ce
+retrait : demande distincte, confirmée séparément par le client.
+
+## Page /nos-modeles — sur le modèle de "Nos services" (v19.0.1.0.67)
+
+Historique de la demande, en trois temps :
+1. Le client a montré `fr.guosegroup.com/application` (fabricant chinois
+   de maisons capsules) et demandé si ce site pouvait servir à voir ce
+   qui manque au nôtre. Leur page "Application" montre le pod utilisé
+   comme logement/bureau/boutique/salle d'exposition/abribus, avec de
+   VRAIES photos de leurs propres installations.
+2. Analyse : ce contenu n'est pas transposable. Rien sur le site Capsule
+   House ne mentionne d'usage bureau/boutique/exposition ; les
+   catégories boutique (Studio/Duo/Panorama/Accessoires) sont des
+   tailles de pods, pas des cas d'usage. Construire une page équivalente
+   aurait nécessité d'inventer des usages — refusé, cohérent avec le
+   principe "jamais de contenu fabriqué" de ce module.
+3. Le client a clarifié : "lorsque je clique sur les elements de la page
+   application c'est comme ma page service sur exocoms indique juste
+   leur domaine d'expertise", puis confirmé vouloir cette page comme
+   modèle plutôt que celle de Guose.
+
+Analyse de `exocoms_theme/views/pages/services.xml` +
+`partials/services_hero.xml` : leurs cartes ne fabriquent aucun contenu
+par domaine — 2-3 phrases génériques par carte, et ce sont les VRAIS
+tags du hero qui renvoient vers les vrais filtres boutique
+(`/shop/category/<id>`). exocoms a même sa propre entrée de menu dédiée
+("Nos services").
+
+**Reproduit à l'identique pour Capsule House** (`views/pages/nos_modeles.xml`,
+route `/nos-modeles`, contrôleur `nos_modeles()`) :
+- Chaque carte pointe vers le VRAI filtre boutique de sa catégorie
+  (même URL que les entrées de menu créées par `_setup_menus`) — aucune
+  sous-page de contenu inventée par catégorie.
+- Description de 1 ligne par carte, strictement réelle : tailles Studio
+  (18 m²) et Panorama (jusqu'à 40 m²) déjà publiées sur `/faq`
+  (`aide_faq.xml`) ; trilogie "Studio, duo ou famille" déjà publiée sur
+  `/shop` (`shop.xml`) ; "Duo" se limite à ce que le nom affirme de
+  lui-même (aucune surface publiée nulle part pour ce modèle — pas
+  d'invention).
+- Image de carte = vraie photo du premier produit publié de la
+  catégorie (`image_id`), sinon icône générique — jamais de photo
+  fabriquée. Compteur "X modèle(s) en ligne" = vrai `search_count`,
+  affiché seulement si `> 0`.
+- Nouvelle entrée de menu "Nos modèles" (séquence 15, entre Accueil et
+  Tous les pods) — même principe que "Nos services" chez exocoms.
 
 ## Point de vérification connu
 
