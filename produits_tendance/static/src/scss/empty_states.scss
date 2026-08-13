@@ -1,0 +1,60 @@
+/* static/src/scss/empty_states.scss
+   WIN-123 : .o_winners_empty_state, documente dans la charte (section 5)
+   comme structure standard pour les pages "coquilles" (Alertes,
+   Collections, Favoris, Historique, Comparaison, Analytics), mais
+   jamais implemente nulle part avant ce ticket. */
+
+.o_winners_empty_state {
+    text-align: center;
+    padding: ($o-winners-spacing-unit * 8) ($o-winners-spacing-unit * 3);
+    color: $o-winners-text-muted;
+
+    &__icon {
+        font-size: 40px;
+        color: $o-winners-text-muted;
+        opacity: 0.5;
+        margin-bottom: $o-winners-spacing-unit;
+    }
+
+    &__title {
+        color: $o-winners-text-dark;
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: ($o-winners-spacing-unit / 2);
+    }
+
+    &__text {
+        max-width: 420px;
+        margin: 0 auto;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    &__action {
+        margin-top: ($o-winners-spacing-unit * 3);
+    }
+}
+
+/* Toast "Bientôt disponible" (coming_soon_toast.js) */
+.o_winners_toast {
+    position: fixed;
+    left: 50%;
+    bottom: ($o-winners-spacing-unit * 3);
+    transform: translate(-50%, ($o-winners-spacing-unit * 2));
+    background-color: $o-winners-primary;
+    color: $o-winners-white;
+    border-radius: $o-winners-radius;
+    padding: $o-winners-spacing-unit ($o-winners-spacing-unit * 2.5);
+    font-family: $o-winners-font-family;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    z-index: 2000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &--visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}

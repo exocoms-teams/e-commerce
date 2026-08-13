@@ -24,6 +24,7 @@
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'data/webhook_queue_cron.xml',      # WIN-67
+        'views/empty_state_templates.xml',   # WIN-123
     ],
 
     'demo': [
@@ -46,6 +47,8 @@
             'produits_tendance/static/src/scss/dashboard.scss',
             'produits_tendance/static/src/scss/header.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
+            'produits_tendance/static/src/scss/empty_states.scss',   # WIN-123
+            'produits_tendance/static/src/js/coming_soon_toast.js',   # WIN-123
         ],
     },
     'installable': True,
