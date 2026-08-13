@@ -1733,6 +1733,39 @@ route `/nos-modeles`, contrôleur `nos_modeles()`) :
 - Nouvelle entrée de menu "Nos modèles" (séquence 15, entre Accueil et
   Tous les pods) — même principe que "Nos services" chez exocoms.
 
+## FAQ "Permis de construire" — retrait d'un engagement non confirmé (v19.0.1.0.69)
+
+En creusant l'idée de la page Application (usages Logement/Bureau/etc.,
+voir section précédente), la discussion a dérivé vers une vraie question
+client : est-ce que le site doit informer sur les démarches
+administratives (permis de construire / déclaration préalable) ? Les
+tailles réelles des pods (Studio 18 m², Panorama jusqu'à 40 m²) tombent
+justement dans la zone où ces seuils s'appliquent — une vraie question
+que se pose un acheteur, absente ailleurs sur le site.
+
+Le client a d'abord envisagé d'en faire un vrai service
+("le service doit prendre ça en compte"), puis a dit explicitement ne
+pas savoir quel niveau d'engagement Capsule House peut tenir
+("j'en sais rien en fait"). Décision : rester au niveau le plus sûr —
+informer, pas promettre.
+
+En vérifiant la FAQ existante (`aide_faq.xml`, chFaq1/chFaq1en,
+présente depuis l'origine du module, reprise de la maquette client),
+sa réponse affirmait déjà "Nous vous accompagnons dans les démarches"
+— exactement l'engagement de service que le client venait de dire ne
+pas pouvoir confirmer. Corrigé :
+- Retrait de la promesse d'accompagnement.
+- Seuils réels vérifiés par recherche (Code de l'urbanisme
+  art. R.421-14 b, formulaires CERFA 16702/16703) : moins de 5 m²,
+  aucune formalité ; 5 à 20 m², déclaration préalable ; plus de 20 m²,
+  permis de construire ; seuil porté à 40 m² en zone urbaine PLU si la
+  surface de plancher déjà bâtie sur le terrain ne dépasse pas 150 m².
+- Application honnête aux tailles réelles : Studio (18 m², typiquement
+  déclaration préalable), Panorama (jusqu'à 40 m², qui peut basculer en
+  permis de construire selon la zone).
+- Renvoi vers la mairie du client pour la décision finale, plutôt
+  qu'une promesse de service non confirmée.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
