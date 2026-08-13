@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.exocoms.portal.signup</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='base_setup']" position="inside">
+                <block title="Inscription portail (EXOCOMS)"
+                       name="exocoms_portal_signup_block">
+
+                    <setting string="Refuser les adresses jetables"
+                             help="Rejette les inscriptions provenant des domaines marqués « Refusé ».">
+                        <field name="exocoms_block_disposable"/>
+                    </setting>
+
+                    <setting string="Vérifier le domaine (DNS)"
+                             help="Contrôle que le domaine de l'adresse peut recevoir du courrier. Ignoré si dnspython n'est pas installé.">
+                        <field name="exocoms_check_mx"/>
+                    </setting>
+
+                    <setting string="Limiter aux domaines autorisés"
+                             help="N'accepte que les domaines marqués « Autorisé ».">
+                        <field name="exocoms_restrict_allowed"/>
+                    </setting>
+
+                    <setting string="Validité du lien d'activation"
+                             help="Durée pendant laquelle le lien reçu par email reste utilisable.">
+                        <field name="exocoms_token_ttl_hours" class="o_light_label"/> heures
+                    </setting>
+
+                    <setting string="Purge des inscriptions non activées"
+                             help="Suppression automatique des comptes jamais activés. 0 désactive la purge.">
+                        <field name="exocoms_purge_days" class="o_light_label"/> jours
+                    </setting>
+
+                    <setting string="Délai entre deux envois"
+                             help="Protection contre les demandes de renvoi répétées.">
+                        <field name="exocoms_resend_interval" class="o_light_label"/> secondes
+                    </setting>
+
+                    <setting string="Nombre maximum d'emails d'activation"
+                             help="Plafond par inscription. 0 pour illimité.">
+                        <field name="exocoms_max_resend" class="o_light_label"/>
+                    </setting>
+
+                    <setting string="Signaler « compte non activé »"
+                             help="Décoché, l'existence d'une adresse n'est jamais confirmée à un tiers lors d'un échec de connexion.">
+                        <field name="exocoms_reveal_pending"/>
+                    </setting>
+
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

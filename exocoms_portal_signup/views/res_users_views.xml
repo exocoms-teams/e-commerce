@@ -12,27 +12,29 @@
                     <group>
                         <group string="État">
                             <field name="exocoms_email_verified"/>
-                            <field name="exocoms_activation_date" readonly="1"/>
-                            <field name="exocoms_activation_expiry" readonly="1"
+                            <field name="exocoms_activation_date"
+                                   invisible="not exocoms_activation_date"/>
+                            <field name="exocoms_activation_expiry"
                                    invisible="exocoms_email_verified"/>
                         </group>
-                        <group string="Emails d'activation">
-                            <field name="exocoms_activation_sent_date" readonly="1"/>
-                            <field name="exocoms_activation_email_count" readonly="1"/>
+                        <group string="Emails">
+                            <field name="exocoms_activation_sent_date"/>
+                            <field name="exocoms_activation_email_count"/>
                         </group>
                     </group>
+                    <group string="Lien en cours" invisible="exocoms_email_verified">
+                        <field name="exocoms_activation_url" readonly="1"/>
+                    </group>
                     <div class="mt-2" invisible="exocoms_email_verified">
-                        <button name="action_exocoms_resend_activation" type="object"
+                        <button name="action_exocoms_resend_activation"
+                                type="object"
                                 string="Renvoyer l'email d'activation"
-                                class="btn btn-primary"/>
-                        <button name="action_exocoms_force_activation" type="object"
+                                class="btn-primary"/>
+                        <button name="action_exocoms_force_activation"
+                                type="object"
                                 string="Activer manuellement"
-                                class="btn btn-secondary ms-2"
-                                confirm="Activer ce compte sans vérification de l'adresse email ?"/>
-                    </div>
-                    <div class="text-muted mt-3" invisible="not exocoms_email_verified">
-                        <i class="fa fa-check-circle text-success me-1"/>
-                        L'adresse email de ce compte a été confirmée.
+                                class="btn-secondary ms-2"
+                                confirm="Activer ce compte sans confirmation de l'adresse email ?"/>
                     </div>
                 </page>
             </xpath>
@@ -44,12 +46,12 @@
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_search"/>
         <field name="arch" type="xml">
-            <xpath expr="//search" position="inside">
+            <search position="inside">
                 <separator/>
-                <filter name="exocoms_pending_activation"
+                <filter name="filter_activation_pending"
                         string="Activation en attente"
                         domain="[('exocoms_email_verified', '=', False), ('active', '=', False)]"/>
-            </xpath>
+            </search>
         </field>
     </record>
 
