@@ -73,6 +73,11 @@ THEME_ASSETS = {
     # jusque-là réservé/vide pour les futures pages internes (Services,
     # Contact, À propos), désormais utilisé pour de vrai.
     'pages.css': 'capsule_house_theme/static/src/css/pages.css',
+    # Ajouté en 19.0.1.0.65 : feuille dédiée aux pages légales
+    # (/mentions-legales, /cgv, /confidentialite), jusque-là stylées via
+    # les classes .ch-aide-* réutilisées des pages Aide (voir legal.css
+    # pour le détail).
+    'legal.css': 'capsule_house_theme/static/src/css/legal.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
 }
 

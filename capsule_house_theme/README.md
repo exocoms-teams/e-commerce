@@ -1599,6 +1599,26 @@ lui-même une fois de vrais produits publiés.
   outil d'analytics/pixel tiers n'est configuré dans le module avant
   d'écrire la section cookies (uniquement des cookies fonctionnels).
 
+### CSS dédié — `legal.css` (v19.0.1.0.65)
+
+À la livraison (v19.0.1.0.64), les trois pages légales réutilisaient les
+classes `.ch-aide-*` des pages Aide (`pages.css`), faute de style qui
+leur soit propre. À la demande du client ("crée un css qui leur est
+propre et bien propre"), elles ont désormais leur propre feuille :
+`static/src/css/legal.css`, avec un namespace dédié `.ch-legal-*`
+(`ch-legal-breadcrumb`, `ch-legal-wrap`, `ch-legal-title`,
+`ch-legal-lead`, `ch-legal-body`) :
+- Largeur de lecture plus étroite (760px) que le reste du site, adaptée
+  à un format "document" plutôt qu'aux pages marketing.
+- Titres `<h2>` avec liseré terracotta (`border-left`) au lieu du style
+  inline `margin-top:32px;` retiré des 3 templates.
+- Ne dépend plus des pages Aide/Entreprise : les deux familles de pages
+  peuvent évoluer indépendamment sans se marcher dessus.
+
+Enregistré dans `THEME_ASSETS` (`__init__.py`) comme les autres feuilles
+du thème, via `ir.asset` scopé `website_id` (jamais dans
+`web.assets_frontend` global). Aucun contenu juridique modifié.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
