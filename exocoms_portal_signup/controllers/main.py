@@ -25,12 +25,11 @@ class ExocomsAuthSignupHome(AuthSignupHome):
     # ==================================================================
     # Inscription
     # ==================================================================
-    def _signup_with_values(self, token, values):
+    def _signup_with_values(self, token, values, *args, **kwargs):
         # Invitation émise depuis le back-office : l'adresse est déjà connue de
         # l'entreprise, on conserve strictement le comportement natif.
         if token:
-            return super()._signup_with_values(token, values)
-
+            return super()._signup_with_values(token, values, *args, **kwargs)
         Users = request.env['res.users'].sudo()
         login = Users._exocoms_check_email(values.get('login'))
         values['login'] = login
