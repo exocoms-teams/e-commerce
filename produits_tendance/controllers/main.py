@@ -324,3 +324,42 @@ class TrendIngestController(http.Controller):
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
+
+
+# -----------------------------------------------------------
+# WIN-123 : routes TEMPORAIRES, pour QA visuelle uniquement.
+#
+# Les routes definitives (memes chemins, meme auth) existent deja dans
+# le PR #121 (Hicham, TrendStaticPagesController), qui n'est pas encore
+# merge. Ce controleur sert uniquement a pouvoir visualiser les 6
+# templates WIN-123 sur cette branche avant que #121 n'arrive.
+#
+# A SUPPRIMER avant le merge de ce PR dans produits-tendance, pour
+# eviter un conflit de route avec #121 - ne garder qu'un seul des deux
+# controleurs, celui de Hicham fera foi une fois #121 merge.
+# -----------------------------------------------------------
+class TrendEmptyPagesQAController(http.Controller):
+
+    @http.route('/alertes', type='http', auth='user', website=True)
+    def qa_alertes(self, **kwargs):
+        return request.render('produits_tendance.template_empty_alertes', {})
+
+    @http.route('/collections', type='http', auth='user', website=True)
+    def qa_collections(self, **kwargs):
+        return request.render('produits_tendance.template_empty_collections', {})
+
+    @http.route('/favoris', type='http', auth='user', website=True)
+    def qa_favoris(self, **kwargs):
+        return request.render('produits_tendance.template_empty_favoris', {})
+
+    @http.route('/historique', type='http', auth='user', website=True)
+    def qa_historique(self, **kwargs):
+        return request.render('produits_tendance.template_empty_historique', {})
+
+    @http.route('/comparaison', type='http', auth='user', website=True)
+    def qa_comparaison(self, **kwargs):
+        return request.render('produits_tendance.template_empty_comparaison', {})
+
+    @http.route('/analytics', type='http', auth='user', website=True)
+    def qa_analytics(self, **kwargs):
+        return request.render('produits_tendance.template_empty_analytics', {})

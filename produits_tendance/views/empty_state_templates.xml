@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         WIN-123 : Pages "coquilles" de navigation
+         (Alertes, Collections, Favoris, Historique, Comparaison, Analytics)
+
+         Placeholders honnetes uniquement : aucune donnee inventee,
+         aucune logique backend (contrainte explicite du ticket).
+
+         Les routes (/alertes, /collections, etc.) existent deja dans le
+         PR #121 (Hicham, WIN-100/101) - on ne les recree pas ici pour
+         eviter un conflit de route, on cree uniquement les templates
+         que son controleur attend deja (template_empty_alertes, etc.).
+         Tant que ce PR n'est pas merge, ces templates existent mais ne
+         sont pointes par aucune route - sans effet, pas d'erreur.
+    ============================================================ -->
+
+    <!-- Sous-template parametre (icon/title/text/action_label fournis
+         par l'appelant), sans dependance a request/website.layout -
+         testable directement, meme principe que template_how_it_works
+         et template_key_indicators. -->
+    <template id="template_empty_state" name="Etat vide - structure standard">
+        <div class="o_winners_empty_state">
+            <i t-attf-class="fa #{icon} o_winners_empty_state__icon"/>
+            <h2 class="o_winners_empty_state__title">
+                <t t-esc="title"/>
+            </h2>
+            <p class="o_winners_empty_state__text">
+                <t t-esc="text"/>
+            </p>
+            <div class="o_winners_empty_state__action" t-if="action_label">
+                <button type="button" class="o_winners_btn_primary o_winners_coming_soon_btn">
+                    <t t-esc="action_label"/>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="template_empty_alertes" name="Alertes (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Alertes</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-bell-o'"/>
+                    <t t-set="title" t-value="'Aucune alerte pour le moment'"/>
+                    <t t-set="text" t-value="'Vous serez notifié·e ici dès qu’un produit que vous suivez connaît un pic de tendance.'"/>
+                    <t t-set="action_label" t-value="False"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_empty_collections" name="Collections (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Collections</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-folder-o'"/>
+                    <t t-set="title" t-value="'Vous n’avez pas encore de collection'"/>
+                    <t t-set="text" t-value="'Regroupez vos produits favoris par thème pour les retrouver facilement.'"/>
+                    <t t-set="action_label" t-value="'+ Nouvelle collection'"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_empty_favoris" name="Favoris (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Favoris</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-star-o'"/>
+                    <t t-set="title" t-value="'Aucun favori pour le moment'"/>
+                    <t t-set="text" t-value="'Ajoutez des produits à vos favoris depuis leur fiche pour les retrouver ici.'"/>
+                    <t t-set="action_label" t-value="False"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_empty_historique" name="Historique (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Historique</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-history'"/>
+                    <t t-set="title" t-value="'Aucun historique pour le moment'"/>
+                    <t t-set="text" t-value="'L’historique de vos consultations et actions apparaîtra ici.'"/>
+                    <t t-set="action_label" t-value="False"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_empty_comparaison" name="Comparaison (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Comparaison</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-columns'"/>
+                    <t t-set="title" t-value="'Aucun produit à comparer'"/>
+                    <t t-set="text" t-value="'Sélectionnez plusieurs produits pour comparer leurs scores et statistiques côte à côte.'"/>
+                    <t t-set="action_label" t-value="False"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="template_empty_analytics" name="Analytics (coquille)">
+        <t t-call="website.layout">
+            <div id="wrap" class="container mt-5 mb-5">
+                <h1>Analytics</h1>
+                <t t-call="produits_tendance.template_empty_state">
+                    <t t-set="icon" t-value="'fa-bar-chart'"/>
+                    <t t-set="title" t-value="'Fonctionnalité à venir'"/>
+                    <t t-set="text" t-value="'Des statistiques avancées sur votre activité seront bientôt disponibles ici.'"/>
+                    <t t-set="action_label" t-value="False"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+</odoo>
