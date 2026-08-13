@@ -25,6 +25,8 @@ class CustomPortal(CustomerPortal):
                 user = request.env.user.sudo()
                 partner = user.partner_id
                 partner_id = partner.id
+                old_name = partner.name
+                old_email = partner.email
                 anon_name = f'Client supprimé #{partner_id}'
                 anon_email = f'deleted_{partner_id}@deleted.invalid'
 
@@ -69,7 +71,7 @@ class CustomPortal(CustomerPortal):
 
                 # Puis vider le body des messages
                 messages._write({
-                    'body': '',
+                    'body': messages.body.replace(old_email,anon_email),.replace(old_name,anon_name),
                     'subject': False,
                 })
 
