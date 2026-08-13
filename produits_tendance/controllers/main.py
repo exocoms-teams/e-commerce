@@ -47,18 +47,37 @@ class TrendSubmissionController(http.Controller):
 # -----------------------------------------------------------
 class TrendProductDetailController(http.Controller):
 
-    @http.route('/product/<int:id>', type='http', auth='public', website=True)
+    @http.route('/product/<int:id>', type='http', auth='user', website=True)
     def product_detail(self, id, **kwargs):
         api = TrendDashboardAPI(request.env)
         data = api.get_product_detail(id)
         return request.render('produits_tendance.template_product_detail', data)
 
 # -----------------------------------------------------------
+# 2ter. CONTROLEUR DETAIL PUBLICITE (Frontend)
+# -----------------------------------------------------------
+class TrendAdDetailController(http.Controller):
+
+    @http.route('/ad/<int:id>', type='http', auth='user', website=True)
+    def ad_detail(self, id, **kwargs):
+        # On cherche la publicité dans la base de données
+        ad = request.env['trend.ad'].sudo().browse(id)
+        
+        # Si elle n'existe pas, on renvoie une 404
+        if not ad.exists():
+            return request.not_found()
+            
+        # On envoie les données à notre futur template QWeb
+        return request.render('produits_tendance.template_ad_detail', {
+            'ad': ad,
+            'product': ad.product_id,
+        })
+# -----------------------------------------------------------
 # 2bis. CONTROLEUR DASHBOARD (Classement des produits & Ingestion)
 # -----------------------------------------------------------
 class TrendDashboardController(http.Controller):
 
-    @http.route('/dashboard', type='http', auth='public', website=True)
+    @http.route('/dashboard', type='http', auth='user', website=True)
     def dashboard(self, price_max=None, source=None, category_id=None, country=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
@@ -83,7 +102,7 @@ class TrendDashboardController(http.Controller):
             'selected_source': source or '',
         })
 
-    @http.route('/api/dashboard/filter', type='http', auth='public', methods=['GET'], csrf=False)
+    @http.route('/api/dashboard/filter', type='http', auth='user', methods=['GET'], csrf=False)
     def dashboard_filter(self, category_id=None, country=None, price_max=None, source=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
