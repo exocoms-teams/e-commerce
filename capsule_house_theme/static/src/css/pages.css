@@ -1012,9 +1012,14 @@
     font-size: 18px;
     font-weight: 800;
     color: var(--ch-ink);
-    margin: 32px 0 16px;
+    /* v19.0.1.0.81 : espacement augmenté (32px -> 48px), retour client
+       "c'est pas trop serré ?" — les sections s'enchaînaient sans assez
+       de respiration, ex. "Included equipment" collé à "Windows". */
+    margin: 48px 0 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--ch-gray-border);
 }
-.ch-gamme-section-title:first-of-type { margin-top: 0; }
+.ch-gamme-section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
 
 /* Section Performances (v19.0.1.0.80) — points forts en tête de page
    détail, grille de cartes icône + titre + description. */
@@ -1104,8 +1109,15 @@
 
 .ch-gamme-equip-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
+    /* v19.0.1.0.81 : colonnes fixes (2) au lieu d'auto-fit — auto-fit
+       donnait un nombre de colonnes variable selon la longueur du texte
+       (5 éléments sur une ligne, puis 1 seul isolé), rendu déséquilibré
+       relevé par le client. */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 24px;
+}
+@media (max-width: 560px) {
+    .ch-gamme-equip-grid { grid-template-columns: 1fr; }
 }
 .ch-gamme-equip-item {
     display: flex;
