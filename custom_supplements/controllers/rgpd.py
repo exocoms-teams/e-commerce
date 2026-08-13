@@ -71,7 +71,7 @@ class CustomPortal(CustomerPortal):
 
                 # Puis vider le body des messages
                 messages._write({
-                    'body': messages.body.replace(old_email,anon_email),.replace(old_name,anon_name),
+                    'body': messages.body.replace(old_email,anon_email).replace(old_name,anon_name),
                     'subject': False,
                 })
 
