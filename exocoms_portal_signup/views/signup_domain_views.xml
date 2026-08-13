@@ -20,16 +20,6 @@
         <field name="arch" type="xml">
             <search string="Domaines email">
                 <field name="name"/>
-                <filter name="filter_blocked" string="Refusés"
-                        domain="[('kind', '=', 'blocked')]"/>
-                <filter name="filter_allowed" string="Autorisés"
-                        domain="[('kind', '=', 'allowed')]"/>
-                <separator/>
-                <filter name="filter_inactive" string="Archivés"
-                        domain="[('active', '=', False)]"/>
-                <group expand="0" string="Regrouper par">
-                    <filter name="group_kind" string="Type" context="{'group_by': 'kind'}"/>
-                </group>
             </search>
         </field>
     </record>
@@ -37,7 +27,7 @@
     <record id="action_signup_domain" model="ir.actions.act_window">
         <field name="name">Domaines email</field>
         <field name="res_model">exocoms.signup.domain</field>
-        <field name="view_mode">list</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_signup_domain_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Ajouter un domaine</p>
