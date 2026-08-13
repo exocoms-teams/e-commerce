@@ -2,352 +2,247 @@
 <odoo>
 
     <!-- ============================================================
-         WIN-121 : Redesign Pages Connexion / Inscription FINAL
-         
-         Nouvelle maquette avec:
-         - Layout 2 colonnes (panneau sombre gauche + formulaire droite)
-         - Vrais logos plateformes (Shopify, WooCommerce, Amazon, TikTok, Facebook, eBay)
-         - Boutons sociaux (Google, Facebook, Apple)
-         - Footer avec liens légaux
-         - Responsive (Desktop/Tablet/Mobile)
+         WIN-121 : Pôle Authentification (Connexion, Inscription,
+         Boutons Sociaux)
+
+         Restyle complet des pages Connexion (/web/login) et
+         Inscription (/web/signup) selon la nouvelle maquette :
+         layout 2 colonnes (panneau sombre à gauche / formulaire
+         blanc à droite), footer légal commun, boutons de connexion
+         sociale non fonctionnels ("Bientôt disponible").
+
+         Fichier séparé de views/auth_templates.xml (WIN-47), qui
+         reste inchangé.
+
+         ⚠️ Contrainte respectée : AUCUNE logique d'authentification
+         ni règle de validation n'est modifiée ici. On ne touche qu'à
+         la structure HTML/CSS autour des formulaires natifs
+         (web.login / auth_signup.signup), qui restent fonctionnellement
+         intacts (mêmes champs, mêmes name=, même csrf_token, même
+         action de soumission).
+
+         web.login_layout est le template partagé par /web/login,
+         /web/signup et /web/reset_password : le surcharger une seule
+         fois habille donc les 3 pages en même temps.
     ============================================================ -->
 
-    <!-- ============================================================
-         TEMPLATE PRINCIPAL - Connexion (Login)
-    ============================================================ -->
-    <template id="auth_login_winners" inherit_id="auth_signup.login" name="WIN-121 - Connexion">
-                      
-        
-        <xpath expr="//main" position="replace">
-            <main class="o_winners_auth_container">
-                
-                <!-- Panneau gauche - Dark panel avec texte + logos -->
-                <div class="o_winners_auth_panel o_winners_auth_panel_dark">
-                    <div class="o_winners_auth_panel_content">
-                        
-                        <!-- Logo Winners -->
-                        <div class="o_winners_auth_logo">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="20" cy="20" r="18" stroke="#FF6B35" stroke-width="2"/>
-                                <circle cx="20" cy="12" r="3" fill="#FF6B35"/>
-                                <path d="M20 15 L25 25 L15 25 Z" fill="#1B3A6B"/>
-                            </svg>
-                            <span>Winners</span>
+    <template id="web_login_layout_win121" inherit_id="web.login_layout" name="Winners - Layout Authentification (2 colonnes)">
+
+        <!-- Le conteneur Bootstrap devient notre grille 2 colonnes -->
+        <xpath expr="//div[hasclass('container') and hasclass('py-5')]" position="attributes">
+            <attribute name="id">o_winners_auth_page</attribute>
+            <attribute name="class" add="o_winners_auth_page" separator=" "/>
+        </xpath>
+
+        <!-- La carte native devient le panneau blanc de droite -->
+        <xpath expr="//div[hasclass('card') and hasclass('o_database_list')]" position="attributes">
+            <attribute name="class" add="o_winners_auth_card" separator=" "/>
+            <attribute name="style">max-width: 480px;</attribute>
+        </xpath>
+
+        <!-- Le logo générique Odoo en haut de carte n'a pas sa place
+             dans la maquette (le logo Winners vit dans le panneau
+             gauche) : on le masque plutôt que de le supprimer, pour
+             ne rien casser si un module tiers dépend de ce bloc. -->
+        <xpath expr="//div[hasclass('text-center') and hasclass('pb-3') and hasclass('border-bottom') and hasclass('mb-4')]" position="attributes">
+            <attribute name="class" add="d-none" separator=" "/>
+        </xpath>
+
+        <!-- Panneau gauche : accroche produit + bénéfices + partenaires -->
+        <xpath expr="//div[hasclass('card') and hasclass('o_database_list')]" position="before">
+            <div class="o_winners_auth_side">
+                <div class="o_winners_auth_side_inner">
+                    <div class="o_winners_auth_logo">
+                        <span class="o_winners_auth_logo_mark">●</span>
+                        <span class="o_winners_auth_logo_text">Winners</span>
+                    </div>
+
+                    <h1 class="o_winners_auth_title">
+                        Découvrez les produits qui vont
+                        <span class="o_winners_auth_accent">exploser</span>
+                    </h1>
+                    <p class="o_winners_auth_subtitle">
+                        Accédez à des données fiables, suivez les tendances en temps réel
+                        et prenez des décisions gagnantes.
+                    </p>
+
+                    <ul class="o_winners_auth_features list-unstyled">
+                        <li>
+                            <span class="o_winners_auth_feature_icon"><i class="fa fa-line-chart"/></span>
+                            <div>
+                                <strong>Tendances en temps réel</strong>
+                                <span>Analysez des millions de données chaque jour.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="o_winners_auth_feature_icon"><i class="fa fa-shield"/></span>
+                            <div>
+                                <strong>Données fiables</strong>
+                                <span>Des sources vérifiées et mises à jour en continu.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="o_winners_auth_feature_icon"><i class="fa fa-bolt"/></span>
+                            <div>
+                                <strong>Décisions gagnantes</strong>
+                                <span>Identifiez les opportunités avant tout le monde.</span>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="o_winners_auth_partners">
+                        <span class="o_winners_auth_partners_label">
+                            Intégrations avec vos plateformes préférées
+                        </span>
+                        <div class="o_winners_auth_partners_logos">
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/Shopify-Logo_wine.svg" alt="Shopify"/>
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/WooCommerce-Logo_wine.svg" alt="WooCommerce"/>
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/Amazon__company_-Logo_wine.svg" alt="Amazon"/>
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/TikTok-Logomark_Wordmark-White-Logo_wine.svg" alt="TikTok"/>
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/Facebook-Logo_wine.svg" alt="Facebook"/>
+                            <img class="o_winners_auth_partner_logo" src="/produits_tendance/static/src/img/logos/EBay-Logo_wine.svg" alt="eBay"/>
                         </div>
-
-                        <!-- Texte principal -->
-                        <h1 class="o_winners_auth_title">
-                            Identifiez-vous et<br/>
-                            découvrez les produits<br/>
-                            qui vont <span class="o_winners_accent">exploser</span>
-                        </h1>
-
-                        <p class="o_winners_auth_subtitle">
-                            Accédez à vos données, suivez les tendances en temps réel<br/>
-                            et prenez des décisions gagnantes.
-                        </p>
-
-                        <!-- Logos plateformes - Images SVG -->
-                        <div class="o_winners_auth_platforms">
-                            <img src="/produits_tendance/static/src/img/logos/Shopify-Logo_wine.svg" alt="Shopify" class="o_winners_platform_logo_img" title="Shopify"/>
-                            <img src="/produits_tendance/static/src/img/logos/WooCommerce-Logo_wine.svg" alt="WooCommerce" class="o_winners_platform_logo_img" title="WooCommerce"/>
-                            <img src="/produits_tendance/static/src/img/logos/Amazon__company_-Logo_wine.svg" alt="Amazon" class="o_winners_platform_logo_img" title="Amazon"/>
-                            <img src="/produits_tendance/static/src/img/logos/TikTok-Logomark_Wordmark-White-Logo_wine.svg" alt="TikTok" class="o_winners_platform_logo_img" title="TikTok"/>
-                            <img src="/produits_tendance/static/src/img/logos/Facebook-Logo_wine.svg" alt="Facebook" class="o_winners_platform_logo_img" title="Facebook"/>
-                            <img src="/produits_tendance/static/src/img/logos/EBay-Logo_wine.svg" alt="eBay" class="o_winners_platform_logo_img" title="eBay"/>
-                        </div>
-
                     </div>
                 </div>
+            </div>
+        </xpath>
 
-                <!-- Panneau droite - Formulaire -->
-                <div class="o_winners_auth_panel o_winners_auth_panel_light">
-                    <div class="o_winners_auth_panel_content">
-
-                        <!-- En-tête -->
-                        <div class="o_winners_auth_header">
-                            <p class="o_winners_auth_welcome">Bienvenue !</p>
-                            <h2>Connexion</h2>
-                            <p>Connectez-vous à votre compte pour continuer.</p>
-                        </div>
-
-                        <!-- Formulaire -->
-                        <form method="post" class="o_winners_auth_form">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                            <!-- Champ Email -->
-                            <div class="o_winners_form_group">
-                                <label for="login">Adresse e-mail</label>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-envelope"/>
-                                    <input type="email" name="login" id="login" 
-                                           class="form-control o_winners_input" 
-                                           placeholder="votre@email.com" required="required"/>
-                                </div>
-                            </div>
-
-                            <!-- Champ Mot de passe -->
-                            <div class="o_winners_form_group">
-                                <div class="o_winners_form_label_row">
-                                    <label for="password">Mot de passe</label>
-                                    <a href="/web/reset_password" class="o_winners_link_secondary">Mot de passe oublié ?</a>
-                                </div>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-lock"/>
-                                    <input type="password" name="password" id="password" 
-                                           class="form-control o_winners_input o_winners_password_input" 
-                                           placeholder="••••••••••••" required="required"/>
-                                    <button type="button" class="o_winners_password_toggle">
-                                        <i class="fa fa-eye"/>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Checkbox Se souvenir -->
-                            <div class="o_winners_form_group o_winners_form_group_checkbox">
-                                <input type="checkbox" name="remember" id="remember" value="1"/>
-                                <label for="remember">Se souvenir de moi</label>
-                            </div>
-
-                            <!-- Bouton Connexion -->
-                            <button type="submit" class="o_winners_btn o_winners_btn_primary o_winners_btn_lg">
-                                Se connecter
-                                <i class="fa fa-arrow-right"/>
-                            </button>
-
-                        </form>
-
-                        <!-- Séparateur -->
-                        <div class="o_winners_divider">
-                            <span>ou continuer avec</span>
-                        </div>
-
-                        <!-- Boutons Sociaux -->
-                        <div class="o_winners_social_buttons">
-                            <button type="button" class="o_winners_btn_social o_winners_btn_google" 
-                                    data-provider="google" title="Continuer avec Google">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                </svg>
-                                <span>Google</span>
-                            </button>
-                            <button type="button" class="o_winners_btn_social o_winners_btn_facebook" 
-                                    data-provider="facebook" title="Continuer avec Facebook">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                                <span>Facebook</span>
-                            </button>
-                            <button type="button" class="o_winners_btn_social o_winners_btn_apple" 
-                                    data-provider="apple" title="Continuer avec Apple">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.04 2.29.77 3.06.8.99-.18 1.95-1.02 3.2-.93 1.69.13 2.95.82 3.36 2.37-2.16 1.34-1.79 4.63.32 5.51-1.08 1.61-2.43 2.48-4.46 2.82-.24.08-.55.17-.78.17-.19-.01-.45-.06-.63-.12z"/>
-                                </svg>
-                                <span>Apple</span>
-                            </button>
-                        </div>
-
-                        <!-- Lien Inscription -->
-                        <p class="o_winners_auth_footer_text">
-                            Vous n'avez pas de compte ?
-                            <a href="/web/signup" class="o_winners_link_primary">Créer un compte</a>
-                        </p>
-
-                    </div>
-
-                    <!-- Footer légal -->
-                    <div class="o_winners_auth_legal">
-                        <a href="/legal-mentions">Vos données sont sécurisées</a>
-                        <span class="o_winners_separator">|</span>
-                        <a href="/confidentiality">Politique de confidentialité</a>
-                        <span class="o_winners_separator">|</span>
-                        <a href="/terms">Conditions d'utilisation</a>
-                    </div>
-
-                </div>
-
-            </main>
+        <!-- Footer légal commun aux 2 vues, sous les colonnes.
+             Réutilise les routes créées en WIN-102. -->
+        <xpath expr="//div[hasclass('container') and hasclass('py-5')]" position="after">
+            <div class="o_winners_auth_footer text-center small">
+                <i class="fa fa-lock me-1" role="presentation"/> Vos données sont sécurisées
+                <span class="o_winners_auth_footer_sep">|</span>
+                <a href="/confidentialite">Politique de confidentialité</a>
+                <span class="o_winners_auth_footer_sep">|</span>
+                <a href="/cgu">Conditions d'utilisation</a>
+            </div>
         </xpath>
 
     </template>
 
-    <!-- ============================================================
-         TEMPLATE PRINCIPAL - Inscription (Signup)
-    ============================================================ -->
-    <template id="auth_signup_winners" inherit_id="auth_signup.signup" name="WIN-121 - Inscription">
-        
-        <xpath expr="//main" position="replace">
-            <main class="o_winners_auth_container">
-                
-                <!-- Panneau gauche -->
-                <div class="o_winners_auth_panel o_winners_auth_panel_dark">
-                    <div class="o_winners_auth_panel_content">
-                        
-                        <!-- Logo Winners -->
-                        <div class="o_winners_auth_logo">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="20" cy="20" r="18" stroke="#FF6B35" stroke-width="2"/>
-                                <circle cx="20" cy="12" r="3" fill="#FF6B35"/>
-                                <path d="M20 15 L25 25 L15 25 Z" fill="#1B3A6B"/>
-                            </svg>
-                            <span>Winners</span>
-                        </div>
+    <!-- Page Connexion (/web/login) — titre, icônes, "Se souvenir de moi",
+         texte du bouton. -->
+    <template id="web_login_win121" inherit_id="web.login" name="Winners - Page Connexion">
 
-                        <!-- Texte principal -->
-                        <h1 class="o_winners_auth_title">
-                            Découvrez les produits<br/>
-                            qui vont <span class="o_winners_accent">exploser</span>
-                        </h1>
-
-                        <p class="o_winners_auth_subtitle">
-                            Accédez à des données fiables, suivez les tendances<br/>
-                            en temps réel et prenez des décisions gagnantes.
-                        </p>
-
-                        <!-- Logos plateformes -->
-                        <div class="o_winners_auth_platforms">
-                            <img src="/produits_tendance/static/src/img/logos/Shopify-Logo_wine.svg" alt="Shopify" class="o_winners_platform_logo_img" title="Shopify"/>
-                            <img src="/produits_tendance/static/src/img/logos/WooCommerce-Logo_wine.svg" alt="WooCommerce" class="o_winners_platform_logo_img" title="WooCommerce"/>
-                            <img src="/produits_tendance/static/src/img/logos/Amazon__company_-Logo_wine.svg" alt="Amazon" class="o_winners_platform_logo_img" title="Amazon"/>
-                            <img src="/produits_tendance/static/src/img/logos/TikTok-Logomark_Wordmark-White-Logo_wine.svg" alt="TikTok" class="o_winners_platform_logo_img" title="TikTok"/>
-                            <img src="/produits_tendance/static/src/img/logos/Facebook-Logo_wine.svg" alt="Facebook" class="o_winners_platform_logo_img" title="Facebook"/>
-                            <img src="/produits_tendance/static/src/img/logos/EBay-Logo_wine.svg" alt="eBay" class="o_winners_platform_logo_img" title="eBay"/>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Panneau droite - Formulaire -->
-                <div class="o_winners_auth_panel o_winners_auth_panel_light">
-                    <div class="o_winners_auth_panel_content">
-
-                        <!-- En-tête -->
-                        <div class="o_winners_auth_header">
-                            <p class="o_winners_auth_welcome">Bienvenue !</p>
-                            <h2>S'inscrire</h2>
-                            <p>Créez un compte pour accéder à toutes les fonctionnalités.</p>
-                        </div>
-
-                        <!-- Formulaire -->
-                        <form method="post" class="o_winners_auth_form">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                            <!-- Champ Nom -->
-                            <div class="o_winners_form_group">
-                                <label for="name">Nom complet</label>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-user"/>
-                                    <input type="text" name="name" id="name" 
-                                           class="form-control o_winners_input" 
-                                           placeholder="Votre nom" required="required"/>
-                                </div>
-                            </div>
-
-                            <!-- Champ Email -->
-                            <div class="o_winners_form_group">
-                                <label for="login">Adresse e-mail</label>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-envelope"/>
-                                    <input type="email" name="login" id="login" 
-                                           class="form-control o_winners_input" 
-                                           placeholder="votre@email.com" required="required"/>
-                                </div>
-                            </div>
-
-                            <!-- Champ Mot de passe -->
-                            <div class="o_winners_form_group">
-                                <label for="password">Mot de passe</label>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-lock"/>
-                                    <input type="password" name="password" id="password" 
-                                           class="form-control o_winners_input o_winners_password_input" 
-                                           placeholder="••••••••••••" required="required"/>
-                                    <button type="button" class="o_winners_password_toggle">
-                                        <i class="fa fa-eye"/>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Champ Confirmer Mot de passe -->
-                            <div class="o_winners_form_group">
-                                <label for="password_confirm">Confirmer le mot de passe</label>
-                                <div class="o_winners_input_wrapper">
-                                    <i class="fa fa-lock"/>
-                                    <input type="password" name="password_confirm" id="password_confirm" 
-                                           class="form-control o_winners_input o_winners_password_input" 
-                                           placeholder="••••••••••••" required="required"/>
-                                    <button type="button" class="o_winners_password_toggle">
-                                        <i class="fa fa-eye"/>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Bouton Inscription -->
-                            <button type="submit" class="o_winners_btn o_winners_btn_primary o_winners_btn_lg">
-                                S'inscrire
-                                <i class="fa fa-arrow-right"/>
-                            </button>
-
-                        </form>
-
-                        <!-- Séparateur -->
-                        <div class="o_winners_divider">
-                            <span>ou continuer avec</span>
-                        </div>
-
-                        <!-- Boutons Sociaux -->
-                        <div class="o_winners_social_buttons">
-                            <button type="button" class="o_winners_btn_social o_winners_btn_google" 
-                                    data-provider="google" title="S'inscrire avec Google">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                </svg>
-                                <span>Google</span>
-                            </button>
-                            <button type="button" class="o_winners_btn_social o_winners_btn_facebook" 
-                                    data-provider="facebook" title="S'inscrire avec Facebook">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                                <span>Facebook</span>
-                            </button>
-                            <button type="button" class="o_winners_btn_social o_winners_btn_apple" 
-                                    data-provider="apple" title="S'inscrire avec Apple">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.04 2.29.77 3.06.8.99-.18 1.95-1.02 3.2-.93 1.69.13 2.95.82 3.36 2.37-2.16 1.34-1.79 4.63.32 5.51-1.08 1.61-2.43 2.48-4.46 2.82-.24.08-.55.17-.78.17-.19-.01-.45-.06-.63-.12z"/>
-                                </svg>
-                                <span>Apple</span>
-                            </button>
-                        </div>
-
-                        <!-- Lien Connexion -->
-                        <p class="o_winners_auth_footer_text">
-                            Vous avez déjà un compte ?
-                            <a href="/web/login" class="o_winners_link_primary">Se connecter</a>
-                        </p>
-
-                    </div>
-
-                    <!-- Footer légal -->
-                    <div class="o_winners_auth_legal">
-                        <a href="/legal-mentions">Vos données sont sécurisées</a>
-                        <span class="o_winners_separator">|</span>
-                        <a href="/confidentiality">Politique de confidentialité</a>
-                        <span class="o_winners_separator">|</span>
-                        <a href="/terms">Conditions d'utilisation</a>
-                    </div>
-
-                </div>
-
-            </main>
+        <xpath expr="//form[hasclass('oe_login_form')]" position="before">
+            <div class="o_winners_auth_welcome">
+                <span class="o_winners_auth_welcome_pretitle">Bienvenue !</span>
+                <h2 class="o_winners_auth_form_title">Connexion</h2>
+                <p class="o_winners_auth_form_subtitle">Connectez-vous à votre compte pour continuer</p>
+            </div>
         </xpath>
 
+        <!-- Icône enveloppe dans le champ email (visuel uniquement,
+             l'input natif — name/id/required — n'est pas modifié) -->
+        <xpath expr="//div[hasclass('field-login')]" position="attributes">
+            <attribute name="class" add="o_winners_field_icon" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('field-login')]//input[@name='login']" position="before">
+            <i class="fa fa-envelope-o o_winners_field_icon_glyph" role="presentation"/>
+        </xpath>
+
+        <!-- Icône cadenas dans le champ mot de passe -->
+        <xpath expr="//div[hasclass('o_caps_lock_warning')]//div[hasclass('input-group')]" position="attributes">
+            <attribute name="class" add="o_winners_field_icon" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('o_caps_lock_warning')]//input[@name='password']" position="before">
+            <i class="fa fa-lock o_winners_field_icon_glyph" role="presentation"/>
+        </xpath>
+
+        <!-- "Se souvenir de moi" — case décorative demandée par la
+             maquette. Non reliée à une logique de session persistante
+             (hors périmètre de ce ticket, cf. contrainte "ne pas
+             modifier la logique d'authentification"). -->
+        <xpath expr="//div[hasclass('o_caps_lock_warning')]" position="after">
+            <div class="form-check o_winners_remember_me">
+                <input class="form-check-input" type="checkbox" id="o_winners_remember_me"/>
+                <label class="form-check-label" for="o_winners_remember_me">Se souvenir de moi</label>
+            </div>
+        </xpath>
+
+        <!-- Texte + flèche sur le bouton de soumission -->
+        <xpath expr="//div[hasclass('oe_login_buttons')]/button[@type='submit']" position="replace">
+            <button type="submit" class="btn btn-primary">
+                Se connecter <i class="fa fa-arrow-right ms-1" role="presentation"/>
+            </button>
+        </xpath>
+
+    </template>
+
+    <!-- Page Inscription (/web/signup) — titre, icônes, texte du bouton -->
+    <template id="auth_signup_signup_win121" inherit_id="auth_signup.signup" name="Winners - Contenu page Inscription (WIN-121)">
+
+        <xpath expr="//form[hasclass('oe_signup_form')]" position="before">
+            <div class="o_winners_auth_welcome">
+                <span class="o_winners_auth_welcome_pretitle">Bienvenue !</span>
+                <h2 class="o_winners_auth_form_title">Créer un compte</h2>
+                <p class="o_winners_auth_form_subtitle">Créez votre compte pour commencer</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('field-name')]" position="attributes">
+            <attribute name="class" add="o_winners_field_icon" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('field-name')]//input[@name='name']" position="before">
+            <i class="fa fa-user-o o_winners_field_icon_glyph" role="presentation"/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('field-login')]" position="attributes">
+            <attribute name="class" add="o_winners_field_icon" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('field-login')]//input[@name='login']" position="before">
+            <i class="fa fa-envelope-o o_winners_field_icon_glyph" role="presentation"/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('oe_login_buttons')]/button[@type='submit']" position="replace">
+            <button type="submit" class="btn btn-primary mb-1">
+                Créer un compte <i class="fa fa-arrow-right ms-1" role="presentation"/>
+            </button>
+        </xpath>
+
+    </template>
+
+    <!-- Liens "Vous n'avez pas de compte ?" / "Vous avez déjà un compte ?"
+         en français, cohérent avec le reste de l'interface. -->
+    <template id="auth_signup_login_win121" inherit_id="auth_signup.login" name="Winners - Lien inscription (FR)">
+        <xpath expr="//div[hasclass('oe_login_buttons')]/a[@t-attf-href]" position="replace">
+            <a t-if="signup_enabled" class="btn btn-link btn-sm mt-2" t-attf-href="/web/signup?{{ keep_query() }}">
+                Vous n'avez pas de compte ? <strong>Créer un compte</strong>
+            </a>
+        </xpath>
+    </template>
+
+    <template id="auth_signup_signup_win121_login_link" inherit_id="auth_signup.signup" name="Winners - Lien connexion (FR)">
+        <xpath expr="//a[@t-attf-href='/web/login?{{ keep_query() }}']" position="replace">
+            <a t-attf-href="/web/login?{{ keep_query() }}" class="btn btn-link btn-sm mt-2" role="button">
+                Vous avez déjà un compte ? <strong>Se connecter</strong>
+            </a>
+        </xpath>
+    </template>
+
+    <!-- Boutons de connexion sociale — non fonctionnels, affichent un
+         toast "Bientôt disponible" au clic.
+         auth_btns est normalement alimenté par les modules OAuth réels
+         (google_account, etc.) ; ici on remplace entièrement l'affichage
+         par 3 boutons statiques. -->
+    <template id="web_login_oauth_win121" inherit_id="web.login_oauth" name="Winners - Boutons sociaux (non fonctionnels)">
+        <xpath expr="//div[hasclass('o_login_auth')]" position="replace">
+            <div class="o_winners_auth_social">
+                <div class="o_winners_auth_social_sep">
+                    <span>ou continuer avec</span>
+                </div>
+                <button type="button" class="btn o_winners_social_btn" data-provider="google">
+                    <i class="fa fa-google" role="presentation"/> Continuer avec Google
+                </button>
+                <button type="button" class="btn o_winners_social_btn" data-provider="facebook">
+                    <i class="fa fa-facebook" role="presentation"/> Continuer avec Facebook
+                </button>
+                <button type="button" class="btn o_winners_social_btn" data-provider="apple">
+                    <i class="fa fa-apple" role="presentation"/> Continuer avec Apple
+                </button>
+            </div>
+        </xpath>
     </template>
 
 </odoo>
