@@ -1,66 +1,119 @@
-// Assure-toi que les variables sont importées, par exemple :
+// Import des variables (à adapter selon ton arborescence)
 // @import 'winners_variables';
 
 .o_winners_footer {
-    // On utilise une autre couleur pour bien différencier le footer du contenu principal
-    background-color: $o-winners-bg-light;
+    // Fond bleu marine (identique à la sidebar)
+    background-color: $o-winners-primary; 
+    color: $o-winners-white;
     font-family: $o-winners-font-family;
-    color: $o-winners-text-dark;
+    padding-top: 4rem;
+    padding-bottom: 2rem;
 
-    &__top {
-        padding-top: 3rem;
-    }
-
-    &__logo_text {
-        color: $o-winners-primary;
-        font-size: 1.5rem;
-    }
-
-    &__desc {
-        color: $o-winners-text-muted;
+    // --- Utilitaires de texte ---
+    &__text-muted {
+        color: $o-winners-text-light-muted;
         font-size: 0.95rem;
         line-height: 1.6;
-        margin-top: 1rem;
     }
 
-    &__links {
-        h5 {
-            color: $o-winners-primary;
-            font-size: 1.1rem;
-            font-weight: 700;
+    // --- Séparateurs ---
+    &__divider {
+        border-top: 1px solid $o-winners-border-dark;
+        margin: 0;
+        opacity: 1; // Force l'affichage Bootstrap
+    }
+
+    // --- 1. Section Newsletter ---
+    &__newsletter {
+        padding-bottom: 3.5rem;
+    }
+
+    &__form {
+        max-width: 500px;
+        margin-left: auto; // Aligne à droite sur grand écran
+        
+        @media (max-width: 991px) {
+            margin-left: 0;
+            margin-top: 1.5rem;
         }
+    }
 
-        ul {
-            padding-left: 0;
+    &__input {
+        background-color: rgba(255, 255, 255, 0.05); // Fond légèrement transparent
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: $o-winners-white;
+        border-radius: $o-winners-radius;
+        padding: 0.85rem 1.25rem;
+        
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: $o-winners-accent;
+            box-shadow: 0 0 0 2px rgba($o-winners-accent, 0.25);
+            color: $o-winners-white;
+        }
+    }
+
+    // --- 2. Section Principale (Liens) ---
+    &__main {
+        padding-top: 3.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    &__title {
+        color: $o-winners-white;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+    }
+
+    &__list {
+        li {
+            margin-bottom: 1rem;
             
-            li {
-                margin-bottom: 0.75rem;
+            a {
+                color: $o-winners-text-light-muted;
+                text-decoration: none;
+                transition: color 0.2s ease;
+                font-size: 0.95rem;
 
-                a {
-                    color: $o-winners-text-muted;
-                    font-size: 0.95rem;
-                    transition: color 0.2s ease-in-out;
-
-                    &:hover {
-                        // Changement de couleur au survol avec la couleur d'accentuation
-                        color: $o-winners-accent;
-                        text-decoration: none;
-                    }
+                &:hover {
+                    color: $o-winners-accent;
                 }
             }
         }
     }
 
-    &__bottom {
-        // La ligne séparatrice exacte comme sur ton image
-        border-top: $o-winners-border-soft;
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
-        margin-top: 2rem;
+    &__badges {
+        span {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: $o-winners-text-light-muted;
+            letter-spacing: 0.5px;
+        }
     }
 
-    &__copyright {
-        color: $o-winners-text-muted;
-        font-size: 0.9rem;
+    // --- 3. Section Bottom (Copyright) ---
+    &__bottom {
+        padding-top: 2rem;
+    }
+
+    &__legal-list {
+        li a {
+            color: $o-winners-text-light-muted;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: $o-winners-white;
+            }
+        }
     }
 }
