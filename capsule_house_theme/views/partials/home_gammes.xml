@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Section "gammes" de l'accueil (v19.0.1.0.72). Demande client :
+        "même nos gamme doit apparaître sur accueil" — le filmstrip des
+        5 gammes (déjà utilisé sur l'index /nos-gammes, voir
+        nos_gammes.xml) est repris ici tel quel (mêmes classes CSS
+        .ch-gammes-filmstrip / .ch-gamme-card, voir pages.css) pour ne
+        pas dupliquer de style. T-called depuis home.xml, AVANT la
+        section usages (le "quoi" avant le "pourquoi").
+
+        /nos-gammes (index + détail par gamme) continue d'exister et
+        reste le lien de chaque carte ("Voir la gamme") : cette section
+        homepage est un aperçu, pas un remplacement de la page.
+
+        Contenu = GAMMES_DATA (__init__.py), passé par
+        CapsuleHouseWebsite.index() (controllers/main.py) sous la clé
+        `gammes`. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.partial_home_gammes).
+    -->
+    <template id="partial_home_gammes" name="Capsule House - Accueil : gammes">
+        <section class="ch-gammes-content ch-gammes-home">
+            <div class="container">
+                <div class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-th-large"/> À titre informatif</span>
+                    <h2 class="ch-usages-title">Nos gammes</h2>
+                </div>
+                <div class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-th-large"/> For information only</span>
+                    <h2 class="ch-usages-title">Our ranges</h2>
+                </div>
+
+                <div class="ch-gammes-filmstrip" t-if="gammes">
+                    <a t-foreach="gammes" t-as="gamme" t-attf-href="/nos-gammes/#{ gamme['slug'] }" class="ch-gamme-card">
+                        <div class="ch-gamme-card-icon"><i t-attf-class="fa #{ gamme['icon'] }"/></div>
+                        <span class="ch-gamme-card-name" t-esc="gamme['name']"/>
+                        <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Disponible</span>
+                        <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Available</span>
+                        <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
+                        <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
+                        <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                        <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>

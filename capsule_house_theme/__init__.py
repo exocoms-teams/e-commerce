@@ -132,6 +132,9 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.page_nos_gammes',
     'capsule_house_theme.page_nos_gammes_detail',
     'capsule_house_theme.partial_home_usages',
+    # Ajouté en 19.0.1.0.72 (section gammes de l'accueil, voir
+    # home_gammes.xml).
+    'capsule_house_theme.partial_home_gammes',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -1287,19 +1290,14 @@ def _setup_menus(env, website, categories):
     Menu = env['website.menu'].sudo()
     entries = [
         ('Accueil', '/', 10),
-        # Ajouté en 19.0.1.0.71 (page /nos-gammes, voir GAMMES_DATA) :
-        # les 5 gammes (Capsule/Cabine/Dôme/Modulaire/Pliable) avec leurs
-        # specs. Remplace Studio/Duo/Panorama comme entrées de premier
-        # niveau du header — demande client explicite ("supprime studio
-        # duo et panorama dans le header") : ce sont désormais des
-        # FORMATS au sein de la gamme Capsule, plus des catégories à
-        # elles seules dans la nav.
-        ('Nos gammes', '/nos-gammes', 12),
-        # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de
-        # "Nos services" chez exocoms_theme, qui a aussi sa propre entrée
-        # de menu dédiée) : conservée telle quelle (demande client :
-        # "on laisse nos modèles"), en parallèle de Nos gammes.
-        ('Nos modèles', '/nos-modeles', 15),
+        # Nos gammes (/nos-gammes) et Nos modèles (/nos-modeles) retirées
+        # des entrées de menu du header en 19.0.1.0.72 (demande client :
+        # "enlève nos modèle et nos gamme sur le header") — leur contenu
+        # est désormais visible directement sur l'accueil (voir
+        # home_gammes.xml / home_usages.xml). Les deux pages et leurs
+        # routes existent toujours (accessibles via l'accueil et les
+        # liens croisés), simplement plus référencées dans la nav
+        # principale.
         ('Tous les pods', '/shop', 20),
     ]
     sequence = 30
@@ -1331,10 +1329,12 @@ def _setup_menus(env, website, categories):
     # Studio/Duo/Panorama ne sont pas traduits : ce sont des noms de
     # gammes de produits (comme des noms propres), pas du texte d'UI —
     # cohérent avec le choix de ne jamais traduire les noms de produits.
+    # 'Nos gammes' / 'Nos modèles' retirées de ce dict en 19.0.1.0.72 (plus
+    # d'entrée de menu correspondante, voir `entries` ci-dessus) — les
+    # libellés EN de ces deux pages vivent maintenant directement dans
+    # nos_gammes.xml / nos_modeles.xml (t-set="title" par page).
     EN_MENU_NAMES = {
         'Accueil': 'Home',
-        'Nos gammes': 'Our ranges',
-        'Nos modèles': 'Our models',
         'Tous les pods': 'All pods',
         'Promotions': 'Deals',
         'Avis clients': 'Reviews',

@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.71',
+    'version': '19.0.1.0.72',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -60,7 +60,12 @@ Pages actuellement livrées : Accueil (avec section usages), Nos gammes (/nos-ga
         # t-called depuis home.xml). partial_home_usages doit être
         # chargé AVANT home.xml qui la t-call.
         'views/partials/home_usages.xml',
+        # Ajouté en 19.0.1.0.72 : section gammes de l'accueil (voir
+        # home_gammes.xml) — réutilise le filmstrip de nos_gammes.xml,
+        # doit donc être chargé après lui (sécurité d'ordre, même si le
+        # t-call se résout au rendu, pas au chargement des données).
         'views/pages/nos_gammes.xml',
+        'views/partials/home_gammes.xml',
         # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis
         # soumis par les clients, modérés avant publication. Vues backend
         # de modération d'abord, puis partiels/page frontend.

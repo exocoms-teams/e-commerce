@@ -144,12 +144,15 @@ class CapsuleHouseWebsite(Website):
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
         # Import différé (voir nos_modeles() plus bas pour la même
-        # justification) : USAGES_DATA alimente la nouvelle section
-        # "usages" de l'accueil (19.0.1.0.71, voir home_usages.xml et
-        # __init__.py) — remplace l'idée d'une page Application séparée
-        # à contenu trop mince (demande client : "il ne faut plus de
-        # page application mais le faire directement sur accueil").
-        from odoo.addons.capsule_house_theme import USAGES_DATA
+        # justification) : USAGES_DATA alimente la section "usages" de
+        # l'accueil (19.0.1.0.71, voir home_usages.xml) — remplace
+        # l'idée d'une page Application séparée à contenu trop mince
+        # (demande client : "il ne faut plus de page application mais
+        # le faire directement sur accueil"). GAMMES_DATA alimente la
+        # section "gammes" de l'accueil (19.0.1.0.72, voir
+        # home_gammes.xml — demande client : "même nos gamme doit
+        # apparaître sur accueil").
+        from odoo.addons.capsule_house_theme import USAGES_DATA, GAMMES_DATA
 
         return request.render('capsule_house_theme.page_home', {
             'featured_products': self._serialize_products(featured_products),
@@ -158,6 +161,7 @@ class CapsuleHouseWebsite(Website):
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
             'usages': USAGES_DATA,
+            'gammes': GAMMES_DATA,
         })
 
     @http.route('/capsule-house/hero-data.json', type='http', auth='public',
