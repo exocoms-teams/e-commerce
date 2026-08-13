@@ -139,30 +139,72 @@ class TrendProduct(models.Model):
 
     # --- SCORE DE TENDANCE ---
     def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score de tendance de ce produit (formule décrite dans
-        score.md) en croisant sales_count/score_site_x (trend.product) avec
-        les likes_count/shares_count agrégés des trend.ad liés.
+        """Calcule le score de tendance de ce produit en utilisant les données historiques
+        sur les fenêtres 30j/30j précédents pour construir current_metrics et previous_metrics,
+        et en récupérant source_score via ir.config_parameter selon la source du produit.
         """
         # Create ScoringEngine instance
         scoring_engine = ScoringEngine()
 
-        # Handle the case where previous_metrics is None (convert to required dict)
-        if previous_metrics is None:
-            previous_metrics = {'ventes': 0, 'likes': 0, 'partages': 0, 'ads': 0}
-        # FILTRER LES PUBLICITÉS EN DOUBLE AVANT LE CALCUL
-        latest_ads = latest_ads_by_ref(self.ad_ids)
-        # Build current metrics (same logic as in trend_score_calculator.build_current_metrics)
+        # Get current date for calculating date ranges
+        from datetime import datetime, timedelta
+        now = datetime.now()
+
+        # Calculate date ranges for historical aggregation
+        # Current period: last 30 days
+        current_start = now - timedelta(days=30)
+        current_end = now
+
+        # Previous period: 30 to 60 days ago
+        previous_start = now - timedelta(days=60)
+        previous_end = now - timedelta(days=30)
+
+        # Build current_metrics by aggregating trend.score records from the last 30 days
+        current_domain = [
+            ('product_id', '=', self.id),
+            ('computed_at', '>=', current_start),
+            ('computed_at', '<', current_end),
+        ]
+        current_scores = self.env['trend.score'].search(current_domain)
         current_metrics = {
-            'ventes': self.sales_count or 0,
-            'likes': sum(latest_ads.mapped('likes_count')),
-            'partages': sum(latest_ads.mapped('shares_count')),
-            'ads': len(latest_ads),
+            'ventes': sum(current_scores.mapped('metric_sales')),
+            'likes': sum(current_scores.mapped('metric_likes')),
+            'partages': sum(current_scores.mapped('metric_shares')),
+            'ads': sum(current_scores.mapped('metric_ads_count')),
         }
 
-        # Normalize source score (same logic as in trend_score_calculator.normalize_source_score)
+        # Build previous_metrics by aggregating trend.score records from 30-60 days ago
+        previous_domain = [
+            ('product_id', '=', self.id),
+            ('computed_at', '>=', previous_start),
+            ('computed_at', '<', previous_end),
+        ]
+        previous_scores = self.env['trend.score'].search(previous_domain)
+        previous_metrics = {
+            'ventes': sum(previous_scores.mapped('metric_sales')),
+            'likes': sum(previous_scores.mapped('metric_likes')),
+            'partages': sum(previous_scores.mapped('metric_shares')),
+            'ads': sum(previous_scores.mapped('metric_ads_count')),
+        }
+
+        # Get source_score from ir.config_parameter based on product source
         source_score = 0.0
-        if self.score_site_x:
-            source_score = max(0.0, min(self.score_site_x / 10.0, 1.0))
+        IrConfigParam = self.env['ir.config_parameter'].sudo()
+        source_mapping = {
+            'scraping': 'winners.source_score_scraping',
+            'crowdsourcing': 'winners.source_score_crowdsourcing',
+            'api': 'winners.source_score_api',
+        }
+        param_name = source_mapping.get(self.source)
+        if param_name:
+            param_value = IrConfigParam.get_param(param_name)
+            if param_value is not None:
+                try:
+                    source_score = float(param_value)
+                    # Ensure source_score is between 0 and 1
+                    source_score = max(0.0, min(source_score, 1.0))
+                except (ValueError, TypeError):
+                    source_score = 0.0
 
         self.ensure_one()
         # Calculate score using ScoringEngine
