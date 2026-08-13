@@ -224,6 +224,10 @@
                             <script>
                                 document.querySelectorAll('.mn-search__tab').forEach(function (tab) {
                                     tab.addEventListener('click', function () {
+                                        if (tab.dataset.target === 'search-voitures') {
+                                            window.location.href = '/voitures';
+                                            return;
+                                        }
                                         document.querySelectorAll('.mn-search__tab').forEach(function (t) { t.classList.remove('active'); });
                                         document.querySelectorAll('.mn-search-bar').forEach(function (f) { f.style.display = 'none'; });
                                         tab.classList.add('active');
