@@ -6,7 +6,7 @@
     'description': 'Full migration of the O.A.I Beauty cosmetics frontend to Odoo 19. Clean Luxury positioning.',
 
     'author': 'O.A.I Beauty',
-    'website': 'https://www.oaibeauty.example',
+    'website': 'http://oa-atelier.com/',
     'license': 'LGPL-3',
 
     'depends': [
