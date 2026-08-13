@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Surcharge du composant natif de panier -->
+    <template id="cam_custom_header_cart_link" inherit_id="website_sale.header_cart_link" name="Custom Header Cart Link">
+        <xpath expr="//a[contains(@href, '/shop/cart')]" position="replace">
+            <a href="/shop/cart" class="cam-action-link cam-cart-link">
+                <div class="cam-icon-wrapper">
+                    <i class="fa fa-shopping-cart"/>
+                    <span class="cam-cart-badge my_cart_quantity t_extra_cart_quantity">
+                        <t t-out="website_sale_order.cart_quantity if website_sale_order else 0"/>
+                    </span>
+                </div>
+                <span class="cam-action-label">Panier</span>
+            </a>
+        </xpath>
+    </template>
+
+</odoo>

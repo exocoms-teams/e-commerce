@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="items_cards" name="Cam card Section">
+        <div class="cam-product-img">
+            <t t-if="product.image_512">
+                <img t-attf-src="/web/image/product.template/#{product.id}/image_512" t-att-alt="product.name" loading="lazy"/>
+            </t>
+            <t t-else="">
+                <div class="cam-product-noimg">—</div>
+            </t>
+        </div>
+        <div class="cam-product-body">
+            <h3 t-esc="product.name"/>
+            
+            <!-- Badge Stock -->
+            <div class="cam-stock-status">
+                <t t-if="'qty_available' in product._fields">
+                    <t t-if="product.sudo().qty_available &gt; 0">
+                        <span class="cam-badge-stock">
+                            <i class="fa fa-box me-1"/> En stock (<t t-esc="int(product.sudo().qty_available)"/>)
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="cam-badge-rupture">
+                            <i class="fa fa-times-circle me-1"/> Rupture de stock
+                        </span>
+                    </t>
+                </t>
+            </div>
+            
+            <div class="cam-product-footer">
+                <span class="cam-product-price">
+                    <span t-field="product.list_price"
+                            t-options="{
+                                'widget': 'monetary',
+                                'display_currency': website.currency_id,
+                            }"/>
+                    <t t-esc="'HT' if website.show_line_subtotals_tax_selection == 'tax_excluded' else 'TTC'"/>
+                </span>
+                <span class="cam-btn-sm">Voir</span>
+            </div>
+        </div>
+    </template>
+</odoo>

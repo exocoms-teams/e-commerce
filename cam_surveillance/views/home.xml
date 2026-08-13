@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue de la page d'accueil -->
+    <record id="cam_home_view" model="ir.ui.view">
+        <field name="name">cam.home</field>
+        <field name="type">qweb</field>
+        <field name="key">cam_surveillance.cam_home</field>
+        <field name="arch" type="xml">
+            <t t-name="cam_surveillance.cam_home">
+                <t t-call="website.layout">
+                    <div id="wrap">
+
+                        <!-- Hero -->
+                        <t t-call='cam_surveillance.home_hero'/>
+
+                        <!-- Produits recommandé -->
+                        <t t-call='cam_surveillance.home_recomanded_products'/>
+
+                        <!-- Catégories -->
+                        <t t-call='cam_surveillance.home_categories'/>
+
+                        <!-- Marques Partenaires -->
+                        <t t-call='cam_surveillance.home_brand'/>
+                        
+                        <!-- Pourquoi nous choisir -->
+                        <t t-call='cam_surveillance.home_why'/>
+                        
+                        <!-- Avis clients -->
+                        <t t-call='cam_surveillance.home_reviews'/>
+
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+
+    <!-- Page liée au site Cam Surveillance -->
+    <record id="cam_home_page" model="website.page">
+        <field name="name">Accueil</field>
+        <field name="url">/</field>
+        <field name="website_id" ref="cam_surveillance_website"/>
+        <field name="view_id" ref="cam_home_view"/>
+        <field name="is_published">True</field>
+        <field name="priority">1</field>
+    </record>
+
+</odoo>

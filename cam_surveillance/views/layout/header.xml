@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cam_header" inherit_id="website.layout" name="Cam Surveillance Header">
+        <xpath expr="//header" position="replace">
+            <header class="cam-header">
+                <!-- Zone Principale : Logo, Recherche, Actions -->
+                <div class="cam-header-main">
+                    <div class="cam-container cam-header-container">
+                        
+                        <!-- 1. Logo -->
+                        <a href="/" class="cam-header-logo">
+                            <span class="cam-logo-text">CAM<span>SURVEILLANCE</span></span>
+                        </a>
+
+                        <!-- 2. Emplacement Recherche -->
+                        <div class="cam-header-search">
+                            <form action="/shop" method="get" class="cam-search-form">
+                                <div class="cam-search-group">
+                                    <input type="text" name="search" class="cam-search-input" placeholder="Rechercher une caméra, un équipement AXIS..." />
+                                    <button type="submit" class="cam-search-btn" aria-label="Rechercher">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 3. Actions Utilisateur : Compte & Panier -->
+                        <div class="cam-header-actions">
+                            <!-- Compte Utilisateur -->
+                            <t t-set="website_sale_pr" t-value="request.env['res.users'].browse(request.uid)"/>
+                            <div class="cam-header-account dropdown">
+                                <t t-if="website_sale_pr._is_public()">
+                                    <a href="/web/login" class="cam-action-link">
+                                        <i class="fa fa-user"></i>
+                                        <span class="cam-action-label">Connexion</span>
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <a href="#" class="cam-action-link dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fa fa-user-circle"></i>
+                                        <span class="cam-action-label"><t t-esc="user_id.name.split(' ')[0]"/></span>
+                                    </a>
+                                    <ul class="cam-dropdown-menu dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="/my/home">Mon Compte</a></li>
+                                        <li><a class="dropdown-item" href="/shop/orders">Mes Commandes</a></li>
+                                        <li><hr class="dropdown-divider"/></li>
+                                        <li><a class="dropdown-item text-danger" href="/web/session/logout">Déconnexion</a></li>
+                                    </ul>
+                                </t>
+                            </div>
+
+                           <t t-call='cam_surveillance.cam_custom_header_cart_link'/>
+                            
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Zone Nav / Emplacement Méga-Menu (Sprint 2) -->
+                <nav class="cam-header-nav">
+                    <div class="cam-container">
+                        <!-- Emplacement prêt pour recevoir la structure du Méga-menu au Sprint 2 -->
+                        <div class="cam-megamenu-placeholder">
+                            <ul class="cam-nav-list">
+                                <li class="cam-nav-item active"><a href="/" class="cam-nav-link">Accueil</a></li>
+                                <li class="cam-nav-item"><a href="/shop" class="cam-nav-link">Boutique</a></li>
+                                <li class="cam-nav-item"><a href="/shop?category=caméras" class="cam-nav-link">Caméras IP</a></li>
+                                <li class="cam-nav-item"><a href="/shop?category=enregistreurs" class="cam-nav-link">Enregistreurs</a></li>
+                                <li class="cam-nav-item"><a href="/contactus" class="cam-nav-link">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        </xpath>
+    </template>
+</odoo>
