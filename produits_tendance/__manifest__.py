@@ -45,6 +45,7 @@
             'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/scss/dashboard.scss',
             'produits_tendance/static/src/scss/header.scss',
+            'produits_tendance/static/src/scss/footer.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
         ],
     },
