@@ -11,18 +11,30 @@
         histoire") repris de la maquette fournie par le client — à
         confirmer/ajuster avec lui si les vrais chiffres diffèrent, ce
         n'est pas une donnée vérifiée par ce module.
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel —
+        seul un placeholder réellement vide en bas de page sert de point
+        d'insertion pour le Website Builder.
     -->
     <template id="entreprise_apropos_page" name="Capsule House - Entreprise - À propos">
         <t t-call="website.layout">
             <t t-set="title" t-if="request.env.lang == 'fr_FR'">À propos | Capsule House</t>
             <t t-set="title" t-if="request.env.lang != 'fr_FR'">About | Capsule House</t>
-            <div id="wrap" class="ch-entreprise-page oe_structure">
+            <t t-set="head">
+                <!-- SEO page-spécifique (v19.0.1.0.63), voir layout.xml. -->
+                <meta name="description" content="Capsule House conçoit et fabrique des pods habitables en atelier, installés en quelques semaines sur votre terrain. Découvrez notre histoire et nos valeurs."/>
+                <link rel="canonical" href="https://capsule-house.fr/a-propos"/>
+                <meta property="og:title" content="À propos | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/a-propos"/>
+            </t>
 
-                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
-                    <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Entreprise</span>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/">Accueil</a><span class="sep">/</span><span>Entreprise</span>
                 </div>
                 <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
-                    <a href="/capsule-house/home">Home</a><span class="sep">/</span><span>Company</span>
+                    <a href="/">Home</a><span class="sep">/</span><span>Company</span>
                 </div>
 
                 <div class="ch-entreprise-wrap">
@@ -190,7 +202,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_entreprise_apropos_bottom"/>
         </t>
     </template>
 </odoo>

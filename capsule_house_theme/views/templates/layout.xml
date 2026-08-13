@@ -40,6 +40,56 @@
         </xpath>
         <xpath expr="//head" position="inside">
             <!--
+                SEO global (v19.0.1.0.63) — même principe que
+                exocoms_theme/views/templates/layout.xml : description,
+                robots, Open Graph, Twitter Card et schema.org Organization
+                par défaut pour tout le site, surchargés page par page via
+                t-set="head" quand une page a son propre contenu (voir
+                avis.xml, aide_*.xml, entreprise_*.xml, home.xml).
+
+                Contenu réutilisé tel quel depuis des textes déjà validés
+                sur le site (sous-titre du hero, description du manifest),
+                jamais inventé. Image de partage : le logo du site
+                (capsule-house-logo.png), même logique que le logo EXOCOMS.png
+                chez exocoms. Coordonnées schema.org (téléphone, adresse) :
+                reprises à l'identique de celles d'exocoms_theme, à la
+                demande explicite du client — Exocoms Group est la même
+                société qui gère les deux sites, à ajuster si Capsule House
+                obtient ses propres coordonnées dédiées.
+            -->
+            <meta name="description" content="Capsule House — Maisons modulaires (pods) design, fabriquées en atelier et installées en 6 semaines partout en France, garantie constructeur 10 ans."/>
+            <meta name="robots" content="index, follow"/>
+            <meta property="og:type" content="website"/>
+            <meta property="og:site_name" content="Capsule House"/>
+            <meta property="og:title" content="Capsule House — Maisons modulaires design"/>
+            <meta property="og:description" content="Comparez nos modèles, configurez le vôtre et commandez en ligne. Livraison, installation et garantie 10 ans incluses."/>
+            <meta property="og:image" content="/capsule_house_theme/static/src/img/capsule-house-logo.png"/>
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="twitter:title" content="Capsule House — Maisons modulaires design"/>
+            <meta name="twitter:description" content="Comparez nos modèles, configurez le vôtre et commandez en ligne."/>
+            <meta name="twitter:image" content="/capsule_house_theme/static/src/img/capsule-house-logo.png"/>
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "Capsule House",
+                "url": "https://capsule-house.fr",
+                "logo": "/capsule_house_theme/static/src/img/capsule-house-logo.png",
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+33-01-84-79-37-55",
+                    "contactType": "customer service",
+                    "availableLanguage": "French"
+                },
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Paris",
+                    "addressCountry": "FR"
+                }
+            }
+            </script>
+
+            <!--
                 Filet de secours, indépendant du bundle compilé web.assets_frontend
                 (voir _setup_theme_assets dans __init__.py pour l'enregistrement
                 normal via ir.asset). Diagnostic terrain : le bundle compilé pour

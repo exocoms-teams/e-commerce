@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 
 from odoo import http
 from odoo.http import request
@@ -18,18 +19,34 @@ class CapsuleHouseWebsite(Website):
     HTTP Python enregistrée sur le chemin '/' s'applique à TOUTE la base
     mutualisée (~17 sites), pas seulement à Capsule House — contrairement
     aux vues QWeb et aux ir.asset, qui eux sont scopables via website_id.
-    Une première version de ce contrôleur surchargeait directement '/' et
-    cassait donc la page d'accueil des 16 autres sites (et tentait
-    d'appeler `super().homepage()`, qui n'existe même pas sur le
-    contrôleur `Website` natif — `AttributeError` en prod).
+    Une première version de ce contrôleur redéclarait '/' comme une route
+    TOUTE NEUVE (pas une surcharge héritée) et cassait donc la page
+    d'accueil des 16 autres sites (et tentait d'appeler
+    `super().homepage()`, qui n'existe même pas sur le contrôleur
+    `Website` natif — `AttributeError` en prod).
 
-    La page d'accueil est donc servie sur une route dédiée et unique
-    (`/capsule-house/home`, jamais réutilisée ailleurs dans la base), et
-    c'est le champ natif `website.homepage_url` — déjà scopé par site,
-    aucun risque de fuite — qui indique à Odoo de servir cette route
-    quand un visiteur de NOTRE site demande '/'. Posé par
-    `_setup_homepage()` dans __init__.py. On ne touche donc JAMAIS au
-    routing partagé du contrôleur Website natif.
+    HISTORIQUE (jusqu'à la 19.0.1.0.56) : pour éviter de retoucher '/',
+    l'accueil était servi sur une route dédiée (`/capsule-house/home`),
+    atteinte via `website.homepage_url` + le redirect natif Odoo de '/'
+    vers cette URL. Ça évitait tout risque de casser les autres sites,
+    mais avait un effet de bord découvert en 19.0.1.0.56 : ce redirect
+    (un vrai aller-retour HTTP, confirmé par capture DevTools client)
+    empêchait le Website Builder de reconnaître correctement la section
+    hero comme un bloc sélectionnable (panneau Style vide), alors que le
+    même hero sur /avis — servie en un seul rendu, sans redirect —
+    fonctionnait normalement. Comparaison directe des deux thèmes
+    (capsule_house_theme vs exocoms_theme, analyse complète du
+    19.0.1.0.57) : exocoms_theme sert '/' en HÉRITANT du contrôleur
+    natif `Website` et en surchargeant `index()` via un `@http.route()`
+    SANS argument (donc réutilisant la route native, pas une nouvelle),
+    avec une garde stricte `_is_our_site()` et un `super().index(**kw)`
+    pour tous les autres sites — pattern déjà éprouvé en production sur
+    17 sites sans jamais avoir cassé personne. C'est ce même pattern
+    (hérité, gardé, avec fallback super()) qui est repris ci-dessous
+    pour `index()`, à la différence de la première tentative fautive :
+    ici on N'ENREGISTRE PAS de nouvelle route, on ne fait QUE surcharger
+    la méthode héritée, et le fallback vers les 16 autres sites est
+    systématique.
     """
 
     def _is_our_website(self, website):
@@ -85,15 +102,19 @@ class CapsuleHouseWebsite(Website):
             })
         return items
 
-    @http.route('/capsule-house/home', type='http', auth='public',
-                website=True, sitemap=False)
-    def homepage(self, **kwargs):
+    @http.route()
+    def index(self, **kw):
+        """Surcharge héritée de la route native '/' (voir docstring de
+        classe pour l'historique complet). Aucun nouveau chemin
+        enregistré : `@http.route()` sans argument réutilise la route
+        exacte du parent `Website.index()`. Le guard `_is_our_website`
+        + le fallback `super().index(**kw)` garantissent que les 16
+        autres sites de la base mutualisée continuent d'être servis
+        exactement comme avant, sans aucun changement de comportement.
+        """
         website = request.website
         if not self._is_our_website(website):
-            # Route unique à ce module : ne devrait jamais être atteinte
-            # pour un autre site. Filet de sécurité si jamais un admin
-            # pointait par erreur le homepage_url d'un autre site ici.
-            return request.redirect('/')
+            return super().index(**kw)
 
         Product = request.env['product.template'].sudo()
         domain = [
@@ -129,6 +150,119 @@ class CapsuleHouseWebsite(Website):
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
         })
+
+    @http.route('/capsule-house/hero-data.json', type='http', auth='public',
+                website=True, sitemap=False)
+    def hero_data(self, **kw):
+        """Valeurs dynamiques du hero (note, comptages, produits vedettes),
+        en JSON — récupérées côté client par static/src/js/main.js
+        (initHeroDynamicContent) après le chargement de la page.
+
+        CAUSE DE CE CHANGEMENT (v19.0.1.0.60, voir README "Cause réelle
+        #3") : ces valeurs étaient auparavant rendues via t-esc
+        directement dans hero.xml. Analyse comparative directe (bloc
+        natif Odoo vs notre hero, dans la même session d'édition) a
+        montré qu'Odoo refuse de marquer comme "bloc" sélectionnable
+        (data-oe-model, panneau Style) tout conteneur dont le sous-arbre
+        contient une expression dynamique (t-esc/t-foreach) — confirmé
+        en comparant avec le hero d'exocoms_theme (0% de contenu
+        dynamique dans son arch) et la doc officielle Odoo 19 sur les
+        "Dynamic Content templates", qui montre que les snippets
+        dynamiques NATIFS d'Odoo (ex: Articles de blog) gardent leur
+        <section> 100% statique et injectent le contenu réel via JS
+        après coup — jamais via t-esc dans l'arch. Reproduit ici à
+        l'identique : hero.xml ne contient plus aucune expression
+        dynamique, cette route fournit les vraies valeurs (aucune
+        donnée fabriquée, mêmes calculs qu'avant) pour affichage
+        post-chargement.
+        """
+        website = request.website
+
+        Product = request.env['product.template'].sudo()
+        domain = [
+            ('website_id', '=', website.id),
+            ('is_published', '=', True),
+        ]
+        featured_products = Product.search(domain, limit=8, order='website_sequence asc')
+        published_products_count = Product.search_count(domain)
+
+        rating_value, rating_count = self._get_avis_stats(website)
+        ICP = request.env['ir.config_parameter'].sudo()
+        if rating_value is None:
+            rating_value = ICP.get_param('capsule_house_theme.rating_value')
+            rating_count = ICP.get_param('capsule_house_theme.rating_count')
+        units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
+
+        # v19.0.1.0.61 : le badge de note reste maintenant TOUJOURS affiché
+        # (retour client : "affiche quand même en mettant 0 ... aucun
+        # élément pour le moment"), plutôt que masqué tant qu'aucun avis
+        # n'existe. Toujours un vrai chiffre (0 si aucun avis publié),
+        # jamais de note fabriquée.
+        if not rating_value:
+            rating_value = 0
+            rating_count = 0
+        if request.env.lang == 'fr_FR':
+            rating_message = '%s avis' % rating_count
+        else:
+            rating_message = '%s reviews' % rating_count
+
+        hero_products = self._serialize_products(featured_products)[:2]
+        featured_json = [{
+            'id': item['id'],
+            'url': item['url'],
+            'name': item['name'],
+            'image_url': '/web/image/product.template/%d/image_128' % item['id'],
+            'price_formatted': self._format_price_display(item['currency'], item['price']),
+            'is_new': item['is_new'],
+            'has_discount': item['has_discount'],
+        } for item in hero_products]
+
+        cart_product_id = hero_products[1]['id'] if len(hero_products) > 1 else None
+
+        try:
+            units_installed_count = int(units_installed_count) if units_installed_count else None
+        except (TypeError, ValueError):
+            units_installed_count = None
+
+        data = {
+            'rating_value': rating_value,
+            'rating_message': rating_message,
+            'published_products_count': published_products_count,
+            'units_installed_count': units_installed_count,
+            'featured_products': featured_json,
+            'cart_product_id': cart_product_id,
+            'csrf_token': request.csrf_token(),
+        }
+        return request.make_response(
+            json.dumps(data),
+            headers=[('Content-Type', 'application/json')],
+        )
+
+    def _format_price_display(self, currency, amount):
+        """Formatage simple prix+devise pour les cartes flottantes du hero
+        (affichage uniquement — jamais utilisé pour une transaction
+        réelle, le vrai prix/devise reste géré nativement par
+        website_sale à l'achat).
+        """
+        decimals = currency.decimal_places or 2
+        amount_str = '{:,.{}f}'.format(amount, decimals)
+        if request.env.lang == 'fr_FR':
+            amount_str = amount_str.replace(',', ' ').replace('.', ',')
+        symbol = currency.symbol or currency.name
+        if currency.position == 'before':
+            return '%s%s' % (symbol, amount_str)
+        return '%s %s' % (amount_str, symbol)
+
+    @http.route('/capsule-house/home', type='http', auth='public',
+                website=True, sitemap=False)
+    def homepage_legacy_redirect(self, **kw):
+        """Ancienne route dédiée de l'accueil (jusqu'à la 19.0.1.0.56),
+        remplacée en 19.0.1.0.57 par une surcharge directe de '/' (voir
+        `index()` ci-dessus). Conservée uniquement en redirect permanent
+        pour ne pas casser d'éventuels favoris/liens déjà partagés vers
+        cette URL — jamais réutilisée comme page réelle.
+        """
+        return request.redirect('/', code=301)
 
     def _get_avis_stats(self, website):
         """Note moyenne + nombre d'avis PUBLIÉS de notre site, ou
@@ -253,6 +387,24 @@ class CapsuleHouseWebsite(Website):
         """Page Entreprise "Le concept"."""
         return request.render('capsule_house_theme.entreprise_concept_page', {})
 
+    @http.route('/mentions-legales', type='http', auth='public', website=True, sitemap=True)
+    def mentions_legales(self, **kw):
+        """Page légale — créée en v19.0.1.0.64, liens du footer cassés
+        depuis le début du projet (détecté par l'outil SEO natif d'Odoo,
+        voir README "Écart connu, non corrigé pour l'instant").
+        """
+        return request.render('capsule_house_theme.mentions_legales_page', {})
+
+    @http.route('/cgv', type='http', auth='public', website=True, sitemap=True)
+    def cgv(self, **kw):
+        """Conditions générales de vente — voir mentions_legales() ci-dessus."""
+        return request.render('capsule_house_theme.cgv_page', {})
+
+    @http.route('/confidentialite', type='http', auth='public', website=True, sitemap=True)
+    def confidentialite(self, **kw):
+        """Politique de confidentialité — voir mentions_legales() ci-dessus."""
+        return request.render('capsule_house_theme.confidentialite_page', {})
+
     @http.route('/newsletter/subscribe', type='http', auth='public',
                 website=True, methods=['POST'], csrf=True)
     def newsletter_subscribe(self, email=None, **kwargs):
@@ -272,7 +424,7 @@ class CapsuleHouseWebsite(Website):
         email = (email or '').strip()
         website = request.website
         if not email:
-            return request.redirect('/capsule-house/home?newsletter=error')
+            return request.redirect('/?newsletter=error')
 
         env = request.env
         # Registry se comporte comme un Mapping {nom_modele: classe} : c'est
@@ -306,4 +458,4 @@ class CapsuleHouseWebsite(Website):
                 'email_to': website.email or 'contact@capsule-house.fr',
             }).send()
 
-        return request.redirect('/capsule-house/home?newsletter=ok')
+        return request.redirect('/?newsletter=ok')

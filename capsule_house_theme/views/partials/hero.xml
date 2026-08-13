@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        Partiel réutilisable (t-call), pas de page à part entière. Scopé à
-        notre site via _scope_layout_views() (external id
-        capsule_house_theme.partial_hero). Structure calquée sur la
-        maquette de référence.
+        RESTRUCTURATION (v19.0.1.0.51) : hypothèse du client, à tester —
+        le panneau Style restait vide sur le hero malgré data-snippet +
+        data-name + o_colored_level + oe_editable (v19.0.1.0.50). Piste
+        suivante : l'ORGANISATION du template lui-même, pas seulement
+        ses classes CSS.
+
+        Avant cette version, `partial_hero` était UN SEUL template
+        contenant tout le FR ET tout le EN à l'intérieur, choisis par
+        t-if/t-else internes — la <section data-snippet> elle-même
+        n'était PAS le résultat direct d'un t-call vers un template
+        dédié à une seule langue.
+
+        Vérification du vrai code d'exocoms_theme
+        (views/partials/hero.xml) : leur organisation est différente.
+        `hero_section` n'est qu'un AIGUILLEUR (2 lignes, un t-if par
+        langue), qui t-call soit `hero_section_fr` soit
+        `hero_section_en` — DEUX templates COMPLETS et INDÉPENDANTS,
+        chacun avec sa PROPRE <section data-snippet="s_exocoms_hero"
+        data-name="Exocoms Hero">...</section> entière (rien de partagé
+        entre les deux, tout dupliqué). Reproduit ici à l'identique :
+        `partial_hero_fr` et `partial_hero_en` sont maintenant deux
+        templates complets et indépendants (illustration + cartes
+        flottantes dupliquées dans chacun, plus seulement le texte),
+        et `partial_hero` n'est plus qu'un aiguilleur t-if/t-call.
+
+        Scopés à notre site via _scope_layout_views() (external ids
+        capsule_house_theme.partial_hero, .partial_hero_fr,
+        .partial_hero_en).
 
         Attend, fournis par CapsuleHouseWebsite.homepage()
         (controllers/main.py) :
@@ -23,31 +47,45 @@
         garantie) sont repris tels quels de la maquette fournie — à
         confirmer avec le client avant mise en ligne.
 
-        Traduction FR/EN (v19.0.1.0.36) : même convention que
-        exocoms_theme (texte statique dupliqué dans un bloc
-        t-if/t-else sur request.env.lang, pas de traduction native
-        .po pour le corps de page) — voir README "Traduction des
-        pages comme sur exocoms_theme". _setup_languages() (déjà en
-        place depuis plus tôt dans ce module) active fr_FR/en_US et
-        pose le sélecteur natif ; ce bloc fournit le texte réellement
-        affiché dans chaque langue.
+        Édition native (v19.0.1.0.49/50, voir README "Blocs non
+        éditables comme sur exocoms_theme") : data-snippet + data-name
+        sur chaque <section>, oe_editable sur le titre, le sous-titre,
+        les 3 pastilles et le bandeau de confiance — même granularité
+        que "s_exocoms_hero_trust oe_editable" / "s_exocoms_hero_badge
+        oe_editable" chez exocoms. Restent volontairement NON éditables
+        (déviation assumée, propre à Capsule House) : les statistiques
+        (valeurs ET libellés — valeurs calculées dynamiquement via
+        t-esc), le formulaire de recherche, le bouton "Ajouter au
+        panier" et les cartes produits flottantes (contenu 100 %
+        dynamique). L'illustration SVG est marquée o_not_editable,
+        comme le SVG décoratif d'exocoms (s_exocoms_hero_svg
+        o_not_editable).
     -->
-    <template id="partial_hero" name="Capsule House - Hero">
-        <section class="ch-hero">
+
+    <template id="partial_hero_fr" name="Capsule House - Hero FR">
+        <section class="ch-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_hero" data-name="Capsule House Hero">
             <div class="container ch-hero-grid">
-                <div class="ch-hero-content" t-if="request.env.lang == 'fr_FR'">
-                    <div class="ch-rating-badge" t-if="rating_value">
+                <div class="ch-hero-content">
+                    <!-- Note/comptages/produits vedettes : valeurs dynamiques
+                         désormais injectées côté client (voir
+                         static/src/js/main.js, initHeroDynamicContent) via
+                         /capsule-house/hero-data.json, PAS via t-esc/t-if
+                         ici (v19.0.1.0.60, voir README "Cause réelle #3").
+                         Placeholders statiques, masqués par défaut (d-none),
+                         affichés par le JS uniquement si la donnée existe
+                         réellement — aucune donnée fabriquée. -->
+                    <div class="ch-rating-badge d-none" data-ch-rating-badge="1">
                         <i class="fa fa-star"/>
-                        <span t-esc="rating_value"/>
+                        <span data-ch-rating-value="1"/>
                         <span class="ch-rating-sep">·</span>
-                        <span t-esc="'%s avis' % rating_count"/>
+                        <span data-ch-rating-message="1"/>
                     </div>
 
-                    <h1 class="ch-hero-title">
+                    <h1 class="ch-hero-title oe_editable">
                         Le pod design fait pour<br/>
                         <span class="ch-hero-title-accent">votre terrain</span>
                     </h1>
-                    <p class="ch-hero-subtitle">
+                    <p class="ch-hero-subtitle oe_editable">
                         Comparez nos modèles, configurez le vôtre et commandez en
                         ligne. Livraison, installation et garantie 10 ans incluses.
                     </p>
@@ -57,7 +95,7 @@
                         <button type="submit" class="ch-btn ch-btn-black">Rechercher</button>
                     </form>
 
-                    <div class="ch-hero-pills">
+                    <div class="ch-hero-pills oe_editable">
                         <span class="ch-pill">18-40 m²</span>
                         <span class="ch-pill">Livré en 6 semaines</span>
                         <span class="ch-pill">Financement possible</span>
@@ -65,14 +103,14 @@
 
                     <div class="ch-hero-stats">
                         <div class="ch-hero-stat">
-                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-number" data-ch-stat="published_products_count">0</span>
                             <span class="ch-hero-stat-label">modèles disponibles</span>
                         </div>
                         <!-- "pods installés" : métrique commerciale non vérifiée
                              par ce module, masquée tant qu'elle n'est pas
                              renseignée (ir.config_parameter). -->
-                        <div class="ch-hero-stat" t-if="units_installed_count">
-                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                        <div class="ch-hero-stat d-none" data-ch-stat-block="units_installed_count">
+                            <span class="ch-hero-stat-number" data-ch-stat="units_installed_count">0</span>
                             <span class="ch-hero-stat-label">pods installés</span>
                         </div>
                         <div class="ch-hero-stat">
@@ -81,26 +119,89 @@
                         </div>
                     </div>
 
-                    <div class="ch-trust-row">
+                    <div class="ch-trust-row oe_editable">
                         <span class="ch-trust-item"><i class="fa fa-truck"/> Livraison &amp; installation offertes</span>
                         <span class="ch-trust-item"><i class="fa fa-shield"/> Garantie constructeur 10 ans</span>
                         <span class="ch-trust-item"><i class="fa fa-credit-card"/> Paiement sécurisé, 3x sans frais</span>
                         <span class="ch-trust-item"><i class="fa fa-map-marker"/> Installation partout en France</span>
                     </div>
                 </div>
-                <div class="ch-hero-content" t-if="request.env.lang != 'fr_FR'">
-                    <div class="ch-rating-badge" t-if="rating_value">
-                        <i class="fa fa-star"/>
-                        <span t-esc="rating_value"/>
-                        <span class="ch-rating-sep">·</span>
-                        <span t-esc="'%s reviews' % rating_count"/>
+
+                <div class="ch-hero-visual">
+                    <div class="ch-hero-illustration">
+                        <!-- SVG de l'illustration pod validée par le client —
+                             repris tel quel (couleurs différentes du badge
+                             logo : teintes supplémentaires EAD9C4/FFF3E0/
+                             E3A48A propres à cette illustration). Ids de
+                             dégradé suffixés _fr pour rester uniques même
+                             si les deux templates FR/EN venaient à
+                             coexister dans le même document (prudence,
+                             même principe que entreprise_apropos.xml). -->
+                        <svg class="ch-pod-illustration-svg o_not_editable" viewBox="0 0 300 220" width="80%">
+                            <defs>
+                                <linearGradient id="ch-pod-body-fr" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF"/>
+                                    <stop offset="100%" stop-color="#EAD9C4"/>
+                                </linearGradient>
+                                <radialGradient id="ch-pod-win-fr" cx="35%" cy="35%" r="75%">
+                                    <stop offset="0%" stop-color="#FFF3E0"/>
+                                    <stop offset="55%" stop-color="#E3A48A"/>
+                                    <stop offset="100%" stop-color="#C1694F"/>
+                                </radialGradient>
+                            </defs>
+                            <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
+                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body-fr)" stroke="#1F2421" stroke-opacity="0.08"/>
+                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win-fr)"/>
+                            <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
+                            <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
+                        </svg>
                     </div>
 
-                    <h1 class="ch-hero-title">
+                    <!-- Cartes flottantes produits + raccourci "Ajouter au
+                         panier" : contenu 100% dynamique, désormais construit
+                         côté client par le JS (voir plus haut) à partir de
+                         /capsule-house/hero-data.json — squelette statique
+                         vide ici, rien ne s'affiche tant que le JS n'a pas
+                         reçu de vrais produits publiés (aucune donnée
+                         fabriquée). Route du formulaire native website_sale
+                         (/shop/cart/update), CSRF token injecté par le JS. -->
+                    <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="Nouveau" data-ch-label-promo="Promo"/>
+
+                    <form action="/shop/cart/update" method="post"
+                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
+                        <input type="hidden" name="csrf_token" value=""/>
+                        <input type="hidden" name="product_id" value=""/>
+                        <input type="hidden" name="add_qty" value="1"/>
+                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
+                            <i class="fa fa-plus"/> Ajouter au panier
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_hero_extra"/>
+        </section>
+    </template>
+
+    <template id="partial_hero_en" name="Capsule House - Hero EN">
+        <section class="ch-hero o_colored_level oe_img_bg o_bg_img_center o_bg_img_origin_border_box" data-snippet="s_ch_hero" data-name="Capsule House Hero">
+            <div class="container ch-hero-grid">
+                <div class="ch-hero-content">
+                    <!-- Voir partial_hero_fr pour l'explication complète
+                         (v19.0.1.0.60) : valeurs dynamiques injectées côté
+                         client via /capsule-house/hero-data.json. -->
+                    <div class="ch-rating-badge d-none" data-ch-rating-badge="1">
+                        <i class="fa fa-star"/>
+                        <span data-ch-rating-value="1"/>
+                        <span class="ch-rating-sep">·</span>
+                        <span data-ch-rating-message="1"/>
+                    </div>
+
+                    <h1 class="ch-hero-title oe_editable">
                         Design pods built for<br/>
                         <span class="ch-hero-title-accent">your land</span>
                     </h1>
-                    <p class="ch-hero-subtitle">
+                    <p class="ch-hero-subtitle oe_editable">
                         Compare our models, configure yours and order online.
                         Delivery, installation and 10-year warranty included.
                     </p>
@@ -110,7 +211,7 @@
                         <button type="submit" class="ch-btn ch-btn-black">Search</button>
                     </form>
 
-                    <div class="ch-hero-pills">
+                    <div class="ch-hero-pills oe_editable">
                         <span class="ch-pill">18-40 sqm</span>
                         <span class="ch-pill">Delivered in 6 weeks</span>
                         <span class="ch-pill">Financing available</span>
@@ -118,11 +219,11 @@
 
                     <div class="ch-hero-stats">
                         <div class="ch-hero-stat">
-                            <span class="ch-hero-stat-number" t-esc="published_products_count"/>
+                            <span class="ch-hero-stat-number" data-ch-stat="published_products_count">0</span>
                             <span class="ch-hero-stat-label">models available</span>
                         </div>
-                        <div class="ch-hero-stat" t-if="units_installed_count">
-                            <span class="ch-hero-stat-number" t-esc="units_installed_count"/>
+                        <div class="ch-hero-stat d-none" data-ch-stat-block="units_installed_count">
+                            <span class="ch-hero-stat-number" data-ch-stat="units_installed_count">0</span>
                             <span class="ch-hero-stat-label">pods installed</span>
                         </div>
                         <div class="ch-hero-stat">
@@ -131,7 +232,7 @@
                         </div>
                     </div>
 
-                    <div class="ch-trust-row">
+                    <div class="ch-trust-row oe_editable">
                         <span class="ch-trust-item"><i class="fa fa-truck"/> Free delivery &amp; installation</span>
                         <span class="ch-trust-item"><i class="fa fa-shield"/> 10-year manufacturer warranty</span>
                         <span class="ch-trust-item"><i class="fa fa-credit-card"/> Secure payment, 3x interest-free</span>
@@ -141,81 +242,50 @@
 
                 <div class="ch-hero-visual">
                     <div class="ch-hero-illustration">
-                        <!-- SVG de l'illustration pod validée par le client —
-                             repris tel quel (couleurs différentes du badge
-                             logo : teintes supplémentaires EAD9C4/FFF3E0/
-                             E3A48A propres à cette illustration). -->
-                        <svg class="ch-pod-illustration-svg" viewBox="0 0 300 220" width="80%">
+                        <svg class="ch-pod-illustration-svg o_not_editable" viewBox="0 0 300 220" width="80%">
                             <defs>
-                                <linearGradient id="ch-pod-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="ch-pod-body-en" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#FFFFFF"/>
                                     <stop offset="100%" stop-color="#EAD9C4"/>
                                 </linearGradient>
-                                <radialGradient id="ch-pod-win" cx="35%" cy="35%" r="75%">
+                                <radialGradient id="ch-pod-win-en" cx="35%" cy="35%" r="75%">
                                     <stop offset="0%" stop-color="#FFF3E0"/>
                                     <stop offset="55%" stop-color="#E3A48A"/>
                                     <stop offset="100%" stop-color="#C1694F"/>
                                 </radialGradient>
                             </defs>
                             <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
-                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body)" stroke="#1F2421" stroke-opacity="0.08"/>
-                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win)"/>
+                            <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-pod-body-en)" stroke="#1F2421" stroke-opacity="0.08"/>
+                            <circle cx="115" cy="105" r="34" fill="url(#ch-pod-win-en)"/>
                             <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
                             <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
                         </svg>
                     </div>
 
-                    <t t-if="featured_products">
-                        <t t-foreach="featured_products[:2]" t-as="hero_product">
-                            <a t-attf-href="/shop/#{ hero_product['url'] }"
-                               t-attf-class="ch-hero-float-card #{'ch-hero-float-card-2' if hero_product_index == 1 else ''}">
-                                <span class="ch-hero-float-badge ch-hero-float-badge-new" t-if="hero_product['is_new']">
-                                    <t t-if="request.env.lang == 'fr_FR'">Nouveau</t>
-                                    <t t-else="">New</t>
-                                </span>
-                                <span class="ch-hero-float-badge ch-hero-float-badge-promo" t-if="hero_product['has_discount']">
-                                    <t t-if="request.env.lang == 'fr_FR'">Promo</t>
-                                    <t t-else="">Sale</t>
-                                </span>
-                                <div class="ch-hero-float-img">
-                                    <img t-attf-src="/web/image/product.template/#{ hero_product['id'] }/image_128"
-                                         t-att-alt="hero_product['name']"/>
-                                </div>
-                                <div class="ch-hero-float-body">
-                                    <span class="ch-hero-float-name" t-esc="hero_product['name']"/>
-                                    <span class="ch-hero-float-price"
-                                          t-esc="hero_product['price']"
-                                          t-options="{'widget': 'monetary', 'display_currency': hero_product['currency']}"/>
-                                </div>
-                            </a>
-                        </t>
+                    <!-- Voir partial_hero_fr : cartes flottantes + raccourci
+                         panier construits côté client par le JS. -->
+                    <div class="ch-hero-float-cards" data-ch-float-cards="1" data-ch-label-new="New" data-ch-label-promo="Sale"/>
 
-                        <!-- Raccourci "Ajouter au panier" repris de la maquette,
-                             rattaché au 2e produit vedette (même logique que les
-                             cartes flottantes ci-dessus : rien ne s'affiche tant
-                             qu'il n'y a pas au moins 2 produits publiés). Route
-                             native website_sale (/shop/cart/update), sans JS
-                             custom : soumission de formulaire classique. -->
-                        <form t-if="len(featured_products) > 1"
-                              t-attf-action="/shop/cart/update" method="post"
-                              class="ch-hero-cart-shortcut">
-                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                            <input type="hidden" name="product_id" t-att-value="featured_products[1]['id']"/>
-                            <input type="hidden" name="add_qty" value="1"/>
-                            <t t-if="request.env.lang == 'fr_FR'">
-                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Ajouter au panier">
-                                    <i class="fa fa-plus"/> Ajouter au panier
-                                </button>
-                            </t>
-                            <t t-else="">
-                                <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
-                                    <i class="fa fa-plus"/> Add to cart
-                                </button>
-                            </t>
-                        </form>
-                    </t>
+                    <form action="/shop/cart/update" method="post"
+                          class="ch-hero-cart-shortcut d-none" data-ch-cart-shortcut="1">
+                        <input type="hidden" name="csrf_token" value=""/>
+                        <input type="hidden" name="product_id" value=""/>
+                        <input type="hidden" name="add_qty" value="1"/>
+                        <button type="submit" class="ch-btn ch-btn-black ch-hero-cart-btn" title="Add to cart">
+                            <i class="fa fa-plus"/> Add to cart
+                        </button>
+                    </form>
                 </div>
             </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_hero_extra"/>
         </section>
+    </template>
+
+    <!-- Aiguilleur — choisit quel template complet appeler selon la
+         langue, même principe que exocoms_theme.hero_section. -->
+    <template id="partial_hero" name="Capsule House - Hero">
+        <t t-if="request.env.lang == 'fr_FR'" t-call="capsule_house_theme.partial_hero_fr"/>
+        <t t-if="request.env.lang != 'fr_FR'" t-call="capsule_house_theme.partial_hero_en"/>
     </template>
 </odoo>

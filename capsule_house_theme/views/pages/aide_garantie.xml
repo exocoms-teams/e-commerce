@@ -6,18 +6,30 @@
         (external id capsule_house_theme.aide_garantie_page). Durée et
         périmètre de garantie repris de la maquette fournie par le
         client — à confirmer avec lui si les vraies conditions diffèrent.
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel —
+        seul un placeholder réellement vide en bas de page sert de point
+        d'insertion pour le Website Builder.
     -->
     <template id="aide_garantie_page" name="Capsule House - Aide - Garantie">
         <t t-call="website.layout">
             <t t-set="title" t-if="request.env.lang == 'fr_FR'">Garantie constructeur | Capsule House</t>
             <t t-set="title" t-if="request.env.lang != 'fr_FR'">Manufacturer warranty | Capsule House</t>
-            <div id="wrap" class="ch-aide-page oe_structure">
+            <t t-set="head">
+                <!-- SEO page-spécifique (v19.0.1.0.63), voir layout.xml. -->
+                <meta name="description" content="Chaque pod Capsule House est couvert par une garantie constructeur de 10 ans."/>
+                <link rel="canonical" href="https://capsule-house.fr/garantie"/>
+                <meta property="og:title" content="Garantie constructeur | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/garantie"/>
+            </t>
 
-                <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
-                    <a href="/capsule-house/home">Accueil</a><span class="sep">/</span><span>Aide</span>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/">Accueil</a><span class="sep">/</span><span>Aide</span>
                 </div>
                 <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
-                    <a href="/capsule-house/home">Home</a><span class="sep">/</span><span>Help</span>
+                    <a href="/">Home</a><span class="sep">/</span><span>Help</span>
                 </div>
 
                 <div class="ch-aide-layout">
@@ -115,7 +127,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_aide_garantie_bottom"/>
         </t>
     </template>
 </odoo>
