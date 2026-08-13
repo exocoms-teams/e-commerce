@@ -107,9 +107,11 @@
     <!-- ============================================================
          NOUVEAU FOOTER GLOBAL (Design SaaS) - FIX ODOO 19
     ============================================================ -->
-    <template id="footer_winners" inherit_id="web.frontend_layout" name="Footer Winners">
-        <xpath expr="//*[@id='bottom']" position="replace">
-            <footer id="bottom" class="o_winners_footer py-5 mt-auto">
+    <template id="footer_winners" inherit_id="website.layout" name="Footer Winners">
+        <!-- On cible la balise <main> qui existe toujours, et on se place juste après -->
+        <xpath expr="//main" position="after">
+            
+            <footer class="o_winners_footer py-5 mt-auto">
                 <div class="container">
                     <div class="row o_winners_footer__top mb-4">
                         
@@ -162,6 +164,12 @@
                     </div>
                 </div>
             </footer>
+
+            <!-- Hack CSS pour masquer les footers natifs d'Odoo 19 -->
+            <style>
+                #bottom, .o_footer { display: none !important; }
+            </style>
+            
         </xpath>
     </template>
     <!-- ============================================================
