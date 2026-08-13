@@ -141,6 +141,7 @@ class TrendProduct(models.Model):
     # --- SCORE DE TENDANCE ---
     def compute_trend_score(self, previous_metrics=None):
         """Calcule le score de tendance de ce produit."""
+        self.ensure_one()
         scoring_engine = ScoringEngine()
         now = datetime.now()
 
@@ -196,6 +197,5 @@ class TrendProduct(models.Model):
                     source_score = max(0.0, min(source_score, 1.0))
                 except (ValueError, TypeError):
                     source_score = 0.0
-
-        self.ensure_one()
+                            
         return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)

@@ -118,7 +118,7 @@ class TestTemporalTraceability(TransactionCase):
             test_score = 0.5  # arbitrary
             self.env['ir.config_parameter'].sudo().set_param(param_name, str(test_score))
 
-            with patch('produits_tendance.models.trend_product.datetime') as mock_dt:
+            with patch('odoo.addons.produits_tendance.models.trend_product.datetime') as mock_dt:
                 mock_dt.now.return_value = self.fixed_date
                 mock_dt.timedelta = timedelta
 
@@ -135,7 +135,7 @@ class TestTemporalTraceability(TransactionCase):
             if source == 'api':
                 # Set a different source score
                 self.env['ir.config_parameter'].sudo().set_param(param_name, '0.9')
-                with patch('produits_tendence.models.trend_product.datetime') as mock_dt2:
+                with patch('odoo.addons.produits_tendance.models.trend_product.datetime') as mock_dt2:
                     mock_dt2.now.return_value = self.fixed_date
                     mock_dt2.timedelta = timedelta
                     score2 = self.product.compute_trend_score()
@@ -153,7 +153,7 @@ class TestTemporalTraceability(TransactionCase):
             'winners.source_score_api', '0.5'
         )
 
-        with patch('produits_tendence.models.trend_product.datetime') as mock_dt:
+        with patch('odoo.addons.produits_tendance.models.trend_product.datetime') as mock_dt:
             mock_dt.now.return_value = self.fixed_date
             mock_dt.timedelta = timedelta
 
@@ -173,7 +173,7 @@ class TestTemporalTraceability(TransactionCase):
             'winners.source_score_api', '0.5'
         )
 
-        with patch('produits_tendence.models.trend_product.datetime') as mock_dt:
+        with patch('odoo.addons.produits_tendance.models.trend_product.datetime') as mock_dt:
             mock_dt.now.return_value = self.fixed_date
             mock_dt.timedelta = timedelta
 
