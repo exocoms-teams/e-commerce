@@ -188,9 +188,14 @@ SHOP_FILTER_ATTRIBUTES = {
 # que les format et accessoire seront les options et équipement").
 #
 # Statut par gamme :
-# - 'disponible' (Capsule) : formats réels déjà publiés ailleurs sur ce
-#   site (18 m² Studio / jusqu'à 40 m² Panorama sur /faq), specs/
-#   équipements ci-dessous marqués 'indicative'=True (voir note plus bas).
+# - 'disponible' (Capsule) : NE SIGNIFIE PAS "en stock"/achetable — la
+#   boutique n'a encore aucun produit publié pour cette gamme (retour
+#   client : "tu mets disponible alors que j'ai encore aucun produit
+#   dans la boutique"). Le badge affiché est "Détails disponibles" /
+#   "Details available" (v19.0.1.0.78), pas "Disponible" : ça veut dire
+#   que cette gamme a du contenu informatif (formats, specs) à montrer,
+#   même si les valeurs restent 'indicative'=True (voir note plus bas) et
+#   qu'aucun achat n'est possible.
 # - 'a_confirmer' (Cabine, Dôme, Modulaire, Pliable) : gammes annoncées
 #   par le client mais sans données réelles pour l'instant — listes
 #   vides intentionnellement, le template affiche "à définir"/"à
@@ -216,14 +221,22 @@ GAMMES_DATA = [
         'icon': 'fa-home',
         'name': 'Capsule',
         'indicative': True,
-        'tagline_fr': '3 tailles disponibles · 19 à 38 m²',
-        'tagline_en': '3 sizes available · 19 to 38 sqm',
+        'tagline_fr': '3 tailles disponibles · 18 à 40 m²',
+        'tagline_en': '3 sizes available · 18 to 40 sqm',
+        # Surfaces en INTERVALLE plutôt qu'en valeur unique (v19.0.1.0.77,
+        # demande client : "pour les différents formats c'est mieux
+        # d'avoir des intervalles en ce qui concerne les mètres [carrés]").
+        # Bornes choisies pour englober les vraies valeurs déjà publiées
+        # ailleurs sur le site (Studio 18 m² et Panorama jusqu'à 40 m²,
+        # voir aide_faq.xml chFaq1) plutôt que des chiffres isolés — reste
+        # sous le bandeau 'indicative' tant que le fournisseur réel n'est
+        # pas confirmé.
         'formats': [
-            {'name': 'Studio', 'surface_fr': '19 m²', 'surface_en': '19 sqm',
+            {'name': 'Studio', 'surface_fr': '18-20 m²', 'surface_en': '18-20 sqm',
              'note_fr': 'Compact', 'note_en': 'Compact'},
-            {'name': 'Duo', 'surface_fr': '28 m²', 'surface_en': '28 sqm',
+            {'name': 'Duo', 'surface_fr': '26-30 m²', 'surface_en': '26-30 sqm',
              'note_fr': "Jusqu'à 4 pers.", 'note_en': 'Up to 4 people'},
-            {'name': 'Panorama', 'surface_fr': '38 m²', 'surface_en': '38 sqm',
+            {'name': 'Panorama', 'surface_fr': '36-40 m²', 'surface_en': '36-40 sqm',
              'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
         ],
         'specs_ext': [
