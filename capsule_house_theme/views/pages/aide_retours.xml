@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.aide_retours() sur la route
+        '/retours'. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.aide_retours_page). Le bouton
+        "Contacter le service client" pointe vers /contactus, la page
+        de contact NATIVE d'Odoo (v19.0.1.0.47, voir README "Pages
+        Entreprise") — jamais de formulaire reconstruit à la main.
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel —
+        seul un placeholder réellement vide en bas de page sert de point
+        d'insertion pour le Website Builder.
+    -->
+    <template id="aide_retours_page" name="Capsule House - Aide - Retours">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Retours &amp; rétractation | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Returns &amp; withdrawal | Capsule House</t>
+            <t t-set="head">
+                <!-- SEO page-spécifique (v19.0.1.0.63), voir layout.xml. -->
+                <meta name="description" content="Nos pods sont fabriqués sur mesure : conditions de retour et de rétractation spécifiques à un achat Capsule House."/>
+                <link rel="canonical" href="https://capsule-house.fr/retours"/>
+                <meta property="og:title" content="Retours &amp; rétractation | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/retours"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/">Accueil</a><span class="sep">/</span><span>Aide</span>
+                </div>
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/">Home</a><span class="sep">/</span><span>Help</span>
+                </div>
+
+                <div class="ch-aide-layout">
+                    <t t-call="capsule_house_theme.aide_sidebar"/>
+
+                    <div class="ch-aide-content" t-if="request.env.lang == 'fr_FR'">
+                        <h1 class="ch-aide-title">Retours &amp; rétractation</h1>
+                        <p class="ch-aide-subtitle">Nos pods sont fabriqués sur mesure : les conditions de retour diffèrent d'un achat standard.</p>
+
+                        <div class="ch-aide-callout ch-aide-callout-alert">
+                            <i class="fa fa-exclamation-triangle ch-aide-callout-icon"/>
+                            <div>
+                                <div class="ch-aide-callout-title">Le droit de rétractation standard de 14 jours ne s'applique pas après lancement de la fabrication</div>
+                                <div class="ch-aide-callout-text">Nos pods étant personnalisés à la commande, la rétractation n'est possible que dans la fenêtre décrite ci-dessous.</div>
+                            </div>
+                        </div>
+
+                        <div class="ch-aide-cards">
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">Avant fabrication</div>
+                                <div class="ch-aide-card-text">Vous disposez de 48h après confirmation de commande pour annuler et être intégralement remboursé, avant le lancement en atelier.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">Après livraison</div>
+                                <div class="ch-aide-card-text">Tout défaut constaté doit être signalé sous 48h avec photos à l'appui pour ouvrir une réclamation.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">Procédure</div>
+                                <div class="ch-aide-card-text">Contactez le service client avec votre numéro de commande ; un conseiller revient vers vous sous 48h ouvrées.</div>
+                            </div>
+                        </div>
+
+                        <a href="/contactus" class="ch-aide-btn-dark">Contacter le service client</a>
+                    </div>
+
+                    <div class="ch-aide-content" t-if="request.env.lang != 'fr_FR'">
+                        <h1 class="ch-aide-title">Returns &amp; withdrawal</h1>
+                        <p class="ch-aide-subtitle">Our pods are custom-built to order: return conditions differ from a standard purchase.</p>
+
+                        <div class="ch-aide-callout ch-aide-callout-alert">
+                            <i class="fa fa-exclamation-triangle ch-aide-callout-icon"/>
+                            <div>
+                                <div class="ch-aide-callout-title">The standard 14-day withdrawal right no longer applies once manufacturing has started</div>
+                                <div class="ch-aide-callout-text">Since our pods are custom-made to order, withdrawal is only possible within the window described below.</div>
+                            </div>
+                        </div>
+
+                        <div class="ch-aide-cards">
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">Before manufacturing</div>
+                                <div class="ch-aide-card-text">You have 48 hours after order confirmation to cancel and be fully refunded, before production begins.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">After delivery</div>
+                                <div class="ch-aide-card-text">Any defect found must be reported within 48 hours, with supporting photos, to open a claim.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <div class="ch-aide-card-title">Procedure</div>
+                                <div class="ch-aide-card-text">Contact customer service with your order number; an advisor will get back to you within 48 business hours.</div>
+                            </div>
+                        </div>
+
+                        <a href="/contactus" class="ch-aide-btn-dark">Contact customer service</a>
+                    </div>
+                </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_aide_retours_bottom"/>
+        </t>
+    </template>
+</odoo>

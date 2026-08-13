@@ -381,13 +381,17 @@ fichier (contrôleurs, `__init__.py`, vues, CSS) plutôt que réactive.
   widget "vus récemment" (`ExocomsWebsiteSale.product()`), pages
   Services/Contact/À propos (déjà actées "au fur et à mesure" par le
   client).
-- **Écart connu, non corrigé pour l'instant** : le footer
-  (`footer.xml`) contient des liens vers `/mentions-legales`, `/cgv`,
+- **Écart connu, CORRIGÉ EN v19.0.1.0.64** : le footer (`footer.xml`)
+  contenait des liens vers `/mentions-legales`, `/cgv`,
   `/confidentialite`, `/livraison`, `/retours`, `/garantie`, `/faq`,
-  `/a-propos`, `/le-concept`, `/contact` — aucune de ces pages n'existe
-  encore dans ce module (elles mèneront à un 404 tant qu'elles ne sont
-  pas créées), cohérent avec le calendrier "au fur et à mesure" déjà
-  acté pour Services/Contact/À propos.
+  `/a-propos`, `/le-concept`, `/contact` sans que ces pages n'existent
+  encore. `/livraison`, `/retours`, `/garantie`, `/faq`, `/a-propos`,
+  `/le-concept` ont été livrées au fil des versions suivantes (voir
+  sections dédiées plus bas) ; `/contact` reste volontairement la page
+  NATIVE Odoo `/contactus`. Les 3 pages légales restantes
+  (`/mentions-legales`, `/cgv`, `/confidentialite`) sont restées
+  cassées jusqu'à ce que l'outil SEO natif d'Odoo les signale
+  explicitement — voir section "Pages légales" plus bas.
 
 ### CRITIQUE — panne totale de chargement du module (v19.0.1.0.18)
 
@@ -1000,6 +1004,620 @@ côté Capsule House. Vérifié dans exocoms_theme
 (`static/src/css/layout.css`) : ils ont exactement cette règle, scopée
 à `#o_wsale_pager`. Reprise à l'identique dans `shop.css` avec
 `--ch-terracotta`/`--ch-white`.
+
+## Pages Aide — Livraison, Retours, Garantie, FAQ (v19.0.1.0.46)
+
+Les 4 liens de la colonne "Aide" du footer (jusque-là en 404) mènent
+maintenant à de vraies pages, livrées d'après une maquette fournie par
+le client :
+
+- `/livraison` : encart "livraison offerte dès 25 000 €", timeline 4
+  étapes, tableau des délais/frais par zone (France métro/Corse/DOM-TOM).
+- `/retours` : encart d'alerte sur le droit de rétractation (non
+  applicable après lancement fabrication, produit sur mesure), 3
+  cartes (avant fabrication / après livraison / procédure), bouton
+  vers `/contactus` (page de contact NATIVE d'Odoo — lien mis à jour en
+  v19.0.1.0.47, voir section "Pages Entreprise" ci-dessous ; pointait
+  vers `/contact` avant que la décision de ne jamais reconstruire de
+  page contact ne soit prise).
+- `/garantie` : bandeau "10 ans", colonnes Couvert (vert)/Non couvert
+  (rouge), étapes pour déclarer un sinistre.
+- `/faq` : questions groupées par catégorie, accordéon Bootstrap natif
+  (markup du snippet Accordéon du Website Builder, pas de JS custom).
+
+Menu latéral "Aide" partagé par les 4 pages (`aide_sidebar.xml`),
+état actif calculé dynamiquement depuis l'URL réelle (jamais codé en
+dur par page). Contenu bilingue FR/EN, même convention que le reste du
+thème. Responsive : le menu latéral passe en barre horizontale
+scrollable sous 900px.
+
+Deux écarts avec le brief fourni, choisis pour rester cohérent avec le
+reste du site déjà en place (le brief ne correspondait pas exactement
+à ce qui est réellement déployé) :
+- **Police** : Inter, pas Manrope — Inter est la police utilisée
+  partout ailleurs sur le site (variables.css) ; changer de police
+  seulement sur ces 4 pages aurait cassé la cohérence visuelle.
+- **Icônes** : FontAwesome (`<i class="fa fa-*">`), pas de SVG en
+  ligne dédiées — même bibliothèque d'icônes que le hero et les avis.
+
+Couleur ajoutée : `--ch-red` (#B4553F, rouge alerte/non-couvert),
+absente jusqu'ici de `variables.css` — le reste de la palette
+(`--ch-panel`, `--ch-ink`, `--ch-terracotta`, `--ch-amber`, `--ch-fog`,
+`--ch-green`) existait déjà et correspond exactement aux couleurs
+demandées, réutilisée telle quelle.
+
+## Pages Entreprise — À propos, Le concept, Contact natif (v19.0.1.0.47)
+
+Les liens de la colonne "Entreprise" du footer mènent maintenant à de
+vraies pages, livrées d'après une maquette fournie par le client :
+
+- `/a-propos` : hero (texte + illustration SVG reprise à l'identique
+  du hero d'accueil), bandeau 4 statistiques (année de fondation, pods
+  installés, taille d'équipe, ateliers), 3 cartes "Nos valeurs" (design
+  intemporel / fabrication responsable / installation rapide),
+  historique en timeline verticale (4 jalons 2022→2026).
+- `/le-concept` : intro "Qu'est-ce qu'un pod Capsule House ?", tableau
+  comparatif Pod vs construction traditionnelle (délai, permis,
+  empreinte carbone, mobilité, budget), 4 étapes "De l'atelier à votre
+  terrain" (matériaux/fabrication/contrôle qualité/transport & pose),
+  schéma "Coupe technique" (même illustration SVG que le hero,
+  stylisée en contour pointillé avec libellés superposés).
+- **Contact : décision explicite du client — "tout les contact de mes
+  pages doive etre dirigé vers la pages contacts native odoo"**. Ce
+  module ne construit AUCUNE page de contact. Tous les liens "Contact"
+  du site (nav en pills `entreprise_nav.xml`, colonne "Entreprise" du
+  footer, bouton "Contacter le service client" de `/retours`) pointent
+  vers `/contactus`, la page de contact native du module `website`
+  (déjà dans les dépendances de ce thème) — confirmée par le code local
+  d'`exocoms_theme` qui l'utilise aussi tel quel (`footer.xml`).
+
+Nav en onglets "pills" partagée par les 2 pages (`entreprise_nav.xml`),
+même principe que `aide_sidebar.xml` : état actif calculé dynamiquement
+depuis l'URL réelle, jamais codé en dur par page. L'onglet "Contact" de
+cette nav n'est jamais marqué actif (il ne pointe pas vers une page à
+nous). Contenu bilingue FR/EN, même convention que le reste du thème.
+CSS (`.ch-entreprise-*` dans `pages.css`) réutilise volontairement les
+classes `.ch-aide-*` existantes (titre, sous-titre, cartes, tableau)
+plutôt que dupliquer un système parallèle.
+
+Mêmes deux écarts que les pages Aide (v19.0.1.0.46), pour rester
+cohérent avec le reste du site déjà en place : police Inter (pas
+Manrope) et icônes FontAwesome (pas de SVG en ligne dédiées). Aucune
+nouvelle couleur : la palette existante (`--ch-panel`, `--ch-ink`,
+`--ch-terracotta`, `--ch-fog`, `--ch-tan-1`) couvre entièrement le
+brief — ce brief-ci ne demandait d'ailleurs pas de rouge (contrairement
+aux pages Aide).
+
+## Blocs non éditables comme sur exocoms_theme (v19.0.1.0.48)
+
+Question posée par le client, capture d'écran à l'appui (Website
+Builder ouvert sur la page d'accueil) : comment le hero d'accueil, et
+plus largement le contenu de la page d'accueil, sont-ils protégés pour
+ne pas être éditables nativement via le panneau "Blocks" d'Odoo — comme
+c'est le cas sur exocoms_theme ?
+
+Réponse honnête après relecture du code local d'exocoms_theme : ce
+n'était **pas** le cas jusqu'à cette version. Les 8 templates de page
+de ce module enveloppaient tout leur contenu réel (hero compris) dans
+un même `<div id="wrap" class="oe_structure">`. Deux problèmes :
+
+1. `website.layout` pose déjà lui-même un `#wrap` natif — on créait
+   donc un second `id="wrap"` dupliqué (HTML invalide) à l'intérieur.
+2. `oe_structure` marque toute la zone comme un conteneur de blocs
+   éditable par le Website Builder (glisser-déposer, édition inline).
+   En l'appliquant à tout le contenu, celui-ci restait exposé à
+   l'édition ou à la suppression accidentelle depuis "Edit" — ce n'est
+   pas ainsi qu'exocoms_theme fonctionne réellement.
+
+Vérification directe du code d'exocoms_theme (`views/pages/home.xml`,
+`avis.xml`, `services.xml`) : aucun de ces templates n'enveloppe son
+contenu réel dans `oe_structure`. Les sections (hero, contenu) sont
+`t-call`-ées directement ; seuls des `<div class="oe_structure
+oe_empty">` séparés et **réellement vides** sont insérés entre les
+sections, comme simples points d'ancrage pour ajouter de nouveaux blocs
+— sans jamais rendre éditable le contenu déjà codé en dur.
+
+Corrigé en reproduisant exactement ce principe sur les 8 pages du
+module (`page_home`, `avis_page`, les 4 pages Aide, les 2 pages
+Entreprise) : suppression du `<div id="wrap" class="oe_structure">`
+englobant, remplacé par des placeholders vides
+(`oe_structure_ch_<page>_after_hero` / `_bottom`) aux mêmes endroits
+qu'exocoms_theme — après le hero sur Accueil et Avis, en bas de page
+partout. Aucun changement
+visuel : les classes CSS posées sur le div supprimé (`.ch-home`,
+`.ch-aide-page`, `.ch-avis-page`, `.ch-entreprise-page`) n'étaient
+ciblées par aucune règle CSS (vérifié dans `static/src/css/`).
+
+**Correctif de ce correctif (v19.0.1.0.49)** : l'affirmation ci-dessus
+("le hero et tout le reste du contenu ne sont donc plus éditables")
+était en partie fausse — erreur repérée par le client (capture
+d'écran : panneau Style vide en cliquant sur le hero) et confirmée en
+relisant cette fois le contenu réel de
+`exocoms_theme/views/partials/hero.xml`, pas seulement `home.xml`. Le
+hero d'exocoms N'EST PAS verrouillé : sa `<section>` porte
+`data-snippet="s_exocoms_hero"` + `data-name="Exocoms Hero"` (donc
+sélectionnable, panneau Style actif), et le texte marketing statique
+(badge, titre, sous-titre, boutons, bandeau de confiance) porte la
+classe `oe_editable` (donc éditable en ligne). Seul leur SVG décoratif
+est explicitement `o_not_editable`. Le correctif 19.0.1.0.48
+(suppression de l'`oe_structure` englobant) restait juste — c'est bien
+ainsi qu'exocoms structure ses pages — mais il manquait ce second
+niveau : sans `data-snippet`/`oe_editable` sur le hero lui-même, celui-
+ci se retrouvait totalement verrouillé au lieu de reproduire le
+comportement réel d'exocoms.
+
+Corrigé sur `views/partials/hero.xml` : `data-snippet="s_ch_hero"` +
+`data-name="Capsule House Hero"` sur la `<section class="ch-hero">`,
+`oe_editable` sur le titre, le sous-titre, le bloc des 3 pastilles et
+le bandeau de confiance (même granularité par bloc qu'exocoms, pas
+span par span), `o_not_editable` sur le SVG de l'illustration.
+Restent volontairement NON éditables — déviation assumée, propre à
+Capsule House puisque ce contenu n'existe pas chez exocoms — les 3
+statistiques (nombres ET libellés) et le formulaire de recherche : ces
+zones affichent des valeurs calculées dynamiquement à chaque rendu
+(`t-esc published_products_count` / `units_installed_count`) ; les
+rendre éditables aurait risqué de figer un chiffre en dur au premier
+Save et de casser le comptage automatique aux rendus suivants. Même
+raisonnement pour le bouton "Ajouter au panier" et les cartes produits
+flottantes (contenu 100 % dynamique).
+
+**Suite (v19.0.1.0.50)** : après déploiement de la 19.0.1.0.49, le
+panneau Style restait toujours vide en cliquant sur le hero
+(nouvelle capture d'écran du client) — `data-snippet`/`data-name`
+seuls n'ont pas suffi. En recomparant précisément les classes de la
+`<section>` hero d'exocoms (`o_colored_level pt32 pb32 oe_img_bg
+o_bg_img_center`, en plus de `data-snippet`) à la nôtre, `o_colored_level`
+est ajoutée par hypothèse — c'est une classe cœur d'Odoo qui enregistre
+un `<section>` auprès du panneau d'options générique Background/
+Layout/Visibility, exactement ce qu'affiche la capture d'écran sur
+exocoms. **Non vérifié à 100 %** faute d'accès au JS cœur d'Odoo en
+local (seuls les modules thème sont montés) — à confirmer par un
+nouveau test après déploiement. Si ça ne suffit toujours pas, prochaine
+piste : `oe_img_bg`/`o_bg_img_center` (liées à une image de fond, que
+notre hero n'a pas — fond en dégradé CSS, pas image).
+
+**Suite (v19.0.1.0.51)** : module bien mis à niveau à chaque test
+(confirmé par le client), donc pas un problème de déploiement — le
+panneau Style restait quand même vide après la 19.0.1.0.50. Piste
+suivante, proposée par le client : l'**organisation** du template, pas
+seulement ses classes. Avant cette version, `partial_hero` était un
+seul template contenant le FR ET le EN à l'intérieur (t-if/t-else
+internes) — la `<section data-snippet>` n'était donc pas le résultat
+direct d'un `t-call` vers un template dédié à une seule langue.
+
+Vérification du vrai code d'exocoms_theme : leur `hero_section` n'est
+qu'un aiguilleur (2 lignes, un `t-if` par langue) qui `t-call` soit
+`hero_section_fr` soit `hero_section_en` — deux templates complets et
+indépendants, chacun avec sa propre `<section data-snippet="...">`
+entière (rien de partagé, tout dupliqué y compris l'illustration). Par
+comparaison, leur `features_section` (pas de `data-snippet`, section
+"normale") utilise lui un simple `t-if/t-else` interne à un seul
+template — donc CE N'EST QUE pour le hero (élément formellement
+"snippet") qu'exocoms scinde en deux templates par langue.
+
+Reproduit à l'identique (v19.0.1.0.51) : `hero.xml` scindé en
+`partial_hero_fr` / `partial_hero_en` (templates complets et
+indépendants), `partial_hero` devenu un simple aiguilleur. Les deux
+nouveaux ids ajoutés à `SCOPED_VIEW_XML_IDS`.
+`partial_featured_products` ("Meilleures ventes", pas de
+`data-snippet`) n'est pas concerné, comme son équivalent
+`features_section` chez exocoms.
+
+**Root cause confirmée (v19.0.1.0.52)**, rapport transmis par le
+client : le Website Builder ne pouvait déposer aucun bloc car Odoo se
+base sur l'attribut `data-oe-model` pour détecter les zones éditables.
+Quand `oe_structure oe_empty` est posé sur un élément qui contient des
+balises `<t>` (`t-call`, `t-if`, `t-foreach`, `t-set`), Odoo considère
+cet élément comme un conteneur de template et supprime `data-oe-model`
+au rendu — aucune zone de dépôt n'est créée. C'est exactement le bug
+de la structure d'AVANT la 19.0.1.0.48 (`<div id="wrap"
+class="oe_structure">` contenant directement des `<t t-call>`).
+
+**Règles retenues pour tout futur développement sur ce module :**
+1. Ne jamais poser `oe_structure oe_empty` sur un élément contenant
+   des `<t>` descendants — toujours un `<div>` enfant à part, sans
+   aucune balise `<t>` dedans ni autour.
+2. Ne jamais imbriquer un `<section>` dans un `<section>`, ni un
+   `<aside>` dans un `<aside>` — un `<div>` pour les conteneurs
+   internes.
+3. Ne jamais imbriquer plusieurs `<div class="oe_structure oe_empty">`
+   l'un dans l'autre au sein d'une même zone éditable (des divs sœurs/
+   successives à différents endroits d'une page restent autorisées —
+   c'est ce que fait ce module et exocoms_theme lui-même).
+4. Chaque `<section>` destinée à accepter des blocs doit avoir sa
+   propre zone `oe_structure oe_empty` interne, juste avant sa
+   fermeture.
+5. Images produit : toujours via `/web/image/product.template/<id>/
+   image_<taille>`, jamais via le champ binaire directement dans un
+   template.
+6. Après chaque modification XML : vérifier que le mode Édition
+   permet bien d'insérer/déplacer des blocs ; si non, vérifier en
+   premier le placement de `oe_structure`.
+
+**Audit du module contre ces règles** : règles 1, 2, 3, 5 déjà
+respectées (rien à corriger). Règle 4 manquante sur `hero.xml`
+(`partial_hero_fr`/`_en`) et `avis_hero.xml` (`avis_hero_fr`/`_en`) —
+corrigé : `oe_structure_ch_hero_extra` / `oe_structure_ch_avis_hero_
+extra` ajoutés juste avant `</section>` dans chacun, comme
+`oe_structure_hero_extra` / `oe_structure_avis_hero_extra` chez
+exocoms. Au passage, `avis_hero.xml` a aussi été mis au même niveau
+que le hero d'accueil : `data-snippet`, `data-name`, `o_colored_level`
+sur la `<section>`, `oe_editable` sur l'eyebrow/titre/sous-titre/
+bouton — il en était complètement dépourvu jusqu'ici malgré son
+schéma FR/EN déjà correct.
+
+## Test diagnostique cartes flottantes du hero (v19.0.1.0.53)
+
+Malgré tous les correctifs précédents (data-snippet, data-name,
+o_colored_level, oe_editable, zone `oe_structure` interne, scission
+FR/EN), le panneau Style restait toujours vide sur le hero. Hypothèse
+du client à tester : le bloc des 2 cartes flottantes de produits dans
+`hero.xml` (`<t t-if="featured_products">` /
+`<t t-foreach="featured_products[:2]" t-as="hero_product">`, contenu
+100 % dynamique) pourrait empêcher Odoo de traiter la `<section
+data-snippet>` comme éditable — même logique que la règle
+"`oe_structure` ne doit jamais être posé sur un élément contenant des
+`<t>`" déjà identifiée.
+
+**Rien n'est supprimé.** Changement strictement réversible et
+temporaire : la condition est passée de `t-if="featured_products"` à
+`t-if="False"` dans `partial_hero_fr` ET `partial_hero_en` — le bloc
+entier (cartes, badges, prix, bouton "Ajouter au panier") reste
+intact dans le code, juste désactivé à l'affichage.
+
+**Résultat attendu par le client** : retester le panneau Style sur le
+hero après déploiement.
+- Panneau Style apparaît maintenant → le bloc dynamique était bien la
+  cause ; prochaine étape : trouver comment le garder (ex : le sortir
+  de la `<section data-snippet>`, le repositionner en CSS) sans
+  bloquer l'éditeur.
+- Panneau Style toujours vide → piste écartée, remettre
+  `t-if="featured_products"` aux deux endroits et chercher ailleurs
+  (piste suggérée : inspecter la console du navigateur en mode Édition
+  pour une éventuelle erreur JS, plutôt que continuer à deviner à
+  partir du seul code source).
+
+**Suite (v19.0.1.0.54)** : remarque juste du client — avec
+`t-if="False"`, la balise `<t>` reste malgré tout présente dans l'arch
+compilé par QWeb, seul son contenu ne s'affiche pas. Ça ne teste donc
+pas correctement l'hypothèse "la simple présence d'une balise `<t>`
+dans la section bloque l'édition". Corrigé : le bloc est maintenant
+neutralisé par un **vrai commentaire XML** (`<!-- ... -->`) au lieu de
+`t-if="False"` — un commentaire XML est éliminé par le parseur avant
+que QWeb ne compile le template, donc les balises `<t>` à l'intérieur
+disparaissent réellement de l'arch tant qu'elles restent commentées.
+Toujours rien de supprimé : décommenter restaure le bloc à
+l'identique.
+
+**Résultat du test (v19.0.1.0.55) : NÉGATIF**, confirmé par le client.
+Même avec le bloc entièrement absent de l'arch compilé, le panneau
+Style restait vide sur le hero. Cette hypothèse est écartée. Le bloc
+est restauré à l'identique (rien n'avait été supprimé).
+
+**Bilan après 6 versions de correctifs sur le hero (49 à 55)**, aucun
+n'a résolu le symptôme, bien que chacun reproduise fidèlement le vrai
+code d'exocoms_theme et reste légitime à conserver : data-snippet +
+data-name (49), + o_colored_level (50), scission FR/EN (51), zone
+oe_structure interne (52), retrait du contenu dynamique par
+t-if=False puis par commentaire XML réel (53/54) — négatif (55).
+
+**Prochaine étape recommandée** : la cause n'est probablement plus à
+chercher dans le code de `hero.xml` lui-même. Sans accès direct à
+l'instance Odoo.sh du client pour tester en direct, la piste la plus
+fiable est d'inspecter la console du navigateur (F12 > Console) en
+mode Édition au moment du clic sur le hero, à la recherche d'une
+erreur JavaScript. Si le panneau Style reste vide sur TOUT le site
+(pas seulement le hero), la cause est probablement plus générale
+(chargement du bundle JS du Website Builder pour ce site, conflit
+d'assets) plutôt que spécifique au code de ce module.
+
+## Cause trouvée — hero et Style panel (v19.0.1.0.56)
+
+Le client a fourni deux captures DevTools (onglet Elements) montrant
+le DOM rendu réel du hero sur exocoms_theme face à celui de Capsule
+House — comparaison du rendu final, pas seulement du code source.
+
+Différence identifiée : la `<section>` hero d'exocoms porte, en plus
+de `data-snippet`/`data-name`/`o_colored_level`, les classes
+`oe_img_bg o_bg_img_center o_bg_img_origin_border_box` (gestion
+d'image de fond). Conséquence visible directement dans le DOM rendu :
+Odoo ajoute alors automatiquement, sur la `<section>` elle-même, la
+classe `o_editable` et les attributs `data-oe-model="ir.ui.view"`
+`data-oe-id` `data-oe-field="arch"` `data-oe-xpath="/t[1]/section[1]"`.
+
+Sur le hero de Capsule House (jusqu'à la 19.0.1.0.55), ces attributs
+n'apparaissaient que sur les enfants `oe_editable` (titre, sous-titre),
+jamais sur la `<section>` — Odoo ne la reconnaissait donc que comme un
+conteneur de texte, pas comme un bloc sélectionnable pour le panneau
+Style. `o_colored_level` seul était insuffisant ; il fallait la
+combinaison avec `oe_img_bg`/`o_bg_img_center`.
+
+Corrigé : ces classes ajoutées à la `<section>` de `hero.xml`
+(`partial_hero_fr`/`_en`) et `avis_hero.xml`
+(`avis_hero_fr`/`_en`, même diagnostic probable). Aucune image de
+fond en `style` inline : rien ne change visuellement, les fonds CSS
+existants restent inchangés. Effet secondaire positif possible : le
+panneau Background qui doit apparaître permettra au client de
+remplacer ce fond par une vraie photo directement depuis le Website
+Builder.
+
+Ce diagnostic est basé sur une comparaison directe du DOM rendu réel
+des deux sites (pas du code source), plus fiable que les tentatives
+précédentes (49 à 55).
+
+**Correctif de ce correctif** : la v56 seule n'a pas suffi — voir
+"Cause réelle trouvée — routing de l'accueil" ci-dessous (v19.0.1.0.57).
+Le hero de `/avis` fonctionnait déjà avant même la v56 (aucune classe
+`oe_img_bg` nécessaire côté avis), ce qui aurait dû alerter plus tôt
+que la différence n'était pas dans le balisage du hero lui-même.
+
+## Cause réelle trouvée — routing de l'accueil (v19.0.1.0.57)
+
+À la demande explicite du client (« regarde bien les deux projets,
+fais une analyse complète des deux projets ») après l'échec de la
+v56 à résoudre le problème sur l'accueil (alors que `/avis`
+fonctionnait avec un balisage désormais identique), analyse
+comparative complète de `capsule_house_theme` et `exocoms_theme` :
+contrôleurs, `__init__.py`, manifestes, pages.
+
+Une seule différence structurelle restait entre les deux thèmes une
+fois le balisage des heros aligné : **comment chaque site sert sa
+page d'accueil.**
+
+- `exocoms_theme` sert `/` directement : `ExocomsWebsite` hérite du
+  contrôleur natif `Website` et surcharge `index()` via
+  `@http.route()` **sans argument** (réutilise la route native
+  existante, n'en crée aucune nouvelle), avec une garde
+  `_is_our_site()` et un `super().index(**kw)` pour les 16 autres
+  sites. Un seul rendu, aucun redirect.
+- `capsule_house_theme` (jusqu'à la 19.0.1.0.56) servait l'accueil
+  sur une route dédiée `/capsule-house/home`, atteinte depuis `/`
+  via le champ natif `website.homepage_url` (posé par
+  `_setup_homepage()`) — un **vrai redirect HTTP côté navigateur**,
+  confirmé par le propre commentaire du module dans `_setup_menus()`
+  (écrit bien avant ce diagnostic, pour un bug de surlignage de menu
+  sans rapport avec l'éditeur à l'époque). Deux hops : `/` → 302 →
+  `/capsule-house/home`.
+
+La page `/avis`, elle, était déjà servie en un seul rendu direct
+(comme `/` chez exocoms) — et fonctionnait. C'est la variable qui
+manquait : le redirect empêchait apparemment le Website Builder de
+garder le fil de « quelle page suis-je en train d'éditer » pendant
+ce second hop, laissant la `<section>` hero sans `data-oe-model`/
+`data-oe-id`/`data-oe-xpath` propres, alors que ses enfants
+`oe_editable` (rendus dans la page finale) les récupéraient bien.
+
+**Corrigé** : `CapsuleHouseWebsite.index()` surcharge maintenant `/`
+directement, exactement comme `exocoms_theme` — même garde stricte
+(`_is_our_website` + `super().index(**kw)` pour tous les autres
+sites), même sécurité multi-site (aucune nouvelle route sur `/`,
+seulement une surcharge héritée). C'est le pattern déjà éprouvé sans
+incident en production sur `exocoms_theme` depuis longtemps.
+
+- `_setup_homepage()` vide désormais `website.homepage_url` au lieu
+  de le pointer vers `/capsule-house/home` (plus nécessaire, et
+  cohérent avec exocoms_theme qui ne pose jamais ce champ).
+- L'ancienne route `/capsule-house/home` est conservée en simple
+  redirect 301 permanent vers `/` (`homepage_legacy_redirect`), pour
+  ne pas casser d'éventuels favoris/liens déjà partagés.
+- Le menu "Accueil" et les breadcrumbs des pages Aide/Entreprise
+  pointent de nouveau vers `/` (`_setup_menus()`, `aide_*.xml`,
+  `entreprise_*.xml`) — cohérent avec l'URL réellement affichée
+  maintenant que le redirect n'existe plus.
+
+Sécurité : ce changement reprend un pattern déjà validé en
+production sur 17 sites (`exocoms_theme`), pas une nouvelle
+tentative de surcharge de `'/'` — la garde `_is_our_website` +
+fallback `super()` systématique protège les 16 autres sites de la
+base mutualisée exactement comme chez exocoms.
+
+Ce correctif seul n'a **pas** résolu le problème (confirmé par le
+client après déploiement) — voir la section suivante pour la cause
+réelle, trouvée juste après.
+
+## Cause réelle #2 — ancêtre `o_editable` manquant (v19.0.1.0.58)
+
+Le correctif de routing (v57) était bien fondé mais insuffisant : le
+panneau Style restait vide sur le hero même en servant `/`
+directement. Test décisif proposé pour trancher entre "problème
+spécifique au hero" et "problème de l'éditeur sur cette page" : le
+client a glissé un bloc **natif** Odoo ("Masonry") depuis le panneau
+Blocks juste après le hero, sur la même page, dans la même session
+d'édition. Résultat : le panneau Style s'affiche normalement pour ce
+bloc natif — donc l'éditeur fonctionne très bien sur cette page ;
+seul le hero pose problème.
+
+Capture du code du bloc natif fournie par le client :
+
+```html
+<section class="s_masonry_block pt48 pb48 o_colored_level"
+         data-snippet="s_masonry_block" data-name="Masonry"
+         contenteditable="false">
+```
+
+**Aucun `data-oe-model`/`data-oe-id`/`data-oe-xpath` sur cette
+`<section>` non plus.** Toute la piste suivie depuis la v56 (faire
+apparaître ces attributs sur la section du hero via `oe_img_bg` etc.)
+reposait donc sur une fausse corrélation : ce n'est pas cet attribut
+qui déclenche le panneau Style.
+
+La vraie différence, visible dans le même DOM (fourni par le
+client) : le bloc Masonry est un **enfant** de :
+
+```html
+<div id="oe_structure_ch_home_after_hero"
+     class="oe_structure oe_empty o_editable" contenteditable="true">
+```
+
+— alors que notre `<section class="ch-hero">` n'avait **aucun
+ancêtre** portant `o_editable` ni `contenteditable="true"`, jusqu'à
+`<main>` inclus. Le SnippetsMenu d'Odoo cherche, au clic, le plus
+proche ancêtre marqué comme zone éditable pour savoir si l'élément
+cliqué (ou son ancêtre `[data-snippet]`) est sélectionnable — sans
+cet ancêtre, aucun clic ne peut jamais activer la sélection de bloc,
+quel que soit le balisage du hero lui-même. Ça explique pourquoi 8
+tentatives successives sur le balisage du hero (v49 à v56) n'ont rien
+changé : le problème était un niveau au-dessus, dans
+`home.xml`/`avis.xml`, pas dans `hero.xml`/`avis_hero.xml`.
+
+**Corrigé (tentative v58, REVERT EN v59)** : le `<t
+t-call="capsule_house_theme.partial_hero"/>` (et `avis_hero`) a été
+enveloppé dans un `<div class="o_editable" contenteditable="true">`.
+**Erreur** : `contenteditable="true"` écrit en dur dans le code source
+est un attribut HTML natif du navigateur, appliqué à TOUS les
+visiteurs en permanence — pas une classe Odoo activée seulement en
+mode édition. Résultat en conditions réelles : le hero devenait
+éditable pour n'importe quel visiteur, sans jamais cliquer sur
+"Edit". Signalé immédiatement par le client ("ça rendait le hero
+éditable sans que je ne clique sur edit") et reverté en v59. Ce que
+montrait la capture DevTools (le `contenteditable="true"` sur le div
+`oe_structure` généré automatiquement) était injecté dynamiquement
+par Odoo, côté serveur, UNIQUEMENT pour la session de l'éditeur
+connecté — jamais présent dans le code source, jamais statique.
+Leçon : ne plus jamais coder `contenteditable` en dur dans un
+template.
+
+## Cause réelle #3 — contenu dynamique dans le hero (v19.0.1.0.60)
+
+Après le revert de la v58/59, retour à l'analyse : comparaison
+directe, dans la même session d'édition, entre le hero (toujours pas
+sélectionnable) et un bloc natif Odoo ("Masonry") glissé juste après
+lui. Le bloc natif s'est révélé parfaitement fonctionnel (panneau
+Style complet), et surtout **sa propre `<section>` n'avait elle non
+plus AUCUN `data-oe-model`** — ce qui invalide rétroactivement toute
+la piste suivie depuis la v56 (cet attribut n'a jamais été le
+déclencheur du panneau Style, la corrélation observée était fausse).
+
+Comparaison précise du DOM complet fourni par le client : tout ce qui
+est purement statique dans le hero est marqué `o_editable`/
+`data-oe-*` par Odoo — y compris des conteneurs entiers comme
+`.ch-hero-visual` (toute la colonne illustration). Mais
+`.ch-hero-content`, `.ch-hero-grid` et la `<section>` elle-même ne le
+sont jamais. La seule chose commune à ces trois-là, absente de
+`.ch-hero-visual` : ils contiennent quelque part `.ch-hero-stats`, qui
+affichait de VRAIES valeurs dynamiques via `t-esc`
+(`published_products_count`, `units_installed_count`), ainsi que le
+badge de note (`rating_value`/`rating_count`) et les cartes flottantes
+de produits vedettes (`t-foreach` sur `featured_products`).
+
+Vérification croisée, deux sources indépendantes :
+- Lecture directe du code source complet d'exocoms_theme
+  (`views/partials/hero.xml`) : **aucune** expression dynamique nulle
+  part dans leur hero, uniquement du texte fixe. `avis_hero.xml` (qui
+  fonctionne chez nous aussi) n'en a pas non plus.
+- Doc officielle Odoo 19 ("Building blocks > Dynamic Content
+  templates") : les snippets dynamiques natifs d'Odoo (ex: Articles de
+  blog) gardent leur `<section>` 100% statique dans l'arch source, et
+  injectent le contenu réel via **JavaScript après le chargement de la
+  page** — jamais via `t-esc`/`t-foreach` directement dans l'arch.
+
+**Corrigé**, à la demande du client ("avoir tout ce qu'on veut en
+pensant par le JS") : `hero.xml` (`partial_hero_fr`/`_en`) ne contient
+plus aucune expression dynamique. Les 4 zones concernées (badge de
+note, comptage produits publiés, comptage unités installées, cartes
+flottantes + raccourci panier) sont désormais des placeholders
+statiques (masqués par défaut via `d-none` quand la donnée peut être
+absente), peuplés côté client par `static/src/js/main.js`
+(`initHeroDynamicContent`) à partir d'une nouvelle route JSON dédiée,
+`/capsule-house/hero-data.json` (`CapsuleHouseWebsite.hero_data()`,
+`controllers/main.py`) — mêmes calculs qu'avant, aucune donnée
+fabriquée, juste injectés après coup au lieu d'être rendus côté
+serveur dans l'arch. Dégradation gracieuse : en cas d'échec du fetch,
+le hero reste utilisable, les placeholders restent simplement masqués.
+
+Effet attendu : la `<section>` du hero redevient 100% statique dans
+l'arch source — condition nécessaire, confirmée par comparaison
+directe avec exocoms_theme et le bloc natif Masonry, pour qu'Odoo la
+marque comme un bloc sélectionnable avec panneau Style complet.
+
+## SEO — même principe que exocoms_theme (v19.0.1.0.63)
+
+Jusqu'ici, `data/seo_data.xml` était vide (juste un commentaire
+"réservé pour plus tard") : aucune meta description, robots, Open
+Graph, Twitter Card ni schema.org n'existait nulle part dans le
+module — contrairement à `exocoms_theme`, dont `layout.xml` pose un
+bloc SEO global et dont plusieurs pages (`avis.xml`, `boutique.xml`,
+`services.xml`, `mentions_legales.xml`) surchargent ce bloc avec leur
+propre contenu.
+
+Reproduit à l'identique :
+- **Bloc global** (`views/templates/layout.xml`, xpath `//head`) :
+  meta description, `robots`, Open Graph, Twitter Card, schema.org
+  `Organization` en JSON-LD. Image de partage : le logo du site
+  (`capsule-house-logo.png`), même logique que `EXOCOMS.png` chez
+  exocoms.
+- **Surcharges page par page** (`t-set="head"`) : `home.xml`,
+  `avis.xml`, les 4 pages Aide, les 2 pages Entreprise — description et
+  `canonical` propres à chaque page.
+
+Tout le texte est réutilisé depuis du contenu déjà validé sur le site
+(sous-titres, h1 existants) — jamais de texte SEO inventé. Coordonnées
+schema.org (téléphone, adresse) : reprises à l'identique de celles
+d'exocoms_theme, à la demande explicite du client ("c'est la même
+entreprise qui gère les deux") — Exocoms Group gère les deux sites. À
+ajuster si Capsule House obtient ses propres coordonnées dédiées.
+
+**Non couvert** : `views/pages/shop.xml` (page boutique native
+`website_sale.products`) — structure de vue héritée moins prévisible
+pour un xpath `//head` fiable, laissé de côté plutôt que de risquer un
+xpath qui casse à l'installation. À traiter dans une prochaine version
+si besoin.
+
+## Pages légales — Mentions légales, CGV, Confidentialité (v19.0.1.0.64)
+
+En ouvrant le panneau SEO natif d'Odoo (Promote > Optimize SEO), le
+client a découvert des liens cassés : `/mentions-legales`, `/cgv`,
+`/confidentialite`. Pas une régression — ces liens sont dans le footer
+depuis le tout début du projet, documentés comme "écart connu, non
+corrigé pour l'instant" (voir plus haut), jamais construits.
+
+`/shop/category/4` (Accessoires) apparaissait aussi cassé dans le même
+panneau : pas un bug de routing (la catégorie est bien créée par
+`_setup_shop_categories()`), simplement une conséquence du catalogue
+actuellement vide (0 produit publié) — devrait se résoudre de
+lui-même une fois de vrais produits publiés.
+
+**Corrigé** : trois nouvelles pages (`views/pages/mentions_legales.xml`,
+`cgv.xml`, `confidentialite.xml`), routes dédiées dans
+`controllers/main.py`. Contenu — rien d'inventé :
+- **Mentions légales** : coordonnées légales réelles d'Exocoms Group
+  (SIRET, adresse, forme juridique, hébergeur), reprises à l'identique
+  de `exocoms_theme` — même société gérant les deux sites, confirmé
+  explicitement par le client ("c'est la même entreprise qui gère les
+  deux"). Seule l'activité déclarée est adaptée (vente de maisons
+  modulaires) et l'email de contact reprend la convention déjà en
+  place ailleurs dans ce module (`contact@capsule-house.fr`).
+  Hébergement (IONOS) repris tel quel — à confirmer/corriger si
+  l'hébergement réel diffère.
+- **CGV** : chaque clause reprend un fait déjà publié ailleurs sur le
+  site (acompte 20 %, délais de fabrication/livraison, garantie 10 ans,
+  paiement 3x sans frais), formalisé juridiquement — y compris le
+  fondement légal réel de l'absence de rétractation pour un bien
+  personnalisé (art. L221-28 3° du Code de la consommation).
+- **Confidentialité** : décrit les traitements de données réellement en
+  place (avis, newsletter, commandes, live chat) ; vérifié qu'aucun
+  outil d'analytics/pixel tiers n'est configuré dans le module avant
+  d'écrire la section cookies (uniquement des cookies fonctionnels).
+
+### CSS dédié — `legal.css` (v19.0.1.0.65)
+
+À la livraison (v19.0.1.0.64), les trois pages légales réutilisaient les
+classes `.ch-aide-*` des pages Aide (`pages.css`), faute de style qui
+leur soit propre. À la demande du client ("crée un css qui leur est
+propre et bien propre"), elles ont désormais leur propre feuille :
+`static/src/css/legal.css`, avec un namespace dédié `.ch-legal-*`
+(`ch-legal-breadcrumb`, `ch-legal-wrap`, `ch-legal-title`,
+`ch-legal-lead`, `ch-legal-body`) :
+- Largeur de lecture plus étroite (760px) que le reste du site, adaptée
+  à un format "document" plutôt qu'aux pages marketing.
+- Titres `<h2>` avec liseré terracotta (`border-left`) au lieu du style
+  inline `margin-top:32px;` retiré des 3 templates.
+- Ne dépend plus des pages Aide/Entreprise : les deux familles de pages
+  peuvent évoluer indépendamment sans se marcher dessus.
+
+Enregistré dans `THEME_ASSETS` (`__init__.py`) comme les autres feuilles
+du thème, via `ir.asset` scopé `website_id` (jamais dans
+`web.assets_frontend` global). Aucun contenu juridique modifié.
 
 ## Point de vérification connu
 

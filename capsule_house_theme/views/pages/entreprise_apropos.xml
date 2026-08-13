@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rendue par CapsuleHouseWebsite.entreprise_apropos() sur la route
+        '/a-propos'. Scopée à notre site via _scope_layout_views()
+        (external id capsule_house_theme.entreprise_apropos_page).
+        Illustration hero reprise à l'identique du SVG déjà validé côté
+        accueil (views/partials/hero.xml, .ch-hero-illustration) plutôt
+        que d'en fabriquer une nouvelle. Chiffres (année de fondation,
+        pods installés, taille d'équipe, ateliers, jalons "Notre
+        histoire") repris de la maquette fournie par le client — à
+        confirmer/ajuster avec lui si les vrais chiffres diffèrent, ce
+        n'est pas une donnée vérifiée par ce module.
+
+        Structure alignée sur exocoms_theme en v19.0.1.0.48 (voir README
+        "Blocs non éditables comme sur exocoms_theme") : plus de
+        <div id="wrap" class="oe_structure"> autour du contenu réel —
+        seul un placeholder réellement vide en bas de page sert de point
+        d'insertion pour le Website Builder.
+    -->
+    <template id="entreprise_apropos_page" name="Capsule House - Entreprise - À propos">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">À propos | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">About | Capsule House</t>
+            <t t-set="head">
+                <!-- SEO page-spécifique (v19.0.1.0.63), voir layout.xml. -->
+                <meta name="description" content="Capsule House conçoit et fabrique des pods habitables en atelier, installés en quelques semaines sur votre terrain. Découvrez notre histoire et nos valeurs."/>
+                <link rel="canonical" href="https://capsule-house.fr/a-propos"/>
+                <meta property="og:title" content="À propos | Capsule House"/>
+                <meta property="og:url" content="https://capsule-house.fr/a-propos"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/">Accueil</a><span class="sep">/</span><span>Entreprise</span>
+                </div>
+                <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/">Home</a><span class="sep">/</span><span>Company</span>
+                </div>
+
+                <div class="ch-entreprise-wrap">
+                    <t t-call="capsule_house_theme.entreprise_nav"/>
+
+                    <div t-if="request.env.lang == 'fr_FR'">
+                        <div class="ch-entreprise-hero">
+                            <div>
+                                <h1 class="ch-aide-title">Repenser l'habitat, <span class="ch-entreprise-accent">capsule après capsule.</span></h1>
+                                <p class="ch-aide-subtitle">Capsule House conçoit et fabrique des pods habitables en atelier, pensés pour s'installer en quelques semaines sur n'importe quel terrain — sans sacrifier le design ni la qualité de construction.</p>
+                            </div>
+                            <div class="ch-entreprise-hero-visual">
+                                <div class="ch-hero-illustration">
+                                    <svg class="ch-pod-illustration-svg" viewBox="0 0 300 220" width="80%">
+                                        <defs>
+                                            <linearGradient id="ch-ap-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                                <stop offset="100%" stop-color="#EAD9C4"/>
+                                            </linearGradient>
+                                            <radialGradient id="ch-ap-win" cx="35%" cy="35%" r="75%">
+                                                <stop offset="0%" stop-color="#FFF3E0"/>
+                                                <stop offset="55%" stop-color="#E3A48A"/>
+                                                <stop offset="100%" stop-color="#C1694F"/>
+                                            </radialGradient>
+                                        </defs>
+                                        <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
+                                        <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-ap-body)" stroke="#1F2421" stroke-opacity="0.08"/>
+                                        <circle cx="115" cy="105" r="34" fill="url(#ch-ap-win)"/>
+                                        <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
+                                        <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ch-entreprise-stats">
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">2022</div><div class="ch-entreprise-stat-label">année de fondation</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">2 340</div><div class="ch-entreprise-stat-label">pods installés</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">42</div><div class="ch-entreprise-stat-label">personnes dans l'équipe</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">3</div><div class="ch-entreprise-stat-label">ateliers en France</div></div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:24px;margin-bottom:16px;">Nos valeurs</h2>
+                        <div class="ch-aide-cards" style="margin-bottom:48px;">
+                            <div class="ch-aide-card">
+                                <i class="fa fa-shield ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Design intemporel</div>
+                                <div class="ch-aide-card-text">Chaque pod est dessiné pour traverser les modes, avec des matériaux nobles et des finitions soignées.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <i class="fa fa-plus ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Fabrication responsable</div>
+                                <div class="ch-aide-card-text">Bois issu de forêts gérées durablement, isolation biosourcée, production locale en atelier.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <i class="fa fa-truck ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Installation rapide</div>
+                                <div class="ch-aide-card-text">De la commande à l'emménagement en 6 semaines, sans chantier interminable.</div>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:24px;margin-bottom:20px;">Notre histoire</h2>
+                        <div class="ch-entreprise-history">
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2022</div>
+                                <div class="ch-aide-card-title">Fondation de Capsule House</div>
+                                <div class="ch-aide-card-text">Lancement du premier modèle, le Pod Studio, dans un atelier pilote.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2023</div>
+                                <div class="ch-aide-card-title">Ouverture du deuxième atelier</div>
+                                <div class="ch-aide-card-text">Montée en cadence pour répondre à la demande sur toute la France.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2024</div>
+                                <div class="ch-aide-card-title">Label qualité construction bois</div>
+                                <div class="ch-aide-card-text">Certification obtenue, garantie constructeur portée à 10 ans.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2026</div>
+                                <div class="ch-aide-card-title">Cap des 2 000 pods installés</div>
+                                <div class="ch-aide-card-text">Boutique en ligne relancée avec configurateur et paiement en 3x.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="request.env.lang != 'fr_FR'">
+                        <div class="ch-entreprise-hero">
+                            <div>
+                                <h1 class="ch-aide-title">Rethinking housing, <span class="ch-entreprise-accent">capsule after capsule.</span></h1>
+                                <p class="ch-aide-subtitle">Capsule House designs and builds livable pods in-workshop, made to be set up in a few weeks on any land — without compromising on design or build quality.</p>
+                            </div>
+                            <div class="ch-entreprise-hero-visual">
+                                <div class="ch-hero-illustration">
+                                    <svg class="ch-pod-illustration-svg" viewBox="0 0 300 220" width="80%">
+                                        <defs>
+                                            <linearGradient id="ch-ap-body-en" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                                <stop offset="100%" stop-color="#EAD9C4"/>
+                                            </linearGradient>
+                                            <radialGradient id="ch-ap-win-en" cx="35%" cy="35%" r="75%">
+                                                <stop offset="0%" stop-color="#FFF3E0"/>
+                                                <stop offset="55%" stop-color="#E3A48A"/>
+                                                <stop offset="100%" stop-color="#C1694F"/>
+                                            </radialGradient>
+                                        </defs>
+                                        <ellipse cx="150" cy="185" rx="120" ry="14" fill="#1F2421" opacity="0.08"/>
+                                        <rect x="40" y="60" width="220" height="90" rx="45" fill="url(#ch-ap-body-en)" stroke="#1F2421" stroke-opacity="0.08"/>
+                                        <circle cx="115" cy="105" r="34" fill="url(#ch-ap-win-en)"/>
+                                        <circle cx="115" cy="105" r="34" fill="none" stroke="#1F2421" stroke-opacity="0.3" stroke-width="2"/>
+                                        <circle cx="200" cy="105" r="15" fill="#E3A48A" opacity="0.85"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ch-entreprise-stats">
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">2022</div><div class="ch-entreprise-stat-label">founding year</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">2,340</div><div class="ch-entreprise-stat-label">pods installed</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">42</div><div class="ch-entreprise-stat-label">people on the team</div></div>
+                            <div class="ch-entreprise-stat"><div class="ch-entreprise-stat-num">3</div><div class="ch-entreprise-stat-label">workshops in France</div></div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:24px;margin-bottom:16px;">Our values</h2>
+                        <div class="ch-aide-cards" style="margin-bottom:48px;">
+                            <div class="ch-aide-card">
+                                <i class="fa fa-shield ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Timeless design</div>
+                                <div class="ch-aide-card-text">Every pod is designed to outlast trends, with quality materials and careful finishes.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <i class="fa fa-plus ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Responsible manufacturing</div>
+                                <div class="ch-aide-card-text">Wood from sustainably managed forests, bio-based insulation, local workshop production.</div>
+                            </div>
+                            <div class="ch-aide-card">
+                                <i class="fa fa-truck ch-entreprise-card-icon"/>
+                                <div class="ch-aide-card-title">Fast installation</div>
+                                <div class="ch-aide-card-text">From order to move-in within 6 weeks, without an endless building site.</div>
+                            </div>
+                        </div>
+
+                        <h2 class="ch-aide-title" style="font-size:24px;margin-bottom:20px;">Our story</h2>
+                        <div class="ch-entreprise-history">
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2022</div>
+                                <div class="ch-aide-card-title">Capsule House founded</div>
+                                <div class="ch-aide-card-text">Launch of the first model, the Studio Pod, in a pilot workshop.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2023</div>
+                                <div class="ch-aide-card-title">Second workshop opens</div>
+                                <div class="ch-aide-card-text">Ramping up production to meet demand across France.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2024</div>
+                                <div class="ch-aide-card-title">Timber construction quality label</div>
+                                <div class="ch-aide-card-text">Certification obtained, manufacturer warranty extended to 10 years.</div>
+                            </div>
+                            <div class="ch-entreprise-history-item">
+                                <div class="ch-entreprise-history-year">2026</div>
+                                <div class="ch-aide-card-title">2,000 pods installed milestone</div>
+                                <div class="ch-aide-card-text">Online shop relaunched with a configurator and 3x payment.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="oe_structure oe_empty" id="oe_structure_ch_entreprise_apropos_bottom"/>
+        </t>
+    </template>
+</odoo>

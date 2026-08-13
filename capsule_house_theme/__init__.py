@@ -46,9 +46,12 @@ CONFIG_LOGO_APPLIED_KEY = 'capsule_house_theme.logo_applied_v1'
 COMPANY_NAME = 'Exocoms Group'
 WEBSITE_NAME = 'Capsule House'
 
-# Route dédiée et unique à ce module (jamais '/', qui est partagée par tous
-# les sites de la base mutualisée) : voir _setup_homepage() et le docstring
-# de CapsuleHouseWebsite dans controllers/main.py pour le pourquoi.
+# Ancienne route dédiée de l'accueil (jusqu'à la 19.0.1.0.56). Depuis la
+# 19.0.1.0.57, l'accueil est servi directement sur '/' (voir
+# CapsuleHouseWebsite.index() dans controllers/main.py) ; cette constante
+# ne sert plus qu'à documenter/retrouver l'ancienne URL, conservée en
+# redirect permanent (homepage_legacy_redirect) pour les favoris/liens
+# déjà partagés.
 HOMEPAGE_ROUTE = '/capsule-house/home'
 
 # Domaine de prod cible. Volontairement PAS posé automatiquement sur le
@@ -70,6 +73,11 @@ THEME_ASSETS = {
     # jusque-là réservé/vide pour les futures pages internes (Services,
     # Contact, À propos), désormais utilisé pour de vrai.
     'pages.css': 'capsule_house_theme/static/src/css/pages.css',
+    # Ajouté en 19.0.1.0.65 : feuille dédiée aux pages légales
+    # (/mentions-legales, /cgv, /confidentialite), jusque-là stylées via
+    # les classes .ch-aide-* réutilisées des pages Aide (voir legal.css
+    # pour le détail).
+    'legal.css': 'capsule_house_theme/static/src/css/legal.css',
     'main.js': 'capsule_house_theme/static/src/js/main.js',
 }
 
@@ -81,6 +89,9 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.theme_footer',
     'capsule_house_theme.theme_layout',
     'capsule_house_theme.partial_hero',
+    # Ajoutés en 19.0.1.0.51 (hero scindé en FR/EN, voir hero.xml).
+    'capsule_house_theme.partial_hero_fr',
+    'capsule_house_theme.partial_hero_en',
     'capsule_house_theme.partial_featured_products',
     'capsule_house_theme.page_home',
     'capsule_house_theme.page_shop',
@@ -92,6 +103,25 @@ SCOPED_VIEW_XML_IDS = [
     # avis_hero.xml et README "Traduction des pages").
     'capsule_house_theme.avis_hero_fr',
     'capsule_house_theme.avis_hero_en',
+    # Ajoutés en 19.0.1.0.46 (pages Aide : Livraison/Retours/Garantie/
+    # FAQ, colonne "Aide" du footer — voir README).
+    'capsule_house_theme.aide_sidebar',
+    'capsule_house_theme.aide_livraison_page',
+    'capsule_house_theme.aide_retours_page',
+    'capsule_house_theme.aide_garantie_page',
+    'capsule_house_theme.aide_faq_page',
+    # Ajoutés en 19.0.1.0.47 (pages Entreprise : À propos/Le concept,
+    # colonne "Entreprise" du footer — "Contact" reste natif /contactus,
+    # jamais construit par ce module — voir README).
+    'capsule_house_theme.entreprise_nav',
+    'capsule_house_theme.entreprise_apropos_page',
+    'capsule_house_theme.entreprise_concept_page',
+    # Ajoutés en 19.0.1.0.64 (pages légales : Mentions légales/CGV/
+    # Confidentialité — liens du footer cassés depuis le début du projet,
+    # détecté par l'outil SEO natif d'Odoo — voir README).
+    'capsule_house_theme.mentions_legales_page',
+    'capsule_house_theme.cgv_page',
+    'capsule_house_theme.confidentialite_page',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -555,22 +585,32 @@ def _set_logo(env, website):
 
 
 def _setup_homepage(env, website):
-    """Fait pointer l'accueil de NOTRE site vers notre route dédiée.
+    """Nettoie `website.homepage_url` : l'accueil est servi DIRECTEMENT
+    sur '/' depuis la 19.0.1.0.57 (voir `CapsuleHouseWebsite.index()`
+    dans controllers/main.py), plus via un redirect vers une route
+    dédiée. Un `homepage_url` resté à l'ancienne valeur
+    (`/capsule-house/home`) n'aurait pas d'effet fonctionnel pour nos
+    visiteurs (notre `index()` intercepte '/' avant que le mécanisme
+    natif de redirect ne s'applique), mais on le vide quand même pour
+    rester cohérent avec exocoms_theme (qui ne pose jamais ce champ) et
+    éviter tout signal SEO/sitemap trompeur. Idempotent : simple write,
+    sans effet si déjà vide.
 
-    Ne touche JAMAIS à la route '/' elle-même (partagée par tous les sites
-    de la base mutualisée) : on se contente d'écrire le champ natif
-    `website.homepage_url` sur NOTRE enregistrement website, qui est par
-    construction scopé (c'est un champ sur le record `website`, pas une
-    donnée recherchée par domaine). Odoo gère nativement la redirection
-    interne de '/' vers cette URL pour les visiteurs de ce site
-    uniquement. Idempotent : simple write, sans effet si déjà à jour.
+    CAUSE DE CE CHANGEMENT (19.0.1.0.57, analyse complète des deux
+    thèmes) : le redirect natif '/' -> homepage_url était un vrai
+    aller-retour HTTP (confirmé par capture DevTools client), qui
+    empêchait le Website Builder de marquer la section hero de
+    l'accueil comme un bloc sélectionnable (panneau Style vide), alors
+    que le même hero sur /avis (servie en un seul rendu, sans redirect)
+    fonctionnait normalement. Voir migrations/19.0.1.0.57/.
     """
-    if website.homepage_url != HOMEPAGE_ROUTE:
-        website.write({'homepage_url': HOMEPAGE_ROUTE})
+    if website.homepage_url:
         _logger.info(
-            "capsule_house_theme: homepage_url du site id=%s pointée vers "
-            "%s.", website.id, HOMEPAGE_ROUTE,
+            "capsule_house_theme: homepage_url du site id=%s vidée "
+            "(était %r) — l'accueil est servi directement sur '/' "
+            "depuis la 19.0.1.0.57.", website.id, website.homepage_url,
         )
+        website.write({'homepage_url': False})
 
 
 def _setup_domain(env, website):
@@ -1028,24 +1068,23 @@ def _setup_menus(env, website, categories):
     get_or_create par (url, website_id) pour rester idempotent et ne
     jamais dupliquer une entrée au fil des rejeux du hook / du cron.
 
-    Accueil pointe directement vers HOMEPAGE_ROUTE
-    (`/capsule-house/home`), PAS vers `/` — bug corrigé, constaté en
-    conditions réelles (capture d'écran : "Studio" avait bien son
-    indicateur de page active, mais jamais "Accueil"). Cause : `/`
-    fait un redirect natif Odoo vers `website.homepage_url`
-    (= HOMEPAGE_ROUTE, posé par `_setup_homepage()`), donc l'URL
-    réellement affichée dans le navigateur une fois sur l'accueil est
-    `/capsule-house/home`, jamais `/`. Le surlignage natif "page
-    active" du header (`#top_menu`) compare l'URL du menu à l'URL
-    réelle de la page — avec un menu Accueil sur `/`, la comparaison ne
-    correspond donc jamais. En pointant directement sur
-    HOMEPAGE_ROUTE, la comparaison est exacte et l'indicateur
-    s'affiche, en plus d'éviter un aller-retour de redirect inutile
-    au clic.
+    Accueil pointe vers '/' (depuis la 19.0.1.0.57 — l'accueil est
+    servi directement sur '/', voir CapsuleHouseWebsite.index() dans
+    controllers/main.py, plus de redirect via homepage_url/
+    HOMEPAGE_ROUTE). Historique du bug corrigé en 19.0.1.0.19-ish
+    (indicateur "page active" du header absent sur "Accueil") : à
+    l'époque, `/` faisait un redirect natif Odoo vers
+    `website.homepage_url` (= HOMEPAGE_ROUTE), donc l'URL réellement
+    affichée dans le navigateur différait de celle du menu — corrigé
+    alors en pointant le menu directement sur HOMEPAGE_ROUTE. Depuis
+    la 19.0.1.0.57, ce redirect n'existe plus (index() sert '/'
+    directement, sans aller-retour) : l'URL réelle de l'accueil est de
+    nouveau '/', donc le menu y pointe de nouveau aussi — la
+    comparaison reste exacte.
     """
     Menu = env['website.menu'].sudo()
     entries = [
-        ('Accueil', HOMEPAGE_ROUTE, 10),
+        ('Accueil', '/', 10),
         ('Tous les pods', '/shop', 20),
     ]
     sequence = 30
@@ -1129,7 +1168,11 @@ def _setup_menus(env, website, categories):
         lambda m: m.id not in kept_menu_ids and m.url not in known_urls
     )
     if stray_menus:
-        _logger.warning(
+        # v19.0.1.0.62 : passé de warning à info — suppression attendue et
+        # idempotente (menu par défaut d'Odoo type "Contact Us", jamais une
+        # anomalie), ne devrait pas remonter comme un signal d'alerte côté
+        # Odoo.sh (voir README "Warning Odoo.sh récurrent").
+        _logger.info(
             "capsule_house_theme: suppression de %d menu(s) par défaut non "
             "reconnu(s) sur le site id=%s : %s.",
             len(stray_menus), website.id, stray_menus.mapped('name'),

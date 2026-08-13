@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Navigation en onglets "pills" partagée par les pages Entreprise
+        (À propos, Le concept) — pendant du menu latéral aide_sidebar.xml
+        pour les pages Aide, même principe : bloc réutilisable t-call-é
+        depuis chaque page, état actif calculé DYNAMIQUEMENT depuis l'URL
+        réelle (request.httprequest.path, comparaison par suffixe — même
+        technique que aide_sidebar.xml et [href$="/shop"], v19.0.1.0.40),
+        jamais codé en dur par page.
+
+        "Contact" ne pointe PAS vers une page à nous : c'est la page de
+        contact NATIVE d'Odoo (/contactus, module website — vérifiée dans
+        exocoms_theme, qui l'utilise aussi tel quel). Cet onglet n'est
+        donc jamais marqué actif depuis ce bloc (si on est réellement sur
+        /contactus, ce n'est pas une de nos pages, donc ce partiel n'y est
+        de toute façon pas affiché).
+
+        Scopée à notre site via _scope_layout_views() (external id
+        capsule_house_theme.entreprise_nav).
+    -->
+    <template id="entreprise_nav" name="Capsule House - Onglets Entreprise">
+        <t t-set="ch_ent_path" t-value="request.httprequest.path"/>
+        <nav class="ch-entreprise-pills">
+            <a href="/a-propos"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/a-propos') else ''}"
+               t-if="request.env.lang == 'fr_FR'">À propos</a>
+            <a href="/a-propos"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/a-propos') else ''}"
+               t-if="request.env.lang != 'fr_FR'">About</a>
+
+            <a href="/le-concept"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/le-concept') else ''}"
+               t-if="request.env.lang == 'fr_FR'">Le concept</a>
+            <a href="/le-concept"
+               t-attf-class="ch-entreprise-pill #{'active' if ch_ent_path.endswith('/le-concept') else ''}"
+               t-if="request.env.lang != 'fr_FR'">The concept</a>
+
+            <a href="/contactus" class="ch-entreprise-pill">Contact</a>
+        </nav>
+    </template>
+</odoo>
