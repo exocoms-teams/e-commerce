@@ -115,10 +115,15 @@ class TestDashboardFilterAPI(HttpCase):
        self.assertNotIn(self.product_fr.id, ids)
 
     def test_get_product_list_combines_price_and_source(self):
+       # assertIn/assertNotIn plutot qu'une egalite stricte : les donnees
+       # de demo (demo/dashboard_demo.xml) incluent aussi des produits
+       # source='api' avec un prix <= 200, meme pattern que
+       # test_get_product_list_filters_by_price_max/_by_source ci-dessus.
        api = TrendDashboardAPI(self.env)
        data = api.get_product_list(price_max=200, source='api')
        ids = [p['id'] for p in data]
-       self.assertEqual(ids, [self.product_ma.id])
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
 
     def test_api_dashboard_filter_route_price_and_source(self):
        response = self.url_open('/api/dashboard/filter?price_max=200&source=api')
