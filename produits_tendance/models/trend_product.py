@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from .trend_ad import latest_ads_by_ref
@@ -139,27 +140,14 @@ class TrendProduct(models.Model):
 
     # --- SCORE DE TENDANCE ---
     def compute_trend_score(self, previous_metrics=None):
-        """Calcule le score de tendance de ce produit en utilisant les données historiques
-        sur les fenêtres 30j/30j précédents pour construir current_metrics et previous_metrics,
-        et en récupérant source_score via ir.config_parameter selon la source du produit.
-        """
-        # Create ScoringEngine instance
+        """Calcule le score de tendance de ce produit."""
         scoring_engine = ScoringEngine()
-
-        # Get current date for calculating date ranges
-        from datetime import datetime, timedelta
         now = datetime.now()
 
-        # Calculate date ranges for historical aggregation
-        # Current period: last 30 days
+        # Fenêtre actuelle (30 derniers jours)
         current_start = now - timedelta(days=30)
         current_end = now
 
-        # Previous period: 30 to 60 days ago
-        previous_start = now - timedelta(days=60)
-        previous_end = now - timedelta(days=30)
-
-        # Build current_metrics by aggregating trend.score records from the last 30 days
         current_domain = [
             ('product_id', '=', self.id),
             ('computed_at', '>=', current_start),
@@ -173,21 +161,25 @@ class TrendProduct(models.Model):
             'ads': sum(current_scores.mapped('metric_ads_count')),
         }
 
-        # Build previous_metrics by aggregating trend.score records from 30-60 days ago
-        previous_domain = [
-            ('product_id', '=', self.id),
-            ('computed_at', '>=', previous_start),
-            ('computed_at', '<', previous_end),
-        ]
-        previous_scores = self.env['trend.score'].search(previous_domain)
-        previous_metrics = {
-            'ventes': sum(previous_scores.mapped('metric_sales')),
-            'likes': sum(previous_scores.mapped('metric_likes')),
-            'partages': sum(previous_scores.mapped('metric_shares')),
-            'ads': sum(previous_scores.mapped('metric_ads_count')),
-        }
+        # Calculer previous_metrics SEULEMENT s'il n'est pas passé en paramètre
+        if previous_metrics is None:
+            previous_start = now - timedelta(days=60)
+            previous_end = now - timedelta(days=30)
 
-        # Get source_score from ir.config_parameter based on product source
+            previous_domain = [
+                ('product_id', '=', self.id),
+                ('computed_at', '>=', previous_start),
+                ('computed_at', '<', previous_end),
+            ]
+            previous_scores = self.env['trend.score'].search(previous_domain)
+            previous_metrics = {
+                'ventes': sum(previous_scores.mapped('metric_sales')),
+                'likes': sum(previous_scores.mapped('metric_likes')),
+                'partages': sum(previous_scores.mapped('metric_shares')),
+                'ads': sum(previous_scores.mapped('metric_ads_count')),
+            }
+
+        # Récupération de source_score via ir.config_parameter
         source_score = 0.0
         IrConfigParam = self.env['ir.config_parameter'].sudo()
         source_mapping = {
@@ -201,11 +193,9 @@ class TrendProduct(models.Model):
             if param_value is not None:
                 try:
                     source_score = float(param_value)
-                    # Ensure source_score is between 0 and 1
                     source_score = max(0.0, min(source_score, 1.0))
                 except (ValueError, TypeError):
                     source_score = 0.0
 
         self.ensure_one()
-        # Calculate score using ScoringEngine
         return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
