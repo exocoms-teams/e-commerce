@@ -1012,16 +1012,25 @@
     font-size: 18px;
     font-weight: 800;
     color: var(--ch-ink);
-    /* v19.0.1.0.82 : le correctif 19.0.1.0.81 (margin 48px) restait trop
-       serré selon le client, même une fois déployé. Passage à
-       padding-top (pas margin-top, qui peut fusionner avec la marge du
-       bloc précédent et donner un écart plus petit que prévu à
-       l'affichage) pour un espacement garanti, poussé à 64px. */
     margin: 0 0 20px;
+}
+/* v19.0.1.0.83 : BUG trouvé dans le correctif 19.0.1.0.82 — chaque
+   titre est seul dans son propre <div>, donc `:first-of-type` (qui
+   regarde le premier enfant DE SON PARENT, pas de la page) matchait
+   TOUS les titres sauf "Formats", pas seulement le vrai premier.
+   Résultat : le padding-top/border-top ne s'appliquait qu'à "Formats"
+   (déjà correct visuellement), jamais à "Technical specifications",
+   "Included equipment" ou "Options" — exactement ce que montrait la
+   capture du client ("c'est le haut qui est collé").
+   Fix : chaque wrapper de section porte maintenant la classe
+   .ch-gamme-section (voir nos_gammes.xml) ; le sélecteur de fratrie
+   général (~) cible alors correctement "toute section précédée d'au
+   moins une autre section", quelle que soit la structure DOM interne
+   de chacune. */
+.ch-gamme-section ~ .ch-gamme-section .ch-gamme-section-title {
     padding-top: 64px;
     border-top: 1px solid var(--ch-gray-border);
 }
-.ch-gamme-section-title:first-of-type { padding-top: 0; border-top: none; }
 
 /* Section Performances (v19.0.1.0.80) — points forts en tête de page
    détail, grille de cartes icône + titre + description. */
