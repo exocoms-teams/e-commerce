@@ -27,7 +27,7 @@
             const icon = item.querySelector(".sn-faq-icon");
 
             icon.textContent = item.classList.contains("active")
-                ? "−"
+                ? "-"
                 : "+";
 
         });
