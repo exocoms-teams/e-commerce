@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        This file runs automatically when the module is upgraded. 
+        It triggers our python method to archive all Odoo demo furniture products.
+    -->
+    <data noupdate="0">
+        <!-- Force activation of French and English languages -->
+        <record id="base.lang_fr" model="res.lang">
+            <field name="active" eval="True"/>
+        </record>
+        <record id="base.lang_en" model="res.lang">
+            <field name="active" eval="True"/>
+        </record>
+        <record id="base.lang_ar" model="res.lang">
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Archive Demo products -->
+        <function model="product.template" name="_archive_default_demo_products"/>
+    </data>
+</odoo>
