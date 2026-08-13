@@ -66,15 +66,31 @@
             <section class="ch-gammes-content">
                 <div class="container">
 
-                    <div class="ch-gamme-indicative-banner" t-if="gamme.get('indicative')">
-                        <i class="fa fa-info-circle"/>
-                        <t t-if="request.env.lang == 'fr_FR'">Valeurs indicatives basées sur un standard du marché — à ajuster dès réception des données réelles du fournisseur.</t>
-                        <t t-if="request.env.lang != 'fr_FR'">Indicative values based on a market standard — to be adjusted once real supplier data is available.</t>
-                    </div>
+                    <!-- Bandeau "valeurs indicatives" retiré en v19.0.1.0.79
+                         — demande client : "pas besoin d'indiquer cela sur
+                         la page". Le flag gamme['indicative'] (GAMMES_DATA,
+                         __init__.py) reste en base pour usage interne/futur,
+                         simplement plus affiché ici. -->
 
-                    <div t-if="not gamme['formats'] and not gamme['specs_ext'] and not gamme['specs_int'] and not gamme['equipements_fr'] and not gamme['options_fr']" class="ch-models-empty">
+                    <div t-if="not gamme.get('performances') and not gamme['formats'] and not gamme['specs_ext'] and not gamme['specs_int'] and not gamme['equipements_fr'] and not gamme['options_fr']" class="ch-models-empty">
                         <t t-if="request.env.lang == 'fr_FR'">Les informations de cette gamme seront bientôt disponibles.</t>
                         <t t-if="request.env.lang != 'fr_FR'">Information for this range will be available soon.</t>
+                    </div>
+
+                    <div t-if="gamme.get('performances')" style="text-align:center;margin-bottom:32px;">
+                        <span class="ch-models-badge" t-if="request.env.lang == 'fr_FR'">Performances</span>
+                        <span class="ch-models-badge" t-if="request.env.lang != 'fr_FR'">Performance</span>
+                        <h2 class="ch-gamme-perf-title" t-if="request.env.lang == 'fr_FR'">Une <t t-esc="gamme['name'].lower()"/> pensée pour le confort absolu</h2>
+                        <h2 class="ch-gamme-perf-title" t-if="request.env.lang != 'fr_FR'">A <t t-esc="gamme['name'].lower()"/> designed for absolute comfort</h2>
+                        <div class="ch-gamme-perf-grid">
+                            <div t-foreach="gamme['performances']" t-as="perf" class="ch-gamme-perf-card">
+                                <i t-attf-class="fa #{ perf['icon'] } ch-gamme-perf-icon"/>
+                                <div class="ch-gamme-perf-name" t-if="request.env.lang == 'fr_FR'" t-esc="perf['title_fr']"/>
+                                <div class="ch-gamme-perf-name" t-if="request.env.lang != 'fr_FR'" t-esc="perf['title_en']"/>
+                                <div class="ch-gamme-perf-desc" t-if="request.env.lang == 'fr_FR'" t-esc="perf['desc_fr']"/>
+                                <div class="ch-gamme-perf-desc" t-if="request.env.lang != 'fr_FR'" t-esc="perf['desc_en']"/>
+                            </div>
+                        </div>
                     </div>
 
                     <div t-if="gamme['formats']">
