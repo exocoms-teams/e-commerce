@@ -46,8 +46,8 @@
             'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
-            'produits_tendance/static/src/scss/auth_login.scss',  
-            'produits_tendance/static/src/js/auth_login.js',
+            'produits_tendance/static/src/scss/auth_pages.scss',   # WIN-121
+            'produits_tendance/static/src/js/auth_social_toast.js',   # WIN-121
         ],
     },
     'installable': True,

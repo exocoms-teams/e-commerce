@@ -1,0 +1,387 @@
+/* ============================================================
+   WIN-121 : Pôle Authentification (Connexion, Inscription,
+   Boutons Sociaux)
+
+   Restyle des pages /web/login et /web/signup selon la maquette
+   "Page complète (Desktop)" : panneau sombre à gauche + formulaire
+   blanc à droite, avec variantes tablette et mobile.
+
+   N'affecte QUE l'apparence : aucune règle ici ne cache, ne
+   désactive ni ne contourne la validation ou la logique native
+   des formulaires.
+   ============================================================ */
+
+// -----------------------------------------------------------
+// Page / grille 2 colonnes
+// -----------------------------------------------------------
+#o_winners_auth_page.o_winners_auth_page {
+    max-width: none;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    min-height: 100vh;
+    background: $o-winners-bg-light;
+
+    @media (max-width: 991.98px) {
+        min-height: auto;
+        padding: $o-winners-spacing-unit * 3 $o-winners-spacing-unit * 2;
+    }
+}
+
+// -----------------------------------------------------------
+// Panneau gauche (sombre)
+// -----------------------------------------------------------
+.o_winners_auth_side {
+    flex: 0 0 46%;
+    max-width: 620px;
+    background: $o-winners-primary;
+    color: $o-winners-white;
+    display: flex;
+    align-items: center;
+    padding: $o-winners-spacing-unit * 7 $o-winners-spacing-unit * 6;
+
+    @media (max-width: 991.98px) {
+        display: none; // caché en tablette/mobile, cf. spec ticket
+    }
+}
+
+.o_winners_auth_side_inner {
+    max-width: 460px;
+}
+
+.o_winners_auth_logo {
+    display: flex;
+    align-items: center;
+    gap: $o-winners-spacing-unit;
+    margin-bottom: $o-winners-spacing-unit * 5;
+    font-family: $o-winners-font-family;
+    font-weight: 700;
+    font-size: 1.25rem;
+
+    .o_winners_auth_logo_mark {
+        color: $o-winners-accent;
+    }
+}
+
+.o_winners_auth_title {
+    font-family: $o-winners-font-family;
+    font-weight: 700;
+    font-size: 2.1rem;
+    line-height: 1.25;
+    margin-bottom: $o-winners-spacing-unit * 2;
+
+    .o_winners_auth_accent {
+        color: $o-winners-accent;
+    }
+}
+
+.o_winners_auth_subtitle {
+    color: rgba($o-winners-white, 0.75);
+    font-family: $o-winners-font-family;
+    margin-bottom: $o-winners-spacing-unit * 5;
+}
+
+.o_winners_auth_features {
+    margin: 0 0 ($o-winners-spacing-unit * 5) 0;
+    padding: 0;
+
+    li {
+        display: flex;
+        align-items: flex-start;
+        gap: $o-winners-spacing-unit * 2;
+        margin-bottom: $o-winners-spacing-unit * 3;
+
+        strong {
+            display: block;
+            font-family: $o-winners-font-family;
+            margin-bottom: 2px;
+        }
+
+        span {
+            display: block;
+            font-size: 0.875rem;
+            color: rgba($o-winners-white, 0.7);
+        }
+    }
+}
+
+.o_winners_auth_feature_icon {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: $o-winners-radius;
+    background: rgba($o-winners-white, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $o-winners-accent;
+}
+
+.o_winners_auth_partners_label {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba($o-winners-white, 0.6);
+    margin-bottom: $o-winners-spacing-unit;
+}
+
+.o_winners_auth_partners_logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $o-winners-spacing-unit;
+}
+
+.o_winners_auth_partner_logo {
+    height: 22px;
+    max-width: 84px;
+    width: auto;
+    object-fit: contain;
+    padding: 8px 12px;
+    background: $o-winners-white;
+    border-radius: $o-winners-radius;
+    // Fond blanc systématique : certains logos (TikTok blanc, Amazon
+    // sombre, etc.) ne resteraient pas lisibles directement sur le
+    // panneau navy sans ce contraste garanti.
+}
+
+// -----------------------------------------------------------
+// Panneau droit (formulaire, carte blanche native)
+// -----------------------------------------------------------
+.card.o_winners_auth_card {
+    flex: 0 0 auto;
+    width: 480px;
+    align-self: center;
+    margin: $o-winners-spacing-unit * 4 !important;
+    border-radius: $o-winners-radius * 2 !important;
+    box-shadow: $o-winners-shadow-soft;
+    border: $o-winners-border-soft;
+    background: $o-winners-white;
+
+    @media (max-width: 575.98px) {
+        width: 100%;
+        margin: 0 !important;
+        box-shadow: none;
+        border: none;
+    }
+}
+
+.o_winners_auth_welcome {
+    text-align: center;
+    margin-bottom: $o-winners-spacing-unit * 3;
+    font-family: $o-winners-font-family;
+
+    .o_winners_auth_welcome_pretitle {
+        display: block;
+        color: $o-winners-primary;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+
+    .o_winners_auth_form_title {
+        font-weight: 700;
+        font-size: 1.75rem;
+        color: $o-winners-text-dark;
+        margin-bottom: 4px;
+    }
+
+    .o_winners_auth_form_subtitle {
+        color: $o-winners-text-muted;
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+}
+
+// -----------------------------------------------------------
+// Icônes dans les champs (email / mot de passe / nom)
+// -----------------------------------------------------------
+.o_winners_field_icon {
+    position: relative;
+
+    .form-control {
+        padding-left: 38px;
+    }
+
+    .o_winners_field_icon_glyph {
+        position: absolute;
+        left: 14px;
+        color: $o-winners-text-muted;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    // Cas "field-login" / "field-name" : label au-dessus de l'input,
+    // dans le même conteneur → l'icône se cale sous le label (valeur
+    // approximative, à ajuster visuellement selon le rendu réel).
+    &:not(.input-group) .o_winners_field_icon_glyph {
+        bottom: 22px;
+    }
+
+    // Cas "input-group" (champ mot de passe) : pas de label à
+    // l'intérieur, l'icône se centre verticalement sur l'input.
+    &.input-group .o_winners_field_icon_glyph {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+// -----------------------------------------------------------
+// "Se souvenir de moi"
+// -----------------------------------------------------------
+.o_winners_remember_me {
+    margin: $o-winners-spacing-unit 0 ($o-winners-spacing-unit * 2);
+
+    .form-check-input:checked {
+        background-color: $o-winners-primary;
+        border-color: $o-winners-primary;
+    }
+
+    .form-check-label {
+        color: $o-winners-text-dark;
+        font-size: 0.9rem;
+    }
+}
+
+// Le titre "Connexion" / "Sign up" natif d'Odoo n'a pas de classe
+// dédiée ; on cible via le contexte du formulaire pour rester
+// cohérent avec la charte sans dupliquer de markup.
+.o_winners_auth_card .oe_login_form,
+.o_winners_auth_card .oe_signup_form {
+    font-family: $o-winners-font-family;
+
+    .form-label {
+        color: $o-winners-text-dark;
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: $o-winners-radius;
+        border: $o-winners-border-soft;
+        padding: 10px 14px;
+
+        &:focus {
+            border-color: $o-winners-primary;
+            box-shadow: 0 0 0 3px rgba($o-winners-primary, 0.12);
+        }
+
+        &.is-invalid {
+            border-color: $o-winners-danger;
+        }
+
+        &.is-valid {
+            border-color: $o-winners-success;
+        }
+    }
+
+    .btn-primary {
+        background: $o-winners-accent;
+        border-color: $o-winners-accent;
+        border-radius: $o-winners-radius;
+        font-weight: 600;
+        padding: 10px;
+
+        &:hover, &:focus {
+            background: darken(#FF6B35, 8%);
+            border-color: darken(#FF6B35, 8%);
+        }
+    }
+
+    .btn-link {
+        color: $o-winners-primary;
+    }
+}
+
+// -----------------------------------------------------------
+// Boutons sociaux (non fonctionnels)
+// -----------------------------------------------------------
+.o_winners_auth_social {
+    margin-top: $o-winners-spacing-unit * 2;
+}
+
+.o_winners_auth_social_sep {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: $o-winners-text-muted;
+    font-size: 0.8rem;
+    margin: $o-winners-spacing-unit * 2 0;
+
+    &::before, &::after {
+        content: "";
+        flex: 1;
+        border-bottom: $o-winners-border-soft;
+    }
+
+    span {
+        padding: 0 $o-winners-spacing-unit;
+    }
+}
+
+.o_winners_social_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $o-winners-spacing-unit;
+    width: 100%;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    background: $o-winners-white;
+    color: $o-winners-text-dark;
+    padding: 10px;
+    margin-bottom: $o-winners-spacing-unit;
+    font-family: $o-winners-font-family;
+    font-size: 0.9rem;
+
+    &:hover {
+        background: $o-winners-bg-light;
+    }
+}
+
+// -----------------------------------------------------------
+// Toast "Bientôt disponible"
+// -----------------------------------------------------------
+.o_winners_toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: $o-winners-text-dark;
+    color: $o-winners-white;
+    padding: 10px 20px;
+    border-radius: $o-winners-radius;
+    font-family: $o-winners-font-family;
+    font-size: 0.875rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 1080;
+
+    &.o_winners_toast_visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+// -----------------------------------------------------------
+// Footer légal commun
+// -----------------------------------------------------------
+.o_winners_auth_footer {
+    padding: $o-winners-spacing-unit * 2 0 ($o-winners-spacing-unit * 4);
+    color: $o-winners-text-muted;
+    font-family: $o-winners-font-family;
+
+    a {
+        color: $o-winners-text-muted;
+        text-decoration: underline;
+
+        &:hover {
+            color: $o-winners-primary;
+        }
+    }
+
+    .o_winners_auth_footer_sep {
+        margin: 0 $o-winners-spacing-unit;
+        color: rgba($o-winners-text-muted, 0.5);
+    }
+}
