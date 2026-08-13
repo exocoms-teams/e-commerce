@@ -1766,6 +1766,17 @@ pas pouvoir confirmer. Corrigé :
 - Renvoi vers la mairie du client pour la décision finale, plutôt
   qu'une promesse de service non confirmée.
 
+### Confirmation client (v19.0.1.0.70)
+
+Le client a ensuite confirmé explicitement : "c'est confirmé, les
+formalités administratives sont gérées par nous et nous accompagnons
+complètement nos clients." La réponse FAQ a été remise à jour en
+conséquence : Capsule House prend en charge l'intégralité des
+démarches (montage du dossier + dépôt en mairie), tout en conservant
+les seuils réels vérifiés comme contexte (Studio 18 m² → généralement
+déclaration préalable, Panorama jusqu'à 40 m² → peut basculer en
+permis de construire selon la zone). FR et EN mis à jour en parallèle.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`
