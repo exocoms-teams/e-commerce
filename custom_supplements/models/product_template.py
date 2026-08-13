@@ -19,6 +19,7 @@ class ProductTemplate(models.Model):
                 vals.setdefault('use_expiration_date', True)
                 vals.setdefault('expiration_time', 365)
                 vals["is_storable"] = True
+                vals["alert_time"] = 30
         return super().create(vals_list)
 
     def write(self, vals):
