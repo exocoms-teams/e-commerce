@@ -1012,14 +1012,16 @@
     font-size: 18px;
     font-weight: 800;
     color: var(--ch-ink);
-    /* v19.0.1.0.81 : espacement augmenté (32px -> 48px), retour client
-       "c'est pas trop serré ?" — les sections s'enchaînaient sans assez
-       de respiration, ex. "Included equipment" collé à "Windows". */
-    margin: 48px 0 20px;
-    padding-top: 24px;
+    /* v19.0.1.0.82 : le correctif 19.0.1.0.81 (margin 48px) restait trop
+       serré selon le client, même une fois déployé. Passage à
+       padding-top (pas margin-top, qui peut fusionner avec la marge du
+       bloc précédent et donner un écart plus petit que prévu à
+       l'affichage) pour un espacement garanti, poussé à 64px. */
+    margin: 0 0 20px;
+    padding-top: 64px;
     border-top: 1px solid var(--ch-gray-border);
 }
-.ch-gamme-section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.ch-gamme-section-title:first-of-type { padding-top: 0; border-top: none; }
 
 /* Section Performances (v19.0.1.0.80) — points forts en tête de page
    détail, grille de cartes icône + titre + description. */
