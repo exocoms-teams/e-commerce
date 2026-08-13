@@ -143,12 +143,21 @@ class CapsuleHouseWebsite(Website):
             rating_count = ICP.get_param('capsule_house_theme.rating_count')
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
+        # Import différé (voir nos_modeles() plus bas pour la même
+        # justification) : USAGES_DATA alimente la nouvelle section
+        # "usages" de l'accueil (19.0.1.0.71, voir home_usages.xml et
+        # __init__.py) — remplace l'idée d'une page Application séparée
+        # à contenu trop mince (demande client : "il ne faut plus de
+        # page application mais le faire directement sur accueil").
+        from odoo.addons.capsule_house_theme import USAGES_DATA
+
         return request.render('capsule_house_theme.page_home', {
             'featured_products': self._serialize_products(featured_products),
             'published_products_count': Product.search_count(domain),
             'rating_value': rating_value,
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
+            'usages': USAGES_DATA,
         })
 
     @http.route('/capsule-house/hero-data.json', type='http', auth='public',
@@ -386,6 +395,42 @@ class CapsuleHouseWebsite(Website):
 
         return request.render('capsule_house_theme.page_nos_modeles', {
             'model_cards': model_cards,
+        })
+
+    @http.route('/nos-gammes', type='http', auth='public', website=True,
+                sitemap=True)
+    def nos_gammes(self, **kw):
+        """Page d'index des gammes de pods (19.0.1.0.71).
+
+        Contenu strictement informatif (demande client : "à titre
+        d'information de ce qui sera disponible"), PAS un catalogue
+        transactionnel — chaque carte renvoie vers /nos-gammes/<slug>
+        pour le détail, jamais vers une page d'achat directe. Les
+        données viennent de GAMMES_DATA (__init__.py) : Capsule a un
+        statut 'disponible' (formats/specs réels ou indicatifs), les 4
+        autres (Cabine/Dôme/Modulaire/Pliable) sont 'a_confirmer' —
+        listes vides intentionnelles tant que le fournisseur réel n'est
+        pas confirmé, jamais de contenu inventé pour les faire
+        paraître complètes.
+        """
+        from odoo.addons.capsule_house_theme import GAMMES_DATA
+        return request.render('capsule_house_theme.page_nos_gammes', {
+            'gammes': GAMMES_DATA,
+        })
+
+    @http.route('/nos-gammes/<string:slug>', type='http', auth='public',
+                website=True, sitemap=True)
+    def nos_gammes_detail(self, slug, **kw):
+        """Page détail d'une gamme — voir nos_gammes() ci-dessus pour le
+        contexte. 404 natif si le slug ne correspond à aucune entrée de
+        GAMMES_DATA (jamais de page fabriquée pour un slug inconnu).
+        """
+        from odoo.addons.capsule_house_theme import GAMMES_DATA
+        gamme = next((g for g in GAMMES_DATA if g['slug'] == slug), None)
+        if not gamme:
+            return request.not_found()
+        return request.render('capsule_house_theme.page_nos_gammes_detail', {
+            'gamme': gamme,
         })
 
     @http.route('/avis', type='http', auth='public', website=True, sitemap=True)

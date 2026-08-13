@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Créées en v19.0.1.0.71, à la demande explicite du client — voir
+        __init__.py (GAMMES_DATA) pour l'historique complet de la
+        décision (Studio/Duo/Panorama deviennent des formats de la gamme
+        "Capsule" plutôt que des catégories de premier niveau, 4 gammes
+        supplémentaires Cabine/Dôme/Modulaire/Pliable annoncées par le
+        client mais sans données réelles pour l'instant).
+
+        Contenu STRICTEMENT informatif (demande client : "à titre
+        d'information de ce qui sera disponible"), jamais un catalogue
+        transactionnel : aucun bouton d'achat, aucun prix engageant,
+        chaque carte de l'index renvoie vers la page détail de sa gamme.
+
+        Deux templates :
+        - page_nos_gammes (index, route /nos-gammes) : bandeau/filmstrip
+          horizontal des 5 gammes (demande client explicite : "au niveau
+          du filmstrip ajoute tout nos gammes").
+        - page_nos_gammes_detail (route /nos-gammes/<slug>) : gabarit
+          complet (formats, spécifications extérieur/intérieur,
+          équipements inclus, options) rendu une fois par gamme via le
+          contexte `gamme` passé par le contrôleur.
+
+        Rendu par CapsuleHouseWebsite.nos_gammes() / nos_gammes_detail()
+        (controllers/main.py). Scopées à notre site via
+        _scope_layout_views() (external ids
+        capsule_house_theme.page_nos_gammes et .page_nos_gammes_detail).
+    -->
+    <template id="page_nos_gammes" name="Capsule House - Nos gammes">
+        <t t-call="website.layout">
+            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Nos gammes | Capsule House</t>
+            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Our ranges | Capsule House</t>
+            <t t-set="head">
+                <meta name="description" content="Un aperçu, à titre informatif, des gammes de pods Capsule House : Capsule, Cabine, Dôme, Modulaire, Pliable."/>
+                <link rel="canonical" href="https://capsule-house.fr/nos-gammes"/>
+                <meta property="og:title" content="Nos gammes | Capsule House"/>
+                <meta property="og:description" content="Un aperçu, à titre informatif, des gammes de pods Capsule House."/>
+                <meta property="og:url" content="https://capsule-house.fr/nos-gammes"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a><span class="sep">/</span><span>Nos gammes</span>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a><span class="sep">/</span><span>Our ranges</span>
+            </div>
+
+            <section class="ch-gammes-hero">
+                <div class="container" style="text-align:center;">
+                    <div t-if="request.env.lang == 'fr_FR'">
+                        <span class="ch-models-badge"><i class="fa fa-info-circle"/> À titre informatif</span>
+                        <h1 class="ch-aide-title">Nos gammes</h1>
+                        <p class="ch-aide-subtitle">Un aperçu de ce qui sera disponible chez Capsule House. Les informations non confirmées sont indiquées comme telles.</p>
+                    </div>
+                    <div t-if="request.env.lang != 'fr_FR'">
+                        <span class="ch-models-badge"><i class="fa fa-info-circle"/> For information only</span>
+                        <h1 class="ch-aide-title">Our ranges</h1>
+                        <p class="ch-aide-subtitle">A preview of what will be available at Capsule House. Unconfirmed information is labelled as such.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_nos_gammes_after_hero"/>
+
+            <section class="ch-gammes-content">
+                <div class="container">
+                    <div class="ch-gammes-filmstrip">
+                        <a t-foreach="gammes" t-as="gamme" t-attf-href="/nos-gammes/#{ gamme['slug'] }" class="ch-gamme-card">
+                            <div class="ch-gamme-card-icon"><i t-attf-class="fa #{ gamme['icon'] }"/></div>
+                            <span class="ch-gamme-card-name" t-esc="gamme['name']"/>
+                            <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Disponible</span>
+                            <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Available</span>
+                            <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
+                            <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
+                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
+                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_nos_gammes_bottom"/>
+        </t>
+    </template>
+
+    <template id="page_nos_gammes_detail" name="Capsule House - Gamme (détail)">
+        <t t-call="website.layout">
+            <t t-set="title" t-esc="gamme['name'] + ' | Capsule House'"/>
+            <t t-set="head">
+                <meta t-attf-name="description" t-attf-content="Découvrez la gamme #{ gamme['name'] } de Capsule House — à titre informatif."/>
+                <meta t-attf-property="og:title" t-attf-content="#{ gamme['name'] } | Capsule House"/>
+            </t>
+
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
+                <a href="/">Accueil</a><span class="sep">/</span>
+                <a href="/nos-gammes">Nos gammes</a><span class="sep">/</span>
+                <span t-esc="gamme['name']"/>
+            </div>
+            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
+                <a href="/">Home</a><span class="sep">/</span>
+                <a href="/nos-gammes">Our ranges</a><span class="sep">/</span>
+                <span t-esc="gamme['name']"/>
+            </div>
+
+            <section class="ch-gammes-hero">
+                <div class="container">
+                    <div class="ch-gamme-detail-head">
+                        <div>
+                            <h1 class="ch-aide-title" t-esc="gamme['name']"/>
+                            <p class="ch-aide-subtitle" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
+                            <p class="ch-aide-subtitle" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
+                        </div>
+                        <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Disponible</span>
+                        <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Available</span>
+                        <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
+                        <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ch-gammes-content">
+                <div class="container">
+
+                    <div class="ch-gamme-indicative-banner" t-if="gamme.get('indicative')">
+                        <i class="fa fa-info-circle"/>
+                        <t t-if="request.env.lang == 'fr_FR'">Valeurs indicatives basées sur un standard du marché — à ajuster dès réception des données réelles du fournisseur.</t>
+                        <t t-if="request.env.lang != 'fr_FR'">Indicative values based on a market standard — to be adjusted once real supplier data is available.</t>
+                    </div>
+
+                    <div t-if="not gamme['formats'] and not gamme['specs_ext'] and not gamme['specs_int'] and not gamme['equipements_fr'] and not gamme['options_fr']" class="ch-models-empty">
+                        <t t-if="request.env.lang == 'fr_FR'">Les informations de cette gamme seront bientôt disponibles.</t>
+                        <t t-if="request.env.lang != 'fr_FR'">Information for this range will be available soon.</t>
+                    </div>
+
+                    <div t-if="gamme['formats']">
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Formats</h2>
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Formats</h2>
+                        <div class="ch-gamme-formats-grid">
+                            <div t-foreach="gamme['formats']" t-as="fmt" class="ch-gamme-format-card">
+                                <div class="ch-gamme-format-name" t-esc="fmt['name']"/>
+                                <div class="ch-gamme-format-surface" t-if="request.env.lang == 'fr_FR'" t-esc="fmt['surface_fr']"/>
+                                <div class="ch-gamme-format-surface" t-if="request.env.lang != 'fr_FR'" t-esc="fmt['surface_en']"/>
+                                <div class="ch-gamme-format-note" t-if="request.env.lang == 'fr_FR'" t-esc="fmt['note_fr']"/>
+                                <div class="ch-gamme-format-note" t-if="request.env.lang != 'fr_FR'" t-esc="fmt['note_en']"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="gamme['specs_ext'] or gamme['specs_int']">
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Spécifications techniques</h2>
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Technical specifications</h2>
+                        <div class="ch-gamme-specs-grid">
+                            <div t-if="gamme['specs_ext']">
+                                <div class="ch-gamme-specs-col-title" t-if="request.env.lang == 'fr_FR'">Extérieur</div>
+                                <div class="ch-gamme-specs-col-title" t-if="request.env.lang != 'fr_FR'">Exterior</div>
+                                <table class="ch-gamme-specs-table">
+                                    <tr t-foreach="gamme['specs_ext']" t-as="row">
+                                        <td class="ch-gamme-specs-label" t-if="request.env.lang == 'fr_FR'" t-esc="row['label_fr']"/>
+                                        <td class="ch-gamme-specs-label" t-if="request.env.lang != 'fr_FR'" t-esc="row['label_en']"/>
+                                        <td class="ch-gamme-specs-value" t-if="request.env.lang == 'fr_FR'" t-esc="row['value_fr']"/>
+                                        <td class="ch-gamme-specs-value" t-if="request.env.lang != 'fr_FR'" t-esc="row['value_en']"/>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div t-if="gamme['specs_int']">
+                                <div class="ch-gamme-specs-col-title" t-if="request.env.lang == 'fr_FR'">Intérieur</div>
+                                <div class="ch-gamme-specs-col-title" t-if="request.env.lang != 'fr_FR'">Interior</div>
+                                <table class="ch-gamme-specs-table">
+                                    <tr t-foreach="gamme['specs_int']" t-as="row">
+                                        <td class="ch-gamme-specs-label" t-if="request.env.lang == 'fr_FR'" t-esc="row['label_fr']"/>
+                                        <td class="ch-gamme-specs-label" t-if="request.env.lang != 'fr_FR'" t-esc="row['label_en']"/>
+                                        <td class="ch-gamme-specs-value" t-if="request.env.lang == 'fr_FR'" t-esc="row['value_fr']"/>
+                                        <td class="ch-gamme-specs-value" t-if="request.env.lang != 'fr_FR'" t-esc="row['value_en']"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="gamme['equipements_fr']">
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Équipements inclus</h2>
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Included equipment</h2>
+                        <div class="ch-gamme-equip-grid" t-if="request.env.lang == 'fr_FR'">
+                            <div t-foreach="gamme['equipements_fr']" t-as="item" class="ch-gamme-equip-item">
+                                <i class="fa fa-check-circle"/><t t-esc="item"/>
+                            </div>
+                        </div>
+                        <div class="ch-gamme-equip-grid" t-if="request.env.lang != 'fr_FR'">
+                            <div t-foreach="gamme['equipements_en']" t-as="item" class="ch-gamme-equip-item">
+                                <i class="fa fa-check-circle"/><t t-esc="item"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="gamme['options_fr']">
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang == 'fr_FR'">Options</h2>
+                        <h2 class="ch-gamme-section-title" t-if="request.env.lang != 'fr_FR'">Options</h2>
+                        <div class="ch-gamme-options-row" t-if="request.env.lang == 'fr_FR'">
+                            <span t-foreach="gamme['options_fr']" t-as="opt" class="ch-gamme-option-pill" t-esc="opt"/>
+                        </div>
+                        <div class="ch-gamme-options-row" t-if="request.env.lang != 'fr_FR'">
+                            <span t-foreach="gamme['options_en']" t-as="opt" class="ch-gamme-option-pill" t-esc="opt"/>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <div class="oe_structure oe_empty" id="oe_structure_nos_gammes_detail_bottom"/>
+        </t>
+    </template>
+</odoo>

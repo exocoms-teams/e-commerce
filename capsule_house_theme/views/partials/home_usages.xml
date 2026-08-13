@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Section "usages" de l'accueil (v19.0.1.0.71). Remplace l'idée
+        d'une page Application séparée — demande client explicite : "il
+        ne faut plus de page application mais le faire directement sur
+        accueil". T-called depuis home.xml juste après le hero, AVANT
+        les produits vedettes.
+
+        Contenu = USAGES_DATA (__init__.py), passé par
+        CapsuleHouseWebsite.index() (controllers/main.py) sous la clé
+        `usages`. Titre volontairement rédigé sans le mot "gamme"
+        (retour client explicite : cette section parle des USAGES, pas
+        des gammes — /nos-gammes est un concept distinct).
+
+        Scopée à notre site via _scope_layout_views() (external id
+        capsule_house_theme.partial_home_usages).
+    -->
+    <template id="partial_home_usages" name="Capsule House - Accueil : usages">
+        <section class="ch-usages">
+            <div class="container">
+                <div class="ch-usages-head" t-if="request.env.lang == 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Selon votre besoin</span>
+                    <h2 class="ch-usages-title">À quoi servira votre pod ?</h2>
+                </div>
+                <div class="ch-usages-head" t-if="request.env.lang != 'fr_FR'">
+                    <span class="ch-models-badge"><i class="fa fa-compass"/> Based on your needs</span>
+                    <h2 class="ch-usages-title">What will your pod be used for?</h2>
+                </div>
+
+                <div class="ch-usages-grid" t-if="usages">
+                    <div t-foreach="usages" t-as="usage" class="ch-usage-card">
+                        <div class="ch-usage-icon"><i t-attf-class="fa #{ usage['icon'] }"/></div>
+                        <div class="ch-usage-name" t-if="request.env.lang == 'fr_FR'" t-esc="usage['name_fr']"/>
+                        <div class="ch-usage-name" t-if="request.env.lang != 'fr_FR'" t-esc="usage['name_en']"/>
+                        <div class="ch-usage-bullets" t-if="request.env.lang == 'fr_FR'">
+                            <div t-foreach="usage['bullets_fr']" t-as="bullet" class="ch-usage-bullet">
+                                <i class="fa fa-check"/><t t-esc="bullet"/>
+                            </div>
+                        </div>
+                        <div class="ch-usage-bullets" t-if="request.env.lang != 'fr_FR'">
+                            <div t-foreach="usage['bullets_en']" t-as="bullet" class="ch-usage-bullet">
+                                <i class="fa fa-check"/><t t-esc="bullet"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>

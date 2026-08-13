@@ -125,6 +125,13 @@ SCOPED_VIEW_XML_IDS = [
     # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de "Nos
     # services" d'exocoms_theme — voir nos_modeles.xml).
     'capsule_house_theme.page_nos_modeles',
+    # Ajoutés en 19.0.1.0.71 (page /nos-gammes : index + détail par
+    # gamme, voir nos_gammes.xml et GAMMES_DATA ci-dessus), et section
+    # "usages" de l'accueil (remplace l'idée d'une page Application
+    # séparée, voir home_usages.xml et USAGES_DATA).
+    'capsule_house_theme.page_nos_gammes',
+    'capsule_house_theme.page_nos_gammes_detail',
+    'capsule_house_theme.partial_home_usages',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de
@@ -137,6 +144,203 @@ SHOP_CATEGORIES = ['Studio', 'Duo', 'Panorama', 'Accessoires']
 SHOP_FILTER_ATTRIBUTES = {
     'Surface (m²)': ['15-20 m²', '20-30 m²', '30-45 m²'],
 }
+
+# Gammes de produits (page /nos-gammes, v19.0.1.0.71) — contenu à titre
+# informatif, PAS un catalogue transactionnel (demande client : "à titre
+# d'information de ce qui sera disponible"). Studio/Duo/Panorama, qui
+# vivaient auparavant comme catégories boutique de premier niveau (menu
+# + /nos-modeles), sont désormais des FORMATS au sein de la gamme
+# "Capsule" (demande client explicite : "studio duo et panorama ne sont
+# que les format et accessoire seront les options et équipement").
+#
+# Statut par gamme :
+# - 'disponible' (Capsule) : formats réels déjà publiés ailleurs sur ce
+#   site (18 m² Studio / jusqu'à 40 m² Panorama sur /faq), specs/
+#   équipements ci-dessous marqués 'indicative'=True (voir note plus bas).
+# - 'a_confirmer' (Cabine, Dôme, Modulaire, Pliable) : gammes annoncées
+#   par le client mais sans données réelles pour l'instant — listes
+#   vides intentionnellement, le template affiche "à définir"/"à
+#   confirmer" plutôt que d'inventer des specs.
+#
+# 'indicative'=True sur Capsule : demande client explicite ("prends en
+# compte que les éléments fournis sur capsule-home.fr sont les normes et
+# on modifiera plus tard") — les valeurs numériques précises
+# (dimensions, kW, matériaux) sont reprises d'un standard du marché, PAS
+# des données fournisseur confirmées pour Capsule House. Le template
+# affiche un bandeau d'avertissement explicite tant que ce flag est
+# True. À repasser à False dès que le fournisseur réel est confirmé.
+# Les références de normes (NF EN 1279, NF EN 410, NF EN 14351-1,
+# NF C 15-100) sont, elles, de vraies normes françaises vérifiables
+# (recherchées le 2026-08-13), pas des valeurs indicatives.
+GAMME_STATUS_DISPONIBLE = 'disponible'
+GAMME_STATUS_A_CONFIRMER = 'a_confirmer'
+
+GAMMES_DATA = [
+    {
+        'slug': 'capsule',
+        'status': GAMME_STATUS_DISPONIBLE,
+        'icon': 'fa-home',
+        'name': 'Capsule',
+        'indicative': True,
+        'tagline_fr': '3 tailles disponibles · 19 à 38 m²',
+        'tagline_en': '3 sizes available · 19 to 38 sqm',
+        'formats': [
+            {'name': 'Studio', 'surface_fr': '19 m²', 'surface_en': '19 sqm',
+             'note_fr': 'Compact', 'note_en': 'Compact'},
+            {'name': 'Duo', 'surface_fr': '28 m²', 'surface_en': '28 sqm',
+             'note_fr': "Jusqu'à 4 pers.", 'note_en': 'Up to 4 people'},
+            {'name': 'Panorama', 'surface_fr': '38 m²', 'surface_en': '38 sqm',
+             'note_fr': '4 à 6 pers.', 'note_en': '4 to 6 people'},
+        ],
+        'specs_ext': [
+            {'label_fr': 'Façade', 'label_en': 'Facade',
+             'value_fr': 'Panneau aluminium', 'value_en': 'Aluminium panel'},
+            {'label_fr': "Porte d'entrée", 'label_en': 'Entrance door',
+             'value_fr': 'Inox + serrure à code', 'value_en': 'Stainless steel + code lock'},
+            {'label_fr': 'Vitrage', 'label_en': 'Glazing',
+             'value_fr': 'Vitrage isolant NF EN 1279', 'value_en': 'Insulating glazing NF EN 1279'},
+            {'label_fr': 'Fenêtres', 'label_en': 'Windows',
+             'value_fr': 'Performances NF EN 14351-1', 'value_en': 'Performance NF EN 14351-1'},
+        ],
+        'specs_int': [
+            {'label_fr': 'Sol principal', 'label_en': 'Main floor',
+             'value_fr': 'Revêtement SPC', 'value_en': 'SPC flooring'},
+            {'label_fr': 'Électricité', 'label_en': 'Electrical',
+             'value_fr': 'Installation NF C 15-100', 'value_en': 'NF C 15-100 wiring'},
+            {'label_fr': 'Automatismes', 'label_en': 'Automation',
+             'value_fr': 'Store motorisé (option)', 'value_en': 'Motorised blind (option)'},
+        ],
+        'equipements_fr': [
+            'Cadre acier galvanisé', 'Fenêtres double vitrage',
+            'Construction isolée et étanche', 'Sanitaire équipé (WC, douche, lavabo)',
+            'Installation électrique NF C 15-100', 'Verrouillage sécurisé',
+        ],
+        'equipements_en': [
+            'Galvanised steel frame', 'Double-glazed windows',
+            'Insulated, weatherproof construction', 'Equipped bathroom (toilet, shower, sink)',
+            'NF C 15-100 electrical wiring', 'Secure locking',
+        ],
+        'options_fr': ['Chauffage additionnel', 'Isolation renforcée', 'Triple vitrage', 'Aménagement sur mesure'],
+        'options_en': ['Additional heating', 'Reinforced insulation', 'Triple glazing', 'Custom fit-out'],
+        'usages': ['Logement', 'Bureau', 'Résidence secondaire', 'Location & Airbnb'],
+    },
+    {
+        'slug': 'cabine', 'status': GAMME_STATUS_A_CONFIRMER,
+        'icon': 'fa-th-large', 'name': 'Cabine', 'indicative': False,
+        'tagline_fr': 'Formats à définir', 'tagline_en': 'Formats to be defined',
+        'formats': [], 'specs_ext': [], 'specs_int': [],
+        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
+        'usages': [],
+    },
+    {
+        'slug': 'dome',
+        'status': GAMME_STATUS_A_CONFIRMER,
+        'icon': 'fa-circle-o', 'name': 'Dôme', 'indicative': False,
+        'tagline_fr': 'Formats à définir', 'tagline_en': 'Formats to be defined',
+        'formats': [], 'specs_ext': [], 'specs_int': [],
+        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
+        'usages': [],
+    },
+    {
+        'slug': 'modulaire',
+        'status': GAMME_STATUS_A_CONFIRMER,
+        'icon': 'fa-puzzle-piece', 'name': 'Modulaire', 'indicative': False,
+        'tagline_fr': 'Système extensible — formats à définir',
+        'tagline_en': 'Extensible system — formats to be defined',
+        'formats': [], 'specs_ext': [], 'specs_int': [],
+        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
+        'usages': [],
+    },
+    {
+        'slug': 'pliable',
+        'status': GAMME_STATUS_A_CONFIRMER,
+        'icon': 'fa-inbox', 'name': 'Pliable', 'indicative': False,
+        'tagline_fr': 'Structure repliable — formats à définir',
+        'tagline_en': 'Foldable structure — formats to be defined',
+        'formats': [], 'specs_ext': [], 'specs_int': [],
+        'equipements_fr': [], 'equipements_en': [], 'options_fr': [], 'options_en': [],
+        'usages': [],
+    },
+]
+
+# Usages (section accueil "Trouvez l'usage qui vous correspond", v19.0.1.0.71)
+# — remplace l'ancienne idée de page "Application" séparée (demande client :
+# "il ne faut plus de page application mais le faire directement sur
+# accueil"). Contenu générique et défendable (pas de statistique ni de
+# chiffre inventé), inspiré du format de capsule-home.fr mais rédigé pour
+# Capsule House — voir échange du 2026-08-13.
+USAGES_DATA = [
+    {
+        'slug': 'logement', 'icon': 'fa-home',
+        'name_fr': 'Logement', 'name_en': 'Housing',
+        'bullets_fr': [
+            'Installation plus rapide qu\'une construction traditionnelle',
+            'Autonome sur un petit terrain',
+            'Alternative à un achat immobilier classique',
+        ],
+        'bullets_en': [
+            'Faster to install than traditional construction',
+            'Self-contained on a small plot',
+            'An alternative to a traditional home purchase',
+        ],
+    },
+    {
+        'slug': 'bureau', 'icon': 'fa-briefcase',
+        'name_fr': 'Bureau', 'name_en': 'Office',
+        'bullets_fr': [
+            'Espace de travail séparé du logement',
+            'Installation indépendante sur votre terrain',
+            'Calme et intimité pour se concentrer',
+        ],
+        'bullets_en': [
+            'Work space separate from the home',
+            'Standalone installation on your plot',
+            'Quiet and private for focused work',
+        ],
+    },
+    {
+        'slug': 'residence-secondaire', 'icon': 'fa-sun-o',
+        'name_fr': 'Résidence secondaire', 'name_en': 'Second home',
+        'bullets_fr': [
+            'Installation rapide sur un terrain existant',
+            'Entretien réduit par rapport à une maison classique',
+            "Utilisable selon l'équipement choisi",
+        ],
+        'bullets_en': [
+            'Quick installation on an existing plot',
+            'Less upkeep than a traditional house',
+            'Usable depending on the equipment chosen',
+        ],
+    },
+    {
+        'slug': 'location-airbnb', 'icon': 'fa-key',
+        'name_fr': 'Location & Airbnb', 'name_en': 'Rental & Airbnb',
+        'bullets_fr': [
+            'Structure autonome et indépendante',
+            'Adaptée à la location courte durée',
+            'Installation flexible selon le terrain',
+        ],
+        'bullets_en': [
+            'Self-contained, standalone structure',
+            'Suited to short-term rental',
+            'Flexible installation depending on the plot',
+        ],
+    },
+    {
+        'slug': 'accessoires', 'icon': 'fa-wrench',
+        'name_fr': 'Accessoires', 'name_en': 'Accessories',
+        'bullets_fr': [
+            'Personnalisez votre pod selon vos besoins',
+            'Ajout possible à la commande',
+            'Compatible avec toutes les gammes',
+        ],
+        'bullets_en': [
+            'Customise your pod to your needs',
+            'Can be added to your order',
+            'Compatible with every range',
+        ],
+    },
+]
 
 
 def _get_company(env):
@@ -1083,16 +1287,32 @@ def _setup_menus(env, website, categories):
     Menu = env['website.menu'].sudo()
     entries = [
         ('Accueil', '/', 10),
+        # Ajouté en 19.0.1.0.71 (page /nos-gammes, voir GAMMES_DATA) :
+        # les 5 gammes (Capsule/Cabine/Dôme/Modulaire/Pliable) avec leurs
+        # specs. Remplace Studio/Duo/Panorama comme entrées de premier
+        # niveau du header — demande client explicite ("supprime studio
+        # duo et panorama dans le header") : ce sont désormais des
+        # FORMATS au sein de la gamme Capsule, plus des catégories à
+        # elles seules dans la nav.
+        ('Nos gammes', '/nos-gammes', 12),
         # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de
         # "Nos services" chez exocoms_theme, qui a aussi sa propre entrée
-        # de menu dédiée) : vitrine des 4 gammes avant le catalogue
-        # complet.
+        # de menu dédiée) : conservée telle quelle (demande client :
+        # "on laisse nos modèles"), en parallèle de Nos gammes.
         ('Nos modèles', '/nos-modeles', 15),
         ('Tous les pods', '/shop', 20),
     ]
     sequence = 30
-    for name, category in categories.items():
-        entries.append((name, '/shop/category/%d' % category.id, sequence))
+    # Studio/Duo/Panorama retirés des entrées de menu par catégorie
+    # (19.0.1.0.71, voir commentaire ci-dessus) : seule Accessoires
+    # reste une entrée directe, car ce n'est pas une gamme (options et
+    # équipements, pas un format de pod) — les catégories
+    # product.public.category elles-mêmes restent inchangées (toujours
+    # nécessaires pour /shop/category/<id> et le rattachement produits).
+    if 'Accessoires' in categories:
+        entries.append((
+            'Accessoires', '/shop/category/%d' % categories['Accessoires'].id, sequence,
+        ))
         sequence += 10
     # Pas de route de filtre "promotions" native dans website_sale : ce lien
     # pointe sur /shop pour l'instant. À remplacer par une vraie route
@@ -1113,6 +1333,7 @@ def _setup_menus(env, website, categories):
     # cohérent avec le choix de ne jamais traduire les noms de produits.
     EN_MENU_NAMES = {
         'Accueil': 'Home',
+        'Nos gammes': 'Our ranges',
         'Nos modèles': 'Our models',
         'Tous les pods': 'All pods',
         'Promotions': 'Deals',

@@ -503,6 +503,79 @@
     text-decoration: none;
 }
 
+/* ── USAGES (accueil, v19.0.1.0.71) — voir views/partials/home_usages.xml
+   et USAGES_DATA (__init__.py). Remplace l'idée d'une page Application
+   séparée (demande client : "il ne faut plus de page application mais
+   le faire directement sur accueil"). Volontairement léger : une carte
+   par usage avec 3 points, pas de photo ni de statistique inventée. ── */
+.ch-usages {
+    padding: 48px 0;
+    background: var(--ch-white);
+}
+
+.ch-usages-head {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.ch-usages-title {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    margin-top: 8px;
+}
+
+.ch-usages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+}
+
+.ch-usage-card {
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 18px;
+}
+
+.ch-usage-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-md);
+    background: var(--ch-panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ch-terracotta);
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.ch-usage-name {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    margin-bottom: 8px;
+}
+
+.ch-usage-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ch-usage-bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ch-fog);
+    line-height: 1.5;
+}
+.ch-usage-bullet .fa { color: var(--ch-green); margin-top: 3px; font-size: 11px; }
+
 /* ── RESPONSIVE HOMEPAGE ── */
 @media (max-width: 1100px) {
     .ch-hero-grid { grid-template-columns: 1fr; }
@@ -518,4 +591,8 @@
     .ch-hero-search { flex-direction: column; }
     .ch-bestsellers-grid { grid-template-columns: 1fr; }
     .ch-bestsellers-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .ch-usages-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+    .ch-usages-grid { grid-template-columns: 1fr; }
 }

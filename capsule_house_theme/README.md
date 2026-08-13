@@ -1777,6 +1777,48 @@ les seuils réels vérifiés comme contexte (Studio 18 m² → généralement
 déclaration préalable, Panorama jusqu'à 40 m² → peut basculer en
 permis de construire selon la zone). FR et EN mis à jour en parallèle.
 
+## Page "Nos gammes" et section usages sur l'accueil (v19.0.1.0.71)
+
+Refonte de la taxonomie produit, décidée sur plusieurs échanges avec le
+client le 2026-08-13 :
+
+- Studio/Duo/Panorama, jusqu'ici des catégories boutique de premier
+  niveau (entrée de menu directe + cartes sur /nos-modeles), deviennent
+  des **formats** au sein d'une gamme "Capsule" — demande explicite :
+  "studio duo et panorama ne sont que les format et accessoire seront
+  les options et équipement".
+- 5 gammes au total : Capsule, Cabine, Dôme, Modulaire, Pliable (voir
+  `GAMMES_DATA` dans `__init__.py`). Seule Capsule a des données
+  réelles/indicatives pour l'instant ; les 4 autres sont marquées
+  `'a_confirmer'` avec des listes vides — jamais de specs inventées
+  pour les faire paraître complètes.
+- Sur les valeurs numériques précises de Capsule (dimensions, matériaux
+  détaillés) : le client a explicitement autorisé la reprise de
+  valeurs indicatives inspirées d'un standard du marché
+  (capsule-home.fr) "on modifiera plus tard" — d'où le flag
+  `'indicative': True` et le bandeau d'avertissement affiché sur la
+  page détail tant que ce flag n'est pas repassé à `False`. Les
+  références de normes citées (NF EN 1279, NF EN 410, NF EN 14351-1,
+  NF C 15-100), elles, sont de vraies normes françaises vérifiées par
+  recherche, pas des valeurs indicatives.
+- Nouvelle page `/nos-gammes` (index avec filmstrip horizontal des 5
+  gammes, demande client explicite) + `/nos-gammes/<slug>` (détail par
+  gamme : formats, spécifications extérieur/intérieur, équipements
+  inclus, options) — voir `views/pages/nos_gammes.xml`.
+- Studio/Duo/Panorama retirés des entrées de menu du header ("supprime
+  studio duo et panorama dans le header") : seule "Accessoires" reste
+  une entrée directe de catégorie, avec la nouvelle entrée "Nos
+  gammes". `/nos-modeles` est explicitement **conservée inchangée**
+  ("on laisse nos modèles") — ce n'est pas un remplacement, les deux
+  pages coexistent.
+- Le concept de page "Application" séparée (usages : Logement, Bureau,
+  Résidence secondaire, Location & Airbnb, Accessoires) est abandonné
+  au profit d'une section directement sur l'accueil ("il ne faut plus
+  de page application mais le faire directement sur accueil") — voir
+  `views/partials/home_usages.xml` et `USAGES_DATA`. Le titre de cette
+  section évite volontairement le mot "gamme" (retour client : la
+  première version confondait les deux concepts).
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

@@ -1017,3 +1017,196 @@
     .ch-models-grid { grid-template-columns: 1fr; }
     .ch-models-tags { gap: 8px; }
 }
+
+/* ── NOS GAMMES (/nos-gammes, v19.0.1.0.71) — voir
+   views/pages/nos_gammes.xml et GAMMES_DATA (__init__.py). Filmstrip
+   horizontal sur l'index (demande client), gabarit détaillé (formats,
+   spécifications, équipements, options) sur la page détail par gamme. ── */
+.ch-gammes-hero {
+    padding: 40px 0 8px;
+    background: var(--ch-panel);
+}
+
+.ch-gammes-content {
+    padding: 40px 0 72px;
+    background: var(--ch-white);
+}
+
+.ch-gammes-filmstrip {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.ch-gamme-card {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    background: var(--ch-white);
+    border: 1px solid var(--ch-gray-border);
+    border-radius: var(--r-lg);
+    padding: 18px;
+    text-decoration: none;
+    transition: all var(--transition);
+}
+.ch-gamme-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    border-color: var(--ch-terracotta);
+}
+
+.ch-gamme-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-md);
+    background: var(--ch-panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ch-terracotta);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.ch-gamme-card-name {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ch-ink);
+}
+
+.ch-gamme-badge {
+    display: inline-block;
+    width: fit-content;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    margin: 6px 0 8px;
+}
+.ch-gamme-badge-ok { background: #E1F0E8; color: var(--ch-green); }
+.ch-gamme-badge-tbd { background: #F7E9E3; color: var(--ch-terracotta); }
+
+.ch-gamme-card-tagline {
+    font-size: 12.5px;
+    color: var(--ch-fog);
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.ch-gamme-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ch-terracotta);
+    margin-top: 12px;
+}
+
+/* Page détail d'une gamme */
+.ch-gamme-detail-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.ch-gamme-indicative-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #F7E9E3;
+    color: var(--ch-terracotta);
+    border-radius: var(--r-md);
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 28px;
+}
+
+.ch-gamme-section-title {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ch-ink);
+    margin: 32px 0 16px;
+}
+.ch-gamme-section-title:first-of-type { margin-top: 0; }
+
+.ch-gamme-formats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+}
+.ch-gamme-format-card {
+    background: var(--ch-panel);
+    border-radius: var(--r-md);
+    padding: 16px;
+}
+.ch-gamme-format-name {
+    font-family: var(--font-head);
+    font-weight: 800;
+    color: var(--ch-ink);
+    font-size: 15px;
+}
+.ch-gamme-format-surface, .ch-gamme-format-note {
+    font-size: 12.5px;
+    color: var(--ch-fog);
+}
+
+.ch-gamme-specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.ch-gamme-specs-col-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ch-fog);
+    margin-bottom: 8px;
+}
+.ch-gamme-specs-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ch-gamme-specs-table tr { border-bottom: 1px solid var(--ch-gray-border); }
+.ch-gamme-specs-table td { padding: 8px 4px; }
+.ch-gamme-specs-label { color: var(--ch-fog); }
+.ch-gamme-specs-value { color: var(--ch-ink); text-align: right; font-weight: 600; }
+
+.ch-gamme-equip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+.ch-gamme-equip-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--ch-ink);
+}
+.ch-gamme-equip-item .fa { color: var(--ch-green); }
+
+.ch-gamme-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.ch-gamme-option-pill {
+    background: var(--ch-panel);
+    border-radius: var(--r-pill);
+    padding: 6px 14px;
+    font-size: 12.5px;
+    color: var(--ch-ink);
+}
+
+@media (max-width: 780px) {
+    .ch-gamme-specs-grid { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 560px) {
+    .ch-gamme-card { flex-basis: 180px; }
+}
