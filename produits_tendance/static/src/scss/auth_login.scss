@@ -1,0 +1,652 @@
+/* static/src/scss/auth_login_win121.scss */
+/* WIN-121: Redesign Pages Connexion/Inscription */
+
+// Import variables Winners
+@import '_winners_variables';
+
+// Breakpoints
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 480px;
+
+/* ============================================================
+   CONTAINER PRINCIPAL - 2 COLONNES
+============================================================ */
+.o_winners_auth_container {
+    display: flex;
+    min-height: 100vh;
+    background: $o-winners-white;
+    font-family: $o-winners-font-family;
+    color: $o-winners-text-dark;
+
+    @media (max-width: $breakpoint-tablet) {
+        flex-direction: column;
+        min-height: auto;
+    }
+}
+
+/* ============================================================
+   PANNEAUX (Gauche/Droite)
+============================================================ */
+.o_winners_auth_panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+
+    @media (max-width: $breakpoint-tablet) {
+        padding: 40px 20px;
+        min-height: auto;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 30px 16px;
+    }
+}
+
+/* Panneau sombre (gauche) */
+.o_winners_auth_panel_dark {
+    background: linear-gradient(135deg, $o-winners-primary 0%, #0f1f3a 100%);
+    color: $o-winners-white;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    @media (max-width: $breakpoint-tablet) {
+        padding: 40px 20px;
+        min-height: 250px;
+        order: -1; // Affiche le panneau sombre en premier sur mobile
+    }
+}
+
+/* Panneau clair (droite) */
+.o_winners_auth_panel_light {
+    background: $o-winners-bg-light;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    @media (max-width: $breakpoint-tablet) {
+        padding: 30px 20px;
+    }
+}
+
+/* Contenu du panneau */
+.o_winners_auth_panel_content {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+}
+
+/* ============================================================
+   LOGO WINNERS
+============================================================ */
+.o_winners_auth_logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    font-size: 24px;
+    font-weight: 700;
+    color: $o-winners-white;
+
+    svg {
+        flex-shrink: 0;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        margin-bottom: 30px;
+        font-size: 20px;
+
+        svg {
+            width: 32px;
+            height: 32px;
+        }
+    }
+}
+
+/* ============================================================
+   TITRES ET TEXTES
+============================================================ */
+.o_winners_auth_title {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 20px 0;
+    color: $o-winners-white;
+
+    .o_winners_accent {
+        color: $o-winners-accent;
+    }
+
+    @media (max-width: $breakpoint-tablet) {
+        font-size: 32px;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        font-size: 24px;
+    }
+}
+
+.o_winners_auth_subtitle {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba($o-winners-white, 0.85);
+    margin: 0 0 40px 0;
+
+    @media (max-width: $breakpoint-mobile) {
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+}
+
+.o_winners_auth_header {
+    margin-bottom: 30px;
+    text-align: center;
+
+    .o_winners_auth_welcome {
+        font-size: 12px;
+        font-weight: 600;
+        color: $o-winners-primary;
+        margin: 0 0 8px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: $o-winners-primary;
+    }
+
+    p {
+        font-size: 14px;
+        color: $o-winners-text-muted;
+        margin: 0;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        h2 {
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 12px;
+        }
+
+        .o_winners_auth_welcome {
+            font-size: 11px;
+        }
+    }
+}
+
+/* ============================================================
+   PLATEFORMES (Logos)
+============================================================ */
+.o_winners_auth_platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 50px;
+    align-items: center;
+
+    @media (max-width: $breakpoint-mobile) {
+        gap: 12px;
+        margin-top: 30px;
+    }
+}
+
+/* Logos SVG images */
+.o_winners_platform_logo_img {
+    display: inline-block;
+    height: 40px;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    object-fit: contain;
+
+    &:hover {
+        transform: scale(1.15) translateY(-3px);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        height: 36px;
+    }
+}
+
+.o_winners_platform_logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    background: rgba($o-winners-white, 0.1);
+    border: 1px solid rgba($o-winners-white, 0.2);
+    border-radius: $o-winners-radius;
+    font-size: 12px;
+    font-weight: 600;
+    color: $o-winners-white;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($o-winners-white, 0.15);
+        border-color: rgba($o-winners-white, 0.3);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}
+
+/* ============================================================
+   FORMULAIRES
+============================================================ */
+.o_winners_auth_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    @media (max-width: $breakpoint-mobile) {
+        gap: 16px;
+    }
+}
+
+.o_winners_form_group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        font-size: 14px;
+        font-weight: 600;
+        color: $o-winners-text-dark;
+        margin: 0;
+    }
+}
+
+.o_winners_form_label_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ============================================================
+   INPUTS
+============================================================ */
+.o_winners_input_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: $o-winners-white;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    transition: all 0.2s ease;
+
+    i {
+        color: $o-winners-text-muted;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    &:focus-within {
+        border-color: $o-winners-primary;
+        box-shadow: 0 0 0 3px rgba($o-winners-primary, 0.1);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 10px 12px;
+
+        i {
+            font-size: 14px;
+        }
+    }
+}
+
+.o_winners_input {
+    flex: 1;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    font-size: 14px;
+    color: $o-winners-text-dark;
+
+    &::placeholder {
+        color: $o-winners-text-muted;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: none !important;
+    }
+}
+
+.o_winners_password_toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $o-winners-text-muted;
+    font-size: 16px;
+    padding: 0;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: $o-winners-primary;
+    }
+}
+
+/* Checkbox */
+.o_winners_form_group_checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
+    input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: $o-winners-accent;
+    }
+
+    label {
+        font-weight: 400;
+        font-size: 14px;
+        cursor: pointer;
+        margin: 0;
+    }
+}
+
+/* ============================================================
+   BOUTONS
+============================================================ */
+.o_winners_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: $o-winners-radius;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: $o-winners-font-family;
+    text-decoration: none;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Bouton primaire (Connexion/Inscription) */
+.o_winners_btn_primary {
+    background: $o-winners-accent;
+    color: $o-winners-white;
+    width: 100%;
+
+    &:hover {
+        background: darken($o-winners-accent, 8%);
+        box-shadow: 0 6px 12px rgba($o-winners-accent, 0.3);
+    }
+
+    i {
+        font-size: 16px;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover i {
+        transform: translateX(4px);
+    }
+}
+
+.o_winners_btn_lg {
+    padding: 14px 28px;
+    font-size: 16px;
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Boutons sociaux */
+.o_winners_social_buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.o_winners_btn_social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: $o-winners-border-soft;
+    border-radius: $o-winners-radius;
+    background: $o-winners-white;
+    color: $o-winners-text-dark;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: $o-winners-font-family;
+
+    svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    &:hover {
+        background: $o-winners-bg-light;
+        border-color: $o-winners-primary;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        padding: 10px 12px;
+        font-size: 13px;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+.o_winners_btn_google svg {
+    color: #4285F4;
+}
+
+.o_winners_btn_facebook svg {
+    color: #1877F2;
+}
+
+.o_winners_btn_apple svg {
+    color: $o-winners-text-dark;
+}
+
+/* ============================================================
+   SÉPARATEUR
+============================================================ */
+.o_winners_divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+    color: $o-winners-text-muted;
+    font-size: 13px;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: $o-winners-border-soft;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        gap: 12px;
+        margin: 16px 0;
+    }
+}
+
+/* ============================================================
+   LIENS
+============================================================ */
+.o_winners_link_primary,
+.o_winners_link_secondary {
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.o_winners_link_primary {
+    color: $o-winners-primary;
+
+    &:hover {
+        color: darken($o-winners-primary, 10%);
+    }
+}
+
+.o_winners_link_secondary {
+    color: $o-winners-text-muted;
+    font-weight: 500;
+
+    &:hover {
+        color: $o-winners-primary;
+    }
+}
+
+/* ============================================================
+   TEXTES FOOTER
+============================================================ */
+.o_winners_auth_footer_text {
+    text-align: center;
+    font-size: 14px;
+    color: $o-winners-text-muted;
+    margin: 20px 0 0 0;
+
+    @media (max-width: $breakpoint-mobile) {
+        font-size: 12px;
+    }
+}
+
+.o_winners_auth_legal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: $o-winners-border-soft;
+    font-size: 12px;
+
+    a {
+        color: $o-winners-text-muted;
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: $o-winners-primary;
+            text-decoration: underline;
+        }
+    }
+
+    .o_winners_separator {
+        color: $o-winners-border-soft;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+        font-size: 11px;
+        gap: 8px;
+        padding-top: 16px;
+        margin-top: 16px;
+    }
+}
+
+/* ============================================================
+   ANIMATIONS & ÉTATS
+============================================================ */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.o_winners_input_error {
+    border-color: $o-winners-danger !important;
+    animation: shake 0.3s ease;
+
+    &::placeholder {
+        color: $o-winners-danger;
+    }
+}
+
+.o_winners_input_valid {
+    border-color: $o-winners-success !important;
+}
+
+.o_winners_input_success {
+    background: rgba($o-winners-success, 0.05);
+    border-color: $o-winners-success !important;
+}
+
+/* ============================================================
+   FOCUS STATES
+============================================================ */
+input:focus,
+button:focus {
+    outline: none;
+}
+
+/* ============================================================
+   PRINT
+============================================================ */
+@media print {
+    .o_winners_auth_container {
+        display: none;
+    }
+}

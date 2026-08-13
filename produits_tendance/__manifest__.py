@@ -24,6 +24,7 @@
         'views/subscription_templates.xml',      # WIN-66
         'views/dashboard_templates.xml',   # WIN-48 / WIN-45 / WIN-50
         'data/webhook_queue_cron.xml',      # WIN-67
+        'views/auth_login.xml',      # WIN-121
     ],
 
     'demo': [
@@ -45,6 +46,8 @@
             'produits_tendance/static/src/scss/subscription_pricing.scss',
             'produits_tendance/static/src/js/dashboard_filters.js',
             'produits_tendance/static/src/scss/dashboard.scss',
+            'produits_tendance/static/src/scss/auth_login.scss',  
+            'produits_tendance/static/src/js/auth_login.js',
         ],
     },
     'installable': True,
