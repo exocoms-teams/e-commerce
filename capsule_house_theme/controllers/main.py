@@ -306,100 +306,23 @@ class CapsuleHouseWebsite(Website):
         return request.redirect('/shop')
 
     @http.route('/nos-modeles', type='http', auth='public', website=True,
-                sitemap=True)
+                sitemap=False)
     def nos_modeles(self, **kw):
-        """Page vitrine des 4 gammes de pods (Studio/Duo/Panorama/
-        Accessoires), ajoutée en 19.0.1.0.67.
+        """Redirige vers l'accueil — retirée en v19.0.1.0.76.
 
-        Origine de la demande : le client a montré la page "Application"
-        de guosegroup.com (fabricant chinois de maisons capsules) et
-        demandé un équivalent. Analyse : leurs cartes cliquables ("loger",
-        "bureau", "boutique"...) montrent de VRAIES photos de leurs
-        propres installations — impossible à répliquer ici sans inventer
-        des usages que Capsule House n'a jamais publiés (voir échange
-        précédent : aucune mention de bureau/boutique/salle d'exposition
-        nulle part sur ce site). Le client a alors précisé : "c'est comme
-        ma page service sur exocoms, indique juste leur domaine
-        d'expertise" — et confirmé ensuite vouloir cette page-là comme
-        modèle ("la page service devrait être la page application").
-
-        Chez exocoms_theme, `/nos-services` est justement une grille de
-        cartes qui ne fait QUE présenter chaque domaine en une ou deux
-        phrases, sans fabriquer de contenu propre à chaque carte : ce
-        sont les vraies pages catégorie de la boutique qui font foi.
-        Reproduit ici à l'identique : chaque carte pointe vers le VRAI
-        filtre boutique (/shop/category/<id>, déjà utilisé par le menu
-        de nav, voir _setup_menus) — aucune page de contenu inventée par
-        catégorie.
-
-        Contenu textuel strictement réel :
-        - Tailles (18 m² Studio, jusqu'à 40 m² Panorama) : déjà publiées
-          sur /faq (aide_faq.xml).
-        - Trilogie "Studio, duo ou famille" : déjà publiée sur /shop
-          (shop.xml, sous-titre du hero boutique).
-        - "Duo" : aucune surface publiée nulle part sur ce site — la
-          carte se limite donc à ce que le nom affirme de lui-même
-          (format pensé pour deux), sans inventer de m².
+        Page vitrine livrée en 19.0.1.0.67, conservée explicitement à
+        plusieurs reprises pendant toute la refonte de la taxonomie
+        gammes ("on laisse nos modèles"), puis finalement retirée : "la
+        page nos modèles doit disparaître sur mon code". Son contenu
+        (Studio/Duo/Panorama/Accessoires) est de toute façon aujourd'hui
+        représenté par la gamme "Capsule" sur /nos-gammes/capsule et la
+        section gammes de l'accueil (voir home_gammes.xml). Route
+        conservée en simple redirect (jamais un 404) pour ne pas casser
+        un lien déjà partagé vers /nos-modeles ; sitemap=False pour ne
+        plus l'indexer en tant que page à part entière — même pattern
+        que nos_gammes() ci-dessous pour l'ancien index /nos-gammes.
         """
-        website = request.website
-        Category = request.env['product.public.category'].sudo()
-        Product = request.env['product.template'].sudo()
-
-        # Import différé (après chargement complet du module) — évite tout
-        # risque d'import circulaire avec __init__.py, même principe que
-        # les migrations qui font `from odoo.addons.capsule_house_theme
-        # import run_theme_maintenance` à l'intérieur de migrate().
-        from odoo.addons.capsule_house_theme import SHOP_CATEGORIES
-
-        # Descriptions strictement réelles (voir docstring ci-dessus) :
-        # Studio/Panorama reprennent les surfaces déjà publiées sur /faq,
-        # "Duo" ne reprend QUE ce que le nom affirme de lui-même (aucune
-        # surface publiée nulle part sur ce site pour ce modèle).
-        if request.env.lang == 'fr_FR':
-            descriptions = {
-                'Studio': "Le format compact, 18 m² — pour une personne ou un usage indépendant.",
-                'Duo': "Le format intermédiaire de la gamme, pensé pour deux.",
-                'Panorama': "Le plus grand de la gamme, jusqu'à 40 m² — pensé pour un usage familial.",
-                'Accessoires': "Équipements et options pour compléter votre pod.",
-            }
-        else:
-            descriptions = {
-                'Studio': "The compact format, 18 sqm — for one person or standalone use.",
-                'Duo': "The mid-size format in the range, designed for two.",
-                'Panorama': "The largest in the range, up to 40 sqm — designed for family use.",
-                'Accessoires': "Equipment and options to complete your pod.",
-            }
-
-        model_cards = []
-        for name in SHOP_CATEGORIES:
-            category = Category.search([
-                ('name', '=', name),
-                '|', ('website_id', '=', website.id), ('website_id', '=', False),
-            ], limit=1)
-            if not category:
-                continue
-            domain = [
-                ('website_id', '=', website.id),
-                ('is_published', '=', True),
-                ('public_categ_ids', 'child_of', category.id),
-            ]
-            first_product = Product.search(domain, limit=1, order='website_sequence asc')
-            # "Accessoires" est un nom commun (contrairement à Studio/Duo/
-            # Panorama, nom de gamme = nom propre, jamais traduit ailleurs
-            # dans ce module) : traduit ici en anglais, même exception que
-            # EN_MENU_NAMES dans _setup_menus() (__init__.py).
-            display_name = 'Accessories' if (name == 'Accessoires' and request.env.lang != 'fr_FR') else name
-            model_cards.append({
-                'name': display_name,
-                'description': descriptions.get(name, ''),
-                'url': '/shop/category/%d' % category.id,
-                'count': Product.search_count(domain),
-                'image_id': first_product.id if first_product else None,
-            })
-
-        return request.render('capsule_house_theme.page_nos_modeles', {
-            'model_cards': model_cards,
-        })
+        return request.redirect('/')
 
     @http.route('/nos-gammes', type='http', auth='public', website=True,
                 sitemap=False)

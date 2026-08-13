@@ -122,9 +122,11 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.mentions_legales_page',
     'capsule_house_theme.cgv_page',
     'capsule_house_theme.confidentialite_page',
-    # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de "Nos
-    # services" d'exocoms_theme — voir nos_modeles.xml).
-    'capsule_house_theme.page_nos_modeles',
+    # NB : page_nos_modeles (page /nos-modeles, livrée en 19.0.1.0.67 sur
+    # le modèle de "Nos services" d'exocoms_theme) a été RETIRÉE en
+    # 19.0.1.0.76 — demande client explicite : "la page nos modèles doit
+    # disparaître sur mon code". Voir controllers/main.py (nos_modeles()
+    # redirige désormais vers '/').
     # Ajoutés en 19.0.1.0.71 (pages /nos-gammes/<slug> : détail par
     # gamme, voir nos_gammes.xml et GAMMES_DATA ci-dessus), et section
     # "usages" de l'accueil (remplace l'idée d'une page Application
@@ -139,10 +141,37 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.partial_home_gammes',
 ]
 
-# Catégories boutique (product.public.category) reprises de la maquette de
-# référence : elles alimentent à la fois le menu (Studio/Duo/Panorama/
-# Accessoires) et les pages /shop/category/<id> natives de website_sale.
-SHOP_CATEGORIES = ['Studio', 'Duo', 'Panorama', 'Accessoires']
+# Catégories boutique (product.public.category), niveau top (celles qui
+# apparaissent comme onglets sur la page /shop native de website_sale).
+#
+# CHANGEMENT (v19.0.1.0.75) : jusqu'ici Studio/Duo/Panorama/Accessoires
+# étaient les 4 catégories de premier niveau. Demande client, capture
+# d'écran des onglets /shop à l'appui : "accessoire reste sauf studio
+# duo et panorama doivent partir et mettre à la place nos différentes
+# gammes" — Studio/Duo/Panorama ne doivent plus apparaître comme des
+# onglets à eux seuls, remplacés par les 5 gammes (cohérent avec
+# GAMMES_DATA : Studio/Duo/Panorama sont des FORMATS de la gamme
+# Capsule, pas des catégories indépendantes).
+#
+# Studio/Duo/Panorama ne sont PAS supprimés : voir SHOP_SUBCATEGORIES
+# ci-dessous, ils deviennent des sous-catégories de "Capsule"
+# (parent_id posé) — la page /shop native de website_sale n'affiche en
+# onglets que les catégories de premier niveau (parent_id vide), donc
+# les reparenter suffit à les faire disparaître des onglets SANS toucher
+# aux produits déjà rattachés (aucune réaffectation nécessaire).
+SHOP_CATEGORIES = ['Capsule', 'Cabine', 'Dôme', 'Modulaire', 'Pliable', 'Accessoires']
+
+# Sous-catégories (formats) au sein d'une gamme de premier niveau —
+# clé = nom de la catégorie parente (doit être dans SHOP_CATEGORIES),
+# valeur = liste des noms d'anciennes/futures catégories enfants.
+SHOP_SUBCATEGORIES = {
+    'Capsule': ['Studio', 'Duo', 'Panorama'],
+}
+
+# NOS_MODELES_CATEGORIES (liste figée pour la page /nos-modeles) retirée
+# en 19.0.1.0.76 — cette page a été supprimée (demande client : "la page
+# nos modèles doit disparaître sur mon code"), la constante n'a donc
+# plus aucun consommateur.
 
 # product.attribute utilisé comme simple filtre boutique (pas de vraies
 # variantes) : nom -> liste de valeurs.
@@ -1063,18 +1092,27 @@ def _clean_demo_data(env, website):
 
 
 def _setup_shop_categories(env, website):
-    """Crée les catégories boutique (Studio, Duo, Panorama, Accessoires).
+    """Crée les catégories boutique de premier niveau (Capsule, Cabine,
+    Dôme, Modulaire, Pliable, Accessoires — voir SHOP_CATEGORIES), puis
+    reparente les sous-catégories (Studio/Duo/Panorama sous Capsule,
+    voir SHOP_SUBCATEGORIES) — v19.0.1.0.75.
 
-    Alimente à la fois le menu de nav (_setup_menus) et les pages
-    /shop/category/<id> natives de website_sale. `product.public.category`
-    n'a pas systématiquement de champ `website_id` selon la version d'Odoo
-    (feature-detect ci-dessous) : quand il existe, on le pose explicitement
-    pour respecter la règle de scope site ; sinon on logue un avertissement
-    car la catégorie sera alors une taxonomie partagée par la base
-    mutualisée (comportement natif Odoo dans ce cas, pas une erreur de ce
-    module).
+    Alimente à la fois le menu de nav (_setup_menus, Accessoires
+    seulement) et les onglets natifs de la page /shop de website_sale,
+    qui n'affiche que les catégories de premier niveau (parent_id vide)
+    — c'est ce mécanisme natif qui fait disparaître Studio/Duo/Panorama
+    des onglets une fois reparentées, sans avoir besoin de les
+    supprimer ni de réaffecter les produits déjà rattachés.
 
-    Retourne un dict {nom: record} pour construction des URLs de menu.
+    `product.public.category` n'a pas systématiquement de champ
+    `website_id` selon la version d'Odoo (feature-detect ci-dessous) :
+    quand il existe, on le pose explicitement pour respecter la règle
+    de scope site ; sinon on logue un avertissement car la catégorie
+    sera alors une taxonomie partagée par la base mutualisée
+    (comportement natif Odoo dans ce cas, pas une erreur de ce module).
+
+    Retourne un dict {nom: record} (catégories top-level ET
+    sous-catégories) pour construction des URLs de menu / autres pages.
     """
     Category = env['product.public.category'].sudo()
     has_website_field = 'website_id' in Category._fields
@@ -1101,9 +1139,47 @@ def _setup_shop_categories(env, website):
             category = Category.create(vals)
         categories[name] = category
     _logger.info(
-        "capsule_house_theme: %d catégorie(s) boutique synchronisée(s) "
-        "pour le site id=%s.", len(categories), website.id,
+        "capsule_house_theme: %d catégorie(s) boutique top-level "
+        "synchronisée(s) pour le site id=%s.", len(categories), website.id,
     )
+
+    reparented = 0
+    for parent_name, child_names in SHOP_SUBCATEGORIES.items():
+        parent = categories.get(parent_name)
+        if not parent:
+            _logger.warning(
+                "capsule_house_theme: catégorie parente '%s' introuvable — "
+                "sous-catégories %s non rattachées.", parent_name, child_names,
+            )
+            continue
+        for child_name in child_names:
+            domain = [('name', '=', child_name)]
+            if has_website_field:
+                domain += ['|', ('website_id', '=', website.id), ('website_id', '=', False)]
+            child = Category.search(domain, limit=1)
+            if child:
+                to_write = {}
+                if child.parent_id.id != parent.id:
+                    to_write['parent_id'] = parent.id
+                if has_website_field and not child.website_id:
+                    to_write['website_id'] = website.id
+                if to_write:
+                    child.write(to_write)
+                    reparented += 1
+            else:
+                vals = {'name': child_name, 'parent_id': parent.id}
+                if has_website_field:
+                    vals['website_id'] = website.id
+                child = Category.create(vals)
+                reparented += 1
+            categories[child_name] = child
+    if reparented:
+        _logger.info(
+            "capsule_house_theme: %d sous-catégorie(s) rattachée(s)/créée(s) "
+            "sous leur gamme parente pour le site id=%s (%s) — retirées des "
+            "onglets de premier niveau de /shop.",
+            reparented, website.id, SHOP_SUBCATEGORIES,
+        )
     return categories
 
 

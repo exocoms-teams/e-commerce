@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.74',
+    'version': '19.0.1.0.76',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gammes (détail par gamme sur /nos-gammes/<slug>, pas d'index séparé), Nos modèles (/nos-modeles), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
+Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gammes (détail par gamme sur /nos-gammes/<slug>, pas d'index séparé), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module. /nos-modeles a existé de la 19.0.1.0.67 à la 19.0.1.0.75 puis a été retirée (redirect vers l'accueil conservé).
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',
@@ -51,9 +51,10 @@ Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gamme
         'views/partials/featured_products.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
-        # Ajouté en 19.0.1.0.67 : page /nos-modeles, sur le modèle de
-        # "Nos services" d'exocoms_theme (voir nos_modeles.xml).
-        'views/pages/nos_modeles.xml',
+        # NB : 'views/pages/nos_modeles.xml' (page /nos-modeles, livrée en
+        # 19.0.1.0.67) retirée de cette liste en 19.0.1.0.76 — demande
+        # client : "la page nos modèles doit disparaître sur mon code".
+        # Le fichier lui-même n'existe plus.
         # Ajoutés en 19.0.1.0.71 : page /nos-gammes (index + détail par
         # gamme, voir nos_gammes.xml et GAMMES_DATA dans __init__.py) et
         # section "usages" de l'accueil (voir home_usages.xml,
