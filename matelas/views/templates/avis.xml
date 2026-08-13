@@ -53,7 +53,9 @@
 
       <!-- Formulaire d'avis — visible uniquement si a acheté -->
       <section class="avis-form-section container" id="avis-form">
-        <div class="avis-form-box">
+        <div class="avis-form-box"
+          t-att-data-user-connected="'true' if user_connected else 'false'"
+          t-att-data-a-achete="'true' if a_achete else 'false'">
 
           <div class="avis-message-info avis-state avis-state-login" style="display:none">
             <i class="bi bi-lock-fill" />
@@ -124,24 +126,6 @@
 
         </div>
       </section>
-
-      <script type="text/javascript">
-        (function () {
-          var connected = <t t-esc="'true' if user_connected else 'false'" />;
-          var achete = <t t-esc="'true' if a_achete else 'false'" />;
-          var toShow;
-          if (!connected) {
-            toShow = '.avis-state-login';
-          } else if (!achete) {
-            toShow = '.avis-state-purchase';
-          } else {
-            toShow = '.avis-state-form';
-          }
-          var el = document.querySelector(toShow);
-          if (el) { el.style.display = ''; }
-        })();
-      </script>
-
 
       <!-- Newsletter -->
       <section class="newsletter-section">

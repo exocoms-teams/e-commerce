@@ -1,13 +1,52 @@
 (function() {
     'use strict';
 
-   
+
+    const matelasShadowRoots = [];
+    if (window.Element && Element.prototype.attachShadow) {
+        const originalAttachShadow = Element.prototype.attachShadow;
+        Element.prototype.attachShadow = function(init) {
+            const root = originalAttachShadow.call(this, Object.assign({}, init, { mode: 'open' }));
+            matelasShadowRoots.push(root);
+            return root;
+        };
+    }
+
+    function removeElfsightBadgeEverywhere() {
+        const selector = 'a[href*="testimonials-slider-widget"]';
+        document.querySelectorAll(selector).forEach(function(el) { el.remove(); });
+        matelasShadowRoots.forEach(function(root) {
+            root.querySelectorAll(selector).forEach(function(el) { el.remove(); });
+        });
+    }
+
+    removeElfsightBadgeEverywhere();
+    const matelasBadgeInterval = setInterval(removeElfsightBadgeEverywhere, 500);
+    setTimeout(function() { clearInterval(matelasBadgeInterval); }, 30000);
+
     function isEnglish() {
         return (document.documentElement.getAttribute('lang') || '').toLowerCase().indexOf('en') === 0;
     }
 
     function initAll() {
         const en = isEnglish();
+
+        // ===== AVIS : affichage de l'état (connexion/achat/formulaire) =====
+        const avisFormBox = document.querySelector('.avis-form-box');
+        if (avisFormBox) {
+            const connected = avisFormBox.dataset.userConnected === 'true';
+            const achete = avisFormBox.dataset.aAchete === 'true';
+            let toShow;
+            if (!connected) {
+                toShow = '.avis-state-login';
+            } else if (!achete) {
+                toShow = '.avis-state-purchase';
+            } else {
+                toShow = '.avis-state-form';
+            }
+            const el = avisFormBox.querySelector(toShow);
+            if (el) { el.style.display = ''; }
+        }
 
         // ===== ÉTOILES AVIS =====
         const stars = document.querySelectorAll('.star');
