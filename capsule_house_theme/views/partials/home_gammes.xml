@@ -3,15 +3,17 @@
     <!--
         Section "gammes" de l'accueil (v19.0.1.0.72). Demande client :
         "même nos gamme doit apparaître sur accueil" — le filmstrip des
-        5 gammes (déjà utilisé sur l'index /nos-gammes, voir
-        nos_gammes.xml) est repris ici tel quel (mêmes classes CSS
-        .ch-gammes-filmstrip / .ch-gamme-card, voir pages.css) pour ne
-        pas dupliquer de style. T-called depuis home.xml, AVANT la
-        section usages (le "quoi" avant le "pourquoi").
+        5 gammes (mêmes classes CSS .ch-gammes-filmstrip / .ch-gamme-card,
+        voir pages.css) est affiché ici. T-called depuis home.xml, AVANT
+        la section usages (le "quoi" avant le "pourquoi").
 
-        /nos-gammes (index + détail par gamme) continue d'exister et
-        reste le lien de chaque carte ("Voir la gamme") : cette section
-        homepage est un aperçu, pas un remplacement de la page.
+        Chaque carte ("Voir la gamme") renvoie vers /nos-gammes/<slug>,
+        la page détail de la gamme (formats, spécifications,
+        équipements, options — voir nos_gammes.xml). L'ancien index
+        /nos-gammes (bandeau + filmstrip pleine page) a été retiré en
+        19.0.1.0.73 : cette section accueil en est désormais le SEUL
+        point d'entrée (plus de doublon) — demande client : "la page
+        Our ranges ne doit plus s'afficher".
 
         Contenu = GAMMES_DATA (__init__.py), passé par
         CapsuleHouseWebsite.index() (controllers/main.py) sous la clé

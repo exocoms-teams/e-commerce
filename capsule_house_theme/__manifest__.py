@@ -8,14 +8,14 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.72',
+    'version': '19.0.1.0.74',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
 
 Ce module ne doit jamais impacter les autres sites de la base partagée : pas d'assets globaux (le CSS/JS est enregistré dynamiquement via ir.asset scopé website_id), et tous les hooks retrouvent notre site uniquement via son id mémorisé (ir.config_parameter), jamais par nom.
 
-Pages actuellement livrées : Accueil (avec section usages), Nos gammes (/nos-gammes, index + détail par gamme), Nos modèles (/nos-modeles), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
+Pages actuellement livrées : Accueil (avec sections gammes + usages), Nos gammes (détail par gamme sur /nos-gammes/<slug>, pas d'index séparé), Nos modèles (/nos-modeles), Boutique, Avis clients (/avis), Aide (Livraison /livraison, Retours /retours, Garantie /garantie, FAQ /faq), Entreprise (À propos /a-propos, Le concept /le-concept), pages légales (Mentions légales /mentions-legales, CGV /cgv, Confidentialité /confidentialite). Le contact passe par la page NATIVE Odoo /contactus, jamais reconstruite par ce module.
 """,
     'author': 'Exocoms Group',
     'website': 'https://capsule-house.fr',

@@ -402,25 +402,23 @@ class CapsuleHouseWebsite(Website):
         })
 
     @http.route('/nos-gammes', type='http', auth='public', website=True,
-                sitemap=True)
+                sitemap=False)
     def nos_gammes(self, **kw):
-        """Page d'index des gammes de pods (19.0.1.0.71).
+        """Redirige vers l'accueil — v19.0.1.0.73.
 
-        Contenu strictement informatif (demande client : "à titre
-        d'information de ce qui sera disponible"), PAS un catalogue
-        transactionnel — chaque carte renvoie vers /nos-gammes/<slug>
-        pour le détail, jamais vers une page d'achat directe. Les
-        données viennent de GAMMES_DATA (__init__.py) : Capsule a un
-        statut 'disponible' (formats/specs réels ou indicatifs), les 4
-        autres (Cabine/Dôme/Modulaire/Pliable) sont 'a_confirmer' —
-        listes vides intentionnelles tant que le fournisseur réel n'est
-        pas confirmé, jamais de contenu inventé pour les faire
-        paraître complètes.
+        Jusqu'à la 19.0.1.0.72, cette route rendait une page d'index
+        (bandeau + filmstrip des 5 gammes). Retirée à la demande
+        explicite du client après avoir vu le fil d'ariane en
+        production ("on doit plus avoir Home/Our ranges/Capsule mais
+        plutôt Home/Capsule, la page Our ranges ne doit plus
+        s'afficher") : le filmstrip équivalent vit déjà sur l'accueil
+        (voir home_gammes.xml, v19.0.1.0.72), cette page était devenue
+        un doublon pur. La route reste enregistrée en simple redirect
+        (jamais un 404) pour ne pas casser un lien déjà partagé vers
+        /nos-gammes ; sitemap=False pour ne plus l'indexer en tant que
+        page à part entière.
         """
-        from odoo.addons.capsule_house_theme import GAMMES_DATA
-        return request.render('capsule_house_theme.page_nos_gammes', {
-            'gammes': GAMMES_DATA,
-        })
+        return request.redirect('/')
 
     @http.route('/nos-gammes/<string:slug>', type='http', auth='public',
                 website=True, sitemap=True)

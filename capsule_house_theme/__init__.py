@@ -125,11 +125,13 @@ SCOPED_VIEW_XML_IDS = [
     # Ajouté en 19.0.1.0.67 (page /nos-modeles, sur le modèle de "Nos
     # services" d'exocoms_theme — voir nos_modeles.xml).
     'capsule_house_theme.page_nos_modeles',
-    # Ajoutés en 19.0.1.0.71 (page /nos-gammes : index + détail par
+    # Ajoutés en 19.0.1.0.71 (pages /nos-gammes/<slug> : détail par
     # gamme, voir nos_gammes.xml et GAMMES_DATA ci-dessus), et section
     # "usages" de l'accueil (remplace l'idée d'une page Application
     # séparée, voir home_usages.xml et USAGES_DATA).
-    'capsule_house_theme.page_nos_gammes',
+    # NB : page_nos_gammes (l'ancien index /nos-gammes) a été RETIRÉE en
+    # 19.0.1.0.73 — demande client explicite, voir nos_gammes.xml et
+    # controllers/main.py (nos_gammes() redirige désormais vers '/').
     'capsule_house_theme.page_nos_gammes_detail',
     'capsule_house_theme.partial_home_usages',
     # Ajouté en 19.0.1.0.72 (section gammes de l'accueil, voir

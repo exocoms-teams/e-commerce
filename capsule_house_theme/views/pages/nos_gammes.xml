@@ -10,82 +10,26 @@
 
         Contenu STRICTEMENT informatif (demande client : "à titre
         d'information de ce qui sera disponible"), jamais un catalogue
-        transactionnel : aucun bouton d'achat, aucun prix engageant,
-        chaque carte de l'index renvoie vers la page détail de sa gamme.
+        transactionnel : aucun bouton d'achat, aucun prix engageant.
 
-        Deux templates :
-        - page_nos_gammes (index, route /nos-gammes) : bandeau/filmstrip
-          horizontal des 5 gammes (demande client explicite : "au niveau
-          du filmstrip ajoute tout nos gammes").
-        - page_nos_gammes_detail (route /nos-gammes/<slug>) : gabarit
-          complet (formats, spécifications extérieur/intérieur,
-          équipements inclus, options) rendu une fois par gamme via le
-          contexte `gamme` passé par le contrôleur.
+        CORRECTIF (v19.0.1.0.73) : l'index /nos-gammes (bandeau +
+        filmstrip pleine page) a été RETIRÉ — demande client explicite
+        après avoir vu le fil d'ariane en production ("on doit plus
+        avoir Home/Our ranges/Capsule mais plutôt Home/Capsule, la page
+        Our ranges ne doit plus s'afficher"). Le filmstrip équivalent
+        vit déjà sur l'accueil (voir home_gammes.xml, v19.0.1.0.72) —
+        cette page index était devenue un doublon pur. La route
+        `/nos-gammes` (controllers/main.py) redirige désormais vers
+        l'accueil plutôt que de rendre une page. Seule reste
+        page_nos_gammes_detail (route /nos-gammes/<slug>), avec un fil
+        d'ariane raccourci qui va directement de l'accueil au nom de la
+        gamme (plus de maillon "Nos gammes" intermédiaire).
 
-        Rendu par CapsuleHouseWebsite.nos_gammes() / nos_gammes_detail()
-        (controllers/main.py). Scopées à notre site via
-        _scope_layout_views() (external ids
-        capsule_house_theme.page_nos_gammes et .page_nos_gammes_detail).
+        Rendu par CapsuleHouseWebsite.nos_gammes_detail()
+        (controllers/main.py). Scopée à notre site via
+        _scope_layout_views() (external id
+        capsule_house_theme.page_nos_gammes_detail).
     -->
-    <template id="page_nos_gammes" name="Capsule House - Nos gammes">
-        <t t-call="website.layout">
-            <t t-set="title" t-if="request.env.lang == 'fr_FR'">Nos gammes | Capsule House</t>
-            <t t-set="title" t-if="request.env.lang != 'fr_FR'">Our ranges | Capsule House</t>
-            <t t-set="head">
-                <meta name="description" content="Un aperçu, à titre informatif, des gammes de pods Capsule House : Capsule, Cabine, Dôme, Modulaire, Pliable."/>
-                <link rel="canonical" href="https://capsule-house.fr/nos-gammes"/>
-                <meta property="og:title" content="Nos gammes | Capsule House"/>
-                <meta property="og:description" content="Un aperçu, à titre informatif, des gammes de pods Capsule House."/>
-                <meta property="og:url" content="https://capsule-house.fr/nos-gammes"/>
-            </t>
-
-            <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
-                <a href="/">Accueil</a><span class="sep">/</span><span>Nos gammes</span>
-            </div>
-            <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
-                <a href="/">Home</a><span class="sep">/</span><span>Our ranges</span>
-            </div>
-
-            <section class="ch-gammes-hero">
-                <div class="container" style="text-align:center;">
-                    <div t-if="request.env.lang == 'fr_FR'">
-                        <span class="ch-models-badge"><i class="fa fa-info-circle"/> À titre informatif</span>
-                        <h1 class="ch-aide-title">Nos gammes</h1>
-                        <p class="ch-aide-subtitle">Un aperçu de ce qui sera disponible chez Capsule House. Les informations non confirmées sont indiquées comme telles.</p>
-                    </div>
-                    <div t-if="request.env.lang != 'fr_FR'">
-                        <span class="ch-models-badge"><i class="fa fa-info-circle"/> For information only</span>
-                        <h1 class="ch-aide-title">Our ranges</h1>
-                        <p class="ch-aide-subtitle">A preview of what will be available at Capsule House. Unconfirmed information is labelled as such.</p>
-                    </div>
-                </div>
-            </section>
-
-            <div class="oe_structure oe_empty" id="oe_structure_nos_gammes_after_hero"/>
-
-            <section class="ch-gammes-content">
-                <div class="container">
-                    <div class="ch-gammes-filmstrip">
-                        <a t-foreach="gammes" t-as="gamme" t-attf-href="/nos-gammes/#{ gamme['slug'] }" class="ch-gamme-card">
-                            <div class="ch-gamme-card-icon"><i t-attf-class="fa #{ gamme['icon'] }"/></div>
-                            <span class="ch-gamme-card-name" t-esc="gamme['name']"/>
-                            <span t-if="gamme['status'] == 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Disponible</span>
-                            <span t-if="gamme['status'] == 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-ok">Available</span>
-                            <span t-if="gamme['status'] != 'disponible' and request.env.lang == 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">À confirmer</span>
-                            <span t-if="gamme['status'] != 'disponible' and request.env.lang != 'fr_FR'" class="ch-gamme-badge ch-gamme-badge-tbd">To be confirmed</span>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang == 'fr_FR'" t-esc="gamme['tagline_fr']"/>
-                            <span class="ch-gamme-card-tagline" t-if="request.env.lang != 'fr_FR'" t-esc="gamme['tagline_en']"/>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang == 'fr_FR'">Voir la gamme <i class="fa fa-arrow-right"/></span>
-                            <span class="ch-gamme-card-cta" t-if="request.env.lang != 'fr_FR'">View range <i class="fa fa-arrow-right"/></span>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <div class="oe_structure oe_empty" id="oe_structure_nos_gammes_bottom"/>
-        </t>
-    </template>
-
     <template id="page_nos_gammes_detail" name="Capsule House - Gamme (détail)">
         <t t-call="website.layout">
             <t t-set="title" t-esc="gamme['name'] + ' | Capsule House'"/>
@@ -96,12 +40,10 @@
 
             <div class="ch-aide-breadcrumb" t-if="request.env.lang == 'fr_FR'">
                 <a href="/">Accueil</a><span class="sep">/</span>
-                <a href="/nos-gammes">Nos gammes</a><span class="sep">/</span>
                 <span t-esc="gamme['name']"/>
             </div>
             <div class="ch-aide-breadcrumb" t-if="request.env.lang != 'fr_FR'">
                 <a href="/">Home</a><span class="sep">/</span>
-                <a href="/nos-gammes">Our ranges</a><span class="sep">/</span>
                 <span t-esc="gamme['name']"/>
             </div>
 
