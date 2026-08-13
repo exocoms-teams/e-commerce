@@ -210,6 +210,10 @@ class TrendDashboardAPI:
             'avg_score': round(avg_score, 1),
         }
     @staticmethod
+    def is_freemium_user(env):
+        """Vrai si l'utilisateur est un compte Gratuit (ni Standard ni Pro)."""
+        return env.user.has_group('produits_tendance.group_trend_free') \
+        and not env.user.has_group('produits_tendance.group_trend_standard')
     @staticmethod
     def get_pagination_limit(env, requested_offset=0, requested_limit=None):
         """Calcule (limit, offset) réels en clampant strictement au plafond
@@ -226,8 +230,7 @@ class TrendDashboardAPI:
             TrendDashboardAPI.get_product_list().
         """
         requested_offset = max(0, requested_offset)
-        is_free = env.user.has_group('produits_tendance.group_trend_free') \
-            and not env.user.has_group('produits_tendance.group_trend_standard')
+        is_free = TrendDashboardAPI.is_freemium_user(env)
 
         if is_free:
             # Le compte Gratuit ne peut jamais dépasser 5 résultats au

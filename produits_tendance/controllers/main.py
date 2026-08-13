@@ -77,6 +77,8 @@ class TrendDashboardController(http.Controller):
             offset=offset,
         )
         has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+             has_more = False
         options = api.get_filter_options()
         stats = api.get_dashboard_stats()
 
@@ -114,6 +116,8 @@ class TrendDashboardController(http.Controller):
             offset=offset,
         )
         has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+                has_more = False
 
         return request.make_response(
             json.dumps({
