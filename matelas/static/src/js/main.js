@@ -2,27 +2,31 @@
     'use strict';
 
 
-    const matelasShadowRoots = [];
+    const matelasBadgeSelector = 'a[href*="testimonials-slider-widget"]';
+
+    function removeElfsightBadgeIn(root) {
+        root.querySelectorAll(matelasBadgeSelector).forEach(function(el) { el.remove(); });
+    }
+
+    // Elfsight recrée/rerend son badge à l'intérieur du même shadow root de
+    // temps en temps (pas seulement au chargement) : un simple passage
+    // ponctuel ne suffit pas, il faut observer en continu. On observe donc
+    // chaque shadow root dès sa création (interception d'attachShadow) au
+    // lieu de s'arrêter après quelques secondes.
     if (window.Element && Element.prototype.attachShadow) {
         const originalAttachShadow = Element.prototype.attachShadow;
         Element.prototype.attachShadow = function(init) {
             const root = originalAttachShadow.call(this, Object.assign({}, init, { mode: 'open' }));
-            matelasShadowRoots.push(root);
+            removeElfsightBadgeIn(root);
+            const shadowObserver = new MutationObserver(function() { removeElfsightBadgeIn(root); });
+            shadowObserver.observe(root, { childList: true, subtree: true });
             return root;
         };
     }
 
-    function removeElfsightBadgeEverywhere() {
-        const selector = 'a[href*="testimonials-slider-widget"]';
-        document.querySelectorAll(selector).forEach(function(el) { el.remove(); });
-        matelasShadowRoots.forEach(function(root) {
-            root.querySelectorAll(selector).forEach(function(el) { el.remove(); });
-        });
-    }
-
-    removeElfsightBadgeEverywhere();
-    const matelasBadgeInterval = setInterval(removeElfsightBadgeEverywhere, 500);
-    setTimeout(function() { clearInterval(matelasBadgeInterval); }, 30000);
+    removeElfsightBadgeIn(document);
+    const matelasBodyBadgeObserver = new MutationObserver(function() { removeElfsightBadgeIn(document); });
+    matelasBodyBadgeObserver.observe(document.documentElement, { childList: true, subtree: true });
 
     function isEnglish() {
         return (document.documentElement.getAttribute('lang') || '').toLowerCase().indexOf('en') === 0;
@@ -251,7 +255,7 @@
             const wishlistLink = document.createElement('a');
             wishlistLink.href = '/shop/wishlist';
             wishlistLink.className = 'matelas-wishlist-btn matelas-icon-btn nav-link';
-            wishlistLink.title = 'Mes favoris';
+            wishlistLink.title = en ? 'My wishlist' : 'Mes favoris';
             wishlistLink.innerHTML = '<i class="bi bi-heart"></i>';
             cartBtn.insertAdjacentElement('beforebegin', wishlistLink);
         }
@@ -285,7 +289,7 @@
             if (toggle && !toggle.classList.contains('matelas-account-link')) {
                 toggle.classList.add('matelas-account-link', 'matelas-icon-btn');
                 toggle.innerHTML = '<i class="bi bi-person-circle"></i>';
-                toggle.title = 'Mon compte';
+                toggle.title = en ? 'My account' : 'Mon compte';
             }
         } else {
             // Cas déconnecté : simple lien "Se connecter"
@@ -293,7 +297,7 @@
             if (signInLink && !signInLink.classList.contains('matelas-account-link')) {
                 signInLink.classList.add('matelas-account-link', 'matelas-icon-btn');
                 signInLink.innerHTML = '<i class="bi bi-person"></i>';
-                signInLink.title = 'Se connecter';
+                signInLink.title = en ? 'Sign in' : 'Se connecter';
             }
         }
 
@@ -342,15 +346,17 @@
         });
 
         // ===== BANNIÈRE COOKIES : texte personnalisé =====
-        const cookiesBar = document.getElementById('website_cookies_bar');
-        if (cookiesBar) {
+        // Odoo injecte cette bannière de façon asynchrone (pas forcément
+        // présente au moment où initAll() tourne) : on la traduit dès
+        // qu'elle apparaît, immédiatement ou plus tard.
+        function translateCookiesBar(cookiesBar) {
             const cookiesText = cookiesBar.querySelector('p');
             if (cookiesText) {
                 cookiesText.innerHTML = en
                     ? '🍪 We use cookies to ensure smooth browsing, remember your cart and preferences, and improve your experience on Matelas. You can accept all cookies or choose only the essential ones.'
                     : '🍪 Nous utilisons des cookies pour vous garantir une navigation fluide, mémoriser votre panier et vos préférences, et améliorer votre expérience sur Matelas. Vous pouvez tout accepter ou choisir uniquement les cookies essentiels.';
             }
-            
+
             cookiesBar.querySelectorAll('a, button').forEach(function(b) {
                 const t = b.textContent.trim().toLowerCase();
                 if (t === 'i agree' || t.indexOf('agree') !== -1 || t.indexOf('accept all') !== -1) {
@@ -359,6 +365,20 @@
                     b.textContent = en ? 'Essential only' : 'Essentiels uniquement';
                 }
             });
+        }
+
+        const existingCookiesBar = document.getElementById('website_cookies_bar');
+        if (existingCookiesBar) {
+            translateCookiesBar(existingCookiesBar);
+        } else {
+            const cookiesBarObserver = new MutationObserver(function() {
+                const bar = document.getElementById('website_cookies_bar');
+                if (bar) {
+                    translateCookiesBar(bar);
+                    cookiesBarObserver.disconnect();
+                }
+            });
+            cookiesBarObserver.observe(document.body, { childList: true, subtree: true });
         }
 
         // ===== LIEN VERS LA FICHE TECHNIQUE (page produit) =====
@@ -507,22 +527,6 @@
                 normalizePaymentButtons();
             });
             mo.observe(document.body, { childList: true, subtree: true, characterData: true });
-        })();
-
-        // ===== Masquer le bandeau "Free Testimonials Slider Widget" d'Elfsight =====
-        (function() {
-            const temoignages = document.querySelector('.temoignages');
-            if (!temoignages) { return; }
-
-            function removeElfsightBadge() {
-                temoignages.querySelectorAll('a[href*="elfsight.com/testimonials-slider-widget"]').forEach(function(badge) {
-                    badge.remove();
-                });
-            }
-
-            removeElfsightBadge();
-            const badgeObserver = new MutationObserver(removeElfsightBadge);
-            badgeObserver.observe(temoignages, { childList: true, subtree: true });
         })();
 
     }
