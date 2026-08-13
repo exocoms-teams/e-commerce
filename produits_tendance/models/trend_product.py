@@ -152,7 +152,7 @@ class TrendProduct(models.Model):
         current_domain = [
             ('product_id', '=', self.id),
             ('computed_at', '>=', current_start),
-            ('computed_at', '<', current_end),
+            ('computed_at', '<=', current_end),
         ]
         current_scores = self.env['trend.score'].search(current_domain)
         current_metrics = {
@@ -197,5 +197,5 @@ class TrendProduct(models.Model):
                     source_score = max(0.0, min(source_score, 1.0))
                 except (ValueError, TypeError):
                     source_score = 0.0
-                            
+
         return scoring_engine.calculate_trend_score(current_metrics, previous_metrics, source_score)
