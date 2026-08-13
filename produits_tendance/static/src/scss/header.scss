@@ -1,0 +1,130 @@
+/* static/src/scss/header.scss */
+
+.o_winners_header {
+    background-color: $o-winners-white;
+    /* Une bordure très légère en bas pour détacher le header du fond */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-family: $o-winners-font-family;
+    padding: ($o-winners-spacing-unit / 2) 0;
+
+    &__logo {
+        text-decoration: none;
+        
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    /* Taille de l'image du logo */
+    &__logo_img {
+        height: 32px; /* Tu pourras ajuster cette valeur si ton image est trop grande/petite */
+        width: auto;
+        object-fit: contain;
+    }
+
+    /* Texte "winners" petit et inspirant */
+    &__logo_text {
+        font-size: 18px;
+        font-weight: 500; /* Poids moyen, plus élégant que du gras classique */
+        letter-spacing: 1.5px; /* Espacement des lettres pour le côté premium/inspirant */
+        color: $o-winners-text-dark;
+        text-transform: lowercase; /* Met "winners" en minuscules, très courant dans le design SaaS moderne */
+    }
+
+    &__nav {
+        gap: ($o-winners-spacing-unit * 2);
+    }
+
+    &__nav_link {
+        color: $o-winners-text-dark;
+        font-weight: 500;
+        font-size: 15px;
+        padding: $o-winners-spacing-unit ($o-winners-spacing-unit * 1.5) !important;
+        border-radius: $o-winners-radius;
+        transition: color 0.2s ease;
+
+        &:hover, &.active {
+            color: $o-winners-primary;
+        }
+    }
+
+    &__auth {
+        gap: $o-winners-spacing-unit;
+    }
+
+    /* Le texte "Se connecter" */
+    &__login_text {
+        color: $o-winners-text-dark;
+        font-weight: 600;
+        font-size: 15px;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: $o-winners-primary;
+        }
+    }
+
+    &__user {
+        color: $o-winners-text-dark;
+        cursor: pointer;
+
+        &:hover {
+            color: $o-winners-primary;
+        }
+    }
+
+    &__username {
+        font-size: 14px;
+    }
+
+    &__avatar {
+        border: 2px solid $o-winners-bg-light;
+    }
+}
+
+/* Nouveau bouton orange pour "Essayer gratuitement" (Charte: Accent) */
+.o_winners_btn_accent {
+    background-color: $o-winners-accent;
+    color: $o-winners-white;
+    border-radius: $o-winners-radius;
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    transition: transform 0.2s ease, filter 0.2s ease;
+
+    &:hover {
+        color: $o-winners-white;
+        filter: brightness(0.95);
+        transform: translateY(-1px);
+    }
+}
+
+/* ---------------------------------------------------
+   Responsive : Menu Mobile (Hamburger) < 768px
+--------------------------------------------------- */
+@media (max-width: 767.98px) {
+    .o_winners_header {
+        &__nav {
+            gap: ($o-winners-spacing-unit / 2);
+            padding-top: $o-winners-spacing-unit;
+        }
+
+        &__nav_link {
+            text-align: center;
+        }
+
+        &__auth {
+            margin-top: $o-winners-spacing-unit;
+            padding-top: $o-winners-spacing-unit;
+            border-top: 1px solid $o-winners-bg-light;
+            align-items: center !important;
+            gap: $o-winners-spacing-unit;
+        }
+        
+        &__user {
+            justify-content: center;
+        }
+    }
+}
