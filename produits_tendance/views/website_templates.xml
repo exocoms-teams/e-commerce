@@ -4,14 +4,19 @@
     <!-- ============================================================
          WIN-45 : Landing Page SaaS - route "/"
          Hérite de la homepage Odoo standard.
+         Structure "oe_structure" éditable via le constructeur de
+         site natif (blocs Bootstrap 5) : aucun CSS custom ici.
     ============================================================ -->
 
-    <template id="winners_homepage" name="Landing Page - Détection Produits Tendance"
-              inherit_id="website.homepage" priority="99">
+    <template id="homepage" name="Landing Page - Détection Produits Tendance"
+          inherit_id="website.homepage" priority="99">
 
-        <xpath expr="//div[@id='wrap']" position="replace">
-            <div id="wrap" class="oe_structure oe_empty" data-name="Homepage">
+        <xpath expr="//div[hasclass('oe_structure')]" position="replace">
+            <div class="oe_structure" id="oe_structure_produits_tendance_homepage">
 
+                <!-- Section de départ : bloc "Cover" natif Odoo.
+                     Editable/remplaçable ensuite depuis le constructeur
+                     de site (drag & drop d'autres blocs). -->
                 <section class="s_cover parallax s_parallax_is_fixed pt96 pb96 o_colored_level"
                          data-scroll-background-ratio="0" data-snippet="s_cover">
                     <div class="o_we_bg_filter bg-black-50"/>
@@ -32,6 +37,11 @@
                     </div>
                 </section>
 
+                <!-- WIN-103 : "Comment ça marche" - 3 étapes juste sous le
+                     hero. Sous-template dédié (template_how_it_works,
+                     ci-dessous) : pas de dépendance à website.layout/request,
+                     donc testable directement en TransactionCase, même
+                     principe que template_product_cards pour le dashboard. -->
                 <t t-call="produits_tendance.template_how_it_works"/>
 
             </div>
@@ -39,6 +49,9 @@
 
     </template>
 
+    <!-- Sous-template autonome (aucun t-call="website.layout", aucun accès
+         à `request`) : uniquement du QWeb statique, pour rester testable
+         hors contexte HTTP. -->
     <template id="template_how_it_works" name="Comment ça marche - 3 étapes">
         <section class="o_winners_how_it_works py-5">
             <div class="container">
@@ -74,52 +87,6 @@
                 </div>
             </div>
         </section>
-    </template>
-
-    <!-- Footer Winners -->
-    <template id="winners_widgets_footer" name="Winners Footer" inherit_id="website.layout" priority="99">
-        <!-- Target <main> which is guaranteed to exist in website.layout -->
-        <xpath expr="//main" position="after">
-            <footer id="bottom" data-anchor="true" class="o_winners_footer" t-if="not no_footer">
-                <div class="o_winners_footer_container">
-                    <div class="o_winners_footer_row">
-                        <!-- À propos -->
-                        <div class="o_winners_footer_col o_winners_footer_about">
-                            <span class="o_winners_footer_logo">Winners</span>
-                            <p class="o_winners_footer_description">Winners vous aide à détecter les produits tendance avant vos concurrents grâce à l'analyse en temps réel des signaux e-commerce.</p>
-                        </div>
-                        <!-- Produit -->
-                        <div class="o_winners_footer_col o_winners_footer_product">
-                            <h4 class="o_winners_footer_title">Produit</h4>
-                            <ul class="o_winners_footer_list">
-                                <li><a href="/dashboard" class="o_winners_footer_link">Dashboard</a></li>
-                                <li><a href="/submit-trend" class="o_winners_footer_link">Soumettre un produit</a></li>
-                            </ul>
-                        </div>
-                        <!-- Ressources -->
-                        <div class="o_winners_footer_col o_winners_footer_resources">
-                            <h4 class="o_winners_footer_title">Ressources</h4>
-                            <ul class="o_winners_footer_list">
-                                <li><a href="/page/comment-ca-marche" class="o_winners_footer_link">Comment ça marche</a></li>
-                                <li><a href="/contact" class="o_winners_footer_link">Contact</a></li>
-                            </ul>
-                        </div>
-                        <!-- Légal -->
-                        <div class="o_winners_footer_col o_winners_footer_legal">
-                            <h4 class="o_winners_footer_title">Légal</h4>
-                            <ul class="o_winners_footer_list">
-                                <li><a href="/page/mentions-legales" class="o_winners_footer_link">Mentions légales</a></li>
-                                <li><a href="/page/confidentialite" class="o_winners_footer_link">Confidentialité</a></li>
-                                <li><a href="/page/cgv" class="o_winners_footer_link">CGU</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="o_winners_footer_bottom">
-                        <p class="o_winners_footer_copyright">© <t t-out="time.strftime('%Y')"/> Winners. Tous droits réservés.</p>
-                    </div>
-                </div>
-            </footer>
-        </xpath>
     </template>
 
 </odoo>
