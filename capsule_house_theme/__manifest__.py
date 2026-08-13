@@ -8,7 +8,7 @@
     # (.1 à .14 à ce jour) au prochain upgrade, ce qui a probablement causé
     # les régressions observées (pricelist, accès société, logo, CSS non
     # appliqués malgré le code correctement poussé).
-    'version': '19.0.1.0.65',
+    'version': '19.0.1.0.66',
     'category': 'Website/Theme',
     'summary': 'Thème officiel du site Capsule House — frontend complet',
     'description': """Thème frontend dédié au site Capsule House (société Exocoms Group), exécuté sur la base Odoo mutualisée multi-sites (environ 17 sites sur la même instance).
@@ -49,6 +49,10 @@ Pages actuellement livrées : Accueil, Boutique, Avis clients (/avis), Aide (Liv
         'views/templates/layout.xml',
         'views/partials/hero.xml',
         'views/partials/featured_products.xml',
+        # Ajouté en 19.0.1.0.66 : témoignages + réassurance sur la home,
+        # repris d'exocoms_theme (voir home_trust.xml). Doit être chargé
+        # avant home.xml, qui le t-call.
+        'views/partials/home_trust.xml',
         'views/pages/home.xml',
         'views/pages/shop.xml',
         # Avis clients (19.0.1.0.35, voir models/avis.py) : vrais avis

@@ -1619,6 +1619,62 @@ Enregistré dans `THEME_ASSETS` (`__init__.py`) comme les autres feuilles
 du thème, via `ir.asset` scopé `website_id` (jamais dans
 `web.assets_frontend` global). Aucun contenu juridique modifié.
 
+## Audit exocoms_theme — témoignages & réassurance sur la home (v19.0.1.0.66)
+
+Demande client : "regarde exocoms et ajoute ce qui est nécessaire pour
+capsule house et si tu peux l'améliorer tu le fais". Comparaison complète
+des deux modules (tous les fichiers `.py`/`.xml`/`.css`/`.js`).
+
+**Éléments d'exocoms_theme identifiés mais volontairement NON repris :**
+- `views/pages/contact.xml` (page contact custom) — Capsule House utilise
+  délibérément la page NATIVE Odoo `/contactus`, décision déjà actée
+  (voir manifest, "jamais reconstruite par ce module").
+- `views/pages/services.xml` + `informatique.xml`/`telecom.xml`/
+  `monéthique.xml` (hub "Services" avec 3 pages de domaines d'expertise)
+  — spécifique à l'activité d'Exocoms (IT/Télécom/Monétique), pas
+  transposable à Capsule House sans inventer des domaines d'expertise
+  qui n'existent pas. C'est le même blocage identifié plus tôt en
+  réponse à "la page application ne peut-elle pas être faite" (site
+  Guose) : pas de vrai contenu disponible.
+- `views/pages/emplois.xml` (carrières) — nécessiterait de vraies offres
+  d'emploi, non disponibles.
+- `views/partials/dashbord.xml`/`dashbord_boutique.xml` (carousels
+  Nouveautés/Meilleures ventes/Vus récemment) — Capsule House a déjà son
+  équivalent minimal (`partial_featured_products`, grille "Meilleures
+  ventes") ; passer à 3 carousels distincts n'apporte rien tant que le
+  catalogue est à 0 produit publié.
+- Bande "moyens de paiement" (logos Visa/Mastercard/PayPal/Amex...) —
+  affirmerait des moyens de paiement dont ce module n'a aucune
+  confirmation qu'ils sont réellement configurés côté `website_sale`
+  pour ce site.
+
+**Éléments réellement portables, ajoutés** (`views/partials/home_trust.xml`,
+t-appelé depuis `home.xml` après `partial_featured_products`) :
+1. **Témoignages** (`.ch-testimonials`) : carousel alimenté par les VRAIS
+   avis publiés (`capsule.house.avis`), via une nouvelle méthode
+   `_get_home_avis_context()` dans `controllers/main.py` (réplique fidèle
+   de `_get_home_avis_context` côté exocoms). Volontairement indépendante
+   de `_get_avis_stats()` (utilisée pour le badge du hero, qui peut
+   retomber sur un réglage manuel `ir.config_parameter`) : la section
+   témoignages n'affiche jamais autre chose que de vrais avis — état vide
+   explicite ("Soyez le premier à partager votre expérience") sinon.
+2. **Réassurance** (`.ch-why-us`) : 4 items, mais contrairement aux 4
+   promesses génériques d'exocoms (non vérifiées pour notre activité :
+   "retours faciles", "qualité garantie"...), chaque item ici reformate un
+   fait déjà publié et validé ailleurs sur CE site — rien de nouveau
+   n'est affirmé : annulation 48h/remboursement intégral
+   (`aide_retours.xml`), livraison 6 semaines France métropolitaine
+   (`aide_livraison.xml`), garantie constructeur 10 ans
+   (`aide_garantie.xml`), paiement 3x sans frais dès 1000€ (`hero.xml`,
+   `aide_faq.xml`). Chaque item pointe vers sa page source respective.
+
+**Amélioration apportée** (au-delà de la simple reprise) : chez exocoms,
+le script de défilement automatique du carousel témoignages est un
+`<script>` inline dans le template QWeb (`features.xml`). Ici, déplacé
+dans `static/src/js/main.js` (`initTestimonialsCarousel`) — cohérent avec
+le reste de ce module, où tout le JS du thème vit dans `main.js`, jamais
+dans les vues.
+
 ## Point de vérification connu
 
 Le xpath de `views/pages/shop.xml`

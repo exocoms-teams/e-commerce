@@ -143,13 +143,15 @@ class CapsuleHouseWebsite(Website):
             rating_count = ICP.get_param('capsule_house_theme.rating_count')
         units_installed_count = ICP.get_param('capsule_house_theme.units_installed_count')
 
-        return request.render('capsule_house_theme.page_home', {
+        values = {
             'featured_products': self._serialize_products(featured_products),
             'published_products_count': Product.search_count(domain),
             'rating_value': rating_value,
             'rating_count': rating_count,
             'units_installed_count': units_installed_count,
-        })
+        }
+        values.update(self._get_home_avis_context(website))
+        return request.render('capsule_house_theme.page_home', values)
 
     @http.route('/capsule-house/hero-data.json', type='http', auth='public',
                 website=True, sitemap=False)
@@ -278,6 +280,38 @@ class CapsuleHouseWebsite(Website):
             return None, None
         avg = sum(a.rating for a in published) / len(published)
         return round(avg, 1), len(published)
+
+    def _get_home_avis_context(self, website):
+        """Avis publiés de notre site, pour le carousel témoignages de la
+        home (même source que la page /avis). Réplique le mécanisme
+        observé sur exocoms_theme (_get_home_avis_context) — ajouté en
+        19.0.1.0.66 suite à la demande client de reprendre ce qui est
+        nécessaire d'exocoms_theme pour Capsule House.
+
+        Volontairement INDÉPENDANT de `_get_avis_stats()` : celui-ci sert
+        au badge du hero, qui retombe sur un réglage manuel
+        (ir.config_parameter) tant qu'aucun avis réel n'existe. La
+        section témoignages, elle, ne doit JAMAIS afficher autre chose
+        que de vrais avis — donc son état vide ("soyez le premier...")
+        doit apparaître même si le badge du hero affiche un chiffre de
+        secours.
+        """
+        Avis = request.env['capsule.house.avis'].sudo()
+        all_avis = Avis.search([
+            ('website_id', '=', website.id),
+            ('state', '=', 'published'),
+        ], order='date desc, id desc')
+
+        home_avis_stats = False
+        if all_avis:
+            total = len(all_avis)
+            avg = sum(a.rating for a in all_avis) / total
+            home_avis_stats = {'avg': round(avg, 1), 'total': total}
+
+        return {
+            'home_avis_list': all_avis[:6],
+            'home_avis_stats': home_avis_stats,
+        }
 
     @http.route('/boutique', type='http', auth='public', website=True,
                 sitemap=True)

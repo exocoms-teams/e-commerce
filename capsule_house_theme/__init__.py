@@ -122,6 +122,9 @@ SCOPED_VIEW_XML_IDS = [
     'capsule_house_theme.mentions_legales_page',
     'capsule_house_theme.cgv_page',
     'capsule_house_theme.confidentialite_page',
+    # Ajouté en 19.0.1.0.66 (témoignages + réassurance sur la home,
+    # repris d'exocoms_theme — voir home_trust.xml).
+    'capsule_house_theme.partial_home_trust',
 ]
 
 # Catégories boutique (product.public.category) reprises de la maquette de

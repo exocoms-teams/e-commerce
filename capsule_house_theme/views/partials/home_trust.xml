@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Ajouté en v19.0.1.0.66, à la demande du client ("regarde exocoms
+        et ajoute ce qui est nécessaire pour capsule house"). Reprend
+        deux blocs d'exocoms_theme (views/templates/features.xml) —
+        témoignages + bande de réassurance — adaptés à Capsule House :
+
+        1. TÉMOIGNAGES (.ch-testimonials) : carousel alimenté par les
+           VRAIS avis publiés (capsule.house.avis, voir
+           _get_home_avis_context() dans controllers/main.py), même
+           source que la page /avis. Réplique fidèle du mécanisme
+           exocoms (_get_home_avis_context côté contrôleur), mais
+           volontairement INDÉPENDANT du badge de note du hero : le
+           hero peut retomber sur un réglage manuel
+           (ir.config_parameter) tant qu'aucun avis réel n'existe,
+           cette section ne doit jamais montrer autre chose que de
+           vrais avis — état vide explicite sinon, jamais de témoignage
+           inventé.
+
+        2. RÉASSURANCE (.ch-why-us) : contrairement à exocoms (4
+           promesses génériques : "retours faciles", "livraison
+           rapide", etc., non vérifiées pour notre activité), les 4
+           items ci-dessous reprennent des faits déjà publiés ET
+           validés ailleurs sur CE site — rien de nouveau n'est
+           affirmé :
+           - 48h pour annuler, remboursement intégral (aide_retours.xml)
+           - Livraison 6 semaines France métropolitaine (aide_livraison.xml)
+           - Garantie constructeur 10 ans (aide_garantie.xml)
+           - Paiement 3x sans frais dès 1 000 € (hero.xml, aide_faq.xml)
+
+           La bande "moyens de paiement" (logos Visa/Mastercard/PayPal…)
+           d'exocoms n'est PAS reprise : elle affirmerait des moyens de
+           paiement (Amex, PayPal...) dont ce module n'a aucune
+           confirmation qu'ils sont réellement configurés côté
+           website_sale pour ce site — à ajouter seulement si le client
+           confirme la liste réelle des moyens acceptés.
+    -->
+    <template id="partial_home_trust" name="Capsule House - Témoignages &amp; réassurance">
+
+        <section class="ch-testimonials">
+            <div class="container">
+                <div class="ch-testimonials-head" t-if="request.env.lang == 'fr_FR'">
+                    <div>
+                        <span class="ch-testimonials-badge">Témoignages</span>
+                        <h2 class="ch-section-title">Ce que disent nos clients</h2>
+                    </div>
+                    <a href="/avis" class="ch-see-all">Voir tous les avis →</a>
+                </div>
+                <div class="ch-testimonials-head" t-if="request.env.lang != 'fr_FR'">
+                    <div>
+                        <span class="ch-testimonials-badge">Testimonials</span>
+                        <h2 class="ch-section-title">What our clients say</h2>
+                    </div>
+                    <a href="/avis" class="ch-see-all">View all reviews →</a>
+                </div>
+
+                <t t-if="home_avis_list">
+                    <div class="ch-testimonials-track-wrap">
+                        <div class="ch-testimonials-track" id="ch-testimonials-track">
+                            <t t-foreach="home_avis_list" t-as="avis">
+                                <div class="ch-testimonial-card">
+                                    <div class="ch-testimonial-stars">
+                                        <t t-foreach="range(avis.rating)" t-as="s"><i class="fa fa-star"/></t>
+                                    </div>
+                                    <blockquote><t t-out="avis.comment"/></blockquote>
+                                    <div class="ch-testimonial-author">
+                                        <div class="ch-testimonial-avatar"><t t-out="avis.name[0].upper()"/></div>
+                                        <div>
+                                            <strong><t t-out="avis.name"/></strong>
+                                            <span t-if="avis.product"><t t-out="avis.product"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="ch-testimonials-rating">
+                        <div class="ch-testimonial-stars ch-testimonial-stars-lg">
+                            <i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/><i class="fa fa-star"/>
+                        </div>
+                        <p t-if="request.env.lang == 'fr_FR'"><strong><t t-out="home_avis_stats['avg']"/> / 5</strong> — <t t-out="home_avis_stats['total']"/> avis vérifiés</p>
+                        <p t-if="request.env.lang != 'fr_FR'"><strong><t t-out="home_avis_stats['avg']"/> / 5</strong> — <t t-out="home_avis_stats['total']"/> verified reviews</p>
+                    </div>
+                </t>
+                <p class="ch-testimonials-empty" t-else="">
+                    <t t-if="request.env.lang == 'fr_FR'">Soyez le premier à partager votre expérience.</t>
+                    <t t-else="">Be the first to share your experience.</t>
+                </p>
+
+                <div class="ch-testimonials-cta">
+                    <a href="/avis#avis-form" class="ch-testimonials-write-btn" t-if="request.env.lang == 'fr_FR'">
+                        <i class="fa fa-pencil"/> Écrire un avis
+                    </a>
+                    <a href="/avis#avis-form" class="ch-testimonials-write-btn" t-if="request.env.lang != 'fr_FR'">
+                        <i class="fa fa-pencil"/> Write a review
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="ch-why-us">
+            <div class="container">
+                <div class="ch-why-us-grid" t-if="request.env.lang == 'fr_FR'">
+                    <a href="/retours" class="ch-why-us-item">
+                        <i class="fa fa-rotate-left"/>
+                        <div><h4>Annulation sous 48h</h4><p>Remboursement intégral avant le lancement en atelier.</p></div>
+                    </a>
+                    <a href="/livraison" class="ch-why-us-item">
+                        <i class="fa fa-truck"/>
+                        <div><h4>Livraison en 6 semaines</h4><p>Installation clé en main partout en France métropolitaine.</p></div>
+                    </a>
+                    <a href="/garantie" class="ch-why-us-item">
+                        <i class="fa fa-shield"/>
+                        <div><h4>Garantie constructeur 10 ans</h4><p>Sur la structure et l'étanchéité de votre pod.</p></div>
+                    </a>
+                    <a href="/faq" class="ch-why-us-item">
+                        <i class="fa fa-credit-card"/>
+                        <div><h4>Paiement 3x sans frais</h4><p>Dès 1 000 € d'achat, en plus de la carte et du virement.</p></div>
+                    </a>
+                </div>
+                <div class="ch-why-us-grid" t-if="request.env.lang != 'fr_FR'">
+                    <a href="/retours" class="ch-why-us-item">
+                        <i class="fa fa-rotate-left"/>
+                        <div><h4>Cancel within 48h</h4><p>Full refund before production begins in our workshop.</p></div>
+                    </a>
+                    <a href="/livraison" class="ch-why-us-item">
+                        <i class="fa fa-truck"/>
+                        <div><h4>Delivery in 6 weeks</h4><p>Turnkey installation anywhere in mainland France.</p></div>
+                    </a>
+                    <a href="/garantie" class="ch-why-us-item">
+                        <i class="fa fa-shield"/>
+                        <div><h4>10-year manufacturer warranty</h4><p>Covering the structure and weatherproofing of your pod.</p></div>
+                    </a>
+                    <a href="/faq" class="ch-why-us-item">
+                        <i class="fa fa-credit-card"/>
+                        <div><h4>3x interest-free payment</h4><p>From €1,000 of purchase, in addition to card and bank transfer.</p></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </template>
+</odoo>
