@@ -16,6 +16,9 @@
         'mail',
         'delivery',
         'base_setup',
+        'portal',
+        'auth_signup',
+        'sale',
     ],
 
     # ---------------------------

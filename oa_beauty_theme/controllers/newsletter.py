@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 class NewsletterController(http.Controller):
 
-    @http.route('/newsletter/subscribe', type='jsonrpc', auth='public', methods=['POST'], csrf=False)
+    @http.route('/newsletter/subscribe', type='json', auth='public', methods=['POST'], csrf=False)
     def subscribe(self, **kwargs):
         """
         Point d'entrée appelé par le formulaire newsletter du footer.
