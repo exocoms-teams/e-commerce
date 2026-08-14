@@ -201,15 +201,35 @@
         </field>
     </record>
 
-    <record id="view_rgpd_treatment_search" model="ir.ui.view">
+    <!-- <record id="view_rgpd_treatment_search" model="ir.ui.view">
         <field name="name">exocoms.rgpd.treatment.search</field>
         <field name="model">exocoms.rgpd.treatment</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
+                <field name="data_category_ids"/>
+                <field name="subject_category_ids"/>
+                <field name="owner_user_id"/>
+                <filter name="filter_active" string="Actifs" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_draft" string="Brouillons" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="filter_sensitive" string="Données sensibles" domain="[('has_sensitive_data', '=', True)]"/>
+                <filter name="filter_minors" string="Concerne des mineurs" domain="[('concerns_minors', '=', True)]"/>
+                <filter name="filter_transfer" string="Transfert hors UE" domain="[('transfer_outside_eu', '=', True)]"/>
+                <filter name="filter_dpia" string="AIPD requise" domain="[('dpia_required', '=', True)]"/>
+                <filter name="filter_high_risk" string="Risque élevé" domain="[('risk_level', '=', 'high')]"/>
+                <separator/>
+                <filter name="filter_review_overdue" string="Revue en retard" domain="[('review_overdue', '=', True)]"/>
+                <filter name="filter_archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_legal_basis" string="Base légale" context="{'group_by': 'legal_basis'}"/>
+                    <filter name="group_risk" string="Niveau de risque" context="{'group_by': 'risk_level'}"/>
+                    <filter name="group_owner" string="Responsable" context="{'group_by': 'owner_user_id'}"/>
+                </group>
             </search>
         </field>
-    </record>
+    </record> -->
 
     <record id="action_rgpd_treatment" model="ir.actions.act_window">
         <field name="name">Registre des traitements</field>
