@@ -2,12 +2,14 @@
 from . import controllers
 from . import models
 from . import wizards
+from . import i18n_map
 
 
 def _assign_nouveaute_tag(env):
     """Pose automatiquement le tag "Nouveauté" sur quelques produits"""
     _ensure_french_is_default_language(env)
     _seed_matelas_caracteristiques(env)
+    _fix_fr_translations(env)
 
     tag = env.ref('matelas.product_tag_nouveaute', raise_if_not_found=False)
     if not tag:
@@ -61,6 +63,49 @@ def _seed_matelas_caracteristiques(env):
     for product, valeurs in zip(products, exemples):
         if not product.matelas_dimensions:
             product.write(valeurs)
+
+
+def _fix_fr_translations(env):
+    """Réapplique explicitement les traductions françaises des vues du
+    site, en lisant le texte source ACTUELLEMENT enregistré en base (via
+    get_field_translations) plutôt qu'en se fiant à une correspondance
+    exacte dans un fichier .po.
+
+    Nécessaire à cause d'une particularité d'Odoo : le champ traduit
+    arch_db utilise 'en_US' comme clé technique de référence, quelle que
+    soit la langue du XML source. Importer les traductions anglaises
+    (i18n/en_US.po) écrase donc cette référence avec du texte anglais, et
+    le français (qui n'a pas de clé de référence à lui) affiche l'anglais
+    par repli tant qu'une traduction fr_FR explicite n'est pas reposée sur
+    le texte source du moment. Un fichier fr_FR.po statique doit
+    correspondre EXACTEMENT (espaces, sauts de ligne...) au texte source
+    réellement stocké en base pour que l'import fonctionne, ce qui s'est
+    avéré peu fiable en pratique - d'où cette approche : on relit le texte
+    source réel en base et on n'utilise i18n_map.EN_TO_FR que pour la
+    valeur française à appliquer, sans dépendre d'une correspondance de
+    fichier statique.
+    """
+    view_xmlids = [
+        'home', 'avis_page', 'contact_page', 'mentions_legales',
+        'cookie_policy_custom', 'fiche_technique', 'email_confirm_success',
+        'email_confirm_invalid', 'website_footer',
+        'view_matelas_newsletter_wizard_form', 'view_matelas_avis_form',
+        'view_matelas_avis_list',
+        'product_template_form_matelas_caracteristiques',
+    ]
+    for xmlid in view_xmlids:
+        view = env.ref('matelas.%s' % xmlid, raise_if_not_found=False)
+        if not view:
+            continue
+        translations, _info = view.get_field_translations('arch_db')
+        update = {}
+        for entry in translations:
+            source = entry.get('source') or ''
+            fr_value = i18n_map.EN_TO_FR.get(source) or i18n_map.EN_TO_FR.get(source.strip())
+            if fr_value:
+                update[source] = fr_value
+        if update:
+            view.update_field_translations('arch_db', {'fr_FR': update})
 
 
 def _ensure_french_is_default_language(env):
