@@ -1,0 +1,225 @@
+.exo-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    z-index: 999;
+}
+
+.exo-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 85px;
+}
+
+.exo-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.exo-logo img {
+    height: 48px;
+    width: auto;
+    display: block;
+}
+
+.exo-navbar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.exo-menu {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.exo-menu li {
+    position: relative;
+}
+
+.exo-menu li a {
+    position: relative;
+    display: inline-block;
+    color: var(--navy);
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.exo-menu li a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0;
+    height: 2px;
+    background: var(--blue);
+    transition: var(--transition);
+}
+
+.exo-menu li a:hover {
+    color: var(--blue);
+}
+
+.exo-menu li a:hover::after {
+    width: 100%;
+}
+
+.exo-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.exo-header-icon {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--navy);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.exo-header-icon:hover {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--panel);
+}
+
+.exo-header-icon i {
+    font-size: 17px;
+}
+
+.exo-cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue);
+    color: var(--panel);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.exo-menu li.active a {
+    color: var(--blue);
+}
+
+.exo-menu li.active a::after {
+    width: 100%;
+}
+
+/* MEGA MENU */
+.exo-mega-menu {
+    position: relative;
+}
+
+.exo-mega-menu > a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.exo-mega-menu > a i {
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.exo-mega-menu:hover > a i {
+    transform: rotate(180deg);
+}
+
+.exo-mega-dropdown {
+    position: absolute;
+    top: calc(100% + 22px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: 760px;
+    padding: 35px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 25px 60px rgba(11, 27, 51, .15);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.exo-mega-menu:hover .exo-mega-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.exo-mega-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.exo-mega-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.exo-mega-item:hover {
+    background: var(--blue-soft);
+}
+
+.exo-mega-item i {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue);
+    color: var(--panel);
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.exo-mega-item h4 {
+    margin: 0 0 6px;
+    color: var(--navy);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.exo-mega-item span {
+    display: block;
+    color: var(--grey);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.exo-mega-item::after {
+    display: none;
+}

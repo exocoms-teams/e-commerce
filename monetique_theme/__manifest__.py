@@ -9,13 +9,20 @@
     'data': [
         'security/ir.model.access.csv',
 
-        'views/layout.xml',
-        'views/pages.xml',
+        'views/pages/home.xml',
+
+        'views/templates/header.xml',
+        'views/templates/footer.xml',
+
+        
     ],
 
     'assets': {
         'web.assets_frontend': [
-            'monetique_theme/static/src/scss/main.scss',
+            'monetique_theme/static/src/css/pages/home.css',
+            'monetique_theme/static/src/css/variables.css',
+            'monetique_theme/static/src/css/templates/header.css',
+            'monetique_theme/static/src/css/templates/footer.css',
         ],
     },
     'installable': True,
