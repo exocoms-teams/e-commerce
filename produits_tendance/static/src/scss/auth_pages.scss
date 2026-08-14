@@ -12,6 +12,19 @@
    ============================================================ */
 
 // -----------------------------------------------------------
+// Masquage du header/footer standard du site sur les pages
+// d'authentification uniquement (le module "website" installé
+// sur ce projet force website.layout, avec header/nav/footer
+// complets, sur /web/login et /web/signup). On les cache plutôt
+// que de les supprimer côté template pour ne rien casser si
+// d'autres modules en dépendent ailleurs sur la page.
+// -----------------------------------------------------------
+body:has(.oe_website_login_container) #wrapwrap > header,
+body:has(.oe_website_login_container) #wrapwrap > footer {
+    display: none;
+}
+
+// -----------------------------------------------------------
 // Page / grille 2 colonnes
 // -----------------------------------------------------------
 #o_winners_auth_page.o_winners_auth_page {
@@ -146,21 +159,26 @@
 }
 
 // -----------------------------------------------------------
-// Panneau droit (formulaire, carte blanche native)
+// Panneau droit (formulaire) — le conteneur réel ici est
+// .oe_website_login_container (natif au module "website"), pas
+// une .card : ce projet utilise website.login_layout plutôt que
+// web.login_layout brut (voir commentaire dans auth_templates.xml).
 // -----------------------------------------------------------
-.card.o_winners_auth_card {
+.oe_website_login_container {
     flex: 0 0 auto;
     width: 480px;
     align-self: center;
-    margin: $o-winners-spacing-unit * 4 !important;
-    border-radius: $o-winners-radius * 2 !important;
+    margin: $o-winners-spacing-unit * 4;
+    padding: $o-winners-spacing-unit * 4;
+    border-radius: $o-winners-radius * 2;
     box-shadow: $o-winners-shadow-soft;
     border: $o-winners-border-soft;
     background: $o-winners-white;
 
     @media (max-width: 575.98px) {
         width: 100%;
-        margin: 0 !important;
+        margin: 0;
+        padding: $o-winners-spacing-unit * 3 $o-winners-spacing-unit * 2;
         box-shadow: none;
         border: none;
     }
@@ -246,8 +264,8 @@
 // Le titre "Connexion" / "Sign up" natif d'Odoo n'a pas de classe
 // dédiée ; on cible via le contexte du formulaire pour rester
 // cohérent avec la charte sans dupliquer de markup.
-.o_winners_auth_card .oe_login_form,
-.o_winners_auth_card .oe_signup_form {
+.oe_website_login_container .oe_login_form,
+.oe_website_login_container .oe_signup_form {
     font-family: $o-winners-font-family;
 
     .form-label {

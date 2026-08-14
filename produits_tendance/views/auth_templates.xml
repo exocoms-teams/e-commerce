@@ -60,32 +60,26 @@
          fois habille donc les 3 pages en même temps.
     ============================================================ -->
 
-    <template id="web_login_layout_winners" inherit_id="web.login_layout" name="Winners - Layout Authentification (2 colonnes)">
+    <template id="website_login_layout_winners" inherit_id="website.login_layout" priority="30" name="Winners - Layout Authentification (2 colonnes)">
 
-        <!-- Le conteneur Bootstrap devient notre grille 2 colonnes -->
-        <xpath expr="//div[hasclass('container') and hasclass('py-5')]" position="attributes">
+        <!-- ⚠️ Le module "website" (installé sur ce site e-commerce)
+             surcharge web.login_layout via website.login_layout
+             (priority 20), en remplaçant TOUTE la structure interne
+             par <div class="oe_website_login_container" t-out="0"/>
+             dans le layout complet du site (header/nav/footer inclus).
+             C'est donc CE template — et non web.login_layout — qui
+             produit la page réellement affichée. On l'hérite ici avec
+             une priorité supérieure (30) pour s'appliquer après lui. -->
+
+        <xpath expr="//div[hasclass('oe_website_login_container')]" position="attributes">
             <attribute name="id">o_winners_auth_page</attribute>
             <attribute name="class" add="o_winners_auth_page" separator=" "/>
-        </xpath>
-
-        <!-- La carte native devient le panneau blanc de droite -->
-        <xpath expr="//div[contains(@t-attf-class, 'o_database_list')]" position="attributes">
-            <attribute name="t-attf-class">card border-0 mx-auto bg-100 {{login_card_classes}} o_database_list o_winners_auth_card</attribute>
-            <attribute name="style">max-width: 480px;</attribute>
-        </xpath>
-
-        <!-- Le logo générique Odoo en haut de carte n'a pas sa place
-             dans la maquette (le logo Winners vit dans le panneau
-             gauche) : on le masque plutôt que de le supprimer, pour
-             ne rien casser si un module tiers dépend de ce bloc. -->
-        <xpath expr="//div[hasclass('text-center') and hasclass('pb-3') and hasclass('border-bottom') and hasclass('mb-4')]" position="attributes">
-            <attribute name="class" add="d-none" separator=" "/>
         </xpath>
 
         <!-- Panneau gauche : accroche produit + bénéfices + partenaires.
              Contenu texte uniquement (pas de logos de marques réels
              reproduits, pour rester neutre côté droits/marques) -->
-        <xpath expr="//div[contains(@t-attf-class, 'o_database_list')]" position="before">
+        <xpath expr="//div[hasclass('oe_website_login_container')]" position="before">
             <div class="o_winners_auth_side">
                 <div class="o_winners_auth_side_inner">
                     <div class="o_winners_auth_logo">
@@ -145,7 +139,7 @@
 
         <!-- Footer légal commun aux 2 vues, sous les colonnes.
              Réutilise les routes créées en WIN-102. -->
-        <xpath expr="//div[hasclass('container') and hasclass('py-5')]" position="after">
+        <xpath expr="//div[hasclass('oe_website_login_container')]" position="after">
             <div class="o_winners_auth_footer text-center small">
                 <i class="fa fa-lock me-1" role="presentation"/> Vos données sont sécurisées
                 <span class="o_winners_auth_footer_sep">|</span>
