@@ -104,3 +104,24 @@ class ProductTemplate(models.Model):
                 
         _logger.info("Ingram Sync Complete: %s created, %s updated.", created_count, updated_count)
         return True
+
+    @api.model
+    def clean_homepage_pages(self):
+        """
+        Deactivates any dynamically generated default homepages for OA Atelier
+        to ensure our custom standalone homepage is routed correctly.
+        """
+        website = self.env.ref('oa_beauty_theme.oa_beauty_website', raise_if_not_found=False)
+        if not website:
+            return
+        
+        pages = self.env['website.page'].search([
+            ('website_id', '=', website.id),
+            ('url', '=', '/')
+        ])
+        
+        our_page = self.env.ref('oa_beauty_theme.website_page_homepage', raise_if_not_found=False)
+        for page in pages:
+            if our_page and page.id != our_page.id:
+                page.write({'active': False, 'is_homepage': False, 'url': '/old-home'})
+
