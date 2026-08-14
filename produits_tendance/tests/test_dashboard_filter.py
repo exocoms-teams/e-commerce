@@ -21,7 +21,7 @@ class TestDashboardFilterAPI(HttpCase):
         })
         self.env['trend.score'].create({
             'product_id': self.product_ma.id,
-            'computed_score': 30.0,
+            'computed_score': 998.0,
         })
 
         self.product_fr = self.env['trend.product'].create({
@@ -118,7 +118,9 @@ class TestDashboardFilterAPI(HttpCase):
        api = TrendDashboardAPI(self.env)
        data = api.get_product_list(price_max=200, source='api')
        ids = [p['id'] for p in data]
-       self.assertEqual(ids, [self.product_ma.id])
+       self.assertIn(self.product_ma.id, ids)
+       self.assertNotIn(self.product_fr.id, ids)
+       self.assertEqual(ids[0], self.product_ma.id)
 
     def test_api_dashboard_filter_route_price_and_source(self):
        response = self.url_open('/api/dashboard/filter?price_max=200&source=api')

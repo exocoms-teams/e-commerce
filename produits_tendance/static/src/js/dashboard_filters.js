@@ -1,10 +1,21 @@
 /**
- * produits_tendance — Filtres dynamiques du dashboard (WIN-45 / WIN-50)
+ * produits_tendance — Filtres dynamiques + pagination du dashboard
+ * (WIN-45 / WIN-50 / WIN-77)
  *
  * Écoute les changements des selects du panneau de filtres
  * (.o_winners_filter_panel), appelle /api/dashboard/filter en AJAX
- * (GET, JSON) et reconstruit uniquement la grille de cartes produit
+ * (GET, JSON) et reconstruit la grille de cartes produit
  * (#o_winners_product_grid), sans recharger la page.
+ *
+ * Le bouton "Charger plus" (#o_winners_load_more) réutilise le même
+ * endpoint AJAX, avec un offset croissant et en mode "append" (les
+ * nouvelles cartes s'ajoutent à la grille au lieu de la remplacer) —
+ * conformément au ticket WIN-77 ("Reutiliser le mecanisme AJAX du
+ * ticket Filtres dynamiques plutot que d'en recoder un nouveau").
+ *
+ * La limite Freemium n'est jamais recalculée côté client : le serveur
+ * (TrendDashboardAPI.get_pagination_limit) reste seul juge du (limit,
+ * offset) réellement appliqué, quel que soit l'offset envoyé ici.
  *
  * Reproduit côté client le même balisage que le sous-template QWeb
  * produits_tendance.template_product_cards, pour que le rendu initial
@@ -25,6 +36,13 @@
         var priceMaxInput = document.getElementById('o_winners_filter_price_max');
         var sourceSelect = document.getElementById('o_winners_filter_source');
         var resetBtn = document.getElementById('o_winners_filter_reset');
+        var loadMoreWrapper = document.getElementById('o_winners_load_more_wrapper');
+        var loadMoreBtn = document.getElementById('o_winners_load_more');
+
+        // Offset à utiliser au prochain clic sur "Charger plus". Initialisé
+        // depuis l'attribut posé par le rendu serveur (template_dashboard),
+        // puis mis à jour après chaque réponse AJAX.
+        var nextOffset = (loadMoreBtn && parseInt(loadMoreBtn.getAttribute('data-next-offset'), 10)) || 0;
 
         function escapeHtml(value) {
             var div = document.createElement('div');
@@ -73,10 +91,17 @@
             return col;
         }
 
-        function renderProducts(products) {
-            grid.innerHTML = '';
+        // append=false (filtres/reset) : la grille est entièrement
+        // reconstruite. append=true ("Charger plus") : les nouvelles
+        // cartes s'ajoutent à la suite des cartes déjà affichées.
+        function renderProducts(products, append) {
+            if (!append) {
+                grid.innerHTML = '';
+            }
             if (!products || !products.length) {
-                grid.appendChild(renderEmptyState());
+                if (!append) {
+                    grid.appendChild(renderEmptyState());
+                }
                 return;
             }
             products.forEach(function (p) {
@@ -84,11 +109,16 @@
             });
         }
 
-        // Compteur pour ignorer les réponses obsolètes si l'utilisateur
-        // change les filtres plus vite que le réseau ne répond.
-        var requestToken = 0;
+        function updateLoadMoreState(hasMore, offset) {
+            nextOffset = offset;
+            if (!loadMoreWrapper || !loadMoreBtn) {
+                return;
+            }
+            loadMoreWrapper.style.display = hasMore ? '' : 'none';
+            loadMoreBtn.setAttribute('data-next-offset', offset);
+        }
 
-        function applyFilters() {
+        function buildFilterParams() {
             var params = new URLSearchParams();
             if (categorySelect && categorySelect.value) {
                 params.set('category_id', categorySelect.value);
@@ -102,11 +132,24 @@
             if (sourceSelect && sourceSelect.value) {
                 params.set('source', sourceSelect.value);
             }
+            return params;
+        }
+
+        // Compteur pour ignorer les réponses obsolètes si l'utilisateur
+        // change les filtres plus vite que le réseau ne répond.
+        var requestToken = 0;
+
+        function fetchProducts(offset, append) {
+            var params = buildFilterParams();
+            params.set('offset', offset);
 
             var currentToken = ++requestToken;
             grid.classList.add('o_winners_product_grid--loading');
+            if (append && loadMoreBtn) {
+                loadMoreBtn.disabled = true;
+            }
 
-            fetch('/api/dashboard/filter?' + params.toString(), {
+            return fetch('/api/dashboard/filter?' + params.toString(), {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' },
             })
@@ -116,7 +159,8 @@
                         return; // une requête plus récente est en cours
                     }
                     if (data && data.status === 'success') {
-                        renderProducts(data.products);
+                        renderProducts(data.products, append);
+                        updateLoadMoreState(!!data.has_more, data.next_offset || 0);
                     }
                 })
                 .catch(function () {
@@ -127,7 +171,16 @@
                     if (currentToken === requestToken) {
                         grid.classList.remove('o_winners_product_grid--loading');
                     }
+                    if (append && loadMoreBtn) {
+                        loadMoreBtn.disabled = false;
+                    }
                 });
+        }
+
+        // Changement de filtre : on repart toujours de offset=0 et on
+        // remplace la grille (append=false).
+        function applyFilters() {
+            fetchProducts(0, false);
         }
 
         // Le prix max est un input texte/numérique : on écoute "input" (frappe
@@ -160,6 +213,11 @@
                 if (priceMaxInput) { priceMaxInput.value = ''; }
                 if (sourceSelect) { sourceSelect.value = ''; }
                 applyFilters();
+            });
+        }
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                fetchProducts(nextOffset, true);
             });
         }
     }

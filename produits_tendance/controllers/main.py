@@ -24,7 +24,7 @@ class TrendSubmissionController(http.Controller):
             user_input = post.get('link_or_desc', '').strip()
             final_ref = False
             final_desc = False
-            
+
             if user_input.startswith('http') and ' ' not in user_input:
                 final_ref = user_input
             else:
@@ -81,16 +81,29 @@ class TrendDashboardController(http.Controller):
     def dashboard(self, price_max=None, source=None, category_id=None, country=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
+
+        try:
+            requested_offset = int(offset)
+        except (TypeError, ValueError):
+            requested_offset = 0
+
+        limit, offset = api.get_pagination_limit(request.env, requested_offset)
+        products = api.get_product_list(
+            category_id=category_id or None,
+            country=country or None,
+            price_max=price_max or None,
+            source=source or None,
+            limit=limit,
+            offset=offset,
+        )
+        has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+             has_more = False
         options = api.get_filter_options()
         stats = api.get_dashboard_stats()
+
         return request.render('produits_tendance.template_dashboard', {
-            'products': api.get_product_list(
-                category_id=category_id or None,
-                country=country or None,
-                price_max=price_max or None,
-                source=source or None,
-                limit=limit,
-            ),
+            'products': products,
             'categories': options.get('categories', []),
             'countries': options.get('countries', []),
             'sources': options.get('sources', []),
@@ -100,21 +113,40 @@ class TrendDashboardController(http.Controller):
             'selected_country': country or '',
             'selected_price_max': price_max or '',
             'selected_source': source or '',
+            'has_more': has_more,
+            'next_offset': offset + len(products),
         })
 
     @http.route('/api/dashboard/filter', type='http', auth='user', methods=['GET'], csrf=False)
     def dashboard_filter(self, category_id=None, country=None, price_max=None, source=None, **kwargs):
         limit = 5 if request.env.user.has_group('produits_tendance.group_trend_free') else None
         api = TrendDashboardAPI(request.env)
+
+        try:
+            requested_offset = int(offset)
+        except (TypeError, ValueError):
+            requested_offset = 0
+
+        limit, offset = api.get_pagination_limit(request.env, requested_offset)
         products = api.get_product_list(
             category_id=category_id or None,
             country=country or None,
             price_max=price_max or None,
             source=source or None,
             limit=limit,
+            offset=offset,
         )
+        has_more = len(products) == limit and limit > 0
+        if TrendDashboardAPI.is_freemium_user(request.env) and offset + len(products) >= 5:
+                has_more = False
+
         return request.make_response(
-            json.dumps({'status': 'success', 'products': products}),
+            json.dumps({
+                'status': 'success',
+                'products': products,
+                'has_more': has_more,
+                'next_offset': offset + len(products),
+            }),
             headers=[('Content-Type', 'application/json')],
         )
 
@@ -122,13 +154,13 @@ class TrendDashboardController(http.Controller):
     @http.route('/winners/dashboard', type='http', auth='user', website=True)
     def show_dashboard(self, **kwargs):
         return request.render('produits_tendance.template_winners_dashboard', {})
-    
+
     # --- ROUTE EBAY ---
     @http.route('/dashboard/run_ebay_scan', type='jsonrpc', auth='user')
     def run_ebay_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
-        
+
         if not (is_api_user or is_admin):
             return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
 
@@ -139,10 +171,10 @@ class TrendDashboardController(http.Controller):
         ebay_app_id = Param.get_param('ebay.app_id')
         ebay_cert_id = Param.get_param('ebay.cert_id')
         odoo_api_key = Param.get_param('winners.api_key')
-        
+
         base_url = Param.get_param('web.base.url')
         odoo_url = f"{base_url}/api/trend/ingest"
-        
+
         result = run_ingestion_for_keyword(
             keyword=keyword,
             app_id=ebay_app_id,
@@ -150,7 +182,7 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
         return result
 
     # --- ROUTE META ADS (MANUELLE) ---
@@ -158,7 +190,7 @@ class TrendDashboardController(http.Controller):
     def run_meta_scan(self, keyword):
         is_api_user = request.env.user.has_group('produits_tendance.group_trend_api')
         is_admin = request.env.user.has_group('base.group_erp_manager')
-        
+
         if not (is_api_user or is_admin):
             return {"status": "error", "message": "Accès refusé : Vous n'avez pas les droits pour lancer le scan."}
 
@@ -180,7 +212,7 @@ class TrendDashboardController(http.Controller):
             odoo_url=odoo_url,
             odoo_api_key=odoo_api_key
         )
-        
+
         return result
 
 # -----------------------------------------------------------
@@ -198,7 +230,7 @@ class TrendIngestController(http.Controller):
         api_key = data.get('api_key')
         if not api_key:
             return self._json_response({'status': 'error', 'code': 'missing_field', 'field': 'api_key'}, 401)
-            
+
         if not self.check_api_key(api_key):
             return self._json_response({'status': 'error', 'code': 'invalid_api_key'}, 403)
 
@@ -267,12 +299,12 @@ class TrendIngestController(http.Controller):
 
         # Création / Recherche automatique du produit rattaché
         product = env['trend.product'].search([('product_ref', '=', payload['product_ref'])], limit=1)
-        
+
         if not product:
             category = env['trend.category'].search([('name', '=', 'Non classé')], limit=1)
             if not category:
                 category = env['trend.category'].create({'name': 'Non classé'})
-                
+
             product = env['trend.product'].create({
                 'name': payload.get('product_name', 'Produit Généré par Meta'),
                 'product_ref': payload['product_ref'],
@@ -298,11 +330,11 @@ class TrendIngestController(http.Controller):
             'likes_count': payload.get('likes_count', 0),
             'shares_count': payload.get('shares_count', 0),
         }
-        
+
         # Prise en compte de la date de collecte ajoutée par ton collègue
         if payload.get('collected_at'):
             vals['collected_at'] = payload['collected_at']
-            
+
         record = env['trend.ad'].create(vals)
 
         return self._json_response({'status': 'success', 'type': 'ad', 'id': record.id}, 200)
@@ -336,7 +368,7 @@ class TrendIngestController(http.Controller):
         # == qui peut fuiter la longueur/le prefixe correct de la cle via
         # une attaque temporelle (Epic 1.D, "Securiser l'endpoint (cle API)").
         return bool(valid_key) and hmac.compare_digest(key, valid_key)
-    
+
     def _json_response(self, payload, status):
         return request.make_response(
             json.dumps(payload),
