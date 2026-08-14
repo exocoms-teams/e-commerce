@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import controllers
 from . import models
+from . import wizards
 
 
 def _assign_nouveaute_tag(env):

@@ -58,9 +58,7 @@
             'matelas/static/src/js/main.js',
         ],
     },
-    'installable': True,
     'application': True,
-    'auto_install': False,
     'post_init_hook': '_assign_nouveaute_tag',
 
 }
