@@ -149,20 +149,38 @@ main:has(.oe_website_login_container) {
 .o_winners_auth_partners_logos {
     display: flex;
     flex-wrap: wrap;
-    gap: $o-winners-spacing-unit;
+    gap: $o-winners-spacing-unit; // or ~12px
+    align-items: center;
 }
 
 .o_winners_auth_partner_logo {
-    height: 22px;
-    max-width: 84px;
-    width: auto;
-    object-fit: contain;
-    padding: 8px 12px;
-    background: $o-winners-white;
-    border-radius: $o-winners-radius;
-    // Fond blanc systématique : certains logos (TikTok blanc, Amazon
-    // sombre, etc.) ne resteraient pas lisibles directement sur le
-    // panneau navy sans ce contraste garanti.
+    // 1. Square container styling
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    // 2. Dark glassmorphism card style
+    background: rgba(255, 255, 255, 0.08); // Semi-transparent white
+    border: 1px solid rgba(255, 255, 255, 0.15); // Subtle white border
+    border-radius: 10px; // Rounded corners (or use $o-winners-radius)
+    padding: 10px; // Inner spacing for the icon
+    
+    // Smooth transition for hover effects
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    // 3. Ensure the icon fills the square nicely
+    img, svg {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
 }
 
 // -----------------------------------------------------------
