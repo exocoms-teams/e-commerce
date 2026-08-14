@@ -201,12 +201,12 @@
         </field>
     </record>
 
-    <!-- <record id="view_rgpd_treatment_search" model="ir.ui.view">
+    <record id="view_rgpd_treatment_search" model="ir.ui.view">
         <field name="name">exocoms.rgpd.treatment.search</field>
         <field name="model">exocoms.rgpd.treatment</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" />
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"/>
                 <field name="data_category_ids"/>
                 <field name="subject_category_ids"/>
                 <field name="owner_user_id"/>
@@ -229,7 +229,7 @@
                 </group>
             </search>
         </field>
-    </record> -->
+    </record>
 
     <record id="action_rgpd_treatment" model="ir.actions.act_window">
         <field name="name">Registre des traitements</field>
