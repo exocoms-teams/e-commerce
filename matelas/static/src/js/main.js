@@ -8,22 +8,6 @@
         root.querySelectorAll(matelasBadgeSelector).forEach(function(el) { el.remove(); });
     }
 
-    // Elfsight recrée/rerend son badge à l'intérieur du même shadow root de
-    // temps en temps (pas seulement au chargement) : un simple passage
-    // ponctuel ne suffit pas, il faut observer en continu. On observe donc
-    // chaque shadow root dès sa création (interception d'attachShadow) au
-    // lieu de s'arrêter après quelques secondes.
-    if (window.Element && Element.prototype.attachShadow) {
-        const originalAttachShadow = Element.prototype.attachShadow;
-        Element.prototype.attachShadow = function(init) {
-            const root = originalAttachShadow.call(this, Object.assign({}, init, { mode: 'open' }));
-            removeElfsightBadgeIn(root);
-            const shadowObserver = new MutationObserver(function() { removeElfsightBadgeIn(root); });
-            shadowObserver.observe(root, { childList: true, subtree: true });
-            return root;
-        };
-    }
-
     removeElfsightBadgeIn(document);
     const matelasBodyBadgeObserver = new MutationObserver(function() { removeElfsightBadgeIn(document); });
     matelasBodyBadgeObserver.observe(document.documentElement, { childList: true, subtree: true });

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="website_layout_head_elfsight_fix" inherit_id="website.layout"
+    name="Matelas - Masquage badge Elfsight (avant chargement des autres scripts)">
+    <xpath expr="//head/*[1]" position="before">
+      <script>
+        (function () {
+          if (!window.Element || !Element.prototype.attachShadow) { return; }
+          var originalAttachShadow = Element.prototype.attachShadow;
+          Element.prototype.attachShadow = function (init) {
+            var root = originalAttachShadow.call(this, Object.assign({}, init, { mode: 'open' }));
+            function removeBadge() {
+              root.querySelectorAll('a[href*="testimonials-slider-widget"]').forEach(function (el) {
+                el.remove();
+              });
+            }
+            removeBadge();
+            new MutationObserver(removeBadge).observe(root, { childList: true, subtree: true });
+            return root;
+          };
+        })();
+      </script>
+    </xpath>
+  </template>
+
+</odoo>
