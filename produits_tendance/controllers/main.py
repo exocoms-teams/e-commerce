@@ -354,3 +354,43 @@ class TrendIngestController(http.Controller):
             status=status,
             headers=[('Content-Type', 'application/json')]
         )
+    
+class TrendStaticPagesController(http.Controller):
+
+    # --- PAGES LEGALES (Lien depuis le Footer) ---
+    @http.route('/mentions-legales', type='http', auth='public', website=True)
+    def mentions_legales(self, **kwargs):
+        return request.render('produits_tendance.template_mentions_legales', {})
+
+    @http.route('/confidentialite', type='http', auth='public', website=True)
+    def confidentialite(self, **kwargs):
+        return request.render('produits_tendance.template_confidentialite', {})
+
+    @http.route('/cgu', type='http', auth='public', website=True)
+    def cgu(self, **kwargs):
+        return request.render('produits_tendance.template_cgu', {})
+
+    # --- PAGES DE NAVIGATION (Sidebar & Dashboard) ---
+    @http.route('/alertes', type='http', auth='user', website=True)
+    def page_alertes(self, **kwargs):
+        return request.render('produits_tendance.template_empty_alertes', {})
+
+    @http.route('/collections', type='http', auth='user', website=True)
+    def page_collections(self, **kwargs):
+        return request.render('produits_tendance.template_empty_collections', {})
+
+    @http.route('/favoris', type='http', auth='user', website=True)
+    def page_favoris(self, **kwargs):
+        return request.render('produits_tendance.template_empty_favoris', {})
+        
+    @http.route('/historique', type='http', auth='user', website=True)
+    def page_historique(self, **kwargs):
+        return request.render('produits_tendance.template_empty_historique', {})
+
+    @http.route('/comparaison', type='http', auth='user', website=True)
+    def page_comparaison(self, **kwargs):
+        return request.render('produits_tendance.template_empty_comparaison', {})
+
+    @http.route('/analytics', type='http', auth='user', website=True)
+    def page_analytics(self, **kwargs):
+        return request.render('produits_tendance.template_empty_analytics', {})   
