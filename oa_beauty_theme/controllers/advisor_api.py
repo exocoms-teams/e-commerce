@@ -4,7 +4,7 @@ import uuid
 
 class AdvisorController(http.Controller):
 
-    @http.route('/api/advisor/recommend', type='json', auth='public', website=True, csrf=False)
+    @http.route('/api/advisor/recommend', type='jsonrpc', auth='public', website=True, csrf=False)
     def get_recommendation(self, **kw):
         # Extract data from the JSON-RPC params
         skin_type   = kw.get('skin_type', '').lower()
