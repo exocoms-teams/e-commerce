@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Single inheritance point, on a single confirmed-working anchor.
+
+        Empirically validated on this exact Odoo.sh database:
+          ✅  website_sale.product_accordion  →  div#product_accordion
+          ❌  website_sale.product            →  div#add_to_cart_wrap  (not found)
+
+        Both the "Product Details" specs section (oa_type / oa_finish /
+        oa_best_for / oa_key_ingredients) AND the trust-badge row live
+        inside the accordion so we need only the one proven anchor.
+
+        The o_oa_* classes are styled in static/src/scss/oa_beauty.scss.
+    -->
+    <template id="product_accordion_oa_specs"
+              inherit_id="website_sale.product_accordion"
+              name="O&amp;A Beauty — Product Details Accordion">
+
+        <xpath expr="//div[@id='product_accordion']" position="inside">
+
+            <!-- ── ACCORDION ITEM 1: Ingrédients ── -->
+            <div class="accordion-item" t-if="product.oa_key_ingredients">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_ingredients" aria-expanded="false" aria-controls="oa_ingredients">
+                        Ingrédients
+                    </button>
+                </div>
+                <div id="oa_ingredients" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <p class="mb-0" t-esc="product.oa_key_ingredients"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 2: Conseils d'utilisation ── -->
+            <div class="accordion-item" t-if="product.oa_how_to_use">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_conseils" aria-expanded="false" aria-controls="oa_conseils">
+                        Conseils d'utilisation
+                    </button>
+                </div>
+                <div id="oa_conseils" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div t-field="product.oa_how_to_use"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM: Bienfaits (Benefits) ── -->
+            <div class="accordion-item" t-if="product.oa_benefits">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_benefits_acc" aria-expanded="false" aria-controls="oa_benefits_acc">
+                        Bienfaits
+                    </button>
+                </div>
+                <div id="oa_benefits_acc" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div t-field="product.oa_benefits"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 3: Promesse de la marque ── -->
+            <div class="accordion-item">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_promesse" aria-expanded="false" aria-controls="oa_promesse">
+                        Promesse de la marque
+                    </button>
+                </div>
+                <div id="oa_promesse" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <p class="mb-0">"La beauté à deux voix. Révélée, jamais déguisée." Nos formules transparentes sont élaborées sans compromis, alliant efficacité clinique et sensorialité luxueuse.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM 4: Informations complémentaires ── -->
+            <div class="accordion-item" t-if="product.oa_type or product.oa_finish or product.oa_best_for">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button collapsed fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_infos" aria-expanded="false" aria-controls="oa_infos">
+                        Informations complémentaires
+                    </button>
+                </div>
+                <div id="oa_infos" class="accordion-collapse collapse" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="row mt-2">
+                            <div class="col-12 col-md-4" t-if="product.oa_type">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Type</span>
+                                <span t-esc="product.oa_type"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_finish">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Fini</span>
+                                <span t-esc="product.oa_finish"/>
+                            </div>
+                            <div class="col-12 col-md-4" t-if="product.oa_best_for">
+                                <span class="d-block text-muted small fw-bold text-uppercase">Idéal pour</span>
+                                <span t-esc="product.oa_best_for"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ACCORDION ITEM: Fragrance Notes Pyramid ── -->
+            <div class="accordion-item" t-if="product.oa_fragrance_top_notes or product.oa_fragrance_heart_notes or product.oa_fragrance_base_notes">
+                <div class="accordion-header my-0 h6">
+                    <button class="accordion-button fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#oa_fragrance_notes" aria-expanded="true" aria-controls="oa_fragrance_notes">
+                        Pyramide Olfactive
+                    </button>
+                </div>
+                <div id="oa_fragrance_notes" class="accordion-collapse collapse show" data-bs-parent="#product_accordion">
+                    <div class="accordion-body pt-0">
+                        <div class="oa-notes-pyramid">
+                            <!-- Top Notes -->
+                            <div class="oa-note-level oa-note-top" t-if="product.oa_fragrance_top_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">◇</span> Notes de Tête
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_top_notes"/>
+                            </div>
+                            <!-- Heart Notes -->
+                            <div class="oa-note-level oa-note-heart" t-if="product.oa_fragrance_heart_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">♡</span> Notes de Cœur
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_heart_notes"/>
+                            </div>
+                            <!-- Base Notes -->
+                            <div class="oa-note-level oa-note-base" t-if="product.oa_fragrance_base_notes">
+                                <div class="oa-note-label">
+                                    <span class="oa-note-icon">▽</span> Notes de Fond
+                                </div>
+                                <div class="oa-note-items" t-esc="product.oa_fragrance_base_notes"/>
+                            </div>
+                        </div>
+                        <!-- Mood -->
+                        <div class="mt-3 pt-3 border-top" t-if="product.oa_mood">
+                            <span class="text-uppercase fw-bold small" style="letter-spacing: 0.15em; color: var(--oa-mauve);">Mood</span>
+                            <p class="mb-0 mt-1" style="color: var(--oa-prune); font-style: italic;" t-esc="product.oa_mood"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SOCIAL PROOF BANNER ── -->
+            <div class="mt-4 pt-4 border-top text-center">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <i class="fa fa-star text-warning"></i>
+                    <i class="fa fa-star text-warning"></i>
+                    <i class="fa fa-star text-warning"></i>
+                    <i class="fa fa-star text-warning"></i>
+                    <i class="fa fa-star text-warning"></i>
+                    <span class="ms-2 fw-bold" style="color: var(--oa-prune);">4.9/5</span>
+                </div>
+                <p class="small text-muted mb-0">Recommandé par plus de <strong style="color: var(--oa-mauve);">10 000+</strong> clientes.</p>
+            </div>
+
+            <!-- ── TRUST BADGES ── -->
+            <div class="mt-4 pt-3 border-top">
+                <div class="d-flex flex-wrap justify-content-between text-center gap-2" style="font-size: 0.8rem; color: var(--oa-prune);">
+                    <div>
+                        <i class="fa fa-paw fs-5 mb-1 d-block" style="color: var(--oa-mauve);"></i>
+                        Cruelty-Free
+                    </div>
+                    <div>
+                        <i class="fa fa-leaf fs-5 mb-1 d-block" style="color: var(--oa-mauve);"></i>
+                        Vegan
+                    </div>
+                    <div>
+                        <i class="fa fa-droplet fs-5 mb-1 d-block" style="color: var(--oa-mauve);"></i>
+                        Natural Ingredients
+                    </div>
+                    <div>
+                        <i class="fa fa-lock fs-5 mb-1 d-block" style="color: var(--oa-mauve);"></i>
+                        Secure Payment
+                    </div>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+
+    <!-- ═══════════════════════════════════════════
+         COMING SOON BADGE — Shown at top of accordion
+         Uses the same working inherit point as the specs template.
+         A <style> block hides the add-to-cart form for coming-soon products.
+         ═══════════════════════════════════════════ -->
+    <template id="oa_beauty_coming_soon_badge" inherit_id="website_sale.product_accordion" name="O&amp;A Beauty — Coming Soon Badge">
+        <xpath expr="//div[@id='product_accordion']" position="before">
+            <t t-if="product.oa_is_coming_soon">
+                <div class="oa-coming-soon-wrap text-center py-4 mb-4">
+                    <div class="oa-coming-soon-badge">
+                        <span class="oa-coming-soon-icon">✦</span>
+                        <span class="oa-coming-soon-text">Official Collection Coming Soon</span>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">Cette création sera bientôt disponible. Restez à l'écoute.</p>
+                </div>
+                <!-- Hide add-to-cart form elements for coming-soon products -->
+                <style>
+                    form.js_add_to_cart_wrap,
+                    #product_option_block,
+                    .js_add_to_cart_wrap,
+                    #oa_sticky_cart_bar { display: none !important; }
+                </style>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Phase 5: SEO Optimization (Schema.org) -->
+    <template id="oa_beauty_product_seo_schema" inherit_id="website_sale.product">
+        <xpath expr="." position="inside">
+            <script type="application/ld+json">
+                {
+                    "@context": "https://schema.org/",
+                    "@type": "Product",
+                    "name": "<t t-esc='product.name'/>",
+                    "image": [
+                        "<t t-esc='request.httprequest.url_root'/>web/image/product.template/<t t-esc='product.id'/>/image_1920"
+                    ],
+                    "description": "<t t-esc='product.description_sale or product.name'/>",
+                    "sku": "<t t-esc='product.default_code or product.id'/>",
+                    "brand": {
+                        "@type": "Brand",
+                        "name": "O&amp;A Beauty"
+                    },
+                    "keywords": "<t t-esc='product.oa_seo_keywords or product.name'/>",
+                    "offers": {
+                        "@type": "Offer",
+                        "url": "<t t-esc='request.httprequest.url'/>",
+                        "priceCurrency": "<t t-esc='website.currency_id.name'/>",
+                        "price": "<t t-esc='product.list_price'/>",
+                        "itemCondition": "https://schema.org/NewCondition",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Phase 3: Sticky Add To Cart -->
+    <template id="oa_beauty_product_sticky_cart" inherit_id="website_sale.product">
+        <xpath expr="." position="inside">
+            <!-- Sticky Cart Bar (Hidden initially, shown on scroll via JS) -->
+            <div id="oa_sticky_cart_bar" class="fixed-bottom bg-white shadow-lg py-3 px-4 d-flex justify-content-between align-items-center" style="transform: translateY(100%); transition: transform 0.3s ease-in-out; z-index: 1040; border-top: 1px solid var(--oa-border);">
+                <div class="d-none d-md-flex align-items-center">
+                    <img t-if="product.image_128" t-att-src="image_data_uri(product.image_128)" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;"/>
+                    <div>
+                        <div class="fw-bold text-dark" style="font-family: var(--oa-font-display);"><t t-esc="product.name"/></div>
+                        <div class="text-muted small" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                    </div>
+                </div>
+                <!-- Price for mobile -->
+                <div class="d-flex d-md-none flex-column">
+                    <span class="fw-bold text-dark" style="font-size: 0.9rem;"><t t-esc="product.name"/></span>
+                    <span class="text-muted" style="font-size: 0.85rem;" t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                </div>
+                <!-- Action Button -->
+                <div>
+                    <!-- This button triggers a click on the real Add To Cart button -->
+                    <button id="oa_sticky_add_btn" class="oa-btn-primary px-4 py-2" style="font-size: 0.85rem; min-width: 150px;">
+                        Ajouter au Panier
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const stickyBar = document.getElementById('oa_sticky_cart_bar');
+                    const realAddToCart = document.getElementById('add_to_cart');
+                    const stickyBtn = document.getElementById('oa_sticky_add_btn');
+                    
+                    if(stickyBar &amp;&amp; realAddToCart) {
+                        // Show bar when scrolling past the real button
+                        window.addEventListener('scroll', function() {
+                            const rect = realAddToCart.getBoundingClientRect();
+                            if(rect.bottom &lt; 0) {
+                                stickyBar.style.transform = 'translateY(0)';
+                            } else {
+                                stickyBar.style.transform = 'translateY(100%)';
+                            }
+                        });
+                        
+                        // Proxy click
+                        stickyBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            realAddToCart.click();
+                        });
+                    }
+                });
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Low Stock Indicator on Product Page -->
+    <template id="oa_beauty_low_stock_indicator" inherit_id="website_sale.product" name="O&amp;A Beauty — Low Stock Indicator">
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <t t-set="product_variant" t-value="product.product_variant_id"/>
+            <t t-if="'qty_available' in product_variant._fields and product_variant.qty_available and product_variant.qty_available > 0 and product_variant.qty_available &lt;= 5">
+                <div class="oa-low-stock mt-2">
+                    Plus que <t t-esc="int(product_variant.qty_available)"/> en stock — commandez vite !
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Recently Viewed Products Section -->
+    <template id="oa_beauty_recently_viewed" inherit_id="website_sale.product" name="O&amp;A Beauty — Recently Viewed">
+        <xpath expr="." position="inside">
+            <section class="oa-recently-viewed py-5" style="background-color: var(--oa-ivory);">
+                <div class="container">
+                    <h2 class="oa-section-heading text-center mb-5">Récemment Consultés</h2>
+                    <div id="oa_rv_container" class="row g-3">
+                        <!-- Populated by JS from localStorage -->
+                    </div>
+                </div>
+            </section>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Save current product to recently viewed
+                    var currentProduct = {
+                        id: '<t t-esc="product.id"/>',
+                        name: '<t t-esc="product.name"/>',
+                        price: '<t t-esc="product.list_price"/>',
+                        url: window.location.pathname,
+                        image: '/web/image/product.template/<t t-esc="product.id"/>/image_128'
+                    };
+
+                    var rvKey = 'oa_recently_viewed';
+                    var rvList = JSON.parse(localStorage.getItem(rvKey) || '[]');
+
+                    // Remove if already exists
+                    rvList = rvList.filter(function(p) { return p.id !== currentProduct.id; });
+                    // Add to front
+                    rvList.unshift(currentProduct);
+                    // Keep max 6
+                    rvList = rvList.slice(0, 6);
+                    localStorage.setItem(rvKey, JSON.stringify(rvList));
+
+                    // Render recently viewed (excluding current)
+                    var container = document.getElementById('oa_rv_container');
+                    var displayList = rvList.filter(function(p) { return p.id !== currentProduct.id; });
+
+                    if (displayList.length === 0) {
+                        container.closest('section').style.display = 'none';
+                        return;
+                    }
+
+                    displayList.slice(0, 4).forEach(function(p) {
+                        var card = document.createElement('div');
+                        card.className = 'col-6 col-md-3';
+                        card.innerHTML =
+                            '<a href="' + p.url + '" class="oa-rv-card">' +
+                            '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy"/>' +
+                            '<div>' +
+                            '<div class="oa-rv-name">' + p.name + '</div>' +
+                            '<div class="oa-rv-price">' + p.price + ' €</div>' +
+                            '</div></a>';
+                        container.appendChild(card);
+                    });
+                });
+            </script>
+        </xpath>
+    </template>
+
+</odoo>
